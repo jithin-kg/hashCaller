@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bottombaritem_messages"
+        android:icon="@drawable/ic_message"
+        android:title="Messages"
+        app:showAsAction="ifRoom"/>
+
+
+
+    <item
+        android:id="@+id/bottombaritem_contacts"
+        android:icon="@drawable/ic_contact"
+        android:title="Contacts"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/bottombaritem_calls"
+        android:icon="@drawable/ic_call_white_24dp"
+        android:title="Calls"/>
+
+    <item
+        android:id="@+id/bottombaritem_spam"
+        android:icon="@drawable/ic_block"
+        android:title="Block"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/bottombaritem_premium"
+        android:icon="@drawable/ic_block"
+        android:title="Block"
+        app:showAsAction="ifRoom"/>
+
+
+</menu>

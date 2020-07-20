@@ -1,0 +1,10 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="dialpad_num24sp">24sp</dimen>
+    <dimen name="dialpad_character10sp">10sp</dimen>
+    <dimen name="dialpad_margin_top15dp">15dp</dimen>
+    <dimen name="dialpad_layoutheight_50dp">50dp</dimen>
+    <dimen name="num_margin_top_0dp">0dp</dimen>
+    <dimen name="dialpad_row_marginbottom_16dp">16dp</dimen>
+</resources>
