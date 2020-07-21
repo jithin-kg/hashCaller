@@ -3,12 +3,12 @@ package com.nibble.hashcaller.view.ui.BlockConfig
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.data.local.db.BlockedListPattern
@@ -74,7 +74,9 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
         Log.d(TAG, "save button clicked")
         blockListViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
         val newPattern = editTextNewPattern?.text?.toString()
-        val blockListPattern = BlockedListPattern( null, newPattern!!)
+        val patternRegex = "($newPattern)([0-9]*)"
+
+        val blockListPattern = BlockedListPattern( null, newPattern!!,patternRegex )
         blockListViewModel.insert(blockListPattern)
 
 //        blockListViewModel =

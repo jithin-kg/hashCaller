@@ -22,6 +22,7 @@ public class BlockListViewModel(application: Application) : AndroidViewModel(app
         blockListPatternRepository = BlockListPatternRepository(blockedLIstDao)
 
         allblockedList = blockListPatternRepository.allBlockedList
+
     }
 
     //creating a coroutine to call suspending function

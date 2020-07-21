@@ -8,5 +8,8 @@ import androidx.room.PrimaryKey
  * Created by Jithin KG on 03,July,2020
  */
 @Entity(tableName = "block_list_pattern")
-data class BlockedListPattern(@PrimaryKey(autoGenerate = true) val id: Int?, @ColumnInfo(name="num_pattern") var numberPattern:String) {
+data class BlockedListPattern(
+    @PrimaryKey(autoGenerate = true) val id: Int?,
+    @ColumnInfo(name="num_pattern") val numberPattern:String,
+     @ColumnInfo(name = "num_pattern_regex") val numberPatterRegex:String   ) {
 }

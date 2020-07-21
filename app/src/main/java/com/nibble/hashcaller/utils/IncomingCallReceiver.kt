@@ -7,11 +7,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.android.internal.telephony.ITelephony
+import com.nibble.hashcaller.data.local.db.HashCallerDatabase
+import com.nibble.hashcaller.data.local.db.dao.BlockedLIstDao
+import com.nibble.hashcaller.data.repository.BlockListPatternRepository
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -20,12 +25,19 @@ import java.util.*
  * Created by Jithin KG on 20,July,2020
  */
 class IncomingCallReceiver : BroadcastReceiver(){
-    var sharedPreferences: SharedPreferences? = null
+
+    lateinit var  blockedLIstDao:BlockedLIstDao
+    lateinit var blockListPatternRepository: BlockListPatternRepository
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
+
+
+
+
 
             Log.e(
                 LOG_TAG,
@@ -74,10 +86,10 @@ class IncomingCallReceiver : BroadcastReceiver(){
              * check if receive call ony from contacts enabled
              */
             //initialise incomming call manager
-            sharedPreferences = context.getSharedPreferences(
-                MyPREFERENCES,
-                Context.MODE_PRIVATE
-            )
+//            sharedPreferences = context.getSharedPreferences(
+//                MyPREFERENCES,
+//                Context.MODE_PRIVATE
+//            )
 
 
             if (phoneNumber == null) {
@@ -91,6 +103,10 @@ class IncomingCallReceiver : BroadcastReceiver(){
                 LOG_TAG,
                 String.format("Incoming call from %s", phoneNumber)
             )
+            blockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
+            blockListPatternRepository = BlockListPatternRepository(blockedLIstDao)
+            val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository)
+            inComingCallManager.getBLockedLists()
 //            genratehash(phoneNumber, context)
             /**
              * From here we manage incomming call by IncommingCallManager class
