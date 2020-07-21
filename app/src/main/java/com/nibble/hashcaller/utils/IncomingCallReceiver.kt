@@ -1,33 +1,28 @@
 package com.nibble.hashcaller.utils
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import com.android.internal.telephony.ITelephony
 import com.nibble.hashcaller.data.local.db.HashCallerDatabase
 import com.nibble.hashcaller.data.local.db.dao.BlockedLIstDao
 import com.nibble.hashcaller.data.repository.BlockListPatternRepository
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.*
 
 /**
  * Created by Jithin KG on 20,July,2020
+ * this class recieves the broadcast intent about call state
  */
 class IncomingCallReceiver : BroadcastReceiver(){
 
-    lateinit var  blockedLIstDao:BlockedLIstDao
-    lateinit var blockListPatternRepository: BlockListPatternRepository
+    private lateinit var  blockedLIstDao:BlockedLIstDao
+    private lateinit var blockListPatternRepository: BlockListPatternRepository
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -105,7 +100,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
             )
             blockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
             blockListPatternRepository = BlockListPatternRepository(blockedLIstDao)
-            val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository)
+            val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
             inComingCallManager.getBLockedLists()
 //            genratehash(phoneNumber, context)
             /**

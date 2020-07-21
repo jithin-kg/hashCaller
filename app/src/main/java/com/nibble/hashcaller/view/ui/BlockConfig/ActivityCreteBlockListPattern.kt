@@ -74,7 +74,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
         Log.d(TAG, "save button clicked")
         blockListViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
         val newPattern = editTextNewPattern?.text?.toString()
-        val patternRegex = "($newPattern)([0-9]*)"
+        val patternRegex = "$newPattern([0-9]*)"
 
         val blockListPattern = BlockedListPattern( null, newPattern!!,patternRegex )
         blockListViewModel.insert(blockListPattern)

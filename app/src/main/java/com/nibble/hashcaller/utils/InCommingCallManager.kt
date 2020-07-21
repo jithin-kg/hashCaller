@@ -4,54 +4,67 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.android.internal.telephony.ITelephony
-import com.nibble.hashcaller.data.local.db.dao.BlockedLIstDao
 import com.nibble.hashcaller.data.repository.BlockListPatternRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 /**
  * Created by Jithin KG on 20,July,2020
  */
-class InCommingCallManager (blockListPatternRepository: BlockListPatternRepository) :ITelephony {
+class InCommingCallManager(
+    blockListPatternRepository: BlockListPatternRepository,
+    context: Context,
+    phoneNumber: String
+)  {
 
-    val repository = blockListPatternRepository
+    private val repository = blockListPatternRepository
+    val context = context
+    private val phoneNumber = phoneNumber.replace("+","")
+        .replace("(", "")
+        .replace(")", "")
+        .replace("-","")
+//    preparedPhoenNumber()
 
 
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun getBLockedLists()  = GlobalScope.launch(Dispatchers.IO) {
-
+        Log.d(TAG, "phoneNum: $phoneNumber")
           val job =  async { repository.getListOfdata() }
-        runBlocking {
+//        runBlocking {
             val list = job.await()
-            val phoneNumber:String="34234"
-            Log.d(TAG, "getBLockedLists")
-            list.stream()
+           val match:Boolean  =list.stream()
                 .anyMatch {
                   blockedListPattern->
+                    Log.d(TAG, blockedListPattern.numberPatterRegex)
 //                    phoneNumber.matches(blockedListPattern.numberPattern)
-                    Pattern.matches(blockedListPattern.numberPattern
-                        ,"09304")
+                    Pattern.matches(blockedListPattern.numberPatterRegex
+                        ,phoneNumber)
                 }
-
+        if(match){
+            endIncommingCall(context)
+            Log.d(TAG, "getBLockedLists: $match")
+        }else{
+            Log.d(TAG, "getBLockedLists: $match")
         }
+//        }
 
 
     }
 
     companion object{
-        private const val  TAG = "__IncommingCAllManager"
-    }
-    override fun endCall(): Boolean {
-          return false
+        private const val  TAG = "__IncomingCallManager"
     }
 
-    override fun answerRingingCall() {
 
+    private fun endIncommingCall(context: Context) {
+        val c =  CallEnder(context)
+        c.endIncomingCall()
     }
-
-    override fun silenceRinger() {
-
-    }
+//    fun preparedPhoenNumber(num:String):Boolean{
+//
+//    }
 }
