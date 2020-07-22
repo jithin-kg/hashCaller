@@ -22,11 +22,8 @@ class InCommingCallManager(
 
     private val repository = blockListPatternRepository
     val context = context
-    private val phoneNumber = phoneNumber.replace("+","")
-        .replace("(", "")
-        .replace(")", "")
-        .replace("-","")
-//    preparedPhoenNumber()
+    private val phoneNumber = preparedPhoenNumber(phoneNumber)
+
 
 
 
@@ -46,9 +43,9 @@ class InCommingCallManager(
                 }
         if(match){
             endIncommingCall(context)
-            Log.d(TAG, "getBLockedLists: $match")
+
         }else{
-            Log.d(TAG, "getBLockedLists: $match")
+
         }
 //        }
 
@@ -64,7 +61,11 @@ class InCommingCallManager(
         val c =  CallEnder(context)
         c.endIncomingCall()
     }
-//    fun preparedPhoenNumber(num:String):Boolean{
-//
-//    }
+
+    fun preparedPhoenNumber(num:String):String{
+        return num.replace("+","")
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-","").trim()
+    }
 }

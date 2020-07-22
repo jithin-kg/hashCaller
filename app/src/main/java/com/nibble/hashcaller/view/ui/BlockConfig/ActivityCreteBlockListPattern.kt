@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_add_new_pattern.*
 
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener {
-    private lateinit var  blockListViewModel:MyViewModel
+    private lateinit var  blockListViewModel:BlockListViewModel
 
     var sharedPreferences: SharedPreferences? = null
 
@@ -72,8 +72,8 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
 
     private fun savePattern() {
         Log.d(TAG, "save button clicked")
-        blockListViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
-        val newPattern = editTextNewPattern?.text?.toString()
+        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
+        val newPattern = editTextNewPattern?.text?.toString()?.trim()
         val patternRegex = "$newPattern([0-9]*)"
 
         val blockListPattern = BlockedListPattern( null, newPattern!!,patternRegex )

@@ -28,7 +28,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.BlockConfig.BlockConfigFragment
+import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_contacts.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var toolbar: Toolbar
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //    private lateinit var callFragment: CallFragment
 //    private lateinit var messagesFragment: MessagesFragment
     private lateinit var blockConfigFragment: BlockConfigFragment
-//    private lateinit var contactFragment: ContactFragment
+    private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
 //    var layoutBottomSheet: ConstraintLayout
 
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            callFragment = CallFragment()
 //            messagesFragment = MessagesFragment()
             blockConfigFragment = BlockConfigFragment()
-//            contactFragment = ContactFragment()
+            contactFragment = ContactsFragment()
             //            callFragment.setSelectedItemId(R.id.callFragment)
         }
         //        Intent intent = new Intent(MainActivity.this, CreateCustomFilter2.class);
@@ -96,10 +98,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //                    showCallFragment()
 //                    return@OnNavigationItemSelectedListener true
 //                }
-//                R.id.bottombaritem_contacts -> {
-//                    showContactsFragment()
-//                    return@OnNavigationItemSelectedListener true
-//                }
+                R.id.bottombaritem_contacts -> {
+                    showContactsFragment()
+                    return@OnNavigationItemSelectedListener true
+                }
                 R.id.bottombaritem_spam -> {
                     showBlockConfigFragment()
                     return@OnNavigationItemSelectedListener true
@@ -150,10 +152,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        ft.add(R.id.frame_fragmentholder, callFragment)
 //        //        ft.hide(callFragment);
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
-//        ft.add(R.id.frame_fragmentholder, contactFragment)
+        ft.add(R.id.frame_fragmentholder, contactFragment)
 //        ft.hide(contactFragment)
         ft.add(R.id.frame_fragmentholder, blockConfigFragment)
-//        ft.hide(blockConfigFragment)
+        ft.hide(blockConfigFragment)
         ft.commit()
     }
 
@@ -163,9 +165,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             ft.show(blockConfigFragment)
         }
         // Hide fragment contact
-//        if (contactFragment.isAdded) {
-//            ft.hide(contactFragment)
-//        }
+        if (contactFragment.isAdded) {
+            ft.hide(contactFragment)
+        }
 //        // Hide fragment call
 //        if (callFragment.isAdded) {
 //            ft.hide(callFragment)
@@ -177,16 +179,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ft.commit()
     }
 
-//    private fun showContactsFragment() {
+    private fun showContactsFragment() {
 //        showDialPad()
-//        val ft = supportFragmentManager.beginTransaction()
-//        if (contactFragment.isAdded) { // if the fragment is already in container
-//            ft.show(contactFragment)
-//        }
+        val ft = supportFragmentManager.beginTransaction()
+        if (contactFragment.isAdded) { // if the fragment is already in container
+            ft.show(contactFragment)
+        }
 //        // Hide fragment B
-//        if (blockConfigFragment.isAdded) {
-//            ft.hide(blockConfigFragment)
-//        }
+        if (blockConfigFragment.isAdded) {
+            ft.hide(blockConfigFragment)
+        }
 //        // Hide fragment C
 //        if (callFragment.isAdded) {
 //            ft.hide(callFragment)
@@ -196,7 +198,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        }
 //        // Commit changes
 //        ft.commit()
-//    }
+    }
 
     //    @Override
     //    public void onBackPressed() {

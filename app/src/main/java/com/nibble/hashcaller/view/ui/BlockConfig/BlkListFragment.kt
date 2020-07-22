@@ -13,9 +13,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.data.local.db.BlockedListPattern
 import com.nibble.hashcaller.view.adapter.BlockListAdapter
 import com.nibble.hashcaller.view.ui.tabian.BlogRecyclerAdapter
-import com.nibble.hashcaller.view.ui.tabian.DataSource
 import com.nibble.hashcaller.view.ui.tabian.TopSpacingItemDecoration
-import kotlinx.android.synthetic.main.activity_tabian.*
 
 import kotlinx.android.synthetic.main.fragment_blk_list.*
 
@@ -31,10 +29,10 @@ class BlkListFragment : Fragment(),View.OnClickListener {
     private lateinit var blockListView:View
     private lateinit var adapter: BlockListAdapter
 
-    private lateinit var blockListViewModel: MyViewModel
+    private lateinit var blockListViewModel: BlockListViewModel
 
 
-    private lateinit var blogAdapter: BlogRecyclerAdapter
+    private lateinit var blockListAdapter: BlogRecyclerAdapter
 
     private fun initRecyclerView(){
 
@@ -42,8 +40,8 @@ class BlkListFragment : Fragment(),View.OnClickListener {
             layoutManager = LinearLayoutManager(activity)
             val topSpacingDecorator = TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)
-            blogAdapter = BlogRecyclerAdapter()
-            adapter = blogAdapter
+            blockListAdapter = BlogRecyclerAdapter()
+            adapter = blockListAdapter
         }
     }
 
@@ -84,13 +82,13 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 //                adapter.notifyDataSetChanged()
 //                //                Toast.makeText(MainActivity.this, "onChanged", Toast.LENGTH_SHORT).show();
 //            });
-        blockListViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         blockListViewModel.allblockedList.observe(viewLifecycleOwner,
             Observer<List<BlockedListPattern>> { blockedListPatterns ->
                 Log.d(TAG, "onViewCreated: " + blockedListPatterns?.size)
 //                adapter = BlockListAdapter(blockedListPatterns)
 //                adapter.setBlockedListPatterns(blockedListPatterns)
-                blockedListPatterns?.let{blogAdapter.submitList(it)}
+                blockedListPatterns?.let{blockListAdapter.submitList(it)}
                 //Update Recycler view
 //                blogAdapter?.submitList(blockedListPatterns)
 //                adapter.notifyDataSetChanged()

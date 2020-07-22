@@ -42,7 +42,7 @@ class BlockListAdapter(blockedListPatterns: List<BlockedListPattern>) : Recycler
     }
     internal fun setBlockedListPatterns(blockedListPatterns: List<BlockedListPattern>) {
         this.blockedListPattern = blockedListPattern
-        //TODO change notifyDatasetChaged() to other to have animation for addition and deletion
+
         notifyDataSetChanged()
     }
     inner class BlockListViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView){

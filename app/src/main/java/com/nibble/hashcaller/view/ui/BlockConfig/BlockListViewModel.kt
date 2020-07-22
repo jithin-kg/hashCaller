@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers.IO
 /**
  * Created by Jithin KG on 03,July,2020
  */
-class MyViewModel(application: Application) : AndroidViewModel(application) {
+class BlockListViewModel(application: Application) : AndroidViewModel(application) {
     private  val blockListPatternRepository: BlockListPatternRepository
 
     val allblockedList: LiveData<List<BlockedListPattern>>
