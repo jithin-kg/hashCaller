@@ -12,5 +12,4 @@ class ContactsViewModel(application: Application): AndroidViewModel(application)
     val contacts =
         ContactLiveData(application.applicationContext)
 
-
 }
