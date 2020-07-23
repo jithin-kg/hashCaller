@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.contacts
+package com.nibble.hashcaller.view.ui.contacts.utils
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

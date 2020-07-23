@@ -12,8 +12,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
  */
 class ContactLiveData(private val context: Context):
     ContentProviderLiveData<List<Contact>>(context,
-        URI
-    ){
+        URI) {
 
     companion object{
         val URI: Uri = ContactsContract.Contacts.CONTENT_URI

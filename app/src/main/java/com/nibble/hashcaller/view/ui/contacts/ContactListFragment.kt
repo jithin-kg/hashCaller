@@ -1,7 +1,7 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,17 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.data.local.db.BlockedListPattern
-import com.nibble.hashcaller.data.stubs.Contact
-import com.nibble.hashcaller.view.ui.BlockConfig.BlkListFragment
-import com.nibble.hashcaller.view.ui.BlockConfig.BlockListViewModel
-import com.nibble.hashcaller.view.ui.tabian.BlogRecyclerAdapter
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import com.nibble.hashcaller.view.ui.tabian.TopSpacingItemDecoration
-import kotlinx.android.synthetic.main.fragment_blk_list.*
 import kotlinx.android.synthetic.main.fragment_contact_list.*
-import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,6 +33,7 @@ class ContactListFragment  : Fragment()  {
 
     private lateinit  var contactViewModel: ContactsViewModel
     private lateinit var contactListViewFragment: View
+
 //    var contacts: List<Contact>? = null
     var contactsRecyclerAdapter: ContactAdapter? = null
     var progressBar: ProgressBar? = null
@@ -104,8 +100,10 @@ class ContactListFragment  : Fragment()  {
         }
     private fun onContactItemClicked(id:Long){
         Log.d(TAG, "onContactItemClicked: $id")
+        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+        intent.putExtra(CONTACT_ID, id)
+        startActivity(intent)
     }
-
 
 
 
