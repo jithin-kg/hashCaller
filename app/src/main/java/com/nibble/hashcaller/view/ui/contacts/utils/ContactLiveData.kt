@@ -3,7 +3,9 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
+import android.util.Log
 import com.nibble.hashcaller.data.stubs.Contact
+import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -34,8 +36,12 @@ class ContactLiveData(private val context: Context):
         )
         if(cursor != null && cursor.moveToFirst()){
             do{
+
                 val id = cursor.getLong(0)
                 val name = cursor.getString(1)
+//                val numIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.NUMBER)
+//                val number = cursor.getString(numIndex)
+//                Log.d(TAG, "getContacts: number")
 
                 listOfContacts.add(Contact(id, name))
             }while (cursor.moveToNext())

@@ -33,7 +33,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ContactListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ContactListFragment : Fragment() {
+class ContactListFragment  : Fragment()  {
     private val TAG = "ContactListFragment"
 
     private lateinit  var contactViewModel: ContactsViewModel
@@ -94,11 +94,19 @@ class ContactListFragment : Fragment() {
                 layoutManager = LinearLayoutManager(activity)
                 val topSpacingDecorator = TopSpacingItemDecoration(30)
                 addItemDecoration(topSpacingDecorator)
-                contactsRecyclerAdapter = ContactAdapter(context)
+                contactsRecyclerAdapter = ContactAdapter(context) { id:Long->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
 //                setContacts()
+
+//                adapter.onItemClick =
             }
+
         }
+    private fun onContactItemClicked(id:Long){
+        Log.d(TAG, "onContactItemClicked: $id")
+    }
+
+
 
 
 }

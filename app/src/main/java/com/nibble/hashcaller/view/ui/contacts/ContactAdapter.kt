@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.contact_list.view.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class ContactAdapter(private val context: Context) :
+class ContactAdapter(private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     private var contacts = emptyList<Contact>()
@@ -24,12 +24,13 @@ class ContactAdapter(private val context: Context) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_list, parent, false)
+
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val contact = contacts[position]
-        holder.bind(contact, context)
+        holder.bind(contact, context, onContactItemClickListener)
     }
 
     override fun getItemCount() = contacts.size
@@ -42,10 +43,19 @@ class ContactAdapter(private val context: Context) :
         private val name = view.textViewContactName
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: Contact, context: Context) {
+        fun bind(contact: Contact, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
             name.text = contact.name
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
+            view.setOnClickListener{
+                onContactItemClickListener(contact.id)
+            }
         }
+
+        }
+
+
+
     }
 
-}
+
+
