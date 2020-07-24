@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            ft.hide(messagesFragment)
 //        }
 //        // Commit changes
-//        ft.commit()
+        ft.commit()
     }
 
     //    @Override

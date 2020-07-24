@@ -33,6 +33,9 @@ class IndividualContactRepository(private  val context: Context, private var id:
         val cCONTACT_CONTENT_URI = ContactsContract.Contacts.CONTENT_URI
         val cDisplayNameColumn = ContactsContract.Contacts.DISPLAY_NAME
 
+        var nameToDisplay = ""
+        var phoneNumber = ""
+
 //        ContactsContract.Contacts.PHOTO_URI
 
 
@@ -47,9 +50,9 @@ class IndividualContactRepository(private  val context: Context, private var id:
             while (cursor != null && !cursor.isAfterLast()) {
                 if (cursor.getColumnIndex(cContactIdString) >= 0) {
                     if (contactId == cursor.getString(cursor.getColumnIndex(cContactIdString))) {
-                        val name: String =
+                        nameToDisplay =
                             cursor.getString(cursor.getColumnIndex(cDisplayNameColumn))
-                        Log.d("__IndividualContactRepository"," getIndividualContact: $name")
+                        Log.d("__IndividualContactRepository"," getIndividualContact: $nameToDisplay")
                    
                         break
                     }
@@ -59,24 +62,22 @@ class IndividualContactRepository(private  val context: Context, private var id:
 
         }
         cursor?.close()
-        getPhoneNumber()
+         phoneNumber = getPhoneNumber()
 
 
-        val individualContact =
-            IndividualContact(
-                id,
-                "default",
-                 "676876"
-            )
-        return  individualContact
+        return IndividualContact(
+            id,
+            nameToDisplay,
+             phoneNumber
+        )
     }
 
     @SuppressLint("LongLogTag")
-    private fun getPhoneNumber(){
+    private fun getPhoneNumber(): String {
         val contactId = idString
 //        val cContactIdString = ContactsContract.Contacts._ID
         val cContactIdString = CommonDataKinds.Phone.CONTACT_ID
-
+        var phoneNum = ""
 
         val selection = "$cContactIdString = ? "
         val selectionArgs =
@@ -84,14 +85,14 @@ class IndividualContactRepository(private  val context: Context, private var id:
 
         val cursor: Cursor? = context.contentResolver
             .query(CommonDataKinds.Phone.CONTENT_URI, null, selection, selectionArgs, null)
-        if (cursor != null && cursor.getCount() > 0) {
+        if (cursor != null && cursor.count > 0) {
             cursor.moveToFirst()
-            while (cursor != null && !cursor.isAfterLast()) {
+            while (cursor != null && !cursor.isAfterLast) {
                 if (cursor.getColumnIndex(cContactIdString) >= 0) {
                     if (contactId == cursor.getString(cursor.getColumnIndex(cContactIdString))) {
 
-                       val phone:String =  cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER))
-                        Log.d("__IndividualContactRepository", "getPhoneNumber: $phone")
+                       phoneNum =  cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER))
+                        Log.d("__IndividualContactRepository", "getPhoneNumber: $phoneNum")
 //                        val name: String =
 //                            cursor.getString(cursor.getColumnIndex(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER)))
 ////                        Log.d("__IndividualContactRepository"," getIndividualContact: $name")
@@ -104,8 +105,8 @@ class IndividualContactRepository(private  val context: Context, private var id:
 
         }
         cursor?.close()
-        
 
+        return phoneNum
     }
     override fun getContentProviderValue() = getIndividualContact(context)
 }

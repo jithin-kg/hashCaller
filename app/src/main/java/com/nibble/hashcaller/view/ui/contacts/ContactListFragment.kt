@@ -53,6 +53,7 @@ class ContactListFragment  : Fragment()  {
         retainInstance = true
         // Inflate the layout for this fragment
         contactListViewFragment = inflater.inflate(R.layout.fragment_contact_list, container, false)
+//        initRecyclerView()
 
         contactViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer{contacts->
@@ -65,6 +66,7 @@ class ContactListFragment  : Fragment()  {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
     }
 
@@ -86,16 +88,19 @@ class ContactListFragment  : Fragment()  {
 
 
         private fun initRecyclerView() {
+
             rcrViewContactsList?.apply {
                 layoutManager = LinearLayoutManager(activity)
                 val topSpacingDecorator = TopSpacingItemDecoration(30)
                 addItemDecoration(topSpacingDecorator)
                 contactsRecyclerAdapter = ContactAdapter(context) { id:Long->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
+
 //                setContacts()
 
 //                adapter.onItemClick =
             }
+
 
         }
     private fun onContactItemClicked(id:Long){

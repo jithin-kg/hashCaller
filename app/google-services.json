@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "213218463453",
+    "firebase_url": "https://hashcaller-a97e5.firebaseio.com",
+    "project_id": "hashcaller-a97e5",
+    "storage_bucket": "hashcaller-a97e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213218463453:android:19d8822456df0d52a59534",
+        "android_client_info": {
+          "package_name": "com.nibble.hashcaller"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "213218463453-2q8ppco7tv78sssn2dv6hv3md7cm8nph.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE4-rOeTExNqQCO3cIkntrrdQUaPdD-Tw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "213218463453-2q8ppco7tv78sssn2dv6hv3md7cm8nph.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

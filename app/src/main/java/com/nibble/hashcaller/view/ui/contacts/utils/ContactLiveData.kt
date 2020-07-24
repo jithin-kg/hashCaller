@@ -9,6 +9,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 
 /**
  * Created by Jithin KG on 22,July,2020
+ * To get the list of contacts
  */
 class ContactLiveData(private val context: Context):
     ContentProviderLiveData<List<Contact>>(context,
@@ -38,14 +39,16 @@ class ContactLiveData(private val context: Context):
 
                 val id = cursor.getLong(0)
                 val name = cursor.getString(1)
-//                val numIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.NUMBER)
-//                val number = cursor.getString(numIndex)
-//                Log.d(TAG, "getContacts: number")
+                if(name!=null){
+                    listOfContacts.add(Contact(id, name))
+                }
 
-                listOfContacts.add(Contact(id, name))
+
+
             }while (cursor.moveToNext())
             cursor.close()
         }
+
         return listOfContacts
 
     }
