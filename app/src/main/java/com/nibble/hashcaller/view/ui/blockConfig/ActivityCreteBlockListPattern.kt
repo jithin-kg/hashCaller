@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.BlockConfig
+package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -12,11 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.data.local.db.BlockedListPattern
+import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import kotlinx.android.synthetic.main.activity_add_new_pattern.*
 
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener {
-    private lateinit var  blockListViewModel:BlockListViewModel
+    private lateinit var  blockListViewModel: BlockListViewModel
 
     var sharedPreferences: SharedPreferences? = null
 

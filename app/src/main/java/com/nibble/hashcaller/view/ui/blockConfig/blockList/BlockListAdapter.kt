@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.tabian
+package com.nibble.hashcaller.view.ui.blockConfig.blockList
 
 
 
@@ -7,17 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.layout_blog_list_item.view.*
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.nibble.hashcaller.view.ui.tabian.BlogPost
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.data.local.db.BlockedListPattern
 import kotlinx.android.synthetic.main.block_pattern_list.view.*
 import kotlin.collections.ArrayList
 
 
-class BlogRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
+class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
 
     private val TAG: String = "__BlogRecyclerAdapter"
@@ -25,7 +21,7 @@ class BlogRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     private var items: List<BlockedListPattern> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return BlogViewHolder(
+        return BlockListViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.block_pattern_list, parent, false)
         )
     }
@@ -33,7 +29,7 @@ class BlogRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
 
-            is BlogViewHolder -> {
+            is BlockListViewHolder -> {
                 holder.bind(items[position])
             }
 
@@ -50,12 +46,12 @@ class BlogRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         notifyDataSetChanged()
     }
 
-    class BlogViewHolder constructor(
+    class BlockListViewHolder constructor(
         itemView: View
     ): RecyclerView.ViewHolder(itemView){
 
 //        val blog_image = itemView.blog_image
-        val blog_title = itemView.textViewBlockedPattern
+        val block_title = itemView.textViewBlockedPattern
 //        val blog_author = itemView.blog_author
 
         fun bind(blogPost: BlockedListPattern){
@@ -68,7 +64,7 @@ class BlogRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 //                .applyDefaultRequestOptions(requestOptions)
 //                .load(blogPost.image)
 //                .into(blog_image)
-            blog_title.setText(blogPost.numberPattern)
+            block_title.setText(blogPost.numberPattern)
 //            blog_author.setText(blogPost.username)
 
         }

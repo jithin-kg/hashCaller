@@ -15,7 +15,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
-import com.nibble.hashcaller.view.ui.tabian.TopSpacingItemDecoration
+import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_contact_list.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -91,7 +91,10 @@ class ContactListFragment  : Fragment()  {
 
             rcrViewContactsList?.apply {
                 layoutManager = LinearLayoutManager(activity)
-                val topSpacingDecorator = TopSpacingItemDecoration(30)
+                val topSpacingDecorator =
+                    TopSpacingItemDecoration(
+                        30
+                    )
                 addItemDecoration(topSpacingDecorator)
                 contactsRecyclerAdapter = ContactAdapter(context) { id:Long->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter

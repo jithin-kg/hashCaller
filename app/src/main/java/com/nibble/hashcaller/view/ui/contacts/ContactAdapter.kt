@@ -5,13 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.data.stubs.Contact
-import com.nibble.hashcaller.view.ui.tabian.BlogRecyclerAdapter
 import kotlinx.android.synthetic.main.contact_list.view.*
 
 /**
@@ -54,9 +50,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     fun setContactList(newContactList: List<Contact>) {
         contacts = newContactList
-        for ( i in contacts){
-            Log.d("__ContactAdapter", "setContactList: ${i.name}")
-        }
+
         notifyDataSetChanged()
     }
      class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {

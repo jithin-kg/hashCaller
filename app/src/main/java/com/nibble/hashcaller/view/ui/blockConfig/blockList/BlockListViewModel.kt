@@ -1,7 +1,6 @@
-package com.nibble.hashcaller.view.ui.BlockConfig
+package com.nibble.hashcaller.view.ui.blockConfig.blockList
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -9,7 +8,6 @@ import com.nibble.hashcaller.data.local.db.BlockedListPattern
 import com.nibble.hashcaller.data.local.db.HashCallerDatabase
 import com.nibble.hashcaller.data.repository.BlockListPatternRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 
 /**
  * Created by Jithin KG on 03,July,2020

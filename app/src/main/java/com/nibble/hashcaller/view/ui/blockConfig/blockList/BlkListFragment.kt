@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.BlockConfig
+package com.nibble.hashcaller.view.ui.blockConfig.blockList
 
 import android.os.Bundle
 import android.util.Log
@@ -11,9 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.data.local.db.BlockedListPattern
-import com.nibble.hashcaller.view.adapter.BlockListAdapter
-import com.nibble.hashcaller.view.ui.tabian.BlogRecyclerAdapter
-import com.nibble.hashcaller.view.ui.tabian.TopSpacingItemDecoration
+import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+
 
 import kotlinx.android.synthetic.main.fragment_blk_list.*
 
@@ -32,15 +31,17 @@ class BlkListFragment : Fragment(),View.OnClickListener {
     private lateinit var blockListViewModel: BlockListViewModel
 
 
-    private lateinit var blockListAdapter: BlogRecyclerAdapter
+    private lateinit var blockListAdapter: BlockListAdapter
 
     private fun initRecyclerView(){
 
         rcrViewPtrnList?.apply {
             layoutManager = LinearLayoutManager(activity)
-            val topSpacingDecorator = TopSpacingItemDecoration(30)
+            val topSpacingDecorator =
+                TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)
-            blockListAdapter = BlogRecyclerAdapter()
+            blockListAdapter =
+                BlockListAdapter()
             adapter = blockListAdapter
         }
     }

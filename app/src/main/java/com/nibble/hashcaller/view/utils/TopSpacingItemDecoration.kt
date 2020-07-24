@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.tabian
+package com.nibble.hashcaller.view.utils
 
 import android.graphics.Rect
 import android.view.View

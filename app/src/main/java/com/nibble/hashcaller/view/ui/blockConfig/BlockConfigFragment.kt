@@ -1,19 +1,16 @@
-package com.nibble.hashcaller.view.ui.BlockConfig
+package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
-import com.nibble.hashcaller.view.ui.tabian.TabianActivit
+import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlkListFragment
 
 import kotlinx.android.synthetic.main.block_config_fragment.*
 

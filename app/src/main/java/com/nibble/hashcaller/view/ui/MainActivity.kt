@@ -10,7 +10,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -20,17 +19,15 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.BlockConfig.BlockConfigFragment
+import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_contacts.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var toolbar: Toolbar

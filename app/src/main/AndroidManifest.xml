@@ -21,8 +21,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity"></activity>
-        <activity android:name=".view.ui.BlockConfig.ActivityCreteBlockListPattern" />
+        <activity android:name=".view.ui.auth.ActivityEnterOTP"></activity>
+        <activity android:name=".view.ui.auth.ActivityPhoneAuth" />
+        <activity android:name=".view.ui.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" />
+        <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
         <activity android:name=".view.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
