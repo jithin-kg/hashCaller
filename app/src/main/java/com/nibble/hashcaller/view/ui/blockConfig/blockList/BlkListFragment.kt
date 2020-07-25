@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.data.local.db.BlockedListPattern
+import com.nibble.hashcaller.local.db.BlockedListPattern
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 
 

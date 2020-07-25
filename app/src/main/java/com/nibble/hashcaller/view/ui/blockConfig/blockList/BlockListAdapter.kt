@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.data.local.db.BlockedListPattern
+import com.nibble.hashcaller.local.db.BlockedListPattern
 import kotlinx.android.synthetic.main.block_pattern_list.view.*
 import kotlin.collections.ArrayList
 

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.data.stubs.Contact
+import com.nibble.hashcaller.stubs.Contact
 import kotlinx.android.synthetic.main.contact_list.view.*
 
 /**
@@ -44,7 +44,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 }
 
     override fun getItemCount(): Int {
-        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
+//        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
        return contacts.size
     }
 

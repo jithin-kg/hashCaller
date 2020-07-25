@@ -3,8 +3,8 @@
 //import android.app.Application
 //import androidx.databinding.ObservableArrayList
 //import androidx.lifecycle.AndroidViewModel
-//import com.nibble.hashcaller.data.repository.contacts.ContactRepository
-//import com.nibble.hashcaller.data.stubs.Contact
+//import com.nibble.hashcaller.repository.contacts.ContactRepository
+//import com.nibble.hashcaller.stubs.Contact
 //
 ///**
 // * Created by Jithin KG on 21,July,2020

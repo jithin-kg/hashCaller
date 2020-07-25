@@ -1,10 +1,10 @@
-package com.nibble.hashcaller.data.local.db
+package com.nibble.hashcaller.local.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.nibble.hashcaller.data.local.db.dao.BlockedLIstDao
+import com.nibble.hashcaller.local.db.dao.BlockedLIstDao
 
 /**
  * Created by Jithin KG on 03,July,2020

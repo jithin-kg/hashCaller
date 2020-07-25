@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.nibble.hashcaller.data.repository.BlockListPatternRepository
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async

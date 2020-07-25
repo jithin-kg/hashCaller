@@ -1,11 +1,11 @@
-package com.nibble.hashcaller.data.local.db.dao
+package com.nibble.hashcaller.local.db.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nibble.hashcaller.data.local.db.BlockedListPattern
+import com.nibble.hashcaller.local.db.BlockedListPattern
 
 /**
  * Created by Jithin KG on 03,July,2020

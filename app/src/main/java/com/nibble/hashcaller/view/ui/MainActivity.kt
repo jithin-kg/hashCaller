@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -15,11 +14,14 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -27,6 +29,7 @@ import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -128,6 +131,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        }
 
 //        NetworkChecker networkChecker = new NetworkChecker(getApplicationContext());
+
+
+
+        /**
+         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
+         */
+        val request =
+            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                .build()
+        WorkManager.getInstance().enqueue(request)
     }
 
     //    private void onSingnedOutcleanUp() {

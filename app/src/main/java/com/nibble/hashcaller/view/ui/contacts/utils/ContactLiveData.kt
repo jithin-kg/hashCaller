@@ -3,9 +3,7 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
-import android.util.Log
-import com.nibble.hashcaller.data.stubs.Contact
-import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import com.nibble.hashcaller.stubs.Contact
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -41,6 +39,8 @@ class ContactLiveData(private val context: Context):
                 val name = cursor.getString(1)
                 if(name!=null){
                     listOfContacts.add(Contact(id, name))
+                    val c = Contact(id, name)
+
                 }
 
 

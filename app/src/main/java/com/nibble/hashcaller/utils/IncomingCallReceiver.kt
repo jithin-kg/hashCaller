@@ -9,9 +9,9 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import com.nibble.hashcaller.data.local.db.HashCallerDatabase
-import com.nibble.hashcaller.data.local.db.dao.BlockedLIstDao
-import com.nibble.hashcaller.data.repository.BlockListPatternRepository
+import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.dao.BlockedLIstDao
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 

@@ -11,7 +11,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.data.local.db.BlockedListPattern
+import com.nibble.hashcaller.local.db.BlockedListPattern
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import kotlinx.android.synthetic.main.activity_add_new_pattern.*
 
