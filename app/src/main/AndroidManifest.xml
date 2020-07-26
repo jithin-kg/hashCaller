@@ -34,15 +34,7 @@
         <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" />
         <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
         <activity android:name=".view.ui.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity
-            android:name=".view.ui.tabian.TabianActivit"
-            android:theme="@style/CustomAppBar" />
 
         <receiver android:name=".utils.IncomingCallReceiver">
             <intent-filter>

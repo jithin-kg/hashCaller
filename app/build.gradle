@@ -5,6 +5,18 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services' // firebase
 
 android {
+
+
+    /**This 'compileOptions' is added by me for build time error
+     * invoke-customs are only supported starting with android O --min-api 26
+     * https://stackoverflow.com/questions/49891730/invoke-customs-are-only-supported-starting-with-android-0-min-api-26
+     *
+     */
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     dataBinding {
         enabled = true
     }
@@ -29,13 +41,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 //        debug {
-//            minifyEnabled false
-//            shrinkResources false
-//            zipAlignEnabled false
+//            minifyEnabled true
+//            shrinkResources true
+//            zipAlignEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 //        }
     }

@@ -17,7 +17,6 @@ class ContactsNetworkRepository {
 
 
 
-
     suspend fun uploadContacts(contacts:MutableList<ContactUploadDTO>) {
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
