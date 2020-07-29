@@ -5,25 +5,41 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
+import com.nibble.hashcaller.utils.auth.DeCryptor
+import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
+import java.io.IOException
+import java.security.*
+import java.security.cert.CertificateException
+import javax.crypto.BadPaddingException
+import javax.crypto.IllegalBlockSizeException
+import javax.crypto.NoSuchPaddingException
 
 class SplashActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1
-    private val TAG = "SplashActivity"
+    private val TAG = "__SplashActivity"
 
     private var rcfirebaseAuth: FirebaseAuth? = null
     private var rcAuthStateListener: AuthStateListener? = null
 //    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 //    private val userCollectionRef: CollectionReference = db.collection("Users")
     var user: FirebaseUser? = null
+    private lateinit var encryptor: EnCryptor
+    private lateinit var decryptor: DeCryptor
+    private val SAMPLE_ALIAS = "MYALIAS"
     var sharedPreferences: SharedPreferences? = null
-
+companion object{
+    private const val KEY_ALIAS = "MYKeyAlias"
+    private const val KEY_STORE = "AndroidKeyStore"
+    private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
+}
     override fun onPause() {
         super.onPause()
         rcfirebaseAuth!!.removeAuthStateListener(rcAuthStateListener!!)
@@ -95,18 +111,45 @@ class SplashActivity : AppCompatActivity() {
                     // Send token to your backend via HTTPS
                     Log.d(TAG, "onComplete: $idToken")
                     // ...
-                    sharedPreferences = applicationContext.getSharedPreferences(
-                        "TOKEN",
-                        Context.MODE_PRIVATE
-                    )
-                    val editor = sharedPreferences?.edit()
-                    editor?.putString("token", idToken)
-                    editor?.apply()
+
+                    saveToken(idToken)
+
+//                    generateEncryptedKey()
                 } else {
                     // Handle error -> task.getException();
                 }
             }
     }
+
+    private fun saveToken(idToken: String?) {
+        initCrypto()
+        val encryptedToken = encryptText(idToken)
+        Log.d(TAG, "saveToken: $encryptedToken")
+        sharedPreferences = applicationContext.getSharedPreferences(
+            "TOKEN",
+            Context.MODE_PRIVATE
+        )
+        val editor = sharedPreferences?.edit()
+        editor?.putString("token", encryptedToken)
+        editor?.apply()
+
+    }
+
+    private fun initCrypto() {
+        encryptor = EnCryptor()
+        try {
+            decryptor = DeCryptor()
+        } catch (e: CertificateException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        } catch (e: KeyStoreException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
 
     private fun onSignedInInitialize() {
         val i = Intent(this, MainActivity::class.java)
@@ -169,6 +212,8 @@ class SplashActivity : AppCompatActivity() {
 //        finish()
     }
 
+
+
     private fun checkPermission(): Boolean {
 //        val permissionsUtil = PermissionsUtil(this)
 //        return if (!permissionsUtil.checkPermissions()) {
@@ -186,8 +231,44 @@ class SplashActivity : AppCompatActivity() {
 ////        }
         return true
 
+
     }
 
+
+    fun encryptText(token: String?):String {
+        var encryptedToken = ""
+        try {
+            val encryptedText: ByteArray? = token?.let {
+                encryptor
+                    .encryptText(SAMPLE_ALIAS, it)
+            }
+
+            encryptedToken= Base64.encodeToString(encryptedText, Base64.DEFAULT)
+        } catch (e: UnrecoverableEntryException) {
+            Log.d(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: NoSuchAlgorithmException) {
+            Log.d(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: NoSuchProviderException) {
+            Log.e(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: KeyStoreException) {
+            Log.d(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: IOException) {
+            Log.d(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: NoSuchPaddingException) {
+            Log.d(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: InvalidKeyException) {
+            Log.d(TAG, "onClick() called with: " + e.message, e)
+        } catch (e: InvalidAlgorithmParameterException) {
+            e.printStackTrace()
+        } catch (e: SignatureException) {
+            e.printStackTrace()
+        } catch (e: IllegalBlockSizeException) {
+            e.printStackTrace()
+        } catch (e: BadPaddingException) {
+            e.printStackTrace()
+        }
+        return encryptedToken
+    }
 
     override fun onPostResume() {
         super.onPostResume()

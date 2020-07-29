@@ -9,6 +9,8 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -31,6 +33,11 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.IvParameterSpec
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var toolbar: Toolbar
@@ -52,7 +59,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-
 //        firebaseHelper = new MainActivityHelper();
 
 //        firebaseHelper.intializeFirebaseLogin(this);
@@ -380,7 +386,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     companion object {
-        private const val TAG = "MainActivity"
+        private const val TAG = "__MainActivity"
         fun hideKeyboard(activity: Activity) {
             try {
                 val inputManager = activity
@@ -393,5 +399,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 e.printStackTrace()
             }
         }
+
+
     }
+
+
+
+
+
 }
+

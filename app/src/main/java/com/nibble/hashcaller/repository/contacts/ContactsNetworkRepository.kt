@@ -32,13 +32,13 @@ class ContactsNetworkRepository {
         Log.d(TAG, "after uploading $uploadContacts")
         val isSuccess = uploadContacts?.isSuccessful ?: false
         if(isSuccess){
-            val result =uploadContacts?.body()?.message
-//            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
-//            Log.d(TAG, "uploadContacts: $topic")
-            Log.d(TAG, "uploadContacts: ${uploadContacts?.code()}")
-            Log.d(TAG, "uploadContacts: $result")
-            val r = uploadContacts?.message()
-            Log.d(TAG, "uploadContacts: $r")
+//            val result =uploadContacts?.body()?.message
+////            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
+////            Log.d(TAG, "uploadContacts: $topic")
+//            Log.d(TAG, "uploadContacts: ${uploadContacts?.code()}")
+//            Log.d(TAG, "uploadContacts: $result")
+//            val r = uploadContacts?.message()
+//            Log.d(TAG, "uploadContacts: $r")
 
 
         }else{
