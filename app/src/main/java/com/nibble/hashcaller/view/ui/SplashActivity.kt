@@ -26,15 +26,15 @@ class SplashActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1
     private val TAG = "__SplashActivity"
 
-    private var rcfirebaseAuth: FirebaseAuth? = null
-    private var rcAuthStateListener: AuthStateListener? = null
+    private lateinit var rcfirebaseAuth: FirebaseAuth
+    private lateinit var rcAuthStateListener: AuthStateListener
 //    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 //    private val userCollectionRef: CollectionReference = db.collection("Users")
     var user: FirebaseUser? = null
     private lateinit var encryptor: EnCryptor
     private lateinit var decryptor: DeCryptor
     private val SAMPLE_ALIAS = "MYALIAS"
-    var sharedPreferences: SharedPreferences? = null
+    private lateinit var sharedPreferences: SharedPreferences
 companion object{
     private const val KEY_ALIAS = "MYKeyAlias"
     private const val KEY_STORE = "AndroidKeyStore"
@@ -42,7 +42,7 @@ companion object{
 }
     override fun onPause() {
         super.onPause()
-        rcfirebaseAuth!!.removeAuthStateListener(rcAuthStateListener!!)
+        rcfirebaseAuth?.removeAuthStateListener(rcAuthStateListener)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -175,14 +175,14 @@ companion object{
 
 //            IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == Activity.RESULT_OK) {
-                phoneNumber = rcfirebaseAuth!!.currentUser!!.phoneNumber
-                val user = rcfirebaseAuth!!.currentUser
+                phoneNumber = rcfirebaseAuth?.currentUser!!.phoneNumber
+                val user = rcfirebaseAuth?.currentUser
                 val uid = user!!.uid
                 //                IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
                 Log.d("SplashActiviy", "The UID is $uid")
 
                 //determine if the user who just signed in is an existing or new one
-                val metadata = rcfirebaseAuth!!.currentUser!!.metadata
+                val metadata = rcfirebaseAuth?.currentUser!!.metadata
                 Log.d("META_DATA", "metaData: " + metadata!!.creationTimestamp)
                 Log.d("META_DATA", "metaData: " + metadata.lastSignInTimestamp)
                 if (metadata.creationTimestamp == metadata.lastSignInTimestamp) {
@@ -274,7 +274,7 @@ companion object{
         super.onPostResume()
         Log.d("SplashActivity", "postResume")
         if (checkPermission()) {
-            rcfirebaseAuth!!.addAuthStateListener(rcAuthStateListener!!)
+            rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
         }
     }
 }

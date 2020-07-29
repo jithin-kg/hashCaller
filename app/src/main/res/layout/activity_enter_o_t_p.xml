@@ -5,5 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.ui.auth.ActivityEnterOTP">
-    <include layout="@layout/content_activity_enter_o_t_p" />
+
+    <include
+        android:id="@+id/include2"
+        layout="@layout/content_activity_enter_o_t_p" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="475dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

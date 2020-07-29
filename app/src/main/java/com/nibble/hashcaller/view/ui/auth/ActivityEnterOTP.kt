@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.TaskExecutors
@@ -66,6 +67,7 @@ private val TAG: String? = "ActivityEnterOTP"
             override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
                 //getting code sent by sms
                 code = phoneAuthCredential.smsCode
+                if(code == null) code = "123456" //Only for testing purpose
                 if (code != null) {
                     verifyCode(code)
                     Log.d(ActivityEnterOTP.TAG, "onVerificationCompleted: $code")
@@ -101,7 +103,7 @@ private val TAG: String? = "ActivityEnterOTP"
                     ).show()
                 }
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                    Log.d(ActivityEnterOTP.TAG, "invalid code: ")
+                    Log.d(TAG, "invalid code: ")
                     Toast.makeText(this@ActivityEnterOTP, "invalid code", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -118,4 +120,8 @@ private val TAG: String? = "ActivityEnterOTP"
    companion object{
        private const val TAG= "__ActivityEnterOTP"
    }
+
+    fun manualVerification(view: View) {
+        verifyCode("123456")
+    }
 }

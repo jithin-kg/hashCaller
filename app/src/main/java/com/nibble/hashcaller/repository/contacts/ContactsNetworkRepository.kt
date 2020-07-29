@@ -6,6 +6,7 @@ import com.nibble.hashcaller.network.ContactsListHelper
 import com.nibble.hashcaller.network.IContactsService
 import com.nibble.hashcaller.network.NetWorkResponse
 import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.utils.auth.TokenManager
 import kotlin.math.log
 
 /**
@@ -28,7 +29,9 @@ class ContactsNetworkRepository {
         Log.d(TAG, "uploadContacts: ")
             val list:MutableList<String> = ArrayList<String>()
         list.add("hi")
-        val uploadContacts = retrofitService?.uploadContacts(list)
+//        var tokenManager = TokenManager()
+        val uploadContacts = retrofitService?.uploadContacts(list )
+
         Log.d(TAG, "after uploading $uploadContacts")
         val isSuccess = uploadContacts?.isSuccessful ?: false
         if(isSuccess){

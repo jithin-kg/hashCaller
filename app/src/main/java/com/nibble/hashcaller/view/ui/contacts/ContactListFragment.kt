@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
+import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_contact_list.*
@@ -54,8 +55,8 @@ class ContactListFragment  : Fragment()  {
         // Inflate the layout for this fragment
         contactListViewFragment = inflater.inflate(R.layout.fragment_contact_list, container, false)
 //        initRecyclerView()
-
-        contactViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
+        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
+//        contactViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer{contacts->
             contacts.let {
                 contactsRecyclerAdapter?.setContactList(it)
