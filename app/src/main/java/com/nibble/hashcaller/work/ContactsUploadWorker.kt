@@ -31,7 +31,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private suspend fun uploadContactsToServer() {
         val contactRepository = ContactRepository(context)
         contacts.addAll(contactRepository.fetchContacts())
-        val contactsNetworkRepository = ContactsNetworkRepository()
+        val contactsNetworkRepository = ContactsNetworkRepository(context)
         contactsNetworkRepository.uploadContacts(contacts)
 
     }

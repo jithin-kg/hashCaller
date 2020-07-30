@@ -7,11 +7,16 @@ import java.security.cert.CertificateException
 import javax.crypto.*
 import javax.crypto.spec.GCMParameterSpec
 
-/**
- * Created by Jithin KG on 29,July,2020
- */
-internal class DeCryptor {
-    private lateinit var keyStore: KeyStore
+public class Decryptor {
+    private val TRANSFORMATION = "AES/GCM/NoPadding"
+    private val ANDROID_KEY_STORE = "AndroidKeyStore"
+
+    private var keyStore: KeyStore? = null
+
+
+    init {
+        initKeyStore()
+    }
 
     @Throws(
         KeyStoreException::class,
@@ -37,15 +42,14 @@ internal class DeCryptor {
         InvalidAlgorithmParameterException::class
     )
     fun decryptData(
-        alias: String,
+        alias: String?,
         encryptedData: ByteArray?,
         encryptionIv: ByteArray?
-    ): String {
-        val cipher =
-            Cipher.getInstance(TRANSFORMATION)
+    ): String? {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec =
             GCMParameterSpec(128, encryptionIv)
-        cipher.init(Cipher.DECRYPT_MODE, getSecretKey(alias), spec)
+        cipher.init(Cipher.DECRYPT_MODE, getSecretKey(alias!!), spec)
         return String(cipher.doFinal(encryptedData), StandardCharsets.UTF_8)
     }
 
@@ -54,19 +58,9 @@ internal class DeCryptor {
         UnrecoverableEntryException::class,
         KeyStoreException::class
     )
-    private fun getSecretKey(alias: String): SecretKey {
-        return (keyStore!!.getEntry(
-            alias,
-            null
-        ) as KeyStore.SecretKeyEntry).secretKey
+    private fun getSecretKey(alias: String): SecretKey? {
+        return (keyStore!!.getEntry(alias,
+            null) as KeyStore.SecretKeyEntry).secretKey
     }
 
-    companion object {
-        private const val TRANSFORMATION = "AES/GCM/NoPadding"
-        private const val ANDROID_KEY_STORE = "AndroidKeyStore"
-    }
-
-    init {
-        initKeyStore()
-    }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 class ActivityEnterOTP : AppCompatActivity() {
 
-private val TAG: String? = "ActivityEnterOTP"
+    private val TAG: String? = "ActivityEnterOTP"
 
     var phoneNumber: String? = null
     var mAuth: FirebaseAuth? = null
@@ -117,11 +117,12 @@ private val TAG: String? = "ActivityEnterOTP"
         finish()
     }
 
-   companion object{
-       private const val TAG= "__ActivityEnterOTP"
-   }
+    companion object{
+        private const val TAG= "__ActivityEnterOTP"
+    }
 
     fun manualVerification(view: View) {
+
         verifyCode("123456")
     }
 }

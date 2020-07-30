@@ -116,12 +116,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             false
         })
         addAllFragments()
-        /**
-         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
-         */
-//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorkManager::class.java)
-//                .build()
-//        WorkManager.getInstance(applicationContext).enqueue(request)
 
 
         //TODO check if contacts are uploaded
@@ -140,13 +134,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
 
-        /**
-         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
-         */
-        val request =
-            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-                .build()
-        WorkManager.getInstance().enqueue(request)
+//        /**
+//         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
+//         */
+//        val request =
+//            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+//                .build()
+//        WorkManager.getInstance().enqueue(request)
     }
 
     //    private void onSingnedOutcleanUp() {
@@ -213,6 +207,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            ft.hide(messagesFragment)
 //        }
 //        // Commit changes
+        /**
+         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
+         */
+//        val intent = intent
+//        intent.getByteArrayExtra("key")
+        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+            .build()
+        WorkManager.getInstance().enqueue(request)
+
         ft.commit()
     }
 

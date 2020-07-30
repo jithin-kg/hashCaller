@@ -18,7 +18,7 @@ class TokenManager(private val applicationContext: Context) {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var encryptor: EnCryptor
-    private lateinit var decryptor: DeCryptor
+    private lateinit var decryptor: Decryptor
     private val SAMPLE_ALIAS = "MYALIAS"
 
 
@@ -34,7 +34,7 @@ class TokenManager(private val applicationContext: Context) {
     private fun initCrypto() {
         encryptor = EnCryptor()
         try {
-            decryptor = DeCryptor()
+            decryptor = Decryptor()
         } catch (e: CertificateException) {
             e.printStackTrace()
         } catch (e: NoSuchAlgorithmException) {
@@ -49,12 +49,12 @@ class TokenManager(private val applicationContext: Context) {
         var decryptedToken = ""
         try {
 
-            decryptedToken = decryptor
-                .decryptData(
-                    SAMPLE_ALIAS,
-                    encryptor.getEncryption(),
-                    encryptor.getIv()
-                )
+//            decryptedToken = decryptor
+//                .decryptData(
+//                    SAMPLE_ALIAS,
+//                    encryptor.getEncryption(),
+//                    encryptor.getIv()
+//                )
 
 
         } catch (e: UnrecoverableEntryException) {
