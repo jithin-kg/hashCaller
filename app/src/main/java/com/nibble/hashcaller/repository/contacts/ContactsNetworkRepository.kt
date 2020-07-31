@@ -51,7 +51,7 @@ class ContactsNetworkRepository (private val context: Context){
                 EncryptorObject.encryption,
                 EncryptorObject.iv
             )
-            Log.d(TAG, "uploadContacts: $decryptData")
+
         } catch (e: UnrecoverableEntryException) {
             Log.e(TAG, "decryptData() called with: " + e.message, e)
         } catch (e: NoSuchAlgorithmException) {

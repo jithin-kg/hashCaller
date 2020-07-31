@@ -11,7 +11,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 class ContactsViewModel(val contacts: ContactLiveData): ViewModel() {
 
 
-
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {
 //
