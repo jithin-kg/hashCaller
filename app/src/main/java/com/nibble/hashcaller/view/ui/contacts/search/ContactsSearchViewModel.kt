@@ -4,29 +4,44 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
-import com.nibble.hashcaller.stubs.Contact
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 31,July,2020
  */
 class ContactsSearchViewModel(application: Application): AndroidViewModel(application) {
-    val contacts = mutableListOf<Contact>()
 
-    @SuppressLint("LongLogTag")
-    fun findContactForNum(number:String): MutableList<ContactUploadDTO> {
-        val contactSearchRepository = ContactSearchRepository(getApplication())
+    var contacts: MutableLiveData<List<SearchContactSTub>>
+    val contactSearchRepository = ContactSearchRepository(getApplication())
+    init {
 
-        val contacts =  contactSearchRepository.fetchContacts(number)
-        Log.d("__ContactsSearchViewModel", "findContactForNum: ${contacts.size}")
-        for (contact in contacts){
-            Log.d("__ContactsSearchViewModel", "${contact.name} ")
-            Log.d("__ContactsSearchViewModel", "${contact.phoneNumber} ")
 
-        }
-        return contacts
+        contacts = contactSearchRepository.fetchContacts("")
+
+
     }
+
+    var contactsList = mutableListOf<ContactUploadDTO>()
+        @SuppressLint("LongLogTag")
+    fun findContactForNum(number:String) = viewModelScope.launch(
+            Dispatchers.IO) {
+
+
+         contacts =  contactSearchRepository.fetchContacts(number)
+
+
+    }
+//    fun getContactsList(): LiveData<List<SearchContactSTub>> {
+//    contacts = MutableLiveData<List<SearchContactSTub>>()
+//       return contacts
+//    }
+
+
 
 }

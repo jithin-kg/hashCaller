@@ -2,7 +2,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.nibble.hashcaller.local.db.BlockedListPattern
+import com.nibble.hashcaller.local.db.dao.BlockedListPattern
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import kotlinx.coroutines.Dispatchers

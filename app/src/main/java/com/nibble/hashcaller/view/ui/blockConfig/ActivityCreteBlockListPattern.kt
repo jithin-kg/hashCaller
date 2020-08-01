@@ -11,7 +11,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.local.db.BlockedListPattern
+import com.nibble.hashcaller.local.db.dao.BlockedListPattern
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import kotlinx.android.synthetic.main.activity_add_new_pattern.*
 
@@ -77,7 +77,12 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
         val newPattern = editTextNewPattern?.text?.toString()?.trim()
         val patternRegex = "$newPattern([0-9]*)"
 
-        val blockListPattern = BlockedListPattern( null, newPattern!!,patternRegex )
+        val blockListPattern =
+            BlockedListPattern(
+                null,
+                newPattern!!,
+                patternRegex
+            )
         blockListViewModel.insert(blockListPattern)
 
 //        blockListViewModel =
