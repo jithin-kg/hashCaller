@@ -3,9 +3,8 @@ package com.nibble.hashcaller.repository.search
 import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.view.ui.contacts.search.SearchContactSTub
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -18,9 +17,9 @@ class ContactSearchRepository(context: Context) {
     var contactsLiveData = MutableLiveData<List<SearchContactSTub>>()
     var lastNumber = "0"
 
-    fun fetchContacts(number:String): MutableLiveData<List<SearchContactSTub>> {
-         var contacts = mutableListOf<SearchContactSTub>()
-        if(number!=""){
+    fun fetchContactsLiveData(number:String): MutableLiveData<List<SearchContactSTub>> {
+
+//        if(number!=""){
             var cursor:Cursor?
 
 
@@ -70,33 +69,81 @@ class ContactSearchRepository(context: Context) {
 //        }
 
 
-            if (cursor?.count ?: 0 > 0) {
-                while (cursor!!.moveToNext()) {
-                    var contact = SearchContactSTub()
-                    val name =
-                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                    var phoneNo =
-                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                    phoneNo = phoneNo.trim { it <= ' ' }.replace(" ", "")
-                    phoneNo = phoneNo.replace("-", "")
-                    val photoUri =
-                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
-                    val duplicate =
-                        AtomicBoolean(false)
+//            if (cursor?.count ?: 0 > 0) {
+//                while (cursor!!.moveToNext()) {
+//                    var contact = SearchContactSTub()
+//                    val name =
+//                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+//                    var phoneNo =
+//                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+//                    phoneNo = phoneNo.trim { it <= ' ' }.replace(" ", "")
+//                    phoneNo = phoneNo.replace("-", "")
+//                    val photoUri =
+//                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
+//                    val duplicate =
+//                        AtomicBoolean(false)
+//
+//                    if (lastNumber != phoneNo) {
+//                        contact.name = name
+//                        contact.phoneNumber = phoneNo
+//                        contacts.add(contact)
+//                        lastNumber = phoneNo
+//                    }
+//                }
+//                cursor.close()
+//                contactsLiveData.postValue(contacts)
+//            }
+//        }
 
-                    if (lastNumber != phoneNo) {
-                        contact.name = name
-                        contact.phoneNumber = phoneNo
-                        contacts.add(contact)
-                        lastNumber = phoneNo
-                    }
-                }
-                cursor.close()
-                contactsLiveData.postValue(contacts)
-            }
-        }
+        contactsLiveData.postValue(getcontacts(cursor))
 
         return contactsLiveData
+    }
+
+    private fun getcontacts(cursor: Cursor?): MutableList<SearchContactSTub> {
+        var contacts = mutableListOf<SearchContactSTub>()
+        if (cursor?.count ?: 0 > 0) {
+            while (cursor!!.moveToNext()) {
+                var contact = SearchContactSTub()
+                val name =
+                    cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                var phoneNo =
+                    cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                phoneNo = phoneNo.trim { it <= ' ' }.replace(" ", "")
+                phoneNo = phoneNo.replace("-", "")
+                val photoUri =
+                    cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
+                val duplicate =
+                    AtomicBoolean(false)
+
+                if (lastNumber != phoneNo) {
+                    contact.name = name
+                    contact.phoneNumber = phoneNo
+                    contacts.add(contact)
+                    lastNumber = phoneNo
+                }
+            }
+            cursor.close()
+
+        }
+        return contacts
+    }
+
+    fun fetchContacts(): List<SearchContactSTub> {
+
+        var cursor:Cursor?
+
+
+        cursor = context?.contentResolver?.query(
+//                ContactsContract.Data.CONTENT_URI,
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null ,
+            null,
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+        )
+    return getcontacts(cursor)
+
     }
 
 }

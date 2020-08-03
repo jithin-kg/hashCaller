@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.local.db.dao
+package com.nibble.hashcaller.local.db.blocklist
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

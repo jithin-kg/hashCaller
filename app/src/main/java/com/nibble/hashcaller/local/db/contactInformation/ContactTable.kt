@@ -10,6 +10,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "contacts_information")
 data class ContactTable(
     @PrimaryKey(autoGenerate = true) val id: Int?,
-    @ColumnInfo(name="number") val number:String,
+     @ColumnInfo(name="number") val number:String,
     @ColumnInfo(name = "name") val name:String   ) {
 }

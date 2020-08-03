@@ -5,8 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.local.db.dao.BlockedLIstDao
-import com.nibble.hashcaller.local.db.dao.BlockedListPattern
+import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -14,6 +15,7 @@ import com.nibble.hashcaller.local.db.dao.BlockedListPattern
 @Database(entities = arrayOf(BlockedListPattern::class, ContactTable::class), version = 1, exportSchema = false)
 abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun blocklistDAO() : BlockedLIstDao
+        abstract fun contactInformationDAO() : IContactIformationDAO
 
     companion object{
 

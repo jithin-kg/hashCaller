@@ -3,8 +3,8 @@ package com.nibble.hashcaller.repository
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
-import com.nibble.hashcaller.local.db.dao.BlockedListPattern
-import com.nibble.hashcaller.local.db.dao.BlockedLIstDao
+import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 
 /**
  * Created by Jithin KG on 03,July,2020

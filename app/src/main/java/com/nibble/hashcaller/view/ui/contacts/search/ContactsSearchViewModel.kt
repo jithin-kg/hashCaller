@@ -2,9 +2,7 @@ package com.nibble.hashcaller.view.ui.contacts.search
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
@@ -22,7 +20,7 @@ class ContactsSearchViewModel(application: Application): AndroidViewModel(applic
     init {
 
 
-        contacts = contactSearchRepository.fetchContacts("")
+        contacts = contactSearchRepository.fetchContactsLiveData("")
 
 
     }
@@ -33,7 +31,7 @@ class ContactsSearchViewModel(application: Application): AndroidViewModel(applic
             Dispatchers.IO) {
 
 
-         contacts =  contactSearchRepository.fetchContacts(number)
+         contacts =  contactSearchRepository.fetchContactsLiveData(number)
 
 
     }

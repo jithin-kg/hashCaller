@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.local.db.dao
+package com.nibble.hashcaller.local.db.blocklist
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

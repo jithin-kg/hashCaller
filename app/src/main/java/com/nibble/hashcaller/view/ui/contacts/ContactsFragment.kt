@@ -12,12 +12,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuItemCompat.getActionView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
+import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -72,6 +75,7 @@ class ContactsFragment : Fragment(), View.OnClickListener {
         tabLayout!!.setupWithViewPager(viewPager)
 
 
+
         searchViewContacts.onFocusChangeListener = OnFocusChangeListener { view, hasFocus ->
 
             if (hasFocus) {
@@ -95,6 +99,8 @@ class ContactsFragment : Fragment(), View.OnClickListener {
         searchViewContacts.setOnClickListener(this)
         return ContactViewFragment
     }
+
+
 
     private fun startSearchActivity() {
         val intent = Intent(activity, ActivitySearchPhone::class.java)

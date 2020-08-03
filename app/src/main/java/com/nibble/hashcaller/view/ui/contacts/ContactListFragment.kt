@@ -15,10 +15,10 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_contact_list.*
-import kotlinx.android.synthetic.main.fragment_contacts.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,6 +61,16 @@ class ContactListFragment  : Fragment()  {
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer{contacts->
             contacts.let {
                 contactsRecyclerAdapter?.setContactList(it)
+                ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
+
+//                //sync contact with local db
+//                contactViewModel.getCountOfContactFromLocalDb()?.observe(viewLifecycleOwner,Observer{count->
+//                    count.let{
+//                        contactViewModel?.syncContactsWithLocalDb(contacts, count)
+//                    }
+//                })
+
+
             }
         })
 
