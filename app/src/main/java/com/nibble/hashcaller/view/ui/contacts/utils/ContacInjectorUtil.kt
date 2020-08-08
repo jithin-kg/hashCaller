@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 import android.content.Context
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
+import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
 
 /**
@@ -19,11 +20,16 @@ object ContacInjectorUtil {
         // for ContactLocalSyncReposirorty
 
         val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO)
+        val contactNetworkRepository  = context?.let { ContactsNetworkRepository(it) }
         val contactsRepository = context?.let { ContactSearchRepository(it) }
 
 
 
-        return ContactsViewModelFactory(contactsLiveData!!, contactLocalSyncRepository,contactsRepository )
+        return ContactsViewModelFactory(contactsLiveData!!,
+            contactLocalSyncRepository,
+            contactsRepository,
+            contactNetworkRepository
+            )
     }
 
 }

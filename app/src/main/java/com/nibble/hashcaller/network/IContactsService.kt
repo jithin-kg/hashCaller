@@ -2,6 +2,7 @@ package com.nibble.hashcaller.network
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Response
@@ -33,7 +34,8 @@ interface IContactsService  {
 
 @POST("contacts/uploadcontacts")
 suspend fun uploadContacts(
-    @Body contacts: List<String>
+    @Body contacts: List<ContactUploadDTO>,
+    @Header("Authorization") token:String
 ):Response<NetWorkResponse>
 
 //    @GET("getContacts")

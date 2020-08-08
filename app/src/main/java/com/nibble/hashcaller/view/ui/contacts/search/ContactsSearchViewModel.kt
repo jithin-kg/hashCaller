@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 class ContactsSearchViewModel(application: Application): AndroidViewModel(application) {
 
-    var contacts: MutableLiveData<List<SearchContactSTub>>
+    var contacts: MutableLiveData<List<ContactUploadDTO>>
     val contactSearchRepository = ContactSearchRepository(getApplication())
     init {
 

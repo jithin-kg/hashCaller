@@ -4,7 +4,9 @@ import android.os.Build
 import android.util.Log
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.view.ui.contacts.search.SearchContactSTub
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
+
 import kotlin.collections.ArrayList
 
 /**
@@ -12,9 +14,12 @@ import kotlin.collections.ArrayList
  * This class helps to compare contacts list recieved from content provider and contact that are available
  * in sqlite database
  */
-class ContactsSyncHelper(private val contactLocalSyncRepository: ContactLocalSyncRepository) {
+class ContactsSyncHelper(
+    private val contactLocalSyncRepository: ContactLocalSyncRepository,
+    private val contactNetworkRepository: ContactsNetworkRepository?
+) {
     suspend fun syncContacts(
-        contactsListfromContentProvider: ArrayList<SearchContactSTub>?,
+        contactsListfromContentProvider: ArrayList<ContactUploadDTO>?,
         contactsListFromLocalDb: List<ContactTable>?
     ) {
 
@@ -26,23 +31,30 @@ class ContactsSyncHelper(private val contactLocalSyncRepository: ContactLocalSyn
 
         val mapContactLocalDb = contactsListFromLocalDb?.associateBy({it.number}, {it})
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Log.d(TAG, "size before is ${contactsListfromContentProvider?.size}")
+
             if (mapContactLocalDb != null) {
-                contactsListfromContentProvider?.removeIf{ contact-> mapContactLocalDb.containsKey(contact.phoneNumber)}
-                Log.d(TAG, "final size after removing common elements : ${contactsListfromContentProvider?.size}")
+                if(contactsListFromLocalDb.size?:0 < contactsListfromContentProvider?.size?:0){
+                    contactsListfromContentProvider?.removeIf{ contact-> mapContactLocalDb.containsKey(contact.phoneNumber)}
 
-                if (contactsListfromContentProvider?.size == 0) Log.d(TAG, "nothing to sync: ")
-                //insert the new contacts to database
-                if (contactsListfromContentProvider != null) {
-                    for (item in contactsListfromContentProvider){
-                        var contact = ContactTable(null, item.phoneNumber, item.name)
-                        //insert new contacts
-                        contactLocalSyncRepository.insertContacts(contact)
-                        Log.d(TAG, "inserting ${contact}")
-                        //save the same contacts to server
+                    if (contactsListfromContentProvider?.size == 0) Log.d(TAG, "nothing to sync: ")
+
+                    //insert the new contacts to database
+                    if (contactsListfromContentProvider != null) {
+
+                        for (item in contactsListfromContentProvider){
+                            var contact = ContactTable(null, item.phoneNumber, item.name)
+                            //insert new contacts
+                            contactLocalSyncRepository.insertContacts(contact)
+                            Log.d(TAG, "inserting ${contact}")
+                            //save the same contacts to server
+
+                            contactNetworkRepository?.uploadContacts(contactsListfromContentProvider)
+
+                        }
+
                     }
-
                 }
+
             }
 
         }else{

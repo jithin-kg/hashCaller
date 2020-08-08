@@ -5,7 +5,8 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.view.ui.contacts.search.SearchContactSTub
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -14,10 +15,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ContactSearchRepository(context: Context) {
     private val context: Context? = context
 
-    var contactsLiveData = MutableLiveData<List<SearchContactSTub>>()
+    var contactsLiveData = MutableLiveData<List<ContactUploadDTO>>()
     var lastNumber = "0"
 
-    fun fetchContactsLiveData(number:String): MutableLiveData<List<SearchContactSTub>> {
+    fun fetchContactsLiveData(number:String): MutableLiveData<List<ContactUploadDTO>> {
 
 //        if(number!=""){
             var cursor:Cursor?
@@ -100,11 +101,11 @@ class ContactSearchRepository(context: Context) {
         return contactsLiveData
     }
 
-    private fun getcontacts(cursor: Cursor?): MutableList<SearchContactSTub> {
-        var contacts = mutableListOf<SearchContactSTub>()
+    private fun getcontacts(cursor: Cursor?): MutableList<ContactUploadDTO> {
+        var contacts = mutableListOf<ContactUploadDTO>()
         if (cursor?.count ?: 0 > 0) {
             while (cursor!!.moveToNext()) {
-                var contact = SearchContactSTub()
+                var contact = ContactUploadDTO()
                 val name =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                 var phoneNo =
@@ -129,7 +130,7 @@ class ContactSearchRepository(context: Context) {
         return contacts
     }
 
-    fun fetchContacts(): List<SearchContactSTub> {
+    fun fetchContacts(): List<ContactUploadDTO> {
 
         var cursor:Cursor?
 

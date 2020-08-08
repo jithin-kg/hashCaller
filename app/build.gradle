@@ -32,7 +32,7 @@ android {
     defaultConfig {
         applicationId "com.nibble.hashcaller"
         minSdkVersion 23 //using stream need api level 24
-        targetSdkVersion 29
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
 

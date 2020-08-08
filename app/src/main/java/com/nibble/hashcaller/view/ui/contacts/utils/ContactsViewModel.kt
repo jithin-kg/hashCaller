@@ -3,8 +3,10 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
-import com.nibble.hashcaller.view.ui.contacts.search.SearchContactSTub
+
 import kotlinx.coroutines.launch
 
 /**
@@ -13,7 +15,8 @@ import kotlinx.coroutines.launch
 class ContactsViewModel(
     val contacts: ContactLiveData,
     private val contactLocalSyncRepository: ContactLocalSyncRepository,
-    private val contactsRepository: ContactSearchRepository?
+    private val contactsRepository: ContactSearchRepository?,
+    private val contactNetworkRepository: ContactsNetworkRepository?
 ): ViewModel() {
     init {
        syncContactsWithLocalDb()
@@ -23,11 +26,11 @@ class ContactsViewModel(
      fun syncContactsWithLocalDb() = viewModelScope.launch {
 
 
-         val contactsListfromContentProvider: ArrayList<SearchContactSTub>? = contactsRepository?.fetchContacts() as ArrayList<SearchContactSTub>?
+         val contactsListfromContentProvider: ArrayList<ContactUploadDTO>? = contactsRepository?.fetchContacts() as ArrayList<ContactUploadDTO>?
 
 
          val contactsListFromLocalDb = contactLocalSyncRepository.getContactsFromLocalDB()
-         val contactHelper = ContactsSyncHelper(contactLocalSyncRepository)
+         val contactHelper = ContactsSyncHelper(contactLocalSyncRepository, contactNetworkRepository)
          contactHelper.syncContacts(contactsListfromContentProvider, contactsListFromLocalDb)
 
     }
@@ -40,7 +43,7 @@ class ContactsViewModel(
      * If there is no contacts is local sqlite database then we insert all contacts
      * by adding all contacts to a list
      */
-    private suspend fun insertContactstoLocalDb(contentProviderContacts: List<SearchContactSTub>?) {
+    private suspend fun insertContactstoLocalDb(contentProviderContacts: List<ContactUploadDTO>?) {
         val contactsListToSave:MutableList<ContactTable> = mutableListOf()
 //        for(item in contentProviderContacts){
 //            Log.d(TAG, "getPreparedContacts: ${i}")

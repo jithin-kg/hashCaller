@@ -34,7 +34,8 @@ class ContactsNetworkRepository (private val context: Context){
 
 
     @SuppressLint("LongLogTag")
-    suspend fun uploadContacts(contacts:MutableList<ContactUploadDTO>) {
+    suspend fun
+            uploadContacts(contacts:MutableList<ContactUploadDTO>) {
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 
@@ -43,14 +44,14 @@ class ContactsNetworkRepository (private val context: Context){
             val contactListObject = ContactsListHelper(contacts)
             val list:MutableList<String> = ArrayList<String>()
             list.add("hi")
-
+        var token = ""
         try {
             decryptor = Decryptor()
-            val decryptData = decryptor?.decryptData(
+            token = decryptor?.decryptData(
                 SAMPLE_ALIAS,
                 EncryptorObject.encryption,
                 EncryptorObject.iv
-            )
+            ).toString()
 
         } catch (e: UnrecoverableEntryException) {
             Log.e(TAG, "decryptData() called with: " + e.message, e)
@@ -81,18 +82,19 @@ class ContactsNetworkRepository (private val context: Context){
 
 //        var tokenManager = TokenManager()
 //        Log.d(TAG, "uploadContacts: ${decryptFromStringToke.toString()}")
-        val uploadContacts = retrofitService?.uploadContacts(list )
+        val uploadContacts = retrofitService?.uploadContacts(contacts, token)
 
 
         val isSuccess = uploadContacts?.isSuccessful ?: false
         if(isSuccess){
-//            val result =uploadContacts?.body()?.message
-////            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
-////            Log.d(TAG, "uploadContacts: $topic")
-//            Log.d(TAG, "uploadContacts: ${uploadContacts?.code()}")
-//            Log.d(TAG, "uploadContacts: $result")
-//            val r = uploadContacts?.message()
-//            Log.d(TAG, "uploadContacts: $r")
+            val result =uploadContacts?.body()?.message
+//            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
+//            Log.d(TAG, "uploadContacts: $topic")
+            Log.d(TAG, "uploadContacts: ${uploadContacts?.code()}")
+            Log.d(TAG, "uploadContacts: $result")
+            val r = uploadContacts?.message()
+            Log.d(TAG, "uploadContacts: $r")
+
 
 
         }else{

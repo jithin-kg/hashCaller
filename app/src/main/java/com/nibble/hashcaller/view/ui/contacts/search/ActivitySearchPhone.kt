@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
@@ -48,7 +49,7 @@ class ActivitySearchPhone : AppCompatActivity() {
 
 //        contactsSearchAdapter.setContactList(sampel)
                      contactsSearchViewModel.contacts.observe(
-                 this@ActivitySearchPhone, Observer<List<SearchContactSTub>>{
+                 this@ActivitySearchPhone, Observer<List<ContactUploadDTO>>{
 
                          contacts->
                              Log.d(TAG, "onCreate: change")

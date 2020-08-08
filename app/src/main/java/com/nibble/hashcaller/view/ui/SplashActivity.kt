@@ -112,7 +112,7 @@ companion object{
         user!!.getIdToken(true)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    var idToken = task.result!!.token
+                    var idToken = task.result?.token
                     // Send token to your backend via HTTPS
                     Log.d(TAG, "onComplete: $idToken")
                     // ...
@@ -134,7 +134,6 @@ companion object{
                 Base64.encodeToString(
                     encryptedText,
                     Base64.DEFAULT
-
             )
         } catch (e: UnrecoverableEntryException) {
             Log.e(TAG, "onClick() called with: " + e.message, e)
@@ -213,8 +212,8 @@ companion object{
         Log.d("SplashActivity", "onactivity Result")
         var phoneNumber: String? = ""
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("SplashActivity", "requestCode $requestCode")
-        Log.d("SplashActivity", "resultCode $resultCode")
+        Log.d(TAG, "requestCode $requestCode")
+        Log.d(TAG, "resultCode $resultCode")
         if (requestCode == RC_SIGN_IN) {
 
 
@@ -325,7 +324,7 @@ companion object{
 
     override fun onPostResume() {
         super.onPostResume()
-        Log.d("SplashActivity", "postResume")
+        Log.d(TAG, "postResume")
         if (checkPermission()) {
             rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
         }

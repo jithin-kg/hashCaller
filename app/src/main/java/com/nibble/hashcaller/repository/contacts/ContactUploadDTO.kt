@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.repository.contacts
 
+import androidx.annotation.Keep
 
 
 /**
@@ -12,6 +13,7 @@ package com.nibble.hashcaller.repository.contacts
  * serialization and deserialization to and fro Json of ContactUploadDTO
  *
  */
+@Keep
 data class ContactUploadDTO(
   var name:String="",
    var phoneNumber:String="") {

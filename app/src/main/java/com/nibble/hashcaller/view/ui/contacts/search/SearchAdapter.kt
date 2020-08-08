@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.search_result_layout.view.*
 class SearchAdapter (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private  var contacts: List<SearchContactSTub>? = null
+    private  var contacts: List<ContactUploadDTO>? = null
     private val TAG  = "__SearchAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,7 +29,7 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
 //        Log.d(TAG, "getItemCount: ${contacts?.size}")
         return contacts?.size?:0
     }
-    fun setContactList(newContactList: List<SearchContactSTub>) {
+    fun setContactList(newContactList: List<ContactUploadDTO>) {
         contacts = emptyList()
         contacts = newContactList
 
@@ -55,7 +55,7 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
         private val name = view.textViewSearchContactName
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: SearchContactSTub, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
+        fun bind(contact: ContactUploadDTO, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
             name.text = contact.name
             Log.d("__ViewHolder", "bind:")
 //            name.text = contact.name

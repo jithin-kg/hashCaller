@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import kotlinx.android.synthetic.main.list_item.view.*
 
 
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.list_item.view.*
  */
 class MyListAdapter:
     RecyclerView.Adapter<MyListAdapter.ViewHolder?>() {
-    private var listdata = emptyList<SearchContactSTub>()
+    private var listdata = emptyList<ContactUploadDTO>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -47,7 +48,7 @@ class MyListAdapter:
     override fun getItemCount(): Int {
         return listdata.size
     }
-    fun setContactList(newContactList: List<SearchContactSTub>) {
+    fun setContactList(newContactList: List<ContactUploadDTO>) {
         listdata = emptyList()
         listdata = newContactList.toList()
         Log.d("__MYListAdapter", "setContactList: ${newContactList.size}")
