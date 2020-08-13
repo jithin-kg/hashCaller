@@ -47,7 +47,7 @@ class BlockConfigFragment : Fragment(), View.OnClickListener {
 
     private fun intialize() {
 
-        fabBtnAddNewBlock?.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_add))
+        fabBtnAddNewBlock?.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_baseline_add_24))
         fabBtnAddNewBlock?.setOnClickListener(this as View.OnClickListener)
     }
 

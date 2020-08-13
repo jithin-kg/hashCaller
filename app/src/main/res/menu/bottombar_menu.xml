@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/bottombaritem_messages"
-        android:icon="@drawable/ic_message"
+        android:icon="@drawable/ic_baseline_message_24"
         android:title="Messages"
-        app:showAsAction="ifRoom"/>
 
-
+        />
 
     <item
         android:id="@+id/bottombaritem_contacts"
-        android:icon="@drawable/ic_contact"
+        android:icon="@drawable/ic_baseline_perm_contact_calendar_24"
         android:title="Contacts"
-        app:showAsAction="ifRoom"/>
+     />
     <item
         android:id="@+id/bottombaritem_calls"
-        android:icon="@drawable/ic_call_white_24dp"
+        android:icon="@drawable/ic_baseline_call_24"
         android:title="Calls"/>
 
     <item
         android:id="@+id/bottombaritem_spam"
-        android:icon="@drawable/ic_block"
+        android:icon="@drawable/ic_baseline_block_24"
         android:title="Block"
-        app:showAsAction="ifRoom"/>
+      />
     <item
         android:id="@+id/bottombaritem_premium"
-        android:icon="@drawable/ic_block"
+        android:icon="@drawable/ic_baseline_block_24"
         android:title="Block"
-        app:showAsAction="ifRoom"/>
-
-
+        />
 </menu>
