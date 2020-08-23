@@ -1,5 +1,7 @@
 package com.nibble.hashcaller.utils.auth
 
+import android.util.Base64
+import android.util.Log
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.security.*
@@ -46,10 +48,17 @@ public class Decryptor {
         encryptedData: ByteArray?,
         encryptionIv: ByteArray?
     ): String? {
+        Log.d("__IV", "iv in decryptor is ${Base64.encodeToString(encryptionIv, Base64.DEFAULT).trim()}: ")
+        Log.d("__IV", "token in decryptor is ${Base64.encodeToString(encryptedData, Base64.DEFAULT).trim()}: ")
+        val fullByteArray = encryptionIv!! + encryptedData!!;
+        val fullString = Base64.encodeToString(fullByteArray, Base64.DEFAULT)
+        Log.d("__IV", "fullTokenString ${fullString}:  + lengtht is ${fullString.length}")
+
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec =
             GCMParameterSpec(128, encryptionIv)
         cipher.init(Cipher.DECRYPT_MODE, getSecretKey(alias!!), spec)
+        cipher.doFinal(encryptedData)
         return String(cipher.doFinal(encryptedData), StandardCharsets.UTF_8)
     }
 

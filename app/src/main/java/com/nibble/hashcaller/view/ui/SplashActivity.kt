@@ -1,21 +1,23 @@
 package com.nibble.hashcaller.view.ui
 
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseUserMetadata
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
+import com.nibble.hashcaller.utils.auth.EncryptorObject
 
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
+import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 
 import java.io.IOException
 import java.security.*
@@ -39,10 +41,13 @@ class SplashActivity : AppCompatActivity() {
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var key : ByteArray
+    private var metadata:FirebaseUserMetadata?= null;
 companion object{
     private const val KEY_ALIAS = "MYKeyAlias"
     private const val KEY_STORE = "AndroidKeyStore"
     private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
+    private  const val SHARED_PREFERENCE_TOKEN_NAME = "com.nibble.hashCaller.prefs"
+    private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
 //    private lateinit var skey:SecretKey
 }
     override fun onPause() {
@@ -73,7 +78,7 @@ companion object{
                         //                        Toast.makeText(this, "You are now signed in", Toast.LENGTH_SHORT).show();
                         onSignedInInitialize()
 
-                        Log.i("SplashActivity", "logged in")
+                        Log.i(TAG, "User not null")
                     } else {
                         // user is signed out
                         onSingnedOutcleanUp()
@@ -108,33 +113,51 @@ companion object{
 //        finish();
     }
 
-    private fun getAuthToken() {
-        user!!.getIdToken(true)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    var idToken = task.result?.token
-                    // Send token to your backend via HTTPS
-                    Log.d(TAG, "onComplete: $idToken")
-                    // ...
+//    private fun getAuthToken() {
+//        user!!.getIdToken(true)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    var idToken = task.result?.token
+//                    // Send token to your backend via HTTPS
+//                    Log.d(TAG, "onComplete: $idToken")
+//                    // ...
+//
+//                    saveToken(idToken)
+//
+////                    generateEncryptedKey()
+//                } else {
+//                    // Handle error -> task.getException();
+//                }
+//            }
+//    }
 
-                    saveToken(idToken)
-
-//                    generateEncryptedKey()
-                } else {
-                    // Handle error -> task.getException();
-                }
-            }
-    }
-
-    private fun saveToken(idToken: String?) {
+    private fun  saveToken(idToken: String?) {
         try {
             encryptor = EnCryptor()
             val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,idToken.toString())
 
-                Base64.encodeToString(
-                    encryptedText,
-                    Base64.DEFAULT
+            /**
+             * Base64.encode method helps to get the encrypted byte array to readable string
+             * which we want to save in sharedPrefrences
+             */
+
+            val encodeTokenString = Base64.encodeToString(
+                encryptedText,
+                Base64.DEFAULT
             )
+//        Base64.decode(encodeTokenString, Base64.DEFAULT)
+
+
+//            Saving encryped token in sharedPreferences
+            sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            Log.d(TAG, "token ${encodeTokenString} saving to shared preferences : length + ${encodeTokenString.length}")
+            editor.putString(SHARED_PREFERENCE_TOKEN_KEY, encodeTokenString)
+
+            editor.apply()
+
+
+            Log.d(TAG, "saveToken: Encoded string is $encodeTokenString")
         } catch (e: UnrecoverableEntryException) {
             Log.e(TAG, "onClick() called with: " + e.message, e)
         } catch (e: NoSuchAlgorithmException) {
@@ -194,11 +217,35 @@ companion object{
 
 
     private fun onSignedInInitialize() {
-        getAuthToken()
-        val i = Intent(this, MainActivity::class.java)
+//        getAuthToken()
+
+        user!!.getIdToken(true)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    var idToken = task.result?.token
+                    // Send token to your backend via HTTPS
+                    Log.d(TAG, "onComplete token is : $idToken")
+                    // ...
+
+                    saveToken(idToken)
+
+                    //go to the activity after saving the token
+                    if(checkIfNewUser()){
+                        startGetUserInfoAcitvity()
+                    }else{
+                        Log.d(TAG, "byte array is "+EncryptorObject.encryption)
+                        val i = Intent(this, MainActivity::class.java)
 //        i.putExtra("key", key)
-        startActivity(i)
+                        startActivity(i)
 //        finish();
+                    }
+//                    generateEncryptedKey()
+                } else {
+                    // Handle error -> task.getException();
+                }
+            }
+
+
     }
 
     private fun onSingnedOutcleanUp() {}
@@ -209,50 +256,64 @@ companion object{
         resultCode: Int,
         data: Intent?
     ) {
-        Log.d("SplashActivity", "onactivity Result")
+        Log.d(TAG, "onactivity Result")
         var phoneNumber: String? = ""
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "requestCode $requestCode")
         Log.d(TAG, "resultCode $resultCode")
         if (requestCode == RC_SIGN_IN) {
 
-
 //            IdpResponse response = IdpResponse.fromResultIntent(data);
-            if (resultCode == Activity.RESULT_OK) {
+//            if (resultCode == Activity.RESULT_OK) {
                 phoneNumber = rcfirebaseAuth?.currentUser!!.phoneNumber
-                val user = rcfirebaseAuth?.currentUser
+                 user = rcfirebaseAuth?.currentUser
                 val uid = user!!.uid
                 //                IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
-                Log.d("SplashActiviy", "The UID is $uid")
+                Log.d(TAG, "The UID is $uid")
 
                 //determine if the user who just signed in is an existing or new one
-                val metadata = rcfirebaseAuth?.currentUser!!.metadata
-                Log.d("META_DATA", "metaData: " + metadata!!.creationTimestamp)
-                Log.d("META_DATA", "metaData: " + metadata.lastSignInTimestamp)
-                if (metadata.creationTimestamp == metadata.lastSignInTimestamp) {
-                    // The user is new, show them a fancy intro screen!
-                    Log.d("SplashActiviy", "new user signin")
-                    //                    onSignedInInitialize();
-                    startGetUserInfoAcitvity()
-                } else {
-                    // This is an existing user, show them a welcome back screen.
-                    Log.d("SplashActiviy", "existing user signin")
-                    onSignedInInitialize()
-                }
+//               if(checkIfNewUser()){
+//                   Log.d(TAG, "startGetUserInfoActivity")
+//                   startGetUserInfoAcitvity()
+//               }else{
+                   onSignedInInitialize()
+                   Log.d(TAG, "onSignedInIntitialize")
+
+//               }
 
 //                TODO crete new user in the firestore with the unique phone,firstName,lastName or google signin
-                Log.d("SplashActiviy", phoneNumber)
-                Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show()
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "Signed in cancelled", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+//                Log.d(TAG, phoneNumber)
+//                Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show()
+//            } else if (resultCode == Activity.RESULT_CANCELED) {
+//                Toast.makeText(this, "Signed in cancelled", Toast.LENGTH_SHORT).show()
+//                finish()
+//            }
         }
     }
 
+    private fun checkIfNewUser(): Boolean {
+        metadata = rcfirebaseAuth?.currentUser!!.metadata
+        Log.d(TAG, "metaData: " + metadata!!.creationTimestamp)
+        Log.d(TAG, "metaData: " + metadata?.lastSignInTimestamp)
+//        if (metadata?.creationTimestamp == metadata?.lastSignInTimestamp) {
+//            // The user is new, show them a fancy intro screen!
+//            Log.d(TAG, "new user signin")
+//
+////            startGetUserInfoAcitvity()
+//            return true;
+//        } else {
+//            // This is an existing user, show them a welcome back screen.
+//            Log.d(TAG, "existing user signin")
+////            onSignedInInitialize()
+//            return false;
+//        }
+        return true
+
+    }
+
     private fun startGetUserInfoAcitvity() {
-//        val i = Intent(this, GetInitialUserInfoActivity::class.java)
-//        startActivity(i)
+        val i = Intent(this, GetInitialUserInfoActivity::class.java)
+        startActivity(i)
 //        finish()
     }
 

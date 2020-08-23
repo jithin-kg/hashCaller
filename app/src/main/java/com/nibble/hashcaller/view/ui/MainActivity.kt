@@ -119,12 +119,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
         //TODO check if contacts are uploaded
-        //check internet connection
+//        check internet connection
 //        contactsUploadWorkManager = new ContactsUploadWorkManager(getApplicationContext(), );
-
+//
 //        contactsUploadWorkManager.uploadContacts();
 //        boolean contactsUploaded = false;
-
+//
 //        if(!contactsUploaded) {
 //            ContactsUploder contactsUploder = new ContactsUploder(getApplicationContext());
 //            contactsUploder.uploadContacts();
