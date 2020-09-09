@@ -17,9 +17,22 @@ class UserInfoViewModel(private val userNetworkRepository: UserNetworkRepository
             emit(Resource.loading(null))
 //            userNetworkRepository.signup(userInfo)
         try {
-            emit(Resource.success(userNetworkRepository.signup(userInfo)))
+            var result:String? = ""
+            val response = userNetworkRepository.signup(userInfo)
+
+            val success = response?.isSuccessful?:false
+        if(success){
+            Log.d(TAG, "signup: ${response?.body()}")
+             result = response?.body()?.message
+
+            Log.d(TAG, "signup: $result")
+        }else{
+            Log.d(TAG, "signup: failure")
+        }
+//            Log.d(TAG, "upload: response is $result.")
+            emit(Resource.success(response))
         }catch (e:Exception){
-            Log.d(TAG, "upload: $e")
+            Log.d(TAG, "upload: exception $e")
             emit(Resource.error(null, e.message));
         }
 

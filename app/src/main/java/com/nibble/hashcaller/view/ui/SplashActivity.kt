@@ -14,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
+import com.nibble.hashcaller.network.contact.NetWorkResponse
+import com.nibble.hashcaller.network.user.EUserResponse
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.repository.user.UserInfoDTO
@@ -26,6 +28,7 @@ import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
 import kotlinx.coroutines.*
+import retrofit2.Response
 
 import java.io.IOException
 import java.security.*
@@ -93,20 +96,7 @@ companion object{
                         // user is signed out
                         onSingnedOutcleanUp()
 
-                        //TODO automatic signin auto detecting the phone number and comparing if the perticular user exist in firestore
-                        //                        startActivityForResult(
-                        //                                AuthUI.getInstance()
-                        //                                        .createSignInIntentBuilder()
-                        //                                        .setIsSmartLockEnabled(false)
-                        //                                        .setLogo(R.drawable.real_caller_logo)
-                        //                                        .setTheme(R.style.AppTheme)
-                        //                                        .setTosAndPrivacyPolicyUrls(
-                        //                                                "https://joebirch.co/terms.html",
-                        //                                                "https://joebirch.co/privacy.html")
-                        //                                        .setAvailableProviders(Arrays.asList(
-                        //                                                new AuthUI.IdpConfig.PhoneBuilder().build()))
-                        //                                        .build(),
-                        //                                RC_SIGN_IN);
+
                         val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
                         startActivityForResult(i, RC_SIGN_IN)
                     }
@@ -125,23 +115,6 @@ companion object{
 
 
 
-//    private fun getAuthToken() {
-//        user!!.getIdToken(true)
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    var idToken = task.result?.token
-//                    // Send token to your backend via HTTPS
-//                    Log.d(TAG, "onComplete: $idToken")
-//                    // ...
-//
-//                    saveToken(idToken)
-//
-////                    generateEncryptedKey()
-//                } else {
-//                    // Handle error -> task.getException();
-//                }
-//            }
-//    }
 
     private fun  saveToken(idToken: String?) {
         try {
@@ -330,16 +303,22 @@ companion object{
 //
 //            }
             userInfoViewModel.upload(UserInfoDTO()).observe(this, Observer {
-                it?.let {resource ->
+                it?.let {resource:Resource<Response<NetWorkResponse>?> ->
+                    val resMessage = resource.data?.body()?.message
                     when(resource.status){
-                        
+
                         Status.SUCCESS ->{
-                            Log.d(TAG, "checkIfNewUser: success")
+                            if(resMessage.equals(EUserResponse.NO_SUCH_USER)){
+                                Log.d(TAG, "checkIfNewUser: no such user")
+                                //This is a new user
+                                startGetUserInfoAcitvity()
+                            }
+                            Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
                         }
                         Status.LOADING ->{
                             Log.d(TAG, "checkIfNewUser: Loading")
                         }else ->{
-                        Log.d(TAG, "checkIfNewUser: $resource")
+                        Log.d(TAG, "checkIfNewUser: else $resource")
                         Log.d(TAG, "checkIfNewUser:error ")
                     }
 

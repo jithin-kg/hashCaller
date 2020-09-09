@@ -12,8 +12,7 @@ import com.google.gson.annotations.SerializedName
 data class NetWorkResponse(
 //   val status:String,
    @SerializedName("message")
-
-   public val message:String
+    var message:String="default"
 ) {
 }
 
