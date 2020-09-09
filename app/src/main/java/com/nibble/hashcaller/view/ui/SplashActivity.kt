@@ -8,16 +8,24 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
+import com.nibble.hashcaller.network.user.Resource
+import com.nibble.hashcaller.network.user.Status
+import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.auth.EncryptorObject
 
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
+import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
+import kotlinx.coroutines.*
 
 import java.io.IOException
 import java.security.*
@@ -48,6 +56,7 @@ companion object{
     private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
     private  const val SHARED_PREFERENCE_TOKEN_NAME = "com.nibble.hashCaller.prefs"
     private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
+    private lateinit var userInfoViewModel:UserInfoViewModel
 //    private lateinit var skey:SecretKey
 }
     override fun onPause() {
@@ -65,6 +74,7 @@ companion object{
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
 
+
         //Start home activity
 //        startActivity(new Intent(SplashActivity.this, MainActivity.class));
 //         close splash activity
@@ -78,7 +88,7 @@ companion object{
                         //                        Toast.makeText(this, "You are now signed in", Toast.LENGTH_SHORT).show();
                         onSignedInInitialize()
 
-                        Log.i(TAG, "User not null")
+
                     } else {
                         // user is signed out
                         onSingnedOutcleanUp()
@@ -112,6 +122,8 @@ companion object{
 //        startActivity(i);
 //        finish();
     }
+
+
 
 //    private fun getAuthToken() {
 //        user!!.getIdToken(true)
@@ -151,13 +163,12 @@ companion object{
 //            Saving encryped token in sharedPreferences
             sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
-            Log.d(TAG, "token ${encodeTokenString} saving to shared preferences : length + ${encodeTokenString.length}")
+
             editor.putString(SHARED_PREFERENCE_TOKEN_KEY, encodeTokenString)
 
             editor.apply()
 
 
-            Log.d(TAG, "saveToken: Encoded string is $encodeTokenString")
         } catch (e: UnrecoverableEntryException) {
             Log.e(TAG, "onClick() called with: " + e.message, e)
         } catch (e: NoSuchAlgorithmException) {
@@ -224,7 +235,7 @@ companion object{
                 if (task.isSuccessful) {
                     var idToken = task.result?.token
                     // Send token to your backend via HTTPS
-                    Log.d(TAG, "onComplete token is : $idToken")
+
                     // ...
 
                     saveToken(idToken)
@@ -233,10 +244,10 @@ companion object{
                     if(checkIfNewUser()){
                         startGetUserInfoAcitvity()
                     }else{
-                        Log.d(TAG, "byte array is "+EncryptorObject.encryption)
-                        val i = Intent(this, MainActivity::class.java)
+
+//                        val i = Intent(this, MainActivity::class.java)
 //        i.putExtra("key", key)
-                        startActivity(i)
+//                        startActivity(i)
 //        finish();
                     }
 //                    generateEncryptedKey()
@@ -256,11 +267,10 @@ companion object{
         resultCode: Int,
         data: Intent?
     ) {
-        Log.d(TAG, "onactivity Result")
+
         var phoneNumber: String? = ""
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "requestCode $requestCode")
-        Log.d(TAG, "resultCode $resultCode")
+
         if (requestCode == RC_SIGN_IN) {
 
 //            IdpResponse response = IdpResponse.fromResultIntent(data);
@@ -269,7 +279,7 @@ companion object{
                  user = rcfirebaseAuth?.currentUser
                 val uid = user!!.uid
                 //                IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
-                Log.d(TAG, "The UID is $uid")
+
 
                 //determine if the user who just signed in is an existing or new one
 //               if(checkIfNewUser()){
@@ -277,7 +287,7 @@ companion object{
 //                   startGetUserInfoAcitvity()
 //               }else{
                    onSignedInInitialize()
-                   Log.d(TAG, "onSignedInIntitialize")
+
 
 //               }
 
@@ -293,25 +303,61 @@ companion object{
 
     private fun checkIfNewUser(): Boolean {
         metadata = rcfirebaseAuth?.currentUser!!.metadata
-        Log.d(TAG, "metaData: " + metadata!!.creationTimestamp)
-        Log.d(TAG, "metaData: " + metadata?.lastSignInTimestamp)
-//        if (metadata?.creationTimestamp == metadata?.lastSignInTimestamp) {
-//            // The user is new, show them a fancy intro screen!
-//            Log.d(TAG, "new user signin")
+
+        if (metadata?.creationTimestamp == metadata?.lastSignInTimestamp) {
+            // The user is new, show them a fancy intro screen!
+            Log.d(TAG, "new user signin")
+
+
+//            startGetUserInfoAcitvity()
+            return true;
+        } else {
+            // This is an existing user, show them a welcome back screen.
+            Log.d(TAG, "existing user signin")
+            //check the user primary information such as username and other fields are in the database
+            userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
+//            val job = GlobalScope.launch( Dispatchers.Main){
+//                val postOperation = async(Dispatchers.IO){
+//                    val userInfoDTO = UserInfoDTO()
+//                    userInfoViewModel.upload(userInfoDTO)
+//                }
+//                var response:String
+//                runBlocking {
+//                     response = postOperation.await()
+//                }
 //
-////            startGetUserInfoAcitvity()
-//            return true;
-//        } else {
-//            // This is an existing user, show them a welcome back screen.
-//            Log.d(TAG, "existing user signin")
-////            onSignedInInitialize()
-//            return false;
-//        }
-        return true
+//                Log.d(TAG, "checkIfNewUser: ${response}")
+//
+//            }
+            userInfoViewModel.upload(UserInfoDTO()).observe(this, Observer {
+                it?.let {resource ->
+                    when(resource.status){
+                        
+                        Status.SUCCESS ->{
+                            Log.d(TAG, "checkIfNewUser: success")
+                        }
+                        Status.LOADING ->{
+                            Log.d(TAG, "checkIfNewUser: Loading")
+                        }else ->{
+                        Log.d(TAG, "checkIfNewUser: $resource")
+                        Log.d(TAG, "checkIfNewUser:error ")
+                    }
+
+
+                    }
+                }
+            })
+//
+//            userInfoViewModel.
+//            onSignedInInitialize()
+            return false;
+        }
+
 
     }
 
     private fun startGetUserInfoAcitvity() {
+
         val i = Intent(this, GetInitialUserInfoActivity::class.java)
         startActivity(i)
 //        finish()
@@ -351,10 +397,10 @@ companion object{
 //                .encryptText(SAMPLE_ALIAS, token.toString())
             val s = (encryptor.encryptText(SAMPLE_ALIAS, token.toString().trim())).toString().trim()
             encryptedText = s
-            Log.d(TAG, "byteArray is :$s ")
+
 //            encryptedToken = encryptedText
 //            encryptedToken = Base64.encodeToString(encryptedText, Base64.DEFAULT)
-            Log.d(TAG, "encryptText: $encryptedToken")
+
 
 //            encryptedToken= Base64.encodeToString(encryptedText, Base64.DEFAULT)
         } catch (e: UnrecoverableEntryException) {
@@ -385,7 +431,7 @@ companion object{
 
     override fun onPostResume() {
         super.onPostResume()
-        Log.d(TAG, "postResume")
+
         if (checkPermission()) {
             rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
         }

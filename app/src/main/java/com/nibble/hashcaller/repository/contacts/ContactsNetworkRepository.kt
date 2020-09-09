@@ -4,8 +4,8 @@ package com.nibble.hashcaller.repository.contacts
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import com.nibble.hashcaller.network.ContactsListHelper
-import com.nibble.hashcaller.network.IContactsService
+import com.nibble.hashcaller.network.contact.ContactsListHelper
+import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EncryptorObject
@@ -21,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec
  */
 class ContactsNetworkRepository (private val context: Context){
 
-    private var retrofitService:IContactsService? = null
+    private var retrofitService: IContactsService? = null
     private var keyStore: KeyStore? = null
     private val ANDROID_KEY_STORE = "AndroidKeyStore"
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
@@ -41,7 +41,8 @@ class ContactsNetworkRepository (private val context: Context){
 
             retrofitService = RetrofitClient.createaService(IContactsService::class.java)
 
-            val contactListObject = ContactsListHelper(contacts)
+            val contactListObject =
+                ContactsListHelper(contacts)
             val list:MutableList<String> = ArrayList<String>()
             list.add("hi")
         var token = ""

@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.network
+package com.nibble.hashcaller.network.contact
 
 import com.google.gson.annotations.SerializedName
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO

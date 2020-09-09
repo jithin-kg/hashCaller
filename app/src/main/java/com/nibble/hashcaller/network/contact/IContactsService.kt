@@ -1,13 +1,8 @@
-package com.nibble.hashcaller.network
+package com.nibble.hashcaller.network.contact
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import org.json.JSONObject
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
@@ -29,7 +24,7 @@ interface IContactsService  {
 //    ):Response<NetWorkResponse>
 
     companion object{
-        const val BASE_URL: String = "http://192.168.43.84:8000/"
+        const val BASE_URL: String = "http://192.168.43.84:3000/"
     }
 
 @POST("contacts/uploadcontacts")

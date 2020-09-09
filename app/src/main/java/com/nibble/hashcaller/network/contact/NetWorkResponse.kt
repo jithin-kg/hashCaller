@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.network
+package com.nibble.hashcaller.network.contact
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.Expose

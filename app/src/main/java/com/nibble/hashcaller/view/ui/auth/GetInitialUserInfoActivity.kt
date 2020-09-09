@@ -1,21 +1,22 @@
 package com.nibble.hashcaller.view.ui.auth
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
+import android.view.View
+import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.utils.auth.Decryptor
-import com.nibble.hashcaller.utils.auth.EncryptorObject
-import com.nibble.hashcaller.view.ui.SplashActivity
-import java.nio.charset.Charset
+import com.nibble.hashcaller.repository.user.UserInfoDTO
+import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
+import kotlinx.android.synthetic.main.activity_get_initial_user_info.*
 
-class GetInitialUserInfoActivity : AppCompatActivity() {
+class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
+    private lateinit var userInfoViewModel:UserInfoViewModel
+
 
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,24 +24,9 @@ class GetInitialUserInfoActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_get_initial_user_info)
 
+        btnUserContinue.setOnClickListener(this)
+        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
 
-        sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-        val stringTokenFromSharedPref = sharedPreferences.getString(SHARED_PREFERENCE_TOKEN_KEY, "")
-        Log.d(TAG, "Token is ${stringTokenFromSharedPref}")
-        val tokneByteOne = Base64.decode(stringTokenFromSharedPref, Base64.DEFAULT)
-        Log.d(TAG, "onCreate: ${tokneByteOne.size}")
-
-        val iv = tokneByteOne.copyOfRange(0, 12);
-
-        val tokenByteElements = tokneByteOne.copyOfRange(12, (tokneByteOne!!.size ))
-
-
-        val decryptor = Decryptor()
-        var token = decryptor?.decryptData(
-            SAMPLE_ALIAS,
-            tokenByteElements,
-            iv
-        ).toString()
 
 
     }
@@ -48,7 +34,22 @@ class GetInitialUserInfoActivity : AppCompatActivity() {
     companion object{
 
         const val TAG = "__GetInitialUserInfoActivity"
-        private  const val SHARED_PREFERENCE_TOKEN_NAME = "com.nibble.hashCaller.prefs"
-        private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
+
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            btnUserContinue.id ->{
+                sendUserInfo()
+            }
+        }
+    }
+
+    private fun sendUserInfo() {
+        var userInfo = UserInfoDTO()
+        userInfo.firstName = editTextFName.text.toString()
+        userInfo.lastName = editTextLName.text.toString()
+        userInfo.email = editTextEmail.text.toString()
+        userInfoViewModel.upload(userInfo)
     }
 }

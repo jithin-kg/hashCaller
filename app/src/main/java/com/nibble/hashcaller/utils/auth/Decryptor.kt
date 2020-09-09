@@ -12,7 +12,6 @@ import javax.crypto.spec.GCMParameterSpec
 public class Decryptor {
     private val TRANSFORMATION = "AES/GCM/NoPadding"
     private val ANDROID_KEY_STORE = "AndroidKeyStore"
-
     private var keyStore: KeyStore? = null
 
 
@@ -48,11 +47,10 @@ public class Decryptor {
         encryptedData: ByteArray?,
         encryptionIv: ByteArray?
     ): String? {
-        Log.d("__IV", "iv in decryptor is ${Base64.encodeToString(encryptionIv, Base64.DEFAULT).trim()}: ")
-        Log.d("__IV", "token in decryptor is ${Base64.encodeToString(encryptedData, Base64.DEFAULT).trim()}: ")
+
         val fullByteArray = encryptionIv!! + encryptedData!!;
         val fullString = Base64.encodeToString(fullByteArray, Base64.DEFAULT)
-        Log.d("__IV", "fullTokenString ${fullString}:  + lengtht is ${fullString.length}")
+
 
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec =
