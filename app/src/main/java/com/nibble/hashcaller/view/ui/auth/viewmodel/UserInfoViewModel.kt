@@ -14,9 +14,11 @@ class UserInfoViewModel(private val userNetworkRepository: UserNetworkRepository
 
 
     fun upload(userInfo: UserInfoDTO)= liveData(Dispatchers.IO){
+        Log.d(TAG, "upload: inside ")
             emit(Resource.loading(null))
 //            userNetworkRepository.signup(userInfo)
         try {
+            Log.d(TAG, "upload: try")
             var result:String? = ""
             val response = userNetworkRepository.signup(userInfo)
 

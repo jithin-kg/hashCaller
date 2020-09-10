@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
@@ -37,19 +39,26 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
 
     }
 
+    @SuppressLint("LongLogTag")
     override fun onClick(v: View?) {
+        Log.d(TAG, "onClick: ")
         when(v?.id){
             btnUserContinue.id ->{
+                Log.d(TAG, "onClick: btn")
                 sendUserInfo()
             }
         }
     }
 
+    @SuppressLint("LongLogTag")
     private fun sendUserInfo() {
         var userInfo = UserInfoDTO()
         userInfo.firstName = editTextFName.text.toString()
         userInfo.lastName = editTextLName.text.toString()
         userInfo.email = editTextEmail.text.toString()
-        userInfoViewModel.upload(userInfo)
+        val helper = UserUploadHelper(userInfoViewModel, this, applicationContext)
+        helper.upload(userInfo)
+
     }
+
 }

@@ -8,27 +8,20 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
-import com.nibble.hashcaller.network.contact.NetWorkResponse
-import com.nibble.hashcaller.network.user.EUserResponse
-import com.nibble.hashcaller.network.user.Resource
-import com.nibble.hashcaller.network.user.Status
+import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
-import com.nibble.hashcaller.utils.auth.EncryptorObject
 
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
-import kotlinx.coroutines.*
-import retrofit2.Response
 
 import java.io.IOException
 import java.security.*
@@ -289,46 +282,8 @@ companion object{
             Log.d(TAG, "existing user signin")
             //check the user primary information such as username and other fields are in the database
             userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
-//            val job = GlobalScope.launch( Dispatchers.Main){
-//                val postOperation = async(Dispatchers.IO){
-//                    val userInfoDTO = UserInfoDTO()
-//                    userInfoViewModel.upload(userInfoDTO)
-//                }
-//                var response:String
-//                runBlocking {
-//                     response = postOperation.await()
-//                }
-//
-//                Log.d(TAG, "checkIfNewUser: ${response}")
-//
-//            }
-            userInfoViewModel.upload(UserInfoDTO()).observe(this, Observer {
-                it?.let {resource:Resource<Response<NetWorkResponse>?> ->
-                    val resMessage = resource.data?.body()?.message
-                    when(resource.status){
-
-                        Status.SUCCESS ->{
-                            if(resMessage.equals(EUserResponse.NO_SUCH_USER)){
-                                Log.d(TAG, "checkIfNewUser: no such user")
-                                //This is a new user
-                                startGetUserInfoAcitvity()
-                            }
-                            Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
-                        }
-                        Status.LOADING ->{
-                            Log.d(TAG, "checkIfNewUser: Loading")
-                        }else ->{
-                        Log.d(TAG, "checkIfNewUser: else $resource")
-                        Log.d(TAG, "checkIfNewUser:error ")
-                    }
-
-
-                    }
-                }
-            })
-//
-//            userInfoViewModel.
-//            onSignedInInitialize()
+            val helper = UserUploadHelper(userInfoViewModel, this, applicationContext)
+            helper.upload(UserInfoDTO())
             return false;
         }
 
