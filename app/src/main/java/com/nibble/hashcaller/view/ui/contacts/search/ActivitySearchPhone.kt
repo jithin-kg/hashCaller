@@ -13,26 +13,34 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_search_phone.*
 
 
 class ActivitySearchPhone : AppCompatActivity() {
-    private lateinit var contactsSearchViewModel: ContactsSearchViewModel
+    private lateinit var searchViewModel: SearchViewModel
     private lateinit var contactsSearchAdapter: SearchAdapter
+    private lateinit var owner:ActivitySearchPhone
+   
     companion object{
         private const val TAG = "__ActivitySearchPhone"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_phone)
+        owner = this
 
 //        initAdapter()
 
 
 //
-        contactsSearchViewModel = ViewModelProvider(this).get(ContactsSearchViewModel::class.java)
+        searchViewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(this)).get(
+            SearchViewModel::class.java)
+
+//        contactsSearchViewModel = ViewModelProvider(this).get(ContactsSearchViewModel::class.java)
         val recyclerView =
             findViewById<View>(R.id.recyclerViewSearchResults) as RecyclerView
         val adapter = SearchAdapter(applicationContext){id:Long -> onContactitemClicked(id) }
@@ -48,19 +56,19 @@ class ActivitySearchPhone : AppCompatActivity() {
 //        sampel.add(ContactUploadDTO("dfdfs", "3224"))
 
 //        contactsSearchAdapter.setContactList(sampel)
-                     contactsSearchViewModel.contacts.observe(
-                 this@ActivitySearchPhone, Observer<List<ContactUploadDTO>>{
-
-                         contacts->
-                             Log.d(TAG, "onCreate: change")
-                             if(contacts!=null){
-                                 Log.d(TAG, "onCreate data change: ${contacts?.size}")
-                                 adapter.setContactList(contacts) //Array<SearchContactStub>
-                                 Log.d(TAG, "onQueryTextChange: ")
-                                 Log.d(TAG, "onCreate: data changed")
-                             }
-
-                 })
+//                     searchViewModel.contacts.observe(
+//                 this@ActivitySearchPhone, Observer<List<ContactUploadDTO>>{
+//
+//                         contacts->
+//                             Log.d(TAG, "onCreate: change")
+//                             if(contacts!=null){
+//                                 Log.d(TAG, "onCreate data change: ${contacts?.size}")
+//                                 adapter.setContactList(contacts) //Array<SearchContactStub>
+//                                 Log.d(TAG, "onQueryTextChange: ")
+//                                 Log.d(TAG, "onCreate: data changed")
+//                             }
+//
+//                 })
 
         searchViewSearchPhone.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
          override fun onQueryTextChange(newText: String?): Boolean {
@@ -71,7 +79,9 @@ class ActivitySearchPhone : AppCompatActivity() {
 
 //             adapter.setContactList(sampel.toList())
 //             adapter.setContactList(myListData)
-             contactsSearchViewModel.findContactForNum(newText!!)
+             searchViewModel.search(newText!!).observe(owner, Observer {
+                 Log.d(TAG, "onQueryTextChange is mhan: $it")
+             })
 //             contactsSearchViewModel.findContactForNum("fd"!!).observe(
 //                 this@ActivitySearchPhone, Observer<List<SearchContactSTub>>{
 //                         contacts->
