@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.contacts.search.utils
 import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.network.search.SearchResponse
+import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import kotlinx.coroutines.Dispatchers
 
@@ -15,6 +16,7 @@ import retrofit2.Response
 class SearchViewModel(
     private val searchNetworkRepository: SearchNetworkRepository
 ): ViewModel() {
+    var searchRes = MutableLiveData<Response<SearchResponse>>()
     // The internal MutableLiveData String that stores the most recent response
 //    private val _response = MutableLiveData<String>()
 //    var mt:
@@ -41,15 +43,17 @@ class SearchViewModel(
 
     }
 
-    fun search(phoneNumber:String) = liveData<String>(Dispatchers.IO) {
-
+    fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
+                emit(Resource.loading(data=null))
              try {
                   val res = searchNetworkRepository.search(phoneNumber)
-//                 _response = "res"
-                 Log.d(TAG, "search: ${res?.body()?.name}")
-                 Log.d(TAG, "search: ${res?.body()?.message}")
-                 Log.d(TAG, "search: ${res}")
-                 emit(res?.body()?.name.toString());
+//                 searchRes.value = res;
+//                 _response = "res"222
+//                 Log.d(TAG, "search: ${res?}")
+//                 Log.d(TAG, "search: ${res?.body()?.message}")
+//                 Log.d(TAG, "search: ${res}")
+//                 res?.body()
+                 emit(Resource.success(data = res?.body()));
 
              }catch (e:Exception){
                  Log.d(TAG, "search: $e")

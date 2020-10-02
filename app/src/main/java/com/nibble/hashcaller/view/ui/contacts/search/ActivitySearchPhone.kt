@@ -39,7 +39,7 @@ class ActivitySearchPhone : AppCompatActivity() {
 //
         searchViewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(this)).get(
             SearchViewModel::class.java)
-
+     2
 //        contactsSearchViewModel = ViewModelProvider(this).get(ContactsSearchViewModel::class.java)
         val recyclerView =
             findViewById<View>(R.id.recyclerViewSearchResults) as RecyclerView
