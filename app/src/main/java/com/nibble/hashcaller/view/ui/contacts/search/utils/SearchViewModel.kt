@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.contacts.search.utils
 import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.network.search.SearchResponse
+import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import kotlinx.coroutines.Dispatchers
@@ -31,32 +32,21 @@ class SearchViewModel(
 //
 //    }
 
-     fun syncContactsWithLocalDb() = viewModelScope.launch {
 
-//
-//         val contactsListfromContentProvider: ArrayList<ContactUploadDTO>? = contactsRepository?.fetchContacts() as ArrayList<ContactUploadDTO>?
-//
-//
-//         val contactsListFromLocalDb = contactLocalSyncRepository.getContactsFromLocalDB()
-//         val contactHelper = ContactsSyncHelper(contactLocalSyncRepository, contactNetworkRepository)
-//         contactHelper.syncContacts(contactsListfromContentProvider, contactsListFromLocalDb)
-
-    }
 
     fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
                 emit(Resource.loading(data=null))
+        var res: Response<SerachRes>? = null
              try {
-                  val res = searchNetworkRepository.search(phoneNumber)
-//                 searchRes.value = res;
-//                 _response = "res"222
-//                 Log.d(TAG, "search: ${res?}")
-//                 Log.d(TAG, "search: ${res?.body()?.message}")
-//                 Log.d(TAG, "search: ${res}")
-//                 res?.body()
+                   res = searchNetworkRepository.search(phoneNumber)
+
+                 Log.d(TAG, "search: $res")
                  emit(Resource.success(data = res?.body()));
 
              }catch (e:Exception){
-                 Log.d(TAG, "search: $e")
+                 Log.d(TAG, "response: $res");
+                 Log.d(TAG, "execption : $e");
+                     emit(Resource.error(null, message ="Error Occurred!" ))
              }
 
 
@@ -88,21 +78,9 @@ class SearchViewModel(
 //
 //    }
 
-//    private suspend fun getContactsFromLocalDB(): List<ContactTable>? {
-//
-//        val job = contactLocalSyncRepository.getContactsFromLocalDB()
-//
-//       return job
-//
-//    }
+
 
 companion object{
     private const val TAG ="__SearchViewModel"
 }
 }
-//class ContactsViewModel(application: Application): AndroidViewModel(application) {
-//
-//    val contacts =
-//        ContactLiveData(application.applicationContext)
-//
-//}

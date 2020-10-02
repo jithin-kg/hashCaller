@@ -5,13 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.network.search.model.SerachRes
+import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
@@ -33,62 +35,58 @@ class ActivitySearchPhone : AppCompatActivity() {
         setContentView(R.layout.activity_search_phone)
         owner = this
 
-//        initAdapter()
 
-
-//
         searchViewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(this)).get(
             SearchViewModel::class.java)
-     2
-//        contactsSearchViewModel = ViewModelProvider(this).get(ContactsSearchViewModel::class.java)
+
+
         val recyclerView =
             findViewById<View>(R.id.recyclerViewSearchResults) as RecyclerView
         val adapter = SearchAdapter(applicationContext){id:Long -> onContactitemClicked(id) }
-//        val adapter = MyListAdapter()
 
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
         prepareSearchView()
+        initAdapter()
 
-//      var sampel:  MutableList<ContactUploadDTO> = mutableListOf()
-//        sampel.add(ContactUploadDTO("df", "324"))
-//        sampel.add(ContactUploadDTO("dfdfs", "3224"))
-
-//        contactsSearchAdapter.setContactList(sampel)
-//                     searchViewModel.contacts.observe(
-//                 this@ActivitySearchPhone, Observer<List<ContactUploadDTO>>{
 //
-//                         contacts->
-//                             Log.d(TAG, "onCreate: change")
-//                             if(contacts!=null){
-//                                 Log.d(TAG, "onCreate data change: ${contacts?.size}")
-//                                 adapter.setContactList(contacts) //Array<SearchContactStub>
-//                                 Log.d(TAG, "onQueryTextChange: ")
-//                                 Log.d(TAG, "onCreate: data changed")
-//                             }
-//
-//                 })
 
         searchViewSearchPhone.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
          override fun onQueryTextChange(newText: String?): Boolean {
              // your text view here
              Log.d(TAG, "onQueryTextChange: $newText")
 
-//             adapter.setContactList(myListData)
-
-//             adapter.setContactList(sampel.toList())
-//             adapter.setContactList(myListData)
              searchViewModel.search(newText!!).observe(owner, Observer {
-                 Log.d(TAG, "onQueryTextChange is mhan: $it")
+                 it.let {
+                     resource ->
+                     when(resource.status){
+                         Status.SUCCESS->{
+                             pgBarSearch.visibility = View.GONE
+                             recyclerView.visibility = View.VISIBLE
+                             Log.d(TAG, "onQueryTextChange is mhan: $it")
+                            resource.data?.let {
+                                searchResult->
+                                   setAdapter(searchResult)
+                            }
+                         }
+                         Status.LOADING->{
+                             //show loading
+                             pgBarSearch.visibility = View.VISIBLE
+                             recyclerView.visibility = View.GONE
+                             Log.d(TAG, "onQueryTextChange: Loading....")
+                         }
+                         else ->{
+                             Log.d(TAG, "onQueryTextChange: Error ${resource}")
+                             recyclerView.visibility = View.VISIBLE
+                             pgBarSearch.visibility = View.GONE
+                             Toast.makeText(owner, it.message, Toast.LENGTH_LONG).show()
+                         }
+                     }
+                 }
+
              })
-//             contactsSearchViewModel.findContactForNum("fd"!!).observe(
-//                 this@ActivitySearchPhone, Observer<List<SearchContactSTub>>{
-//                         contacts->
-//                     adapter.setContactList(myListData)
-//                     Log.d(TAG, "onQueryTextChange: ")
-//                 })
-//             adapter.setContactList(sampel)
+
 
 
 
@@ -104,10 +102,7 @@ class ActivitySearchPhone : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-//      recyclerViewSearchResults.apply {
-//          layoutManager = LinearLayoutManager(this@ActivitySearchPhone)
-//          contactsSearchAdapter = SearchAdapter(this@ActivitySearchPhone){id:Long->onContactitemClicked(id)}
-//      }
+
         recyclerViewSearchResults.layoutManager = LinearLayoutManager(this@ActivitySearchPhone)
         val topSpacingDecorator =
             TopSpacingItemDecoration(
@@ -121,9 +116,9 @@ class ActivitySearchPhone : AppCompatActivity() {
 
     private fun onContactitemClicked(id: Long) {
         Log.d(TAG, "onContactItemClicked: $id")
-        val intent = Intent(this@ActivitySearchPhone, IndividualCotactViewActivity::class.java )
-        intent.putExtra(CONTACT_ID, id)
-        startActivity(intent)
+//        val intent = Intent(this@ActivitySearchPhone, IndividualCotactViewActivity::class.java )
+//        intent.putExtra(CONTACT_ID, id)
+//        startActivity(intent)
 
     }
 
@@ -136,4 +131,11 @@ class ActivitySearchPhone : AppCompatActivity() {
         searchViewSearchPhone.isIconified = false;
         searchViewSearchPhone.requestFocusFromTouch();
     }
+    private fun setAdapter(searchResult: SerachRes) {
+        contactsSearchAdapter.apply {
+            setContactList(searchResult)
+        }
+    }
+
+
 }

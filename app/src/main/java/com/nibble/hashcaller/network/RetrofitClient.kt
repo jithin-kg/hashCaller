@@ -27,18 +27,21 @@ object RetrofitClient {
     //create client
     private val okHttp =
         OkHttpClient.Builder().addInterceptor(logger)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .build()
 
     private val retrofit = Retrofit.Builder()
 //        .addConverterFactory(GsonConverterFactory.create(gson))
         .baseUrl(IContactsService.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
-        .client(okHttp.build())
+        .client(okHttp)
         .build()
 
     fun <T> createaService(serviceClass: Class<T>?): T {
 
-        okHttp.readTimeout(60, TimeUnit.SECONDS)
-        okHttp.connectTimeout(60, TimeUnit.SECONDS)
+//        okHttp.readTimeout(60, TimeUnit.SECONDS)
+//        okHttp.connectTimeout(60, TimeUnit.SECONDS)
 
         return retrofit.create(serviceClass)
 

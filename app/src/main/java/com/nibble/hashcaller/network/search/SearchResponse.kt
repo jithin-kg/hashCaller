@@ -7,6 +7,7 @@ data class SearchResponse (
 //   val status:String,
     @SerializedName("message")
     var message:String="default",
-    var name:String="default"
+    var name:String="",
+    var phoneNum:String=""
 ) {
 }

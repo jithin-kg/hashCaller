@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.network.search.model.Cntct
+import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.stubs.Contact
 import kotlinx.android.synthetic.main.search_result_layout.view.*
 
 /**
@@ -16,7 +19,7 @@ import kotlinx.android.synthetic.main.search_result_layout.view.*
 class SearchAdapter (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private  var contacts: List<ContactUploadDTO>? = null
+    private  var contacts: List<Cntct>? = null
     private val TAG  = "__SearchAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,9 +32,9 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
 //        Log.d(TAG, "getItemCount: ${contacts?.size}")
         return contacts?.size?:0
     }
-    fun setContactList(newContactList: List<ContactUploadDTO>) {
+    fun setContactList(newContactList: SerachRes) {
         contacts = emptyList()
-        contacts = newContactList
+        contacts = newContactList.cntcts
 
 //        Log.d(TAG, "setContactList: ${newContactList.size}")
 //        Log.d(TAG, "setContactList: size of contacts ${contacts?.size}")
@@ -50,13 +53,17 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
 
         }
     }
+    fun setSearchResult(newContactList: List<Contact>) {
+//        contacts = newContactList
 
+        notifyDataSetChanged()
+    }
     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textViewSearchContactName
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: ContactUploadDTO, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
-            name.text = contact.name
+        fun bind(contact: Cntct, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
+            name.text = contact.phoneNumber
             Log.d("__ViewHolder", "bind:")
 //            name.text = contact.name
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
