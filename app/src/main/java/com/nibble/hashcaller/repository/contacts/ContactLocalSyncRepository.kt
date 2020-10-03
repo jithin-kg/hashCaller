@@ -16,15 +16,19 @@ class ContactLocalSyncRepository(
        return contactLisDAO?.getCount()
     }
 
-    suspend fun getContactsFromLocalDB(): List<ContactTable>? {
-        return contactLisDAO?.getContacts()
+    var  contactsFomLocalDB = contactLisDAO?.getContacts()
+
+    suspend fun getContacts(phonNumber:String): List<ContactTable>? {
+        val res = contactLisDAO?.search(phonNumber)
+//        contactsFomLocalDB = res
+       return  res
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun insertContacts(preparedContacts: ContactTable): Long? {
+    suspend fun insertContacts(preparedContacts: List<ContactTable>) {
         Log.d(TAG, "insertContacts: ")
         val insert = contactLisDAO?.insert(preparedContacts)
-        return insert;
+
     }
 
 

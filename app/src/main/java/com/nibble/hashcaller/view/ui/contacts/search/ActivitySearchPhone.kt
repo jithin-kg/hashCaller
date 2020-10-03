@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.contacts.search
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,12 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.Status
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_search_phone.*
 
@@ -25,8 +23,11 @@ import kotlinx.android.synthetic.main.activity_search_phone.*
 class ActivitySearchPhone : AppCompatActivity() {
     private lateinit var searchViewModel: SearchViewModel
     private lateinit var contactsSearchAdapter: SearchAdapter
+    private lateinit var contactsSearchAdapterLocal: SearchAdapterLocal
     private lateinit var owner:ActivitySearchPhone
-   
+    private lateinit var  recyclerView:RecyclerView
+    private lateinit var  recyclerViewLocal:RecyclerView
+
     companion object{
         private const val TAG = "__ActivitySearchPhone"
     }
@@ -40,54 +41,45 @@ class ActivitySearchPhone : AppCompatActivity() {
             SearchViewModel::class.java)
 
 
-        val recyclerView =
+         recyclerView =
             findViewById<View>(R.id.recyclerViewSearchResults) as RecyclerView
+        recyclerViewLocal =
+            findViewById<View>(R.id.recyclerViewLocalSearch) as RecyclerView
+
         val adapter = SearchAdapter(applicationContext){id:Long -> onContactitemClicked(id) }
 
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+
+        recyclerViewLocal.setHasFixedSize(true)
+        recyclerViewLocal.layoutManager = LinearLayoutManager(this)
+        recyclerViewLocal.adapter = adapter
         prepareSearchView()
         initAdapter()
 
 //
-
+        searchViewModel.mt.observe(owner, Observer { 
+            it.let {
+                if(it!=null){
+                    Log.d(TAG, "onCreate: ${it}")
+                    setAdapterLocal(it)
+//                    Log.d(TAG, "onCreate: ${it?.get(1)}")
+                }
+//                for (item in cntcs){
+//                    Log.d(TAG, "onCreate: $cntcs")
+//                }
+                Log.d(TAG, "onCreate: ${it?.size}")
+                
+//                Log.d(TAG, "onCreate: ${it?.get(0)}")
+            }
+        })
         searchViewSearchPhone.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
          override fun onQueryTextChange(newText: String?): Boolean {
              // your text view here
              Log.d(TAG, "onQueryTextChange: $newText")
-
-             searchViewModel.search(newText!!).observe(owner, Observer {
-                 it.let {
-                     resource ->
-                     when(resource.status){
-                         Status.SUCCESS->{
-                             pgBarSearch.visibility = View.GONE
-                             recyclerView.visibility = View.VISIBLE
-                             Log.d(TAG, "onQueryTextChange is mhan: $it")
-                            resource.data?.let {
-                                searchResult->
-                                   setAdapter(searchResult)
-                            }
-                         }
-                         Status.LOADING->{
-                             //show loading
-                             pgBarSearch.visibility = View.VISIBLE
-                             recyclerView.visibility = View.GONE
-                             Log.d(TAG, "onQueryTextChange: Loading....")
-                         }
-                         else ->{
-                             Log.d(TAG, "onQueryTextChange: Error ${resource}")
-                             recyclerView.visibility = View.VISIBLE
-                             pgBarSearch.visibility = View.GONE
-                             Toast.makeText(owner, it.message, Toast.LENGTH_LONG).show()
-                         }
-                     }
-                 }
-
-             })
-
-
+             searchViewModel.getContactsFromDb(newText.toString())
+            searchContactInServer(newText);
 
 
              return true
@@ -101,6 +93,38 @@ class ActivitySearchPhone : AppCompatActivity() {
 
     }
 
+    private fun searchContactInServer(newText: String?) {
+        searchViewModel.search(newText!!).observe(owner, Observer {
+            it.let {
+                    resource ->
+                when(resource.status){
+                    Status.SUCCESS->{
+                        pgBarSearch.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                        Log.d(TAG, "onQueryTextChange is mhan: $it")
+                        resource.data?.let {
+                                searchResult->
+                            setAdapter(searchResult)
+                        }
+                    }
+                    Status.LOADING->{
+                        //show loading
+                        pgBarSearch.visibility = View.VISIBLE
+                        recyclerView.visibility = View.GONE
+                        Log.d(TAG, "onQueryTextChange: Loading....")
+                    }
+                    else ->{
+                        Log.d(TAG, "onQueryTextChange: Error ${resource}")
+                        recyclerView.visibility = View.VISIBLE
+                        pgBarSearch.visibility = View.GONE
+                        Toast.makeText(owner, it.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+
+        })
+    }
+
     private fun initAdapter() {
 
         recyclerViewSearchResults.layoutManager = LinearLayoutManager(this@ActivitySearchPhone)
@@ -112,6 +136,18 @@ class ActivitySearchPhone : AppCompatActivity() {
 
         contactsSearchAdapter = SearchAdapter(this@ActivitySearchPhone){id:Long -> onContactitemClicked(id) }
         recyclerViewSearchResults.adapter = contactsSearchAdapter
+
+        //local search adapter
+
+        recyclerViewLocalSearch.layoutManager = LinearLayoutManager(this@ActivitySearchPhone)
+        val topSpacingDecorator2 =
+            TopSpacingItemDecoration(
+                30
+            )
+        recyclerViewLocalSearch.addItemDecoration(topSpacingDecorator2)
+
+        contactsSearchAdapterLocal = SearchAdapterLocal(this@ActivitySearchPhone){ id:Long -> onContactitemClicked(id) }
+        recyclerViewLocalSearch.adapter = contactsSearchAdapterLocal
     }
 
     private fun onContactitemClicked(id: Long) {
@@ -136,6 +172,13 @@ class ActivitySearchPhone : AppCompatActivity() {
             setContactList(searchResult)
         }
     }
+
+    private fun setAdapterLocal(it: List<ContactTable>) {
+        contactsSearchAdapterLocal.apply {
+            setContactList(it)
+        }
+    }
+
 
 
 }

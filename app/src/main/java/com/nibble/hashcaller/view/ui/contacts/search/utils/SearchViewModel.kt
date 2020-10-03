@@ -2,42 +2,55 @@ package com.nibble.hashcaller.view.ui.contacts.search.utils
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.search.SearchResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.Resource
+import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import kotlinx.coroutines.Dispatchers
-
 import kotlinx.coroutines.launch
+
 import retrofit2.Response
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
 class SearchViewModel(
-    private val searchNetworkRepository: SearchNetworkRepository
+    private val searchNetworkRepository: SearchNetworkRepository,
+    private  val contactLocalSyncRepository: ContactLocalSyncRepository
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
-    // The internal MutableLiveData String that stores the most recent response
-//    private val _response = MutableLiveData<String>()
-//    var mt:
-    // The external immutable LiveData for the response String
-//    val response: LiveData<String>
 
-//        get() = _response
-
-
-//    init {
-//       syncContactsWithLocalDb()
-//
-//    }
+    var mt:MutableLiveData<List<ContactTable>>
+    init{
+         var contactsFromLocalDb : LiveData<List<ContactTable>>? = contactLocalSyncRepository.contactsFomLocalDB
+         mt = MutableLiveData<List<ContactTable>>(contactsFromLocalDb?.value)
+//         mt = contactLocalSyncRepository.getContacts("")!!
+    }
 
 
+    fun getContactsFromDb(phoneNumber: String)= viewModelScope.launch {
+        if(!phoneNumber.trim().equals("")) {
+            val c = contactLocalSyncRepository.getContacts(phoneNumber)
+            mt.value = c
+        }
+
+//        kotlin.run {
+
+//        }
+
+    }
 
     fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
                 emit(Resource.loading(data=null))
         var res: Response<SerachRes>? = null
              try {
+
+//                    mt.value  = cntctsFromDb?.value
+//                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
+
+                 
                    res = searchNetworkRepository.search(phoneNumber)
 
                  Log.d(TAG, "search: $res")

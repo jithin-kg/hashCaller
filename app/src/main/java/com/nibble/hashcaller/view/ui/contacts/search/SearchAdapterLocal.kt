@@ -8,19 +8,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.network.search.model.SerachRes
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import com.nibble.hashcaller.stubs.Contact
 import kotlinx.android.synthetic.main.search_result_layout.view.*
 
-/**
- * Created by Jithin KG on 31,July,2020
- */
-class SearchAdapter (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
+class SearchAdapterLocal (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private  var contacts: List<Cntct>? = null
+    private  var contacts: List<ContactTable>? = null
     private val TAG  = "__SearchAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,9 +26,9 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
 //        Log.d(TAG, "getItemCount: ${contacts?.size}")
         return contacts?.size?:0
     }
-    fun setContactList(newContactList: SerachRes) {
+    fun setContactList(it: List<ContactTable>) {
         contacts = emptyList()
-        contacts = newContactList.cntcts
+        contacts = it
 
 //        Log.d(TAG, "setContactList: ${newContactList.size}")
 //        Log.d(TAG, "setContactList: size of contacts ${contacts?.size}")
@@ -54,17 +47,17 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
 
         }
     }
-    fun setSearchResult(newContactList: List<Contact>) {
-//        contacts = newContactList
-
-        notifyDataSetChanged()
-    }
+//    fun setSearchResult(newContactList: List<Contact>) {
+////        contacts = newContactList
+//
+//        notifyDataSetChanged()
+//    }
     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textViewSearchContactName
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: Cntct, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
-            name.text = contact.phoneNumber
+        fun bind(contact: ContactTable, context: Context, onContactItemClickListener :(id:Long)->Unit ) {
+            name.text = contact.number
             Log.d("__ViewHolder", "bind:")
 //            name.text = contact.name
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)

@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 
 import android.os.Build
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
@@ -20,7 +21,7 @@ class ContactsSyncHelper(
 ) {
     suspend fun syncContacts(
         contactsListfromContentProvider: ArrayList<ContactUploadDTO>?,
-        contactsListFromLocalDb: List<ContactTable>?
+        contactsListFromLocalDb: LiveData<List<ContactTable>>?
     ) {
 
         /**
@@ -29,37 +30,37 @@ class ContactsSyncHelper(
          * here the key is number and value is the object itself
          */
 
-        val mapContactLocalDb = contactsListFromLocalDb?.associateBy({it.number}, {it})
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
-            if (mapContactLocalDb != null) {
-                if(contactsListFromLocalDb.size?:0 < contactsListfromContentProvider?.size?:0){
-                    contactsListfromContentProvider?.removeIf{ contact-> mapContactLocalDb.containsKey(contact.phoneNumber)}
-
-                    if (contactsListfromContentProvider?.size == 0) Log.d(TAG, "nothing to sync: ")
-
-                    //insert the new contacts to database
-                    if (contactsListfromContentProvider != null) {
-
-                        for (item in contactsListfromContentProvider){
-                            var contact = ContactTable(null, item.phoneNumber, item.name)
-                            //insert new contacts
-                            contactLocalSyncRepository.insertContacts(contact)
-                            Log.d(TAG, "inserting ${contact}")
-                            //save the same contacts to server
-
-                            contactNetworkRepository?.uploadContacts(contactsListfromContentProvider)
-
-                        }
-
-                    }
-                }
-
-            }
-
-        }else{
-            //TODO for api level 23/ M
-        }
+//        val mapContactLocalDb = contactsListFromLocalDb?.associateBy({it.number}, {it})
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//
+//            if (mapContactLocalDb != null) {
+//                if(contactsListFromLocalDb.size?:0 < contactsListfromContentProvider?.size?:0){
+//                    contactsListfromContentProvider?.removeIf{ contact-> mapContactLocalDb.containsKey(contact.phoneNumber)}
+//
+//                    if (contactsListfromContentProvider?.size == 0) Log.d(TAG, "nothing to sync: ")
+//
+//                    //insert the new contacts to database
+//                    if (contactsListfromContentProvider != null) {
+//
+//                        for (item in contactsListfromContentProvider){
+//                            var contact = ContactTable(null, item.phoneNumber, item.name)
+//                            //insert new contacts
+//                            contactLocalSyncRepository.insertContacts(contact)
+//                            Log.d(TAG, "inserting ${contact}")
+//                            //save the same contacts to server
+//
+////                            contactNetworkRepository?.uploadContacts(contactsListfromContentProvider)
+//
+//                        }
+//
+//                    }
+//                }
+//
+//            }
+//
+//        }else{
+//            //TODO for api level 23/ M
+//        }
 
 
     }

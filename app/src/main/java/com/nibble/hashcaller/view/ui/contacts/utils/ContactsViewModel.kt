@@ -1,12 +1,12 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
-
 import kotlinx.coroutines.launch
 
 /**
@@ -25,13 +25,20 @@ class ContactsViewModel(
 
      fun syncContactsWithLocalDb() = viewModelScope.launch {
 
+         val vowels: List<String> = ArrayList()
 
-         val contactsListfromContentProvider: ArrayList<ContactUploadDTO>? = contactsRepository?.fetchContacts() as ArrayList<ContactUploadDTO>?
+         val contactsListfromContentProvider: List<ContactUploadDTO>? = contactsRepository?.fetchContacts() as ArrayList<ContactUploadDTO>?
+          var cts:MutableList<ContactTable>? = mutableListOf();
+         for(item in contactsListfromContentProvider!!){
+             if (cts != null) {
+                 cts.add(ContactTable(null, item?.phoneNumber, item?.name))
+             }
+           }
+         contactLocalSyncRepository.insertContacts(cts!!)
 
-
-         val contactsListFromLocalDb = contactLocalSyncRepository.getContactsFromLocalDB()
+//         val contactsListFromLocalDb = contactLocalSyncRepository.getContactsFromLocalDB()
          val contactHelper = ContactsSyncHelper(contactLocalSyncRepository, contactNetworkRepository)
-         contactHelper.syncContacts(contactsListfromContentProvider, contactsListFromLocalDb)
+//         contactHelper.syncContacts(contactsListfromContentProvider, contactsListFromLocalDb)
 
     }
 
@@ -51,23 +58,23 @@ class ContactsViewModel(
 //           contactLocalSyncRepository.insertContacts(contact)
 //        }
 
-        contentProviderContacts?.forEachIndexed { i, item->
-            run {
-                val contact = ContactTable(null, item.phoneNumber, item.name)
-
-                val response = contactLocalSyncRepository.insertContacts(contact)
-            }
-        }
+//        contentProviderContacts?.forEachIndexed { i, item->
+//            run {
+//                val contact = ContactTable(null, item.phoneNumber, item.name)
+//
+//                val response = contactLocalSyncRepository.insertContacts(contact)
+//            }
+//        }
        
     }
 
-    private suspend fun getContactsFromLocalDB(): List<ContactTable>? {
-
-        val job = contactLocalSyncRepository.getContactsFromLocalDB()
-
-       return job
-
-    }
+//    private suspend fun getContactsFromLocalDB(): List<ContactTable>? {
+//
+////        val job = contactLocalSyncRepository.getContactsFromLocalDB()
+////
+////       return job
+//
+//    }
 
 companion object{
     private const val TAG ="__ContactsViewModel"
