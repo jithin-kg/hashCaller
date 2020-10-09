@@ -1,13 +1,16 @@
-package com.nibble.hashcaller.view.ui.contacts.search.utils
+package com.nibble.hashcaller.view.ui.IncommingCall
 
 import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
+import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.search.SearchResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -16,42 +19,29 @@ import retrofit2.Response
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class SearchViewModel(
-    private val searchNetworkRepository: SearchNetworkRepository,
-    private  val contactLocalSyncRepository: ContactLocalSyncRepository
+class IncommingCallViewModel(
+    private val spamNetworkRepository: SpamNetworkRepository
 ): ViewModel() {
-    var searchRes = MutableLiveData<Response<SearchResponse>>()
-
-    var mt:MutableLiveData<List<ContactTable>>
-    init{
-         var contactsFromLocalDb : LiveData<List<ContactTable>>? = contactLocalSyncRepository.contactsFomLocalDB
-         mt = MutableLiveData<List<ContactTable>>(contactsFromLocalDb?.value)
-//         mt = contactLocalSyncRepository.getContacts("")!!
-    }
-
-
-    fun getContactsFromDb(phoneNumber: String)= viewModelScope.launch {
-        if(!phoneNumber.trim().equals("")) {
-            val c = contactLocalSyncRepository.getContacts(phoneNumber)
-            mt.value = c
-        }else{
-            mt.value = emptyList()
-        }
+//    var searchRes = MutableLiveData<Response<SearchResponse>>()
+//
+//    init{
+//
+//
+////         mt = contactLocalSyncRepository.getContacts("")!!
+//    }
 
 
 
-    }
-
-    fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
+    fun report(phoneNumber:String) = liveData(Dispatchers.IO) {
                 emit(Resource.loading(data=null))
-        var res: Response<SerachRes>? = null
+        var res: Response<NetWorkResponse>? = null
              try {
 
 //                    mt.value  = cntctsFromDb?.value
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
 
                  
-                   res = searchNetworkRepository.search(phoneNumber)
+                   res = spamNetworkRepository.report(ReportedUserDTo(phoneNumber, "sample"))
 
                  Log.d(TAG, "search: $res")
                  emit(Resource.success(data = res?.body()));

@@ -41,10 +41,10 @@ class ContactsNetworkRepository (private val context: Context){
 
             retrofitService = RetrofitClient.createaService(IContactsService::class.java)
 
-            val contactListObject =
-                ContactsListHelper(contacts)
-            val list:MutableList<String> = ArrayList<String>()
-            list.add("hi")
+//            val contactListObject =
+//                ContactsListHelper(contacts)
+//            val list:MutableList<String> = ArrayList<String>()
+//            list.add("hi")
         var token = ""
         try {
             decryptor = Decryptor()

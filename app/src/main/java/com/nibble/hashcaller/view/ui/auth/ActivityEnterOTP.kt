@@ -38,6 +38,7 @@ class ActivityEnterOTP : AppCompatActivity() {
         sendVerificationCodeToUser()
 
 
+
     }
     private fun sendVerificationCodeToUser() {
         if (!otpSent) {

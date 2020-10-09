@@ -30,11 +30,13 @@ class UserUploadHelper(
                             Log.d(TAG, "checkIfNewUser: no such user")
                             //This is a new user
                             val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
+                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             applicationContext.startActivity(i)
 
                         }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
                             Log.d(TAG, "upload: user already exist")
                             val i  = Intent(applicationContext, MainActivity::class.java)
+                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             applicationContext.startActivity(i)
                         }
                         Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")

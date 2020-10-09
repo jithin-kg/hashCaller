@@ -2,6 +2,7 @@ package com.nibble.hashcaller.network.search.model
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Cntct(
     @SerializedName("carrier")
@@ -12,4 +13,4 @@ data class Cntct(
     val location: String,
     @SerializedName("phoneNumber")
     val phoneNumber: String
-)
+):Serializable

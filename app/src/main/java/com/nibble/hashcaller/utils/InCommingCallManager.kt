@@ -3,12 +3,22 @@ package com.nibble.hashcaller.utils
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.repository.BlockListPatternRepository
+import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
+import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
+import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import kotlinx.android.synthetic.main.activity_search_phone.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.Observer
 import java.util.regex.Pattern
 
 /**
@@ -24,7 +34,12 @@ class InCommingCallManager(
     val context = context
     private val phoneNumber = preparedPhoenNumber(phoneNumber)
 
+    val serchNetworkRepo = SearchNetworkRepository(context)
+    //        var searchResult = serchNetworkRepo.search(phoneNumber)
+    val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
+    val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
 
+    val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -67,5 +82,36 @@ class InCommingCallManager(
             .replace("(", "")
             .replace(")", "")
             .replace("-","").trim()
+    }
+
+    fun getCallerInfo()  {
+
+//        viewModel.search(phoneNumber)
+
+//        viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {
+//            it.let {
+//                    resource ->
+//                when(resource.status){
+//                    Status.SUCCESS->{
+//                        Log.d(TAG, " mhan: $it")
+//                        resource.data?.let {
+//                                searchResult->
+//                            Log.d(TAG, "getCallerInfo: $searchResult")
+//                        }
+//                    }
+//                    Status.LOADING->{
+//                        //show loading
+//
+//                        Log.d(TAG, "onQueryTextChange: Loading....")
+//                    }
+//                    else ->{
+//                        Log.d(TAG, "onQueryTextChange: Error ${resource}")
+//
+//                        Toast.makeText(context.applicationContext, it.message, Toast.LENGTH_LONG).show()
+//                    }
+//                }
+//            }
+//
+//        })
     }
 }

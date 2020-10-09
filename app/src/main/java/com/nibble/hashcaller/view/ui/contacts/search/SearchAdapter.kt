@@ -36,6 +36,7 @@ class SearchAdapter (private val context: Context, private val onContactItemClic
     fun setContactList(newContactList: SerachRes) {
         contacts = emptyList()
         contacts = newContactList.cntcts
+        Log.d(TAG, "setContactList: $contacts")
 
 //        Log.d(TAG, "setContactList: ${newContactList.size}")
 //        Log.d(TAG, "setContactList: size of contacts ${contacts?.size}")

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -11,9 +12,15 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.repository.BlockListPatternRepository
+import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
+import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+
 
 /**
  * Created by Jithin KG on 20,July,2020
@@ -30,10 +37,9 @@ class IncomingCallReceiver : BroadcastReceiver(){
     override fun onReceive(context: Context, intent: Intent) {
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
 
-
-
-
-
+//            val i = Intent(context, ActivityIncommingCallView::class.java)
+//                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//            context.startActivity(i)
             Log.e(
                 LOG_TAG,
                 String.format(
@@ -102,6 +108,59 @@ class IncomingCallReceiver : BroadcastReceiver(){
             blockListPatternRepository = BlockListPatternRepository(blockedLIstDao)
             val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
             inComingCallManager.getBLockedLists()
+
+
+
+//            inComingCallManager.getCallerInfo()
+            /**
+             * geting caller info from server
+             */
+            val serchNetworkRepo = SearchNetworkRepository(context)
+            val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
+            val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
+            val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
+
+            viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {
+                it.let {
+                        resource ->
+                    when(resource.status){
+                        Status.SUCCESS->{
+                            Log.d(TAG, " mhan: $it")
+                            resource.data?.let {
+                                    searchResult->
+                                Log.d(TAG, "getCallerInfo: $searchResult")
+                                Log.d(TAG, "getCallerInfo: ${searchResult.cntcts[0]}")
+                                //start Caller Info activity
+                                val i = Intent(context, ActivityIncommingCallView::class.java)
+                                var obj = searchResult.cntcts[0]
+                                i.putExtra("SerachRes" ,obj)
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                context.startActivity(i)
+
+                            }
+                        }
+                        Status.LOADING->{
+                            //show loading
+
+                            Log.d(TAG, "onQueryTextChange: Loading....")
+                        }
+                        else ->{
+                            Log.d(TAG, "onQueryTextChange: Error ${resource}")
+
+                            Toast.makeText(context.applicationContext, it.message, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+
+            })
+
+
+
+
+
+
+
+
 //            genratehash(phoneNumber, context)
             /**
              * From here we manage incomming call by IncommingCallManager class

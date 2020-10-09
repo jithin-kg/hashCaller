@@ -23,6 +23,10 @@ interface IContactIformationDAO {
     @Query("SELECT COUNT(number) FROM contacts_information")
      fun getCount(): LiveData<Int>
 //WHERE number LIKE '%'|| :phonNumber || '%'
+    /**
+     * Do not return Live data while searching, because live data observe to change,
+     * here change in data in database only occur when new data is inserted
+     */
     @Query("SELECT * FROM contacts_information WHERE number LIKE '%'|| :phonNumber || '%'")
      suspend fun search(phonNumber: String):List<ContactTable>
 

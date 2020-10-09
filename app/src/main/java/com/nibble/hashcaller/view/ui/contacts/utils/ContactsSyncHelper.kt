@@ -49,7 +49,7 @@ class ContactsSyncHelper(
 //                            Log.d(TAG, "inserting ${contact}")
 //                            //save the same contacts to server
 //
-////                            contactNetworkRepository?.uploadContacts(contactsListfromContentProvider)
+//                            contactNetworkRepository?.uploadContacts(contactsListfromContentProvider)
 //
 //                        }
 //
