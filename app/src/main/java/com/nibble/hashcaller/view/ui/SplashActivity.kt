@@ -1,32 +1,40 @@
 package com.nibble.hashcaller.view.ui
 
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
-
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
-
 import java.io.IOException
 import java.security.*
 import java.security.cert.CertificateException
-import javax.crypto.*
+import javax.crypto.BadPaddingException
+import javax.crypto.Cipher
+import javax.crypto.IllegalBlockSizeException
+import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.SecretKeySpec
 
 
@@ -57,16 +65,16 @@ companion object{
 }
     override fun onPause() {
         super.onPause()
-        rcfirebaseAuth?.removeAuthStateListener(rcAuthStateListener)
+        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
+            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-//        getSupportActionBar().hide();
-
-//        setContentView(R.layout.dummy_splash);
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
 
@@ -300,21 +308,38 @@ companion object{
 
 
     private fun checkPermission(): Boolean {
-//        val permissionsUtil = PermissionsUtil(this)
-//        return if (!permissionsUtil.checkPermissions()) {
-//            //            startActivity(new Intent(this, ActivityRequestPermission.class));
-//            //            overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
-//            false
-//        } else true
+
+        var permissionGiven = false
+        //persmission
+        Dexter.withContext(this)
+            .withPermissions(
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.ANSWER_PHONE_CALLS,
+                Manifest.permission.READ_CALL_LOG
+            ).withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
 //
-////        //TODO check if contacts are uploaded
-////        //check internet connection
-////        boolean contactsUploaded = false;
-////        if(!contactsUploaded){
-////            ContactsUploder contactsUploder = new ContactsUploder(context);
-////            contactsUploder.uploadContacts();
-////        }
-        return true
+                    report.let {
+                        if(report?.areAllPermissionsGranted()!!){
+                            permissionGiven = true
+//                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
+
+                        }
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest?>?,
+                    token: PermissionToken?
+                ) { /* ... */
+                    token?.continuePermissionRequest()
+//                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
+                }
+            }).check()
+        return permissionGiven
 
 
     }
@@ -367,7 +392,8 @@ companion object{
         super.onPostResume()
 
         if (checkPermission()) {
-            rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
+            if(::rcAuthStateListener.isInitialized)
+                 rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
         }
     }
 }
