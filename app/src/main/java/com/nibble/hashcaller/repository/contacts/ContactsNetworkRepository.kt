@@ -4,11 +4,12 @@ package com.nibble.hashcaller.repository.contacts
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import com.nibble.hashcaller.network.contact.ContactsListHelper
 import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EncryptorObject
+import retrofit2.Response
 
 import java.io.IOException
 import java.security.*
@@ -35,7 +36,7 @@ class ContactsNetworkRepository (private val context: Context){
 
     @SuppressLint("LongLogTag")
     suspend fun
-            uploadContacts(contacts:MutableList<ContactUploadDTO>) {
+            uploadContacts(contacts:MutableList<ContactUploadDTO>): Response<SerachRes>? {
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 
@@ -83,26 +84,27 @@ class ContactsNetworkRepository (private val context: Context){
 
 //        var tokenManager = TokenManager()
 //        Log.d(TAG, "uploadContacts: ${decryptFromStringToke.toString()}")
-        val uploadContacts = retrofitService?.uploadContacts(contacts, token)
+
+//        val response = retrofitService?.uploadContacts(contacts, token)
 
 
-        val isSuccess = uploadContacts?.isSuccessful ?: false
-        if(isSuccess){
-            val result =uploadContacts?.body()?.message
-//            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
-//            Log.d(TAG, "uploadContacts: $topic")
-            Log.d(TAG, "uploadContacts: ${uploadContacts?.code()}")
-            Log.d(TAG, "uploadContacts: $result")
-            val r = uploadContacts?.message()
-            Log.d(TAG, "uploadContacts: $r")
+//        val isSuccess = response?.isSuccessful ?: false
+//        if(isSuccess){
+//            val result =response?.body()?.message
+////            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
+////            Log.d(TAG, "uploadContacts: $topic")
+////            Log.d(TAG, "uploadContacts: ${response?.code()}")
+////            Log.d(TAG, "uploadContacts: $result")
+//            val r = response?.message()
+////            Log.d(TAG, "uploadContacts: $r")
+//            Log.d(TAG, "phone number: ${response?.body()!!.cntcts[0]?.phoneNumber}")
+//
+//
+//        }else{
+//            Log.d(TAG, "uploadContacts:failure ")
+//        }
 
-
-
-        }else{
-            Log.d(TAG, "uploadContacts:failure ")
-        }
-
-
+        return retrofitService?.uploadContacts(contacts, token)
     }
     companion object{
         private const val TAG = "__ContactsNetworkRepository"

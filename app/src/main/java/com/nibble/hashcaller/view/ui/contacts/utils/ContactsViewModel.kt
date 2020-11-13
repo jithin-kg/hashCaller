@@ -19,7 +19,7 @@ class ContactsViewModel(
     private val contactNetworkRepository: ContactsNetworkRepository?
 ): ViewModel() {
     init {
-       syncContactsWithLocalDb()
+//       syncContactsWithLocalDb()
 
     }
 

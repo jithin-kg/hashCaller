@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.bumptech.glide.load.HttpException
+import com.nibble.hashcaller.local.db.contactInformation.ContactTable
+import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 
@@ -17,7 +19,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     val contacts = mutableListOf<ContactUploadDTO>()
     override suspend fun doWork(): Result {
         try {
-            Log.d(TAG, "doWork: ")
+
 
                 uploadContactsToServer()
 
@@ -32,9 +34,26 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         val contactRepository = ContactRepository(context)
         contacts.addAll(contactRepository.fetchContacts())
         val contactsNetworkRepository = ContactsNetworkRepository(context)
-        contactsNetworkRepository.uploadContacts(contacts)
+        val result = contactsNetworkRepository.uploadContacts(contacts)
+        Log.d(TAG, "result:$result")
+        Log.d(TAG, "body:${result?.body()}")
+        val contacts = result?.body()?.cntcts
+        //save the contacts in the local db
+        saveContactsToLocalDB(contacts)
+
+
 
     }
+
+    private fun saveContactsToLocalDB(contacts: List<Cntct>?) {
+
+        var cts:MutableList<ContactTable>? = mutableListOf();
+
+        for(item in this.contacts){
+            cts?.add(ContactTable(null, item?.phoneNumber, item?.name))
+        }
+    }
+
     companion object{
         private const val TAG = "__ContactsUploadWorker"
     }

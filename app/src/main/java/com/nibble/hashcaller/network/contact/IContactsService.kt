@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.network.contact
 
+import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import retrofit2.Response
@@ -33,7 +34,7 @@ interface IContactsService  {
 suspend fun uploadContacts(
     @Body contacts: List<ContactUploadDTO>,
     @Header("Authorization") token:String
-):Response<NetWorkResponse>
+):Response<SerachRes>
 
 //    @GET("getContacts")
 //    fun getContacts(token: String?): Call<JsonObject?>?
