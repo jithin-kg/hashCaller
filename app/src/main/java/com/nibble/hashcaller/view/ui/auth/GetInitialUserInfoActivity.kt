@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
@@ -51,14 +52,50 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     }
 
     @SuppressLint("LongLogTag")
-    private fun sendUserInfo() {
+private fun sendUserInfo() {
+
+    val firstName = editTextFName.text.toString().trim()
+    val lastName = editTextLName.text.toString().trim()
+    val email = editTextEmail.text.toString().trim()
+
+    editTextFName.error = null
+    editTextEmail.error = null
+    editTextLName.error = null
+    val isValid = validateInput(firstName, lastName, email);
+    if(isValid){
+        Log.d(TAG, "isvalid: ")
         var userInfo = UserInfoDTO()
-        userInfo.firstName = editTextFName.text.toString()
-        userInfo.lastName = editTextLName.text.toString()
-        userInfo.email = editTextEmail.text.toString()
+        userInfo.firstName = firstName;
+        userInfo.lastName =  lastName;
+        userInfo.email = email;
+
         val helper = UserUploadHelper(userInfoViewModel, this, applicationContext)
         helper.upload(userInfo)
-
     }
+
+
+}
+
+    @SuppressLint("LongLogTag")
+    private fun validateInput(firstName: String, lastName: String, email: String): Boolean {
+        var isValid = true;
+        if( email.isEmpty()){
+            editTextEmail.error = "Enter a valid email"
+            isValid = false;
+        }
+        if( firstName.isEmpty() || firstName.length < 3){
+            editTextFName.error = "First name should contain at least 3 characters"
+            isValid = false;
+        }
+        if( lastName.isEmpty() || lastName.length < 3){
+            editTextLName.error = "Last name should contain at least 3 characters"
+            isValid = false;
+        }
+        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            editTextEmail.error = "Enter a valid email"
+            isValid = false;
+        }
+        return isValid
+}
 
 }

@@ -5,12 +5,18 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class Cntct(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("phoneNumber")
+    val phoneNumber: String,
+
+    @SerializedName("spammerStatus")
+    val spammerStatus : SpammerStatus,
     @SerializedName("carrier")
     val carrier: String,
-    @SerializedName("coutry")
-    val coutry: String,
     @SerializedName("location")
     val location: String,
-    @SerializedName("phoneNumber")
-    val phoneNumber: String
-):Serializable
+    @SerializedName("country")
+    val country: String
+
+):Serializable // it it important to extent serializable

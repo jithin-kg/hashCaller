@@ -31,6 +31,7 @@ class UserUploadHelper(
                             //This is a new user
                             val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
                             i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
                             applicationContext.startActivity(i)
 
                         }else if(resMessage.equals(EUserResponse.EXISTING_USER)){

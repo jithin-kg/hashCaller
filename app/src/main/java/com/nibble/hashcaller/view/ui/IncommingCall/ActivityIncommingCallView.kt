@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.IncommingCall
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,9 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
-import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import kotlinx.android.synthetic.main.activity_incomming_call_view.*
+import kotlinx.android.synthetic.main.activity_phone_auth.*
 
 class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("LongLogTag")
@@ -31,7 +31,19 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
         setContentView(R.layout.activity_incomming_call_view)
         btnReportCaller.setOnClickListener(this)
-        callerName.text = callerInfo.phoneNumber
+        txtVPhoneNum.text = callerInfo.phoneNumber
+        txtVCarrier.text =  callerInfo.carrier
+        txtVCity.text =  callerInfo.location
+        txtVCountry.text =  callerInfo.country
+        if(callerInfo.spammerStatus !=null)
+        if(callerInfo.spammerStatus?.spamCount > 10){
+            Log.d(TAG, "onCreate: spammer calling");
+            layoutIncommingCall.setBackgroundColor(Color.parseColor("#E80000"))
+        }else{
+            Log.d(TAG, "onCreate: ${callerInfo.spammerStatus.spamCount}")
+            layoutIncommingCall.setBackgroundColor(Color.parseColor("#0CBDEA"))
+
+        }
 
     }
 

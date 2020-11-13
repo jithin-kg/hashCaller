@@ -9,7 +9,7 @@ import retrofit2.http.POST
 
 interface IuserService {
     companion object{
-        const val BASE_URL: String = "http://192.168.43.110:3000/"
+        public const val BASE_URL: String = "http://192.168.43.84:3000/"
     }
 
     @POST("user/signup")

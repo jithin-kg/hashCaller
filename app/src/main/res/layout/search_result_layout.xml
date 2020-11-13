@@ -9,10 +9,21 @@
     android:layout_marginTop="16dp"
     android:focusable="true">
 
+    <TextView
+        android:id="@+id/textViewSearchCrclr"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="16dp"
+        android:textSize="24sp"
+        android:gravity="center_vertical|center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textViewSearchContactName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:ellipsize="end"
@@ -20,12 +31,43 @@
         android:padding="2dp"
         android:text="ContactName"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSearchLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.209"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
+        app:layout_constraintStart_toEndOf="@+id/textViewSearchCrclr"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewSearchLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="2dp"
+        android:text="Location"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textViewSearchCountry"
+        app:layout_constraintStart_toEndOf="@+id/textViewSearchCrclr"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSearchContactName" />
+
+    <TextView
+        android:id="@+id/textViewSearchCountry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="2dp"
+        android:text="Location"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewSearchLocation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewSearchLocation"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSearchContactName" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

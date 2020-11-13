@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.network.contact
 
+import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import retrofit2.Response
 import retrofit2.http.Body
@@ -24,7 +25,8 @@ interface IContactsService  {
 //    ):Response<NetWorkResponse>
 
     companion object{
-        const val BASE_URL: String = "http://192.168.43.110:3000/"
+//        const val BASE_URL: String = "http://192.168.43.84:3000/"
+        const val BASE_URL: String = IuserService.BASE_URL;
     }
 
 @POST("contacts/uploadcontacts")
