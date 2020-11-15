@@ -31,7 +31,7 @@ class ContactsViewModel(
           var cts:MutableList<ContactTable>? = mutableListOf();
          for(item in contactsListfromContentProvider!!){
              if (cts != null) {
-                 cts.add(ContactTable(null, item?.phoneNumber, item?.name))
+//                 cts.add(ContactTable(null, item?.phoneNumber, item?.name))
              }
            }
          contactLocalSyncRepository.insertContacts(cts!!)

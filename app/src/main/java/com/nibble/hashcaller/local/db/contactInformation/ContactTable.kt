@@ -12,6 +12,12 @@ import androidx.room.PrimaryKey
 data class ContactTable(
     @PrimaryKey(autoGenerate = true) val id: Int?,
 
-     @ColumnInfo(name="number") val number:String,
-    @ColumnInfo(name = "name") val name:String   ) {
+    @ColumnInfo(name="number") val number:String,
+    @ColumnInfo(name = "name") val name:String,
+    @ColumnInfo(name = "carrier") val carrier:String,
+    @ColumnInfo(name = "location") val location:String,
+    @ColumnInfo(name = "country") val country:String,
+    @ColumnInfo(name = "spamCount") val spamCount: Int
+
+    ) {
 }

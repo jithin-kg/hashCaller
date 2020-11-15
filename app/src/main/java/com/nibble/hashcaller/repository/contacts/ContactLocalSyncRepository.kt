@@ -20,6 +20,7 @@ class ContactLocalSyncRepository(
 
     suspend fun getContacts(phonNumber:String): List<ContactTable>? {
         val res = contactLisDAO?.search(phonNumber)
+//        val res = contactLisDAO?.search()
 //        contactsFomLocalDB = res
        return  res
     }

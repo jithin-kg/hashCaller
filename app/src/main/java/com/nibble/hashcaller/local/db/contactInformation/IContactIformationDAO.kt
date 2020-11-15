@@ -27,7 +27,7 @@ interface IContactIformationDAO {
      * Do not return Live data while searching, because live data observe to change,
      * here change in data in database only occur when new data is inserted
      */
-    @Query("SELECT * FROM contacts_information WHERE number LIKE '%'|| :phonNumber || '%'")
+    @Query("SELECT * FROM contacts_information WHERE number LIKE '%'|| :phonNumber || '%' LIMIT 3")
      suspend fun search(phonNumber: String):List<ContactTable>
 
 

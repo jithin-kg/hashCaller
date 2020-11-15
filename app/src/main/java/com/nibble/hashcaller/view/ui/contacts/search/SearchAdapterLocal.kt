@@ -5,16 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import kotlinx.android.synthetic.main.search_result_layout.view.*
+import java.util.*
 
 class SearchAdapterLocal (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private  var contacts: List<ContactTable>? = null
-    private val TAG  = "__SearchAdapter"
+    companion object{
+        private val TAG  = "__SearchAdapter"
+
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.search_result_layout, parent, false)
@@ -53,11 +58,22 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
 //        notifyDataSetChanged()
 //    }
     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val name = view.textViewSearchContactName
+
+            private val name = view.textViewSearchContactName
+            private val circle = view.textViewSearchCrclr;
+            private val location = view.textViewSearchLocation
+            private val country = view.textViewSearchCountry
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(contact: ContactTable, context: Context, onContactItemClickListener :(id:Long)->Unit ) {
-            name.text = contact.number
+            name.text = contact.name
+            location.text = contact.location
+            country.text = contact.country
+            Log.d("__ViewHolder", "contact from table $contact ")
+
+            generateCircleView(context)
+            setNameFirstChar(contact)
+
             Log.d("__ViewHolder", "bind:")
 //            name.text = contact.name
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
@@ -65,6 +81,42 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
                 onContactItemClickListener(1L)
             }
         }
+    private fun setNameFirstChar(contact: ContactTable) {
+        val name: String = contact.name
+        val firstLetter = name[0]
+        val firstLetterString = firstLetter.toString().toUpperCase()
+        circle.text = firstLetterString
+    }
+    private fun generateCircleView(context: Context) {
+        val rand = Random()
+        when (rand.nextInt(5 - 1) + 1) {
+            1 -> {
+                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
+                circle.setTextColor(
+                    ContextCompat.getColor(context, R.color.colorPrimary)
+                )
+            }
+            2 -> {
+                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
+                circle.setTextColor(
+                    ContextCompat.getColor(context, R.color.colorlightBlueviking)
+                )
+            }
+            3 -> {
+                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
+                circle.setTextColor(
+                    ContextCompat.getColor(context, R.color.colorbrightTurquoiseLightBlue
+                    )
+                )
+            }
+            else -> {
+                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
+                circle.setTextColor(
+                    ContextCompat.getColor(context, R.color.colorPrimaryDark)
+                )
+            }
+        }
+    }
 
     }
 

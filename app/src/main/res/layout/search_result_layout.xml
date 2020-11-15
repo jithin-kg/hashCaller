@@ -60,7 +60,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:padding="2dp"
-        android:text="Location"
+        android:text="Country"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBaseline_toBaselineOf="@+id/textViewSearchLocation"
         app:layout_constraintBottom_toBottomOf="parent"

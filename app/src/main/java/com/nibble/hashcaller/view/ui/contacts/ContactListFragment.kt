@@ -110,7 +110,7 @@ class ContactListFragment  : Fragment()  {
                         30
                     )
                 addItemDecoration(topSpacingDecorator)
-                contactsRecyclerAdapter = ContactAdapter(context) { id:Long->onContactItemClicked(id)}
+                contactsRecyclerAdapter = ContactAdapter(context) { id:String->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
 
 //                setContacts()
@@ -120,7 +120,7 @@ class ContactListFragment  : Fragment()  {
 
 
         }
-    private fun onContactItemClicked(id:Long){
+    private fun onContactItemClicked(id:String){
         Log.d(TAG, "onContactItemClicked: $id")
         val intent = Intent(context, IndividualCotactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, id)

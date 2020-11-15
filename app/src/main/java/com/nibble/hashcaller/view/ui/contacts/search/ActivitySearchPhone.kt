@@ -62,7 +62,9 @@ class ActivitySearchPhone : AppCompatActivity() {
         searchViewModel.mt.observe(owner, Observer { 
             it.let {
                 if(it!=null){
+
                     Log.d(TAG, "onCreate: ${it}")
+                    Log.d(TAG, "get contacts from local db  ")
                     setAdapterLocal(it)
 //                    Log.d(TAG, "onCreate: ${it?.get(1)}")
                 }

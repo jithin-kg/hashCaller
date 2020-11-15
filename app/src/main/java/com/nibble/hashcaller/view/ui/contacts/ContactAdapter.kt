@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.contacts
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +15,13 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class ContactAdapter(private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
+class ContactAdapter(private val context: Context, private val onContactItemClickListener: (id:String)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var contacts = emptyList<Contact>()
-
+    companion object{
+        private const val TAG = "__ContactAdapter";
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,17 +62,19 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          private val circle = view.textViewcontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: Contact, context: Context,onContactItemClickListener :(id:Long)->Unit ) {
+        fun bind(contact: Contact, context: Context,onContactItemClickListener :(id:String)->Unit ) {
             name.text = contact.name
             //        Log.i(TAG, String.valueOf(no));
                 setNameFirstChar(contact)
-
+            val pNo = contact.phoneNumber
+            Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
            generateCircleView(context);
 
 
             view.setOnClickListener{
-                onContactItemClickListener(contact.id)
+
+                onContactItemClickListener(pNo)
             }
         }
 
