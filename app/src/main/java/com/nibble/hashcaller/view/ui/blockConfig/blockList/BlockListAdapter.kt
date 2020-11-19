@@ -18,7 +18,7 @@ class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
     private val TAG: String = "__BlogRecyclerAdapter"
 
-    private var items: List<BlockedListPattern> = ArrayList()
+    private var items: ArrayList<BlockedListPattern> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return BlockListViewHolder(
@@ -41,9 +41,20 @@ class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     fun submitList(blogList: List<BlockedListPattern>){
-        items = blogList
+        items = blogList as ArrayList<BlockedListPattern>
         Log.d(TAG, "submitList: " + blogList.size)
         notifyDataSetChanged()
+    }
+    fun getItemAtPosition(position: Int): BlockedListPattern {
+        val item = items[position]
+//        val items2 = ArrayList<Int>()
+        Log.d(TAG, "position $position")
+        Log.d(TAG, "size ${items.size}");
+        items.removeAt(position)
+
+
+        notifyDataSetChanged()
+        return item;
     }
 
     class BlockListViewHolder constructor(

@@ -30,9 +30,13 @@ class IndividualcontactViewModel(private  val repository: IndividualContactRepos
         if(!phoneNumber.trim().equals("")) {
             val c = repository.getIndividualContact(phoneNumber)
             Log.d(TAG, "size is $c ")
-            mt.value = c[0]
+            if(c!=null && c.size>=1){
+                mt.value = c[0]
+            }
+
         }else{
-            mt.value = null
+            mt.value = ContactTable(0, "", "","", "",
+                "",0)
         }
 
 

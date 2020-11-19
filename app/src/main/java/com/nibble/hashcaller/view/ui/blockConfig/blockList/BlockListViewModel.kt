@@ -30,6 +30,10 @@ class BlockListViewModel(application: Application) : AndroidViewModel(applicatio
         blockListPatternRepository.insert(blockedListPattern)
 
     }
+    fun delete(blockedListPattern: String) = viewModelScope.launch(Dispatchers.IO){
+        blockListPatternRepository.delete(blockedListPattern)
+
+    }
 //    fun getVal(){
 //            CoroutineScope(IO).launch {
 //                val result = async { blockListPatternRepository.getListOfdata() }.await()

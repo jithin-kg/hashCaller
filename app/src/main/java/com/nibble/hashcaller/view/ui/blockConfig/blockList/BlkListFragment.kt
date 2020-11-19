@@ -1,16 +1,21 @@
 package com.nibble.hashcaller.view.ui.blockConfig.blockList
 
+import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SimpleAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 
 
@@ -27,7 +32,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
     private var param2: String? = null
     private lateinit var blockListView:View
     private lateinit var adapter: BlockListAdapter
-
+    private lateinit var swipeHandler:SwipeToDeleteCallback
     private lateinit var blockListViewModel: BlockListViewModel
 
 
@@ -37,12 +42,14 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
         rcrViewPtrnList?.apply {
             layoutManager = LinearLayoutManager(activity)
+            ItemTouchHelper(swipeHandler).attachToRecyclerView(rcrViewPtrnList);
             val topSpacingDecorator =
                 TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)
             blockListAdapter =
                 BlockListAdapter()
             adapter = blockListAdapter
+
         }
     }
 
@@ -50,10 +57,14 @@ class BlkListFragment : Fragment(),View.OnClickListener {
         super.onCreate(savedInstanceState)
 //        adapter = BlockListAdapter()
 
-
-
-
-
+        swipeHandler = object : SwipeToDeleteCallback(this.context!!) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter = rcrViewPtrnList.adapter as SimpleAdapter
+                deletePattern(viewHolder.adapterPosition)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(rcrViewPtrnList)
 
     }
     private fun addDataSet(){
@@ -125,6 +136,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
     }
 
+
     override fun onClick(v: View?) {
         Log.d("Blk", "onClick: ")
         when(v?.id){
@@ -143,6 +155,18 @@ class BlkListFragment : Fragment(),View.OnClickListener {
                 Log.d("blk", "onClick: $allblockedList" )
             }
         }
+    }
+
+    /**
+     * ItemTouchHelper.Simple call back is used to get swipe in reacycler view
+     */
+
+
+
+    private fun deletePattern(pos: Int) {
+        val item = blockListAdapter.getItemAtPosition(pos);
+        blockListViewModel.delete(item.numberPattern)
+        //TODO notify dataset changed in adapter and remove item from the list in adapter
     }
 
     companion object{

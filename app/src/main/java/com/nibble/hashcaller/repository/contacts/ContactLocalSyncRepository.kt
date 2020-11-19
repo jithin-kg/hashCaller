@@ -29,6 +29,7 @@ class ContactLocalSyncRepository(
     suspend fun insertContacts(preparedContacts: List<ContactTable>) {
         Log.d(TAG, "insertContacts: ")
         val insert = contactLisDAO?.insert(preparedContacts)
+        Log.d(TAG, "insertContacts:$insert ")
 
     }
 

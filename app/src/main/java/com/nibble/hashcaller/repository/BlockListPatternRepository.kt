@@ -20,6 +20,11 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao) {
         Log.d(TAG, "insert: $insert")
     }
     @SuppressLint("LongLogTag")
+    suspend fun delete(blockedListPattern: String){
+        val insert = blockedLIstDao.delete(blockedListPattern)
+        Log.d(TAG, "insert: $insert")
+    }
+    @SuppressLint("LongLogTag")
     suspend fun getListOfdata():List<BlockedListPattern>{
         return blockedLIstDao.getAllBLockListPatternList()
 
