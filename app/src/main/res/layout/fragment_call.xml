@@ -4,6 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ContactFragment">
+    <include
+        android:id="@+id/bottom_sheet"
+        layout="@layout/sheet_dial_pad"
+        />
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_height="100dp"
@@ -39,7 +43,7 @@
 
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+            android:id="@+id/tabLayoutCall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
@@ -52,15 +56,16 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabBtn"
+        android:id="@+id/fabBtnShowDialpad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="30dp"
+        android:onClick="actionShowDialPad"
         android:backgroundTint="@color/colorPrimary"
         />
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
+        android:id="@+id/viewPagerCall"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"

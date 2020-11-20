@@ -7,4 +7,5 @@
     <dimen name="dialpad_layoutheight_50dp">50dp</dimen>
     <dimen name="num_margin_top_0dp">0dp</dimen>
     <dimen name="dialpad_row_marginbottom_16dp">16dp</dimen>
+    <dimen name="dialpad_row_marginbottom_8dp">8dp</dimen>
 </resources>
