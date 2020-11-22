@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/dialerFragment"
+    context=".view.ui.call.DialerFragment">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolba"
+        android:layout_gravity="top"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+    <!-- TODO: Update blank fragment layout -->
+<!--    <include-->
+<!--        android:id="@+id/bottom_sheet"-->
+<!--        layout="@layout/sheet_dial_pad"-->
+<!--        />-->
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShoDialPad2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:clickable="true"
+        android:src="@drawable/ic_baseline_dialpad_24" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

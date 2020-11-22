@@ -9,10 +9,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
 import android.util.Log
-import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -31,14 +28,10 @@ import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
+import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
-import java.security.KeyStore
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
-import javax.crypto.spec.IvParameterSpec
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var toolbar: Toolbar
@@ -51,6 +44,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
+    private lateinit var dialerFragment: DialerFragment
 //    var layoutBottomSheet: ConstraintLayout
 
     //    MainActivityHelper firebaseHelper;
@@ -65,15 +59,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        firebaseHelper.intializeFirebaseLogin(this);
         hideKeyboard(this)
         setContentView(R.layout.activity_main)
+        fabBtnShowDialpad.setOnClickListener(this)
 //        this.applicationContext
 //                .contentResolver
 //                .registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 //                        true, ContactObserver(Handler()))
         if (savedInstanceState == null) {
-            callFragment = CallFragment()
+
 //            messagesFragment = MessagesFragment()
             blockConfigFragment = BlockConfigFragment()
             contactFragment = ContactsFragment()
+            callFragment = CallFragment()
+            dialerFragment =
+                DialerFragment()
             //            callFragment.setSelectedItemId(R.id.callFragment)
         }
         //        Intent intent = new Intent(MainActivity.this, CreateCustomFilter2.class);
@@ -113,6 +111,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     showBlockConfigFragment()
                     return@OnNavigationItemSelectedListener true
                 }
+//
             }
             false
         })
@@ -144,6 +143,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        WorkManager.getInstance().enqueue(request)
     }
 
+    private fun showDialerFragment() {
+        val ft = supportFragmentManager.beginTransaction()
+        if (dialerFragment.isAdded) { // if the fragment is already in container
+            ft.show(dialerFragment)
+            dialerFragment.showDialPad()
+        }
+        // Hide fragment contact
+        if (contactFragment.isAdded) {
+            ft.hide(contactFragment)
+        }
+//        // Hide fragment call
+        if (callFragment.isAdded) {
+            ft.hide(callFragment)
+        }
+        if(blockConfigFragment.isAdded){
+            ft.hide(blockConfigFragment)
+        }
+//        if (messagesFragment.isAdded) {
+//            ft.hide(messagesFragment)
+//        }
+        // Commit changes
+        ft.addToBackStack(null)
+        ft.commit()
+    }
+
     //    private void onSingnedOutcleanUp() {
     //        mUserName = "Anonymous";
     //
@@ -160,13 +184,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ft = supportFragmentManager.beginTransaction()
 //        ft.add(R.id.frame_fragmentholder, messagesFragment)
 //        ft.hide(messagesFragment)
-        ft.add(R.id.frame_fragmentholder, callFragment)
-                ft.hide(callFragment);
+
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
         ft.add(R.id.frame_fragmentholder, contactFragment)
-//        ft.hide(contactFragment)
+        ft.hide(contactFragment)
         ft.add(R.id.frame_fragmentholder, blockConfigFragment)
         ft.hide(blockConfigFragment)
+
+        ft.add(R.id.frame_fragmentholder, callFragment)
+//        ft.hide(callFragment);
+
+        ft.add(R.id.frame_fragmentholder, dialerFragment)
+        ft.hide(dialerFragment)
+
         ft.commit()
     }
 
@@ -182,6 +212,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        // Hide fragment call
         if (callFragment.isAdded) {
             ft.hide(callFragment)
+        }
+        if(dialerFragment.isAdded){
+            ft.hide(dialerFragment)
         }
 //        if (messagesFragment.isAdded) {
 //            ft.hide(messagesFragment)
@@ -203,6 +236,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        // Hide fragment C
         if (callFragment.isAdded) {
             ft.hide(callFragment)
+        }
+        if(dialerFragment.isAdded){
+            ft.hide(dialerFragment)
         }
 //        if (messagesFragment.isAdded) {
 //            ft.hide(messagesFragment)
@@ -229,20 +265,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //        }
     //        super.onBackPressed();
     //    }
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-//         super.onKeyDown(keyCode, event);
-        Log.d(TAG, "key down")
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Log.d(TAG, "onKeyDown: back button key down")
-            val fragments = supportFragmentManager.fragments
-            for (f in fragments) {
-//                if (f != null && f is CallFragment) f.onKeyDown(keyCode, event)
-            }
-            return true
-        }
-        Log.d(TAG, "returning")
-        return false
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+////         super.onKeyDown(keyCode, event);
+//        Log.d(TAG, "key down")
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            Log.d(TAG, "onKeyDown: back button key down")
+//            val fragments = supportFragmentManager.fragments
+//            for (f in fragments) {
+////                if (f != null && f is CallFragment) f.onKeyDown(keyCode, event)
+//            }
+//            return true
+//        }
+//        Log.d(TAG, "returning")
+//        return false
+//    }
 
     private fun showDialPad() {}
     private fun showCallFragment() {
@@ -257,6 +293,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         // Hide fragment C
         if (contactFragment.isAdded) {
             ft.hide(contactFragment)
+        }
+        if (dialerFragment.isAdded) {
+            ft.hide(dialerFragment)
         }
 //        if (messagesFragment.isAdded) {
 //            ft.hide(messagesFragment)
@@ -316,6 +355,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         Log.d(TAG, "onClick: ")
+        showDialerFragment()
+//        bottomNavigationView.visibility =View.GONE
 //        val i = Intent(baseContext, ActivityAddNewPattern::class.java)
         //        i.putExtra("PersonID", personID);
 //        startActivity(i)
