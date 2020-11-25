@@ -1,8 +1,12 @@
 package com.nibble.hashcaller.view.ui.SMS.util
 
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.provider.CallLog
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.BackgroundColorSpan
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import java.util.LinkedHashSet
@@ -63,7 +67,37 @@ class SMSLocalRepository(private val context: Context){
                     objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                     val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
                     objSMS.address = num
-                    objSMS.msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
+
+
+                    val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
+
+                    var spannableStringBuilder: SpannableStringBuilder?
+
+                    if(searchQuery!=null){
+                        val lowercaseMsg = msg.toLowerCase()
+                        val lowerSearchQuery = searchQuery.toLowerCase()
+                        if(lowercaseMsg.contains(lowerSearchQuery)){
+                            val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
+                            val endPos = startPos +lowerSearchQuery.length
+                            val yellow =
+                                BackgroundColorSpan(Color.YELLOW)
+                           spannableStringBuilder =
+                                SpannableStringBuilder(msg)
+
+                            spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                            objSMS.msg = spannableStringBuilder
+                        }
+                    }else{
+                        spannableStringBuilder =
+                            SpannableStringBuilder(msg)
+                        objSMS.msg = spannableStringBuilder
+                    }
+
+
+
+
+
+
                     objSMS.readState = cursor.getString(cursor.getColumnIndex("read"))
                     val dateMilli = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 

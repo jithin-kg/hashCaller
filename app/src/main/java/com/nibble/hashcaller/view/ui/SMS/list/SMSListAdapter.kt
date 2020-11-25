@@ -3,6 +3,8 @@ package com.nibble.hashcaller.view.ui.SMS.list
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -10,11 +12,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.SMS.list.SMSListAdapter.ViewHolder
 import com.nibble.hashcaller.view.ui.SMS.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import java.lang.IndexOutOfBoundsException
@@ -29,13 +33,13 @@ import java.util.*
  * Created by Jithin KG on 22,July,2020
  */
 class SMSListAdapter(private val context: Context, private val onContactItemClickListener: (id:String)->Unit) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    androidx.recyclerview.widget.ListAdapter<SMS, ViewHolder>(SMSItemDiffCallback()) {
 
     private var smsList = emptyList<SMS>()
 
     companion object{
         private const val TAG = "__SMSListAdapter";
-        private var searchQry:String? = null
+        public var searchQry:String? = null
     }
 
 
@@ -49,37 +53,37 @@ class SMSListAdapter(private val context: Context, private val onContactItemClic
 //        val contact = contacts[position]
 //        holder.bind(contact, context, onContactItemClickListener)
 //    }
-override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-    val contact = smsList[position]
+override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+//    val contact = smsList[position]
 //    holder.bind(contact, context, onContactItemClickListener)
     when(holder) {
 
         is ViewHolder -> {
-            holder.bind(smsList[position],context, onContactItemClickListener)
+            holder.bind(getItem(position),context, onContactItemClickListener)
         }
 
     }
-
 }
 
-    override fun getItemCount(): Int {
-//        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
-       return smsList.size
-    }
 
-    fun setSMSList(
-        newSMSList: List<SMS>,
-        query: String?
-    ) {
-//        smsList = newSMSList
-        searchQry = query
+//    override fun getItemCount(): Int {
+////        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
+//       return smsList.size
+//    }
 
-        val oldlist = smsList
-        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(SMSItemDiffCallback(oldlist, newSMSList) )
-       smsList = newSMSList
-        diffResult.dispatchUpdatesTo(this)
-//        notifyDataSetChanged()
-    }
+//    fun setSMSList(
+//        newSMSList: List<SMS>,
+//        query: String?
+//    ) {
+////        smsList = newSMSList
+//        searchQry = query
+//        Log.d(TAG, "setSMSList query: $query ")
+//        val oldlist = smsList
+////        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(SMSItemDiffCallback(oldlist, newSMSList) )
+//       smsList = newSMSList
+////        diffResult.dispatchUpdatesTo(this)
+////        notifyDataSetChanged()
+//    }
      class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVSMSContactName
          private val circle = view.textViewSMScontactCrclr;
@@ -91,11 +95,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             //        Log.i(TAG, String.valueOf(no));
 
-            highlightSearhcField(sms) // to highlight the search result
-            if(searchQry == null){
+//            highlightSearhcField(sms) // to highlight the search result
+//            if(searchQry == null){
                 name.text = sms.address
                 view.tvSMSMPeek.text = sms.msg
-            }
+
+//            }
 
 
             setTimeInView(sms.time)
@@ -117,32 +122,32 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
          private fun highlightSearhcField(sms: SMS) {
 
-             if(searchQry!=null){
-                 val lowercaseMsg = sms.msg!!.toLowerCase()
-                 val lowerSearchQuery = searchQry!!.toLowerCase()
-                 if(sms.address!!.contains(searchQry!!)){
-                     Log.d(TAG, "address pattern matches")
-                     val startPos = sms.address!!.indexOf(searchQry!!)
-                     val endPos = startPos + searchQry!!.length
-                     view.tvSMSMPeek.text = sms.msg
-                    setSpan(sms.address!!, startPos, endPos, view.textVSMSContactName)
-
-                 }else if(lowercaseMsg.contains(lowerSearchQuery)){
-
-                     Log.d(TAG, "lowercase: $lowercaseMsg")
-                     val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
-                     val endPos = startPos +lowerSearchQuery.length
-                     name.text = sms.address
-                     setSpan(sms.msg!!, startPos, endPos, view.tvSMSMPeek)
-
-                 }else{
-                     name.text = sms.address
-                     view.tvSMSMPeek.text = sms.msg
-                 }
-             }else{
-                 name.text = sms.address
-                 view.tvSMSMPeek.text = sms.msg
-             }
+//             if(searchQry!=null){
+////                 val lowercaseMsg = sms.msg!!.toLowerCase()
+//                 val lowerSearchQuery = searchQry!!.toLowerCase()
+//                 if(sms.address!!.contains(searchQry!!)){
+//                     Log.d(TAG, "address pattern matches")
+//                     val startPos = sms.address!!.indexOf(searchQry!!)
+//                     val endPos = startPos + searchQry!!.length
+//                     view.tvSMSMPeek.text = sms.msg
+//                    setSpan(sms.address!!, startPos, endPos, view.textVSMSContactName)
+//
+//                 }else if(lowercaseMsg.contains(lowerSearchQuery)){
+//
+//                     Log.d(TAG, "lowercase: $lowercaseMsg")
+//                     val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
+//                     val endPos = startPos +lowerSearchQuery.length
+//                     name.text = sms.address
+////                     setSpan(sms.msg!!, startPos, endPos, view.tvSMSMPeek)
+//
+//                 }else{
+//                     name.text = sms.address
+//                     view.tvSMSMPeek.text = sms.msg
+//                 }
+//             }else{
+//                 name.text = sms.address
+//                 view.tvSMSMPeek.text = sms.msg
+//             }
 
          }
 
@@ -158,7 +163,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
              }catch (e:IndexOutOfBoundsException){
                  Log.d(TAG, "setSpan: $e")
              }
-            
+
              v.text = spannableStringBuilder
          }
 
@@ -227,29 +232,19 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          }
 
      }
+    class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
+        override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
+            return oldItem.id == newItem.id
 
-
-    class SMSItemDiffCallback(
-        var oldSMSList:List<SMS>,
-        var newSMSList:List<SMS>
-    ): DiffUtil.Callback(){
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldSMSList[oldItemPosition].id == newSMSList[newItemPosition].id
         }
 
-        override fun getOldListSize(): Int {
-            return oldSMSList.size
-        }
-
-        override fun getNewListSize(): Int {
-            return newSMSList.size
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldSMSList[oldItemPosition].equals(newSMSList[newItemPosition])
+        override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
+            return oldItem.equals(newItem) && oldItem.msg == newItem.msg
         }
 
     }
+
+
 
 
 }

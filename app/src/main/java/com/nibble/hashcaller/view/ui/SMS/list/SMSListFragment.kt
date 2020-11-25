@@ -1,6 +1,10 @@
 package com.nibble.hashcaller.view.ui.SMS.list
 
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,9 +17,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.SMS.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.SMS.util.SMS
 import com.nibble.hashcaller.view.ui.SMS.util.SMSViewModel
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_messages_list.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class SMSListFragment : Fragment() {
@@ -48,7 +55,10 @@ class SMSListFragment : Fragment() {
 
         smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
             sms.let {
-                smsRecyclerAdapter?.setSMSList(it, searchQry)
+//                smsRecyclerAdapter?.setSMSList(it, searchQry)
+                smsRecyclerAdapter?.submitList(it)
+                SMSListAdapter.searchQry = searchQry
+
 
             }
         })
@@ -73,7 +83,30 @@ class SMSListFragment : Fragment() {
             override fun onQueryTextChange(searchQuery: String?): Boolean {
                 Log.d(TAG, "onQueryTextChange: $searchQuery")
                 searchQry = searchQuery
+
                 smsListVIewModel.search(searchQuery)
+//                GlobalScope.launch {
+//                    val smslist = smsListVIewModel.SMS.value
+//                    val newSms:MutableList<SMS> = emptyList<SMS>().toMutableList()
+//                    smslist?.forEach {
+//                       if(it.msg?.contains(searchQuery.toString())!!){
+//                           val yellow =
+//                               BackgroundColorSpan(Color.YELLOW)
+//                           val spannableStringBuilder =
+//                               SpannableStringBuilder(it.msg)
+////                           val startPos = it.msg!!.toLowerCase().indexOf(searchQuery!!.toLowerCase())
+////                           val endPos = startPos + searchQuery.length
+////                           spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+//                           it.msg = spannableStringBuilder
+//                           newSms.add(it)
+//                       }
+//                    }
+//                    smsRecyclerAdapter?.submitList(newSms)
+//                    SMSListAdapter.searchQry = searchQry
+//
+//                }
+
+
                 return true
 
             }
