@@ -9,6 +9,7 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import okio.utf8Size
 import java.util.LinkedHashSet
 
 class SMSLocalRepository(private val context: Context){
@@ -66,31 +67,46 @@ class SMSLocalRepository(private val context: Context){
                     val objSMS = SMS()
                     objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                     val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                    objSMS.address = num
+//                    objSMS.address = num
 
 
                     val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
 
                     var spannableStringBuilder: SpannableStringBuilder?
 
-                    if(searchQuery!=null){
+                    if(searchQuery!=null ){
                         val lowercaseMsg = msg.toLowerCase()
                         val lowerSearchQuery = searchQuery.toLowerCase()
-                        if(lowercaseMsg.contains(lowerSearchQuery)){
+
+                        if(lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()){
                             val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
                             val endPos = startPos +lowerSearchQuery.length
                             val yellow =
                                 BackgroundColorSpan(Color.YELLOW)
                            spannableStringBuilder =
                                 SpannableStringBuilder(msg)
-
                             spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
                             objSMS.msg = spannableStringBuilder
+                            objSMS.address = SpannableStringBuilder(num)
+                        }else if(num.contains(searchQuery) && searchQuery.isNotEmpty()){
+                            val startPos = num.indexOf(searchQuery)
+                            val endPos = startPos + searchQuery.length
+                            val yellow = BackgroundColorSpan(Color.YELLOW)
+                            spannableStringBuilder = SpannableStringBuilder(num)
+                            spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                            objSMS.address = spannableStringBuilder
+                            objSMS.msg = SpannableStringBuilder(msg)
+                        }else{
+                            spannableStringBuilder =
+                                SpannableStringBuilder(msg)
+                            objSMS.msg = spannableStringBuilder
+                            objSMS.address = SpannableStringBuilder(num)
                         }
                     }else{
                         spannableStringBuilder =
                             SpannableStringBuilder(msg)
                         objSMS.msg = spannableStringBuilder
+                        objSMS.address = SpannableStringBuilder(num)
                     }
 
 

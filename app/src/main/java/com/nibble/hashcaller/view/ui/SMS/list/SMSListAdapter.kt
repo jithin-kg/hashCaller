@@ -108,7 +108,7 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
             setNameFirstChar(sms)
 
-            val pNo = sms.address.toString()
+//            val pNo = sms.address.toString()
 //            Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
            generateCircleView(context);
@@ -116,7 +116,7 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
             view.setOnClickListener{
 
-                onContactItemClickListener(pNo)
+//                onContactItemClickListener(pNo)
             }
         }
 
