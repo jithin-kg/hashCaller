@@ -1,10 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
-import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
-import com.nibble.hashcaller.repository.search.ContactSearchRepository
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 
 /**
  * Created by Jithin KG on 29,July,2020
@@ -12,8 +9,9 @@ import com.nibble.hashcaller.repository.search.ContactSearchRepository
 object DialerInjectorUtil {
     fun provideDialerViewModelFactory(context: Context?):DialerViewModelFactory{
 
+        val callLogLiveData = context?.let { CallLogLiveData(it) }
 
-        return DialerViewModelFactory()
+        return DialerViewModelFactory(callLogLiveData)
     }
 
 }

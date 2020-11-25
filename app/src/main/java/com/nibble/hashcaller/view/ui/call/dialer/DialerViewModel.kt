@@ -8,12 +8,13 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class DialerViewModel(): ViewModel() {
+class DialerViewModel(val callLogs:CallLogLiveData): ViewModel() {
     private var phoneNumber: MutableLiveData<String>? = null
 
 
@@ -23,6 +24,10 @@ class DialerViewModel(): ViewModel() {
             return phoneNumber
         }
         return phoneNumber
+
+    }
+
+    fun getCallHistory() {
 
     }
 

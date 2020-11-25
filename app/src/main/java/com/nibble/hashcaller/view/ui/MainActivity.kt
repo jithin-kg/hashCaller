@@ -30,6 +30,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+import com.nibble.hashcaller.view.ui.SMS.SMSContainerFragment
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     var fab: FloatingActionButton? = null
 
     private lateinit var callFragment: CallFragment
-//    private lateinit var messagesFragment: MessagesFragment
+    private lateinit var messagesFragment: SMSContainerFragment
     private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //                        true, ContactObserver(Handler()))
         if (savedInstanceState == null) {
 
-//            messagesFragment = MessagesFragment()
+            messagesFragment = SMSContainerFragment()
             blockConfigFragment = BlockConfigFragment()
             contactFragment = ContactsFragment()
             callFragment = CallFragment()
@@ -95,10 +96,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             var fragment: Fragment
             val selectedFragment = ""
             when (menuItem.itemId) {
-//                R.id.bottombaritem_messages -> {
-//                    showMessagesFragment()
-//                    return@OnNavigationItemSelectedListener true
-//                }
+                R.id.bottombaritem_messages -> {
+                    showMessagesFragment()
+                    return@OnNavigationItemSelectedListener true
+                }
                 R.id.bottombaritem_calls -> {
                     showCallFragment()
                     return@OnNavigationItemSelectedListener true
@@ -160,9 +161,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if(blockConfigFragment.isAdded){
             ft.hide(blockConfigFragment)
         }
-//        if (messagesFragment.isAdded) {
-//            ft.hide(messagesFragment)
-//        }
+        if (messagesFragment.isAdded) {
+            ft.hide(messagesFragment)
+        }
         // Commit changes
         ft.addToBackStack(null)
         ft.commit()
@@ -182,8 +183,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun loadMainActivity() {}
     private fun addAllFragments() {
         ft = supportFragmentManager.beginTransaction()
-//        ft.add(R.id.frame_fragmentholder, messagesFragment)
-//        ft.hide(messagesFragment)
+        ft.add(R.id.frame_fragmentholder, messagesFragment)
+        ft.hide(messagesFragment)
 
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
         ft.add(R.id.frame_fragmentholder, contactFragment)
@@ -216,9 +217,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if(dialerFragment.isAdded){
             ft.hide(dialerFragment)
         }
-//        if (messagesFragment.isAdded) {
-//            ft.hide(messagesFragment)
-//        }
+        if (messagesFragment.isAdded) {
+            ft.hide(messagesFragment)
+        }
         // Commit changes
         ft.commit()
     }
@@ -240,9 +241,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if(dialerFragment.isAdded){
             ft.hide(dialerFragment)
         }
-//        if (messagesFragment.isAdded) {
-//            ft.hide(messagesFragment)
-//        }
+        if (messagesFragment.isAdded) {
+            ft.hide(messagesFragment)
+        }
 //        // Commit changes
         /**
          * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
@@ -297,33 +298,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (dialerFragment.isAdded) {
             ft.hide(dialerFragment)
         }
-//        if (messagesFragment.isAdded) {
-//            ft.hide(messagesFragment)
-//        }
+        if (messagesFragment.isAdded) {
+            ft.hide(messagesFragment)
+        }
 
         // Commit changes
         ft.commit()
     }
 
-//    private fun showMessagesFragment() {
-//        val ft = supportFragmentManager.beginTransaction()
-//        if (messagesFragment.isAdded) { // if the fragment is already in container
-//            ft.show(messagesFragment)
-//        }
-//        // Hide fragment B
-//        if (blockConfigFragment.isAdded) {
-//            ft.hide(blockConfigFragment)
-//        }
-//        // Hide fragment C
-//        if (contactFragment.isAdded) {
-//            ft.hide(contactFragment)
-//        }
-//        if (callFragment.isAdded) {
-//            ft.hide(callFragment)
-//        }
-//        // Commit changes
-//        ft.commit()
-//    }
+    private fun showMessagesFragment() {
+        val ft = supportFragmentManager.beginTransaction()
+        if (messagesFragment.isAdded) { // if the fragment is already in container
+            ft.show(messagesFragment)
+        }
+        // Hide fragment B
+        if (blockConfigFragment.isAdded) {
+            ft.hide(blockConfigFragment)
+        }
+        // Hide fragment C
+        if (contactFragment.isAdded) {
+            ft.hide(contactFragment)
+        }
+        if (callFragment.isAdded) {
+            ft.hide(callFragment)
+        }
+        if (callFragment.isAdded) {
+            ft.hide(callFragment)
+        }
+        // Commit changes
+        ft.commit()
+    }
 
 //    private fun checkPermission() {
 //        val permissionsUtil = PermissionsUtil(this)

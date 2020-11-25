@@ -10,7 +10,7 @@
     android:focusable="true">
 
     <TextView
-        android:id="@+id/textViewcontactCrclr"
+        android:id="@+id/textViewSMScontactCrclr"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginLeft="16dp"
@@ -22,21 +22,44 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:id="@+id/textVContactName"
+        android:id="@+id/textVSMSContactName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:padding="2dp"
-        android:layout_marginLeft="16dp"
-        android:text="ContactName"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.209"
-        app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr"
+        app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.19" />
+
+    <TextView
+        android:id="@+id/tvSMSSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/tvSMSMPeek"
+        app:layout_constraintStart_toStartOf="@+id/textVSMSContactName"
+        app:layout_constraintTop_toBottomOf="@+id/textVSMSContactName" />
+
+    <TextView
+        android:id="@+id/tvSMSMPeek"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/tvSMSSender"
+        app:layout_constraintTop_toBottomOf="@+id/textVSMSContactName" />
+
+    <TextView
+        android:id="@+id/tvSMSTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tvSMSSender"
+        app:layout_constraintStart_toStartOf="@+id/tvSMSSender"
+        app:layout_constraintTop_toBottomOf="@+id/tvSMSSender" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

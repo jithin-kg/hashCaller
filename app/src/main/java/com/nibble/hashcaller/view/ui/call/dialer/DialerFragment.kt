@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,11 +11,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
+import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_contact_list.*
+import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -38,6 +46,7 @@ class DialerFragment : Fragment(), View.OnClickListener {
     private lateinit var dialerViewModel: DialerViewModel
     private lateinit var  nameObserver: Observer<String?>
     private var lastEditPosition = 0
+    var callLogAdapter: DialerAdapter? = null
     var newPos = 0
     var subStringLen = 0
 
@@ -72,10 +81,14 @@ class DialerFragment : Fragment(), View.OnClickListener {
          * Observes the numbers entered in the dialpad
          * and updates the Edittext
          */
-          initEditTextPhoneNumberObserver()
+        initEditTextPhoneNumberObserver()
 
         dialerViewModel.getPhoneNumber()?.observe(viewLifecycleOwner, nameObserver)
-
+        dialerViewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
+            logs.let {
+                callLogAdapter?.setCallLogs(it)
+            }
+        })
         return dialerFragment
     }
 
@@ -126,10 +139,31 @@ class DialerFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        initRecyclerView()
         Log.d(TAG, "onViewCreated: ")
 
 
+    }
+
+    private fun initRecyclerView() {
+        rcrViewCallLogs?.apply {
+            layoutManager = LinearLayoutManager(activity)
+            val topSpacingDecorator =
+                TopSpacingItemDecoration(
+                    30
+                )
+            addItemDecoration(topSpacingDecorator)
+            callLogAdapter = DialerAdapter(context) { id:String->onCallLogItemClicked(id)}
+            adapter = callLogAdapter
+
+        }
+    }
+
+    private fun onCallLogItemClicked(id: String) {
+        Log.d(TAG, "onCallLog item clicked: $id")
+//        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+//        intent.putExtra(CONTACT_ID, id)
+//        startActivity(intent)
     }
 
     private fun initListeners() {
