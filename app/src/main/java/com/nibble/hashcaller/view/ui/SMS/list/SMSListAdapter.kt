@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.SMS.util.SMS
@@ -70,10 +71,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         newSMSList: List<SMS>,
         query: String?
     ) {
-        smsList = newSMSList
+//        smsList = newSMSList
         searchQry = query
 
-        notifyDataSetChanged()
+        val oldlist = smsList
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(SMSItemDiffCallback(oldlist, newSMSList) )
+       smsList = newSMSList
+        diffResult.dispatchUpdatesTo(this)
+//        notifyDataSetChanged()
     }
      class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVSMSContactName
@@ -224,6 +229,27 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
      }
 
 
+    class SMSItemDiffCallback(
+        var oldSMSList:List<SMS>,
+        var newSMSList:List<SMS>
+    ): DiffUtil.Callback(){
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldSMSList[oldItemPosition].id == newSMSList[newItemPosition].id
+        }
+
+        override fun getOldListSize(): Int {
+            return oldSMSList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newSMSList.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldSMSList[oldItemPosition].equals(newSMSList[newItemPosition])
+        }
+
+    }
 
 
 }
