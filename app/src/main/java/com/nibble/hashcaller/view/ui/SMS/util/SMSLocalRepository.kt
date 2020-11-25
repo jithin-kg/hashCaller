@@ -124,7 +124,7 @@ class SMSLocalRepository(private val context: Context){
             data = sortAndSet(listOfMessages)
             cursor.close()
         }
-        return listOfMessages
+        return data
     }
 
 
