@@ -30,7 +30,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
-import com.nibble.hashcaller.view.ui.SMS.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.smsview.SMSContainerFragment
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 

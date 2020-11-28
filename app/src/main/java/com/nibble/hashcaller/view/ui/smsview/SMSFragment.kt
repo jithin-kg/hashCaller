@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.SMS
+package com.nibble.hashcaller.view.ui.smsview
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.SMS.util
+package com.nibble.hashcaller.view.ui.smsview.util
 
 import android.net.Uri
 
@@ -10,4 +10,5 @@ object SMSContract {
     const val COLUMN_ID = "_id"
     const val SMS_SELECTION_SEARCH = "address LIKE ? OR body LIKE ?"
     const val SORT_DESC = "date DESC"
+    const val SORT_ASC = "date ASC"
 }

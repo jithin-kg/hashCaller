@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.SMS.util
+package com.nibble.hashcaller.view.ui.smsview.util
 
 import android.content.Context
 import android.graphics.Color
@@ -8,8 +8,6 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import okio.utf8Size
 import java.util.LinkedHashSet
 
 class SMSLocalRepository(private val context: Context){
@@ -109,7 +107,7 @@ class SMSLocalRepository(private val context: Context){
                         objSMS.address = SpannableStringBuilder(num)
                     }
 
-
+                    objSMS.addressString = num
 
 
 
@@ -149,6 +147,38 @@ class SMSLocalRepository(private val context: Context){
         val data = ArrayList(s)
 
         return data
+    }
+
+    fun fetchIndividualSMS(contact: String?): List<SMS> {
+        var selectionArgs: Array<String>? = null
+        selectionArgs = arrayOf(contact!!)
+        var smslist = mutableListOf<SMS>()
+
+        val cursor = context.contentResolver.query(
+            URI,
+            null,
+            SMSContract.SMS_SELECTION,
+            selectionArgs,
+            SMSContract.SORT_ASC
+        )
+        if(cursor != null && cursor.moveToFirst()) {
+
+            do {
+                val sms = SMS()
+
+                sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
+                sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
+                smslist.add(sms)
+                try {
+
+                } catch (e: java.lang.Exception) {
+                    Log.d(TAG, "fetchIndividualSMS: $e")
+                }
+            } while (cursor.moveToNext())
+
+        }
+        return smslist
     }
 
 }

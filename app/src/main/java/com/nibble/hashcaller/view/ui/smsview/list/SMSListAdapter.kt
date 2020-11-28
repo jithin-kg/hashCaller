@@ -1,10 +1,8 @@
-package com.nibble.hashcaller.view.ui.SMS.list
+package com.nibble.hashcaller.view.ui.smsview.list
 
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.os.Parcel
-import android.os.Parcelable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -12,14 +10,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.SMS.list.SMSListAdapter.ViewHolder
-import com.nibble.hashcaller.view.ui.SMS.util.SMS
+import com.nibble.hashcaller.view.ui.smsview.list.SMSListAdapter.ViewHolder
+import com.nibble.hashcaller.view.ui.smsview.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
@@ -115,8 +112,7 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
             view.setOnClickListener{
-
-//                onContactItemClickListener(pNo)
+                onContactItemClickListener(sms.addressString!!)
             }
         }
 

@@ -1,17 +1,20 @@
-package com.nibble.hashcaller.view.ui.SMS.util
+package com.nibble.hashcaller.view.ui.smsview.individual
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import com.nibble.hashcaller.view.ui.smsview.util.SMSLocalRepository
+
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class SMSViewModel(
-    val SMS: SMSLiveData,
+class SMSIndividualViewModel(
+    val SMS: SMSIndividualLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
+    init {
+
+    }
      var filteredSms: MutableLiveData<String>? = null
 
 
@@ -26,11 +29,6 @@ class SMSViewModel(
 
 
 
-    fun search(searchQuery: String?)  = viewModelScope.launch{
-      val sms =  repository?.getSms(searchQuery)
-        SMS.value = sms
-
-    }
 
 
     companion object{

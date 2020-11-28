@@ -1,11 +1,7 @@
-package com.nibble.hashcaller.view.ui.SMS.list
+package com.nibble.hashcaller.view.ui.smsview.list
 
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,13 +12,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.SMS.SMSContainerFragment
-import com.nibble.hashcaller.view.ui.SMS.util.SMS
-import com.nibble.hashcaller.view.ui.SMS.util.SMSViewModel
+import com.nibble.hashcaller.view.ui.smsview.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.smsview.util.SMSViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.smsview.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_messages_list.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class SMSListFragment : Fragment() {
@@ -131,7 +126,9 @@ class SMSListFragment : Fragment() {
     }
 
     private fun onContactItemClicked(id: String) {
-
+        val intent = Intent(context, IndividualSMSActivity::class.java )
+        intent.putExtra(CONTACT_ADDRES, id)
+        startActivity(intent)
     }
 
 

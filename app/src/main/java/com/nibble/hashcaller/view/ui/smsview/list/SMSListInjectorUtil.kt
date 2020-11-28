@@ -1,8 +1,8 @@
-package com.nibble.hashcaller.view.ui.SMS.list
+package com.nibble.hashcaller.view.ui.smsview.list
 
 import android.content.Context
-import com.nibble.hashcaller.view.ui.SMS.util.SMSLiveData
-import com.nibble.hashcaller.view.ui.SMS.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.smsview.util.SMSLiveData
+import com.nibble.hashcaller.view.ui.smsview.util.SMSLocalRepository
 
 /**
  * Created by Jithin KG on 29,July,2020

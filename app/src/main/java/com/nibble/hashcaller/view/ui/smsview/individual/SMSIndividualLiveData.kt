@@ -1,15 +1,18 @@
-package com.nibble.hashcaller.view.ui.SMS.util
+package com.nibble.hashcaller.view.ui.smsview.individual
 
 import android.content.Context
 import android.net.Uri
-import android.provider.CallLog
 import android.util.Log
+import com.nibble.hashcaller.view.ui.smsview.util.SMS
+import com.nibble.hashcaller.view.ui.smsview.util.SMSContract
+import com.nibble.hashcaller.view.ui.smsview.util.SMSLocalRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SMSLiveData(private val context: Context):
+class SMSIndividualLiveData(private val context: Context,
+                            private var contact: String?):
     ContentProviderLiveData<List<SMS>>(context,
         URI
     )  {
@@ -18,11 +21,11 @@ class SMSLiveData(private val context: Context):
         val URI: Uri = SMSContract.ALL_SMS_URI
         private const val TAG = "__MessagesLiveData"
     }
-    private fun getMessages(context: Context): MutableList<SMS> {
+    private fun getMessages(context: Context): List<SMS> {
 
 
         val repository = SMSLocalRepository(context)
-        return repository.fetchSMS(null)
+        return repository.fetchIndividualSMS(contact)
 
 //        val listOfMessages = mutableListOf<SMS>()
 //        var data = ArrayList<SMS>()

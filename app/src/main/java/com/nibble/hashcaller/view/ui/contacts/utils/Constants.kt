@@ -5,3 +5,4 @@ package com.nibble.hashcaller.view.ui.contacts.utils
  */
 
 const val CONTACT_ID = "contactId"
+const val CONTACT_ADDRES = "contact_address"

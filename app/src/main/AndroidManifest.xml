@@ -41,6 +41,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" />
+        <activity android:name=".view.ui.smsview.individual.IndividualSMSActivity"/>
         <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
         <activity android:name=".view.ui.MainActivity" android:windowSoftInputMode="adjustPan"/>
 
