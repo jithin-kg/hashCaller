@@ -90,12 +90,12 @@ override fun onBindViewHolder(holder:  ViewHolder, position: Int) {
         ) {
             Log.d(TAG, "bind: called")
 
-                if(position  == smsList.size - 1){
-                positionTracker.lastItemReached()
-                }else if(position < smsList.size - 1){
-                    positionTracker.otherPosition()
-                }
-                msg.text = sms.msgString
+            if(position  == smsList.size - 1){
+            positionTracker.lastItemReached()
+            }else if(position < smsList.size - 1){
+                positionTracker.otherPosition()
+            }
+            msg.text = sms.msgString
 //                view.tvTime.text = sms.time.toString()
 
 

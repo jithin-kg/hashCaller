@@ -10,14 +10,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.smsview.util.SMS
+import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 
 
-class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPositionTracker {
+class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPositionTracker, View.OnClickListener {
     private lateinit var viewModel:SMSIndividualViewModel
     private lateinit var  recyclerView:RecyclerView
-    private var oldSize = 0
+    private var oldList = mutableListOf<SMS>()
+    private var oldLIstSize = 0
+    private var countNewItem = 0
     private var recyclerViewAtEnd = true
     private var firstime = true
+    private lateinit var adapter:SMSIndividualAdapter
+    private lateinit var layoutMngr:LinearLayoutManager
 //    private var newSize = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,48 +32,17 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         val contactAddress = intent.getStringExtra(CONTACT_ADDRES)
         contact = contactAddress
 
-        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(this)).get(
-            SMSIndividualViewModel::class.java)
 
-        
-        recyclerView =
-            findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
-        
-
-        val adapter = SMSIndividualAdapter(this, applicationContext ){ id:String -> onContactitemClicked(id) }
-
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
-
-        recyclerView.setHasFixedSize(true)
-        val linearLayout = LinearLayoutManager(this)
-        linearLayout.stackFromEnd = true
-        recyclerView.layoutManager = linearLayout
-
-        recyclerView.adapter = adapter
-        recyclerView.isNestedScrollingEnabled = false
+        initViewModel()
+        initAdapter()
+        setupClickListerner()
+        registerAdapterListener()
+        setupViewmodelObserver()
 
 
+    }
 
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                super.onItemRangeInserted(positionStart, itemCount)
-
-                val msgCount = adapter.getItemCount()
-                val lastVisiblePosition =
-                    linearLayout.findLastCompletelyVisibleItemPosition()
-
-                if (lastVisiblePosition == -1 || positionStart >= msgCount - 1 &&
-                    lastVisiblePosition == positionStart - 1) {
-                    recyclerView.scrollToPosition(positionStart)
-                } else {
-                    if(recyclerViewAtEnd)
-                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                }
-            }
-        })
-
+    private fun setupViewmodelObserver() {
         viewModel.SMS.observe(this, Observer { sms->
             sms.let {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
@@ -79,9 +54,18 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
                     recyclerView.scrollToPosition(it.size - 1);
                     firstime = false
                 }
+                if(!recyclerViewAtEnd){
+                         countNewItem = it.size - oldLIstSize
+
+                    tvcountShow.text = countNewItem.toString()
+                    tvcountShow.visibility = View.VISIBLE
+                }else{
+                    clearNewMessageIndication()
+                    oldLIstSize = it.size
+                }
 
 //                recyclerView.scrollToPosition(adapter.itemCount -1)
-              //  adapter.notifyItemRangeInserted(adapter.itemCount, it!!.size -1 )
+                //  adapter.notifyItemRangeInserted(adapter.itemCount, it!!.size -1 )
                 if(recyclerViewAtEnd){
 //                    recyclerView.scrollToPosition(it.size-1)
 
@@ -106,16 +90,62 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
             }
         })
+    }
+
+    private fun clearNewMessageIndication() {
+        tvcountShow.visibility = View.GONE
+        tvcountShow.text = ""
+        tvNewMsgIndication.visibility = View.GONE
+
+    }
+
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(this)).get(
+            SMSIndividualViewModel::class.java)
+    }
+
+    private fun registerAdapterListener() {
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+
+                val msgCount = adapter.getItemCount()
+                val lastVisiblePosition =
+                    layoutMngr.findLastCompletelyVisibleItemPosition()
+
+                if (lastVisiblePosition == -1 || positionStart >= msgCount - 1 &&
+                    lastVisiblePosition == positionStart - 1) {
+                    recyclerView.scrollToPosition(positionStart)
+                } else {
+                    if(recyclerViewAtEnd)
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                }
+            }
+        })
+    }
+
+    private fun initAdapter() {
+        recyclerView =
+            findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
 
 
-//        adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
-//            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-//                super.onItemRangeInserted(positionStart, itemCount)
-//                recyclerView.smoothScrollToPosition(0)
-//            }
-//        })
+        adapter = SMSIndividualAdapter(this, applicationContext ){ id:String -> onContactitemClicked(id) }
 
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
+        recyclerView.setHasFixedSize(true)
+        layoutMngr = LinearLayoutManager(this)
+        layoutMngr.stackFromEnd = true
+        recyclerView.layoutManager = layoutMngr
+
+        recyclerView.adapter = adapter
+        recyclerView.isNestedScrollingEnabled = false
+    }
+
+    private fun setupClickListerner() {
+        tvNewMsgIndication.setOnClickListener(this)
     }
 
     private fun onContactitemClicked(id: String) {
@@ -130,15 +160,27 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     override fun lastItemReached() {
 
         this.recyclerViewAtEnd = true
+        tvNewMsgIndication.visibility = View.GONE
+        clearNewMessageIndication()
     }
 
     override fun otherPosition() {
         this.recyclerViewAtEnd = false
+        tvNewMsgIndication.visibility = View.VISIBLE
     }
 
     override fun shouldWeScroll() {
         if(this.recyclerViewAtEnd){
 //            recyclerView.scrollToPosition(newSize-1)
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.tvNewMsgIndication->{
+                recyclerView.scrollToPosition(adapter.itemCount - 1)
+                clearNewMessageIndication()
+            }
         }
     }
 }
