@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.smsview.list
+package com.nibble.hashcaller.view.ui.sms.list
 
 import android.content.Context
 import android.graphics.Color
@@ -15,8 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.smsview.list.SMSListAdapter.ViewHolder
-import com.nibble.hashcaller.view.ui.smsview.util.SMS
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter.ViewHolder
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
@@ -56,7 +56,8 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     when(holder) {
 
         is ViewHolder -> {
-            holder.bind(getItem(position),context, onContactItemClickListener)
+
+            holder.bind(getItem(position),context, onContactItemClickListener, position)
         }
 
     }
@@ -88,7 +89,9 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         fun bind(
             sms: SMS, context: Context,
-            onContactItemClickListener:(id:String)->Unit ) {
+            onContactItemClickListener: (id: String) -> Unit,
+            position: Int
+        ) {
 
             //        Log.i(TAG, String.valueOf(no));
 
@@ -230,11 +233,24 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
      }
     class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
+
             return oldItem.id == newItem.id
+
 
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
+            //TODO compare both messages and if the addres is same and message
+            //is different we have new message for a chat
+            //update the badge of that addres
+            if(oldItem.address == newItem.address){
+                if(oldItem.msgString != newItem.msgString){
+                    //we have a new message for this addess
+                    //set badge counter for this number/address
+                    //or i should get the count when i listng sms and if data change compare newcount
+
+                }
+            }
             return oldItem.equals(newItem) && oldItem.msg == newItem.msg
         }
 

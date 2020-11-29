@@ -1,7 +1,7 @@
-package com.nibble.hashcaller.view.ui.smsview.individual
+package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.content.Context
-import com.nibble.hashcaller.view.ui.smsview.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
 
 /**

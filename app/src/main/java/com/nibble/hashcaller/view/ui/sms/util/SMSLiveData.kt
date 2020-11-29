@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.smsview.util
+package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.Context
 import android.net.Uri

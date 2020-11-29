@@ -30,7 +30,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
-import com.nibble.hashcaller.view.ui.smsview.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         hideKeyboard(this)
         setContentView(R.layout.activity_main)
         fabBtnShowDialpad.setOnClickListener(this)
+        fabBtnShowDialpad.visibility = View.GONE
 //        this.applicationContext
 //                .contentResolver
 //                .registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -98,18 +99,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             when (menuItem.itemId) {
                 R.id.bottombaritem_messages -> {
                     showMessagesFragment()
+                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.bottombaritem_calls -> {
                     showCallFragment()
+                    fabBtnShowDialpad.visibility = View.VISIBLE
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.bottombaritem_contacts -> {
                     showContactsFragment()
+                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.bottombaritem_spam -> {
                     showBlockConfigFragment()
+                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
 //
@@ -165,7 +170,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             ft.hide(messagesFragment)
         }
         // Commit changes
-        ft.addToBackStack(null)
+//        ft.addToBackStack("test")
         ft.commit()
     }
 
@@ -257,15 +262,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ft.commit()
     }
 
-    //    @Override
-    //    public void onBackPressed() {
-    //        Log.d(TAG, "onBackPressed: MainActivity");
-    //        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.callFragment);
-    //        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onKeyDown()) {
-    //            super.onBackPressed();
-    //        }
-    //        super.onBackPressed();
-    //    }
+
+
+    //        @Override
+//        public void onBackPressed() {
+//            Log.d(TAG, "onBackPressed: MainActivity");
+//            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.callFragment);
+//            if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onKeyDown()) {
+//                super.onBackPressed();
+//            }
+//            super.onBackPressed();
+//        }
+    override fun onBackPressed() {
+//        super.onBackPressed()
+        if(dialerFragment.isVisible){
+            val ft = supportFragmentManager.beginTransaction()
+            ft.hide(dialerFragment)
+            ft.show(callFragment)
+            fabBtnShowDialpad.visibility = View.VISIBLE
+            ft.commit()
+        }
+
+    }
 //    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
 ////         super.onKeyDown(keyCode, event);
 //        Log.d(TAG, "key down")

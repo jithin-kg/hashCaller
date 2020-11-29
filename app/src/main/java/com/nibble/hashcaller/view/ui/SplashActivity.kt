@@ -1,33 +1,35 @@
 package com.nibble.hashcaller.view.ui
 
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.nibble.hashcaller.network.contact.NetWorkResponse
+import com.nibble.hashcaller.network.user.EUserResponse
+import com.nibble.hashcaller.network.user.Resource
+import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import retrofit2.Response
 import java.io.IOException
 import java.security.*
 import java.security.cert.CertificateException
@@ -40,6 +42,7 @@ import javax.crypto.spec.SecretKeySpec
 
 class SplashActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1
+
     private val TAG = "__SplashActivity"
 
 
@@ -58,7 +61,7 @@ companion object{
     private const val KEY_ALIAS = "MYKeyAlias"
     private const val KEY_STORE = "AndroidKeyStore"
     private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
-    private  const val SHARED_PREFERENCE_TOKEN_NAME = "com.nibble.hashCaller.prefs"
+
     private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
     private lateinit var userInfoViewModel:UserInfoViewModel
 //    private lateinit var skey:SecretKey
@@ -77,32 +80,17 @@ companion object{
 
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
-
+        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
 
         //Start home activity
 //        startActivity(new Intent(SplashActivity.this, MainActivity.class));
 //         close splash activity
         if (checkPermission()) {
-            rcAuthStateListener =
-                AuthStateListener { firebaseAuth ->
-                    user = firebaseAuth.currentUser
-                    //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
-                    if (user != null) {
-                        //user is signed in
-                        //                        Toast.makeText(this, "You are now signed in", Toast.LENGTH_SHORT).show();
-                        onSignedInInitialize()
-
-
-                    } else {
-                        // user is signed out
-                        onSingnedOutcleanUp()
-
-
-                        val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
-                        startActivityForResult(i, RC_SIGN_IN)
-                    }
-                }
+            firebaseAuthListener()
         } else {
+            val i = Intent(this@SplashActivity, PermissionRequestActivity::class.java)
+            startActivityForResult(i, PERMISSION_REQUEST_CODE)
+
 //            startActivity(Intent(this, ActivityRequestPermission::class.java))
 //            finish()
 //            Log.i("SplashActivity", "permission requesting on  progress")
@@ -114,7 +102,27 @@ companion object{
 //        finish();
     }
 
+    private fun firebaseAuthListener() {
+        rcAuthStateListener =
+            AuthStateListener { firebaseAuth ->
+                user = firebaseAuth.currentUser
+                //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
+                if (user != null) {
+                    //user is signed in
+                    //                        Toast.makeText(this, "You are now signed in", Toast.LENGTH_SHORT).show();
+                    onSignedInInitialize()
 
+
+                } else {
+                    // user is signed out
+                    onSingnedOutcleanUp()
+
+
+                    val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
+                    startActivityForResult(i, RC_SIGN_IN)
+                }
+            }
+    }
 
 
     private fun  saveToken(idToken: String?) {
@@ -140,7 +148,7 @@ companion object{
 
             editor.putString(SHARED_PREFERENCE_TOKEN_KEY, encodeTokenString)
 
-            editor.apply()
+            editor.commit()
 
 
         } catch (e: UnrecoverableEntryException) {
@@ -214,16 +222,36 @@ companion object{
 
                     saveToken(idToken)
 
-                    //go to the activity after saving the token
-                    if(checkIfNewUser()){
-                        startGetUserInfoAcitvity()
-                    }else{
+                    //check if we have a loggedInstatus in sharedPreference
+                    val loggedIn = sharedPreferences.getBoolean("IS_LOGGEDIN", false)
 
-//                        val i = Intent(this, MainActivity::class.java)
-//        i.putExtra("key", key)
-//                        startActivity(i)
-//        finish();
-                    }
+                     if(!loggedIn){
+                         //go to the activity after saving the token
+                         val isNewUserInFirebase = isNewUserInFirebase()
+                         if(isNewUserInFirebase){
+                             Log.d(TAG, "onSignedInInitialize:checkIfNewUser Returned true")
+                             startGetUserInfoAcitvity()
+                         }else{
+
+                             if(isNewUserInServer()){
+
+                                 val i = Intent(this, GetInitialUserInfoActivity::class.java)
+                                 startActivity(i)
+                             }else{
+                                 //already existing user in server
+                                 saveToSharedPref(true)
+                                 val i = Intent(this, MainActivity::class.java)
+                                 startActivity(i)
+                             }
+                         }
+
+                     }else{
+                         //user logged in
+                         Log.d(TAG, "onSignedInInitialize: userLogged in  ")
+                         val i = Intent(this, MainActivity::class.java)
+                         startActivity(i)
+                     }
+
 //                    generateEncryptedKey()
                 } else {
                     // Handle error -> task.getException();
@@ -273,9 +301,13 @@ companion object{
 //                finish()
 //            }
         }
+        if(requestCode == PERMISSION_REQUEST_CODE ){
+            Log.d(TAG, "onActivityResult: Permission given")
+            firebaseAuthListener()
+        }
     }
 
-    private fun checkIfNewUser(): Boolean {
+    private fun isNewUserInFirebase(): Boolean {
         metadata = rcfirebaseAuth?.currentUser!!.metadata
 
         if (metadata?.creationTimestamp == metadata?.lastSignInTimestamp) {
@@ -285,17 +317,69 @@ companion object{
 
 //            startGetUserInfoAcitvity()
             return true;
-        } else {
-            // This is an existing user, show them a welcome back screen.
-            Log.d(TAG, "existing user signin")
-            //check the user primary information such as username and other fields are in the database
-            userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
-            val helper = UserUploadHelper(userInfoViewModel, this, applicationContext)
-            helper.upload(UserInfoDTO())
-            return false;
         }
+        return false
 
 
+    }
+
+    private fun isNewUserInServer(): Boolean {
+        var status = false
+        val userInfo = UserInfoDTO()
+
+        userInfoViewModel.upload(userInfo).observe(this, Observer {
+            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
+                val resMessage = resource.data?.body()?.message
+                when (resource.status) {
+
+                    Status.SUCCESS -> {
+
+                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
+                            Log.d(TAG, "checkIfNewUser: no such user")
+                            //This is a new user
+//                            val i = Intent(this, GetInitialUserInfoActivity::class.java)
+//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            //set userLoggedIn = false in shared preference
+
+                            saveToSharedPref(false)
+
+//                            startActivity(i)
+
+                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
+                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
+//                            val i  = Intent(applicationContext, MainActivity::class.java)
+//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                            //set userLogedIn = true in shared preferecce
+                            saveToSharedPref(true)
+                            status = true
+//                            applicationContext.startActivity(i)
+
+                        }
+                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
+                    }
+                    Status.LOADING -> {
+                        Log.d(TAG, "checkIfNewUser: Loading")
+                    }
+                    else -> {
+                        Log.d(TAG, "checkIfNewUser: else $resource")
+                        Log.d(TAG, "checkIfNewUser:error ")
+                    }
+
+
+                }
+
+            }
+        })
+        return status
+    }
+
+    private fun saveToSharedPref(b: Boolean) {
+        sharedPreferences = getSharedPreferences(
+            SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("IS_LOGGEDIN", b)
+        editor.commit()
     }
 
     private fun startGetUserInfoAcitvity() {
@@ -308,39 +392,9 @@ companion object{
 
 
     private fun checkPermission(): Boolean {
+        sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        var permissionGiven = false
-        //persmission
-        Dexter.withContext(this)
-            .withPermissions(
-                Manifest.permission.WRITE_CONTACTS,
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.CALL_PHONE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.ANSWER_PHONE_CALLS,
-                Manifest.permission.READ_CALL_LOG
-            ).withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
-//
-                    report.let {
-                        if(report?.areAllPermissionsGranted()!!){
-                            permissionGiven = true
-//                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
-
-                        }
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest?>?,
-                    token: PermissionToken?
-                ) { /* ... */
-                    token?.continuePermissionRequest()
-//                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
-                }
-            }).check()
-        return permissionGiven
-
+        return sharedPreferences.getBoolean("isPermissionGiven",false)
 
     }
 

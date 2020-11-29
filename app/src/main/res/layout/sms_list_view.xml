@@ -47,6 +47,8 @@
 
     <TextView
         android:id="@+id/tvSMSMPeek"
+        android:ellipsize="end"
+        android:maxLines="2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/tvSMSSender"

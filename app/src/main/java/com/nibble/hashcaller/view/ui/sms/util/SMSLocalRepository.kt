@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.smsview.util
+package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.Context
 import android.graphics.Color
@@ -16,6 +16,49 @@ class SMSLocalRepository(private val context: Context){
         private val URI: Uri = SMSContract.ALL_SMS_URI
         private const val TAG = "__SMSLocalRepository"
     }
+
+
+    fun getUnreadMsgCount(): Int? {
+//        var address = "123456789";
+////
+//        Cursor unreadcountcursor =   cntx.getContentResolver().query(
+//            Uri.parse("content://sms/inbox"),
+//            emptyArray<String>(), "read = 0 and address='$address'", null, null);
+//
+//        var count = unreadcountcursor.getCount();
+
+        var address = "44"
+//        val cursor = context.contentResolver.query(
+//            URI,
+//            emptyArray<String>(),
+//            "read = 0 and address='$address'",
+//            null,
+//            null
+//
+//        )
+        val cursor = context.contentResolver.query(
+            URI,
+            null,
+            "read = 0",
+            null,
+            null
+
+        )
+        val cnt = cursor?.count
+//        if(cursor != null && cursor.moveToFirst()) {
+//            do {
+//                try {
+//                    val count = cursor.count
+//                }catch (e:Exception){
+//                    Log.d(TAG, "exception $e ")
+//                }
+//            }while (cursor.moveToNext())
+//        }
+        Log.d(TAG, "getUnreadMsgCount: count $cnt")
+
+        return cnt
+    }
+
     //gets sms for SMSLiveData to show all sms
     fun fetchSMS(searchText:String?): MutableList<SMS> {
        return fetch(null)
@@ -180,5 +223,7 @@ class SMSLocalRepository(private val context: Context){
         }
         return smslist
     }
+
+
 
 }

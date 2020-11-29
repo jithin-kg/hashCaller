@@ -14,11 +14,12 @@
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+
 
     <application
         android:allowBackup="true"
@@ -28,7 +29,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ui.IncommingCall.ActivityIncommingCallView"></activity>
+        <activity android:name=".view.ui.auth.PermissionRequestActivity"></activity>
+        <activity android:name=".view.ui.IncommingCall.ActivityIncommingCallView" />
         <activity android:name=".view.ui.auth.GetInitialUserInfoActivity" />
         <activity android:name=".view.ui.contacts.search.ActivitySearchPhone" />
         <activity android:name=".view.ui.auth.ActivityEnterOTP" />
@@ -41,15 +43,73 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" />
-        <activity android:name=".view.ui.smsview.individual.IndividualSMSActivity"/>
+
+        <!-- Activity that allows the user to send new SMS/MMS messages -->
+        <activity android:name=".view.ui.sms.individual.IndividualSMSActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
-        <activity android:name=".view.ui.MainActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".view.ui.MainActivity"
+            android:windowSoftInputMode="adjustPan" />
 
         <receiver android:name=".utils.IncomingCallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
+    <!-- Broadcast receiver that listen for SMS  -->
+        <receiver
+            android:name=".view.ui.sms.recievers.SmsReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+        <!-- Service that delivers messages from the phone "quick response" -->
+        <service
+            android:name=".view.ui.sms.services.HeadlessSmsSendService"
+            android:exported="true"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="SMS" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".view.ui.sms.services.SaveSmsService"
+            android:exported="false" />
+
+        <!-- BroadcastReceiver that listens for incoming MMS messages -->
+        <receiver
+            android:name=".view.ui.sms.recievers.MmsReceiver"
+            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

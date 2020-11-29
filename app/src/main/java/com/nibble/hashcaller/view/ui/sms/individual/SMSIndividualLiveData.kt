@@ -1,11 +1,11 @@
-package com.nibble.hashcaller.view.ui.smsview.individual
+package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.nibble.hashcaller.view.ui.smsview.util.SMS
-import com.nibble.hashcaller.view.ui.smsview.util.SMSContract
-import com.nibble.hashcaller.view.ui.smsview.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.view.ui.sms.util.SMSContract
+import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import java.text.SimpleDateFormat
 import java.util.*

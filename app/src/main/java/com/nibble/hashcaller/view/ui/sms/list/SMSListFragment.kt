@@ -1,5 +1,6 @@
-package com.nibble.hashcaller.view.ui.smsview.list
+package com.nibble.hashcaller.view.ui.sms.list
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,15 +13,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.smsview.SMSContainerFragment
-import com.nibble.hashcaller.view.ui.smsview.util.SMSViewModel
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.smsview.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_messages_list.*
 
 
-class SMSListFragment : Fragment() {
+class SMSListFragment : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -29,10 +30,11 @@ class SMSListFragment : Fragment() {
     var smsRecyclerAdapter: SMSListAdapter? = null
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
+    private lateinit var cntx:Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        cntx = this!!.context!!
     }
 
     override fun onCreateView(
@@ -42,12 +44,24 @@ class SMSListFragment : Fragment() {
         // Inflate the layout for this fragment
         viewMesages = inflater.inflate(R.layout.fragment_messages_list, container, false)
 
-        smsListVIewModel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context)).get(
-            SMSViewModel::class.java)
-
+       initVieModel()
         val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
 
 
+       observeSMSList()
+        return  viewMesages
+    }
+
+    private fun initListeners() {
+        btnShowUnreadCount.setOnClickListener(this)
+    }
+
+    private fun initVieModel() {
+        smsListVIewModel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context)).get(
+            SMSViewModel::class.java)
+    }
+
+    private fun observeSMSList() {
         smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
             sms.let {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
@@ -57,12 +71,12 @@ class SMSListFragment : Fragment() {
 
             }
         })
-        return  viewMesages
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
+        initListeners()
         val sView = viewMesages.rootView.findViewById(R.id.searchViewMessages) as SearchView
 
         Log.d(TAG, "onCreateView: $sView")
@@ -134,5 +148,9 @@ class SMSListFragment : Fragment() {
 
     companion object {
     private const val TAG = "__SMSListFragment"
+    }
+
+    override fun onClick(p0: View?) {
+  smsListVIewModel.getUnrealMsgCount()
     }
 }

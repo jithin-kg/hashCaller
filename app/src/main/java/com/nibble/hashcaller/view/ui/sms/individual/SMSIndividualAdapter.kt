@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.smsview.individual
+package com.nibble.hashcaller.view.ui.sms.individual
 
 
 import android.content.Context
@@ -15,7 +15,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.smsview.util.SMS
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_individual_list_view.view.*
 import java.text.SimpleDateFormat
 import java.time.ZoneId

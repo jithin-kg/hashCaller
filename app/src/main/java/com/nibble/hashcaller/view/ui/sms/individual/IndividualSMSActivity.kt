@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.smsview.individual
+package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.smsview.util.SMS
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 
 

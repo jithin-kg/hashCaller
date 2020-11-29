@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
@@ -46,6 +47,8 @@ class CallFragment : Fragment(),View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
+
+
 //        addFragmentDialer()
         return callFragment
 

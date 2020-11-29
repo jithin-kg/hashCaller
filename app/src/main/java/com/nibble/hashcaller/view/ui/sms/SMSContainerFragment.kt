@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.smsview
+package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
 import android.os.Bundle
@@ -14,8 +14,8 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
-import com.nibble.hashcaller.view.ui.smsview.list.SMSListFragment
-import com.nibble.hashcaller.view.ui.smsview.util.SMSViewModel
+import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
+import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import kotlinx.android.synthetic.main.fragment_message_container.*
 
 

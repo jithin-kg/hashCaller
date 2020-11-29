@@ -1,8 +1,8 @@
-package com.nibble.hashcaller.view.ui.smsview.individual
+package com.nibble.hashcaller.view.ui.sms.individual
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.nibble.hashcaller.view.ui.smsview.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
 
 /**

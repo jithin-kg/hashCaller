@@ -245,11 +245,14 @@ class DialerFragment : Fragment(), View.OnClickListener {
             R.id.layoutNumPound->{
                 keypadClicked("#")
             }
+            R.id.fabShoDialPad2->{
+                bottomSheetDialog.show()
+            }
             else->{
                 backspacePhoneNumEditText()
             }
         }
-        bottomSheetDialog.show()
+
     }
 
     private fun backspacePhoneNumEditText() {
@@ -330,5 +333,7 @@ class DialerFragment : Fragment(), View.OnClickListener {
         }
         return num;
     }
+
+
 
 }

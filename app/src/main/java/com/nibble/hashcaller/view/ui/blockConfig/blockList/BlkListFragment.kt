@@ -59,7 +59,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
         swipeHandler = object : SwipeToDeleteCallback(this.context!!) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val adapter = rcrViewPtrnList.adapter as SimpleAdapter
+                val adapter = rcrViewPtrnList.adapter
                 deletePattern(viewHolder.adapterPosition)
             }
         }
