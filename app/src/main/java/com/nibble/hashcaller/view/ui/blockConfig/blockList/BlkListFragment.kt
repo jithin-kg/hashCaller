@@ -20,6 +20,7 @@ import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 
 
 import kotlinx.android.synthetic.main.fragment_blk_list.*
+import kotlinx.android.synthetic.main.fragment_messages_list.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -122,7 +123,10 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 //
 //        }
 //    }
-
+override fun onDestroyView() {
+    super.onDestroyView()
+    rcrViewPtrnList.adapter  = null
+}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

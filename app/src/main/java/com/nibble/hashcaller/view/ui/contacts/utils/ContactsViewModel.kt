@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
@@ -18,6 +19,10 @@ class ContactsViewModel(
     private val contactsRepository: ContactSearchRepository?,
     private val contactNetworkRepository: ContactsNetworkRepository?
 ): ViewModel() {
+    companion object{
+        private const val TAG ="__ContactsViewModel"
+        var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    }
     init {
 //       syncContactsWithLocalDb()
 
@@ -76,9 +81,7 @@ class ContactsViewModel(
 //
 //    }
 
-companion object{
-    private const val TAG ="__ContactsViewModel"
-}
+
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {
 //

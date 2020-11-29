@@ -99,6 +99,12 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 //            if(searchQry == null){
                 name.text = sms.address
                 view.tvSMSMPeek.text = sms.msg
+                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
+                if(sms.unReadSMSCount == 0 ){
+                    view.tvUnreadSMSCount.visibility = View.GONE
+                }else{
+                    view.tvUnreadSMSCount.visibility = View.VISIBLE
+                }
 
 //            }
 
@@ -115,7 +121,10 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
             view.setOnClickListener{
+//                view.tvUnreadSMSCount.text = ""
+//                view.tvUnreadSMSCount.visibility = View.INVISIBLE
                 onContactItemClickListener(sms.addressString!!)
+
             }
         }
 

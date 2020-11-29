@@ -1,6 +1,8 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.provider.CallLog
@@ -19,42 +21,27 @@ class SMSLocalRepository(private val context: Context){
 
 
     fun getUnreadMsgCount(): Int? {
-//        var address = "123456789";
-////
-//        Cursor unreadcountcursor =   cntx.getContentResolver().query(
-//            Uri.parse("content://sms/inbox"),
-//            emptyArray<String>(), "read = 0 and address='$address'", null, null);
-//
-//        var count = unreadcountcursor.getCount();
-
+        var cursor:Cursor? = null
+        var cnt:Int? = 0
         var address = "44"
-//        val cursor = context.contentResolver.query(
-//            URI,
-//            emptyArray<String>(),
-//            "read = 0 and address='$address'",
-//            null,
-//            null
-//
-//        )
-        val cursor = context.contentResolver.query(
-            URI,
-            null,
-            "read = 0",
-            null,
-            null
+        try {
+             cursor = context.contentResolver.query(
+                URI,
+                null,
+                "read = 0",
+                null,
+                null
 
-        )
-        val cnt = cursor?.count
-//        if(cursor != null && cursor.moveToFirst()) {
-//            do {
-//                try {
-//                    val count = cursor.count
-//                }catch (e:Exception){
-//                    Log.d(TAG, "exception $e ")
-//                }
-//            }while (cursor.moveToNext())
-//        }
-        Log.d(TAG, "getUnreadMsgCount: count $cnt")
+            )
+             cnt = cursor?.count
+
+            Log.d(TAG, "getUnreadMsgCount: count $cnt")
+
+        }catch (e:Exception){
+
+        }finally {
+            cursor?.close()
+        }
 
         return cnt
     }
@@ -66,10 +53,18 @@ class SMSLocalRepository(private val context: Context){
 
     //this function fetches sms while searching
     fun getSms(searchQuery: String?): MutableList<SMS> {
+
         return fetch(searchQuery)
     }
 
+     fun update(addressString: String){
+        val cValues = ContentValues().apply {
+            put("read", 1)
 
+        }
+        context.contentResolver.update(URI,cValues, "address='$addressString'",null)
+
+    }
     private fun fetch(searchQuery: String?): MutableList<SMS> {
         val listOfMessages = mutableListOf<SMS>()
         var selectionArgs: Array<String>? = null
@@ -100,6 +95,7 @@ class SMSLocalRepository(private val context: Context){
             selectionArgs,
             SMSContract.SORT_DESC
         )
+
         if(cursor != null && cursor.moveToFirst()){
             do{
 
@@ -152,10 +148,11 @@ class SMSLocalRepository(private val context: Context){
 
                     objSMS.addressString = num
 
+//                    val count =setSMSReadStatus(objSMS, objSMS.addressString!!)
+//                    objSMS.unReadSMSCount = count!!
 
 
-
-                    objSMS.readState = cursor.getString(cursor.getColumnIndex("read"))
+                    objSMS.readState = cursor.getInt(cursor.getColumnIndex("read"))
                     val dateMilli = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 
 
@@ -179,9 +176,43 @@ class SMSLocalRepository(private val context: Context){
             }while (cursor.moveToNext())
 
             data = sortAndSet(listOfMessages)
-            cursor.close()
         }
+        setSMSReadStatus(data)
         return data
+    }
+
+    /**
+     * Function to check whether the current message is opened/readed by the user
+     */
+    private fun setSMSReadStatus(
+        smsList: ArrayList<SMS> ) {
+
+       for (sms in smsList){
+           if(sms.readState ==0 )
+                setCount(sms)
+       }
+
+    }
+
+    private fun setCount(sms: SMS) {
+        val addressString = sms.addressString
+        var cnt:Int? = 0
+        val cursorSMSCount = context.contentResolver.query(
+            URI,
+            emptyArray<String>(),
+            "read = 0 and address='$addressString'",
+            null,
+            null
+
+        )
+        try {
+            cnt = cursorSMSCount?.count
+            sms.unReadSMSCount = cnt!!
+        }catch (e:Exception){
+            Log.d(TAG, "setSMSReadStatus: exception $e ")
+        }finally {
+            cursorSMSCount?.close()
+        }
     }
 
 
@@ -221,6 +252,8 @@ class SMSLocalRepository(private val context: Context){
             } while (cursor.moveToNext())
 
         }
+        cursor?.close()
+//        update(contact)
         return smslist
     }
 

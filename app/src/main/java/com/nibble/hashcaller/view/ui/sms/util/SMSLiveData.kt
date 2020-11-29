@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import java.text.SimpleDateFormat
 import java.util.*
@@ -12,6 +13,8 @@ class SMSLiveData(private val context: Context):
     ContentProviderLiveData<List<SMS>>(context,
         URI
     )  {
+    var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
+
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri = SMSContract.ALL_SMS_URI
@@ -19,9 +22,13 @@ class SMSLiveData(private val context: Context):
     }
     private fun getMessages(context: Context): MutableList<SMS> {
 
-
+        SMSViewModel.isLoading.postValue(true)
         val repository = SMSLocalRepository(context)
-        return repository.fetchSMS(null)
+        val res =  repository.fetchSMS(null)
+
+        //IMPORTANT from backgroudn thread we need to call postValue to set livedata
+        SMSViewModel.isLoading.postValue(false)
+        return res
 
 //        val listOfMessages = mutableListOf<SMS>()
 //        var data = ArrayList<SMS>()
@@ -105,8 +112,12 @@ class SMSLiveData(private val context: Context):
 
         return data
     }
+    fun update(address:String){
+        val repository = SMSLocalRepository(context)
+        repository.update(address)
+    }
 
-    override fun getContentProviderValue(searchText:String?) = getMessages(context)
+    override suspend fun getContentProviderValue(searchText:String?) = getMessages(context)
 //    fun getSms(){
 //
 //    }

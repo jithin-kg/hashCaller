@@ -1,8 +1,6 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
 /**
@@ -12,6 +10,14 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
+    companion object
+    {
+        private const val TAG ="__DialerViewModel"
+        var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
+    }
+
+
+
     var unreadMSCount:MutableLiveData<Int>? = null
      var filteredSms: MutableLiveData<String>? = null
 
@@ -38,10 +44,11 @@ class SMSViewModel(
         unreadMSCount?.value = count
     }
 
-
-    companion object{
-        private const val TAG ="__DialerViewModel"
+    fun update(address: String)  = viewModelScope.launch{
+     SMS?.update(address)
     }
+
+
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {
 //

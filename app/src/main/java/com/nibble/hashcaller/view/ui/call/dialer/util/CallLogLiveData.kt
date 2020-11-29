@@ -69,5 +69,5 @@ class CallLogLiveData(private val context: Context):
         return listOfCallLogs
 
     }
-    override fun getContentProviderValue(text: String?): List<CallLogData> = getCallLog(context)
+    override suspend fun getContentProviderValue(text: String?): List<CallLogData> = getCallLog(context)
 }

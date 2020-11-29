@@ -59,6 +59,22 @@ class ContactListFragment  : Fragment()  {
 
         contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
 //        contactViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
+        observerContactList()
+        observerIsLoading()
+        return contactListViewFragment
+    }
+
+    private fun observerIsLoading() {
+        ContactsViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading->
+            if(isLoading){
+                pgBarCntcList.visibility = View.VISIBLE
+            }else{
+                pgBarCntcList.visibility = View.GONE
+            }
+         })
+    }
+
+    private fun observerContactList() {
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer{contacts->
             contacts.let {
                 contactsRecyclerAdapter?.setContactList(it)
@@ -74,8 +90,6 @@ class ContactListFragment  : Fragment()  {
 
             }
         })
-
-        return contactListViewFragment
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

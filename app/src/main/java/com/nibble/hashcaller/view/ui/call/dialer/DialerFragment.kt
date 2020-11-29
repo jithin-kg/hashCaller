@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_blk_list.*
 import kotlinx.android.synthetic.main.fragment_contact_list.*
 import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
@@ -91,7 +92,11 @@ class DialerFragment : Fragment(), View.OnClickListener {
         })
         return dialerFragment
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        //THIS IS IMPORTANT !! otherwise memory leak occurs
+        rcrViewCallLogs.adapter  = null
+    }
     private fun initEditTextPhoneNumberObserver() {
         /**
          * Observes the numbers entered in the dialpad

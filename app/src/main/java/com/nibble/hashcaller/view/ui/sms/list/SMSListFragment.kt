@@ -30,6 +30,8 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     var smsRecyclerAdapter: SMSListAdapter? = null
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
+
+
     private lateinit var cntx:Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,14 +48,27 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 
        initVieModel()
         val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
-
+    
 
        observeSMSList()
+       observeLoadinState()  
         return  viewMesages
     }
 
+    private fun observeLoadinState() {
+        SMSViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading->
+            if(isLoading){
+                pgBarSMSList.visibility = View.VISIBLE
+
+            }else{
+                pgBarSMSList.visibility = View.GONE
+            }
+            
+        })
+    }
+
     private fun initListeners() {
-        btnShowUnreadCount.setOnClickListener(this)
+
     }
 
     private fun initVieModel() {
@@ -71,6 +86,10 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 
             }
         })
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        rcrViewSMSList.adapter  = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -139,9 +158,10 @@ class SMSListFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun onContactItemClicked(id: String) {
+    private fun onContactItemClicked(address: String) {
+        smsListVIewModel.update(address)
         val intent = Intent(context, IndividualSMSActivity::class.java )
-        intent.putExtra(CONTACT_ADDRES, id)
+        intent.putExtra(CONTACT_ADDRES, address)
         startActivity(intent)
     }
 
@@ -153,4 +173,5 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     override fun onClick(p0: View?) {
   smsListVIewModel.getUnrealMsgCount()
     }
+
 }

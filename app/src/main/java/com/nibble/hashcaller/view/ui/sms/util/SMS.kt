@@ -8,8 +8,9 @@ class SMS {
     var addressString: String? = null
     var msg: SpannableStringBuilder? = null
     var msgString:String? = null
+    var unReadSMSCount:Int = 0
     var readState //"0" for have not read sms and "1" for have read sms
-            : String? = null
+            : Int = 0
     var time: Long?= 0L;
     var folderName: String? = null
     var color = 0

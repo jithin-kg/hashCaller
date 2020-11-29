@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             callFragment = CallFragment()
             dialerFragment =
                 DialerFragment()
-            //            callFragment.setSelectedItemId(R.id.callFragment)
+
         }
         //        Intent intent = new Intent(MainActivity.this, CreateCustomFilter2.class);
 //        startActivity(intent);
@@ -187,6 +187,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //    }
     private fun loadMainActivity() {}
     private fun addAllFragments() {
+        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
         ft = supportFragmentManager.beginTransaction()
         ft.add(R.id.frame_fragmentholder, messagesFragment)
         ft.hide(messagesFragment)

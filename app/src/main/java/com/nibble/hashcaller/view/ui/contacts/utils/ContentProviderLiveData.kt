@@ -4,6 +4,8 @@ import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -16,12 +18,18 @@ abstract class ContentProviderLiveData<T>(
     private lateinit var observer: ContentObserver
 
     override fun onActive() {
-        postValue(getContentProviderValue(null)) // we are posting the initial value of the
+        GlobalScope.launch {
+            postValue(getContentProviderValue(null)) // we are posting the initial value of the
+        }
+
         //content provider to the observer of our live data
         observer = object : ContentObserver(null){
             override fun onChange(selfChange: Boolean) {
                 //calling post value to set the latest value onto the ui controller
-                postValue(getContentProviderValue(null))
+                GlobalScope.launch {
+                    postValue(getContentProviderValue(null))
+                }
+
             }
         }
         context.contentResolver.registerContentObserver(uri, true, observer)
@@ -30,5 +38,5 @@ abstract class ContentProviderLiveData<T>(
     override fun onInactive() {
         context.contentResolver.unregisterContentObserver(observer)
     }
-    abstract fun getContentProviderValue(text:String?) : T
+    abstract suspend fun getContentProviderValue(text:String?) : T
 }

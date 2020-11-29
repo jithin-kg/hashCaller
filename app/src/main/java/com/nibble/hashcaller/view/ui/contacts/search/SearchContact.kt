@@ -54,5 +54,5 @@ class SearchContact(private val context: Context) :
 
         }
         // so if there is any change in data this function will query and get latest data
-        override fun getContentProviderValue(text: String?): List<Contact> = getContacts(context)
+        override suspend fun getContentProviderValue(text: String?): List<Contact> = getContacts(context)
 }

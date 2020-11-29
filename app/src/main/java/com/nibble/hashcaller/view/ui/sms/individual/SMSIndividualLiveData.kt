@@ -110,7 +110,7 @@ class SMSIndividualLiveData(private val context: Context,
         return data
     }
 
-    override fun getContentProviderValue(searchText:String?) = getMessages(context)
+    override suspend fun getContentProviderValue(searchText:String?) = getMessages(context)
 //    fun getSms(){
 //
 //    }

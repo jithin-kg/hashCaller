@@ -63,6 +63,16 @@
         app:layout_constraintStart_toStartOf="@+id/tvSMSSender"
         app:layout_constraintTop_toBottomOf="@+id/tvSMSSender" />
 
+    <TextView
+        android:id="@+id/tvUnreadSMSCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintTop_toBottomOf="@+id/textVSMSContactName" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
