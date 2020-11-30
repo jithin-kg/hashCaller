@@ -29,7 +29,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ui.auth.PermissionRequestActivity"></activity>
+        <activity
+            android:name=".view.ui.auth.PermissionRequestActivity"
+            android:configChanges="orientation|screenSize" >
+            <intent-filter>
+                <category android:name="android.app.role.SMS"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".view.ui.IncommingCall.ActivityIncommingCallView" />
         <activity android:name=".view.ui.auth.GetInitialUserInfoActivity" />
         <activity android:name=".view.ui.contacts.search.ActivitySearchPhone" />
@@ -46,7 +52,7 @@
 
         <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity android:name=".view.ui.sms.individual.IndividualSMSActivity" >
-            <intent-filter>
+            <intent-filter >
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
                 <category android:name="android.intent.category.DEFAULT" />
