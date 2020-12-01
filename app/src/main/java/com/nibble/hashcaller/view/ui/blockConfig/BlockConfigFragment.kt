@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlkListFragment
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 
 import kotlinx.android.synthetic.main.block_config_fragment.*
 
@@ -18,8 +19,9 @@ import kotlinx.android.synthetic.main.block_config_fragment.*
  * Created by Jithin KG on 03,July,2020
  */
 //import database.sql.SQLiteDatabaseHandler;
-class BlockConfigFragment : Fragment(), View.OnClickListener {
+class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
     //    private SQLiteDatabaseHandler db;
+    private var isDflt = false
 
 
 
@@ -64,4 +66,8 @@ class BlockConfigFragment : Fragment(), View.OnClickListener {
 //                i.putExtra("PersonID", personID);
         startActivity(i)
     }
+
+    override var isDefaultFgmnt: Boolean
+        get() = isDflt
+        set(value) {isDflt = value}
 }

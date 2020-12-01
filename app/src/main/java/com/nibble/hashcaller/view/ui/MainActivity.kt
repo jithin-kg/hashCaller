@@ -32,8 +32,17 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.utils.DefaultFragmentManager
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
+
+/**
+ * This is a extension function which set the default fragment
+ * for dynamically hiding / showing a fragment
+ */
+
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var toolbar: Toolbar
@@ -79,6 +88,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 DialerFragment()
 
         }
+        //set the default fragment
+        setTheDefaultFragment()
         //        Intent intent = new Intent(MainActivity.this, CreateCustomFilter2.class);
 //        startActivity(intent);
 //        toolbar = findViewById(R.id.toolbar)
@@ -152,6 +163,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        WorkManager.getInstance().enqueue(request)
     }
 
+    /**
+     * This function set the default fragment status of each fragment
+     */
+    private fun setTheDefaultFragment() {
+        if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
+            callFragment.isDefaultFgmnt = true
+        }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
+            messagesFragment.isDefaultFgmnt = true
+        }
+        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CONTACT_FRAGMENT){
+            contactFragment.isDefaultFgmnt = true
+        }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_BLOCK_FRAGMENT){
+            blockConfigFragment.isDefaultFgmnt = true
+        }else{
+            dialerFragment.isDefaultFgmnt = true
+        }
+    }
 
 
     private fun showDialerFragment() {
@@ -198,24 +226,45 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //    }
     private fun loadMainActivity() {}
     private fun addAllFragments() {
-        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
+        setDefaultFragment(DefaultFragmentManager.id)
+
         ft = supportFragmentManager.beginTransaction()
         ft.add(R.id.frame_fragmentholder, messagesFragment)
-        ft.hide(messagesFragment)
+        hideThisFragment(ft, messagesFragment,  messagesFragment)
+
 
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
         ft.add(R.id.frame_fragmentholder, contactFragment)
-        ft.hide(contactFragment)
+        hideThisFragment(ft, contactFragment, contactFragment)
         ft.add(R.id.frame_fragmentholder, blockConfigFragment)
-        ft.hide(blockConfigFragment)
+        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
 
         ft.add(R.id.frame_fragmentholder, callFragment)
-//        ft.hide(callFragment);
+        hideThisFragment(ft, callFragment, callFragment)
 
         ft.add(R.id.frame_fragmentholder, dialerFragment)
-        ft.hide(dialerFragment)
+        hideThisFragment(ft, dialerFragment, dialerFragment)
 
         ft.commit()
+    }
+
+    /**
+     * This function hides a fragment if it is set as default fragment
+     */
+    private fun hideThisFragment(
+        ft: FragmentTransaction,
+        fragment: Fragment,
+        fmnt: IDefaultFragmentSelection
+    ) {
+        if(!fmnt.isDefaultFgmnt){
+            ft.hide(fragment)
+        }
+
+    }
+
+    private fun setDefaultFragment(idValue:Int) {
+//        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
+        bottomNavigationView.selectedItemId = idValue
     }
 
     private fun showBlockConfigFragment() {

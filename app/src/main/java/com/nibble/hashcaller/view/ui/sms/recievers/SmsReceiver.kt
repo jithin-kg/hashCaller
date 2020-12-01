@@ -12,15 +12,15 @@ import android.telephony.SmsMessage
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.notifications.HashCaller
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.FROM_SMS_RECIEVER
-
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.services.SaveSmsService
+import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 
 
 class SmsReceiver : BroadcastReceiver() {
@@ -44,6 +44,7 @@ class SmsReceiver : BroadcastReceiver() {
 
                         //Log.d(TAG, "senderNum: " + senderNo + " :\n message: " + message);
 //                        issueNotification(context, senderNo, message)
+
                         showNotification(context, senderNo, message)
                         saveSmsInInbox(context, currentSMS)
                     }
@@ -55,15 +56,34 @@ class SmsReceiver : BroadcastReceiver() {
     }
 
     private fun showNotification(context: Context, senderNo: String?, message: String?) {
-        val activityIntent = Intent(context, IndividualSMSActivity::class.java)
-        activityIntent.putExtra(CONTACT_ADDRES, senderNo)
-        val contentIntent = PendingIntent.getActivity(context,
-            0,
-            activityIntent,
-            0)
-        //flag tells what happens when we recreate this pending intent with new intent
-        //the notification CHNNEL_1_ID we are passing here will be ignored in lower api
-        //levels
+
+           DefaultFragmentManager.id = R.id.bottombaritem_messages
+           DefaultFragmentManager.defaultFragmentToShow =
+               DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT
+
+        // Create an Intent for the activity you want to start
+        val resultIntent = Intent(context, IndividualSMSActivity::class.java)
+        resultIntent.putExtra(CONTACT_ADDRES, senderNo)
+// Create the TaskStackBuilder
+        val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
+            // Add the intent, which inflates the back stack
+            addNextIntentWithParentStack(resultIntent)
+            // Get the PendingIntent containing the entire back stack
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        }
+
+
+//        // Create an Intent for the activity you want to start
+//        val activityIntent = Intent(context, IndividualSMSActivity::class.java)
+//        activityIntent.putExtra(CONTACT_ADDRES, senderNo)
+
+// Create the TaskStackBuilder and add the intent, which inflates the back stack
+        //This is important because this add the MainActivity to backstack, we have do this because
+        //we have set parentActivityName = "MainActivity" for IndividualSMSActivity
+        val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
+        stackBuilder.addNextIntentWithParentStack(resultIntent)
+
         val notification = NotificationCompat
             .Builder(context,HashCaller.CHANNEL_1_ID )
             .setSmallIcon(R.drawable.ic_baseline_textsms_24)
@@ -71,7 +91,7 @@ class SmsReceiver : BroadcastReceiver() {
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .setContentIntent(contentIntent)
+            .setContentIntent(resultPendingIntent)
             .setAutoCancel(true)
             .build()
         //if we use same id it will overrite previous notification

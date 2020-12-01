@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_call.*
 
@@ -29,8 +30,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CallFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallFragment : Fragment(),View.OnClickListener {
-    // TODO: Rename and change types of parameters
+class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection {
+    private var isDflt = false
     private var param1: String? = null
     private var param2: String? = null
     private var viewPager: ViewPager? = null
@@ -193,5 +194,8 @@ class CallFragment : Fragment(),View.OnClickListener {
         }
     }
 
+    override var isDefaultFgmnt: Boolean
+        get() = isDflt
+        set(value) {isDflt = value}
 
 }

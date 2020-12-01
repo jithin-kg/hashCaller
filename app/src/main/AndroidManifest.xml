@@ -52,7 +52,9 @@
         <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" />
 
         <!-- Activity that allows the user to send new SMS/MMS messages -->
-        <activity android:name=".view.ui.sms.individual.IndividualSMSActivity" >
+        <activity android:name=".view.ui.sms.individual.IndividualSMSActivity"
+            android:parentActivityName=".view.ui.MainActivity"
+            > <!--prent activity is need to define the natural hierarchy of the application / navigation -->
             <intent-filter >
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />

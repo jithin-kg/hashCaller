@@ -27,6 +27,11 @@ class HashCaller : Application(){
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()
+        instantiateAllFragment()
+    }
+
+    private fun instantiateAllFragment() {
+
     }
 
     private fun createNotificationChannels() {
@@ -50,4 +55,6 @@ class HashCaller : Application(){
 
          }
     }
+
+
 }

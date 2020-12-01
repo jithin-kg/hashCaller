@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -33,7 +34,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ContactsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ContactsFragment : Fragment(), View.OnClickListener {
+class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
+    private var isDflt = false
     private val TAG = "__ContactFragment"
     private var tabLayout: TabLayout? = null
     private var viewPager: ViewPager? = null
@@ -153,4 +155,8 @@ class ContactsFragment : Fragment(), View.OnClickListener {
         Log.d(TAG, "onClick: searchview")
        startSearchActivity()
     }
+
+    override var isDefaultFgmnt: Boolean
+        get() = isDflt
+        set(value) {isDflt = value}
 }

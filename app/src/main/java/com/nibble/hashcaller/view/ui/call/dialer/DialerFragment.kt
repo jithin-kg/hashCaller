@@ -15,6 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
@@ -31,8 +32,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [DialerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DialerFragment : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
+class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
+    private var isDflt = false
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var dialerFragment: View
@@ -347,6 +348,8 @@ class DialerFragment : Fragment(), View.OnClickListener {
         return num;
     }
 
-
+    override var isDefaultFgmnt: Boolean
+        get() = isDflt
+        set(value) {isDflt = value}
 
 }

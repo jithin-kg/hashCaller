@@ -16,10 +16,13 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.fragment_message_container.*
 
 
-class SMSContainerFragment : Fragment() {
+class SMSContainerFragment : Fragment(), IDefaultFragmentSelection {
+    private var isDflt = false
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -99,6 +102,9 @@ class SMSContainerFragment : Fragment() {
     }
 
 
+    override var isDefaultFgmnt: Boolean
+        get() = isDflt
+        set(value) {isDflt = value}
 
     companion object {
         private const val TAG = "__SMSContainerFragment"
