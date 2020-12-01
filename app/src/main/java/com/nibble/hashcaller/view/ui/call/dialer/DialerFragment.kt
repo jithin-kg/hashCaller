@@ -1,7 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,14 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
-import kotlinx.android.synthetic.main.fragment_blk_list.*
-import kotlinx.android.synthetic.main.fragment_contact_list.*
 import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
 
@@ -54,6 +49,9 @@ class DialerFragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
+//        setHasOptionsMenu(true);
+
+
     }
 
     override fun onAttach(context: Context) {
@@ -190,9 +188,11 @@ class DialerFragment : Fragment(), View.OnClickListener {
         bottomSheetDialog.imgBtnBackspace.setOnClickListener(this)
         bottomSheetDialog.imgBtnBackspace.isEnabled = false
         bottomSheetDialog.editTextTextDigits.showSoftInputOnFocus = false;
-
+//        includeDialer.setOnClickListener(this)
 
         bottomSheetDialog.editTextTextDigits.append("")
+        dialerFragment.imgBtnCloseDialer.setOnClickListener(this)
+
 
 
     }
@@ -252,12 +252,20 @@ class DialerFragment : Fragment(), View.OnClickListener {
             }
             R.id.fabShoDialPad2->{
                 bottomSheetDialog.show()
-            }
+            }R.id.imgBtnCloseDialer->{
+            Log.d(TAG, "onClick: close button clicked")
+            closeDialerFragment()
+        }
             else->{
                 backspacePhoneNumEditText()
             }
         }
 
+    }
+
+    private fun closeDialerFragment() {
+
+        (activity as MainActivity?)?.showCallFragment()
     }
 
     private fun backspacePhoneNumEditText() {

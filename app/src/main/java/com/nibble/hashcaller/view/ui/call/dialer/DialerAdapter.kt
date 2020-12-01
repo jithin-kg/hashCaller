@@ -67,7 +67,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         fun bind(
             callLog: CallLogData, context: Context,
             onContactItemClickListener:(id:String)->Unit ) {
-            name.text = callLog.name
+            name.text = if(callLog.name == null || callLog!!.name!!.isEmpty()) callLog.number else callLog.name
             //        Log.i(TAG, String.valueOf(no));
             setNameFirstChar(callLog)
             val pNo = callLog.number
@@ -101,7 +101,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          }
 
          private fun setNameFirstChar(callLog: CallLogData) {
-             val name: String = if(callLog.name == null) " " else callLog.name!!
+             val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
              val firstLetter = name[0]
              val firstLetterString = firstLetter.toString().toUpperCase()
              circle.text = firstLetterString

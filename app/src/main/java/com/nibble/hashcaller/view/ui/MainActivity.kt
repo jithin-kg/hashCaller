@@ -30,6 +30,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
@@ -60,9 +61,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        firebaseHelper.intializeFirebaseLogin(this);
         hideKeyboard(this)
         setContentView(R.layout.activity_main)
+
         fabBtnShowDialpad.setOnClickListener(this)
         fabBtnShowDialpad.visibility = View.GONE
-//        this.applicationContext
+        Log.d(TAG, "onCreate  height of bottom nav: ${bottomNavigationView.height}")
+//        t his.applicationContext
 //                .contentResolver
 //                .registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 //                        true, ContactObserver(Handler()))
@@ -149,12 +152,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        WorkManager.getInstance().enqueue(request)
     }
 
+
+
     private fun showDialerFragment() {
         val ft = supportFragmentManager.beginTransaction()
-        if (dialerFragment.isAdded) { // if the fragment is already in container
-            ft.show(dialerFragment)
-            dialerFragment.showDialPad()
-        }
+
         // Hide fragment contact
         if (contactFragment.isAdded) {
             ft.hide(contactFragment)
@@ -168,6 +170,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
+        }
+
+        if (dialerFragment.isAdded) { // if the fragment is already in container
+
+            ft.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
+
+            ft.show(dialerFragment)
+            dialerFragment.showDialPad()
+
         }
         // Commit changes
 //        ft.addToBackStack("test")
@@ -301,10 +312,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //    }
 
     private fun showDialPad() {}
-    private fun showCallFragment() {
+     fun showCallFragment() {
         val ft = supportFragmentManager.beginTransaction()
         if (callFragment.isAdded) { // if the fragment is already in container
             ft.show(callFragment)
+            fabBtnShowDialpad.visibility = View.VISIBLE
         }
         // Hide fragment B
         if (blockConfigFragment.isAdded) {
@@ -327,9 +339,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun showMessagesFragment() {
         val ft = supportFragmentManager.beginTransaction()
-        if (messagesFragment.isAdded) { // if the fragment is already in container
-            ft.show(messagesFragment)
-        }
+
         // Hide fragment B
         if (blockConfigFragment.isAdded) {
             ft.hide(blockConfigFragment)
@@ -343,6 +353,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         if (callFragment.isAdded) {
             ft.hide(callFragment)
+        }
+        if(dialerFragment.isAdded){
+            ft.hide(dialerFragment)
+        }
+        if (messagesFragment.isAdded) { // if the fragment is already in container
+            ft.show(messagesFragment)
         }
         // Commit changes
         ft.commit()

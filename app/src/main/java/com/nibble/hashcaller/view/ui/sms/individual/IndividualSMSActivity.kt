@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 
@@ -41,6 +42,8 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
 
     }
+
+
 
     private fun setupViewmodelObserver() {
         viewModel.SMS.observe(this, Observer { sms->

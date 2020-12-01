@@ -2,10 +2,10 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -97,6 +97,7 @@ class SMSContainerFragment : Fragment() {
             }).check()
         return permissionGiven
     }
+
 
 
     companion object {

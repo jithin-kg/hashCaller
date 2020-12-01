@@ -38,7 +38,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
         this.permissionGivenLiveDAta.value = false
 
         initListeners()
-//        observerPermission()
+        observerPermission()
 
 
     }
@@ -171,6 +171,8 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
          */
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode== -1 && requestCode == 222){
+            permissionGivenLiveDAta.value  = true
+
             if(requesetPermission()){
 //                setSharedPref(true)
             }else{

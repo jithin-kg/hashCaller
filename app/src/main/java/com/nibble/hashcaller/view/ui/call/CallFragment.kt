@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_call.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -66,6 +67,7 @@ class CallFragment : Fragment(),View.OnClickListener {
 //        intialize()
         setupViewPager(viewPagerCall)
         tabLayoutCall?.setupWithViewPager(viewPagerCall)
+
 
 
 

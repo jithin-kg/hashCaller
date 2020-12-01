@@ -159,9 +159,10 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun onContactItemClicked(address: String) {
-        smsListVIewModel.update(address)
+        smsListVIewModel.update(address) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )
         intent.putExtra(CONTACT_ADDRES, address)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 

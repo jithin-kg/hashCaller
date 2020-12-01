@@ -13,12 +13,14 @@
         android:layout_height="match_parent"
         tools:listitem="@layout/contact_list" />
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/toolba"
-        android:layout_gravity="top"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
+<!--    <include-->
+<!--        android:id="@+id/includeDialer"-->
+<!--        layout="@layout/toolbar_dialer"-->
+<!--        android:layout_gravity="top"-->
+<!--        android:clickable="true"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:focusable="true" />-->
     <!-- TODO: Update blank fragment layout -->
 <!--    <include-->
 <!--        android:id="@+id/bottom_sheet"-->
@@ -38,5 +40,14 @@
         android:background="#fff"
         android:backgroundTint="#92EC6C"
         android:src="@drawable/ic_baseline_dialpad_24" />
+
+    <ImageButton
+        android:id="@+id/imgBtnCloseDialer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:backgroundTint="#fff"
+        android:layout_gravity="top|left"
+        app:srcCompat="@drawable/ic_baseline_close_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
