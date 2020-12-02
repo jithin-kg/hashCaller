@@ -14,7 +14,7 @@ class SaveSmsService : IntentService("SaveService") {
         values.put("address", senderNo)
         values.put("body", message)
         values.put("date_sent", time)
-        contentResolver.insert(SMSContract.ALL_SMS_URI, values)
+        contentResolver.insert(SMSContract.INBOX_SMS_URI, values)
         val i = Intent("android.intent.action.MAIN").putExtra("new_sms", true)
         this.sendBroadcast(i)
     }

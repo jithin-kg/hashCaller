@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder
 class SMS {
     var id: Long = 0
     var address: SpannableStringBuilder? = null
+    var type:Int = 0
     var addressString: String? = null
     var msg: SpannableStringBuilder? = null
     var msgString:String? = null

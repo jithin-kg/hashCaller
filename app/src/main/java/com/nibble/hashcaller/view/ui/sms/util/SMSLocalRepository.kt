@@ -15,7 +15,7 @@ import java.util.LinkedHashSet
 class SMSLocalRepository(private val context: Context){
 
     companion object{
-        private val URI: Uri = SMSContract.ALL_SMS_URI
+        private val URI: Uri = SMSContract.INBOX_SMS_URI
         private const val TAG = "__SMSLocalRepository"
     }
 
@@ -89,7 +89,7 @@ class SMSLocalRepository(private val context: Context){
 
 
         val cursor = context.contentResolver.query(
-            URI,
+            SMSContract.ALL_SMS_URI,
             null,
             selection,
             selectionArgs,
@@ -105,7 +105,7 @@ class SMSLocalRepository(private val context: Context){
                     objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                     val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
 //                    objSMS.address = num
-
+                    objSMS.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
                     val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
 
@@ -147,6 +147,7 @@ class SMSLocalRepository(private val context: Context){
                     }
 
                     objSMS.addressString = num
+
 
 //                    val count =setSMSReadStatus(objSMS, objSMS.addressString!!)
 //                    objSMS.unReadSMSCount = count!!

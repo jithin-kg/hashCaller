@@ -6,13 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+<!--    android:maxWidth to set max width-->
     <TextView
         android:id="@+id/tvMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="16dp"
-        android:text="TextView"
+        android:padding="8dp"
+        android:text="hi man, how are you?"
+
+        android:layout_marginTop="4dp"
+        android:textColor="#ffffff"
+
+        android:background="@drawable/runded_rectangular_blue_chat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tvTime"
         app:layout_constraintStart_toStartOf="parent"

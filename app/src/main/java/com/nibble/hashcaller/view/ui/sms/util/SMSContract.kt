@@ -4,7 +4,8 @@ import android.net.Uri
 
 object SMSContract {
     @JvmField
-    val ALL_SMS_URI = Uri.parse("content://sms/inbox")
+    val INBOX_SMS_URI = Uri.parse("content://sms/inbox")
+    val ALL_SMS_URI = Uri.parse("content://sms/")
     const val SMS_SELECTION = "address = ? "
     const val SMS_SELECTION_ID = "_id = ? "
     const val COLUMN_ID = "_id"

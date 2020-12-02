@@ -4,6 +4,7 @@ package com.nibble.hashcaller.view.ui.sms.individual
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -16,7 +17,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.SMS
-import kotlinx.android.synthetic.main.sms_individual_list_view.view.*
+import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -30,38 +31,53 @@ import java.util.*
 class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, private val context: Context,
                            private val onContactItemClickListener: (id:String)->Unit
                           ) :
-    androidx.recyclerview.widget.ListAdapter<SMS, SMSIndividualAdapter.ViewHolder>(SMSIndividualDiffCallback()) {
+    androidx.recyclerview.widget.ListAdapter<SMS, SMSIndividualAdapter.ReceivedMessageViewHolder>(SMSIndividualDiffCallback()) {
     private var smsList = emptyList<SMS>()
-
+    private val VIEW_TYPE_MESSAGE_SENT = 2
+    private val VIEW_TYPE_MESSAGE_RECEIVED = 1
     companion object{
         private const val TAG = "__SMSIndividualAdapter";
         public var searchQry:String? = null
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_list_view, parent, false)
-        Log.d(TAG, "onCreateViewHolder: ")
-        return ViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReceivedMessageViewHolder {
+       if(viewType ==VIEW_TYPE_MESSAGE_RECEIVED){
+           val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_recived_item, parent, false)
+           Log.d(TAG, "onCreateViewHolder: ")
+           return ReceivedMessageViewHolder(view)
+       }else {
+           val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_sent_item, parent, false)
+           Log.d(TAG, "onCreateViewHolder: ")
+           return ReceivedMessageViewHolder(view)
+       }
     }
 
-//    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    //    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 //        val contact = contacts[position]
 //        holder.bind(contact, context, onContactItemClickListener)
 //    }
 //override fun getItemCount(): Int {
 //    return smsList.size
-//}
+    override fun getItemViewType(position: Int): Int {
+//        return super.getItemViewType(position)
+        if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
+            //sent message 2
+            return VIEW_TYPE_MESSAGE_SENT
 
-override fun onBindViewHolder(holder:  ViewHolder, position: Int) {
+        }else (smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX)
+            return VIEW_TYPE_MESSAGE_RECEIVED
+    }
+//}
+override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder, position: Int) {
 //    val contact = smsList[position]
 //    holder.bind(contact, context, onContactItemClickListener)
 
     Log.d(TAG, "onBindViewHolder: ")
-    when(holder) {
+    when(holderReceivedMessage.itemViewType) {
 
-        is ViewHolder -> {
-            holder.bind(getItem(position),context, onContactItemClickListener, position, holder)
+         VIEW_TYPE_MESSAGE_SENT -> {
+            holderReceivedMessage.bind(getItem(position),context, onContactItemClickListener, position, holderReceivedMessage)
         }
 
     }
@@ -77,16 +93,97 @@ override fun onBindViewHolder(holder:  ViewHolder, position: Int) {
 
     }
 
-    inner class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val msg = view.tvMsg
-//         private val circle = view.textViewSMScontactCrclr;
-//        private val image = view.findViewById<ImageView>(R.id.contact_image)
+    inner class ReceivedMessageViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        private val msg = view.tvRecivedMsg
+
 
         fun bind(
             sms: SMS, context: Context,
             onContactItemClickListener: (id: String) -> Unit,
             position: Int,
-            holder: ViewHolder
+            holderReceivedMessage: ReceivedMessageViewHolder
+        ) {
+            Log.d(TAG, "bind: called")
+
+            if(position  == smsList.size - 1){
+                positionTracker.lastItemReached()
+            }else if(position < smsList.size - 1){
+                positionTracker.otherPosition()
+            }
+            msg.text = sms.msgString
+
+            setTimeInView(sms.time)
+            view.setOnClickListener{
+
+//                onContactItemClickListener(pNo)
+            }
+        }
+
+        private fun highlightSearhcField(sms: SMS) {
+
+
+        }
+
+        private fun setSpan(str:String, startPos:Int, endPos:Int, v: TextView) {
+            val yellow =
+                BackgroundColorSpan(Color.YELLOW)
+            val spannableStringBuilder =
+                SpannableStringBuilder(str)
+            Log.d(TAG, "setSpan: startPos:$startPos")
+            Log.d(TAG, "setSpan: endPos:$endPos")
+            try{
+                spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+            }catch (e:IndexOutOfBoundsException){
+                Log.d(TAG, "setSpan: $e")
+            }
+
+            v.text = spannableStringBuilder
+        }
+
+        private fun setTimeInView(time: Long?) {
+            val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))
+            val time =   SimpleDateFormat("hh:mm:ss").format(time * 1000)
+//             Log.d(TAG, "date: $date")
+//             Log.d(TAG, "time: $time")
+//             val now: ZonedDateTime  = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));(
+            /**
+             * now(),ofPattern(), format() requires min api 26
+             */
+            val now =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
+                } else {
+                    TODO("VERSION.SDK_INT < O")
+                }
+            val todayDate =
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    .format(now)
+            if(date.equals(todayDate)){
+                //only set time in view
+//                 view.tvTime.text = time
+//             }else{
+//                 view.tvTime.text = date
+            }
+//             Log.d(TAG, "today: $todayDate")
+//             Log.d(TAG, "setTimeInView: $d2")
+
+
+        }
+
+
+
+
+    }
+
+    inner class SentMessageViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        private val msg = view.tvRecivedMsg
+
+
+        fun bind(
+            sms: SMS, context: Context,
+            onContactItemClickListener: (id: String) -> Unit,
+            position: Int,
+            holderReceivedMessage: ReceivedMessageViewHolder
         ) {
             Log.d(TAG, "bind: called")
 
@@ -96,18 +193,8 @@ override fun onBindViewHolder(holder:  ViewHolder, position: Int) {
                 positionTracker.otherPosition()
             }
             msg.text = sms.msgString
-//                view.tvTime.text = sms.time.toString()
-
-
 
             setTimeInView(sms.time)
-
-
-
-
-
-
-
             view.setOnClickListener{
 
 //                onContactItemClickListener(pNo)
@@ -155,9 +242,9 @@ override fun onBindViewHolder(holder:  ViewHolder, position: Int) {
                      .format(now)
              if(date.equals(todayDate)){
                  //only set time in view
-                 view.tvTime.text = time
-             }else{
-                 view.tvTime.text = date
+//                 view.tvTime.text = time
+//             }else{
+//                 view.tvTime.text = date
              }
 //             Log.d(TAG, "today: $todayDate")
 //             Log.d(TAG, "setTimeInView: $d2")

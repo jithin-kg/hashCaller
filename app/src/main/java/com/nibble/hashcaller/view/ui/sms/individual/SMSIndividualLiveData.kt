@@ -18,7 +18,7 @@ class SMSIndividualLiveData(private val context: Context,
     )  {
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
-        val URI: Uri = SMSContract.ALL_SMS_URI
+        val URI: Uri = SMSContract.INBOX_SMS_URI
         private const val TAG = "__MessagesLiveData"
     }
     private fun getMessages(context: Context): List<SMS> {
