@@ -8,7 +8,7 @@
 
 <!--    android:maxWidth to set max width-->
     <TextView
-        android:id="@+id/tvMsg"
+        android:id="@+id/tvSentMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -17,14 +17,14 @@
         android:layout_marginTop="4dp"
         android:textColor="#ffffff"
 
-        android:background="@drawable/runded_rectangular_blue_chat"
+        android:background="@drawable/runded_rectangular_orange_chat"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tvTime"
+        app:layout_constraintEnd_toStartOf="@+id/tvSentTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvTime"
+        android:id="@+id/tvSentTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -33,6 +33,6 @@
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvMsg"
+        app:layout_constraintStart_toEndOf="@+id/tvSentMsg"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

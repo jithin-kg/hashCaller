@@ -10,7 +10,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/edtTxtMSg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,15 +52,25 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/edtTxtMSg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnSend"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <ImageButton
+        android:id="@+id/imgBtnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edtTxtMSg"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:srcCompat="@drawable/ic_baseline_send_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

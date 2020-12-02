@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
+import kotlinx.android.synthetic.main.sms_individual_sent_item.view.*
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -29,9 +30,9 @@ import java.util.*
  * Created by Jithin KG on 22,July,2020
  */
 class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, private val context: Context,
-                           private val onContactItemClickListener: (id:String)->Unit
-                          ) :
-    androidx.recyclerview.widget.ListAdapter<SMS, SMSIndividualAdapter.ReceivedMessageViewHolder>(SMSIndividualDiffCallback()) {
+                            private val onContactItemClickListener: (id:String)->Unit
+) :
+    androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSIndividualDiffCallback()) {
     private var smsList = emptyList<SMS>()
     private val VIEW_TYPE_MESSAGE_SENT = 2
     private val VIEW_TYPE_MESSAGE_RECEIVED = 1
@@ -41,16 +42,16 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReceivedMessageViewHolder {
-       if(viewType ==VIEW_TYPE_MESSAGE_RECEIVED){
-           val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_recived_item, parent, false)
-           Log.d(TAG, "onCreateViewHolder: ")
-           return ReceivedMessageViewHolder(view)
-       }else {
-           val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_sent_item, parent, false)
-           Log.d(TAG, "onCreateViewHolder: ")
-           return ReceivedMessageViewHolder(view)
-       }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if(viewType == VIEW_TYPE_MESSAGE_RECEIVED){
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_recived_item, parent, false)
+            Log.d(TAG, "onCreateViewHolder: ")
+            return ReceivedMessageViewHolder(view)
+        }else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_sent_item, parent, false)
+            Log.d(TAG, "onCreateViewHolder: ")
+            return SentMessageViewHolder(view)
+        }
     }
 
     //    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -65,23 +66,27 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             //sent message 2
             return VIEW_TYPE_MESSAGE_SENT
 
-        }else (smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX)
-            return VIEW_TYPE_MESSAGE_RECEIVED
+        }
+        return VIEW_TYPE_MESSAGE_RECEIVED
+
     }
-//}
-override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder, position: Int) {
+    //}
+    override fun onBindViewHolder(holder:  RecyclerView.ViewHolder, position: Int) {
 //    val contact = smsList[position]
 //    holder.bind(contact, context, onContactItemClickListener)
 
-    Log.d(TAG, "onBindViewHolder: ")
-    when(holderReceivedMessage.itemViewType) {
+        Log.d(TAG, "onBindViewHolder: ")
+        when(holder.itemViewType) {
 
-         VIEW_TYPE_MESSAGE_SENT -> {
-            holderReceivedMessage.bind(getItem(position),context, onContactItemClickListener, position, holderReceivedMessage)
+            VIEW_TYPE_MESSAGE_SENT -> {
+                (holder as SentMessageViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
+            }
+            VIEW_TYPE_MESSAGE_RECEIVED->{
+                (holder as ReceivedMessageViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
+            }
+
         }
-
     }
-}
 
     fun setList(it: List<SMS>?) {
         smsList = it!!
@@ -101,7 +106,7 @@ override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder,
             sms: SMS, context: Context,
             onContactItemClickListener: (id: String) -> Unit,
             position: Int,
-            holderReceivedMessage: ReceivedMessageViewHolder
+            holderReceivedMessage: RecyclerView.ViewHolder
         ) {
             Log.d(TAG, "bind: called")
 
@@ -110,7 +115,7 @@ override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder,
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text = sms.msgString
+            msg.text = if (sms.msgString == null) " null" else sms.msgString
 
             setTimeInView(sms.time)
             view.setOnClickListener{
@@ -176,23 +181,24 @@ override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder,
     }
 
     inner class SentMessageViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val msg = view.tvRecivedMsg
+        private val msg = view.tvSentMsg
 
 
         fun bind(
-            sms: SMS, context: Context,
+            sms: SMS,
+            context: Context,
             onContactItemClickListener: (id: String) -> Unit,
             position: Int,
-            holderReceivedMessage: ReceivedMessageViewHolder
+            holderReceivedMessage: RecyclerView.ViewHolder
         ) {
             Log.d(TAG, "bind: called")
 
             if(position  == smsList.size - 1){
-            positionTracker.lastItemReached()
+                positionTracker.lastItemReached()
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text = sms.msgString
+            msg.text =  sms.msgString
 
             setTimeInView(sms.time)
             view.setOnClickListener{
@@ -201,61 +207,61 @@ override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder,
             }
         }
 
-         private fun highlightSearhcField(sms: SMS) {
+        private fun highlightSearhcField(sms: SMS) {
 
 
-         }
+        }
 
-         private fun setSpan(str:String, startPos:Int, endPos:Int, v: TextView) {
-             val yellow =
-                 BackgroundColorSpan(Color.YELLOW)
-             val spannableStringBuilder =
-                 SpannableStringBuilder(str)
-             Log.d(TAG, "setSpan: startPos:$startPos")
-             Log.d(TAG, "setSpan: endPos:$endPos")
-             try{
-                 spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-             }catch (e:IndexOutOfBoundsException){
-                 Log.d(TAG, "setSpan: $e")
-             }
+        private fun setSpan(str:String, startPos:Int, endPos:Int, v: TextView) {
+            val yellow =
+                BackgroundColorSpan(Color.YELLOW)
+            val spannableStringBuilder =
+                SpannableStringBuilder(str)
+            Log.d(TAG, "setSpan: startPos:$startPos")
+            Log.d(TAG, "setSpan: endPos:$endPos")
+            try{
+                spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+            }catch (e:IndexOutOfBoundsException){
+                Log.d(TAG, "setSpan: $e")
+            }
 
-             v.text = spannableStringBuilder
-         }
+            v.text = spannableStringBuilder
+        }
 
-         private fun setTimeInView(time: Long?) {
-             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))
-              val time =   SimpleDateFormat("hh:mm:ss").format(time * 1000)
+        private fun setTimeInView(time: Long?) {
+            val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))
+            val time =   SimpleDateFormat("hh:mm:ss").format(time * 1000)
 //             Log.d(TAG, "date: $date")
 //             Log.d(TAG, "time: $time")
 //             val now: ZonedDateTime  = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));(
-             /**
-              * now(),ofPattern(), format() requires min api 26
-              */
-             val now =
-                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                     ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
-                 } else {
-                     TODO("VERSION.SDK_INT < O")
-                 }
-             val todayDate =
-                 DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                     .format(now)
-             if(date.equals(todayDate)){
-                 //only set time in view
+            /**
+             * now(),ofPattern(), format() requires min api 26
+             */
+            val now =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
+                } else {
+                    TODO("VERSION.SDK_INT < O")
+                }
+            val todayDate =
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    .format(now)
+            if(date.equals(todayDate)){
+                //only set time in view
 //                 view.tvTime.text = time
 //             }else{
 //                 view.tvTime.text = date
-             }
+            }
 //             Log.d(TAG, "today: $todayDate")
 //             Log.d(TAG, "setTimeInView: $d2")
 
 
-         }
+        }
 
 
 
 
-     }
+    }
     class SMSIndividualDiffCallback : DiffUtil.ItemCallback<SMS>() {
 
 
@@ -279,16 +285,16 @@ override fun onBindViewHolder(holderReceivedMessage:  ReceivedMessageViewHolder,
             val b = oldItem.equals(newItem) && oldItem.time == newItem.time
 
             Log.d(TAG, "areContentsTheSame: b : $b")
-            return oldItem.time == newItem.time && oldItem.msgString == newItem.msgString
+            return oldItem.time == newItem.time && oldItem.msgString == newItem.msgString && oldItem.type == newItem.type
         }
 
     }
 
-interface ItemPositionTracker{
-    fun lastItemReached()
-    fun otherPosition()
-    fun shouldWeScroll()
-}
+    interface ItemPositionTracker{
+        fun lastItemReached()
+        fun otherPosition()
+        fun shouldWeScroll()
+    }
 
 
 }

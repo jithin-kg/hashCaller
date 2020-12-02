@@ -1,6 +1,11 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.DeliverReceiver
+import com.nibble.hashcaller.utils.SentReceiver
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -19,23 +26,28 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     private lateinit var viewModel:SMSIndividualViewModel
     private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
+    private var contactAddress = ""
     private var oldLIstSize = 0
     private var countNewItem = 0
     private var recyclerViewAtEnd = true
     private var firstime = true
     private lateinit var adapter:SMSIndividualAdapter
     private lateinit var layoutMngr:LinearLayoutManager
-//    private var newSize = 0
+    private var sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
+    private var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
+
+    //    private var newSize = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_individual_s_m_s)
 
-        val contactAddress = intent.getStringExtra(CONTACT_ADDRES)
+         contactAddress = intent.getStringExtra(CONTACT_ADDRES)
         contact = contactAddress
 
 
         initViewModel()
         initAdapter()
+        initListners()
         setupClickListerner()
         registerAdapterListener()
         setupViewmodelObserver()
@@ -43,6 +55,9 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
     }
 
+    private fun initListners() {
+        imgBtnSend.setOnClickListener(this)
+    }
 
 
     private fun setupViewmodelObserver() {
@@ -108,6 +123,7 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     }
 
     private fun registerAdapterListener() {
+        //for auto scrolling
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
@@ -183,7 +199,31 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
             R.id.tvNewMsgIndication->{
                 recyclerView.scrollToPosition(adapter.itemCount - 1)
                 clearNewMessageIndication()
+            }R.id.imgBtnSend->{
+                    sendSms()
             }
+
         }
+    }
+
+    private fun sendSms() {
+        val SENT = "SMS_SENT"
+        val DELIVERED = "SMS_DELIVERED"
+
+
+
+
+        var sendIntent:PendingIntent? = PendingIntent.getBroadcast(this, 0, Intent(SENT), 0)
+        var deliveryIntent:PendingIntent? = PendingIntent.getBroadcast(this, 0, Intent(DELIVERED), 0)
+
+        registerReceiver(sendBroadcastReceiver, IntentFilter(SENT))
+        registerReceiver(deliveryBroadcastReceiver, IntentFilter(DELIVERED))
+
+        val smsManager: SmsManager = SmsManager.getDefault()
+        smsManager.sendTextMessage(
+            contactAddress,null , edtTxtMSg.text.toString() ,
+            sendIntent, deliveryIntent
+        )
+
     }
 }

@@ -50,7 +50,7 @@
         android:id="@+id/tvSMSMPeek"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
 
         android:maxLines="1"

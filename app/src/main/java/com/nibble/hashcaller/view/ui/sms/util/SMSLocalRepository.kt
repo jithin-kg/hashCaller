@@ -6,11 +6,67 @@ import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.provider.CallLog
+import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import java.util.LinkedHashSet
+import kotlin.math.log
+
+/**
+ * type 2 sent message and type 1 recieved message
+ * Telephony.TextBasedSmsColumns.MESSAGE_TYPE_DRAFT
+ * Message type: drafts.
+Constant Value: 3 (0x00000003)
+
+public static final int MESSAGE_TYPE_FAILED
+Message type: failed outgoing message.
+Constant Value: 5 (0x00000005)
+
+MESSAGE_TYPE_INBOX
+public static final int MESSAGE_TYPE_INBOX
+Message type: inbox.
+Constant Value: 1 (0x00000001)
+
+MESSAGE_TYPE_OUTBOX
+public static final int MESSAGE_TYPE_OUTBOX
+Message type: outbox.
+Constant Value: 4 (0x00000004)
+
+MESSAGE_TYPE_QUEUED
+public static final int MESSAGE_TYPE_QUEUED
+Message type: queued to send later.
+Constant Value: 6 (0x00000006)
+
+MESSAGE_TYPE_SENT
+public static final int MESSAGE_TYPE_SENT
+Message type: sent messages.
+Constant Value: 2 (0x00000002)
+
+PERSON
+public static final String PERSON
+The ID of the sender of the conversation, if present.
+
+Type: INTEGER (reference to item in content://contacts/people)
+
+Constant Value: "person"
+
+READ
+public static final String READ
+Has the message been read?
+Type: INTEGER (boolean)
+Constant Value: "read"
+
+SEEN
+Added in API level 19
+
+public static final String SEEN
+Has the message been seen by the user? The "seen" flag determines whether we need to show a notification.
+Type: INTEGER (boolean)
+Constant Value: "seen"
+ */
+//
 
 class SMSLocalRepository(private val context: Context){
 
@@ -230,7 +286,7 @@ class SMSLocalRepository(private val context: Context){
         var smslist = mutableListOf<SMS>()
 
         val cursor = context.contentResolver.query(
-            URI,
+            SMSContract.ALL_SMS_URI,
             null,
             SMSContract.SMS_SELECTION,
             selectionArgs,
@@ -241,9 +297,29 @@ class SMSLocalRepository(private val context: Context){
             do {
                 val sms = SMS()
 
+
                 sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
                 sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                 sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
+               sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                Log.d(TAG, "fetchIndividualSMS:person ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("person"))}")
+                 Log.d(TAG, "fetchIndividualSMS:date_sent ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("date_sent"))}")
+                 Log.d(TAG, "fetchIndividualSMS:protocol ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("protocol"))}")
+                 Log.d(TAG, "fetchIndividualSMS:read ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("read"))}")
+                 Log.d(TAG, "fetchIndividualSMS:status ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("status"))}")
+                 Log.d(TAG, "fetchIndividualSMS:type ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("type"))}")
+                 Log.d(TAG, "fetchIndividualSMS:reply_path_present ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("reply_path_present"))}")
+                 Log.d(TAG, "fetchIndividualSMS:subject ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("subject"))}")
+                 Log.d(TAG, "fetchIndividualSMS:body ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))}")
+                 Log.d(TAG, "fetchIndividualSMS:service_center ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("service_center"))}")
+                 Log.d(TAG, "fetchIndividualSMS:locked ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("locked"))}")
+                 Log.d(TAG, "fetchIndividualSMS:sub_id ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("sub_id"))}")
+                 Log.d(TAG, "fetchIndividualSMS:error_code ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("error_code"))}")
+                 Log.d(TAG, "fetchIndividualSMS:creator ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("creator"))}")
+                 Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+                 Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+
                 smslist.add(sms)
                 try {
 
