@@ -64,9 +64,9 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         viewModel.SMS.observe(this, Observer { sms->
             sms.let {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
-                Log.d(TAG, "onCreate: ${it.size}")
 //                adapter.submitList(it)
 //                newSize = it.size
+                Log.d(TAG, "setupViewmodelObserver: size : ${it.size}")
                 adapter.setList(it)
                 if(firstime){
                     recyclerView.scrollToPosition(it.size - 1);

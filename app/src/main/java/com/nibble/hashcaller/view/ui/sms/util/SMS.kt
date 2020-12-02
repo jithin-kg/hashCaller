@@ -10,6 +10,7 @@ class SMS {
     var msg: SpannableStringBuilder? = null
     var msgString:String? = null
     var msgType:Int = 0
+    var currentDate:String? = null
     var unReadSMSCount:Int = 0
     var readState //"0" for have not read sms and "1" for have read sms
             : Int = 0

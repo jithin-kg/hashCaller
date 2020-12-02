@@ -11,7 +11,9 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
-import java.util.LinkedHashSet
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.log
 
 /**
@@ -281,6 +283,7 @@ class SMSLocalRepository(private val context: Context){
     }
 
     fun fetchIndividualSMS(contact: String?): List<SMS> {
+        var prevDate = ""
         var selectionArgs: Array<String>? = null
         selectionArgs = arrayOf(contact!!)
         var smslist = mutableListOf<SMS>()
@@ -295,30 +298,46 @@ class SMSLocalRepository(private val context: Context){
         if(cursor != null && cursor.moveToFirst()) {
 
             do {
+                val smsWithCurrentDate = SMS()
+                val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                val currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
+
+
+                if(currentDate != prevDate){
+                    prevDate = currentDate
+                    smsWithCurrentDate.currentDate = prevDate
+                    smslist.add(smsWithCurrentDate)
+
+
+                }
                 val sms = SMS()
+                    sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                    sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
+
+                    sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
+                    sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+                    sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
 
-                sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
-                sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
-                sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
-               sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
-                sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
-                Log.d(TAG, "fetchIndividualSMS:person ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("person"))}")
-                 Log.d(TAG, "fetchIndividualSMS:date_sent ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("date_sent"))}")
-                 Log.d(TAG, "fetchIndividualSMS:protocol ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("protocol"))}")
-                 Log.d(TAG, "fetchIndividualSMS:read ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("read"))}")
-                 Log.d(TAG, "fetchIndividualSMS:status ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("status"))}")
-                 Log.d(TAG, "fetchIndividualSMS:type ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("type"))}")
-                 Log.d(TAG, "fetchIndividualSMS:reply_path_present ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("reply_path_present"))}")
-                 Log.d(TAG, "fetchIndividualSMS:subject ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("subject"))}")
-                 Log.d(TAG, "fetchIndividualSMS:body ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))}")
-                 Log.d(TAG, "fetchIndividualSMS:service_center ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("service_center"))}")
-                 Log.d(TAG, "fetchIndividualSMS:locked ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("locked"))}")
-                 Log.d(TAG, "fetchIndividualSMS:sub_id ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("sub_id"))}")
-                 Log.d(TAG, "fetchIndividualSMS:error_code ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("error_code"))}")
-                 Log.d(TAG, "fetchIndividualSMS:creator ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("creator"))}")
-                 Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
-                 Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+
+                    Log.d(TAG, "fetchIndividualSMS:person ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("person"))}")
+                    Log.d(TAG, "fetchIndividualSMS:date_sent ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("date_sent"))}")
+                    Log.d(TAG, "fetchIndividualSMS:protocol ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("protocol"))}")
+                    Log.d(TAG, "fetchIndividualSMS:read ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("read"))}")
+                    Log.d(TAG, "fetchIndividualSMS:status ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("status"))}")
+                    Log.d(TAG, "fetchIndividualSMS:type ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("type"))}")
+                    Log.d(TAG, "fetchIndividualSMS:reply_path_present ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("reply_path_present"))}")
+                    Log.d(TAG, "fetchIndividualSMS:subject ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("subject"))}")
+                    Log.d(TAG, "fetchIndividualSMS:body ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))}")
+                    Log.d(TAG, "fetchIndividualSMS:service_center ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("service_center"))}")
+                    Log.d(TAG, "fetchIndividualSMS:locked ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("locked"))}")
+                    Log.d(TAG, "fetchIndividualSMS:sub_id ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("sub_id"))}")
+                    Log.d(TAG, "fetchIndividualSMS:error_code ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("error_code"))}")
+                    Log.d(TAG, "fetchIndividualSMS:creator ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("creator"))}")
+                    Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+                    Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+
+
 
                 smslist.add(sms)
                 try {

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.SMS
+import kotlinx.android.synthetic.main.sms_indiivdual_date.view.*
 import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_sent_item.view.*
 import java.text.SimpleDateFormat
@@ -36,21 +37,29 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
     private var smsList = emptyList<SMS>()
     private val VIEW_TYPE_MESSAGE_SENT = 2
     private val VIEW_TYPE_MESSAGE_RECEIVED = 1
+    private val VIEW_TYPE_DATE = 3
+
     companion object{
         private const val TAG = "__SMSIndividualAdapter";
         public var searchQry:String? = null
+        private var prevDate = ""
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if(viewType == VIEW_TYPE_MESSAGE_RECEIVED){
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_recived_item, parent, false)
-            Log.d(TAG, "onCreateViewHolder: ")
-            return ReceivedMessageViewHolder(view)
-        }else {
+
+            return ReceivedSMSViewHolder(view)
+        }else if(viewType == VIEW_TYPE_DATE) {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.sms_indiivdual_date, parent, false)
+
+            return SMSDate(view)
+        }
+        else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_sent_item, parent, false)
-            Log.d(TAG, "onCreateViewHolder: ")
-            return SentMessageViewHolder(view)
+            return SentSMSViewHolder(view)
         }
     }
 
@@ -66,8 +75,12 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             //sent message 2
             return VIEW_TYPE_MESSAGE_SENT
 
+        }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX ){
+            return VIEW_TYPE_MESSAGE_RECEIVED
+        }else{
+            return  VIEW_TYPE_DATE
         }
-        return VIEW_TYPE_MESSAGE_RECEIVED
+
 
     }
     //}
@@ -79,12 +92,14 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
         when(holder.itemViewType) {
 
             VIEW_TYPE_MESSAGE_SENT -> {
-                (holder as SentMessageViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
+                (holder as SentSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
             VIEW_TYPE_MESSAGE_RECEIVED->{
-                (holder as ReceivedMessageViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
+                (holder as ReceivedSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
-
+            VIEW_TYPE_DATE->{
+                (holder as SMSDate).bind(getItem(position),context, onContactItemClickListener, position, holder)
+            }
         }
     }
 
@@ -98,7 +113,41 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
     }
 
-    inner class ReceivedMessageViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+
+    inner class SMSDate(private val view: View) : RecyclerView.ViewHolder(view) {
+
+
+        fun bind(
+            sms: SMS, context: Context,
+            onContactItemClickListener: (id: String) -> Unit,
+            position: Int,
+            holderReceivedMessage: RecyclerView.ViewHolder
+        ) {
+
+            if(position  == smsList.size - 1){
+                positionTracker.lastItemReached()
+            }else if(position < smsList.size - 1){
+                positionTracker.otherPosition()
+            }
+
+//            if(sms.currentDate!=null){
+                val date =  sms.currentDate
+//                if(prevDate != date ){
+                    prevDate = date!!
+                    Log.d(TAG, "bind: setting date ${sms.currentDate}")
+                    view.tvSMSDate.text = sms.currentDate
+//                }
+//            }
+            
+            view.setOnClickListener{
+
+//                onContactItemClickListener(pNo)
+            }
+        }
+
+    }
+
+    inner class ReceivedSMSViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val msg = view.tvRecivedMsg
 
 
@@ -117,7 +166,10 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }
             msg.text = if (sms.msgString == null) " null" else sms.msgString
 
+            val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
+
             setTimeInView(sms.time)
+
             view.setOnClickListener{
 
 //                onContactItemClickListener(pNo)
@@ -164,10 +216,10 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 DateTimeFormatter.ofPattern("dd/MM/yyyy")
                     .format(now)
             if(date.equals(todayDate)){
-                //only set time in view
-//                 view.tvTime.text = time
-//             }else{
-//                 view.tvTime.text = date
+//                only set time in view
+                 view.tvRecivedTime.text = time
+             }else{
+                 view.tvRecivedTime.text = date
             }
 //             Log.d(TAG, "today: $todayDate")
 //             Log.d(TAG, "setTimeInView: $d2")
@@ -180,7 +232,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
     }
 
-    inner class SentMessageViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class SentSMSViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val msg = view.tvSentMsg
 
 
@@ -230,7 +282,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
         private fun setTimeInView(time: Long?) {
             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))
-            val time =   SimpleDateFormat("hh:mm:ss").format(time * 1000)
+            val time =   SimpleDateFormat("hh:mm").format(time * 1000)
 //             Log.d(TAG, "date: $date")
 //             Log.d(TAG, "time: $time")
 //             val now: ZonedDateTime  = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));(
@@ -247,8 +299,8 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 DateTimeFormatter.ofPattern("dd/MM/yyyy")
                     .format(now)
             if(date.equals(todayDate)){
-                //only set time in view
-//                 view.tvTime.text = time
+//                only set time in view
+                 view.tvSenttime.text = time
 //             }else{
 //                 view.tvTime.text = date
             }
@@ -276,13 +328,13 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            if(oldItem.equals(newItem)){
+            if(oldItem == newItem){
                 Log.d(TAG, "areContentsTheSame:  equal")
             }else{
                 Log.d(TAG, "areContentsTheSame: not equal")
 
             }
-            val b = oldItem.equals(newItem) && oldItem.time == newItem.time
+            val b = oldItem == newItem && oldItem.time == newItem.time
 
             Log.d(TAG, "areContentsTheSame: b : $b")
             return oldItem.time == newItem.time && oldItem.msgString == newItem.msgString
