@@ -210,9 +210,6 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         val SENT = "SMS_SENT"
         val DELIVERED = "SMS_DELIVERED"
 
-
-
-
         var sendIntent:PendingIntent? = PendingIntent.getBroadcast(this, 0, Intent(SENT), 0)
         var deliveryIntent:PendingIntent? = PendingIntent.getBroadcast(this, 0, Intent(DELIVERED), 0)
 

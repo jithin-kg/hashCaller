@@ -285,7 +285,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             val b = oldItem.equals(newItem) && oldItem.time == newItem.time
 
             Log.d(TAG, "areContentsTheSame: b : $b")
-            return oldItem.time == newItem.time && oldItem.msgString == newItem.msgString && oldItem.type == newItem.type
+            return oldItem.time == newItem.time && oldItem.msgString == newItem.msgString
         }
 
     }

@@ -301,8 +301,8 @@ class SMSLocalRepository(private val context: Context){
                 sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
                 sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                 sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
-               sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
-
+               sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+                sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
                 Log.d(TAG, "fetchIndividualSMS:person ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("person"))}")
                  Log.d(TAG, "fetchIndividualSMS:date_sent ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("date_sent"))}")
                  Log.d(TAG, "fetchIndividualSMS:protocol ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("protocol"))}")

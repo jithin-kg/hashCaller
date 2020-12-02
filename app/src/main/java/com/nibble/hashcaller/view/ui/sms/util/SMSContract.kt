@@ -6,7 +6,7 @@ object SMSContract {
     @JvmField
     val INBOX_SMS_URI = Uri.parse("content://sms/inbox")
 
-    val ALL_SMS_URI = Uri.parse("content://sms/")
+    val ALL_SMS_URI = Uri.parse("content://sms/");
 
     const val SMS_SELECTION = "address = ? "
     const val SMS_SELECTION_ID = "_id = ? "
