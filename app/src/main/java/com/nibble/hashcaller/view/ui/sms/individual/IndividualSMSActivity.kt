@@ -1,11 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
-import android.telephony.SmsManager
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -14,11 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.utils.DeliverReceiver
-import com.nibble.hashcaller.utils.SentReceiver
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-
 import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 
 
@@ -33,17 +27,21 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     private var firstime = true
     private lateinit var adapter:SMSIndividualAdapter
     private lateinit var layoutMngr:LinearLayoutManager
-    private var sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
-    private var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
+//    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
+//    private var time:String? = null
+    private var address = ""
+//    private var sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
+//    private var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
 
     //    private var newSize = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_individual_s_m_s)
-
+//        messageSent.value = false
          contactAddress = intent.getStringExtra(CONTACT_ADDRES)
         contact = contactAddress
 
+        observerSmsSent()
 
         initViewModel()
         initAdapter()
@@ -53,10 +51,38 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         setupViewmodelObserver()
 
 
+
     }
+
+    private fun observerSmsSent() {
+//        messageSent.observe(this, Observer {
+//                it->
+//            run {
+//            if (it == true) {
+//                viewModel.moveToSent(time, address)
+
+//                GlobalScope.launch {
+//
+//                    val values = ContentValues()
+//                    values.put("type", "2")
+//                    Log.d(TAG, "observerSmsSent: date $time")
+//                    Log.d(TAG, "observerSmsSent: address $address")
+////                    viewModel.moveToSent(time, address)
+////                    contentResolver.update(SMSContract.ALL_SMS_URI, values, "_id='$id'  AND address='$address'",null)
+////                   val selctionClause =  Telephony.TextBasedSmsColumns.DATE + " LIKE '$time' AND  "
+//                    contentResolver.update(SMSContract.ALL_SMS_URI, values, "date = '$time' and address='$address'",null)
+//
+//                }
+
+//            }
+//            }
+//        })
+    }
+
 
     private fun initListners() {
         imgBtnSend.setOnClickListener(this)
+//        btnUpdate.setOnClickListener(this)
     }
 
 
@@ -67,6 +93,11 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 //                adapter.submitList(it)
 //                newSize = it.size
                 Log.d(TAG, "setupViewmodelObserver: size : ${it.size}")
+                Log.d(TAG, "setupViewmodelObserver:  type of last item ${it[it.size-1].type}")
+                Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
+                Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
+                Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
+
                 adapter.setList(it)
                 if(firstime){
                     recyclerView.scrollToPosition(it.size - 1);
@@ -89,20 +120,6 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
                 }
 
-//                adapter.notifyItemRangeChanged(oldSize, it.size)
-//                oldSize = it.size
-//                recyclerView.scrollToPosition(recyclerView.adapter!!.itemCount -1 )
-//                val recyclerViewState =
-//                    recyclerView.layoutManager!!.onSaveInstanceState()
-//// apply diff result here (dispatch updates to the adapter)
-//// apply diff result here (dispatch updates to the adapter)
-//                recyclerView.layoutManager!!.onRestoreInstanceState(recyclerViewState)
-//                adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
-//                    override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-//                        super.onItemRangeInserted(positionStart, itemCount)
-//                        recyclerView.smoothScrollToPosition(0)
-//                    }
-//                })
 
 
 
@@ -174,6 +191,12 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     companion object{
         var contact:String? = null
         const val TAG = "__IndividualSMSActivity"
+        lateinit var dotedPg:HorizontalDottedProgress
+
+        private fun stopDotedAnimation() {
+//            dotedPgSMSSenging.clearAnimation()
+//            dotedPgSMSSenging.visibility = View.GONE
+        }
     }
 
     override fun lastItemReached() {
@@ -202,25 +225,70 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
             }R.id.imgBtnSend->{
                     sendSms()
             }
+//            R.id.btnUpdate->{
+//            viewModel.update()
+//        }
 
         }
     }
 
     private fun sendSms() {
-        val SENT = "SMS_SENT"
-        val DELIVERED = "SMS_DELIVERED"
+//        messageSent.value = false
+        /**
+         * When there is no network the messages is added to the queue
+         * and at the moment user clicks send the message is added to outbox
+         * and later updated to sended in table ,meanwhile when user starts typing the messsage is added to draft
+         */
+        Log.d(TAG, "sendSms: clicked contact address $contactAddress")
+        val msg = edtTxtMSg.text.toString()
+        viewModel.sendSms(msg, applicationContext, contactAddress)
 
-        var sendIntent:PendingIntent? = PendingIntent.getBroadcast(this, 0, Intent(SENT), 0)
-        var deliveryIntent:PendingIntent? = PendingIntent.getBroadcast(this, 0, Intent(DELIVERED), 0)
 
-        registerReceiver(sendBroadcastReceiver, IntentFilter(SENT))
-        registerReceiver(deliveryBroadcastReceiver, IntentFilter(DELIVERED))
 
-        val smsManager: SmsManager = SmsManager.getDefault()
-        smsManager.sendTextMessage(
-            contactAddress,null , edtTxtMSg.text.toString() ,
-            sendIntent, deliveryIntent
-        )
+
 
     }
+    override fun onResume() {
+        super.onResume()
+//            LocalBroadcastManager.getInstance(this).registerReceiver(
+//                messagesReceiver,
+//                IntentFilter("myhashcallersms")
+//            )
+        registerReceiver(messagesReceiver, IntentFilter("myhashcallersms"))
+
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(messagesReceiver)
+        super.onDestroy()
+    }
+
+    //receiver as a global variable in your Fragment class
+    private val messagesReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent != null && intent.extras != null) {
+//                val smsMessageStr = intent.extras!!.getString("idvalue")
+                Log.d("messagesReceiver", "onReceive: intent ")
+                val extras= intent.extras
+                 var time = extras?.getString("date")!!
+                 address = extras?.getString("address")!!
+//                Log.d(TAG, "onReceive:id $id")
+                Log.d(TAG, "onReceive: address $address")
+                Log.d(TAG, "onReceive: time $time")
+                val values = ContentValues().apply {
+                    put("type", "2")
+                }
+//                viewModel.unregister()
+                viewModel.moveToSent(time, address)
+
+//                    Log.d(TAG, "observerSmsSent: date $time")
+//                    Log.d(TAG, "observerSmsSent: address $address")
+//                contentResolver.update(SMSContract.ALL_SMS_URI, values, "date = '$time'",null)
+//                contentResolver.update(SMSContract.ALL_SMS_URI, values, "date = '$time' and address='$address'",null)
+//                messageSent.value = true
+            }
+        }
+    }
+
 }
+

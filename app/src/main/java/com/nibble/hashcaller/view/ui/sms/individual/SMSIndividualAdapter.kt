@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_indiivdual_date.view.*
+import kotlinx.android.synthetic.main.sms_individual_outbox_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_sent_item.view.*
 import java.text.SimpleDateFormat
@@ -37,7 +38,8 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
     private var smsList = emptyList<SMS>()
     private val VIEW_TYPE_MESSAGE_SENT = 2
     private val VIEW_TYPE_MESSAGE_RECEIVED = 1
-    private val VIEW_TYPE_DATE = 3
+    private val VIEW_TYPE_MESSAGE_OUTBOX  = 4
+    private val VIEW_TYPE_DATE = 6
 
     companion object{
         private const val TAG = "__SMSIndividualAdapter";
@@ -55,7 +57,13 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.sms_indiivdual_date, parent, false)
 
-            return SMSDate(view)
+            return SMSDateViewHolder(view)
+        }
+        else if(viewType == VIEW_TYPE_MESSAGE_OUTBOX){
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.sms_individual_outbox_item, parent, false)
+
+            return OutBoxSMSViewHolder(view)
         }
         else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_individual_sent_item, parent, false)
@@ -77,7 +85,11 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
         }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX ){
             return VIEW_TYPE_MESSAGE_RECEIVED
-        }else{
+        }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX){
+//            Log.d(TAG, "getItemViewType: outbox msg ${Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX}")
+            return VIEW_TYPE_MESSAGE_OUTBOX
+        }
+        else{
             return  VIEW_TYPE_DATE
         }
 
@@ -88,7 +100,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //    val contact = smsList[position]
 //    holder.bind(contact, context, onContactItemClickListener)
 
-        Log.d(TAG, "onBindViewHolder: ")
+//        Log.d(TAG, "onBindViewHolder: ")
         when(holder.itemViewType) {
 
             VIEW_TYPE_MESSAGE_SENT -> {
@@ -98,13 +110,17 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 (holder as ReceivedSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
             VIEW_TYPE_DATE->{
-                (holder as SMSDate).bind(getItem(position),context, onContactItemClickListener, position, holder)
+                (holder as SMSDateViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
+            }
+            VIEW_TYPE_MESSAGE_OUTBOX->{
+                (holder as OutBoxSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
         }
     }
 
     fun setList(it: List<SMS>?) {
         smsList = it!!
+        Log.d(TAG, "setList: ${smsList.size}")
         this.submitList(it)
 //        if(smsList.isNotEmpty() && smsList.size < it!!.size){
 //            positionTracker.shouldWeScroll()
@@ -114,7 +130,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
     }
 
 
-    inner class SMSDate(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class SMSDateViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
 
         fun bind(
@@ -133,9 +149,11 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //            if(sms.currentDate!=null){
                 val date =  sms.currentDate
 //                if(prevDate != date ){
-                    prevDate = date!!
-                    Log.d(TAG, "bind: setting date ${sms.currentDate}")
-                    view.tvSMSDate.text = sms.currentDate
+                    if(date!=null)
+                        prevDate = date!!
+                     view.tvSMSDate.text = sms.currentDate
+//                    Log.d(TAG, "bind: setting date ${sms.currentDate}")
+
 //                }
 //            }
             
@@ -157,7 +175,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             position: Int,
             holderReceivedMessage: RecyclerView.ViewHolder
         ) {
-            Log.d(TAG, "bind: called")
+//            Log.d(TAG, "bind: called")
 
             if(position  == smsList.size - 1){
                 positionTracker.lastItemReached()
@@ -186,12 +204,12 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 BackgroundColorSpan(Color.YELLOW)
             val spannableStringBuilder =
                 SpannableStringBuilder(str)
-            Log.d(TAG, "setSpan: startPos:$startPos")
-            Log.d(TAG, "setSpan: endPos:$endPos")
+//            Log.d(TAG, "setSpan: startPos:$startPos")
+//            Log.d(TAG, "setSpan: endPos:$endPos")
             try{
                 spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             }catch (e:IndexOutOfBoundsException){
-                Log.d(TAG, "setSpan: $e")
+//                Log.d(TAG, "setSpan: $e")
             }
 
             v.text = spannableStringBuilder
@@ -232,6 +250,43 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
     }
 
+    /**
+     * Viewhodler for messages of type MESSAGE_TYPE_OUTBOX Constant Value: 4 (0x00000004)
+     */
+    inner class OutBoxSMSViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        private val msg = view.tvSentMsgOutbox
+
+
+        fun bind(
+            sms: SMS, context: Context,
+            onContactItemClickListener: (id: String) -> Unit,
+            position: Int,
+            holderReceivedMessage: RecyclerView.ViewHolder
+        ) {
+//            Log.d(TAG, "bind: called")
+
+            if(position  == smsList.size - 1){
+                positionTracker.lastItemReached()
+            }else if(position < smsList.size - 1){
+                positionTracker.otherPosition()
+            }
+            msg.text = if (sms.msgString == null) " null" else sms.msgString
+
+//            val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
+
+//            setTimeInView(sms.time)
+
+            view.setOnClickListener{
+
+//                onContactItemClickListener(pNo)
+            }
+        }
+
+
+
+
+    }
+
     inner class SentSMSViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val msg = view.tvSentMsg
 
@@ -243,7 +298,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             position: Int,
             holderReceivedMessage: RecyclerView.ViewHolder
         ) {
-            Log.d(TAG, "bind: called")
+//            Log.d(TAG, "bind: called")
 
             if(position  == smsList.size - 1){
                 positionTracker.lastItemReached()
@@ -269,12 +324,12 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 BackgroundColorSpan(Color.YELLOW)
             val spannableStringBuilder =
                 SpannableStringBuilder(str)
-            Log.d(TAG, "setSpan: startPos:$startPos")
-            Log.d(TAG, "setSpan: endPos:$endPos")
+//            Log.d(TAG, "setSpan: startPos:$startPos")
+//            Log.d(TAG, "setSpan: endPos:$endPos")
             try{
                 spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             }catch (e:IndexOutOfBoundsException){
-                Log.d(TAG, "setSpan: $e")
+//                Log.d(TAG, "setSpan: $e")
             }
 
             v.text = spannableStringBuilder
@@ -319,25 +374,31 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
             if(oldItem.time == newItem.time){
-                Log.d(TAG, "areItemsTheSame: time are same")
+//                Log.d(TAG, "areItemsTheSame: time are same")
             }else{
-                Log.d(TAG, "areItemsTheSame: time not same")
+//                Log.d(TAG, "areItemsTheSame: time not same")
             }
-            return oldItem.time == newItem.time
+
+            Log.d(TAG, "areItemsTheSame: ${newItem.currentDate}")
+            return oldItem.id == newItem.id
 
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
+            Log.d(TAG, "areContentsTheSame: type ${oldItem.type == newItem.type}")
+            Log.d(TAG, "areContentsTheSame: ")
             if(oldItem == newItem){
-                Log.d(TAG, "areContentsTheSame:  equal")
+//                Log.d(TAG, "areContentsTheSame:  equal")
             }else{
-                Log.d(TAG, "areContentsTheSame: not equal")
+//                Log.d(TAG, "areContentsTheSame: not equal")
 
             }
             val b = oldItem == newItem && oldItem.time == newItem.time
 
-            Log.d(TAG, "areContentsTheSame: b : $b")
-            return oldItem.time == newItem.time && oldItem.msgString == newItem.msgString
+//            Log.d(TAG, "areContentsTheSame: b : $b")
+            return oldItem.time == newItem.time &&
+                    oldItem.msgString == newItem.msgString && oldItem.type == newItem.type
+
         }
 
     }

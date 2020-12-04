@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.content.Context
+import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
 
@@ -15,9 +16,11 @@ object SMSIndividualInjectorUtil {
                 it, IndividualSMSActivity.contact
             )
         }
+        val smsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsDAO() }
+
         val repository = context?.let { SMSLocalRepository(it) }
 
-        return SMSIndividualViewModelFactory(messagesLiveData!!, repository)
+        return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO)
     }
 
 }

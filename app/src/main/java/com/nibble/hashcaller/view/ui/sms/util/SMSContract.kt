@@ -5,6 +5,7 @@ import android.net.Uri
 object SMSContract {
     @JvmField
     val INBOX_SMS_URI = Uri.parse("content://sms/inbox")
+    val SMS_OUTBOX_URI =  Uri.parse("content://sms/outbox")
 
     val ALL_SMS_URI = Uri.parse("content://sms/");
 

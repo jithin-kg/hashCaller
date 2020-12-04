@@ -6,18 +6,19 @@ import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.provider.CallLog
-import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlin.collections.ArrayList
-import kotlin.math.log
 
 /**
- * type 2 sent message and type 1 recieved message
+ * type 2 sent message
+ * and type 1 recieved message
  * Telephony.TextBasedSmsColumns.MESSAGE_TYPE_DRAFT
  * Message type: drafts.
 Constant Value: 3 (0x00000003)
@@ -36,7 +37,7 @@ public static final int MESSAGE_TYPE_OUTBOX
 Message type: outbox.
 Constant Value: 4 (0x00000004)
 
-MESSAGE_TYPE_QUEUED
+MESSAGE_TYPE_QUEUED, when there is network issue
 public static final int MESSAGE_TYPE_QUEUED
 Message type: queued to send later.
 Constant Value: 6 (0x00000006)
@@ -70,7 +71,9 @@ Constant Value: "seen"
  */
 //
 
-class SMSLocalRepository(private val context: Context){
+class SMSLocalRepository(
+    private val context: Context
+){
 
     companion object{
         private val URI: Uri = SMSContract.INBOX_SMS_URI
@@ -93,7 +96,7 @@ class SMSLocalRepository(private val context: Context){
             )
              cnt = cursor?.count
 
-            Log.d(TAG, "getUnreadMsgCount: count $cnt")
+//            Log.d(TAG, "getUnreadMsgCount: count $cnt")
 
         }catch (e:Exception){
 
@@ -313,29 +316,30 @@ class SMSLocalRepository(private val context: Context){
                 val sms = SMS()
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                     sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
-
+                    sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
                     sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
                     sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
                     sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+//                Log.d(TAG, "fetchIndividualSMS:type ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("type"))}")
+//                Log.d(TAG, "fetchIndividualSMS:id ${cursor!!.getInt(cursor!!.getColumnIndexOrThrow("_id"))}")
 
-
-
-                    Log.d(TAG, "fetchIndividualSMS:person ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("person"))}")
-                    Log.d(TAG, "fetchIndividualSMS:date_sent ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("date_sent"))}")
-                    Log.d(TAG, "fetchIndividualSMS:protocol ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("protocol"))}")
-                    Log.d(TAG, "fetchIndividualSMS:read ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("read"))}")
-                    Log.d(TAG, "fetchIndividualSMS:status ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("status"))}")
-                    Log.d(TAG, "fetchIndividualSMS:type ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("type"))}")
-                    Log.d(TAG, "fetchIndividualSMS:reply_path_present ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("reply_path_present"))}")
-                    Log.d(TAG, "fetchIndividualSMS:subject ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("subject"))}")
-                    Log.d(TAG, "fetchIndividualSMS:body ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))}")
-                    Log.d(TAG, "fetchIndividualSMS:service_center ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("service_center"))}")
-                    Log.d(TAG, "fetchIndividualSMS:locked ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("locked"))}")
-                    Log.d(TAG, "fetchIndividualSMS:sub_id ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("sub_id"))}")
-                    Log.d(TAG, "fetchIndividualSMS:error_code ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("error_code"))}")
-                    Log.d(TAG, "fetchIndividualSMS:creator ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("creator"))}")
-                    Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
-                    Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:id ${cursor!!.getInt(cursor!!.getColumnIndexOrThrow("_id"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:person ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("person"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:date_sent ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("date_sent"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:protocol ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("protocol"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:read ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("read"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:status ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("status"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:type ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("type"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:reply_path_present ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("reply_path_present"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:subject ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("subject"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:body ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:service_center ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("service_center"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:locked ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("locked"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:sub_id ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("sub_id"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:error_code ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("error_code"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:creator ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("creator"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
+//                    Log.d(TAG, "fetchIndividualSMS:seen ${cursor!!.getString(cursor!!.getColumnIndexOrThrow("seen"))}")
 
 
 
@@ -353,6 +357,78 @@ class SMSLocalRepository(private val context: Context){
         return smslist
     }
 
+    /**
+     * Add to messages of type sd/dsds... to TextBasedSMSColums table
+     */
+    fun addMessageToOutBox(msg: String, contactAddress: String): String {
+//        Log.d(TAG, "addMessageToOutBox: ")
+        var time = System.currentTimeMillis().toString()
+        Log.d(TAG, "addMessageToOutBox: time is $time")
+        val values = ContentValues().apply {
+            put("body", "this the the  message while addinig to outbox")
+            put("address", contactAddress)
+            put("date", time)
+            put("type", "4")
+            put("thread_id", "0")
+            put("date_sent", time)
+        }
+
+
+        var id:Int? = -1
+        try {
+            //the response will be  like content://sms/outbox/894
+            val res = context.contentResolver.insert(SMSContract.ALL_SMS_URI, values)
+
+             id = extractIdFromUri(res.toString())
+//            saveSMSIdToDatabase(id)
+
+
+            Log.d(TAG, "addMessageToOutBox: $res")
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "addMessageToOutBox: exception $e")
+        }
+        Log.d(TAG, "id:$id")
+        return time
+
+    }
+
+    fun moveFromoutBoxToSent(time: String?, address: String){
+        Log.d(TAG, "moveFromoutBoxToSent:  id $time")
+        Log.d(TAG, "moveFromoutBoxToSent:  address $address")
+        val values = ContentValues().apply {
+            put("type", "2")
+        }
+//        values.put("address", address)
+//        values.put("body", "msg")
+//        values.put("date", System.currentTimeMillis().toString())
+//        values.put("type", "2")
+//        values.put("thread_id", "0")
+//        val idStr = time
+
+//        val res =context.contentResolver.update(SMSContract.ALL_SMS_URI,cValues, "_id='$id'",null)
+       val res =  context.contentResolver.update(SMSContract.ALL_SMS_URI, values,
+           "date_sent = '$time' AND address = '$address'",null)
+//        val res =context.contentResolver.delete(SMSContract.SMS_OUTBOX_URI, "_id='$id'",null)
+        Log.d(TAG, "moveFromoutBoxToSent: $res")
+    }
+
+    private fun saveSMSIdToDatabase(id: Int) {
+//        GlobalScope.
+//        smsDAO.insert(SMSDraft(id))
+
+    }
+
+    private fun extractIdFromUri(res: String): Int {
+        val p: Pattern = Pattern.compile("\\d+")
+        val m: Matcher = p.matcher(res)
+        var id = ""
+        while(m.find()) {
+           id = m.group()
+        }
+        Log.d(TAG, "extractIdFromUri: $id")
+        return id.toInt()
+
+    }
 
 
 }
