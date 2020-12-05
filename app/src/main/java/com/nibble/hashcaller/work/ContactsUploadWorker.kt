@@ -16,6 +16,7 @@ import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 
 /**
  * Created by Jithin KG on 25,July,2020
+ * Todo update worker https://www.youtube.com/watch?v=6manrgTPzyA
  */
 class ContactsUploadWorker(private val context: Context,private val params:WorkerParameters ) :
         CoroutineWorker(context, params){

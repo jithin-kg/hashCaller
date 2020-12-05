@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -12,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
@@ -119,6 +119,11 @@ class IncomingCallReceiver : BroadcastReceiver(){
             val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
             val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
             val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
+            val i = Intent(context, ActivityIncommingCallView::class.java)
+//            var obj = cntcts[0]
+//            i.putExtra("SerachRes" ,obj)
+//            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(i)
 
             viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {
                 it.let {
@@ -131,11 +136,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
                                 Log.d(TAG, "getCallerInfo: $searchResult")
                                 Log.d(TAG, "getCallerInfo: ${searchResult.cntcts[0]}")
                                 //start Caller Info activity
-                                val i = Intent(context, ActivityIncommingCallView::class.java)
-                                var obj = searchResult.cntcts[0]
-                                i.putExtra("SerachRes" ,obj)
-                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(i)
+                              startCallerInfoActivity(context, searchResult.cntcts)
 
                             }
                         }
@@ -172,6 +173,17 @@ class IncomingCallReceiver : BroadcastReceiver(){
              */
 
         }
+    }
+
+    private fun startCallerInfoActivity(
+        context: Context,
+        cntcts: List<Cntct>
+    ) {
+        val i = Intent(context, ActivityIncommingCallView::class.java)
+        var obj = cntcts[0]
+        i.putExtra("SerachRes" ,obj)
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(i)
     }
 
     private fun genratehash(
