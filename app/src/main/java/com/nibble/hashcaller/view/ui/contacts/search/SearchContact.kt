@@ -39,8 +39,18 @@ class SearchContact(private val context: Context) :
                     val id = cursor.getLong(0)
                     val name = cursor.getString(1)
                     if(name!=null){
-                        listOfContacts.add(Contact(id, name))
-                        val c = Contact(id, name)
+                        listOfContacts.add(Contact(
+                            id,
+                            name,
+                            photoThumnail = "photoThumnail",
+                            photoURI = "photoURI"
+                        ))
+                        val c = Contact(
+                            id,
+                            name,
+                            photoThumnail = "photoThumnail",
+                            photoURI = "photoURI"
+                        )
 
                     }
 

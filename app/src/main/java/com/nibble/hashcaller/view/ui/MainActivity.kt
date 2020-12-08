@@ -407,8 +407,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             ft.hide(dialerFragment)
         }
         if (messagesFragment.isAdded) { // if the fragment is already in container
+            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(messagesFragment)
+
         }
+
         // Commit changes
         ft.commit()
     }

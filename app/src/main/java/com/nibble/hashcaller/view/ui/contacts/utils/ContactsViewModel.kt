@@ -19,6 +19,7 @@ class ContactsViewModel(
     private val contactsRepository: ContactSearchRepository?,
     private val contactNetworkRepository: ContactsNetworkRepository?
 ): ViewModel() {
+
     companion object{
         private const val TAG ="__ContactsViewModel"
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)

@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
@@ -124,7 +125,7 @@ class ContactListFragment  : Fragment()  {
                         30
                     )
                 addItemDecoration(topSpacingDecorator)
-                contactsRecyclerAdapter = ContactAdapter(context) { id:String->onContactItemClicked(id)}
+                contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
 
 //                setContacts()
@@ -134,10 +135,13 @@ class ContactListFragment  : Fragment()  {
 
 
         }
-    private fun onContactItemClicked(id:String){
-        Log.d(TAG, "onContactItemClicked: $id")
+    private fun onContactItemClicked(contactItem: Contact){
+        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
         val intent = Intent(context, IndividualCotactViewActivity::class.java )
-        intent.putExtra(CONTACT_ID, id)
+        intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
+        intent.putExtra("name", contactItem.name )
+        intent.putExtra("id", contactItem.id)
+        intent.putExtra("photo", contactItem.photoURI)
         startActivity(intent)
     }
 

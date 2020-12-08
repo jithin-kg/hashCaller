@@ -56,6 +56,7 @@
 
         <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity android:name=".view.ui.sms.individual.IndividualSMSActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:parentActivityName=".view.ui.MainActivity"
             > <!--prent activity is need to define the natural hierarchy of the application / navigation -->
             <intent-filter >

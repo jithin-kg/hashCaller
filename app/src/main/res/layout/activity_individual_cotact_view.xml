@@ -102,10 +102,13 @@
         </androidx.cardview.widget.CardView>
 
         <ImageView
+            android:id="@+id/imgViewAvatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:elevation="13dp"
+            android:clickable="true"
+            android:focusable="true"
             android:layout_centerHorizontal="true"
+            android:elevation="13dp"
             android:src="@drawable/contact_circular_background" />
 
     </RelativeLayout>

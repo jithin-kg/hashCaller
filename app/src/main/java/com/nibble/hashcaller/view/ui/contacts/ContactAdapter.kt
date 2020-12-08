@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.contacts
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class ContactAdapter(private val context: Context, private val onContactItemClickListener: (id:String)->Unit) :
+class ContactAdapter(private val context: Context, private val onContactItemClickListener: (contactItem:Contact)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var contacts = emptyList<Contact>()
@@ -62,8 +63,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          private val circle = view.textViewcontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: Contact, context: Context,onContactItemClickListener :(id:String)->Unit ) {
+        fun bind(
+            contact: Contact, context: Context,
+            onContactItemClickListener: (contatItem: Contact) -> Unit
+        ) {
             name.text = contact.name
+            view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
             //        Log.i(TAG, String.valueOf(no));
                 setNameFirstChar(contact)
             val pNo = contact.phoneNumber
@@ -74,7 +79,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             view.setOnClickListener{
 
-                onContactItemClickListener(pNo)
+                onContactItemClickListener(contact)
             }
         }
 
