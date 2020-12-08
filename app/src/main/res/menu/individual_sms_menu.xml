@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--        android:actionLayout="@layout/toolbar_dialer"-->
+    <item
+        android:id="@+id/itemBlock"
+        android:icon="@drawable/ic_baseline_block_24"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="Block" />
+
+    <item
+        android:id="@+id/itemSettings"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:title="Setting" />
+</menu>

@@ -14,6 +14,8 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import kotlinx.android.synthetic.main.activity_add_new_pattern.*
+import kotlinx.android.synthetic.main.activity_add_new_pattern.editTextNewPattern
+import kotlinx.android.synthetic.main.activity_crete_block_list_pattern.*
 
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener {
@@ -25,7 +27,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crete_block_list_pattern)
 
-
+    intiListeners()
 
 //        ActionBar actionBar;
 //        actionBar = getSupportActionBar();
@@ -45,31 +47,35 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
 //        setTokenInEditText()
     }
 
+    private fun intiListeners() {
+        imgBtnBackBlock.setOnClickListener(this)
+    }
+
 //    private fun setTokenInEditText() {
 //        sharedPreferences = applicationContext.getSharedPreferences("TOKEN", Context.MODE_PRIVATE)
 //        Log.d(TAG, "setTokenInEditText: " + sharedPreferences.getString("token", ""))
 //        editTextTokenDisplay!!.setText(sharedPreferences.getString("token", ""))
 //    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val menuInflater = menuInflater
-        menuInflater.inflate(R.menu.add_new_pattern_acitvity_bar, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        val menuInflater = menuInflater
+//        menuInflater.inflate(R.menu.add_new_pattern_acitvity_bar, menu)
+//        return true
+//    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.actionSave -> {
-                savePattern()
-                true
-            }
-
-            else -> {
-                finish()
-                super.onOptionsItemSelected(item)
-            }
-        }
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.actionSave -> {
+//                savePattern()
+//                true
+//            }
+//
+//            else -> {
+//                finish()
+//                super.onOptionsItemSelected(item)
+//            }
+//        }
+//    }
 
     private fun savePattern() {
         Log.d(TAG, "save button clicked")
@@ -108,9 +114,13 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
         when(v?.id){
+            R.id.imgBtnBackBlock->{
+                finish()
+            }
             R.id.buttonSave->{
                 savePattern()
-                true
+//                true
+//                finish()
             }
         }
     }

@@ -407,8 +407,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             ft.hide(dialerFragment)
         }
         if (messagesFragment.isAdded) { // if the fragment is already in container
-            ft.addToBackStack(messagesFragment.javaClass.name)
+//            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(messagesFragment)
+//            setDefaultFragment(R.id.bottombaritem_messages)
 
         }
 

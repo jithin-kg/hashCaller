@@ -3,7 +3,10 @@ package com.nibble.hashcaller.view.ui.sms.individual
 import android.content.*
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -38,11 +41,13 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_individual_s_m_s)
 //        messageSent.value = false
+        setSupportActionBar(toolbarSMSIndividual)
+
          contactAddress = intent.getStringExtra(CONTACT_ADDRES)
         contact = contactAddress
 
         observerSmsSent()
-
+        configureToolbar()
         initViewModel()
         initAdapter()
         initListners()
@@ -52,6 +57,10 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
 
 
+    }
+
+    private fun configureToolbar() {
+        toolbarSMSIndividual.inflateMenu(R.menu.individual_sms_menu)
     }
 
     private fun observerSmsSent() {
@@ -79,9 +88,32 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 //        })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.individual_sms_menu, menu)
+//        super.onCreateOptionsMenu(menu);
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(TAG, "onOptionsItemSelected: ")
+        return when(item.itemId){
+
+            R.id.itemBlock->{
+                Log.d(TAG, "onOptionsItemSelected: block")
+                true
+
+            }else->{
+                super.onOptionsItemSelected(item)
+            }
+        }
+
+    }
+
 
     private fun initListners() {
         imgBtnSend.setOnClickListener(this)
+        imgBtnBackSmsIndividual.setOnClickListener(this)
 //        btnUpdate.setOnClickListener(this)
     }
 
@@ -224,6 +256,9 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
                 clearNewMessageIndication()
             }R.id.imgBtnSend->{
                     sendSms()
+            }
+            R.id.imgBtnBackSmsIndividual->{
+                finish()
             }
 //            R.id.btnUpdate->{
 //            viewModel.update()

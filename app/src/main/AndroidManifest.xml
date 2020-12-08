@@ -20,7 +20,6 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_MMS" />
 
-
     <application
         android:name=".utils.notifications.HashCaller"
         android:allowBackup="true"
@@ -31,16 +30,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".view.ui.sms.individual.SampleActivity"
+            android:label="@string/title_activity_sample"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".view.ui.auth.PermissionRequestActivity"
-            android:configChanges="orientation|screenSize" >
+            android:configChanges="orientation|screenSize">
             <intent-filter>
-                <category android:name="android.app.role.SMS"/>
+                <category android:name="android.app.role.SMS" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-           android:theme="@style/Theme.AppCompat.Dialog"
-
-            />
+        <activity
+            android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
+            android:theme="@style/Theme.AppCompat.Dialog" />
         <activity android:name=".view.ui.auth.GetInitialUserInfoActivity" />
         <activity android:name=".view.ui.contacts.search.ActivitySearchPhone" />
         <activity android:name=".view.ui.auth.ActivityEnterOTP" />
@@ -52,25 +54,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" />
-
-        <!-- Activity that allows the user to send new SMS/MMS messages -->
-        <activity android:name=".view.ui.sms.individual.IndividualSMSActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:parentActivityName=".view.ui.MainActivity"
-            > <!--prent activity is need to define the natural hierarchy of the application / navigation -->
-            <intent-filter >
+        <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
+        <activity
+            android:name=".view.ui.sms.individual.IndividualSMSActivity"
+            android:parentActivityName=".view.ui.MainActivity"> <!-- prent activity is need to define the natural hierarchy of the application / navigation -->
+            <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
                 <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
-
         <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
         <activity
             android:name=".view.ui.MainActivity"
@@ -80,36 +80,36 @@
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
-        </receiver>
-    <!-- Broadcast receiver that listen for SMS  -->
+        </receiver> <!-- Broadcast receiver that listen for SMS -->
         <receiver
             android:name=".view.ui.sms.recievers.SmsReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="999">
-
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".utils.SentReceiver" android:enabled="true">
+        <receiver
+            android:name=".utils.SentReceiver"
+            android:enabled="true">
             <intent-filter>
-<!--                <action android:name="android.provider.Telephony.SMS_RECEIVED" />-->
+
+                <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
                 <action android:name="myhashcallersms" />
                 <!-- and some more actions if you want -->
             </intent-filter>
-        </receiver>
-
-
-        <!-- Service that delivers messages from the phone "quick response" -->
+        </receiver> <!-- Service that delivers messages from the phone "quick response" -->
         <service
             android:name=".view.ui.sms.services.HeadlessSmsSendService"
             android:exported="true"
             android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+
                 <data android:scheme="SMS" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
@@ -118,9 +118,7 @@
         </service>
         <service
             android:name=".view.ui.sms.services.SaveSmsService"
-            android:exported="false" />
-
-        <!-- BroadcastReceiver that listens for incoming MMS messages -->
+            android:exported="false" /> <!-- BroadcastReceiver that listens for incoming MMS messages -->
         <receiver
             android:name=".view.ui.sms.recievers.MmsReceiver"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
@@ -130,7 +128,6 @@
                 <data android:mimeType="application/vnd.wap.mms-message" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

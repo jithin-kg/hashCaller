@@ -2,6 +2,12 @@
 <Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:navigationIcon="@drawable/ic_baseline_close_24"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ImageView
+        android:id="@+id/imgBtnBackBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="@drawable/ic_baseline_close_24" />
 </Toolbar>
