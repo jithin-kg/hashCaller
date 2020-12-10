@@ -1,5 +1,5 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+apply plugin: 'com.android.application'//synthetic binding
+apply plugin: 'kotlin-android' // synthetic binding
 apply plugin: 'kotlin-kapt' //kotlin synthetic binding
 apply plugin: 'kotlin-android-extensions' // synthetic binding
 apply plugin: 'com.google.gms.google-services' // firebase

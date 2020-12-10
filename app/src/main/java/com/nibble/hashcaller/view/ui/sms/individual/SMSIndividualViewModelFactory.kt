@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.individual
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
+import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
 
@@ -12,12 +13,13 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 class SMSIndividualViewModelFactory(
     private val SMSLiveData: SMSIndividualLiveData?,
     private val repository: SMSLocalRepository?,
-    private val smsDAODAO: SmsOutboxListDAO?
+    private val smsDAODAO: SmsOutboxListDAO?,
+    private val spamNetworkRepository: SpamNetworkRepository?
 ) :
     ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         //preparing view model
 
-        return SMSIndividualViewModel(this!!.SMSLiveData!!, repository, smsDAODAO) as T
+        return SMSIndividualViewModel(this!!.SMSLiveData!!, repository, smsDAODAO, spamNetworkRepository) as T
     }
 }

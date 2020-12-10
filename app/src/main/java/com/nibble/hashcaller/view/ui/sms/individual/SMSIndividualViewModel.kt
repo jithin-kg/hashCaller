@@ -12,6 +12,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
+import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.DeliverReceiver
 import com.nibble.hashcaller.utils.SentReceiver
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -24,7 +26,8 @@ import kotlinx.coroutines.launch
 class SMSIndividualViewModel(
     val SMS: SMSIndividualLiveData,
     val repository: SMSLocalRepository?,
-    private val smsDAODAO: SmsOutboxListDAO?
+    private val smsDAODAO: SmsOutboxListDAO?,
+    private val spamNetworkRepository: SpamNetworkRepository?
 ): ViewModel() {
     private var applicationContext:Context?=null
     private  var  sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
@@ -122,6 +125,15 @@ class SMSIndividualViewModel(
 
     fun update() = viewModelScope.launch {
 //        repository.upda
+    }
+
+    fun blockThisAddress(contactAddress: String)  = viewModelScope.launch {
+        spamNetworkRepository?.report(ReportedUserDTo((contactAddress)))
+
+        /**
+         * Todo I have to handle non network condition, retry request when the
+         * network is available, or add to work manager
+         */
     }
 
 

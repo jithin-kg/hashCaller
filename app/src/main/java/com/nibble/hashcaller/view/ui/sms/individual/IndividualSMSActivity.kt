@@ -6,17 +6,18 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
+import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
 class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPositionTracker, View.OnClickListener {
@@ -30,6 +31,7 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     private var firstime = true
     private lateinit var adapter:SMSIndividualAdapter
     private lateinit var layoutMngr:LinearLayoutManager
+    private lateinit var bottomSheetDialog: BottomSheetDialog
 //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
 //    private var time:String? = null
     private var address = ""
@@ -45,7 +47,7 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
          contactAddress = intent.getStringExtra(CONTACT_ADDRES)
         contact = contactAddress
-
+        setupBottomSheet()
         observerSmsSent()
         configureToolbar()
         initViewModel()
@@ -59,8 +61,26 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
     }
 
+    private fun setupBottomSheet() {
+        bottomSheetDialog = BottomSheetDialog(this)
+        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+
+        bottomSheetDialog.setContentView(viewSheet)
+
+//        if(this.view?.visibility == View.VISIBLE){
+//            bottomSheetDialog.hide()
+
+//        }
+
+        bottomSheetDialog.setOnDismissListener{
+            Log.d(TAG, "bottomSheetDialogDismissed")
+
+        }
+    }
+
     private fun configureToolbar() {
         toolbarSMSIndividual.inflateMenu(R.menu.individual_sms_menu)
+        tvSMSAddress.text = contactAddress
     }
 
     private fun observerSmsSent() {
@@ -101,6 +121,7 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
             R.id.itemBlock->{
                 Log.d(TAG, "onOptionsItemSelected: block")
+                showBlockBottomSheet()
                 true
 
             }else->{
@@ -110,10 +131,15 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
     }
 
+    private fun showBlockBottomSheet() {
+        bottomSheetDialog.show()
+    }
+
 
     private fun initListners() {
         imgBtnSend.setOnClickListener(this)
         imgBtnBackSmsIndividual.setOnClickListener(this)
+        bottomSheetDialog.btnBlock.setOnClickListener(this)
 //        btnUpdate.setOnClickListener(this)
     }
 
@@ -260,11 +286,18 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
             R.id.imgBtnBackSmsIndividual->{
                 finish()
             }
+            R.id.btnBlock->{
+                addToBlockList(contactAddress)
+            }
 //            R.id.btnUpdate->{
 //            viewModel.update()
 //        }
 
         }
+    }
+
+    private fun addToBlockList(contactAddress: String) {
+        viewModel.blockThisAddress(contactAddress)
     }
 
     private fun sendSms() {

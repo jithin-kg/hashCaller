@@ -10,7 +10,7 @@ class Contact(
     val id: Long,
     val name: String,
     var phoneNumber: String = "",
-    var photoThumnail: String = "",
+    var photoThumnail: String?,
     var photoURI: String = ""
 
 )  {

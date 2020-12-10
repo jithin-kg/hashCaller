@@ -34,9 +34,16 @@ class ContactLiveData(private val context: Context):
             ContactsContract.Contacts.DISPLAY_NAME
         )
         try {
+            val projection = arrayOf(
+                ContactsContract.Contacts.NAME_RAW_CONTACT_ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
+
+            )
              cursor = context.contentResolver.query(
                 URI,
-                null,
+                projection,
                 null,
                 null,
                 ContactsContract.Contacts.DISPLAY_NAME
@@ -46,19 +53,25 @@ class ContactLiveData(private val context: Context):
 
     //                val id = cursor.getLong(0)
     //                val name = cursor.getString(1)
-                    val id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.NAME_RAW_CONTACT_ID))
-                    Log.d(TAG, "id is $id ")
-                    val name =
-                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                     val photoURI =  cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
-                    val photoThumnail = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+//                    val id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.NAME_RAW_CONTACT_ID))
+//                    Log.d(TAG, "id is $id ")
+//                    val name =
+//                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+//                     val photoURI =  cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
+//                    var photoThumnail = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+//
+//                    ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI
+//                    val phoneNo =
+//                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
-                    ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI
-                    val phoneNo =
-                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+//                    Log.d(TAG, "phone num is $phoneNo")
+//                    Log.d(TAG, "name is  $name")
+                    var id = cursor.getString(0).toLong()
+                    var name = cursor.getString(1)
+                    var phoneNo = cursor.getString(2)
 
-                    Log.d(TAG, "phone num is $phoneNo")
-                    Log.d(TAG, "name is  $name")
+                    val photoThumnail = cursor.getString(3)
+                    var photoURI = " utririri"
                     if(name!=null){
                         listOfContacts.add(Contact(id, name, phoneNo, photoThumnail, photoURI))
                     }
@@ -69,7 +82,7 @@ class ContactLiveData(private val context: Context):
                 cursor.close()
             }
         }catch (e:Exception){
-            Log.d(TAG, "getContacts: execption $e")
+            Log.e(TAG, "getContacts: execption $e")
         }finally {
             cursor?.close()
         }

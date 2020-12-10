@@ -68,13 +68,26 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             onContactItemClickListener: (contatItem: Contact) -> Unit
         ) {
             name.text = contact.name
-            view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
+//           if(contact.photoThumnail !=null){
+//               view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
+//           }
             //        Log.i(TAG, String.valueOf(no));
+            if(contact.photoThumnail !=null){
+                view.textViewcontactCrclr.visibility = View.INVISIBLE
+                view.imgViewCntct.visibility = View.VISIBLE
+                view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
+            }else{
+                view.imgViewCntct.setImageURI(Uri.parse(""))
+                view.imgViewCntct.visibility = View.INVISIBLE
+                view.textViewcontactCrclr.visibility = View.VISIBLE
                 setNameFirstChar(contact)
+                generateCircleView(context);
+            }
+
             val pNo = contact.phoneNumber
             Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-           generateCircleView(context);
+
 
 
             view.setOnClickListener{
@@ -84,10 +97,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         }
 
          private fun setNameFirstChar(contact: Contact) {
-             val name: String = contact.name
+             val name: String = contact.name!!
              val firstLetter = name[0]
              val firstLetterString = firstLetter.toString().toUpperCase()
              circle.text = firstLetterString
+
+
          }
 
          private fun generateCircleView(context: Context) {
