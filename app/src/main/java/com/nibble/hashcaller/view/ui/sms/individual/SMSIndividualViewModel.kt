@@ -8,15 +8,18 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.DeliverReceiver
 import com.nibble.hashcaller.utils.SentReceiver
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
@@ -27,8 +30,13 @@ class SMSIndividualViewModel(
     val SMS: SMSIndividualLiveData,
     val repository: SMSLocalRepository?,
     private val smsDAODAO: SmsOutboxListDAO?,
-    private val spamNetworkRepository: SpamNetworkRepository?
+    private val spamRepository: SpamNetworkRepository?
 ): ViewModel() {
+//    public var blockedStatusOfThenumber:MutableList<SpammerInfo> =
+//        mutableListOf<SpammerInfo>()
+
+    public var blockedStatusOfThenumber:LiveData<List<SpammerInfo>>?= null
+
     private var applicationContext:Context?=null
     private  var  sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
     private  var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
@@ -127,13 +135,38 @@ class SMSIndividualViewModel(
 //        repository.upda
     }
 
-    fun blockThisAddress(contactAddress: String)  = viewModelScope.launch {
-        spamNetworkRepository?.report(ReportedUserDTo((contactAddress)))
+    fun blockThisAddress(
+        contactAddress: String,
+        spammerType: Int?,
+        spammerCategory: Int
+    )  = viewModelScope.launch {
+
+       async {
+           spamRepository?.report(ReportedUserDTo(contactAddress, " ",
+               spammerType.toString(), spammerCategory.toString()
+           ))
+       }
+    async {
+        spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory ))
+    }
 
         /**
          * Todo I have to handle non network condition, retry request when the
          * network is available, or add to work manager
          */
+    }
+
+    /**
+     * @param contactAddress
+     * check if the conact address if in spamlist list
+     */
+    fun getblockedStatusOfThenumber(contactAddress: String)  = viewModelScope.launch{
+        val data =spamRepository?.getSpammerInfo(contactAddress)
+        blockedStatusOfThenumber = data
+    }
+
+    fun unblock(contactAddress: String)  = viewModelScope.launch{
+        spamRepository?.delete(contactAddress)
     }
 
 

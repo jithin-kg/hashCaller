@@ -7,6 +7,12 @@ import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.stubs.Contact
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.Set
+import kotlin.collections.mutableListOf
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -16,7 +22,8 @@ import com.nibble.hashcaller.stubs.Contact
 class ContactLiveData(private val context: Context):
     ContentProviderLiveData<List<Contact>>(context,
         URI) {
-
+    private var lastNumber = "0"
+    private var prevName = "Aadithyan Bb"
     companion object{
 //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri =ContactsContract.CommonDataKinds.Phone.CONTENT_URI
@@ -38,7 +45,8 @@ class ContactLiveData(private val context: Context):
                 ContactsContract.Contacts.NAME_RAW_CONTACT_ID,
                 ContactsContract.Contacts.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
+                ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
+                ContactsContract.Contacts.PHOTO_URI
 
             )
              cursor = context.contentResolver.query(
@@ -46,7 +54,7 @@ class ContactLiveData(private val context: Context):
                 projection,
                 null,
                 null,
-                ContactsContract.Contacts.DISPLAY_NAME
+                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " COLLATE NOCASE ASC"
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
@@ -71,9 +79,17 @@ class ContactLiveData(private val context: Context):
                     var phoneNo = cursor.getString(2)
 
                     val photoThumnail = cursor.getString(3)
-                    var photoURI = " utririri"
+
+                    var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
                     if(name!=null){
-                        listOfContacts.add(Contact(id, name, phoneNo, photoThumnail, photoURI))
+                        if(this.prevName != name && this.lastNumber != phoneNo){
+                            listOfContacts.add(Contact(id, name, phoneNo, photoThumnail, photoURI))
+                            this.lastNumber = phoneNo
+                            this.prevName = name
+                        }
+
+
+
                     }
 
 
@@ -87,8 +103,16 @@ class ContactLiveData(private val context: Context):
             cursor?.close()
         }
         isLoading.postValue(false)
+       val sortedList = sortAndSet(listOfContacts)
         return listOfContacts
 
+    }
+
+    private fun sortAndSet(listOfMessages: MutableList<Contact>): ArrayList<Contact> {
+        val s: Set<Contact> = LinkedHashSet(listOfMessages)
+        val data = ArrayList(s)
+
+        return data
     }
     // so if there is any change in data this function will query and get latest data
     override suspend fun getContentProviderValue(text: String?): List<Contact> = getContacts(context)

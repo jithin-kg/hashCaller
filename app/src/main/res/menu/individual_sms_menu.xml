@@ -8,6 +8,12 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         android:title="Block" />
+    <item
+        android:id="@+id/itemUnBlock"
+        android:icon="@drawable/ic_baseline_block_24"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="Unblock" />
 
     <item
         android:id="@+id/itemSettings"

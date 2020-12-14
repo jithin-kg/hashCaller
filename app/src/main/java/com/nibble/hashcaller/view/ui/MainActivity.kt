@@ -9,6 +9,9 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.telephony.SubscriptionInfo
+import android.telephony.SubscriptionManager
+import android.telephony.SubscriptionPlan
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -30,10 +33,10 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
-
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.spam.SpamSyncManager
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -73,6 +76,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         fabBtnShowDialpad.setOnClickListener(this)
         fabBtnShowDialpad.visibility = View.GONE
+        getSimOperator()
+       SpamSyncManager.setSimOpeartor()
+
         Log.d(TAG, "onCreate  height of bottom nav: ${bottomNavigationView.height}")
 //        t his.applicationContext
 //                .contentResolver
@@ -161,6 +167,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
 //                .build()
 //        WorkManager.getInstance().enqueue(request)
+    }
+
+    private fun getSimOperator() {
+
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_PHONE_STATE
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+                val subscriptionInfos:List<SubscriptionInfo> =subscriptionManager.activeSubscriptionInfoList
+
+                SubscriptionManager.ACTION_REFRESH_SUBSCRIPTION_PLANS
+                for (element in subscriptionInfos) {
+                    val lsuSubscriptionInfo: SubscriptionInfo = element
+                    Log.d(TAG, "getNumber " + lsuSubscriptionInfo.getNumber())
+                    Log.d(
+                        TAG,
+                        "network name : " + lsuSubscriptionInfo.getCarrierName()
+                    )
+                    Log.d(TAG,
+                        "getCountryIso " + lsuSubscriptionInfo.getCountryIso()
+                    )
+                }
+
+            }else{
+                Log.d(TAG, "permission not granted: ")
+            }
+
     }
 
     /**

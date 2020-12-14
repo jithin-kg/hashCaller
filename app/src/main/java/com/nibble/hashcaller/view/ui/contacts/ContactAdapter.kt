@@ -75,11 +75,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if(contact.photoThumnail !=null){
                 view.textViewcontactCrclr.visibility = View.INVISIBLE
                 view.imgViewCntct.visibility = View.VISIBLE
+                view.contactCard.visibility = View.VISIBLE
                 view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
             }else{
                 view.imgViewCntct.setImageURI(Uri.parse(""))
                 view.imgViewCntct.visibility = View.INVISIBLE
                 view.textViewcontactCrclr.visibility = View.VISIBLE
+                view.contactCard.visibility = View.INVISIBLE
                 setNameFirstChar(contact)
                 generateCircleView(context);
             }

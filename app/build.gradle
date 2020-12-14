@@ -17,9 +17,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dataBinding {
-        enabled = true
-    }
+//    dataBinding {
+//        enabled = true
+//    }
 
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -141,6 +141,7 @@ dependencies {
 //    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
     //skeleton shimmer
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
 }
 repositories {
     mavenCentral()

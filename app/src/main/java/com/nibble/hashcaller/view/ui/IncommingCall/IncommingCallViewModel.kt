@@ -2,17 +2,11 @@ package com.nibble.hashcaller.view.ui.IncommingCall
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.contact.NetWorkResponse
-import com.nibble.hashcaller.network.search.SearchResponse
-import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.user.Resource
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 import retrofit2.Response
 
@@ -41,7 +35,12 @@ class IncommingCallViewModel(
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
 
                  
-                   res = spamNetworkRepository.report(ReportedUserDTo(phoneNumber, "sample"))
+                   res = spamNetworkRepository.report(ReportedUserDTo(
+                       phoneNumber,
+                       "sample",
+                       "",
+                       ""
+                   ))
 
                  Log.d(TAG, "search: $res")
                  emit(Resource.success(data = res?.body()));

@@ -3,97 +3,154 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/btnBlkScam"
-        android:layout_width="@dimen/blockImgBtnWidth"
-        android:layout_height="@dimen/blockImgBtnWidth"
-        app:layout_constraintEnd_toStartOf="@+id/btnBlkMore"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnBlkSales"
-        app:layout_constraintTop_toTopOf="@+id/btnBlkSales"
-        app:srcCompat="@drawable/ic_baseline_warning_24" />
-
-    <ImageView
-        android:id="@+id/btnBlkMore"
-        android:layout_width="@dimen/blockImgBtnWidth"
-        android:layout_height="@dimen/blockImgBtnWidth"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnBlkScam"
-        app:layout_constraintTop_toTopOf="@+id/btnBlkScam"
-        app:srcCompat="@drawable/ic_baseline_expand_more_24" />
-
-    <ImageView
-        android:id="@+id/btnBlkSales"
-        android:layout_width="@dimen/blockImgBtnWidth"
-        android:layout_height="@dimen/blockImgBtnWidth"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toStartOf="@+id/btnBlkScam"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvBlkHint"
-        app:srcCompat="@drawable/ic_baseline_headset_mic_24" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="@dimen/blockImgBtnWidth"
-        android:layout_height="@dimen/blockImgBtnWidth"
-        android:layout_marginTop="32dp"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="tvBlckContactAddress,tvBlkHint"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvBlckContactAddress"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutExpand"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/colorWhite"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/radioGroup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.953"
+        app:layout_constraintStart_toEndOf="@+id/radioGroup"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <ImageView
+            android:id="@+id/imgExpand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_baseline_expand_more_24"
+            app:layout_constraintBottom_toTopOf="@id/tvExpand"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvExpand"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="More"
+            app:layout_constraintBottom_toBottomOf="@+id/layoutExpand"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RadioGroup
+
+        android:id="@+id/radioGroup"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/tvBlkHint"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvBlkHint"
-        android:layout_width="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/radioPersonOrBusiness"
+        app:layout_constraintEnd_toStartOf="@+id/layoutExpand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/radioScam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/radio_background"
+            android:buttonTint="@color/colorPrimary"
+            android:drawableLeft="@drawable/ic_baseline_warning_24"
+            android:drawablePadding="4dp"
+            android:layout_marginEnd="16dp"
+            android:outlineSpotShadowColor="@color/colorPrimary"
+            android:text="Scam" />
+
+        <RadioButton
+            android:id="@+id/radioS"
+            android:layout_marginEnd="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/radio_background"
+            android:buttonTint="@color/colorPrimary"
+            android:drawableLeft="@drawable/ic_baseline_headset_mic_24"
+            android:drawablePadding="4dp"
+            android:outlineSpotShadowColor="@color/colorPrimary"
+
+            android:text="Sales" />
+
+
+    </RadioGroup>
+
+
+    <RadioGroup
+        android:id="@+id/radioPersonOrBusiness"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvBlckContactAddress" />
+        android:layout_marginEnd="16dp"
+        >
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="btnBlkSales,btnBlkMore,btnBlkScam"
-        tools:layout_editor_absoluteY="731dp" />
+        <RadioButton
+            android:id="@+id/radioBusiness"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="16dp"
+            android:checked="true"
+            android:text="Business">
+
+        </RadioButton>
+
+        <RadioButton
+            android:id="@+id/radioPerson"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="16dp"
+            android:text="Person">
+
+        </RadioButton>
+
+
+    </RadioGroup>
+
+    <View
+        android:id="@+id/viewPopup"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnBlock"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.461"
+        app:layout_constraintStart_toStartOf="@+id/radioPersonOrBusiness"
+        app:layout_constraintTop_toBottomOf="@+id/radioPersonOrBusiness" />
 
     <Button
         android:id="@+id/btnBlock"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
-        android:text="@string/block"
         android:background="@drawable/btn_continue"
-        tools:background="@drawable/btn_continue"
+        android:text="@string/block"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBlkScam"
-        app:layout_constraintVertical_bias="0.256" />
-
+        app:layout_constraintTop_toBottomOf="@+id/radioPersonOrBusiness"
+        app:layout_constraintVertical_bias="0.288"
+        tools:background="@drawable/btn_continue" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,9 +18,10 @@ object SMSIndividualInjectorUtil {
             )
         }
         val smsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsDAO() }
+        val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
 
         val repository = context?.let { SMSLocalRepository(it) }
-        val spamNetworkRepository = context?.let { SpamNetworkRepository(it) }
+        val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }
 
         return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO, spamNetworkRepository)
     }

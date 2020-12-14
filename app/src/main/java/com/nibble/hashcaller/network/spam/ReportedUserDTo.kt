@@ -3,5 +3,10 @@ package com.nibble.hashcaller.network.spam
 import androidx.annotation.Keep
 
 @Keep
-data class ReportedUserDTo( var phoneNumber:String = "", var location:String = "") {
+data class ReportedUserDTo(
+    var phoneNumber: String = "",
+    var location: String = "",
+    var spammerType: String = "",
+    var spammerCategory: String =""
+) {
 }

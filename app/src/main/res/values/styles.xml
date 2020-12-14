@@ -28,6 +28,15 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+<!--rounded button in block bottom sheet-->
+    <style name="ShapeAppearanceOverlay.MyApp.Button.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+<!--Spinner-->
+    <style name="SpinnerTheme" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/ic_baseline_expand_more_24</item>
+    </style>
     <!--    splash screen-->
 <!--    <style name="AppTheme.Launcher">-->
 <!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->

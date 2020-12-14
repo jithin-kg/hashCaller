@@ -1,12 +1,17 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.content.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,11 +21,15 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
+import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
-class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPositionTracker, View.OnClickListener {
+class IndividualSMSActivity : AppCompatActivity(),
+    SMSIndividualAdapter.ItemPositionTracker, View.OnClickListener,
+    AdapterView.OnItemSelectedListener, android.widget.PopupMenu.OnMenuItemClickListener,
+    PopupMenu.OnMenuItemClickListener {
     private lateinit var viewModel:SMSIndividualViewModel
     private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
@@ -32,9 +41,23 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     private lateinit var adapter:SMSIndividualAdapter
     private lateinit var layoutMngr:LinearLayoutManager
     private lateinit var bottomSheetDialog: BottomSheetDialog
-//    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
+    private  var menuSMS:Menu? = null
+    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+    private var isTheNumberBlocked:MutableLiveData<Boolean> = MutableLiveData(false)
+
+
+    private  var spinnerSelected: MutableLiveData<Boolean> = MutableLiveData(false);
+    private  var selectedRadioButton:RadioButton? = null
+
+
+    private  var spammerType:Int = -1
+    var spamTypes:MutableList<String> = ArrayList<String>()
+
+
+    //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
 //    private var time:String? = null
     private var address = ""
+
 //    private var sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
 //    private var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
 
@@ -42,8 +65,15 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_individual_s_m_s)
+
+        spinnerSelected.value = false
+
 //        messageSent.value = false
         setSupportActionBar(toolbarSMSIndividual)
+        this.spamTypes.add(0, "Spam type")
+        this.spamTypes.add("Public service")
+        this.spamTypes.add("Robocall")
+        this.spamTypes.add("Survey")
 
          contactAddress = intent.getStringExtra(CONTACT_ADDRES)
         contact = contactAddress
@@ -57,15 +87,32 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         registerAdapterListener()
         setupViewmodelObserver()
 
+        observeSpinnerSelected()
+        addOrRemoveMenuItem()
 
 
     }
+
+
+
+    private fun addOrRemoveMenuItem() {
+
+
+
+
+    }
+
 
     private fun setupBottomSheet() {
         bottomSheetDialog = BottomSheetDialog(this)
         val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
 
         bottomSheetDialog.setContentView(viewSheet)
+
+        selectedRadioButton = bottomSheetDialog.radioScam
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+
+
 
 //        if(this.view?.visibility == View.VISIBLE){
 //            bottomSheetDialog.hide()
@@ -81,6 +128,8 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     private fun configureToolbar() {
         toolbarSMSIndividual.inflateMenu(R.menu.individual_sms_menu)
         tvSMSAddress.text = contactAddress
+
+//        toolbarSMSIndividual.add
     }
 
     private fun observerSmsSent() {
@@ -108,11 +157,52 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 //        })
     }
 
+    private fun isThisNumBlocked() {
+        viewModel.getblockedStatusOfThenumber(contactAddress)
+        viewModel.blockedStatusOfThenumber?.observe(this, Observer {
+            if(it!=null){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    isTheNumberBlocked.value = it.stream()
+                        .anyMatch { t -> t.contactAddress.equals(this.contactAddress) }
+                }
+
+            }
+
+        })
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.individual_sms_menu, menu)
 //        super.onCreateOptionsMenu(menu);
+         this.menuSMS = menu
+//        if(isTheNumberBlocked.value!!){
+//           toggleBlockMenu()
+//        }
+        observeIsContactBlocked()
+
+
         return true
+    }
+
+    private fun observeIsContactBlocked() {
+        this.isTheNumberBlocked.observe(this, Observer {it->
+            if(it == true){
+                toggleBlockMenu(false)
+            }else if (it == false){
+                toggleBlockMenu(true)
+            }
+        })
+    }
+
+    private fun toggleBlockMenu(value: Boolean) {
+        val item = this.menuSMS!!.findItem(R.id.itemBlock)
+        val unblockItem = this.menuSMS?.findItem(R.id.itemUnBlock)
+
+//        item?.isVisible = false
+//        item?
+        this.menuSMS!!.getItem(0)!!.isVisible = value
+        this.menuSMS?.getItem(1)?.isVisible = !value
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -124,7 +214,13 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
                 showBlockBottomSheet()
                 true
 
-            }else->{
+            }
+            R.id.itemUnBlock->{
+                viewModel.unblock(this.contactAddress)
+                true
+            }
+
+            else->{
                 super.onOptionsItemSelected(item)
             }
         }
@@ -133,13 +229,25 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
     private fun showBlockBottomSheet() {
         bottomSheetDialog.show()
+//        val sheet = BlockDialogFragment.newInstance(1)
+//        sheet.show(supportFragmentManager,"ItemListDialogFragment" )
+
     }
 
 
     private fun initListners() {
         imgBtnSend.setOnClickListener(this)
         imgBtnBackSmsIndividual.setOnClickListener(this)
+        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioScam.setOnClickListener(this)
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
+//        bottomSheetDialog.btnBlock.setOnClickListener(this)
+//        bottomSheetDialog.radioButtonSales.setOnClickListener(this)
+//        bottomSheetDialog.radioButtonScam.setOnClickListener(this)
+////        bottomSheetDialog.radioButtonSales.setOnCheckedChangeListener(this)
+//        bottomSheetDialog.radioGroupSpamType.setOnClickListener(this)
+
 //        btnUpdate.setOnClickListener(this)
     }
 
@@ -183,6 +291,8 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
 
             }
         })
+        isThisNumBlocked()
+
     }
 
     private fun clearNewMessageIndication() {
@@ -264,7 +374,7 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
         clearNewMessageIndication()
     }
 
-    override fun otherPosition() {
+     override fun otherPosition() {
         this.recyclerViewAtEnd = false
         tvNewMsgIndication.visibility = View.VISIBLE
     }
@@ -276,28 +386,114 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
     }
 
     override fun onClick(v: View?) {
+
         when(v?.id){
+            
             R.id.tvNewMsgIndication->{
+
                 recyclerView.scrollToPosition(adapter.itemCount - 1)
                 clearNewMessageIndication()
             }R.id.imgBtnSend->{
+            Log.d(TAG, "onClick: ")
                     sendSms()
             }
             R.id.imgBtnBackSmsIndividual->{
                 finish()
             }
             R.id.btnBlock->{
+                Log.d(TAG, "onClick: ")
                 addToBlockList(contactAddress)
+            }
+            R.id.imgExpand->{
+                Log.d(TAG, "onClick: img button")
+                val popup = PopupMenu(this, bottomSheetDialog.viewPopup)
+                popup.inflate(R.menu.image_chooser_popup)
+                popup.setOnMenuItemClickListener(this)
+                popup.show()
+
             }
 //            R.id.btnUpdate->{
 //            viewModel.update()
 //        }
+            else->{
+                this.radioButtonClickPerformed(v)
+            }
 
+        }
+
+
+    }
+
+    private fun radioButtonClickPerformed(v: View?) {
+        if(v is RadioButton){
+
+            when(v.id){
+                R.id.radioScam->{
+                    val checked = v.isChecked
+                    if(checked){
+                        selectedRadioButton= bottomSheetDialog.radioScam
+                        Log.d(TAG, "radio button clicked")
+                        this.spammerType = SpamLocalListManager.SPAMM_TYPE_SCAM
+
+//                                spinnerSelected.value = false
+
+
+                    }
+                }
+                R.id.radioS->{
+
+                    val checked = v.isChecked
+                    if(checked){
+                        selectedRadioButton= bottomSheetDialog.radioS
+                        this.spammerType = SpamLocalListManager.SPAMM_TYPE_SALES
+                        Log.d(TAG, "onClick: radio scam")
+//                                spinnerSelected.value = false
+
+                    }
+                }
+                R.id.radioBusiness->{
+                    val checked = v.isChecked
+                    if(checked){
+                        this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+                    }
+                }
+                R.id.radioPerson->{
+                    val checked = v.isChecked
+                    if(checked){
+                        this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_PEERSON
+
+                    }
+                }
+            }
         }
     }
 
+    private fun observeSpinnerSelected() {
+        this.spinnerSelected.observe(this, Observer {spinnerSelected->
+            if(spinnerSelected){
+//                selectedRadioButton?.isChecked = false
+            }
+        })
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+        this.spammerType = position
+        Log.d(TAG, "onItemSelected: ")
+        if(parent?.getItemAtPosition(position)?.equals("Spam type")!!){
+//            spinnerSelected.value = true
+
+        }else{
+
+            selectedRadioButton?.isChecked = false
+        }
+    }
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+//        selectedRadioButton?.isChecked = true
+    }
     private fun addToBlockList(contactAddress: String) {
-        viewModel.blockThisAddress(contactAddress)
+
+        viewModel.blockThisAddress(contactAddress, this.spammerType, this.SPAMMER_CATEGORY )
+
     }
 
     private fun sendSms() {
@@ -357,6 +553,15 @@ class IndividualSMSActivity : AppCompatActivity(), SMSIndividualAdapter.ItemPosi
             }
         }
     }
+
+    override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+           this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+
+            return false
+    }
+
+
+
 
 }
 

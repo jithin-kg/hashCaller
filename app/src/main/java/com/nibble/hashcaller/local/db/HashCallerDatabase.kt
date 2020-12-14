@@ -7,6 +7,8 @@ import androidx.room.RoomDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
+import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
@@ -15,11 +17,16 @@ import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
  * Created by Jithin KG on 03,July,2020
  * important we need to pass the newly created tables in the @Database
  */
-@Database(entities = arrayOf(BlockedListPattern::class, ContactTable::class, SMSOutBox::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(BlockedListPattern::class,
+    ContactTable::class,
+    SMSOutBox::class,
+    SpammerInfo::class
+), version = 1, exportSchema = false)
 abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun blocklistDAO() : BlockedLIstDao
         abstract fun contactInformationDAO() : IContactIformationDAO
         abstract fun smsDAO(): SmsOutboxListDAO
+        abstract fun spamListDAO(): SpamListDAO
 
     companion object{
 

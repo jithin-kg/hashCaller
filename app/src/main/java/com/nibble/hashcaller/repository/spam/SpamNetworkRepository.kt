@@ -2,18 +2,20 @@ package com.nibble.hashcaller.repository.spam
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
+import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.contact.NetWorkResponse
-import com.nibble.hashcaller.network.search.ISearchService
-import com.nibble.hashcaller.network.search.SearchResponse
-import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.utils.auth.TokenManager
 import retrofit2.Response
 
-class SpamNetworkRepository(private val context: Context){
+class SpamNetworkRepository(
+    private val context: Context,
+    private val spamListDAO: SpamListDAO?
+){
 
     private var retrofitService:ISpamService? = null
     @SuppressLint("LongLogTag")
@@ -30,6 +32,19 @@ class SpamNetworkRepository(private val context: Context){
 //        return response
          return retrofitService?.report(callerInfo, token)
     }
+
+    suspend fun save(spammerInfo: SpammerInfo){
+        spamListDAO?.insert(spammerInfo)
+    }
+
+     fun getSpammerInfo(contactAddress: String): LiveData<List<SpammerInfo>>? {
+        return spamListDAO?.getAllBLockListPattern()
+    }
+
+    suspend fun delete(contactAddress: String) {
+        spamListDAO?.delete(contactAddress)
+    }
+
     companion object{
         private const val TAG = "__SearchNetworkRepository"
     }

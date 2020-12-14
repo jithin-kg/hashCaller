@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+
+    >
+
+    <item
+        android:id="@+id/publicService"
+        android:title="Public service" />
+    <item
+        android:id="@+id/roboCall"
+        android:title="Robocall" />
+    <item
+        android:id="@+id/survey"
+        android:title="Survey" />
+    <item
+        android:id="@+id/fraud"
+        android:title="Fraud" />
+
+</menu>

@@ -72,8 +72,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
+<!--@style/Theme.MaterialComponents.DayNight set for Error inflating class material.bottomnavigation.BottomNavigationView
+       in mainactivity theme-->
         <activity
             android:name=".view.ui.MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.MaterialComponents.DayNight"
             android:windowSoftInputMode="adjustPan" />
 
         <receiver android:name=".utils.IncomingCallReceiver">
