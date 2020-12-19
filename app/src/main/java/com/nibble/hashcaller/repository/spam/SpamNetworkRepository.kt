@@ -45,6 +45,7 @@ class SpamNetworkRepository(
         spamListDAO?.delete(contactAddress)
     }
 
+
     companion object{
         private const val TAG = "__SearchNetworkRepository"
     }

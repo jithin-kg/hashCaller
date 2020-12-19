@@ -56,8 +56,10 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     when(holder) {
 
         is ViewHolder -> {
+           val item =  getItem(position)
 
-            holder.bind(getItem(position),context, onContactItemClickListener, position)
+                holder.bind(item,context, onContactItemClickListener, position)
+
         }
 
     }
@@ -93,7 +95,8 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             position: Int
         ) {
 
-            //        Log.i(TAG, String.valueOf(no));
+//            if(!sms.isSpam){
+                //        Log.i(TAG, String.valueOf(no));
 
 //            highlightSearhcField(sms) // to highlight the search result
 //            if(searchQry == null){
@@ -109,24 +112,25 @@ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 //            }
 
 
-            setTimeInView(sms.time)
+                setTimeInView(sms.time)
 
 
-            setNameFirstChar(sms)
+                setNameFirstChar(sms)
 
 //            val pNo = sms.address.toString()
 //            Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-           generateCircleView(context);
+                generateCircleView(context);
 
 
-            view.setOnClickListener{
+                view.setOnClickListener{
 //                view.tvUnreadSMSCount.text = ""
 //                view.tvUnreadSMSCount.visibility = View.INVISIBLE
-                onContactItemClickListener(sms.addressString!!)
+                    onContactItemClickListener(sms.addressString!!)
 
+                }
             }
-        }
+//        }
 
          private fun highlightSearhcField(sms: SMS) {
 

@@ -14,6 +14,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
+import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -65,7 +66,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection {
     private fun setupViewPager(viewPagerMessages: ViewPager?) {
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPagerAdapter.addFragment(SMSListFragment(), "Messages")
-        viewPagerAdapter.addFragment(SMSFragment(), "Identified as spam")
+        viewPagerAdapter.addFragment(SMSIdentifiedAsSpamFragment(), "Identified as spam")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
         viewPagerMessages!!.adapter = viewPagerAdapter
     }

@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
-import android.telephony.SubscriptionPlan
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -29,6 +28,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
@@ -36,6 +36,7 @@ import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 import com.nibble.hashcaller.view.utils.spam.SpamSyncManager
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
@@ -76,8 +77,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         fabBtnShowDialpad.setOnClickListener(this)
         fabBtnShowDialpad.visibility = View.GONE
-        getSimOperator()
-       SpamSyncManager.setSimOpeartor()
+        syncSpamList()
 
         Log.d(TAG, "onCreate  height of bottom nav: ${bottomNavigationView.height}")
 //        t his.applicationContext
@@ -169,8 +169,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        WorkManager.getInstance().enqueue(request)
     }
 
-    private fun getSimOperator() {
+    private fun syncSpamList() {
+        val list = getSimOperator()
+        val spamSyncRepository = SpamSyncRepository()
+        SpamSyncManager.sync(list, spamSyncRepository, this)
 
+    }
+
+    private fun getSimOperator(): MutableList<OperatorInformationDTO> {
+        val subscriptionInfoList = mutableListOf<OperatorInformationDTO>()
             if (ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.READ_PHONE_STATE
@@ -179,22 +186,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
                 val subscriptionInfos:List<SubscriptionInfo> =subscriptionManager.activeSubscriptionInfoList
 
+
+
                 SubscriptionManager.ACTION_REFRESH_SUBSCRIPTION_PLANS
                 for (element in subscriptionInfos) {
                     val lsuSubscriptionInfo: SubscriptionInfo = element
+                    val operatorDisplayName = lsuSubscriptionInfo.displayName
                     Log.d(TAG, "getNumber " + lsuSubscriptionInfo.getNumber())
+//                    val tel =  getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager;
+//                    val operator = tel.networkOperator
+//                    val simOperator = tel.simOperator
+
                     Log.d(
                         TAG,
-                        "network name : " + lsuSubscriptionInfo.getCarrierName()
+                        "network display : $operatorDisplayName"
                     )
+
                     Log.d(TAG,
-                        "getCountryIso " + lsuSubscriptionInfo.getCountryIso()
+                        "getCountryIso   ${lsuSubscriptionInfo.countryIso}"
                     )
+                    subscriptionInfoList.add(OperatorInformationDTO(operatorDisplayName.toString(), lsuSubscriptionInfo.countryIso ))
                 }
 
             }else{
                 Log.d(TAG, "permission not granted: ")
             }
+
+        return subscriptionInfoList
 
     }
 

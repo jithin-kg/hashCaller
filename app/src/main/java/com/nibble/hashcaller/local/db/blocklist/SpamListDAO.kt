@@ -6,6 +6,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
+/**
+ * table which holds user reported and other other spammers number
+ * retrieved from database
+ */
 @Dao
 interface SpamListDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -16,6 +20,10 @@ interface SpamListDAO {
 
     @Query("SELECT * FROM spammer_info")
     fun getAllBLockListPattern(): LiveData<List<SpammerInfo>>
-//    @Query("SELECT * FROM spammer_info WHERE contact_address=:contactAddress")
-//    suspend fun get(contactAddress: String) : SpammerInfo
+
+    @Query("SELECT * FROM spammer_info")
+    fun getAll(): List<SpammerInfo>
+
+    @Query("SELECT * FROM spammer_info WHERE contact_address=:contactAddress")
+    suspend fun get(contactAddress: String) : SpammerInfo
 }

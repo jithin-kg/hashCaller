@@ -1,19 +1,18 @@
-package com.nibble.hashcaller.view.ui.sms.util
+package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
 import androidx.lifecycle.*
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class SMSViewModel(
-    val SMS: SMSLiveData,
+class SMSSpamViewModel(
+    val SMS: SMSSpamLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
     companion object
     {
-        private const val TAG ="__DialerViewModel"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
     }
 

@@ -2,7 +2,7 @@ package com.nibble.hashcaller.network.spam
 
 import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.user.IuserService
-import com.nibble.hashcaller.repository.user.UserInfoDTO
+import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -18,5 +18,12 @@ interface ISpamService {
     suspend fun report(
         @Body userInfo :ReportedUserDTo,
         @Header ("Authorization") token:String
+    ):Response<NetWorkResponse>
+
+
+    @POST("spam/getReleventSpamInfo")
+    suspend fun syncSpamListOfOperator(
+        @Body token1: MutableList<OperatorInformationDTO>,
+        @Header ("Authorization") token: String
     ):Response<NetWorkResponse>
 }

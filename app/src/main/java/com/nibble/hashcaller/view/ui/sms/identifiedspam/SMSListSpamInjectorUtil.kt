@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.sms.list
+package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
 import android.content.Context
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -7,11 +7,11 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 /**
  * Created by Jithin KG on 29,July,2020
  */
-object SMSListInjectorUtil {
-    fun provideDialerViewModelFactory(context: Context?):SMSListViewModelFactory{
+object SMSListSpamInjectorUtil {
+    fun provideDialerViewModelFactory(context: Context?):SMSListSpamViewModelFactory{
 
-        val messagesLiveData = context?.let {
-            SMSLiveData(
+        val smsSpamLiveData = context?.let {
+            SMSSpamLiveData(
                 it
             )
         }
@@ -19,7 +19,7 @@ object SMSListInjectorUtil {
 
         val repository = context?.let { SMSLocalRepository(it, spamListDAO) }
 
-        return SMSListViewModelFactory(messagesLiveData, repository)
+        return SMSListSpamViewModelFactory(smsSpamLiveData, repository)
     }
 
 }

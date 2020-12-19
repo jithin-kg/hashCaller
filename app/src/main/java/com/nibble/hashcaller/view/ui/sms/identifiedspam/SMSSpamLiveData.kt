@@ -1,33 +1,46 @@
-package com.nibble.hashcaller.view.ui.sms.util
+package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.view.ui.sms.util.SMSContract
+import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SMSLiveData(private val context: Context):
+class SMSSpamLiveData(private val context: Context):
     ContentProviderLiveData<List<SMS>>(context,
         URI
     )  {
+    private lateinit var spamListDAO:SpamListDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
 
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
-        val URI: Uri = SMSContract.INBOX_SMS_URI
+        val URI: Uri =
+            SMSContract.INBOX_SMS_URI
         private const val TAG = "__MessagesLiveData"
     }
-    private fun getMessages(context: Context): MutableList<SMS> {
+     private suspend fun getMessages(context: Context): MutableList<SMS> {
 
-        SMSViewModel.isLoading.postValue(true)
-        val repository = SMSLocalRepository(context)
-        val res =  repository.fetchSMS(null)
+        SMSSpamViewModel.isLoading.postValue(true)
+          spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
+        val repository =
+            SMSLocalRepository(
+                context,
+                spamListDAO
+            )
+        val res =  repository.fetchSMS(null, true)
 
         //IMPORTANT from backgroudn thread we need to call postValue to set livedata
-        SMSViewModel.isLoading.postValue(false)
+        SMSSpamViewModel.isLoading.postValue(false)
         return res
 
 //        val listOfMessages = mutableListOf<SMS>()
@@ -113,7 +126,11 @@ class SMSLiveData(private val context: Context):
         return data
     }
     fun update(address:String){
-        val repository = SMSLocalRepository(context)
+        val repository =
+            SMSLocalRepository(
+                context,
+                spamListDAO
+            )
         repository.update(address)
     }
 

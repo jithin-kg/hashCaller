@@ -12,17 +12,19 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 object SMSIndividualInjectorUtil {
     fun provideViewModelFactory(context: Context?):SMSIndividualViewModelFactory{
 
-        val messagesLiveData = context?.let {
-            SMSIndividualLiveData(
-                it, IndividualSMSActivity.contact
-            )
-        }
-        val smsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsDAO() }
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
+        val smsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsDAO() }
 
-        val repository = context?.let { SMSLocalRepository(it) }
+        val repository = context?.let { SMSLocalRepository(it, spamListDAO) }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }
 
+
+        val messagesLiveData = context?.let {
+            SMSIndividualLiveData(
+                it, IndividualSMSActivity.contact,
+                spamListDAO
+            )
+        }
         return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO, spamNetworkRepository)
     }
 

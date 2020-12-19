@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.text.SpannableStringBuilder
 
 class SMS {
+    var isSpam: Boolean = false
     var id: Long = 0
     var address: SpannableStringBuilder? = null
     var type:Int = 0

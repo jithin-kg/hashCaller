@@ -10,11 +10,13 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
+import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * type 2 sent message
@@ -72,9 +74,10 @@ Constant Value: "seen"
 //
 
 class SMSLocalRepository(
-    private val context: Context
+    private val context: Context,
+    private val spamListDAO: SpamListDAO?
 ){
-
+private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     companion object{
         private val URI: Uri = SMSContract.INBOX_SMS_URI
         private const val TAG = "__SMSLocalRepository"
@@ -108,14 +111,14 @@ class SMSLocalRepository(
     }
 
     //gets sms for SMSLiveData to show all sms
-    fun fetchSMS(searchText:String?): MutableList<SMS> {
-       return fetch(null)
+    suspend fun fetchSMS(searchText:String?, isSpamNeeded:Boolean = false): MutableList<SMS> {
+       return fetch(null, isSpamNeeded)
     }
 
     //this function fetches sms while searching
-    fun getSms(searchQuery: String?): MutableList<SMS> {
+    suspend fun getSms(searchQuery: String?): MutableList<SMS> {
 
-        return fetch(searchQuery)
+        return fetch(searchQuery, false)
     }
 
      fun update(addressString: String){
@@ -126,10 +129,13 @@ class SMSLocalRepository(
         context.contentResolver.update(URI,cValues, "address='$addressString'",null)
 
     }
-    private fun fetch(searchQuery: String?): MutableList<SMS> {
+    private suspend fun fetch(searchQuery: String?, spamNeeded: Boolean?): MutableList<SMS> {
         val listOfMessages = mutableListOf<SMS>()
         var selectionArgs: Array<String>? = null
         var selection: String? = null
+        var count = 0
+        var map: HashMap<String?, String?> = HashMap()
+        smsListHashMap = map
 
         if (searchQuery != null) {
             selection = SMSContract.SMS_SELECTION_SEARCH
@@ -158,6 +164,13 @@ class SMSLocalRepository(
         )
 
         if(cursor != null && cursor.moveToFirst()){
+            val spammersList = spamListDAO?.getAll()
+
+            if (spammersList != null) {
+                for (spamer in spammersList){
+                    this.smsListHashMap.put(spamer.contactAddress, spamer.id.toString())
+                }
+            }
             do{
 
                 try{
@@ -229,8 +242,31 @@ class SMSLocalRepository(
                     } else {
                         objSMS.folderName = "sent"
                     }
+//                    if(spamNeeded!!){
+//                        //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+//                        if(isThisAddressSpam(objSMS.addressString))
+//                            listOfMessages.add(objSMS)
+//                    }else{
+//                        //we are requesting from SMSListFragment
+//                        if(!isThisAddressSpam(objSMS.addressString))
+//                            listOfMessages.add(objSMS)
+//                    }
 
-                    listOfMessages.add(objSMS)
+                if(spamNeeded!!){
+                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+                    if(this.smsListHashMap.containsKey(objSMS.addressString)){
+                        listOfMessages.add(objSMS)
+                    }
+                }else{
+                    //we are requesting from SMSListFragment
+                    if(!this.smsListHashMap.containsKey(objSMS.addressString)){
+                        listOfMessages.add(objSMS)
+                    }
+                }
+
+//                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
+                count = listOfMessages.size - 1
+
                 }catch (e:Exception){
                     Log.d(TAG, "getMessages: $e")
                 }
@@ -238,9 +274,30 @@ class SMSLocalRepository(
             }while (cursor.moveToNext())
 
             data = sortAndSet(listOfMessages)
+
         }
+//        data = removeSpamSmS(data)
+
         setSMSReadStatus(data)
         return data
+    }
+
+
+    /**
+     * @param contact adderss
+     * cross check in local database to check if the number is reported as spammer by user
+     *
+     */
+    //TODO get the updated spammer list
+    private suspend fun isThisAddressSpam(addressString: String?): Boolean {
+
+        val info = addressString?.let { spamListDAO?.get(it) }
+
+        if(info == null)
+            return false
+
+        return true
+
     }
 
     /**
