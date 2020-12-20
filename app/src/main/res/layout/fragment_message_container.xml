@@ -62,7 +62,23 @@
             app:tabMaxWidth="0dp"
             app:tabMode="fixed" />
     </com.google.android.material.appbar.AppBarLayout>
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabBtnDeleteSMS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="32dp"
+        android:visibility="invisible"
+        android:src="@drawable/ic_delete_white_24"
+        android:backgroundTint="@color/colorPrimary" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSendNewSMS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="32dp"
+        android:src="@drawable/ic_baseline_send_24"
+        android:backgroundTint="@color/colorPrimary" />
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPagerMessages"
         android:layout_width="match_parent"

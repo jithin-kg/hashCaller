@@ -22,7 +22,7 @@ interface SpamListDAO {
     fun getAllBLockListPattern(): LiveData<List<SpammerInfo>>
 
     @Query("SELECT * FROM spammer_info")
-    fun getAll(): List<SpammerInfo>
+    suspend fun getAll(): List<SpammerInfo>
 
     @Query("SELECT * FROM spammer_info WHERE contact_address=:contactAddress")
     suspend fun get(contactAddress: String) : SpammerInfo

@@ -137,6 +137,7 @@ class SMSIndividualViewModel(
 
     fun blockThisAddress(
         contactAddress: String,
+        threadID: Long,
         spammerType: Int?,
         spammerCategory: Int
     )  = viewModelScope.launch {
@@ -147,7 +148,7 @@ class SMSIndividualViewModel(
            ))
        }
     async {
-        spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory ))
+        spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
     }
 
         /**

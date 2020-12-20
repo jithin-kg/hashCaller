@@ -1,14 +1,19 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.content.*
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +29,7 @@ import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
+import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -41,6 +47,9 @@ class IndividualSMSActivity : AppCompatActivity(),
     private lateinit var adapter:SMSIndividualAdapter
     private lateinit var layoutMngr:LinearLayoutManager
     private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
+    private var threadID = -1L
+
     private  var menuSMS:Menu? = null
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isTheNumberBlocked:MutableLiveData<Boolean> = MutableLiveData(false)
@@ -105,12 +114,16 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun setupBottomSheet() {
         bottomSheetDialog = BottomSheetDialog(this)
+        bottomSheetDialogfeedback = BottomSheetDialog(this)
         val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+        val viewSheetFeedback = layoutInflater.inflate(R.layout.bottom_sheet_block_feedback, null)
 
         bottomSheetDialog.setContentView(viewSheet)
+        bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
         selectedRadioButton = bottomSheetDialog.radioScam
         bottomSheetDialog.imgExpand.setOnClickListener(this)
+
 
 
 
@@ -263,6 +276,7 @@ class IndividualSMSActivity : AppCompatActivity(),
                 Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
                 Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
                 Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
+                this.threadID = it[it.size-1].threadID
 
                 adapter.setList(it)
                 if(firstime){
@@ -492,7 +506,24 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
     private fun addToBlockList(contactAddress: String) {
 
-        viewModel.blockThisAddress(contactAddress, this.spammerType, this.SPAMMER_CATEGORY )
+        viewModel.blockThisAddress(contactAddress, this.threadID, this.spammerType, this.SPAMMER_CATEGORY )
+        Toast.makeText(this, "Number added to spamlist", Toast.LENGTH_LONG)
+        bottomSheetDialog.hide()
+        bottomSheetDialog.dismiss()
+
+        bottomSheetDialogfeedback.show()
+        var txt = "$contactAddress can no longer send SMS or call you."
+
+        val  sb =  SpannableStringBuilder(txt);
+
+        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
+        sb.setSpan(bss, 0, contactAddress.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
+//        sb.setSpan(normal, txt.length -1, normal.length-1,Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+
+        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+
+
+
 
     }
 

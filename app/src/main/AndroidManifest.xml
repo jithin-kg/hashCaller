@@ -29,10 +29,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".view.ui.sms.schedule.ScheduleActivity"></activity>
         <activity
             android:name=".view.ui.sms.individual.SampleActivity"
             android:label="@string/title_activity_sample"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize">
@@ -72,8 +73,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
-<!--@style/Theme.MaterialComponents.DayNight set for Error inflating class material.bottomnavigation.BottomNavigationView
-       in mainactivity theme-->
+        <!--
+@style/Theme.MaterialComponents.DayNight set for Error inflating class material.bottomnavigation.BottomNavigationView
+       in mainactivity theme
+        -->
         <activity
             android:name=".view.ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -131,6 +134,9 @@
 
                 <data android:mimeType="application/vnd.wap.mms-message" />
             </intent-filter>
+        </receiver>
+        <receiver android:name=".repository.spam.AlarmReceiver">
+
         </receiver>
     </application>
 

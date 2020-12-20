@@ -48,6 +48,10 @@ class SMSSpamViewModel(
      SMS?.update(address)
     }
 
+     fun deleteSpamSMS() = viewModelScope.launch {
+        repository?.deleteAllSpamSMS()
+    }
+
 
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {

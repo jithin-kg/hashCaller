@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
+import android.R.id
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -17,6 +18,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+
 
 /**
  * type 2 sent message
@@ -374,6 +376,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                     sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
                     sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
+                    sms.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
                     sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
                     sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
                     sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
@@ -487,7 +490,25 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
     }
 
+    suspend fun deleteAllSpamSMS() {
+        val spamerslist = spamListDAO?.getAll()
+        if (spamerslist != null) {
+            for (spamer in spamerslist){
 
+                val thread = Uri.parse("content://sms")
+                val deleted: Int = context.contentResolver.delete(
+                    thread,
+                    "thread_id=?",
+                    arrayOf<String>(
+                        java.lang.String.valueOf(spamer.threadId)
+                    )
+                )
+                Log.d(TAG, "deleteAllSpamSMS: deleted: $deleted")
+            }
+        }
+
+
+    }
 
 
 }

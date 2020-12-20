@@ -1,12 +1,16 @@
 package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TabHost
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -16,12 +20,15 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
+import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.fragment_message_container.*
+import kotlinx.android.synthetic.main.fragment_message_container.view.*
 
 
-class SMSContainerFragment : Fragment(), IDefaultFragmentSelection {
+class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
+    TabLayout.OnTabSelectedListener, View.OnClickListener {
     private var isDflt = false
 
     // TODO: Rename and change types of parameters
@@ -58,9 +65,16 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection {
         if(checkPermission()){
             setupViewPager(viewPagerMessages)
             tabLayoutMessages?.setupWithViewPager(viewPagerMessages)
+//            tabLayoutMessages.addOnTabSelectedListener(this)
+            setListeners()
 
         }
 
+    }
+
+    private fun setListeners() {
+        tabLayoutMessages.addOnTabSelectedListener(this)
+        this.messagesView.fabBtnDeleteSMS.setOnClickListener(this)
     }
 
     private fun setupViewPager(viewPagerMessages: ViewPager?) {
@@ -69,6 +83,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection {
         viewPagerAdapter.addFragment(SMSIdentifiedAsSpamFragment(), "Identified as spam")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
         viewPagerMessages!!.adapter = viewPagerAdapter
+
+
     }
 
     private fun checkPermission(): Boolean {
@@ -103,12 +119,62 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection {
     }
 
 
+
+    fun toggleDeleteFab(){
+
+        val visibility = this.messagesView.fabBtnDeleteSMS.visibility
+        if(visibility == View.VISIBLE){
+            this.messagesView.fabBtnDeleteSMS.visibility = View.INVISIBLE
+
+        }else{
+            this.messagesView.fabBtnDeleteSMS.visibility = View.VISIBLE
+
+        }
+    }
+
     override var isDefaultFgmnt: Boolean
         get() = isDflt
         set(value) {isDflt = value}
 
     companion object {
         private const val TAG = "__SMSContainerFragment"
+
+
             }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+        Log.d(TAG, "onTabReselected: ${tab?.position}")
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+        Log.d(TAG, "onTabUnselected: ${tab?.position}")
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        Log.d(TAG, "onTabSelected: ${tab?.position} ")
+        if (tab != null) {
+            when(tab.position){
+                    0->{
+                        this.messagesView.fabBtnDeleteSMS.visibility = View.INVISIBLE
+                        this.messagesView.fabSendNewSMS.visibility = View.VISIBLE
+                    }
+                1->{
+                    this.messagesView.fabSendNewSMS.visibility = View.INVISIBLE
+                    this.messagesView.fabBtnDeleteSMS.visibility = View.VISIBLE
+
+
+                }
+            }
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.fabBtnDeleteSMS ->{
+                val i = Intent(activity, ScheduleActivity::class.java)
+                startActivity(i)
+            }
+        }
+    }
 
 }
