@@ -62,23 +62,42 @@
             app:tabMaxWidth="0dp"
             app:tabMode="fixed" />
     </com.google.android.material.appbar.AppBarLayout>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabBtnDeleteSMS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:textColor="@color/colorWhite"
         android:layout_margin="32dp"
+        app:iconTint="@color/colorWhite"
         android:visibility="invisible"
-        android:src="@drawable/ic_delete_white_24"
+        app:icon="@drawable/ic_delete_white_24"
         android:backgroundTint="@color/colorPrimary" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabBtnDeleteSMSExpanded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:text="Schedule"
+        android:contentDescription="Schedule"
+        android:textColor="@color/colorWhite"
+        android:layout_margin="32dp"
+        app:iconTint="@color/colorWhite"
+        android:visibility="invisible"
+        app:icon="@drawable/ic_delete_white_24"
+        android:backgroundTint="@color/colorPrimary" />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabSendNewSMS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:contentDescription="Schedule"
+        android:textColor="@color/colorWhite"
         android:layout_margin="32dp"
-        android:src="@drawable/ic_baseline_send_24"
+        app:iconTint="@color/colorWhite"
+        app:icon="@drawable/ic_baseline_send_24"
         android:backgroundTint="@color/colorPrimary" />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPagerMessages"
         android:layout_width="match_parent"

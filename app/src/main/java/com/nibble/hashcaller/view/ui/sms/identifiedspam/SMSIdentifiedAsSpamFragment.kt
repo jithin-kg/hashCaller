@@ -15,12 +15,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 
@@ -62,8 +65,12 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
             run {
                 if (size > 0) {
                     viewMesages.imgViewNoSpam.visibility = View.GONE
+//                    viewMesages.layoutDeleteSpamInfo.visibility = View.VISIBLE
+
+
                 } else {
                     viewMesages.imgViewNoSpam.visibility = View.VISIBLE
+//                    viewMesages.layoutDeleteSpamInfo.visibility = View.GONE
                 }
             }
         })
@@ -94,7 +101,8 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
             sms.let {
 
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
-                smsRecyclerAdapter?.submitList(it)
+//                smsRecyclerAdapter?.submitList(it)
+                smsRecyclerAdapter?.setList(it)
                 this.smsListSize.value = it.size
                 SMSListAdapter.searchQry = searchQry
 
@@ -107,29 +115,38 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initListeners()
+        val numOfDays = 2
+//        this.viewMesages.tvsmsDeleteInfo.text  = "Items that have been in Spam will be deleted automatically" +
+//                "according to your spam delete cycle"
        val height = activity?.bottomNavigationView?.height
         Log.d(TAG, "onViewCreated: height $height")
          sView = viewMesages.rootView.findViewById(R.id.searchViewMessages) as SearchView
         
-//        val params = CoordinatorLayout.LayoutParams(
-//            CoordinatorLayout.LayoutParams.WRAP_CONTENT,
-//            CoordinatorLayout.LayoutParams.WRAP_CONTENT
-//        )
-//        params.marginEnd = 100
-//        params.bottomMargin = height!!
-////        params.setMargins(0, 0, 100, height!!)
-//        params.gravity = Gravity.BOTTOM or Gravity.END
 
-//        view.fabBtnDeleteSMS.layoutParams = params
 
         Log.d(TAG, "onCreateView: $sView")
 
-
-
-
+        SMSContainerFragment.recyclerViewSpamSms = this.viewMesages.rcrViewSMSSpamList
+        setScrollViewListener()
         searchViewListener()
     }
 
+    private fun setScrollViewListener() {
+        viewMesages.rcrViewSMSSpamList?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            @SuppressLint("LongLogTag")
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                Log.d(TAG, "onScrolled: ")
+                if (dy > 0 || dy < 0 ) SMSContainerFragment.hide()
+            }
+
+            @SuppressLint("LongLogTag")
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) SMSContainerFragment.show()
+                Log.d(TAG, "onScrollStateChanged: ")
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
+    }
     private fun searchViewListener() {
         sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(p0: String?): Boolean {
@@ -150,7 +167,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initListeners() {
-        viewMesages.btnEmptySpamSMS.setOnClickListener(this)
+//        viewMesages.btnEmptySpamSMS.setOnClickListener(this)
     }
 
     private fun initRecyclerView() {
@@ -161,7 +178,9 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            smsRecyclerAdapter = SMSListAdapter(context) { id:String->onContactItemClicked(id)}
+//            smsRecyclerAdapter = SMSListAdapter(context,o) { id:String->onContactItemClicked(id)}
+            smsRecyclerAdapter = SMSListAdapter(context,::onContactItemClicked,::onDeleteItemClicked)
+//            smsRecyclerAdapter = SMSListAdapter(context)
             adapter = smsRecyclerAdapter
 
 //                setContacts()
@@ -178,6 +197,10 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         startActivity(intent)
     }
 
+    private fun onDeleteItemClicked(){
+        deleteAllSpamSms()
+    }
+
     private fun initVieModel() {
         viewmodel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(context)).get(
             SMSSpamViewModel::class.java)
@@ -188,11 +211,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        when(v?.id){
-            R.id.btnEmptySpamSMS->{
-                deleteAllSpamSms()
-            }
-        }
+
     }
 
     private fun deleteAllSpamSms() {

@@ -44,7 +44,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cntx = this!!.context!!
+        cntx = this!!.requireContext()
     }
 
     override fun onCreateView(
@@ -144,7 +144,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            smsRecyclerAdapter = SMSListAdapter(context) { id:String->onContactItemClicked(id)}
+            smsRecyclerAdapter = SMSListAdapter(context,::onContactItemClicked, ::onDeleteItemClicked)
             adapter = smsRecyclerAdapter
 
 //                setContacts()
@@ -152,7 +152,9 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 //                adapter.onItemClick =
         }
     }
+    private fun onDeleteItemClicked(){
 
+    }
     private fun onContactItemClicked(address: String) {
         smsListVIewModel.update(address) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )

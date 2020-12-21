@@ -15,9 +15,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter.ViewHolder
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
+import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
 import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
 import java.time.ZoneId
@@ -29,9 +29,13 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class SMSListAdapter(private val context: Context, private val onContactItemClickListener: (id:String)->Unit) :
-    androidx.recyclerview.widget.ListAdapter<SMS, ViewHolder>(SMSItemDiffCallback()) {
-
+class SMSListAdapter(private val context: Context,
+                     private val onContactItemClickListener: (id:String)->Unit,
+                     private val onDelteItemclickListener: ()->Unit
+                        ) :
+    androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
+    private val VIEW_TYPE_DELETE = 1;
+    private val VIEW_TYPE_SMS = 2;
     private var smsList = emptyList<SMS>()
 
     companion object{
@@ -40,51 +44,75 @@ class SMSListAdapter(private val context: Context, private val onContactItemClic
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if(viewType == VIEW_TYPE_DELETE){
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_spam_delete_item, parent, false)
+            return DeleteViewHolder(view)
 
-        return ViewHolder(view)
+        }else{
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
+            return SmsViewHolder(view)
+        }
+
+
     }
 
-//    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        val contact = contacts[position]
-//        holder.bind(contact, context, onContactItemClickListener)
-//    }
-override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun getItemViewType(position: Int): Int {
+        if(this.smsList.isNotEmpty())
+        if(this.smsList[position].deleteViewPresent){
+            return VIEW_TYPE_DELETE
+        }else{
+            return VIEW_TYPE_SMS
+        }
+        return VIEW_TYPE_SMS
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //    val contact = smsList[position]
 //    holder.bind(contact, context, onContactItemClickListener)
-    when(holder) {
+    when(holder.itemViewType) {
 
-        is ViewHolder -> {
+        VIEW_TYPE_SMS -> {
            val item =  getItem(position)
 
-                holder.bind(item,context, onContactItemClickListener, position)
+            (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position)
 
         }
+        VIEW_TYPE_DELETE ->{
+            val item =  getItem(position)
+
+            (holder as DeleteViewHolder).bind(item,context, onDelteItemclickListener, position)
+        }
+
 
     }
 }
 
+    fun setList(it: List<SMS>?) {
+        this.smsList = it!!
+        this.submitList(this.smsList)
 
-//    override fun getItemCount(): Int {
-////        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
-//       return smsList.size
-//    }
+    }
 
-//    fun setSMSList(
-//        newSMSList: List<SMS>,
-//        query: String?
-//    ) {
-////        smsList = newSMSList
-//        searchQry = query
-//        Log.d(TAG, "setSMSList query: $query ")
-//        val oldlist = smsList
-////        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(SMSItemDiffCallback(oldlist, newSMSList) )
-//       smsList = newSMSList
-////        diffResult.dispatchUpdatesTo(this)
-////        notifyDataSetChanged()
-//    }
-     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+
+
+    class DeleteViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        val btnEmptySms = view.btnEmptySpamSMS
+
+        fun bind(
+            sms: SMS, context: Context,
+            onDeleteItemclickLIstener: () -> Unit,
+            position: Int
+        ) {
+            btnEmptySms.setOnClickListener{
+//                view.tvUnreadSMSCount.text = ""
+//                view.tvUnreadSMSCount.visibility = View.INVISIBLE
+                onDeleteItemclickLIstener()
+
+            }
+        }
+    }
+     class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVSMSContactName
          private val circle = view.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)

@@ -80,9 +80,11 @@ class SMSLocalRepository(
     private val spamListDAO: SpamListDAO?
 ){
 private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
+
     companion object{
         private val URI: Uri = SMSContract.INBOX_SMS_URI
         private const val TAG = "__SMSLocalRepository"
+
     }
 
 
@@ -132,6 +134,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
     }
     private suspend fun fetch(searchQuery: String?, spamNeeded: Boolean?): MutableList<SMS> {
+        var deleteViewAdded = false
         val listOfMessages = mutableListOf<SMS>()
         var selectionArgs: Array<String>? = null
         var selection: String? = null
@@ -257,6 +260,12 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                 if(spamNeeded!!){
                     //if we are requesting from fragment SMSIdentifiedAsSpamFragment
                     if(this.smsListHashMap.containsKey(objSMS.addressString)){
+                        if(!deleteViewAdded){
+                            val delViewObj = SMS()
+                            delViewObj.deleteViewPresent = true
+                            listOfMessages.add(delViewObj)
+                            deleteViewAdded = true
+                        }
                         listOfMessages.add(objSMS)
                     }
                 }else{

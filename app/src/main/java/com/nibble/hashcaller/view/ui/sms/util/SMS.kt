@@ -3,6 +3,8 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.text.SpannableStringBuilder
 
 class SMS {
+    var deleteViewPresent:Boolean = false
+
     var threadID: Long = -1L
     var isSpam: Boolean = false
     var id: Long = 0

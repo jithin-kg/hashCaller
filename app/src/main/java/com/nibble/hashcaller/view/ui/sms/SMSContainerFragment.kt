@@ -7,8 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TabHost
+import android.view.animation.TranslateAnimation
+import android.widget.ScrollView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.karumi.dexter.Dexter
@@ -49,7 +51,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         // Inflate the layout for this fragment
         if(checkPermission()){
             messagesView =  inflater.inflate(R.layout.fragment_message_container, container, false)
-
+            viewSms = messagesView
 
 
             return messagesView
@@ -71,6 +73,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         }
 
     }
+
+
 
     private fun setListeners() {
         tabLayoutMessages.addOnTabSelectedListener(this)
@@ -136,11 +140,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         get() = isDflt
         set(value) {isDflt = value}
 
-    companion object {
-        private const val TAG = "__SMSContainerFragment"
 
-
-            }
 
     override fun onTabReselected(tab: TabLayout.Tab?) {
         Log.d(TAG, "onTabReselected: ${tab?.position}")
@@ -156,11 +156,13 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             when(tab.position){
                     0->{
                         this.messagesView.fabBtnDeleteSMS.visibility = View.INVISIBLE
+                        this.messagesView.fabBtnDeleteSMSExpanded.visibility = View.INVISIBLE
                         this.messagesView.fabSendNewSMS.visibility = View.VISIBLE
                     }
                 1->{
                     this.messagesView.fabSendNewSMS.visibility = View.INVISIBLE
-                    this.messagesView.fabBtnDeleteSMS.visibility = View.VISIBLE
+                    this.messagesView.fabBtnDeleteSMSExpanded.visibility = View.VISIBLE
+                    this.messagesView.fabBtnDeleteSMS.visibility = View.INVISIBLE
 
 
                 }
@@ -170,11 +172,43 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.fabBtnDeleteSMS ->{
+            R.id.fabBtnDeleteSMS, R.id.fabBtnDeleteSMSExpanded ->{
                 val i = Intent(activity, ScheduleActivity::class.java)
                 startActivity(i)
             }
         }
     }
+    companion object {
+        private const val TAG = "__SMSContainerFragment"
+        var recyclerViewSpamSms:RecyclerView? = null
+        var viewSms:View? = null
+        fun show(){
+            viewSms?.fabBtnDeleteSMS?.visibility = View.INVISIBLE
+
+            viewSms?.fabBtnDeleteSMSExpanded?.animate()?.
+            scaleX(1f)?.
+            scaleY(1f)?.
+            setDuration(10)?.
+            start();
+            viewSms?.fabBtnDeleteSMSExpanded?.visibility = View.VISIBLE
+
+        }
+        fun hide(){
+
+            viewSms?.fabBtnDeleteSMS?.visibility = View.VISIBLE
+            var width:Float = viewSms?.fabBtnDeleteSMS?.width?.toFloat()!!
+            val animate = TranslateAnimation(0f, width, 0f,  0f )
+            animate.duration = 500;
+            animate.fillAfter = true;
+//            viewSms?.fabBtnDeleteSMSExpanded?.startAnimation(animate)
+            viewSms?.fabBtnDeleteSMSExpanded?.animate()?.
+            scaleX(0.3f)?.
+            scaleY(0.3f)?.
+            setDuration(10)?.
+            start();
+            viewSms?.fabBtnDeleteSMSExpanded?.visibility = View.INVISIBLE
+        }
+    }
+
 
 }
