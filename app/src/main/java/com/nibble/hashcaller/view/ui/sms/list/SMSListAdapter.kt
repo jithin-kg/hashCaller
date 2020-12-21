@@ -58,7 +58,7 @@ class SMSListAdapter(private val context: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(this.smsList.isNotEmpty())
+        if(this.smsList.isNotEmpty() && position < smsList.size)
         if(this.smsList[position].deleteViewPresent){
             return VIEW_TYPE_DELETE
         }else{
