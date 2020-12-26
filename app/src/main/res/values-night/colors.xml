@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3399FF</color>
+    <color name="colorPrimaryDark">#3366CC</color>
+<!--    <color name="colorBackgroundDark">#000000</color>-->
+
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorlightBlueviking">#79BEDB</color>
+    <color name="colorbrightTurquoiseLightBlue">#10C8CD</color>
+    <color name="lightGray">#E8EAEA</color>
+    <color name="darktGray">#252C2C</color>
+
+    <color name="tranparent_time_picker">#00ffffff</color>
+    <color name="amPmTextColor">#13FF32</color>
+    <color name="headerBackground">#16ABEF</color>
+    <color name="numbersBackgroundColor">#FF8400</color>
+    <color name="numbersInnerTextColor">#FA0000</color>
+
+    <color name="numbersSelectorColor">#11AA4E</color>
+    <color name="numbersTextColor">#1B6EAC</color>
+
+    <color name="textColor">#FFFFFF</color>
+    <color name="textColorSecondary">#7E7B7B</color>
+
+
+</resources>

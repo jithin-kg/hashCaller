@@ -5,6 +5,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -26,6 +27,9 @@ class HashCaller : Application(){
 
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
         createNotificationChannels()
         instantiateAllFragment()
     }

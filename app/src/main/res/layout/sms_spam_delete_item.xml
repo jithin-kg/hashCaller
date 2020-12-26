@@ -11,11 +11,10 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="220dp"
-        android:layout_marginBottom="8dp"
         android:fontFamily="sans-serif"
         android:lineHeight="2dp"
         android:lines="2"
-        android:maxLines="2"
+        android:maxLines="3"
         android:text="Clear spam sms now"
         app:layout_constraintBottom_toTopOf="@+id/btnEmptySpamSMS"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,11 +26,11 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginTop="8dp"
-
         android:layout_marginBottom="8dp"
-        android:elevation="0dp"
 
+        android:elevation="0dp"
         android:padding="8dp"
         android:text="Empty Spam now"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -16,6 +16,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -67,12 +68,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
+//        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 //        firebaseHelper = new MainActivityHelper();
 
 //        firebaseHelper.intializeFirebaseLogin(this);
         hideKeyboard(this)
+//        AppCompatDelegate.setDefaultNi
+//        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_main)
 
         fabBtnShowDialpad.setOnClickListener(this)
@@ -85,7 +88,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //                .registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 //                        true, ContactObserver(Handler()))
         if (savedInstanceState == null) {
-
             messagesFragment = SMSContainerFragment()
             blockConfigFragment = BlockConfigFragment()
             contactFragment = ContactsFragment()

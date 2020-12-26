@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +23,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_contact_list.*
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,12 +53,28 @@ class ContactListFragment  : Fragment()  {
 //        // Required empty public constructor
 //    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (savedInstanceState != null) {
 
+
+        }
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
         retainInstance = true
         // Inflate the layout for this fragment
+
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//        val contextThemeWrapper: Context =
+//            ContextThemeWrapper(activity, R.style.MyDarkTheme)
+        // clone the inflater using the ContextThemeWrapper
+        // clone the inflater using the ContextThemeWrapper
+//        val localInflater = inflater.cloneInContext(contextThemeWrapper)
+
+
         contactListViewFragment = inflater.inflate(R.layout.fragment_contact_list, container, false)
 //        initRecyclerView()
 
@@ -64,6 +84,8 @@ class ContactListFragment  : Fragment()  {
         observerIsLoading()
         return contactListViewFragment
     }
+
+
 
     private fun observerIsLoading() {
         ContactsViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading->

@@ -1,12 +1,19 @@
 package com.nibble.hashcaller.view.ui.blockConfig.blockList
 
-import android.graphics.Canvas
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SimpleAdapter
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,10 +24,8 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
-
-
 import kotlinx.android.synthetic.main.fragment_blk_list.*
-import kotlinx.android.synthetic.main.fragment_messages_list.*
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,6 +43,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
 
     private lateinit var blockListAdapter: BlockListAdapter
+
 
     private fun initRecyclerView(){
 
@@ -58,7 +64,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
         super.onCreate(savedInstanceState)
 //        adapter = BlockListAdapter()
 
-        swipeHandler = object : SwipeToDeleteCallback(this.context!!) {
+        swipeHandler = object : SwipeToDeleteCallback(this.requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val adapter = rcrViewPtrnList.adapter
                 deletePattern(viewHolder.adapterPosition)
@@ -78,9 +84,15 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
     override fun onCreateView(  inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?) :View{
         super.onCreate(savedInstanceState)
+// create ContextThemeWrapper from the original Activity Context with the custom theme
+        //darktheme
+        val contextThemeWrapper =  ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme);
+        setBackgroundTheme()
 
+        // clone the inflater using the ContextThemeWrapper
+        val localInflater = inflater.cloneInContext(contextThemeWrapper)
 
-         blockListView = inflater.inflate(R.layout.fragment_blk_list, container, false)
+         blockListView = localInflater.inflate(R.layout.fragment_blk_list, container, false)
 
 //        intiRecyclerView()
 //
@@ -113,7 +125,32 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
     }
 
-//    private fun intiRecyclerView() {
+    @SuppressLint("SwitchIntDef")
+    private fun setBackgroundTheme() {
+        val nightModeFlags = requireContext().resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK
+        val type = AppCompatDelegate.getDefaultNightMode()
+        when (type) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                Log.d(TAG, "setBackgroundTheme: light")
+            }
+            UI_MODE_NIGHT_YES -> {
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                Log.d(TAG, "setBackgroundTheme: night mode yes")
+            }
+
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                Log.d(TAG, "setBackgroundTheme: undefined")
+
+            }else ->{
+            Log.d(TAG, "setBackgroundTheme: else")
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//            activity?.setTheme(R.style.MyLightTheme)
+        }
+        }
+    }
+
+    //    private fun intiRecyclerView() {
 //        rcrViewPtrnList?.apply {
 //            // set a LinearLayoutManager to handle Android
 //            // RecyclerView behavior
@@ -127,6 +164,25 @@ override fun onDestroyView() {
     super.onDestroyView()
     rcrViewPtrnList.adapter  = null
 }
+
+    override fun onInflate(activity: Activity, attrs: AttributeSet, savedInstanceState: Bundle?) {
+        super.onInflate(activity, attrs, savedInstanceState)
+        Log.v(TAG, "onInflate called")
+
+        val a = activity.obtainStyledAttributes(attrs, R.styleable.ds)
+
+//        val myString = a.getText(R.styleable.ds)
+//        if (myString != null) {
+//            Log.v(TAG, "My String Received : $myString")
+//        }
+
+//        val myInteger = a.getInt(R.styleable.AdFragment_my_integer, -1)
+//        if (myInteger != -1) {
+//            Log.v(TAG, "My Integer Received :$myInteger")
+//        }
+
+        a.recycle()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

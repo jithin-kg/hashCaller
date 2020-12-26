@@ -11,10 +11,9 @@
         <item name="fontFamily"> sans-serif</item>
     </style>
 
-    <style name="Theme.MyDarkTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.MyDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-<!--        <item name="backgroundColor">@color/colorBackground</item>-->
         <item name="android:windowSoftInputMode">stateHidden</item>
         <item name="android:textColorPrimary">@color/textColor</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>

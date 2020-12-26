@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
-import android.widget.ScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -68,7 +67,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             setupViewPager(viewPagerMessages)
             tabLayoutMessages?.setupWithViewPager(viewPagerMessages)
 //            tabLayoutMessages.addOnTabSelectedListener(this)
-            setListeners()
+            initListeners()
 
         }
 
@@ -76,9 +75,10 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
 
 
-    private fun setListeners() {
+    private fun initListeners() {
         tabLayoutMessages.addOnTabSelectedListener(this)
         this.messagesView.fabBtnDeleteSMS.setOnClickListener(this)
+        this.messagesView.fabBtnDeleteSMSExpanded.setOnClickListener(this)
     }
 
     private fun setupViewPager(viewPagerMessages: ViewPager?) {
@@ -183,30 +183,14 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         var recyclerViewSpamSms:RecyclerView? = null
         var viewSms:View? = null
         fun show(){
-            viewSms?.fabBtnDeleteSMS?.visibility = View.INVISIBLE
 
-            viewSms?.fabBtnDeleteSMSExpanded?.animate()?.
-            scaleX(1f)?.
-            scaleY(1f)?.
-            setDuration(10)?.
-            start();
-            viewSms?.fabBtnDeleteSMSExpanded?.visibility = View.VISIBLE
+
+              viewSms?.fabBtnDeleteSMSExpanded?.extend()
 
         }
         fun hide(){
+            viewSms?.fabBtnDeleteSMSExpanded?.shrink()
 
-            viewSms?.fabBtnDeleteSMS?.visibility = View.VISIBLE
-            var width:Float = viewSms?.fabBtnDeleteSMS?.width?.toFloat()!!
-            val animate = TranslateAnimation(0f, width, 0f,  0f )
-            animate.duration = 500;
-            animate.fillAfter = true;
-//            viewSms?.fabBtnDeleteSMSExpanded?.startAnimation(animate)
-            viewSms?.fabBtnDeleteSMSExpanded?.animate()?.
-            scaleX(0.3f)?.
-            scaleY(0.3f)?.
-            setDuration(10)?.
-            start();
-            viewSms?.fabBtnDeleteSMSExpanded?.visibility = View.INVISIBLE
         }
     }
 

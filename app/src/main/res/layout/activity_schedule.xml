@@ -4,15 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/scdule_layout_main_background"
     tools:context=".view.ui.sms.schedule.ScheduleActivity">
 
+
     <TimePicker
-        android:id="@+id/timePickerSpinner"
+        android:id="@+id/timePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="56dp"
+        android:scaleX="1.6"
+        android:scaleY="1.6"
+        android:theme="@style/defaultNumberPickerTheme"
         android:timePickerMode="spinner"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,19 +28,111 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:text="Cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnSaveSmsDelete"
         app:layout_constraintEnd_toStartOf="@+id/btnSaveSmsDelete"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        style="?attr/borderlessButtonStyle"
         android:id="@+id/btnSaveSmsDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button" />
+        app:layout_constraintStart_toEndOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/scdule_layout_backgroudn"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timePicker">
+
+        <TextView
+            android:id="@+id/textViewSpmDeleteInfo1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:fontFamily="sans-serif"
+            android:singleLine="false"
+            android:text="schedule"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.065"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <EditText
+            android:id="@+id/edtTxtNumOfDays"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="28dp"
+            android:ems="10"
+            android:background="@null"
+            android:inputType="number"
+            android:textSize="34sp"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnDecrement"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnIncrement"
+            app:layout_constraintTop_toBottomOf="@+id/textViewSpmDeleteInfo1" />
+
+        <ImageButton
+            android:id="@+id/imgBtnIncrement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/ic_baseline_add_24"
+            app:layout_constraintBottom_toBottomOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintEnd_toStartOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintHorizontal_bias="0.5"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/edtTxtNumOfDays" />
+
+        <ImageButton
+            android:id="@+id/imgBtnDecrement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/ic_baseline_remove_24"
+            app:layout_constraintBottom_toBottomOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintTop_toTopOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintVertical_bias="0.666" />
+
+        <TextView
+            android:id="@+id/tvDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Days"
+            app:layout_constraintEnd_toEndOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintStart_toStartOf="@+id/edtTxtNumOfDays"
+            app:layout_constraintTop_toBottomOf="@+id/edtTxtNumOfDays" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

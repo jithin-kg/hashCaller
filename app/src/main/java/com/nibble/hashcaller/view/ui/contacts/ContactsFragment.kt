@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,8 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuItemCompat.getActionView
@@ -57,7 +60,10 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (savedInstanceState != null) {
+
+
         }
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
 
@@ -66,9 +72,15 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         savedInstanceState: Bundle?
     ): View? {
 
-
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+       //dark theme
+        val contextThemeWrapper: Context =
+            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
+        // clone the inflater using the ContextThemeWrapper
+        // clone the inflater using the ContextThemeWrapper
+        val localInflater = inflater.cloneInContext(contextThemeWrapper)
         // Inflate the layout for this fragment
-        ContactViewFragment = inflater.inflate(R.layout.fragment_contacts, container, false)
+        ContactViewFragment = localInflater.inflate(R.layout.fragment_contacts, container, false)
 //        if (!checkPermission()) {
 //            return null
 //        }

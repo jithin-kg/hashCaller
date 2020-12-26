@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?attr/actionBarSize"
-        android:background="#fff"
         android:focusableInTouchMode="true">
 
     </FrameLayout>
@@ -21,8 +20,6 @@
         android:layout_height="100dp"
         android:layout_width="match_parent"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:background="#fff"
-
         >
 
         <androidx.appcompat.widget.Toolbar
@@ -73,31 +70,65 @@
         android:visibility="invisible"
         app:icon="@drawable/ic_delete_white_24"
         android:backgroundTint="@color/colorPrimary" />
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabBtnDeleteSMSExpanded"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:text="Schedule"
-        android:contentDescription="Schedule"
-        android:textColor="@color/colorWhite"
-        android:layout_margin="32dp"
-        app:iconTint="@color/colorWhite"
-        android:visibility="invisible"
-        app:icon="@drawable/ic_delete_white_24"
-        android:backgroundTint="@color/colorPrimary" />
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabSendNewSMS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:contentDescription="Schedule"
-        android:textColor="@color/colorWhite"
-        android:layout_margin="32dp"
-        app:iconTint="@color/colorWhite"
-        app:icon="@drawable/ic_baseline_send_24"
-        android:backgroundTint="@color/colorPrimary" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabBtnDeleteSMSExpanded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:text="Schedule"
+            android:contentDescription="Schedule"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="32dp"
+            app:iconTint="@color/colorWhite"
+            android:visibility="invisible"
+            app:icon="@drawable/ic_delete_white_24"
+            android:backgroundTint="@color/colorPrimary" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabSendNewSMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="Schedule"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="32dp"
+            app:iconTint="@color/colorWhite"
+            app:icon="@drawable/ic_baseline_send_24"
+            android:backgroundTint="@color/colorPrimary" />
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/constraintLayout3"-->
+<!--        android:layout_width="250dp"-->
+<!--        android:layout_height="250dp"-->
+<!--        android:layout_gravity="bottom|end">-->
 
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:src="@drawable/ic_delete_blue_24"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/textView14"-->
+<!--            app:layout_constraintHorizontal_bias="0.011"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintVertical_bias="0.008"-->
+<!--            tools:layout_conversion_absoluteHeight="0dp"-->
+<!--            tools:layout_conversion_absoluteWidth="0dp" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textView14"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:text="Schedule"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/imageView5"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintVertical_bias="0.008"-->
+<!--            tools:layout_conversion_absoluteHeight="19dp"-->
+<!--            tools:layout_conversion_absoluteWidth="58dp" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPagerMessages"
         android:layout_width="match_parent"

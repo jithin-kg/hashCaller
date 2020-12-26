@@ -12,4 +12,9 @@
     <dimen name="list_item_spacing_half">8dp</dimen>
     <dimen name="row_layout_height">12dp</dimen>
     <dimen name="blockImgBtnWidth">48dp</dimen>
+    <dimen name="timepicker_text_size">32sp</dimen>
+
+<!--    picker-->
+    <dimen name="text_size">72sp</dimen>
+    <dimen name="selected_text_size">80sp</dimen>
 </resources>

@@ -11,6 +11,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
+import com.nibble.hashcaller.BuildConfig
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import java.io.ByteArrayInputStream
@@ -60,7 +61,7 @@ class IndividualContactRepository(private val dao: IContactIformationDAO, privat
            try {
                val inputStream =
                    ContactsContract.Contacts.openContactPhotoInputStream(
-                      context.contentResolver,
+                       context.contentResolver,
                        ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactID)
                    )
                if (inputStream != null) {
@@ -68,8 +69,8 @@ class IndividualContactRepository(private val dao: IContactIformationDAO, privat
 //                   val imageView: ImageView = findViewById(R.id.img_contact) as ImageView
 //                   imageView.setImageBitmap(photo)
                }
-               assert(inputStream != null)
-               inputStream!!.close()
+
+               inputStream?.close()
            } catch (e: IOException) {
                e.printStackTrace()
            }

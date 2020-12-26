@@ -28,13 +28,14 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.MyDarkTheme">
         <activity android:name=".view.ui.sms.schedule.ScheduleActivity"></activity>
         <activity
             android:name=".view.ui.sms.individual.SampleActivity"
             android:label="@string/title_activity_sample"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:theme="@style/Theme.MyDarkTheme"
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
@@ -48,16 +49,21 @@
         <activity android:name=".view.ui.contacts.search.ActivitySearchPhone" />
         <activity android:name=".view.ui.auth.ActivityEnterOTP" />
         <activity android:name=".view.ui.auth.ActivityPhoneAuth" />
-        <activity android:name=".view.ui.SplashActivity">
+        <activity android:name=".view.ui.SplashActivity"
+            android:theme="@style/Theme.MyDarkTheme"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
+        <activity android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity"
+            android:theme="@style/Theme.MyDarkTheme"
+            /> <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
+            android:theme="@style/Theme.MyDarkTheme"
             android:parentActivityName=".view.ui.MainActivity"> <!-- prent activity is need to define the natural hierarchy of the application / navigation -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -72,16 +78,21 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern" />
+        <activity android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern"
+          android:theme="@style/Theme.MyDarkTheme"
+            android:configChanges="uiMode"
+            />
         <!--
 @style/Theme.MaterialComponents.DayNight set for Error inflating class material.bottomnavigation.BottomNavigationView
        in mainactivity theme
         -->
         <activity
             android:name=".view.ui.MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:theme="@style/Theme.MaterialComponents.DayNight"
-            android:windowSoftInputMode="adjustPan" />
+            android:configChanges="uiMode|orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.MyDarkTheme"
+            android:windowSoftInputMode="adjustPan"
+
+            />
 
         <receiver android:name=".utils.IncomingCallReceiver">
             <intent-filter>
