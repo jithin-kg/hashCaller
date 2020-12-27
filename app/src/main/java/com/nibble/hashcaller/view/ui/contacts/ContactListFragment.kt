@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
@@ -154,6 +156,12 @@ class ContactListFragment  : Fragment()  {
 
 //                adapter.onItemClick =
             }
+
+//            val horizontalDecoration =  DividerItemDecoration(rcrViewContactsList.context,
+//                DividerItemDecoration.VERTICAL);
+//            val horizontalDivider = ContextCompat.getDrawable(this!!.requireActivity(), R.drawable.horizontal_line);
+//            horizontalDecoration.setDrawable(horizontalDivider!!);
+//            rcrViewContactsList.addItemDecoration(horizontalDecoration)
 
 
         }

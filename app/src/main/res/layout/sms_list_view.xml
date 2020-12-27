@@ -13,12 +13,11 @@
         android:id="@+id/textViewSMScontactCrclr"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="32dp"
         android:gravity="center_vertical|center_horizontal"
+        android:textColor="@color/colorWhite"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textVSMSContactName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.4" />
@@ -27,6 +26,7 @@
         android:id="@+id/textVSMSContactName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:layout_marginBottom="8dp"
         android:ellipsize="end"
         android:maxLines="1"
@@ -50,29 +50,28 @@
         android:id="@+id/tvSMSMPeek"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
 
+        android:layout_marginEnd="8dp"
         android:maxLines="1"
         android:paddingEnd="16dp"
         android:text="tvsmspeeek"
-        app:layout_constrainedWidth="true"
 
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textVSMSContactName"
-        app:layout_constraintTop_toBottomOf="@+id/tvUnreadSMSCount"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvUnreadSMSCount" />
 
     <TextView
         android:id="@+id/tvSMSTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
         android:text="time"
-        app:layout_constraintBottom_toBottomOf="@+id/tvUnreadSMSCount"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tvUnreadSMSCount"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,6 +82,21 @@
         android:text="count"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvSMSTime"
         app:layout_constraintStart_toEndOf="@+id/textVSMSContactName" />
+
+    <ImageView
+        android:id="@+id/imgViewDevider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/horizontal_line" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

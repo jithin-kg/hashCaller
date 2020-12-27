@@ -28,6 +28,7 @@
         android:src="@drawable/ic_baseline_dialpad_24"
         app:layout_anchor="@id/bottomNavigationView"
         app:layout_anchorGravity="end"
+        android:visibility="invisible"
         android:layout_marginBottom="96dp"
         android:layout_marginEnd="32dp"
         />

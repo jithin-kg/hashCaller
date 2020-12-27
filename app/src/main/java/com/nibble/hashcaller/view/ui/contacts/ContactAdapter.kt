@@ -112,24 +112,15 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
              when (rand.nextInt(5 - 1) + 1) {
                  1 -> {
                      circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary)
-                     )
                  }
                  2 -> {
                      circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorlightBlueviking)
-                     )
                  }
                  3 -> {
                      circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorbrightTurquoiseLightBlue
-                     )
-                     )
                  }
                  else -> {
                      circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark)
-                     )
                  }
              }
          }
