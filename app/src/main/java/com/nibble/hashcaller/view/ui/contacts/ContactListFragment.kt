@@ -1,30 +1,31 @@
 package com.nibble.hashcaller.view.ui.contacts
 
-import android.content.Context
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_contact_list.*
+import kotlinx.android.synthetic.main.fragment_contact_list.view.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -37,11 +38,12 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ContactListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ContactListFragment  : Fragment()  {
+class ContactListFragment  : Fragment(), View.OnClickListener {
     private val TAG = "ContactListFragment"
 
     private lateinit  var contactViewModel: ContactsViewModel
-    private lateinit var contactListViewFragment: View
+    private lateinit var contactsView: View
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
 //    var contacts: List<Contact>? = null
     var contactsRecyclerAdapter: ContactAdapter? = null
@@ -77,22 +79,57 @@ class ContactListFragment  : Fragment()  {
 //        val localInflater = inflater.cloneInContext(contextThemeWrapper)
 
 
-        contactListViewFragment = inflater.inflate(R.layout.fragment_contact_list, container, false)
+        contactsView = inflater.inflate(R.layout.fragment_contact_list, container, false)
 //        initRecyclerView()
 
-        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
+
 //        contactViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
-        observerContactList()
-        observerIsLoading()
-        return contactListViewFragment
+//        if(PermissionUtil.requesetPermission(this!!.requireActivity()))
+            contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
+           if(checkContactPermission()){
+               observerContactList()
+           }
+            observerIsLoading()
+            observePermissionLiveData()
+            initListeners()
+
+
+        return contactsView
     }
 
+    private fun initListeners() {
+        this.contactsView.btnGivecontactPermission.setOnClickListener(this)
+    }
+
+    private fun observePermissionLiveData() {
+        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
+            if(value == true){
+                this.contactsView.btnGivecontactPermission.visibility = View.GONE
+                this.contactsView.tvCntctPermissionInfo.visibility = View.GONE
+                this.contactsView.pgBarCntcList.visibility = View.VISIBLE
+                observerContactList()
+            }else{
+                this.contactsView.btnGivecontactPermission.visibility = View.VISIBLE
+                this.contactsView.tvCntctPermissionInfo.visibility = View.VISIBLE
+                this.contactsView.pgBarCntcList.visibility = View.GONE
+
+                if (this.contactViewModel!! != null  ) {
+                    if(this.contactViewModel?.contacts != null)
+                        if(this.contactViewModel.contacts!!.hasObservers())
+                             this.contactViewModel?.contacts?.removeObservers(this);
+                }
+
+
+            }
+        })
+    }
 
 
     private fun observerIsLoading() {
         ContactsViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading->
             if(isLoading){
                 pgBarCntcList.visibility = View.VISIBLE
+
             }else{
                 pgBarCntcList.visibility = View.GONE
             }
@@ -100,10 +137,12 @@ class ContactListFragment  : Fragment()  {
     }
 
     private fun observerContactList() {
-        contactViewModel.contacts.observe(viewLifecycleOwner, Observer{contacts->
-            contacts.let {
-                contactsRecyclerAdapter?.setContactList(it)
-                ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
+        try {
+            contactViewModel.contacts?.observe(viewLifecycleOwner, Observer{contacts->
+                contacts.let {
+                    this.contactsView.pgBarCntcList.visibility = View.GONE
+                    contactsRecyclerAdapter?.setContactList(it)
+                    ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
 
 //                //sync contact with local db
 //                contactViewModel.getCountOfContactFromLocalDb()?.observe(viewLifecycleOwner,Observer{count->
@@ -113,13 +152,18 @@ class ContactListFragment  : Fragment()  {
 //                })
 
 
-            }
-        })
+                }
+            })
+        }catch (e:Exception){
+            Log.d(TAG, "observerContactList: exception $e")
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecyclerView()
+//        if(PermissionUtil.requesetPermission(this.requireActivity()))
+            initRecyclerView()
 
     }
 
@@ -175,6 +219,29 @@ class ContactListFragment  : Fragment()  {
         startActivity(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        this.permissionGivenLiveData.value  = checkContactPermission()
 
 
+    }
+
+    private fun checkContactPermission(): Boolean {
+        val permissionContact =
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CONTACTS)
+        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+            return false
+        }
+        return true
+    }
+
+    override fun onClick(v: View?) {
+        Log.d(TAG, "onClick: ")
+        when(v?.id){
+            R.id.btnGivecontactPermission ->{
+                Log.d(TAG, "onClick: request permission")
+                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+            }
+        }
+    }
 }

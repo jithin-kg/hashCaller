@@ -124,8 +124,6 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
         //persmission
         Dexter.withContext(this)
             .withPermissions(
-                Manifest.permission.WRITE_CONTACTS,
-                Manifest.permission.READ_CONTACTS,
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ANSWER_PHONE_CALLS,
