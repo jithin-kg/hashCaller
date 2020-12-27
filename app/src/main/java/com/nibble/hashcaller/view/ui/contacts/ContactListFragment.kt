@@ -69,22 +69,8 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
         retainInstance = true
-        // Inflate the layout for this fragment
-
-//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-//        val contextThemeWrapper: Context =
-//            ContextThemeWrapper(activity, R.style.MyDarkTheme)
-        // clone the inflater using the ContextThemeWrapper
-        // clone the inflater using the ContextThemeWrapper
-//        val localInflater = inflater.cloneInContext(contextThemeWrapper)
-
 
         contactsView = inflater.inflate(R.layout.fragment_contact_list, container, false)
-//        initRecyclerView()
-
-
-//        contactViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
-//        if(PermissionUtil.requesetPermission(this!!.requireActivity()))
             contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
            if(checkContactPermission()){
                observerContactList()
@@ -143,15 +129,6 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
                     this.contactsView.pgBarCntcList.visibility = View.GONE
                     contactsRecyclerAdapter?.setContactList(it)
                     ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
-
-//                //sync contact with local db
-//                contactViewModel.getCountOfContactFromLocalDb()?.observe(viewLifecycleOwner,Observer{count->
-//                    count.let{
-//                        contactViewModel?.syncContactsWithLocalDb(contacts, count)
-//                    }
-//                })
-
-
                 }
             })
         }catch (e:Exception){

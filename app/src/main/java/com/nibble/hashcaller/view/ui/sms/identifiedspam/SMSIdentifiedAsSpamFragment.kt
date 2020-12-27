@@ -1,7 +1,9 @@
 package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -10,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -17,12 +20,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_contact_list.view.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
@@ -36,6 +41,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     private lateinit var viewMesages:View
     private lateinit var sView:SearchView
     private var smsListSize:MutableLiveData<Int> = MutableLiveData(0)
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
 
@@ -53,11 +59,47 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
 
         viewMesages = inflater.inflate(R.layout.fragment_spam_messages, container, false)
         initVieModel()
-        observeSMSList()
+        if(checkContactPermission()){
+            observeSMSList()
+        }
+        initListeners()
         observeLoadinState()
         observeSmsSize()
+        observePermissionLiveData()
 
         return  viewMesages
+    }
+
+    private fun observePermissionLiveData() {
+        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
+            if(value == true){
+                this.viewMesages.btnSmsReadPermission.visibility = View.GONE
+                this.viewMesages.tvSMSPermissionInfo.visibility = View.GONE
+                this.viewMesages.pgBarSMSSpamList.visibility = View.VISIBLE
+                observeSMSList()
+            }else{
+                this.viewMesages.btnSmsReadPermission.visibility = View.VISIBLE
+                this.viewMesages.tvSMSPermissionInfo.visibility = View.VISIBLE
+                this.viewMesages.pgBarSMSSpamList.visibility = View.GONE
+
+                if (this.viewmodel!! != null  ) {
+                    if(this.viewmodel?.SMS != null)
+                        if(this.viewmodel.SMS!!.hasObservers())
+                            this.viewmodel?.SMS?.removeObservers(this);
+                }
+
+
+            }
+        })
+    }
+
+    private fun checkContactPermission(): Boolean {
+        val permissionContact =
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_SMS)
+        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+            return false
+        }
+        return true
     }
 
     private fun observeSmsSize() {
@@ -89,7 +131,10 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
 
         })
     }
-
+    override fun onResume() {
+        super.onResume()
+        this.permissionGivenLiveData.value  = checkContactPermission()
+    }
     @SuppressLint("LongLogTag")
     private fun observeSMSList() {
         viewmodel.SMS.observe(viewLifecycleOwner, Observer { sms->
@@ -167,7 +212,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initListeners() {
-//        viewMesages.btnEmptySpamSMS.setOnClickListener(this)
+        viewMesages.btnSmsReadPermission.setOnClickListener(this)
     }
 
     private fun initRecyclerView() {
@@ -211,7 +256,12 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
+        when(v!!.id){
+            R.id.btnSmsReadPermission ->{
+                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
 
+            }
+        }
     }
 
     private fun deleteAllSpamSms() {

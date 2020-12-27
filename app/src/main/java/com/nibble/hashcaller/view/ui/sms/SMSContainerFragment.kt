@@ -52,28 +52,28 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        if(checkPermission()){
+//        if(checkPermission()){
             messagesView =  inflater.inflate(R.layout.fragment_message_container, container, false)
             viewSms = messagesView
 
 
             return messagesView
-        }else{
-            return inflater.inflate(R.layout.request_permission, container, false)
-        }
+//        }else{
+//            return inflater.inflate(R.layout.request_permission, container, false)
+//        }
 
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(checkPermission()){
+//        if(checkPermission()){
             setupViewPager(viewPagerMessages)
             tabLayoutMessages?.setupWithViewPager(viewPagerMessages)
 //            tabLayoutMessages.addOnTabSelectedListener(this)
             initListeners()
 
-        }
+//        }
 
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -112,7 +112,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPagerAdapter.addFragment(this.smsListFragment!!, "Messages")
         viewPagerAdapter.addFragment(this.smsIdentifiedAsSpamFragment!!, "Identified as spam")
-//        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
+//
         viewPagerMessages!!.adapter = viewPagerAdapter
 
 

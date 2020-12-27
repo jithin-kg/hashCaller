@@ -134,6 +134,10 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
     }
     private suspend fun fetch(searchQuery: String?, spamNeeded: Boolean?): MutableList<SMS> {
+        var data = ArrayList<SMS>()
+    try {
+
+
         var deleteViewAdded = false
         val listOfMessages = mutableListOf<SMS>()
         var selectionArgs: Array<String>? = null
@@ -146,7 +150,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
             selection = SMSContract.SMS_SELECTION_SEARCH
             selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
         }
-        var data = ArrayList<SMS>()
+
 
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
@@ -290,6 +294,9 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 //        data = removeSpamSmS(data)
 
         setSMSReadStatus(data)
+    }catch (e:java.lang.Exception){
+        Log.d(TAG, "fetch: exception $e")
+    }
         return data
     }
 
