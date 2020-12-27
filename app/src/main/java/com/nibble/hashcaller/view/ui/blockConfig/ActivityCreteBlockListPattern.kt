@@ -1,6 +1,8 @@
 package com.nibble.hashcaller.view.ui.blockConfig
 
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,73 +11,52 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.ThemeUtils
+import androidx.lifecycle.*
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import kotlinx.android.synthetic.main.activity_add_new_pattern.*
 import kotlinx.android.synthetic.main.activity_add_new_pattern.editTextNewPattern
 import kotlinx.android.synthetic.main.activity_crete_block_list_pattern.*
 
 
-class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener {
+class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,LifecycleObserver  {
     private lateinit var  blockListViewModel: BlockListViewModel
+    private  var themeLiveData:MutableLiveData<Int>? = null
+    private var prevtheme:Int? = null
+
 
     var sharedPreferences: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: ")
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_crete_block_list_pattern)
-
     intiListeners()
-
-//        ActionBar actionBar;
-//        actionBar = getSupportActionBar();
-//        actionBar.setDisplayShowTitleEnabled(false);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//            getSupportActionBar();
-//            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-//            setTitle("Add Pattern");
-
-//        //Define ColorDrawable object and parse color
-//        // using parseColor method
-//        // with color hash code as its parameter
-        val colorDrawable = ColorDrawable(Color.parseColor("#3399FF"))
-        //
-//        // Set BackgroundDrawable
-//        actionBar.setBackgroundDrawable(colorDrawable);
-//        setTokenInEditText()
     }
 
+
+
+
+
+    override fun onPostResume() {
+
+        Log.d(TAG, "onPostResume: ")
+        super.onPostResume()
+    }
+//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+//    fun resume(){
+//        Log.d(TAG, "resume: ")
+//    }
     private fun intiListeners() {
         imgBtnBackBlock.setOnClickListener(this)
+        btnSave.setOnClickListener(this)
     }
-
-//    private fun setTokenInEditText() {
-//        sharedPreferences = applicationContext.getSharedPreferences("TOKEN", Context.MODE_PRIVATE)
-//        Log.d(TAG, "setTokenInEditText: " + sharedPreferences.getString("token", ""))
-//        editTextTokenDisplay!!.setText(sharedPreferences.getString("token", ""))
-//    }
-
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        val menuInflater = menuInflater
-//        menuInflater.inflate(R.menu.add_new_pattern_acitvity_bar, menu)
-//        return true
-//    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-//            R.id.actionSave -> {
-//                savePattern()
-//                true
-//            }
-//
-//            else -> {
-//                finish()
-//                super.onOptionsItemSelected(item)
-//            }
-//        }
-//    }
 
     private fun savePattern() {
         Log.d(TAG, "save button clicked")
@@ -91,24 +72,10 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
             )
         blockListViewModel.insert(blockListPattern)
 
-//        blockListViewModel =
-//            ViewModelProvider(this).get<BlockListViewModel>(BlockListViewModel::class.java)
-//        val newPattern = numberPattern!!.text.toString()
-//        if (newPattern.trim { it <= ' ' }.isEmpty()) {
-//            Toast.makeText(this, "Please Enter pattern to block", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//        //TODO change country code ....
-//        val countryCode: String = ccp.getSelectedCountryCode().replace("+", "")
-//        val pattern = "($countryCode$newPattern)([0-9]*)"
-//        Log.i("ActivityAddNewPattern", pattern)
-//        val blockedListPattern = BlockedListPattern(newPattern, pattern)
-//        blockListViewModel.insert(blockedListPattern)
-//        finish()
     }
 
     companion object {
-        private const val TAG = "ActivityAddNewPattern"
+        private const val TAG = "__ActivityAddNewPattern"
     }
 
     override fun onClick(v: View?) {
@@ -117,16 +84,18 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener 
             R.id.imgBtnBackBlock->{
                 finish()
             }
-            R.id.buttonSave->{
+            R.id.btnSave->{
                 savePattern()
-//                true
-//                finish()
+                true
+                finish()
             }
         }
     }
 
     fun saveData(view: View) {
         Log.d(TAG, "onClick: ")
-        savePattern()
+
     }
+
+
 }

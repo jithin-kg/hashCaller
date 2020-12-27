@@ -15,6 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.contacts.ContactListFragment
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
@@ -53,6 +54,18 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 //        setHasOptionsMenu(true);
 
 
+    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if(savedInstanceState!= null){
+         //get state of this fragment
+
+
+        }
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //save state of this fragment, list...
     }
 
     override fun onAttach(context: Context) {
@@ -124,7 +137,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
 
     private fun setupBottomSheet() {
-        bottomSheetDialog = BottomSheetDialog(this.activity!!)
+        bottomSheetDialog = BottomSheetDialog(this.requireActivity())
 
         val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
 

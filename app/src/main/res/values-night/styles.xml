@@ -18,12 +18,23 @@
         <item name="android:textColorPrimary">@color/textColor</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
     </style>
-    <style name="MyLightTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.MyLightTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="backgroundColor">#ffff</item>
         <item name="android:windowSoftInputMode">stateHidden</item>
         <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:windowAnimationStyle">@style/windowAnimationTransition</item>
+
+    </style>
+    <style name="Theme.MyDarkestTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="backgroundColor">#ffff</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:windowAnimationStyle">@style/windowAnimationTransition</item>
+
     </style>
     <style name="MyDarkTheme.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>

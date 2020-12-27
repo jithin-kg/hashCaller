@@ -28,7 +28,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         setContentView(R.layout.activity_individual_cotact_view)
 
@@ -51,25 +51,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
 
         })
         viewModel.getPhoto(id, phoneNum)
-//
-//        viewModel.livedata.observe(this, Observer { contact->
-//            Log.d(TAG, "onCreate: $contact")
-//            Log.d(TAG, "onCreate: name ${contact.name}")
-//        })
-//        viewModel.mt?.observe(this, Observer { contact->
-//            if(contact!=null){
-//                Log.d(TAG, "onCreate: ${contact?.number}")
-//                textViewCntcName.text = contact.name
-//               textViewNumber.text = contact.number
-//                textViewCarrier.text = contact.carrier
-//                textViewLocation.text = contact.location
-//                textViewMail.text = "sample@gmail.com"
-//
-//            }else{
-//                Log.d(TAG, "contact is null ")
-//            }
-//
-//        })
+
         viewModel.getContactsFromDb(phoneNum)
 
 

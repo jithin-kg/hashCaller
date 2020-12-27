@@ -4,7 +4,9 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
@@ -16,14 +18,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -34,13 +33,15 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 import com.nibble.hashcaller.view.utils.spam.SpamSyncManager
-import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * This is a extension function which set the default fragment
@@ -54,6 +55,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var  tabLayout: TabLayout
     private val viewPager: ViewPager? = null
     var fab: FloatingActionButton? = null
+    private lateinit var sharedPreferences: SharedPreferences
+
 
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
@@ -70,17 +73,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
 //        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-//        firebaseHelper = new MainActivityHelper();
 
-//        firebaseHelper.intializeFirebaseLogin(this);
         hideKeyboard(this)
 //        AppCompatDelegate.setDefaultNi
 //        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_main)
 
-        fabBtnShowDialpad.setOnClickListener(this)
-        fabBtnShowDialpad.visibility = View.GONE
-        syncSpamList()
+
 
         Log.d(TAG, "onCreate  height of bottom nav: ${bottomNavigationView.height}")
 //        t his.applicationContext
@@ -88,62 +87,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //                .registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 //                        true, ContactObserver(Handler()))
         if (savedInstanceState == null) {
-            messagesFragment = SMSContainerFragment()
-            blockConfigFragment = BlockConfigFragment()
-            contactFragment = ContactsFragment()
-            callFragment = CallFragment()
-            dialerFragment =
-                DialerFragment()
+            Log.d(TAG, "onCreate: savedInstanceState is null")
+            ft = supportFragmentManager.beginTransaction()
+            this.messagesFragment = SMSContainerFragment()
+            this.blockConfigFragment = BlockConfigFragment()
+            this.contactFragment = ContactsFragment()
+            this.callFragment = CallFragment()
+            this.dialerFragment = DialerFragment()
+//            setInstancesInApp()
+
+            fabBtnShowDialpad.visibility = View.GONE
+            syncSpamList()
+
+
+            //set the default fragment
+            setTheDefaultFragment()
+            addAllFragments()
+
+        }else{
+
+           setFragmentsFromSavedInstanceState(savedInstanceState)
+//            this.ft = supportFragmentManager.beginTransaction()
 
         }
-        //set the default fragment
-        setTheDefaultFragment()
-        //        Intent intent = new Intent(MainActivity.this, CreateCustomFilter2.class);
-//        startActivity(intent);
-//        toolbar = findViewById(R.id.toolbar)
-        //        tabLayout =  findViewById(R.id.tabLayout);
-//        viewPager = findViewById(R.id.viewPager);
-//        fab = findViewById(R.id.fabBtn);
-//        fab.setOnClickListener(this);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        fabBtnShowDialpad.setOnClickListener(this)
+        setBottomSheetListener()
 
-//        setSupportActionBar(toolbar);
-//        setupViewPager(viewPager);
-//        tabLayout.setupWithViewPager(viewPager);
-//        getSupportActionBar().hide();
 
-        //After nested fragments
-
-        //        layoutBottomSheet = findViewById(R.id.bottom_sheet);
-        bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
-            var fragment: Fragment
-            val selectedFragment = ""
-            when (menuItem.itemId) {
-                R.id.bottombaritem_messages -> {
-                    showMessagesFragment()
-                    fabBtnShowDialpad.visibility = View.GONE
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.bottombaritem_calls -> {
-                    showCallFragment()
-                    fabBtnShowDialpad.visibility = View.VISIBLE
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.bottombaritem_contacts -> {
-                    showContactsFragment()
-                    fabBtnShowDialpad.visibility = View.GONE
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.bottombaritem_spam -> {
-                    showBlockConfigFragment()
-                    fabBtnShowDialpad.visibility = View.GONE
-                    return@OnNavigationItemSelectedListener true
-                }
-//
-            }
-            false
-        })
-        addAllFragments()
 
 
         //TODO check if contacts are uploaded
@@ -171,6 +141,68 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        WorkManager.getInstance().enqueue(request)
     }
 
+    private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
+        this.callFragment = supportFragmentManager.getFragment(savedInstanceState,"callFragment") as CallFragment
+        this.messagesFragment = supportFragmentManager.getFragment(savedInstanceState,"messagesFragment") as SMSContainerFragment
+        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
+        this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsFragment
+        this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
+    }
+
+    private fun setBottomSheetListener(){
+        bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+            var fragment: Fragment
+            val selectedFragment = ""
+            when (menuItem.itemId) {
+                R.id.bottombaritem_messages -> {
+                    showMessagesFragment()
+                    Log.d(TAG, "setBottomSheetListener: show sms clicked")
+                    fabBtnShowDialpad.visibility = View.GONE
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.bottombaritem_calls -> {
+                    showCallFragment()
+                    fabBtnShowDialpad.visibility = View.VISIBLE
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.bottombaritem_contacts -> {
+                    showContactsFragment()
+                    fabBtnShowDialpad.visibility = View.GONE
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.bottombaritem_spam -> {
+                    showBlockConfigFragment()
+                    fabBtnShowDialpad.visibility = View.GONE
+                    return@OnNavigationItemSelectedListener true
+                }
+//
+            }
+            false
+        })
+    }
+
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        supportFragmentManager.putFragment(outState,"callFragment", this.callFragment)
+        supportFragmentManager.putFragment(outState,"contactFragment", this.contactFragment)
+        supportFragmentManager.putFragment(outState,"dialerFragment", this.dialerFragment)
+        supportFragmentManager.putFragment(outState,"messagesFragment", this.messagesFragment)
+        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
+//        outState.putInt("AStringKey", )
+////        outState.putString("AStringKey2", variableData2)
+//        val p: Parcelable? = callFragment.saveAllState()
+//        if (p != null) {
+////            outState.putParcelable(FragmentActivity.FRAGMENTS_TAG, p)
+//        }
+    }
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+//        variableData = savedInstanceState.getInt("AStringKey")
+//        variableData2 = savedInstanceState.getString("AStringKey2")
+    }
     private fun syncSpamList() {
         val list = getSimOperator()
         val spamSyncRepository = SpamSyncRepository()
@@ -296,6 +328,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         ft.add(R.id.frame_fragmentholder, callFragment)
         hideThisFragment(ft, callFragment, callFragment)
+        fabBtnShowDialpad.visibility = View.VISIBLE
 
         ft.add(R.id.frame_fragmentholder, dialerFragment)
         hideThisFragment(ft, dialerFragment, dialerFragment)
@@ -371,9 +404,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
          */
 //        val intent = intent
 //        intent.getByteArrayExtra("key")
-        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-            .build()
-        WorkManager.getInstance().enqueue(request)
+//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+//            .build()
+//        WorkManager.getInstance().enqueue(request)
 
         ft.commit()
     }
@@ -455,9 +488,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (callFragment.isAdded) {
             ft.hide(callFragment)
         }
-        if (callFragment.isAdded) {
-            ft.hide(callFragment)
-        }
+//        if (callFragment.isAdded) {
+//            ft.hide(callFragment)
+//        }
         if(dialerFragment.isAdded){
             ft.hide(dialerFragment)
         }
@@ -466,6 +499,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             ft.show(messagesFragment)
 //            setDefaultFragment(R.id.bottombaritem_messages)
 
+        }else{
+            Log.d(TAG, "showMessagesFragment:messagesFragment not added")
         }
 
         // Commit changes
@@ -484,8 +519,52 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onPostResume() {
         Log.i(TAG, "Onresume")
         //        checkPermission();
+
+//        if(getCurrentTheme() == 1){
+//            setcurrentThemeInSharedPref()
+//        }
         super.onPostResume()
         //        firebaseHelper.addFirebaseAuthListener();
+    }
+
+    private fun setcurrentThemeInSharedPref() {
+        sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+        val currentTheme = getCurrentTheme()
+        var isDarkTheme = false
+        if(currentTheme == 1){
+            isDarkTheme = true
+        }
+        GlobalScope.launch {
+            val editor = sharedPreferences.edit()
+
+            editor.putBoolean("isDarkTheme", isDarkTheme )
+            editor.commit()
+        }
+    }
+    private fun getCurrentTheme(): Int {
+        val currentNightMode = getResources().getConfiguration().uiMode and  Configuration.UI_MODE_NIGHT_MASK
+        when (currentNightMode) {
+             Configuration.UI_MODE_NIGHT_NO->{
+                 Log.d(TAG, "checkTheme: white")
+                 return 0
+
+             }
+            // Night mode is not active, we're in day time
+             Configuration.UI_MODE_NIGHT_YES ->{
+                 Log.d(TAG, "checkTheme: dark")
+                 return 1
+             }
+            // Night mode is active, we're at night!
+             Configuration.UI_MODE_NIGHT_UNDEFINED ->{
+                 Log.d(TAG, "checkTheme: undefined")
+                 return 2
+             }else->{
+            return 2
+
+        }
+
+            // We don't know what mode we're in, assume notnight
+        }
     }
 
     override fun onRestart() {

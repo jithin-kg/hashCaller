@@ -21,6 +21,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
+import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlkListFragment
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
@@ -44,7 +45,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     private var viewPager: ViewPager? = null
     private var toolbar: Toolbar? = null
     private lateinit var searchViewContacts:EditText
-
+    private var contactListFragment: ContactListFragment? = null
 
     var ContactViewFragment: View? = null
 //    private val contactViewModel: ContactViewModel? = null
@@ -59,11 +60,21 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState != null) {
-
-
+        if(savedInstanceState!= null){
+            if(childFragmentManager.getFragment(savedInstanceState, "contactListFragment") != null)
+                this.contactListFragment = childFragmentManager.getFragment(savedInstanceState, "contactListFragment") as ContactListFragment
         }
-//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if(this.contactListFragment!=null){
+            if(this.contactListFragment!!.isAdded){
+                childFragmentManager.putFragment(outState,"contactListFragment",
+                    this.contactListFragment!!
+                )
+            }
+        }
+
     }
 
 
@@ -131,19 +142,13 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     }
 
 
-//    private fun checkPermission(): Boolean {
-//        val permissionsUtil = PermissionsUtil(activity)
-//        if (!permissionsUtil.checkPermissions()) {
-//            startActivity(Intent(activity, ActivityRequestPermission::class.java))
-//            return false
-//        }
-//        return true
-//    }
-
     //nested
     private fun setupViewPager(viewPager: ViewPager?) {
+        if(this.contactListFragment == null){
+            this.contactListFragment = ContactListFragment()
+        }
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPagerAdapter.addFragment(ContactListFragment(), "Contacts")
+        viewPagerAdapter.addFragment(this.contactListFragment!!, "Contacts")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
         viewPager!!.adapter = viewPagerAdapter
     }

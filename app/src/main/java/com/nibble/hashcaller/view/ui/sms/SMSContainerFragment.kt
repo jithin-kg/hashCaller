@@ -19,6 +19,8 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
+import com.nibble.hashcaller.view.ui.call.CallHistoryFragment
+import com.nibble.hashcaller.view.ui.call.SpamCallFragment
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
@@ -37,6 +39,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private var param2: String? = null
     private lateinit var messagesView:View
     private lateinit var smsListVIewModel: SMSViewModel
+    private var smsListFragment:SMSListFragment? = null
+    private var smsIdentifiedAsSpamFragment:SMSIdentifiedAsSpamFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,9 +76,28 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         }
 
     }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if(savedInstanceState!= null){
+            if(childFragmentManager.getFragment(savedInstanceState, "smsListFragment") != null){
+                this.smsListFragment = childFragmentManager.getFragment(savedInstanceState, "smsListFragment") as SMSListFragment?
+                this.smsIdentifiedAsSpamFragment = childFragmentManager.getFragment(savedInstanceState, "smsIdentifiedAsSpamFragment") as SMSIdentifiedAsSpamFragment?
+            }
+
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if(this.smsIdentifiedAsSpamFragment !=null){
+            if(this.smsIdentifiedAsSpamFragment!!.isAdded){
+                childFragmentManager.putFragment(outState,"smsIdentifiedAsSpamFragment", this.smsIdentifiedAsSpamFragment!!)
+                childFragmentManager.putFragment(outState,"smsListFragment", this.smsListFragment!!)
+            }
+        }
 
 
-
+    }
     private fun initListeners() {
         tabLayoutMessages.addOnTabSelectedListener(this)
         this.messagesView.fabBtnDeleteSMS.setOnClickListener(this)
@@ -82,9 +105,13 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     }
 
     private fun setupViewPager(viewPagerMessages: ViewPager?) {
+        if(this.smsIdentifiedAsSpamFragment == null){
+            this.smsIdentifiedAsSpamFragment = SMSIdentifiedAsSpamFragment()
+            this.smsListFragment = SMSListFragment()
+        }
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPagerAdapter.addFragment(SMSListFragment(), "Messages")
-        viewPagerAdapter.addFragment(SMSIdentifiedAsSpamFragment(), "Identified as spam")
+        viewPagerAdapter.addFragment(this.smsListFragment!!, "Messages")
+        viewPagerAdapter.addFragment(this.smsIdentifiedAsSpamFragment!!, "Identified as spam")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
         viewPagerMessages!!.adapter = viewPagerAdapter
 
