@@ -123,6 +123,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         searchViewContacts.onFocusChangeListener = OnFocusChangeListener { view, hasFocus ->
 
             if (hasFocus) {
+                if((activity as MainActivity).searchFragment!=null)
                 startSearchActivity()
             }
         }
@@ -158,17 +159,19 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
         val kittenDetails = (activity as MainActivity).searchFragment
 
-        kittenDetails.setSharedElementEnterTransition(DetailsTransition())
-        kittenDetails.setEnterTransition(Fade())
-        exitTransition = Fade()
-        kittenDetails.setSharedElementReturnTransition(DetailsTransition())
+        kittenDetails?.setSharedElementEnterTransition(DetailsTransition())
+        kittenDetails?.setEnterTransition(Fade())
+        //Todo add exit transition other than fade, fade is laggy in view for exit
+//        exitTransition = Fade()
+
+        kittenDetails?.setSharedElementReturnTransition(DetailsTransition())
 
         (activity as MainActivity).bottomNavigationView.visibility = View.GONE
 
         requireActivity().supportFragmentManager
             .beginTransaction()
             .addSharedElement(searchViewContacts, searchViewContacts.transitionName)
-            .replace(R.id.frame_fragmentholder, kittenDetails)
+            .replace(R.id.frame_fragmentholder, kittenDetails!!)
             .addToBackStack(null)
             .commit()
 
@@ -213,7 +216,12 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: searchview")
-       startSearchActivity()
+        if((activity as MainActivity).searchFragment!=null){
+            startSearchActivity()
+
+        }else{
+            Log.d(TAG, "onClick: searchfragment is null")
+        }
       }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

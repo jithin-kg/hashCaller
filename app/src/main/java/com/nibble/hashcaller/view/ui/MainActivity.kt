@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
 
-     lateinit var  searchFragment: SearchFragment
+    var  searchFragment: SearchFragment? = null
 //    var layoutBottomSheet: ConstraintLayout
 
     //    MainActivityHelper firebaseHelper;
@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        AppCompatDelegate.setDefaultNi
 //        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_main)
-        if(this::searchFragment.isInitialized)
-        if(this.searchFragment.isAdded){
+        if(this.searchFragment !=null)
+        if(this.searchFragment?.isAdded!!){
             bottomNavigationView.visibility = View.GONE
         }
 
@@ -157,8 +157,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
         this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsFragment
         this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
-        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null)
-        this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
+        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
+            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
+
+        }else{
+            this.searchFragment = SearchFragment.newInstance()
+        }
+
     }
 
     private fun setBottomSheetListener(){
@@ -203,9 +208,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         supportFragmentManager.putFragment(outState,"dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState,"messagesFragment", this.messagesFragment)
         supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
-        if(this::searchFragment.isInitialized)
-            if(this.searchFragment.isAdded)
-                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment)
+        if(this.searchFragment!=null)
+            if(this.searchFragment?.isAdded!!)
+                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment!!)
 //        outState.putInt("AStringKey", )
 ////        outState.putString("AStringKey2", variableData2)
 //        val p: Parcelable? = callFragment.saveAllState()
@@ -475,13 +480,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             bottomNavigationView.visibility = View.VISIBLE
 
             //for hiding search fragment
-            if(this::searchFragment.isInitialized){
-                if(this.searchFragment.isAdded and this.searchFragment.isVisible){
+            if(this::searchFragment !=null){
+                if(this.searchFragment?.isAdded!! and this.searchFragment?.isVisible!!){
                     Log.d(TAG, "onBackPressed: searchfragment is visible")
                 }
             }
+            if(this.searchFragment !=null)
+                if(this.searchFragment!!.isVisible){
 
-            super.onBackPressed()
+                }
+
+                    super.onBackPressed()
 
         }
 

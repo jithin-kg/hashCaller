@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3399FF</color>
     <color name="colorPrimaryDark">#3366CC</color>
 <!--    <color name="colorBackgroundDark">#000000</color>-->
-
+    <color name="colorBackground">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorlightBlueviking">#79BEDB</color>
     <color name="colorbrightTurquoiseLightBlue">#10C8CD</color>
