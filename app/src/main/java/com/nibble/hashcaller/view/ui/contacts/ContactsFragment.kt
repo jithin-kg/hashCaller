@@ -193,7 +193,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPagerAdapter.addFragment(this.contactListFragment!!, "Contacts")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
-//        viewPager!!.adapter = viewPagerAdapter
+        viewPager!!.adapter = viewPagerAdapter
     }
 
     override fun onDestroyView() {
