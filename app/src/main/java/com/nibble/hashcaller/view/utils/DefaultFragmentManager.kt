@@ -5,6 +5,7 @@ import com.nibble.hashcaller.R
 class DefaultFragmentManager {
 
     companion object{
+//        var id:Int = R.id.bottombaritem_contacts
         var id:Int = R.id.bottombaritem_calls
         const val SHOW_MESSAGES_FRAGMENT = 1
         const val SHOW_CONTACT_FRAGMENT = 2
@@ -13,7 +14,7 @@ class DefaultFragmentManager {
         const val SHOW_DIALER_FRAGMENT = 4
 
         /**
-         * When the main Activity loads we show the call fragment ass the default
+         * When the main Activity loads we show the call fragment as the default
          * fragment and we change it for the purpose of showing respective fragment
          * when we come from notification intent
          */

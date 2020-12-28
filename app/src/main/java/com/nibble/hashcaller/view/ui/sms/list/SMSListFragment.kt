@@ -179,11 +179,6 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private fun initRecyclerView() {
         rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
-            val topSpacingDecorator =
-                TopSpacingItemDecoration(
-                    30
-                )
-            addItemDecoration(topSpacingDecorator)
             smsRecyclerAdapter = SMSListAdapter(context,::onContactItemClicked, ::onDeleteItemClicked)
             adapter = smsRecyclerAdapter
 

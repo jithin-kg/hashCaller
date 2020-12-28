@@ -48,6 +48,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "onCreateView: ")
         // Inflate the layout for this fragment
         callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
 
@@ -57,6 +58,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)
         if(savedInstanceState == null){
 
@@ -64,6 +66,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
 //        intialize()
         setupViewPager(viewPagerCall)
@@ -84,6 +87,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onActivityCreated: ")
         super.onActivityCreated(savedInstanceState)
         if(savedInstanceState!= null){
             if(childFragmentManager.getFragment(savedInstanceState, "callHistoryFragment")!=null){
@@ -126,6 +130,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun setupViewPager(viewPager: ViewPager?) {
+        Log.d(TAG, "setupViewPager: ")
         if(this.callHistoryFragment == null){
             this.callHistoryFragment = CallHistoryFragment()
             this.spamCallFragment = SpamCallFragment()

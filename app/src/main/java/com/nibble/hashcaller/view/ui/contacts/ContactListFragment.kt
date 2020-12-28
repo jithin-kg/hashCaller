@@ -169,7 +169,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
                     TopSpacingItemDecoration(
                         30
                     )
-                addItemDecoration(topSpacingDecorator)
+//                addItemDecoration(topSpacingDecorator)
                 contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
 

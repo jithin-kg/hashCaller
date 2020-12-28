@@ -9,6 +9,7 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
         <item name="fontFamily"> sans-serif</item>
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="Theme.MyDarkTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">

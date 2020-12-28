@@ -46,7 +46,9 @@
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
             android:theme="@style/Theme.AppCompat.Dialog" />
         <activity android:name=".view.ui.auth.GetInitialUserInfoActivity" />
-        <activity android:name=".view.ui.contacts.search.ActivitySearchPhone" />
+        <activity android:name=".view.ui.contacts.search.ActivitySearchPhone"
+
+            android:theme="@style/AppTheme"/>
         <activity android:name=".view.ui.auth.ActivityEnterOTP"
             android:theme="@style/AppTheme"/>
         <activity android:name=".view.ui.auth.ActivityPhoneAuth"

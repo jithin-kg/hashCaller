@@ -2,30 +2,37 @@ package com.nibble.hashcaller.view.ui.contacts
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.transition.Fade
+import android.transition.TransitionInflater
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.MenuItemCompat.getActionView
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Scene
+import androidx.transition.Transition
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
-import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlkListFragment
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
-import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
-import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
+import com.nibble.hashcaller.view.ui.contacts.search.DetailsTransition
+import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_contacts.*
+import kotlinx.android.synthetic.main.fragment_search.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -47,10 +54,15 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     private lateinit var searchViewContacts:EditText
     private var contactListFragment: ContactListFragment? = null
 
+    private lateinit var scene1:Scene
+    private lateinit var scene2:Scene
+    private lateinit var currentScene:Scene
+    private lateinit var transition:Transition
+
     var ContactViewFragment: View? = null
 //    private val contactViewModel: ContactViewModel? = null
 
-    //    private RecyclerView contactsList;
+//        private RecyclerView contactsList;
     var recyclerView: RecyclerView? = null
 
 //    var permissionsUtil: PermissionsUtil? = null
@@ -83,6 +95,9 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         savedInstanceState: Bundle?
     ): View? {
 
+        sharedElementEnterTransition=  TransitionInflater.from(activity).inflateTransition(R.transition.fragment_transition)
+//        sharedElementEnterTransition=  TransitionInflater.from(activity).inflateTransition(R.transition.fragment_transition)
+
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
        //dark theme
         val contextThemeWrapper: Context =
@@ -92,9 +107,13 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         val localInflater = inflater.cloneInContext(contextThemeWrapper)
         // Inflate the layout for this fragment
         ContactViewFragment = localInflater.inflate(R.layout.fragment_contacts, container, false)
+
+
+
 //        if (!checkPermission()) {
 //            return null
 //        }
+
         initialize()
         setupViewPager(viewPager)
         tabLayout!!.setupWithViewPager(viewPager)
@@ -128,8 +147,31 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
 
     private fun startSearchActivity() {
-        val intent = Intent(activity, ActivitySearchPhone::class.java)
-        startActivity(intent)
+//        val intent = Intent(activity, ActivitySearchPhone::class.java)
+//        intent.putExtra("animation", "explode")
+//        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
+//        val options  = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//            this!!.requireActivity(), btnSampleTransition,
+//            ViewCompat.getTransitionName(btnSampleTransition)!!
+//        )
+//        startActivity(intent, options.toBundle())
+
+        val kittenDetails = (activity as MainActivity).searchFragment
+
+        kittenDetails.setSharedElementEnterTransition(DetailsTransition())
+        kittenDetails.setEnterTransition(Fade())
+        exitTransition = Fade()
+        kittenDetails.setSharedElementReturnTransition(DetailsTransition())
+
+        (activity as MainActivity).bottomNavigationView.visibility = View.GONE
+
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .addSharedElement(searchViewContacts, searchViewContacts.transitionName)
+            .replace(R.id.frame_fragmentholder, kittenDetails)
+            .addToBackStack(null)
+            .commit()
+
     }
 
 
@@ -138,6 +180,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         tabLayout = ContactViewFragment?.findViewById(R.id.tabLayout)
         viewPager = ContactViewFragment?.findViewById(R.id.viewPager)
         searchViewContacts = ContactViewFragment?.findViewById(R.id.searchViewContacts)!!
+
 
     }
 
@@ -150,7 +193,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPagerAdapter.addFragment(this.contactListFragment!!, "Contacts")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
-        viewPager!!.adapter = viewPagerAdapter
+//        viewPager!!.adapter = viewPagerAdapter
     }
 
     override fun onDestroyView() {
@@ -171,6 +214,13 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: searchview")
        startSearchActivity()
+      }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+//        btnTest.setOnClickListener(this)
+        ViewCompat.setTransitionName(searchViewContacts, searchViewContacts.transitionName)
+
     }
 
     override var isDefaultFgmnt: Boolean

@@ -14,6 +14,7 @@ import android.os.Handler
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -23,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -33,6 +35,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -64,6 +67,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
+
+     lateinit var  searchFragment: SearchFragment
 //    var layoutBottomSheet: ConstraintLayout
 
     //    MainActivityHelper firebaseHelper;
@@ -78,7 +83,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        AppCompatDelegate.setDefaultNi
 //        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_main)
-
+        if(this::searchFragment.isInitialized)
+        if(this.searchFragment.isAdded){
+            bottomNavigationView.visibility = View.GONE
+        }
 
 
         Log.d(TAG, "onCreate  height of bottom nav: ${bottomNavigationView.height}")
@@ -94,6 +102,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             this.contactFragment = ContactsFragment()
             this.callFragment = CallFragment()
             this.dialerFragment = DialerFragment()
+            this.searchFragment =  SearchFragment.newInstance()
 //            setInstancesInApp()
 
             fabBtnShowDialpad.visibility = View.GONE
@@ -142,11 +151,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
+        Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState,"callFragment") as CallFragment
         this.messagesFragment = supportFragmentManager.getFragment(savedInstanceState,"messagesFragment") as SMSContainerFragment
         this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
         this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsFragment
         this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
+        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null)
+        this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
     }
 
     private fun setBottomSheetListener(){
@@ -185,12 +197,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
+        Log.d(TAG, "onSaveInstanceState: ")
         supportFragmentManager.putFragment(outState,"callFragment", this.callFragment)
         supportFragmentManager.putFragment(outState,"contactFragment", this.contactFragment)
         supportFragmentManager.putFragment(outState,"dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState,"messagesFragment", this.messagesFragment)
         supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
+        if(this::searchFragment.isInitialized)
+            if(this.searchFragment.isAdded)
+                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment)
 //        outState.putInt("AStringKey", )
 ////        outState.putString("AStringKey2", variableData2)
 //        val p: Parcelable? = callFragment.saveAllState()
@@ -200,6 +215,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
+        Log.d(TAG, "onRestoreInstanceState: ")
 //        variableData = savedInstanceState.getInt("AStringKey")
 //        variableData2 = savedInstanceState.getString("AStringKey2")
     }
@@ -254,6 +270,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
      * This function set the default fragment status of each fragment
      */
     private fun setTheDefaultFragment() {
+//        contactFragment.isDefaultFgmnt = true
+
         if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
             callFragment.isDefaultFgmnt = true
         }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
@@ -312,7 +330,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //
     //    }
     private fun loadMainActivity() {}
-    private fun addAllFragments() {
+    fun removeSearchFragment(){
+//        ft = supportFragmentManager.beginTransaction()
+//        ft.hide(this.searchFragment)
+//        ft.remove(this.searchFragment).commit()
+//        ft.commit()
+        bottomNavigationView.visibility = View.VISIBLE
+
+    }
+
+    /**
+     * adds fragment to frame layout after search fragment closes
+     */
+    fun addFragmentsAgain(){
+        setTheDefaultFragment()
+//        DefaultFragmentManager.defaultFragmentToShow = 2
+        addAllFragments()
+//        val actionRestart =
+//            findViewById<View>(R.id.bottombaritem_calls)
+
+
+
+
+    }
+     fun addAllFragments() {
         setDefaultFragment(DefaultFragmentManager.id)
 
         ft = supportFragmentManager.beginTransaction()
@@ -423,13 +464,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            super.onBackPressed();
 //        }
     override fun onBackPressed() {
-//        super.onBackPressed()
+        Log.d(TAG, "onBackPressed: ")
         if(dialerFragment.isVisible){
             val ft = supportFragmentManager.beginTransaction()
             ft.hide(dialerFragment)
             ft.show(callFragment)
             fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
+        }else{
+            bottomNavigationView.visibility = View.VISIBLE
+
+            //for hiding search fragment
+            if(this::searchFragment.isInitialized){
+                if(this.searchFragment.isAdded and this.searchFragment.isVisible){
+                    Log.d(TAG, "onBackPressed: searchfragment is visible")
+                }
+            }
+
+            super.onBackPressed()
+
         }
 
     }
