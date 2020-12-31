@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.bumptech.glide.load.HttpException
+
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
@@ -13,6 +13,7 @@ import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
+import retrofit2.HttpException
 
 /**
  * Created by Jithin KG on 25,July,2020
@@ -32,7 +33,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
                 uploadContactsToServer()
 
-        }catch (e:HttpException){
+        }catch (e: HttpException){
             return Result.retry()
             Log.d(TAG, "doWork: retry")
         }

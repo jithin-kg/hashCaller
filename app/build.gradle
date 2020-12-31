@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt' //kotlin synthetic binding
 apply plugin: 'kotlin-android-extensions' // synthetic binding
 apply plugin: 'com.google.gms.google-services' // firebase
 
+apply plugin: 'com.klaxit.hiddensecrets'
 android {
 
 
@@ -23,11 +24,15 @@ android {
 
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+// Enable NDK build
+//    externalNativeBuild {
+//        cmake {
+//            path "src/main/cpp/CMakeLists.txt"
+//        }
+//    }
 
     //codelab android mvvm kotlin
-//    packagingOptions {
-//        exclude 'META-INF/atomicfu.kotlin_module'
-//    }
+
 
     defaultConfig {
         applicationId "com.nibble.hashcaller"
@@ -118,9 +123,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
     //glide
-    def glide_version = "4.8.0"
-    implementation "com.github.bumptech.glide:glide:$glide_version"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
+//    def glide_version = "4.8.0"
+//    implementation "com.github.bumptech.glide:glide:$glide_version"
+//    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     //GIF image drawable
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
