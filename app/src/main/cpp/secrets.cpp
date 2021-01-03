@@ -4,30 +4,15 @@
 
 #include "sha256.hpp"
 #include "sha256.cpp"
+#include "sha512.h"
+#include "Crypto.cpp"
 
-/* Copyright (c) 2020-present Klaxit SAS
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+#include <iostream>
+
+using std::string;
+using std::cout;
+using std::endl;
+
 
 void customDecode(char *str) {
     /* Add your own logic here
@@ -60,7 +45,20 @@ jstring getOriginalKey(
 
     return pEnv->NewStringUTF(out);
 }
+//mycustom function for transforming string
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_nibble_hashcaller_Secrets_managecipher(JNIEnv *pEnv, jobject pThis, jstring packageName, jstring key ){
+    Crypto c;
+const char *keyP = pEnv->GetStringUTFChars(key, NULL);
+//    std::string output1 = sha512(keyP);
+   std:: string output1 =  c.doSomething(keyP);
+//   sha512("jf");
 
+    const char *cString = output1.c_str();
+
+    return pEnv->NewStringUTF(cString);
+}
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_nibble_hashcaller_Secrets_getbcf2a937004d5b229fdaff17b9fd6d0328d3eb80a709e8234ede7c5501af648b(

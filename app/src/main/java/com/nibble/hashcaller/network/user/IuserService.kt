@@ -18,4 +18,11 @@ interface IuserService {
         @Body userInfo :UserInfoDTO,
         @Header ("Authorization") token:String
     ):Response<NetWorkResponse>
+
+    //retrieves cipher from hashcaller server
+    @POST("user/getCipher")
+    suspend fun getCipher(
+        @Header("Authorization")
+        token: String): Response<ResponseCipher>
+
 }

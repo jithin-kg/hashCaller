@@ -14,7 +14,6 @@ import android.os.Handler
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -24,13 +23,13 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
+import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setBottomSheetListener()
 
 
-
+        mangeCipherInSharedPref()
 
         //TODO check if contacts are uploaded
 //        check internet connection
@@ -148,6 +147,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
 //                .build()
 //        WorkManager.getInstance().enqueue(request)
+    }
+
+    private fun mangeCipherInSharedPref() {
+        if(!isCipherInSharedPreferences()){
+            KeyManager.setCipherInSharedPreferences(this)
+        }
+    }
+
+    private fun isCipherInSharedPreferences(): Boolean {
+
+        return false
     }
 
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {

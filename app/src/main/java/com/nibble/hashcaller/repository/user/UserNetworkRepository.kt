@@ -22,19 +22,7 @@ class UserNetworkRepository (private val context:Context){
         
         val response = retrofitService?.signup(userInfo, token)
         Log.d(TAG, "signup: ${response?.body()?.message}")
-
-//        val success = response?.isSuccessful?:false
-//
-//        if(success){
-//            Log.d(TAG, "signup: ${response?.body()}")
-//            val result = response?.body()?.message
-//
-//            Log.d(TAG, "signup: $result")
-//        }else{
-//            Log.d(TAG, "signup: failure")
-//        }
         return response
-        
     }
     companion object{
         private const val TAG = "__UserNetworkRepository"

@@ -125,35 +125,35 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(i)
 
-            viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {
-                it.let {
-                        resource ->
-                    when(resource.status){
-                        Status.SUCCESS->{
-                            Log.d(TAG, " mhan: $it")
-                            resource.data?.let {
-                                    searchResult->
-                                Log.d(TAG, "getCallerInfo: $searchResult")
-                                Log.d(TAG, "getCallerInfo: ${searchResult.cntcts[0]}")
-                                //start Caller Info activity
-                              startCallerInfoActivity(context, searchResult.cntcts)
-
-                            }
-                        }
-                        Status.LOADING->{
-                            //show loading
-
-                            Log.d(TAG, "onQueryTextChange: Loading....")
-                        }
-                        else ->{
-                            Log.d(TAG, "onQueryTextChange: Error ${resource}")
-
-                            Toast.makeText(context.applicationContext, it.message, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-
-            })
+//            viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {
+//                it.let {
+//                        resource ->
+//                    when(resource.status){
+//                        Status.SUCCESS->{
+//                            Log.d(TAG, " mhan: $it")
+//                            resource.data?.let {
+//                                    searchResult->
+//                                Log.d(TAG, "getCallerInfo: $searchResult")
+//                                Log.d(TAG, "getCallerInfo: ${searchResult.cntcts[0]}")
+//                                //start Caller Info activity
+//                              startCallerInfoActivity(context, searchResult.cntcts)
+//
+//                            }
+//                        }
+//                        Status.LOADING->{
+//                            //show loading
+//
+//                            Log.d(TAG, "onQueryTextChange: Loading....")
+//                        }
+//                        else ->{
+//                            Log.d(TAG, "onQueryTextChange: Error ${resource}")
+//
+//                            Toast.makeText(context.applicationContext, it.message, Toast.LENGTH_LONG).show()
+//                        }
+//                    }
+//                }
+//
+//            })
 
 
 

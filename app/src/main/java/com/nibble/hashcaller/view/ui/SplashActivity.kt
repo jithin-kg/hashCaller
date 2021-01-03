@@ -39,6 +39,8 @@ import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.SecretKeySpec
 
+//TODO I should check this in each activity whether the use is logged in or not,
+//make seperate helper class for this checking
 
 class SplashActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1

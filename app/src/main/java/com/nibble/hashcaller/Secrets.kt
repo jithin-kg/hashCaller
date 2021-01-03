@@ -16,4 +16,7 @@ class Secrets {
     external fun getIBZQHPWG(packageName: String): String
 
     external fun getSGBEDOKF(packageName: String): String
+
+    external fun managecipher(packageName: String, key:String):String
+
 }

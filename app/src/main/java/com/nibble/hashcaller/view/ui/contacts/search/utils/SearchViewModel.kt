@@ -1,17 +1,20 @@
 package com.nibble.hashcaller.view.ui.contacts.search.utils
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.search.SearchResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
-import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 import retrofit2.Response
+import java.security.MessageDigest
+import kotlin.experimental.and
+
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -44,31 +47,45 @@ class SearchViewModel(
 
     }
 
-    fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
-                emit(Resource.loading(data=null))
+//    fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
+    fun search(phoneNumber:String) = viewModelScope.launch {
+//                emit(Resource.loading(data=null))
         var res: Response<SerachRes>? = null
              try {
 
 //                    mt.value  = cntctsFromDb?.value
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
+                val hashedPhone = hashPhoneNum(phoneNumber)
 
-                 
-                   res = searchNetworkRepository.search(phoneNumber)
+//                 res = searchNetworkRepository.search(phoneNumber)
 
                  Log.d(TAG, "search: $res")
-                 emit(Resource.success(data = res?.body()));
+//                 emit(Resource.success(data = res?.body()));
 
              }catch (e:Exception){
                  Log.d(TAG, "response: $res");
                  Log.d(TAG, "execption : $e");
-                     emit(Resource.error(null, message ="Error Occurred!" ))
+//                     emit(Resource.error(null, message ="Error Occurred!" ))
              }
 
 
     }
 
-
-
+    private fun hashPhoneNum(phoneNumber: String): String {
+        val md: MessageDigest = MessageDigest.getInstance("SHA-256")
+        md.update(phoneNumber.toByteArray());
+        val bytes = md.digest()
+        val sb = StringBuilder()
+        for (element in bytes) {
+            sb.append(
+                ((element and 0xff.toByte()) + 0x100).toString(16)
+                    .substring(1)
+            )
+        }
+        val hashedPhone = sb.toString()
+        Log.d(TAG, "search: hashed phone is  $hashedPhone")
+        return hashedPhone
+    }
 
 
     /**

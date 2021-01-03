@@ -9,6 +9,12 @@ cmake_minimum_required(VERSION 3.4.1)
 # define multiple libraries by adding multiple add_library() commands,
 # and CMake builds them for you. When you build your app, Gradle
 # automatically packages shared libraries with your APK.
+SET(TARGET_H
+        sha512.h
+        Crypto.h)
+set(TARGET_SRC
+        sha512.cpp
+        Crypto.cpp)
 
 add_library( # Specifies the name of the library.
              secrets
@@ -18,3 +24,7 @@ add_library( # Specifies the name of the library.
 
              # Provides a relative path to your source file(s).
              secrets.cpp )
+add_library(sha512
+        SHARED
+        sha512.cpp )
+
