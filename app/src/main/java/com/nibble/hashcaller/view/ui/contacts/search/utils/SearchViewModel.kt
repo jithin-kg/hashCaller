@@ -24,6 +24,7 @@ class SearchViewModel(
     private  val contactLocalSyncRepository: ContactLocalSyncRepository
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
+    var hashedPhoneNum:MutableLiveData<String> = MutableLiveData()
 
     var mt:MutableLiveData<List<ContactTable>>
     init{
@@ -56,7 +57,7 @@ class SearchViewModel(
 //                    mt.value  = cntctsFromDb?.value
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
                 val hashedPhone = hashPhoneNum(phoneNumber)
-
+                 hashedPhoneNum.value = hashedPhone
 //                 res = searchNetworkRepository.search(phoneNumber)
 
                  Log.d(TAG, "search: $res")

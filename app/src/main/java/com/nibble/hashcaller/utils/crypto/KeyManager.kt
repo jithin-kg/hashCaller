@@ -52,5 +52,21 @@ object KeyManager {
         }
     }
 
+    fun isKeyStored(context:Context): Boolean {
+        val keyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+        val encSharedPref = EncryptedSharedPreferences.create(
+            "my_secret_prefs",
+            keyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+       val reslt  = encSharedPref.getString("keyOne","no")
+        if(reslt != "no")
+            return true
+        return false
+    }
+
     const val TAG = "__KeyManager"
 }

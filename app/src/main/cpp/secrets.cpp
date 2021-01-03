@@ -6,13 +6,12 @@
 #include "sha256.cpp"
 #include "sha512.h"
 #include "Crypto.cpp"
-
 #include <iostream>
+
 
 using std::string;
 using std::cout;
 using std::endl;
-
 
 void customDecode(char *str) {
     /* Add your own logic here

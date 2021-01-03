@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -157,7 +158,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun isCipherInSharedPreferences(): Boolean {
 
-        return false
+     return  KeyManager.isKeyStored(this)
+
     }
 
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {

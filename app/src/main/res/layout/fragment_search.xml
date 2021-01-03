@@ -25,18 +25,26 @@
         android:layout_height="wrap_content"
         android:transitionName="@string/search_view_transition"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtTextPhoneSearch"
+        app:layout_constraintTop_toBottomOf="@+id/shimmer_view_container"
         tools:layout_editor_absoluteX="73dp" />
 
-    <EditText
-        android:id="@+id/edtTextPhoneSearch"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_view_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:ems="10"
-        android:inputType="textPersonName"
+        app:shimmer_repeat_count="1"
+        app:shimmer_auto_start="false"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toStartOf="@+id/btnSampleTransition"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        >
+    <EditText
+        android:id="@+id/edtTextPhoneSearch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:ems="10"
+        android:inputType="textPersonName"
+         />
+    </com.facebook.shimmer.ShimmerFrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

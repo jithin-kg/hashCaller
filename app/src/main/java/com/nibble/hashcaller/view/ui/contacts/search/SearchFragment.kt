@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
@@ -64,13 +65,24 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         super.onViewCreated(view, savedInstanceState)
 
         initListeners()
+        observerPhoneHashValue()
 
+
+    }
+
+    private fun observerPhoneHashValue() {
+        this.searchViewmodel.hashedPhoneNum.observe(viewLifecycleOwner, Observer {
+            no->
+            edtTextPhoneSearch.setText(no)
+            shimmer_view_container.startShimmer()
+        } )
     }
 
     private fun initListeners() {
         viewSearch.btnSampleTransition.setOnClickListener(this)
         viewSearch.searchViewPhoneNum.setOnQueryTextFocusChangeListener(this)
         searchViewPhoneNum.setOnQueryTextListener(this)
+
 
     }
 
@@ -112,9 +124,14 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
     override fun onQueryTextChange(newText: String?): Boolean {
 //        this.viewSearch.edtTextPhoneSearch.setText(newText)
-        this.searchViewmodel.search(newText!!)
-        val secret = Secrets().managecipher(activity?.packageName!!, newText)
+        val secret = Secrets().managecipher(activity?.packageName!!, newText!!)
+        this.searchViewmodel.search(secret!!)
+
         Log.d(TAG, "got secret $secret")
+        //public key comes from server, saved in shared preferences
+//        phone number is hashed and encoded in and while sending encrypted
+
+
         return true
     }
 

@@ -9,14 +9,71 @@
 
 class Crypto{
 public:
-    std::basic_string<char, std::char_traits<char>, std::allocator<char>> doSomething(const char *string) {
-//        SHA512
 
-//SHA512 s;
+    std::basic_string<char, std::char_traits<char>, std::allocator<char>> divideString(char str[], int n)
+    {
+        int str_size = strlen(str);
+        int i;
+        int part_size;
+        part_size = n;
+        int sum = 0;
+        int count = 0;
+        std::string result = "";
+        int multipleOf = 2;
+        for (i = 0; i < str_size; i++)
+        {
+            multipleOf = multipleOf * 2;
+            int currentBitInInt = str[i] - '0';
+            sum += currentBitInInt * multipleOf;
+            int nextNumber = i+1;
+            if (i!=0 && nextNumber % (part_size) == 0){
 
-
-        return sha512(string);;
+                result+= std::to_string(sum) + " ";
+                multipleOf = 3;
+                sum =0;
+            }
+        }
+        return result;
     }
+
+    std::basic_string<char, std::char_traits<char>, std::allocator<char>> strToBinary(std::string s)
+    {
+        int n = s.length();
+        std::string bin = "";
+
+        for (int i = 0; i <= n; i++)
+        {
+
+            int val = int(s[i]);
+
+            // Convert ASCII value to binary
+
+            while (val > 0)
+            {
+                (val % 2)? bin.push_back('1') :
+                bin.push_back('0');
+                val /= 2;
+            }
+            reverse(bin.begin(), bin.end());
+        }
+
+        int length = bin.length();
+        int numsToAdd =  6 - length % 6;
+        for(int i =0; i <numsToAdd; i++){
+            bin.push_back('0');
+        };
+
+        char charArr[length + 1];
+        std::strcpy(charArr, bin.c_str());
+        return divideString(charArr, 6);
+    }
+
+    std::basic_string<char, std::char_traits<char>, std::allocator<char>> doSomething(const char *string) {
+
+        std::string hash = sha512(string);
+        return strToBinary(hash);
+    }
+
 };
 
 const unsigned int SHA512::sha512_k[64] = //UL = uint32
