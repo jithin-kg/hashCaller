@@ -1,34 +1,41 @@
 {
   "project_info": {
-    "project_number": "213218463453",
-    "firebase_url": "https://hashcaller-a97e5.firebaseio.com",
-    "project_id": "hashcaller-a97e5",
-    "storage_bucket": "hashcaller-a97e5.appspot.com"
+    "project_number": "296162447779",
+    "project_id": "hashcaller2",
+    "storage_bucket": "hashcaller2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:213218463453:android:19d8822456df0d52a59534",
+        "mobilesdk_app_id": "1:296162447779:android:6bf0a14d81bbeddab94a16",
         "android_client_info": {
           "package_name": "com.nibble.hashcaller"
         }
       },
       "oauth_client": [
         {
-          "client_id": "213218463453-2q8ppco7tv78sssn2dv6hv3md7cm8nph.apps.googleusercontent.com",
+          "client_id": "296162447779-egpff78pkisf7ak52rr4k92rgu99jqg7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nibble.hashcaller",
+            "certificate_hash": "843b429437e0d03eb18944a8396f9d9076ee1a85"
+          }
+        },
+        {
+          "client_id": "296162447779-bgrm8rqdflu619rfmeisn1j9lfejum4c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAE4-rOeTExNqQCO3cIkntrrdQUaPdD-Tw"
+          "current_key": "AIzaSyC5ZXzzTY1t_drwjUASW3DxOL7U6I7qSU8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "213218463453-2q8ppco7tv78sssn2dv6hv3md7cm8nph.apps.googleusercontent.com",
+              "client_id": "296162447779-bgrm8rqdflu619rfmeisn1j9lfejum4c.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

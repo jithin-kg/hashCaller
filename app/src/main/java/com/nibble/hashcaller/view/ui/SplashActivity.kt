@@ -10,6 +10,10 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.safetynet.SafetyNet
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
@@ -25,6 +29,7 @@ import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
+import com.nibble.hashcaller.view.ui.auth.testauth
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
@@ -79,7 +84,35 @@ companion object{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
+//        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
+//            // The SafetyNet Attestation API is available.
+//            Log.d(TAG, "onCreate: csafetynet attstation api available")
+//
+//            SafetyNet.getClient(this).attest("12345678911234567".toByteArray(), "AIzaSyDkpiDiYb84psGet7KKcqNG3DN3dgfyy18")
+//                .addOnSuccessListener(this) {
+//                    // Indicates communication with the service was successful.
+//                    // Use response.getJwsResult() to get the result data.
+//                    Log.d(TAG, "onCreate: success safety net")
+//                }
+//                .addOnFailureListener(this) { e ->
+//                    // An error occurred while communicating with the service.
+//                    if (e is ApiException) {
+//                        // An error with the Google Play services API contains some
+//                        // additional details.
+//                        val apiException = e as ApiException
+//
+//                        // You can retrieve the status code using the
+//                        // apiException.statusCode property.
+//                    } else {
+//                        // A different, unknown type of error occurred.
+//                        Log.d(TAG, "Error: " + e.message)
+//                    }
+//                }
+//        } else {
+//            // Prompt user to update Google Play services.
+//            Log.d(TAG, "onCreate: csafetynet attstation api not available")
+//
+//        }
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
         userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
@@ -120,7 +153,7 @@ companion object{
                     onSingnedOutcleanUp()
 
 
-                    val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
+                    val i = Intent(this@SplashActivity, testauth::class.java)
                     startActivityForResult(i, RC_SIGN_IN)
                 }
             }
@@ -309,6 +342,7 @@ companion object{
         }
     }
 
+
     private fun isNewUserInFirebase(): Boolean {
         metadata = rcfirebaseAuth?.currentUser!!.metadata
 
@@ -391,7 +425,11 @@ companion object{
 //        finish()
     }
 
-
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        this.user = rcfirebaseAuth!!.currentUser
+    }
 
     private fun checkPermission(): Boolean {
         sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
