@@ -13,7 +13,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
 import com.google.firebase.FirebaseException
-import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
@@ -85,91 +84,34 @@ class ActivityEnterOTP : AppCompatActivity(), View.OnClickListener {
             otpSent = true
         }
     }
-    private val mCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            // This callback will be invoked in two situations:
-            // 1 - Instant verification. In some cases the phone number can be instantly
-            //     verified without needing to send or enter a verification code.
-            // 2 - Auto-retrieval. On some devices Google Play services can automatically
-            //     detect the incoming verification SMS and perform verification without
-            //     user action.
-            Log.d(TAG, "onVerificationCompleted:$credential")
-
-            signInWithPhoneAuthCredential(credential)
-        }
-
-        override fun onVerificationFailed(e: FirebaseException) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            Log.w(TAG, "onVerificationFailed", e)
-
-            if (e is FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-                // ...
-            } else if (e is FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-                // ...
+    private val mCallbacks: OnVerificationStateChangedCallbacks =
+        object : OnVerificationStateChangedCallbacks() {
+            override fun onCodeSent(
+                s: String,
+                forceResendingToken: ForceResendingToken
+            ) {
+                super.onCodeSent(s, forceResendingToken)
+                mVerificationId = s
+                Log.d(ActivityEnterOTP.TAG, "onCodeSent: $mVerificationId")
+                val mResendTokne = forceResendingToken
             }
 
-            // Show a message and update the UI
-            // ...
+            override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
+                //getting code sent by sms
+                code = phoneAuthCredential.smsCode
+                if(code == null) code = "123456" //Only for testing purpose
+                if (code != null) {
+                    verifyCode(code)
+                    Log.d(ActivityEnterOTP.TAG, "onVerificationCompleted: $code")
+                }
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                Toast.makeText(this@ActivityEnterOTP, e.message, Toast.LENGTH_SHORT).show()
+                Log.d(ActivityEnterOTP.TAG, "onVerificationFailed: " + e.message)
+            }
         }
-
-        override fun onCodeSent(
-            verificationId: String,
-            token: PhoneAuthProvider.ForceResendingToken
-        ) {
-            // The SMS verification code has been sent to the provided phone number, we
-            // now need to ask the user to enter the code and then construct a credential
-            // by combining the code with a verification ID.
-            Log.d(TAG, "onCodeSent:$verificationId")
-
-            // Save verification ID and resending token so we can use them later
-            val storedVerificationId = verificationId
-            val resendToken = token
-
-            // ...
-        }
-    }
-    private fun verifyPhoneNumberWithCode(verificationId: String?, code: String) {
-        // [START verify_with_code]
-        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
-        // [END verify_with_code]
-        signInWithPhoneAuthCredential(credential)
-    }
-
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        Log.d(TAG, "signInWithPhoneAuthCredential: $credential")
-    }
-
-    //    private val mCallbacks: OnVerificationStateChangedCallbacks =
-//        object : OnVerificationStateChangedCallbacks() {
-//            override fun onCodeSent(
-//                s: String,
-//                forceResendingToken: ForceResendingToken
-//            ) {
-//                super.onCodeSent(s, forceResendingToken)
-//                mVerificationId = s
-//                Log.d(ActivityEnterOTP.TAG, "onCodeSent: $mVerificationId")
-//                val mResendTokne = forceResendingToken
-//            }
-//
-//            override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
-//                //getting code sent by sms
-//                code = phoneAuthCredential.smsCode
-//                if(code == null) code = "123456" //Only for testing purpose
-//                if (code != null) {
-//                    verifyCode(code)
-//                    Log.d(ActivityEnterOTP.TAG, "onVerificationCompleted: $code")
-//                }
-//            }
-//
-//            override fun onVerificationFailed(e: FirebaseException) {
-//                Toast.makeText(this@ActivityEnterOTP, e.message, Toast.LENGTH_SHORT).show()
-//                Log.d(ActivityEnterOTP.TAG, "onVerificationFailed: " + e.message)
-//            }
-//        }
     private fun verifyCode(code: String?) {
         //creating the credential
         val credential = PhoneAuthProvider.getCredential(mVerificationId!!, code!!)
@@ -201,8 +143,7 @@ class ActivityEnterOTP : AppCompatActivity(), View.OnClickListener {
             }
     }
     private fun onSignedInInitialize(code: String?) {
-//        setPinInView(code)
-        Log.d(TAG , "onsignedInInitialize")
+//        setPinInView(code)z
         val i = Intent()
         i.putExtra("RC_SIGN_IN", 1)
         setResult(1, i)

@@ -153,7 +153,7 @@ companion object{
                     onSingnedOutcleanUp()
 
 
-                    val i = Intent(this@SplashActivity, testauth::class.java)
+                    val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
                     startActivityForResult(i, RC_SIGN_IN)
                 }
             }

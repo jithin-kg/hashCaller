@@ -52,7 +52,7 @@ class ActivityPhoneAuth : AppCompatActivity() {
     fun passPhoneNumber(view: View?) {
         val phoneNumber =
             editTextPhone?.text.toString().trim { it <= ' ' }
-        val i = Intent(this@ActivityPhoneAuth, ActivityEnterOTP::class.java)
+        val i = Intent(this@ActivityPhoneAuth, testauth::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
         i.putExtra("phoneNumber", phoneNumber)
         startActivity(i)

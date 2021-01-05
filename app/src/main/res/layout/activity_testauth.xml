@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
@@ -7,106 +8,68 @@
     android:orientation="vertical"
     android:weightSum="4">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/fieldPhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        app:layout_constraintEnd_toStartOf="@+id/fieldVerificationCode"
+        tools:layout_editor_absoluteY="80dp" />
+
+    <EditText
+        android:id="@+id/fieldVerificationCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        app:layout_constraintEnd_toStartOf="@+id/buttonVerifyPhone"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="35dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonStartVerification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="start verification"
+        app:layout_constraintBottom_toTopOf="@+id/verifyManually"
+        app:layout_constraintEnd_toEndOf="@+id/verifyManually"
+        app:layout_constraintStart_toStartOf="@+id/verifyManually" />
 
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonVerifyPhone"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/buttonResend"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonResend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/signOutButton"
+        tools:layout_editor_absoluteY="80dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signOutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/buttonStartVerification"
+        app:layout_constraintEnd_toEndOf="@+id/buttonStartVerification"
+        app:layout_constraintStart_toStartOf="@+id/buttonStartVerification" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/verifyManually"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="manual verifiy for emulator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-    </LinearLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center_vertical">
-
-        <LinearLayout
-            android:id="@+id/phoneAuthFields"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2.0">
-
-                <EditText
-                    android:id="@+id/fieldPhoneNumber"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:inputType="phone"/>
-
-                <EditText
-                    android:id="@+id/fieldVerificationCode"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:inputType="number"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3.0">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonStartVerification"
-                    android:layout_width="0dp"
-                    android:text="start verification"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVerifyPhone"
-
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonResend"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                   />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/signedInButtons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:visibility="gone"
-            android:weightSum="1.0">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/signOutButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                />
-
-        </LinearLayout>
-
-    </RelativeLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

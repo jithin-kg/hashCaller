@@ -1,9 +1,11 @@
 package com.nibble.hashcaller.view.ui.auth
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -21,21 +23,30 @@ class testauth : AppCompatActivity(), View.OnClickListener {
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var auth: FirebaseAuth
     // [END declare_auth]
+    var phoneNumber: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_testauth)
+        phoneNumber = intent.getStringExtra("phoneNumber")
+
         // Restore instance state
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
         }
+        verifyManually.setOnClickListener(this)
         buttonStartVerification.setOnClickListener(this)
         buttonVerifyPhone.setOnClickListener(this)
         // Initialize Firebase Auth
         auth = Firebase.auth
+        registerCallback()
+        startPhoneNumberVerification("+91$phoneNumber")
 
-// [START phone_auth_callbacks]
+
+    }
+
+    private fun registerCallback() {
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -64,7 +75,6 @@ class testauth : AppCompatActivity(), View.OnClickListener {
                 // [START_EXCLUDE silent]
                 verificationInProgress = false
                 // [END_EXCLUDE]
-
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
                     // [START_EXCLUDE]
@@ -105,8 +115,8 @@ class testauth : AppCompatActivity(), View.OnClickListener {
                 // [END_EXCLUDE]
             }
         }
-
     }
+
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -235,8 +245,53 @@ class testauth : AppCompatActivity(), View.OnClickListener {
 
                 verifyPhoneNumberWithCode(storedVerificationId, "1234")
             }
+            R.id.verifyManually ->{
+                verifycode("123456")
+            }
 //            R.id.buttonResend -> resendVerificationCode(binding.fieldPhoneNumber.text.toString(), resendToken)
             R.id.signOutButton -> signOut()
         }
+    }
+
+    private fun verifycode(code : String) {
+        val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code!!)
+        signInWithCreadential(credential, code)
+    }
+
+    private fun signInWithCreadential(
+        credential: PhoneAuthCredential,
+        code: String
+    ) {
+        Log.d(TAG, "signInWithCreadential: $auth")
+        auth!!.signInWithCredential(credential)
+            .addOnCompleteListener(
+                this
+            ) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "successfull: ")
+                    onSignedInInitialize(code)
+                    Toast.makeText(this, "verified", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.d(TAG, "something went wrong: ")
+                    Toast.makeText(
+                        this,
+                        "Something went wrong",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                    Log.d(TAG, "invalid code: ")
+                    Toast.makeText(this, "invalid code", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+    }
+
+    private fun onSignedInInitialize(code: String?) {
+//        setPinInView(code)
+        val i = Intent()
+        i.putExtra("RC_SIGN_IN", 1)
+        setResult(1, i)
+        finish()
     }
 }
