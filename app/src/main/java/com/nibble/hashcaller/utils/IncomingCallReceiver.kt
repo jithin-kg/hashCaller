@@ -122,7 +122,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
             val i = Intent(context, ActivityIncommingCallView::class.java)
 //            var obj = cntcts[0]
 //            i.putExtra("SerachRes" ,obj)
-//            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(i)
 
 //            viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {

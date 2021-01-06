@@ -15,7 +15,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.ContactListFragment
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*

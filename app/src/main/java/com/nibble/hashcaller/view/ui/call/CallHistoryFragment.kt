@@ -1,11 +1,19 @@
 package com.nibble.hashcaller.view.ui.call
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
+import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import kotlinx.android.synthetic.main.fragment_call_history.*
+import kotlinx.android.synthetic.main.fragment_dialer.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -19,7 +27,8 @@ private const val ARG_PARAM2 = "param2"
  */
 class CallHistoryFragment : Fragment() {
     private lateinit var callHistoryFragment: View
-
+    private lateinit var viewModel: CallHistoryViewmodel
+    var callLogAdapter: DialerAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,10 +40,50 @@ class CallHistoryFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         callHistoryFragment = inflater.inflate(R.layout.fragment_call_history, container, false)
+
+        viewModel = ViewModelProvider(this, CallInjectorUtil.provideDialerViewModelFactory(context)).get(
+            CallHistoryViewmodel::class.java)
+        observeCallLog()
         return callHistoryFragment;
     }
 
-    companion object {
+    private fun observeCallLog() {
+        viewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
+            logs.let {
+                callLogAdapter?.setCallLogs(it)
+            }
+        })
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        initRecyclerView()
+        Log.d(TAG, "onViewCreated: ")
+
+
+    }
+
+    private fun initRecyclerView() {
+        rcrViewCallHistoryLogs?.apply {
+            layoutManager = LinearLayoutManager(activity)
+            val topSpacingDecorator =
+                TopSpacingItemDecoration(
+                    30
+                )
+            addItemDecoration(topSpacingDecorator)
+            callLogAdapter = DialerAdapter(context) { id:String->onCallLogItemClicked(id)}
+            adapter = callLogAdapter
+
+        }
+    }
+    private fun onCallLogItemClicked(id: String) {
+        Log.d(TAG, "onCallLog item clicked: $id")
+//        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+//        intent.putExtra(CONTACT_ID, id)
+//        startActivity(intent)
+    }
+
+    companion object {
+        const val TAG = "__CallHistoryFragment"
     }
 }

@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.contacts.search.utils
 
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +13,11 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.security.KeyFactory
 import java.security.MessageDigest
+import java.security.PublicKey
+import java.security.spec.X509EncodedKeySpec
+import javax.crypto.Cipher
 import kotlin.experimental.and
 
 
@@ -49,7 +54,7 @@ class SearchViewModel(
     }
 
 //    fun search(phoneNumber:String) = liveData(Dispatchers.IO) {
-    fun search(phoneNumber:String) = viewModelScope.launch {
+    fun search(phoneNumber: String, key: String?) = viewModelScope.launch {
 //                emit(Resource.loading(data=null))
         var res: Response<SerachRes>? = null
              try {
@@ -57,8 +62,12 @@ class SearchViewModel(
 //                    mt.value  = cntctsFromDb?.value
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
                 val hashedPhone = hashPhoneNum(phoneNumber)
+                 val encPhone = encryptPhoneNum("hi", key)
+                 Log.d(TAG, "search: enc hi is $encPhone")
+//                 val encPhone = encryptPhoneNum(hashedPhone, key)
                  hashedPhoneNum.value = hashedPhone
-//                 res = searchNetworkRepository.search(phoneNumber)
+                 res = searchNetworkRepository.search(encPhone)
+//                 res = searchNetworkRepository.search("Iyfgga1yHP90u/mBwFS5XK2QNq3KRsr+ZYYGH6Lav5X4IS8FvzMlC/WKvxQ0+o1q7XXgcNZ8Olg6P5JEKXVAGnVlexUDbUsjCuwZgRbACGJ8jIueYOUcgc7w9N+K1+Sc6I7ZAe6vRLknjpLuLIy9DOMJ/wirO1s5tv+l/fgDbEJp7Jl1rOodiFZU1ysBl/2cel7+9Xozb1+ZJhkQk/hlKdX49MvXwVDmbO+2uGYIEIe7V6uNouPlpE7VAKg/VP29uySsxDNJFR8ABEvMJhEkqkQJTCmM4Jk0sQmgmV1e+44ugyIZPEZMMQPGT/M+D4w2JtAg21zHpEUmXtkGZ7Lyuxp55fUWk8ISAZ/wPm9BO9hYCC4mEGF3vWtxEJNoWKMLw6vxeGbOnaNVakZs0bze9OzTsJsz3Vxgv1arutT9gDl2FfB5IfTHoC85V9+J4AUGnn4v1Oel7NxdPici0DhBAawkb41FV+fW6LuUgtm1TpdxyKuxZOfObQS23XtmmArd9B44TjMNl0S7G3RsfG3BYCSFG+bxSEgPgWLboXjkwhFqLK0MH7oD2oLvrP2eZYWK+lJSt0g926zT94yC5Y5jQCatsN//ZKiOunxNPI2Gr6Nj2fVdEsGRIjAYBqiPxk/GmshlN3RLnFtlu+PQY+PDqdhxpA5ZbOsBgjbrtFyJ2o4=")
 
                  Log.d(TAG, "search: $res")
 //                 emit(Resource.success(data = res?.body()));
@@ -70,6 +79,26 @@ class SearchViewModel(
              }
 
 
+    }
+
+    private fun encryptPhoneNum(phoneNumber: String, key: String?): String {
+        var encoded = ""
+        var encrypted: ByteArray? = null
+        try {
+            val publicBytes: ByteArray = Base64.decode(key, Base64.DEFAULT)
+            val keySpec = X509EncodedKeySpec(publicBytes)
+            val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
+            val pubKey: PublicKey = keyFactory.generatePublic(keySpec)
+            val cipher: Cipher = Cipher.getInstance("RSA/ECB/PKCS1PADDING") //or try with "RSA"
+            cipher.init(Cipher.ENCRYPT_MODE, pubKey)
+            encrypted = cipher.doFinal(phoneNumber.toByteArray())
+            encoded = Base64.encodeToString(encrypted, Base64.DEFAULT)
+        } catch (e: java.lang.Exception) {
+            Log.d(TAG, "encryptPhoneNum: error $e")
+            e.printStackTrace()
+        }
+        Log.d(TAG, "encryptPhoneNum: $encoded")
+        return encoded;
     }
 
     private fun hashPhoneNum(phoneNumber: String): String {

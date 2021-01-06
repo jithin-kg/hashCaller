@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui
 
 import android.Manifest
 import android.app.Activity
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.database.ContentObserver
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.telephony.SubscriptionInfo
@@ -17,6 +19,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -45,6 +48,7 @@ import com.nibble.hashcaller.view.utils.spam.SpamSyncManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 /**
  * This is a extension function which set the default fragment
@@ -83,6 +87,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        AppCompatDelegate.setDefaultNi
 //        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_main)
+
         if(this.searchFragment !=null)
         if(this.searchFragment?.isAdded!!){
             bottomNavigationView.visibility = View.GONE
@@ -119,9 +124,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            this.ft = supportFragmentManager.beginTransaction()
 
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            requestScreeningRole()
+        }
         fabBtnShowDialpad.setOnClickListener(this)
         setBottomSheetListener()
-
 
         mangeCipherInSharedPref()
 
@@ -156,9 +163,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun isCipherInSharedPreferences(): Boolean {
 
-     return  KeyManager.isKeyStored(this)
+    private fun isCipherInSharedPreferences(): Boolean {
+        val isKeyAvailable = KeyManager.isKeyStored(this)
+        if(isKeyAvailable) Log.d(TAG, "isCipherInSharedPreferences: key availabl")
+        else
+            Log.d(TAG, "isCipherInSharedPreferences: key not available")
+     return  isKeyAvailable
 
     }
 
@@ -749,8 +760,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
 
-
-
-
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun requestScreeningRole(){
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+           val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
+            val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+             if(!isHeld){
+                 //ask the user to set your app as the default screening app
+                 val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+                 startActivityForResult(intent, 123)
+             } else {
+                 //you are already the default screening app!
+             }
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            123 -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    //The user set you as the default screening app!
+                    Log.d(TAG, "onActivityResult: user set as as the defaul screening app")
+                } else {
+                    //the user didn't set you as the default screening app...
+                    Log.d(TAG, "onActivityResult: user does not set as the defaul screening app")
+                }
+            }
+            else -> {}
+        }
+    }
 }
+
 

@@ -12,10 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
-import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
-import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
 
@@ -37,6 +36,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     private var param2: String? = null
     private lateinit var viewSearch:View
     private lateinit  var searchViewmodel: SearchViewModel
+    private var key:String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -63,6 +63,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+         key = KeyManager.getKey(this.requireActivity())
 
         initListeners()
         observerPhoneHashValue()
@@ -124,8 +125,9 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
     override fun onQueryTextChange(newText: String?): Boolean {
 //        this.viewSearch.edtTextPhoneSearch.setText(newText)
+
         val secret = Secrets().managecipher(activity?.packageName!!, newText!!)
-        this.searchViewmodel.search(secret!!)
+        this.searchViewmodel.search(secret!!, key)
 
         Log.d(TAG, "got secret $secret")
         //public key comes from server, saved in shared preferences

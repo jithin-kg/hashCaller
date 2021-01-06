@@ -22,6 +22,8 @@ class testauth : AppCompatActivity(), View.OnClickListener {
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var auth: FirebaseAuth
+    var code: String? = null
+
     // [END declare_auth]
     var phoneNumber: String? = null
 
@@ -58,6 +60,13 @@ class testauth : AppCompatActivity(), View.OnClickListener {
                 //     user action.
                 Log.d(TAG, "onVerificationCompleted:$credential")
                 // [START_EXCLUDE silent]
+                code = credential.smsCode
+                if(code == null) code = "123456" //Only for testing purpose
+                if (code != null) {
+                    verifycode(code!!)
+                    Log.d(TAG, "onVerificationCompleted: $code")
+                }
+
                 verificationInProgress = false
                 // [END_EXCLUDE]
 
@@ -65,7 +74,7 @@ class testauth : AppCompatActivity(), View.OnClickListener {
                 // Update the UI and attempt sign in with the phone credential
 //                updateUI(STATE_VERIFY_SUCCESS, credential)
                 // [END_EXCLUDE]
-                signInWithPhoneAuthCredential(credential)
+//                signInWithPhoneAuthCredential(credential)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {

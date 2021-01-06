@@ -26,6 +26,7 @@
         android:layout_marginTop="24dp"
         android:background="@drawable/edit_text_phone_num"
         android:ems="10"
+        android:text="6605551234"
         android:inputType="phone"
         app:layout_constraintBottom_toTopOf="@+id/buttonGo"
         app:layout_constraintEnd_toStartOf="@+id/guideline10"

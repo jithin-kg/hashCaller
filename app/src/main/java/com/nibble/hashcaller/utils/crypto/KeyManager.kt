@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.nibble.hashcaller.repository.cipher.CipherNetworkRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -19,7 +18,18 @@ object KeyManager {
     }
 
 
-    fun getKey(){
+    fun getKey(context: Context): String? {
+        val keyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+        val encSharedPref = EncryptedSharedPreferences.create(
+            "my_secret_prefs",
+            keyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        val reslt  = encSharedPref.getString("keyOne","no")
+        return reslt
     }
 
     fun saveInSharedPreferences(context: Context, key:String){
@@ -53,17 +63,7 @@ object KeyManager {
     }
 
     fun isKeyStored(context:Context): Boolean {
-        val keyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-
-        val encSharedPref = EncryptedSharedPreferences.create(
-            "my_secret_prefs",
-            keyAlias,
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-       val reslt  = encSharedPref.getString("keyOne","no")
-        if(reslt != "no")
+        if( getKey(context) != "no")
             return true
         return false
     }
