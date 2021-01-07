@@ -10,7 +10,8 @@ class CallLogData(
     val duration: String,
     var name: String? = "",
     val date: String,
-    var expanded:Boolean = false
+    var expanded:Boolean = false,
+    var dateInMilliseconds:String = ""
 
 )  {
 

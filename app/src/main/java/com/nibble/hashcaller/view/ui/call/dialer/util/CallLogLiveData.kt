@@ -45,7 +45,7 @@ class CallLogLiveData(private val context: Context):
                 val duration: String = cursor.getString(2)
                 val name: String? = cursor.getString(3)
                 val id: String = cursor.getString(4)
-                val dateInMilliseconds = cursor.getString(5)
+                var dateInMilliseconds = cursor.getString(5)
                 val fmt =
                     SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
                 val dateInLong: Long = dateInMilliseconds.toLong()
@@ -58,9 +58,9 @@ class CallLogLiveData(private val context: Context):
                  *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
                  *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                  */
+                dateInMilliseconds += name + id + Math.random().toString();
 
-
-                val log = CallLogData(id, number, callType, duration, name, dateString)
+                val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
                 listOfCallLogs.add(log)
             }while (cursor.moveToNext())
             cursor.close()
