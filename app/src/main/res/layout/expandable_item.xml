@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content">
+
+    <com.skydoves.expandablelayout.ExpandableLayout
+        android:id="@+id/expandable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:expandable_duration="300"
+        app:expandable_isExpanded="false"
+        app:expandable_parentLayout="@layout/expandable_parent"
+        app:expandable_secondLayout="@layout/layout_second"
+        app:expandable_showSpinner="true"
+        app:expandable_spinner="@drawable/ic_arrow_down"
+        app:expandable_spinner_animate="true"
+        app:expandable_spinner_gravity="start"
+        app:expandable_spinner_margin="14dp"
+        app:expandable_spinner_size="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

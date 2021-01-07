@@ -1,77 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
     android:layout_marginTop="16dp"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:clickable="true"
     android:focusable="true">
 
-    <TextView
-        android:id="@+id/textViewCrclr"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="16dp"
-        android:textSize="24sp"
-        android:gravity="center_vertical|center_horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textVcallerName"
-        android:layout_width="0dp"
+        <TextView
+            android:id="@+id/textViewCrclr"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textVcallerName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="2dp"
+            android:text="ContactName"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.209"
+            app:layout_constraintStart_toEndOf="@+id/textViewCrclr"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.19" />
+
+        <ImageView
+            android:id="@+id/imgVPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/imgVCallType"
+            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
+            app:srcCompat="@drawable/ic_baseline_call_24" />
+
+        <ImageView
+            android:id="@+id/imgVCallType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="196dp"
+            app:layout_constraintEnd_toStartOf="@+id/textViewTime"
+            app:layout_constraintStart_toEndOf="@+id/imgVPhone"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_baseline_call_received_24" />
+
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.874"
+            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutExpandableCall"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:padding="2dp"
-        android:layout_marginLeft="16dp"
-        android:text="ContactName"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.209"
-        app:layout_constraintStart_toEndOf="@+id/textViewCrclr"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
+        android:visibility="gone"
 
-    <ImageView
-        android:id="@+id/imgVPhone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imgVCallType"
-        app:layout_constraintStart_toStartOf="@+id/textVcallerName"
-        app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
-        app:srcCompat="@drawable/ic_baseline_call_24" />
+        >
 
-    <ImageView
-        android:id="@+id/imgVCallType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="196dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textViewTime"
-        app:layout_constraintStart_toEndOf="@+id/imgVPhone"
-        app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_baseline_call_received_24" />
+        <TextView
+            android:id="@+id/tvExpandNumCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@android:color/transparent"/>
 
-    <TextView
-        android:id="@+id/textViewTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.874"
-        app:layout_constraintStart_toEndOf="@+id/imgVCallType"
-        app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
+        <ImageButton
+            android:id="@+id/imgBtnCallExpand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButtonCallExpand"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpand"
+            app:srcCompat="@drawable/ic_baseline_call_24" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:id="@+id/imageButtonCallExpand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnCallExpand"
+            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
+            app:srcCompat="@drawable/ic_baseline_call_24" />
+
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:id="@+id/imgBtnSmsExpand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnInfoExpand"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageButtonCallExpand"
+            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpand"
+            app:srcCompat="@drawable/ic_baseline_textsms_24" />
+
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:id="@+id/imgBtnInfoExpand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnSmsExpand"
+            app:layout_constraintTop_toTopOf="@+id/imgBtnSmsExpand"
+            app:srcCompat="@drawable/ic_baseline_info_24" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
 
 
 

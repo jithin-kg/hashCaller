@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -24,25 +25,32 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.reflect.KFunction2
 
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
 class SMSListAdapter(private val context: Context,
-                     private val onContactItemClickListener: (id:String)->Unit,
+                     private val onContactItemClickListener: KFunction2<@ParameterName(
+                         name = "address"
+                     ) String, @ParameterName(name = "pos") Int, Unit>,
                      private val onDelteItemclickListener: ()->Unit
                         ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_DELETE = 1;
     private val VIEW_TYPE_SMS = 2;
     private var smsList = emptyList<SMS>()
-
     companion object{
         private const val TAG = "__SMSListAdapter";
         public var searchQry:String? = null
-    }
+        var prevView:View? = null
+        var prevPos:Int? = null
 
+    }
+    fun getps(){
+
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if(viewType == VIEW_TYPE_DELETE){
@@ -96,6 +104,7 @@ class SMSListAdapter(private val context: Context,
 
 
 
+
     class DeleteViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val btnEmptySms = view.btnEmptySpamSMS
 
@@ -113,16 +122,18 @@ class SMSListAdapter(private val context: Context,
         }
     }
      class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val name = view.textVSMSContactName
+         var layoutExpandable: ConstraintLayout = view.layoutExpandable
+         private val name = view.textVSMSContactName
          private val circle = view.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
             sms: SMS, context: Context,
-            onContactItemClickListener: (id: String) -> Unit,
+            onContactItemClickListener: (id: String, position:Int) -> Unit,
             position: Int
         ) {
-
+            Log.d(TAG, "bind: ")
+//            layoutExpandable?.visibility   = if(sms.expanded) View.VISIBLE else View.GONE
 //            if(!sms.isSpam){
                 //        Log.i(TAG, String.valueOf(no));
 
@@ -151,11 +162,55 @@ class SMSListAdapter(private val context: Context,
                 generateCircleView(context);
 
 
-                view.setOnClickListener{
+                view.setOnClickListener{v->
+                    val pos = this.layoutPosition
+                    val pos2 = this.adapterPosition
+
+                    Log.d(TAG, "bind: $pos ")
+                    Log.d(TAG, "bind: $pos2 ")
+                    if(SMSListAdapter.prevPos == null){
+                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
+                        SMSListAdapter.prevPos = pos
+                        prevView = v
+
+                    }else if(pos != SMSListAdapter.prevPos){
+                        prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
+                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
+                        prevView = v
+                        prevPos = pos
+                    }else{
+                        if (v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility == View.VISIBLE){
+                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
+                            prevPos = pos
+                            prevView = v
+                        }else
+                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
+                        prevPos = pos
+                        prevView = v
+                    }
+//                    if(SMSListAdapter.prevView !=null ){
+//
+//                        SMSListAdapter.prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
+//                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
+//                    }else if(SMSListAdapter.prevView == v ){
+//                        if(v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility == View.VISIBLE){
+//                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
+//                        }else{
+//                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
+//                        }
+//                    }
+//                    else{
+//                        SMSListAdapter.prevView = v
+//                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
+//
+//                    }
+
 //                view.tvUnreadSMSCount.text = ""
 //                view.tvUnreadSMSCount.visibility = View.INVISIBLE
-                    onContactItemClickListener(sms.addressString!!)
-
+//                    onContactItemClickListener(sms.addressString!!)
+//                    onContactItemClickListener(sms.addressString!!, pos)
+//
+//                    sms.expanded = true
                 }
             }
 //        }
@@ -265,16 +320,24 @@ class SMSListAdapter(private val context: Context,
      }
     class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-
-            return oldItem.id == newItem.id
+//            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id
+            Log.d(TAG, "areItemsTheSame: oldItem ${oldItem.expanded}")
+            Log.d(TAG, "areItemsTheSame: newItem ${newItem.expanded}")
+            if(oldItem.expanded == newItem.expanded)
+                Log.d(TAG, "areItemsTheSame: yes")
+            else
+                Log.d(TAG, "areItemsTheSame: no")
+            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id
 
 
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            //TODO compare both messages and if the addres is same and message
+
             //is different we have new message for a chat
             //update the badge of that addres
+            Log.d(TAG, "areContentsTheSame: oldItem ${oldItem.expanded}")
+            Log.d(TAG, "areContentsTheSame: newItem ${newItem.expanded}")
             if(oldItem.address == newItem.address){
                 if(oldItem.msgString != newItem.msgString){
                     //we have a new message for this addess
@@ -283,7 +346,12 @@ class SMSListAdapter(private val context: Context,
 
                 }
             }
-            return oldItem.equals(newItem) && oldItem.msg == newItem.msg
+            if(oldItem.expanded == newItem.expanded)
+                Log.d(TAG, "areContentsTheSame: yes")
+            else
+                Log.d(TAG, "areContentsTheSame: no")
+            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
+           //TODO compare both messages and if the addres is same and message
         }
 
     }

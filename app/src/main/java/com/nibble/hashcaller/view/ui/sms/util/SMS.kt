@@ -4,7 +4,7 @@ import android.text.SpannableStringBuilder
 
 class SMS {
     var deleteViewPresent:Boolean = false
-
+    var expanded:Boolean = true
     var threadID: Long = -1L
     var isSpam: Boolean = false
     var id: Long = 0

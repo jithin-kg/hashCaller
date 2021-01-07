@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
+import android.content.Context
 import androidx.lifecycle.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import kotlinx.coroutines.launch
@@ -11,6 +12,8 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
+    var smsLive:SMSLiveData = SMS
+
     companion object
     {
         private const val TAG ="__DialerViewModel"
@@ -47,6 +50,12 @@ class SMSViewModel(
 
     fun update(address: String)  = viewModelScope.launch{
      SMS?.update(address)
+    }
+
+    fun changelist(smsLIst: List<SMS>, context:Context)  = viewModelScope.launch{
+
+        smsLive = SMSLiveData(context)
+        smsLive.value = smsLIst as List<SMS>
     }
 
 

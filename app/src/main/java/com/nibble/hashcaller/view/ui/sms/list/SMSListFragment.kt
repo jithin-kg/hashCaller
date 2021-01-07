@@ -1,9 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.list
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
@@ -23,15 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
-import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
-import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 
 import kotlinx.android.synthetic.main.fragment_messages_list.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
-import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 
 
 class SMSListFragment : Fragment(), View.OnClickListener {
@@ -44,6 +39,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
     private lateinit var cntx:Context
+    private var smsLIst:MutableList<SMS>? = null
 
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
@@ -130,15 +126,16 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun observeSMSList() {
-        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
-            sms.let {
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-                smsRecyclerAdapter?.submitList(it)
-                SMSListAdapter.searchQry = searchQry
-
-
-            }
-        })
+//        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
+//            sms.let {
+////                smsRecyclerAdapter?.setSMSList(it, searchQry)
+//                Log.d(TAG, "observeSMSList: data changed")
+//                smsRecyclerAdapter?.submitList(it)
+//                SMSListAdapter.searchQry = searchQry
+//                this.smsLIst = it as MutableList<SMS>?
+//
+//            }
+//        })
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -172,8 +169,23 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 
             }
         })
+        observeLive()
     }
 
+    private fun observeLive() {
+        smsListVIewModel.smsLive.observe(viewLifecycleOwner, Observer { sms->
+            sms.let {
+                Log.d(TAG, "observeLive: size ${sms.size}")
+//                smsRecyclerAdapter?.setSMSList(it, searchQry)
+                Log.d(TAG, "observeLive: data changed")
+                smsRecyclerAdapter?.setList(it)
+                SMSListAdapter.searchQry = searchQry
+                this.smsLIst = it as MutableList<SMS>?
+
+
+            }
+        })
+    }
 
 
     private fun initRecyclerView() {
@@ -190,12 +202,25 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private fun onDeleteItemClicked(){
 
     }
-    private fun onContactItemClicked(address: String) {
-        smsListVIewModel.update(address) // update count
-        val intent = Intent(context, IndividualSMSActivity::class.java )
-        intent.putExtra(CONTACT_ADDRES, address)
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
+    private fun onContactItemClicked(address: String, pos:Int) {
+        Log.d(TAG, "onContactItemClicked: $pos")
+        Log.d(TAG, "onContactItemClicked: size ${this.smsLIst!!.size}")
+//        this.smsLIst!!.removeAt(0);
+        Log.d(TAG, "onContactItemClicked: size ${this.smsLIst!!.size}")
+       val item =  this.smsRecyclerAdapter!!.getItemId(0)
+        Log.d(TAG, "onContactItemClicked: id $item")
+//        val newList:MutableList<SMS> = mutableListOf()
+//        newList.addAll(this.smsLIst!!)
+//        this.smsLIst!![pos].expanded = !(this.smsLIst!![pos].expanded)
+//        this.smsListVIewModel.SMS.value = smsLIst
+//        smsRecyclerAdapter?.submitList(newList)
+//        smsListVIewModel.update(address) // update count
+//        val intent = Intent(context, IndividualSMSActivity::class.java )
+//        intent.putExtra(CONTACT_ADDRES, address)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//        startActivity(intent)
+            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
+
     }
     override fun onResume() {
         super.onResume()

@@ -4,6 +4,7 @@ import android.app.role.RoleManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,8 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import com.nibble.hashcaller.R
+import com.skydoves.expandablelayout.ExpandableLayout
+import com.skydoves.expandablelayout.expandableLayout
 import kotlinx.android.synthetic.main.fragment_spam_call.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,6 +30,9 @@ class SpamCallFragment : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var myExpandableLayout:ExpandableLayout? = null
+
+    private lateinit var adapter:SpamCallAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +51,8 @@ class SpamCallFragment : Fragment(), View.OnClickListener {
     }
 
     companion object {
+        const val TAG = "__SpamCallFragment"
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -67,10 +75,22 @@ class SpamCallFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnDefaulCallScreening.setOnClickListener(this)
+         myExpandableLayout = expandableLayout(this!!.requireContext()) {
+            setParentLayoutResource(R.layout.expandable_parent)
+            setSecondLayoutResource(R.layout.layout_second)
+            setShowSpinner(true)
+            setSpinnerAnimate(true)
+            setSpinnerMargin(12f)
+            setSpinnerRotation(90)
+            setDuration(200)
+            setOnExpandListener { Log.d(TAG, "onViewCreated: clicked") }
+        }
     }
 
     override fun onClick(v: View?) {
-
+        myExpandableLayout!!.expand()
     }
+
+
 
 }

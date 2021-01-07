@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!--!!!important to give animateLayout changes to expand and collapse animation on recycler item lick-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:paddingTop="16dp"
+    android:animateLayoutChanges="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:background="@drawable/recyclere_view_background"
     android:focusable="true">
@@ -99,6 +100,30 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/horizontal_line" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutExpandable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDevider"
+
+        >
+
+        <TextView
+            android:id="@+id/tvHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

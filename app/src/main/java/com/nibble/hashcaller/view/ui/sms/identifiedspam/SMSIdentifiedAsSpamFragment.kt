@@ -6,12 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -27,8 +25,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_contact_list.view.*
-import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 
@@ -234,7 +230,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun onContactItemClicked(address: String) {
+    private fun onContactItemClicked(address: String, pos:Int) {
         viewmodel.update(address) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )
         intent.putExtra(CONTACT_ADDRES, address)
