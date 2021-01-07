@@ -35,6 +35,7 @@
 
     <color name="textColor">#232323</color>
     <color name="textColorSecondary">#2E2D2D</color>
+    <color name="lineColor"> #22000000</color>
 
 
 </resources>

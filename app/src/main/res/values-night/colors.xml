@@ -21,6 +21,8 @@
 
     <color name="textColor">#FFFFFF</color>
     <color name="textColorSecondary">#7E7B7B</color>
+    <color name="lineColor">#22A5A2A2</color>
+
 
 
 </resources>

@@ -112,7 +112,15 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.setOnClickListener(View.OnClickListener {v->
 //                onContactItemClickListener("2", this.adapterPosition, view)
                prevTime = callLog.dateInMilliseconds
+
+                if(v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility== View.VISIBLE)
+                    v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
+                else if(v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility== View.GONE)
+                    v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
+
                 toggleExpandableView(v, this.adapterPosition)
+
+
 ////               if( view.isFocused){
 //////                   view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
 ////               }
@@ -135,6 +143,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                  //first click
                  Log.d(TAG, "toggleExpandableView: first click")
                  v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
+                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
 //                 v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
 //                 prevPos = pos
                  prevTag = tag
@@ -144,9 +153,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 //clicked on new item
                  Log.d(TAG, "toggleExpandableView: not euqals")
                  prevView!!.findViewWithTag<ConstraintLayout>(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag).visibility = View.GONE
+                 prevView!!.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
 //                 prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
 //                 v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
                  v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
+                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
+
                  prevView = v
 //                 prevPos = pos
                  prevTag = tag
@@ -157,11 +169,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                  if (v.findViewWithTag<ConstraintLayout>(tag).visibility == View.VISIBLE){
 //                     v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
                      v.findViewWithTag<ConstraintLayout>(tag).visibility = View.GONE
+                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
 //                     prevPos = pos
                      prevTag = tag
                      prevView = v
                  }else{
                      v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
+                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
 //                 prevPos = pos
                      prevTag = tag
                      prevView = v

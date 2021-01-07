@@ -13,6 +13,7 @@
     android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutcallMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -47,12 +48,11 @@
             android:id="@+id/imgVPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toStartOf="@+id/imgVCallType"
             app:layout_constraintStart_toStartOf="@+id/textVcallerName"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
-            app:srcCompat="@drawable/ic_baseline_call_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            />
+            app:srcCompat="@drawable/ic_baseline_call_24" />
 
         <ImageView
             android:id="@+id/imgVCallType"
@@ -74,7 +74,22 @@
             app:layout_constraintHorizontal_bias="0.874"
             app:layout_constraintStart_toEndOf="@+id/imgVCallType"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
+
+        <View
+            android:id="@+id/dividerCall"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lineColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
+            app:layout_constraintTop_toBottomOf="@+id/imgVCallType" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -148,7 +163,16 @@
             android:foreground="?android:attr/selectableItemBackground"
             />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lineColor"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageButtonCallExpand" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </LinearLayout>
 
