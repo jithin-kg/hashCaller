@@ -18,7 +18,7 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class DialerAdapter(private val context: Context, private val onContactItemClickListener: (id:String, postition:Int, view:View)->Unit) :
+class DialerAdapter(private val context: Context, private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var callLogs = emptyList<CallLogData>()
@@ -28,6 +28,12 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
         var prevPos:Int? = null
         var prevTag:String? = null
         var prevTime : String? = null
+
+        const val BUTTON_SIM_1 = 0;
+        const val BUTTON_SIM_2 = 1;
+        const val BUTTON_SMS = 2;
+        const val BUTTON_INFO = 3;
+
     }
 
      
@@ -81,7 +87,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogData, context: Context,
-            onContactItemClickListener:(id:String, posoitin:Int, view:View)->Unit ) {
+            onContactItemClickListener:(id:String, posoitin:Int, view:View, btn:Int)->Unit ) {
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).setTag(callLog.dateInMilliseconds )
             if(prevTime!= null)
                 if(prevTime == callLog.dateInMilliseconds){
@@ -104,36 +110,16 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             //setDate
             view.textViewTime.text = callLog.date
 
-//            view.setOnClickListener{
-//
-//                onContactItemClickListener(pNo)
-//            }
+            view.layoutExpandableCall.setOnClickListener {
+                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1)
+            }
 
             view.setOnClickListener(View.OnClickListener {v->
 //                onContactItemClickListener("2", this.adapterPosition, view)
                prevTime = callLog.dateInMilliseconds
-
-                if(v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility== View.VISIBLE)
-                    v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-                else if(v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility== View.GONE)
-                    v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-
                 toggleExpandableView(v, this.adapterPosition)
 
 
-////               if( view.isFocused){
-//////                   view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
-////               }
-////                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
-//                val pos = this.layoutPosition
-//                val pos2 = this.adapterPosition
-//
-////                Log.d(TAG, "bind: tag ${v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag}")
-//
-////               toggleExpandableView(v, pos)
-//                //Log.d(TAG, "bind: onclick")
-//               // callLog.expanded = true
-////                notifyItemChanged(adapterPosition)
             })
         }
 
@@ -144,8 +130,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                  Log.d(TAG, "toggleExpandableView: first click")
                  v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
                  v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-//                 v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
-//                 prevPos = pos
+
                  prevTag = tag
                  prevView = v
 
@@ -154,34 +139,24 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                  Log.d(TAG, "toggleExpandableView: not euqals")
                  prevView!!.findViewWithTag<ConstraintLayout>(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag).visibility = View.GONE
                  prevView!!.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-//                 prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
-//                 v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
                  v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
                  v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-
                  prevView = v
-//                 prevPos = pos
                  prevTag = tag
-//             }else if(tag.equals (prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag)){
+
              }else if(prevView == v){
                  Log.d(TAG, "toggleExpandableView: euqals")
-//                 if (v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility == View.VISIBLE){
                  if (v.findViewWithTag<ConstraintLayout>(tag).visibility == View.VISIBLE){
-//                     v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
                      v.findViewWithTag<ConstraintLayout>(tag).visibility = View.GONE
                      v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-//                     prevPos = pos
                      prevTag = tag
                      prevView = v
                  }else{
                      v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
                      v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-//                 prevPos = pos
                      prevTag = tag
                      prevView = v
                  }
-//                     v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
-
              }
          }
 

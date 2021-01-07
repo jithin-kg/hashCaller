@@ -17,4 +17,5 @@
 <!--    picker-->
     <dimen name="text_size">72sp</dimen>
     <dimen name="selected_text_size">80sp</dimen>
+    <dimen name="bottom_fab_margin">32dp</dimen>
 </resources>

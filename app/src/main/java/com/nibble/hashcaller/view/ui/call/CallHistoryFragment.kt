@@ -1,12 +1,14 @@
 package com.nibble.hashcaller.view.ui.call
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +16,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_call_history.*
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -71,7 +74,7 @@ class CallHistoryFragment : Fragment() {
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View->onCallLogItemClicked(id, position, view)}
+            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View, btn:Int->onCallLogItemClicked(id, position, view, btn)}
             adapter = callLogAdapter
 
         }
@@ -79,16 +82,36 @@ class CallHistoryFragment : Fragment() {
     private fun onCallLogItemClicked(
         id: String,
         position: Int,
-        view: View
+        view: View,
+        btn: Int
     ) {
         Log.d(TAG, "onCallLog item clicked: $id")
         val id = callLogAdapter!!.getItemId(position)
         val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
-        if(v.visibility == View.GONE){
-            v.visibility = View.VISIBLE
-        }else{
-            v.visibility = View.GONE
+
+        when(btn){
+            DialerAdapter.BUTTON_SIM_1->{
+                Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
+                val intent =
+                    Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "918086176336"))
+                startActivity(intent)
+            }
+            DialerAdapter.BUTTON_SIM_2->{
+
+            }
+            DialerAdapter.BUTTON_SMS->{
+
+            }
+            DialerAdapter.BUTTON_INFO->{
+
+            }
+
         }
+//        if(v.visibility == View.GONE){
+//            v.visibility = View.VISIBLE
+//        }else{
+//            v.visibility = View.GONE
+//        }
 
         Log.d(TAG, "onCallLogItemClicked: ")
 //        val intent = Intent(context, IndividualCotactViewActivity::class.java )

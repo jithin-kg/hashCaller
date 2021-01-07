@@ -169,13 +169,18 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context) { id:String,pos:Int, v:View->onCallLogItemClicked(id, pos, v)}
+            callLogAdapter = DialerAdapter(context) { id:String,pos:Int, v:View, btn:Int->onCallLogItemClicked(id, pos, v, btn)}
             adapter = callLogAdapter
 
         }
     }
 
-    private fun onCallLogItemClicked(id: String, pos: Int, v: View) {
+    private fun onCallLogItemClicked(
+        id: String,
+        pos: Int,
+        v: View,
+        btn: Int
+    ) {
         Log.d(TAG, "onCallLog item clicked: $id")
 //        val intent = Intent(context, IndividualCotactViewActivity::class.java )
 //        intent.putExtra(CONTACT_ID, id)

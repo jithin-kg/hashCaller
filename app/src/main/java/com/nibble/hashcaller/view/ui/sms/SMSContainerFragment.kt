@@ -19,8 +19,6 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
-import com.nibble.hashcaller.view.ui.call.CallHistoryFragment
-import com.nibble.hashcaller.view.ui.call.SpamCallFragment
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
