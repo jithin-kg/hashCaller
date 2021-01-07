@@ -1,10 +1,12 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
+import android.provider.CallLog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -18,7 +20,7 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class DialerAdapter(private val context: Context, private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int)->Unit) :
+class DialerAdapter(private val context: Context, private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int, callLog:CallLogData)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var callLogs = emptyList<CallLogData>()
@@ -87,7 +89,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogData, context: Context,
-            onContactItemClickListener:(id:String, posoitin:Int, view:View, btn:Int)->Unit ) {
+            onContactItemClickListener:(id:String, posoitin:Int, view:View, btn:Int, callLog:CallLogData)->Unit ) {
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).setTag(callLog.dateInMilliseconds )
             if(prevTime!= null)
                 if(prevTime == callLog.dateInMilliseconds){
@@ -110,8 +112,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             //setDate
             view.textViewTime.text = callLog.date
 
-            view.layoutExpandableCall.setOnClickListener {
-                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1)
+            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).findViewById<ImageButton>(R.id.imgBtnCallExpand) .setOnClickListener {
+                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1,callLog)
             }
 
             view.setOnClickListener(View.OnClickListener {v->

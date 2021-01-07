@@ -1,11 +1,14 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -15,12 +18,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,9 +61,9 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        
         if(savedInstanceState!= null){
          //get state of this fragment
-
 
         }
     }
@@ -144,6 +149,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         if(this.view?.visibility == View.VISIBLE){
             bottomSheetDialog.show()
 
+
+
         }
 
         bottomSheetDialog.setOnDismissListener{
@@ -169,7 +176,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context) { id:String,pos:Int, v:View, btn:Int->onCallLogItemClicked(id, pos, v, btn)}
+            callLogAdapter = DialerAdapter(context) { id:String,pos:Int, v:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, pos, v, btn, callLog)}
             adapter = callLogAdapter
 
         }
@@ -179,7 +186,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         id: String,
         pos: Int,
         v: View,
-        btn: Int
+        btn: Int,
+        callLog: CallLogData
     ) {
         Log.d(TAG, "onCallLog item clicked: $id")
 //        val intent = Intent(context, IndividualCotactViewActivity::class.java )
@@ -204,10 +212,11 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         bottomSheetDialog.layoutNumPound.setOnClickListener(this)
 
         bottomSheetDialog.imgBtnBackspace.setOnClickListener(this)
+        bottomSheetDialog.fabBtnMakeCall.setOnClickListener(this)
+
         bottomSheetDialog.imgBtnBackspace.isEnabled = false
         bottomSheetDialog.editTextTextDigits.showSoftInputOnFocus = false;
 //        includeDialer.setOnClickListener(this)
-
         bottomSheetDialog.editTextTextDigits.append("")
         dialerFragment.imgBtnCloseDialer.setOnClickListener(this)
 
@@ -273,12 +282,31 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             }R.id.imgBtnCloseDialer->{
             Log.d(TAG, "onClick: close button clicked")
             closeDialerFragment()
+        }R.id.fabBtnMakeCall->{
+            makeCall()
         }
+            
             else->{
                 backspacePhoneNumEditText()
             }
         }
 
+    }
+
+    private fun makeCall() {
+       val num: String? =  getPhoneNumFromViewModel()
+        if(num!=null)
+        {
+          if(!num?.isEmpty())  {
+              Log.d(TAG, "onClick: make call fab")
+              val callIntent = Intent(Intent.ACTION_CALL)
+              callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+              callIntent.data = Uri.parse("tel:$num")
+              requireActivity().startActivity(callIntent)
+          }else{
+              Toast.makeText(context, "Please enter a number to call", Toast.LENGTH_SHORT).show()
+          }
+        }
     }
 
     private fun closeDialerFragment() {
