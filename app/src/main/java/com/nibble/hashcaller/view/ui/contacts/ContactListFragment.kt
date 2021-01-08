@@ -200,12 +200,11 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         super.onResume()
         this.permissionGivenLiveData.value  = checkContactPermission()
 
-
     }
 
     private fun checkContactPermission(): Boolean {
         val permissionContact =
-            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CONTACTS)
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CALL_LOG)
         if(permissionContact!= PackageManager.PERMISSION_GRANTED){
             return false
         }

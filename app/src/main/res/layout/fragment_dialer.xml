@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialerFragment"
-    android:layout_marginBottom="?attr/actionBarSize"
-    context=".view.ui.call.DialerFragment">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="?attr/actionBarSize">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcrViewCallLogs"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/contact_list" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcrViewCallLogs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/contact_list" />
 
-<!--    <include-->
-<!--        android:id="@+id/includeDialer"-->
-<!--        layout="@layout/toolbar_dialer"-->
-<!--        android:layout_gravity="top"-->
-<!--        android:clickable="true"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:focusable="true" />-->
+    <!--    <include-->
+    <!--        android:id="@+id/includeDialer"-->
+    <!--        layout="@layout/toolbar_dialer"-->
+    <!--        android:layout_gravity="top"-->
+    <!--        android:clickable="true"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:focusable="true" />-->
     <!-- TODO: Update blank fragment layout -->
-<!--    <include-->
-<!--        android:id="@+id/bottom_sheet"-->
-<!--        layout="@layout/sheet_dial_pad"-->
-<!--        />-->
-
+    <!--    <include-->
+    <!--        android:id="@+id/bottom_sheet"-->
+    <!--        layout="@layout/sheet_dial_pad"-->
+    <!--        />-->
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabShoDialPad2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="@dimen/bottom_fab_margin"
-        android:clickable="true"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="32dp"
         android:background="#fff"
         android:backgroundTint="#92EC6C"
-        android:src="@drawable/ic_baseline_dialpad_24" />
+        android:clickable="true"
+        android:src="@drawable/ic_baseline_dialpad_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
         android:id="@+id/imgBtnCloseDialer"
@@ -48,7 +48,32 @@
         android:layout_height="wrap_content"
         android:background="#fff"
         android:backgroundTint="#fff"
-        android:layout_gravity="top|left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_close_24" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <Button
+        android:id="@+id/btnDialerPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/pgbarDialer"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

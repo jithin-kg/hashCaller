@@ -1,6 +1,8 @@
 package com.nibble.hashcaller.view.ui.call
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,8 +21,11 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_call_history.*
+import kotlinx.android.synthetic.main.fragment_call_history.view.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -31,10 +38,11 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CallHistoryFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallHistoryFragment : Fragment() {
+class CallHistoryFragment : Fragment(), View.OnClickListener {
     private lateinit var callHistoryFragment: View
     private lateinit var viewModel: CallHistoryViewmodel
     var callLogAdapter: DialerAdapter? = null
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,8 +57,60 @@ class CallHistoryFragment : Fragment() {
 
         viewModel = ViewModelProvider(this, CallInjectorUtil.provideDialerViewModelFactory(context)).get(
             CallHistoryViewmodel::class.java)
-        observeCallLog()
+        if(checkContactPermission()){
+            observeCallLog()
+
+        }
+        initListeners()
+        observePermissionLiveData()
+        observeLiveDataLoading()
         return callHistoryFragment;
+    }
+
+    private fun observeLiveDataLoading() {
+        CallLogLiveData.isLoading.observe(viewLifecycleOwner, Observer {
+            if (it){
+                //show pg bar
+                this.callHistoryFragment.pgbarCallHistory.visibility = View.VISIBLE
+            }else{
+                this.callHistoryFragment.pgbarCallHistory.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun initListeners() {
+        this.callHistoryFragment.btnCallhistoryPermission.setOnClickListener(this)
+    }
+
+    private fun observePermissionLiveData() {
+        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { 
+            if(it){
+                Log.d(TAG, "observePermissionLiveData: permission given")
+                observeCallLog()
+                this.callHistoryFragment.btnCallhistoryPermission.visibility = View.GONE
+            }else{
+                this.callHistoryFragment.btnCallhistoryPermission.visibility = View.VISIBLE
+                Log.d(TAG, "observePermissionLiveData: permission not given")
+                if (this.viewModel!! != null  ) {
+                    if(this.viewModel?.callLogs != null)
+                        if(this.viewModel.callLogs!!.hasObservers())
+                            this.viewModel?.callLogs?.removeObservers(this);
+                }
+            }
+        })
+    }
+
+    private fun checkContactPermission(): Boolean {
+        val permissionSms =
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CALL_LOG)
+        if(permissionSms!= PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG, "checkContactPermission: false")
+            this.callHistoryFragment.pgbarCallHistory.visibility = View.GONE
+            return false
+        }
+        Log.d(TAG, "checkContactPermission: true")
+
+        return true
     }
 
     private fun observeCallLog() {
@@ -60,10 +120,16 @@ class CallHistoryFragment : Fragment() {
             }
         })
     }
+    override fun onResume() {
+        super.onResume()
+        this.permissionGivenLiveData.value  = checkContactPermission()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
+        initListeners()
+
         Log.d(TAG, "onViewCreated: ")
 
 
@@ -134,5 +200,16 @@ class CallHistoryFragment : Fragment() {
 
     companion object {
         const val TAG = "__CallHistoryFragment"
+    }
+
+    override fun onClick(v: View?) {
+        Log.d(TAG, "onClick: ")
+        when(v?.id){
+            R.id.btnCallhistoryPermission->{
+               val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
+                Log.d(TAG, "onClick: res is $res")
+                this.permissionGivenLiveData.value = res
+            }
+        }
     }
 }

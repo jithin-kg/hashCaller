@@ -1,7 +1,9 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -18,11 +21,15 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.call.CallHistoryFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_call_history.view.*
 import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
 
@@ -44,9 +51,11 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     private lateinit var dialerFragment: View
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     private lateinit var bottomSheetDialog:BottomSheetDialog
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 //    var phoneNumberViewModel: PhoneNumber? = null
     private lateinit var dialerViewModel: DialerViewModel
     private lateinit var  nameObserver: Observer<String?>
+
     private var lastEditPosition = 0
     var callLogAdapter: DialerAdapter? = null
     var newPos = 0
@@ -79,7 +88,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: ")
+        this.permissionGivenLiveData.value  = checkCallPermission()
     }
 
     override fun onCreateView(
@@ -99,15 +108,66 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
          * and updates the Edittext
          */
         initEditTextPhoneNumberObserver()
+        if(checkCallPermission()){
+            observeCallLog()
+            observeLiveDataLoading()
+        }
 
+        observePermissionLiveData()
+        return dialerFragment
+    }
+
+    private fun observeLiveDataLoading() {
+        CallLogLiveData.isLoading.observe(viewLifecycleOwner, Observer {
+            if(it){
+                this.dialerFragment.pgbarDialer.visibility = View.VISIBLE
+            }else{
+                this.dialerFragment.pgbarDialer.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun observePermissionLiveData() {
+        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
+            if(it){
+                Log.d(TAG, "observePermissionLiveData: permission given")
+                observeCallLog()
+                this.dialerFragment.btnDialerPermission.visibility = View.GONE
+            }else{
+                this.dialerFragment.btnDialerPermission.visibility = View.VISIBLE
+                Log.d(TAG, "observePermissionLiveData: permission not given")
+                if (this.dialerViewModel!! != null  ) {
+                    if(this.dialerViewModel?.callLogs != null)
+                        if(this.dialerViewModel.callLogs!!.hasObservers())
+                            this.dialerViewModel?.callLogs?.removeObservers(this);
+                }
+            }
+        })
+    }
+
+    private fun checkCallPermission(): Boolean {
+        val permissionSms =
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CALL_LOG)
+        if(permissionSms!= PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG, "checkContactPermission: false")
+            this.dialerFragment.btnDialerPermission.visibility = View.VISIBLE
+//            this.callHistoryFragment.pgbarCallHistory.visibility = View.GONE
+            return false
+        }
+        this.dialerFragment.btnDialerPermission.visibility = View.GONE
+        Log.d(TAG, "checkContactPermission: true")
+        return true
+    }
+
+    private fun observeCallLog() {
         dialerViewModel.getPhoneNumber()?.observe(viewLifecycleOwner, nameObserver)
         dialerViewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
                 callLogAdapter?.setCallLogs(it)
             }
         })
-        return dialerFragment
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         //THIS IS IMPORTANT !! otherwise memory leak occurs
@@ -219,6 +279,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 //        includeDialer.setOnClickListener(this)
         bottomSheetDialog.editTextTextDigits.append("")
         dialerFragment.imgBtnCloseDialer.setOnClickListener(this)
+        dialerFragment.btnDialerPermission.setOnClickListener(this)
 
 
 
@@ -284,6 +345,12 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             closeDialerFragment()
         }R.id.fabBtnMakeCall->{
             makeCall()
+        }R.id.btnDialerPermission->{
+            Log.d(TAG, "onClick: btn dialer permission")
+            val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
+            Log.d(TAG, "onClick: res is $res")
+            this.permissionGivenLiveData.value = res
+
         }
             
             else->{
