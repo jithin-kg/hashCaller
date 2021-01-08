@@ -163,31 +163,7 @@ class SMSListAdapter(private val context: Context,
 
 
                 view.setOnClickListener{v->
-                    val pos = this.layoutPosition
-                    val pos2 = this.adapterPosition
-
-                    Log.d(TAG, "bind: $pos ")
-                    Log.d(TAG, "bind: $pos2 ")
-                    if(SMSListAdapter.prevPos == null){
-                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
-                        SMSListAdapter.prevPos = pos
-                        prevView = v
-
-                    }else if(pos != SMSListAdapter.prevPos){
-                        prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
-                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
-                        prevView = v
-                        prevPos = pos
-                    }else{
-                        if (v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility == View.VISIBLE){
-                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
-                            prevPos = pos
-                            prevView = v
-                        }else
-                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
-                        prevPos = pos
-                        prevView = v
-                    }
+                  onContactItemClickListener(sms.id.toString(), this.adapterPosition)
 //                    if(SMSListAdapter.prevView !=null ){
 //
 //                        SMSListAdapter.prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE

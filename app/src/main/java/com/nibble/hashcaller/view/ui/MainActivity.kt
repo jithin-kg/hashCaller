@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
         setContentView(R.layout.activity_main)
 
+
         if(this.searchFragment !=null)
         if(this.searchFragment?.isAdded!!){
             bottomNavigationView.visibility = View.GONE

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
@@ -30,6 +31,7 @@ import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
+import java.lang.reflect.InvocationTargetException
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -83,21 +85,31 @@ class IndividualSMSActivity : AppCompatActivity(),
         this.spamTypes.add("Public service")
         this.spamTypes.add("Robocall")
         this.spamTypes.add("Survey")
+        when{
+            intent.action == Intent.ACTION_SENDTO->{
+                Log.d(TAG, "onCreate: send sms to ")
+                val body = intent.getStringExtra("sms_body")
+                contactAddress = intent.data.toString()
 
-         contactAddress = intent.getStringExtra(CONTACT_ADDRES)
-        contact = contactAddress
-        setupBottomSheet()
-        observerSmsSent()
-        configureToolbar()
-        initViewModel()
-        initAdapter()
-        initListners()
-        setupClickListerner()
-        registerAdapterListener()
-        setupViewmodelObserver()
 
-        observeSpinnerSelected()
-        addOrRemoveMenuItem()
+            }else->{
+            contactAddress = intent.getStringExtra(CONTACT_ADDRES)
+        }
+        }
+
+//        contact = contactAddress
+//        setupBottomSheet()
+//        observerSmsSent()
+//        configureToolbar()
+//        initViewModel()
+//        initAdapter()
+//        initListners()
+//        setupClickListerner()
+//        registerAdapterListener()
+//        setupViewmodelObserver()
+//
+//        observeSpinnerSelected()
+//        addOrRemoveMenuItem()
 
 
     }

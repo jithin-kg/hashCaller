@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.list
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
@@ -21,7 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 
@@ -203,23 +206,18 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 
     }
     private fun onContactItemClicked(address: String, pos:Int) {
-        Log.d(TAG, "onContactItemClicked: $pos")
-        Log.d(TAG, "onContactItemClicked: size ${this.smsLIst!!.size}")
-//        this.smsLIst!!.removeAt(0);
-        Log.d(TAG, "onContactItemClicked: size ${this.smsLIst!!.size}")
-       val item =  this.smsRecyclerAdapter!!.getItemId(0)
-        Log.d(TAG, "onContactItemClicked: id $item")
+
 //        val newList:MutableList<SMS> = mutableListOf()
 //        newList.addAll(this.smsLIst!!)
 //        this.smsLIst!![pos].expanded = !(this.smsLIst!![pos].expanded)
 //        this.smsListVIewModel.SMS.value = smsLIst
 //        smsRecyclerAdapter?.submitList(newList)
 //        smsListVIewModel.update(address) // update count
-//        val intent = Intent(context, IndividualSMSActivity::class.java )
-//        intent.putExtra(CONTACT_ADDRES, address)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//        startActivity(intent)
-            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
+        val intent = Intent(context, IndividualSMSActivity::class.java )
+        intent.putExtra(CONTACT_ADDRES, address)
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        startActivity(intent)
+//            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
 
     }
     override fun onResume() {

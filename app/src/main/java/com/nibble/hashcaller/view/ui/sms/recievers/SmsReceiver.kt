@@ -53,6 +53,11 @@ class SmsReceiver : BroadcastReceiver() {
                 }
             }
         } // bundle null
+
+        if(intent.action == "android.provider.Telephony.SMS_DELIVER"){
+            Log.d(TAG, "onReceive: action sms deliver")
+        }
+
     }
 
     private fun showNotification(context: Context, senderNo: String?, message: String?) {
