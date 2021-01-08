@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import java.lang.reflect.InvocationTargetException
+import kotlin.math.log
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -50,7 +51,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     private lateinit var layoutMngr:LinearLayoutManager
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
-    private var threadID = -1L
+    private var threadID = -1L // sms thread id not java thread
 
     private  var menuSMS:Menu? = null
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
@@ -97,23 +98,39 @@ class IndividualSMSActivity : AppCompatActivity(),
         }
         }
 
-//        contact = contactAddress
-//        setupBottomSheet()
-//        observerSmsSent()
-//        configureToolbar()
-//        initViewModel()
-//        initAdapter()
-//        initListners()
-//        setupClickListerner()
-//        registerAdapterListener()
-//        setupViewmodelObserver()
-//
-//        observeSpinnerSelected()
-//        addOrRemoveMenuItem()
+        contact = contactAddress
+        setupBottomSheet()
+        observerSmsSent()
+        initViewModel()
+        initAdapter()
+        initListners()
+        setupClickListerner()
+        registerAdapterListener()
+        setupViewmodelObserver()
+        observeSpinnerSelected()
+        addOrRemoveMenuItem()
+        getContactInformation()
+        observeContactname()
+        configureToolbar()
 
 
     }
 
+    private fun observeContactname() {
+        this.viewModel.nameLiveData.observe(this, Observer {
+            if(!it.isNullOrBlank()){
+                Log.d(TAG, "observeContactname: $it")
+                contactAddress = it
+                tvSMSAddress.text = contactAddress
+
+            }
+        })
+    }
+
+    private fun getContactInformation() {
+        Log.d(TAG, "getContactInformation: ")
+        this.viewModel.getContactInfoForNumber(contactAddress)
+    }
 
 
     private fun addOrRemoveMenuItem() {
@@ -152,6 +169,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun configureToolbar() {
         toolbarSMSIndividual.inflateMenu(R.menu.individual_sms_menu)
+        Log.d(TAG, "configureToolbar: name $contactAddress")
         tvSMSAddress.text = contactAddress
 
 //        toolbarSMSIndividual.add
@@ -283,11 +301,12 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
 //                adapter.submitList(it)
 //                newSize = it.size
-                Log.d(TAG, "setupViewmodelObserver: size : ${it.size}")
-                Log.d(TAG, "setupViewmodelObserver:  type of last item ${it[it.size-1].type}")
-                Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
-                Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
-                Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
+//                Log.d(TAG, "setupViewmodelObserver: size : ${it.size}")
+//                Log.d(TAG, "setupViewmodelObserver:  type of last item ${it[it.size-1].type}")
+//                Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
+//                Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
+//                Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
+                if(it.size>1)
                 this.threadID = it[it.size-1].threadID
 
                 adapter.setList(it)

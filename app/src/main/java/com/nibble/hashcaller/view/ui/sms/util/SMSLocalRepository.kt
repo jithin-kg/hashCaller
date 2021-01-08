@@ -7,17 +7,20 @@ import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.provider.CallLog
+import android.provider.ContactsContract
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.log
 
 
 /**
@@ -524,6 +527,71 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
         }
 
 
+    }
+
+    fun getConactInfoForNumber( pno: String): String? {
+        var cursor:Cursor? = null
+        Log.d(TAG, "getConactInfoForNumber: pno $pno")
+//        val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+        var name:String? = null
+        val phoneNum = pno.replace("+", "").trim()
+        Log.d(TAG, "getConactInfoForNumber: phoneNum $phoneNum")
+//        try {
+//
+//             cursor = context.contentResolver.query(
+//                 ContactsContract.Data.CONTENT_URI,
+//                null,
+//                ContactsContract.CommonDataKinds.Phone.NUMBER +" LIKE ? ",
+//                arrayOf("%$phoneNum%"),
+//                null
+//            )
+////            cursor = context.contentResolver.query(
+////                ContactLiveData.URI,
+////                projection,
+////                ContactsContract.CommonDataKinds.Phone.NUMBER +" LIKE ? ",
+////                arrayOf("+919495617494"),
+////                null
+////            )
+//
+//            if(cursor!=null && cursor.moveToFirst()){
+//                Log.d(TAG, "getConactInfoForNumber: contact exist")
+//                do{
+//                     name = cursor.getString(0)
+//
+//                }while (cursor.moveToNext())
+//            }else{
+//                Log.d(TAG, "getConactInfoForNumber: no such number")
+//            }
+//        }catch (e:Exception){
+//            Log.d(TAG, "getConactInfoForNumber: exception $e")
+//        }finally {
+//            cursor?.close()
+//        }
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(pno));
+//        cursor = context.contentResolver.query(
+//                 ContactsContract.Data.CONTENT_URI,
+//                null,
+//                ContactsContract.CommonDataKinds.Phone.NUMBER +" LIKE ? ",
+//                arrayOf("%$phoneNum%"),
+//                null
+//            )
+        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+            try{
+                if(cursor2!=null && cursor2.moveToFirst()){
+                    Log.d(TAG, "getConactInfoForNumber: data exist")
+                    name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+                }else{
+                    Log.d(TAG, "getConactInfoForNumber: no date")
+                }
+
+            }catch (e:Exception){
+                Log.d(TAG, "getConactInfoForNumber: exception $e")
+            }finally {
+                cursor2?.close()
+            }
+
+//
+        return name
     }
 
 

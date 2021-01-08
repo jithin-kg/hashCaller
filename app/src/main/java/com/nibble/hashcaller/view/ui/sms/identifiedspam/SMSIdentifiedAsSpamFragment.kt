@@ -220,7 +220,9 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
                 )
             addItemDecoration(topSpacingDecorator)
 //            smsRecyclerAdapter = SMSListAdapter(context,o) { id:String->onContactItemClicked(id)}
-            smsRecyclerAdapter = SMSListAdapter(context,::onContactItemClicked,::onDeleteItemClicked)
+            //TODO PASS FUNCTION TYPE AS PARAMETER FOR HANDLING DELETE BUTTON CLICK
+            smsRecyclerAdapter = SMSListAdapter(context){id:String, pos:Int,
+                                                         pno:String->onContactItemClicked(id, pos, pno) }
 //            smsRecyclerAdapter = SMSListAdapter(context)
             adapter = smsRecyclerAdapter
 
@@ -230,7 +232,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun onContactItemClicked(address: String, pos:Int) {
+    private fun onContactItemClicked(address: String, pos: Int, pno: String) {
         viewmodel.update(address) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )
         intent.putExtra(CONTACT_ADDRES, address)

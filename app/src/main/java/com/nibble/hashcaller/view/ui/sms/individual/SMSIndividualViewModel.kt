@@ -28,12 +28,13 @@ import kotlinx.coroutines.launch
  */
 class SMSIndividualViewModel(
     val SMS: SMSIndividualLiveData,
-    val repository: SMSLocalRepository?,
+    private val repository: SMSLocalRepository?,
     private val smsDAODAO: SmsOutboxListDAO?,
     private val spamRepository: SpamNetworkRepository?
 ): ViewModel() {
 //    public var blockedStatusOfThenumber:MutableList<SpammerInfo> =
 //        mutableListOf<SpammerInfo>()
+    var nameLiveData: MutableLiveData<String> = MutableLiveData("")
 
     public var blockedStatusOfThenumber:LiveData<List<SpammerInfo>>?= null
 
@@ -46,7 +47,11 @@ class SMSIndividualViewModel(
     }
      var filteredSms: MutableLiveData<String>? = null
 
-
+    fun getContactInfoForNumber(pno:String) = viewModelScope.launch {
+        val name = repository?.getConactInfoForNumber(pno)
+        Log.d(TAG, "getContactInfoForNumber: name from repository is $name")
+        nameLiveData.value = name
+    }
     fun getPhoneNumber(): MutableLiveData<String>? {
         if (filteredSms == null) {
             filteredSms = MutableLiveData<String>()

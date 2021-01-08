@@ -194,7 +194,8 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private fun initRecyclerView() {
         rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
-            smsRecyclerAdapter = SMSListAdapter(context,::onContactItemClicked, ::onDeleteItemClicked)
+            smsRecyclerAdapter = SMSListAdapter(context){id:String, pos:Int,
+                                                         pno:String->onContactItemClicked(id, pos, pno) }
             adapter = smsRecyclerAdapter
 
 //                setContacts()
@@ -205,8 +206,8 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private fun onDeleteItemClicked(){
 
     }
-    private fun onContactItemClicked(address: String, pos:Int) {
-
+    private fun onContactItemClicked(id: String, pos: Int, pno: String) {
+        Log.d(TAG, "onContactItemClicked address is : $pno")
 //        val newList:MutableList<SMS> = mutableListOf()
 //        newList.addAll(this.smsLIst!!)
 //        this.smsLIst!![pos].expanded = !(this.smsLIst!![pos].expanded)
@@ -214,7 +215,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 //        smsRecyclerAdapter?.submitList(newList)
 //        smsListVIewModel.update(address) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )
-        intent.putExtra(CONTACT_ADDRES, address)
+        intent.putExtra(CONTACT_ADDRES, pno)
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
 //            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())

@@ -25,18 +25,16 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.reflect.KFunction2
 
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
+
+
 class SMSListAdapter(private val context: Context,
-                     private val onContactItemClickListener: KFunction2<@ParameterName(
-                         name = "address"
-                     ) String, @ParameterName(name = "pos") Int, Unit>,
-                     private val onDelteItemclickListener: ()->Unit
-                        ) :
+                     private val onContactItemClickListener: (id:String, pos:Int, pno:String)->Unit
+ ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_DELETE = 1;
     private val VIEW_TYPE_SMS = 2;
@@ -89,7 +87,7 @@ class SMSListAdapter(private val context: Context,
         VIEW_TYPE_DELETE ->{
             val item =  getItem(position)
 
-            (holder as DeleteViewHolder).bind(item,context, onDelteItemclickListener, position)
+            (holder as DeleteViewHolder).bind(item,context, onContactItemClickListener, position)
         }
 
 
@@ -110,13 +108,14 @@ class SMSListAdapter(private val context: Context,
 
         fun bind(
             sms: SMS, context: Context,
-            onDeleteItemclickLIstener: () -> Unit,
+            onDeleteItemclickLIstener: (id: String, pos: Int, pno: String) -> Unit,
             position: Int
         ) {
             btnEmptySms.setOnClickListener{
 //                view.tvUnreadSMSCount.text = ""
 //                view.tvUnreadSMSCount.visibility = View.INVISIBLE
-                onDeleteItemclickLIstener()
+
+                onDeleteItemclickLIstener("", 0, ",")
 
             }
         }
@@ -129,7 +128,7 @@ class SMSListAdapter(private val context: Context,
 
         fun bind(
             sms: SMS, context: Context,
-            onContactItemClickListener: (id: String, position:Int) -> Unit,
+            onContactItemClickListener: (id: String, position:Int, pno:String) -> Unit,
             position: Int
         ) {
             Log.d(TAG, "bind: ")
@@ -163,7 +162,9 @@ class SMSListAdapter(private val context: Context,
 
 
                 view.setOnClickListener{v->
-                  onContactItemClickListener(sms.id.toString(), this.adapterPosition)
+                  onContactItemClickListener(sms.id.toString(), this.adapterPosition,
+                      sms.addressString!!
+                  )
 //                    if(SMSListAdapter.prevView !=null ){
 //
 //                        SMSListAdapter.prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
