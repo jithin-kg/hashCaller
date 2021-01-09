@@ -27,6 +27,7 @@ class SmsReceiver : BroadcastReceiver() {
     private val TAG = "__SmsReceiver"
     private lateinit var notificationManagerCmpt:  NotificationManagerCompat
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d(TAG, "onReceive: ")
         if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
 
             Log.e(TAG, "smsReceiver")

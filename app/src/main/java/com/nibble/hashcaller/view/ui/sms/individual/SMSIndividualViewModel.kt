@@ -16,8 +16,7 @@ import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
-import com.nibble.hashcaller.utils.DeliverReceiver
-import com.nibble.hashcaller.utils.SentReceiver
+import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -39,8 +38,8 @@ class SMSIndividualViewModel(
     public var blockedStatusOfThenumber:LiveData<List<SpammerInfo>>?= null
 
     private var applicationContext:Context?=null
-    private  var  sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
-    private  var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
+    private  var  sendBroadcastReceiver: BroadcastReceiver = SmsStatusSentReceiver()
+//    private  var deliveryBroadcastReceiver: BroadcastReceiver = SmsStatusDeliveredReceiver()
 
     init {
 
@@ -121,7 +120,7 @@ class SMSIndividualViewModel(
 
         applicationContext.registerReceiver(sendBroadcastReceiver, IntentFilter(SENT))
 
-        applicationContext.registerReceiver(deliveryBroadcastReceiver, IntentFilter(DELIVERED))
+//        applicationContext.registerReceiver(deliveryBroadcastReceiver, IntentFilter(DELIVERED))
 
         val smsManager: SmsManager = SmsManager.getDefault()
         smsManager.sendTextMessage(
@@ -133,7 +132,7 @@ class SMSIndividualViewModel(
     }
     fun unregister(){
         applicationContext?.unregisterReceiver(sendBroadcastReceiver)
-        applicationContext?.unregisterReceiver(deliveryBroadcastReceiver)
+//        applicationContext?.unregisterReceiver(deliveryBroadcastReceiver)
     }
 
     fun update() = viewModelScope.launch {

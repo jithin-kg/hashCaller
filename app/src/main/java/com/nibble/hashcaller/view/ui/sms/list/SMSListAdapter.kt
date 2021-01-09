@@ -271,7 +271,8 @@ class SMSListAdapter(private val context: Context,
 
          private fun setNameFirstChar(sms: SMS) {
              val name: String = sms.address.toString()
-             val firstLetter = name[0]
+//             val firstLetter = name[0]
+             val firstLetter = "h"
              val firstLetterString = firstLetter.toString().toUpperCase()
              circle.text = firstLetterString
          }

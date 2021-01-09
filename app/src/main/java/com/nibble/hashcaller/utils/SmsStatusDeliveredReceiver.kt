@@ -13,8 +13,9 @@ import kotlinx.coroutines.launch
 /**
  * This onReceive is called when the message got in recipient phone /read by recipient
  */
-class DeliverReceiver : BroadcastReceiver() {
+class SmsStatusDeliveredReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, arg1: Intent) {
+        Log.d(TAG, "onReceive: ")
         GlobalScope.launch {
             when (resultCode) {
 
@@ -33,6 +34,6 @@ class DeliverReceiver : BroadcastReceiver() {
 
     }
     companion object{
-        const val TAG="__DeliverReceiver"
+        const val TAG="__SmsStatusDeliveredReceiver"
     }
 }

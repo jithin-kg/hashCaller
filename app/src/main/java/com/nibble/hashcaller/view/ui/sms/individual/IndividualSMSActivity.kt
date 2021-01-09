@@ -22,13 +22,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.klinker.android.send_message.Message
+import com.klinker.android.send_message.Settings
+import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
+import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
+import kotlinx.android.synthetic.main.activity_send_test.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import java.lang.reflect.InvocationTargetException
@@ -567,7 +573,23 @@ class IndividualSMSActivity : AppCompatActivity(),
          */
         Log.d(TAG, "sendSms: clicked contact address $contactAddress")
         val msg = edtTxtMSg.text.toString()
-        viewModel.sendSms(msg, applicationContext, contactAddress)
+//        viewModel.sendSms(msg, applicationContext, contactAddress)
+        val settings = Settings()
+        settings.useSystemSending = true;
+        settings.useSystemSending = true
+        settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
+
+        val transaction = Transaction(this, settings)
+        val message = Message(msg, "919495617494")
+//        message.setImage(mBitmap);
+
+        val smsSentIntent = Intent(this, SmsStatusSentReceiver::class.java)
+        val deliveredIntent = Intent(this, SmsStatusDeliveredReceiver::class.java)
+        transaction.setExplicitBroadcastForSentSms(smsSentIntent)
+        transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
+
+        transaction.sendNewMessage(message, 133)
+
 
 
 

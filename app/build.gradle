@@ -167,6 +167,9 @@ dependencies {
     implementation "androidx.browser:browser:1.3.0"
     //expandable view
     implementation "com.github.skydoves:expandablelayout:1.0.6"
+
+    //https://github.com/klinker41/android-smsmms
+    implementation 'com.klinkerapps:android-smsmms:5.2.6'
 }
 repositories {
     mavenCentral()
