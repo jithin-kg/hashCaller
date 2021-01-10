@@ -79,6 +79,8 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //    return smsList.size
     override fun getItemViewType(position: Int): Int {
 //        return super.getItemViewType(position)
+        Log.d(TAG, "getItemViewType: type${smsList[position].type}")
+        Log.d(TAG, "getItemViewType: msg type type${smsList[position].msgType}")
         if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
             //sent message 2
             return VIEW_TYPE_MESSAGE_SENT
@@ -120,7 +122,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
     fun setList(it: List<SMS>?) {
         smsList = it!!
-        Log.d(TAG, "setList: ${smsList.size}")
+//        Log.d(TAG, "setList: ${smsList.size}")
         this.submitList(it)
 //        if(smsList.isNotEmpty() && smsList.size < it!!.size){
 //            positionTracker.shouldWeScroll()
@@ -379,14 +381,14 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //                Log.d(TAG, "areItemsTheSame: time not same")
             }
 
-            Log.d(TAG, "areItemsTheSame: ${newItem.currentDate}")
+//            Log.d(TAG, "areItemsTheSame: ${newItem.currentDate}")
             return oldItem.id == newItem.id
 
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            Log.d(TAG, "areContentsTheSame: type ${oldItem.type == newItem.type}")
-            Log.d(TAG, "areContentsTheSame: ")
+//            Log.d(TAG, "areContentsTheSame: type ${oldItem.type == newItem.type}")
+//            Log.d(TAG, "areContentsTheSame: ")
             if(oldItem == newItem){
 //                Log.d(TAG, "areContentsTheSame:  equal")
             }else{

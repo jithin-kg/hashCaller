@@ -2,9 +2,12 @@ package com.nibble.hashcaller.utils
 
 import android.app.Activity
 import android.content.BroadcastReceiver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Telephony
 import android.telephony.SmsManager
 import android.util.Log
 import android.widget.Toast
@@ -14,6 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class SmsStatusSentReceiver : BroadcastReceiver() {
+    private var messageId:Long? = null
     override fun onReceive(context: Context, intent: Intent) {
            var act =  intent.action
         Log.d(TAG, "onReceive: ")
@@ -21,7 +25,21 @@ class SmsStatusSentReceiver : BroadcastReceiver() {
 //            Log.d(TAG, "onReceive:  SMS_SENT")
 //
 //        }
+        if (intent.extras?.containsKey("message_uri") == true) {
+            Log.d(TAG, "onReceive: sms contains uri")
+            val uri = Uri.parse(intent.getStringExtra("message_uri"))
+             messageId = uri?.lastPathSegment?.toLong() ?: 0L
+            //TODO message id is always zero recieved, I need to check that
 
+                val type = if (intent.extras!!.containsKey("errorCode")) {
+//                    showSendingFailedNotification(context, messageId)
+                    Telephony.Sms.MESSAGE_TYPE_FAILED
+                } else {
+                    Telephony.Sms.MESSAGE_TYPE_OUTBOX
+                }
+                SmsStatusUpdator.updateMessageType(context, messageId!!, type)
+
+        }
                 when (resultCode) {
 //                Activity.RESULT_OK -> {
 //
@@ -86,7 +104,12 @@ class SmsStatusSentReceiver : BroadcastReceiver() {
                         .show()
                 }
                 SmsManager.RESULT_ERROR_RADIO_OFF -> {
-                    Log.d(TAG, "onReceive: no netowork")
+//                    Log.d(TAG, "onReceive: no netowork")
+//                    GlobalScope.launch {
+//
+//                        val type = Telephony.Sms.MESSAGE_TYPE_OUTBOX
+//                        updateMessageType(context, this@SmsStatusSentReceiver.messageId!!, type)
+//                    }
                     Toast.makeText(context, "No network",
                         Toast.LENGTH_SHORT).show()
                 }
@@ -94,6 +117,8 @@ class SmsStatusSentReceiver : BroadcastReceiver() {
             }
 
     }
+
+
 
     companion object{
         private const val TAG = "__SmsStatusSentReceiver"

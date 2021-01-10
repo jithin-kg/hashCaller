@@ -28,17 +28,13 @@ import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
-import kotlinx.android.synthetic.main.activity_send_test.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
-import java.lang.reflect.InvocationTargetException
-import kotlin.math.log
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -70,7 +66,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private  var spammerType:Int = -1
     var spamTypes:MutableList<String> = ArrayList<String>()
-
+    private var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData(mutableListOf(SMS()))
+    private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
 
     //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
 //    private var time:String? = null
@@ -112,7 +109,8 @@ class IndividualSMSActivity : AppCompatActivity(),
         initListners()
         setupClickListerner()
         registerAdapterListener()
-        setupViewmodelObserver()
+        observeViewmodelSms()
+        observeSmsLiveData()
         observeSpinnerSelected()
         addOrRemoveMenuItem()
         getContactInformation()
@@ -121,6 +119,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
     }
+
+
 
     private fun observeContactname() {
         this.viewModel.nameLiveData.observe(this, Observer {
@@ -300,8 +300,34 @@ class IndividualSMSActivity : AppCompatActivity(),
 //        btnUpdate.setOnClickListener(this)
     }
 
+    private fun observeSmsLiveData() {
+        this.smsLiveData.observe(this, Observer {
+            Log.d(TAG, "observeSmsLiveData: ")
+            adapter.setList(it)
+            if(firstime){
+                recyclerView.scrollToPosition(it.size - 1);
+                firstime = false
+            }
+            if(!recyclerViewAtEnd){
+                countNewItem = it.size - oldLIstSize
 
-    private fun setupViewmodelObserver() {
+                tvcountShow.text = countNewItem.toString()
+                tvcountShow.visibility = View.VISIBLE
+            }else{
+                clearNewMessageIndication()
+                oldLIstSize = it.size
+            }
+
+//                recyclerView.scrollToPosition(adapter.itemCount -1)
+            //  adapter.notifyItemRangeInserted(adapter.itemCount, it!!.size -1 )
+            if(recyclerViewAtEnd){
+//                    recyclerView.scrollToPosition(it.size-1)
+
+            }
+        })
+    }
+
+    private fun observeViewmodelSms() {
         viewModel.SMS.observe(this, Observer { sms->
             sms.let {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
@@ -312,32 +338,15 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
 //                Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
 //                Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
+
                 if(it.size>1)
                 this.threadID = it[it.size-1].threadID
-
-                adapter.setList(it)
-                if(firstime){
-                    recyclerView.scrollToPosition(it.size - 1);
-                    firstime = false
-                }
-                if(!recyclerViewAtEnd){
-                         countNewItem = it.size - oldLIstSize
-
-                    tvcountShow.text = countNewItem.toString()
-                    tvcountShow.visibility = View.VISIBLE
-                }else{
-                    clearNewMessageIndication()
-                    oldLIstSize = it.size
-                }
-
-//                recyclerView.scrollToPosition(adapter.itemCount -1)
-                //  adapter.notifyItemRangeInserted(adapter.itemCount, it!!.size -1 )
-                if(recyclerViewAtEnd){
-//                    recyclerView.scrollToPosition(it.size-1)
-
-                }
-
-
+                Log.d(TAG, "observeViewmodelSms: sms changed")
+                Log.d(TAG, "observeViewmodelSms: last item sms  ${it[it.size-1].msgString} ")
+                Log.d(TAG, "observeViewmodelSms: last item type  ${it[it.size-1].type} ")
+                Log.d(TAG, "observeViewmodelSms: last item msgtype  ${it[it.size-1].msgType} ")
+               this.smsLiveData.value = sms as MutableList<SMS>?
+                this.allTypeOfSmsList.addAll(it)
 
 
             }
@@ -572,11 +581,11 @@ class IndividualSMSActivity : AppCompatActivity(),
          * and later updated to sended in table ,meanwhile when user starts typing the messsage is added to draft
          */
         Log.d(TAG, "sendSms: clicked contact address $contactAddress")
+        this.allTypeOfSmsList.add(SMS())
         val msg = edtTxtMSg.text.toString()
 //        viewModel.sendSms(msg, applicationContext, contactAddress)
         val settings = Settings()
         settings.useSystemSending = true;
-        settings.useSystemSending = true
         settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
 
         val transaction = Transaction(this, settings)
