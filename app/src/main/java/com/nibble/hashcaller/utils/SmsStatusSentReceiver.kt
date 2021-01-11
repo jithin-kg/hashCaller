@@ -13,6 +13,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nibble.hashcaller.view.ui.contacts.utils.INTANT_SMS_BRECIEVER_TIME
+import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -35,8 +36,9 @@ class SmsStatusSentReceiver : BroadcastReceiver() {
 //                    showSendingFailedNotification(context, messageId)
                     Telephony.Sms.MESSAGE_TYPE_FAILED
                 } else {
-                    Telephony.Sms.MESSAGE_TYPE_OUTBOX
+                    Telephony.Sms.MESSAGE_TYPE_SENT
                 }
+            LAST_SMS_SENT = type == Telephony.Sms.MESSAGE_TYPE_SENT
                 SmsStatusUpdator.updateMessageType(context, messageId!!, type)
 
         }
@@ -91,6 +93,7 @@ class SmsStatusSentReceiver : BroadcastReceiver() {
                     Toast.makeText(context, "Generic failure",
                         Toast.LENGTH_SHORT).show()
                     Log.d(TAG, "onReceive: generic failure")
+                    LAST_SMS_SENT = false;
                 }
                 SmsManager.RESULT_ERROR_NO_SERVICE -> {
 //                    Toast.makeText(context, "No service",

@@ -4,6 +4,8 @@ import android.content.*
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.provider.Telephony
+import android.provider.Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -29,12 +31,16 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -62,13 +68,15 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private  var spinnerSelected: MutableLiveData<Boolean> = MutableLiveData(false);
     private  var selectedRadioButton:RadioButton? = null
+    private var isSmsChannelBusy = false // to know whether there is an sms is currently sending
 
 
     private  var spammerType:Int = -1
     var spamTypes:MutableList<String> = ArrayList<String>()
-    private var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData(mutableListOf(SMS()))
+    var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData(mutableListOf(SMS()))
     private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
-
+    private var smsQueueLiveData:MutableLiveData<Queue<SMS>> = MutableLiveData()
+    private var smsQueue:Queue<SMS> = LinkedList<SMS>()
     //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
 //    private var time:String? = null
     private var address = ""
@@ -303,14 +311,18 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun observeSmsLiveData() {
         this.smsLiveData.observe(this, Observer {
             Log.d(TAG, "observeSmsLiveData: ")
+
             adapter.setList(it)
+//            if(!isSmsChannelBusy && !smsQueue.isEmpty()){
+//                sendSmsToClient(smsQueue.remove())
+//                isSmsChannelBusy = true
+//            }
             if(firstime){
                 recyclerView.scrollToPosition(it.size - 1);
                 firstime = false
             }
             if(!recyclerViewAtEnd){
                 countNewItem = it.size - oldLIstSize
-
                 tvcountShow.text = countNewItem.toString()
                 tvcountShow.visibility = View.VISIBLE
             }else{
@@ -327,6 +339,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         })
     }
 
+
     private fun observeViewmodelSms() {
         viewModel.SMS.observe(this, Observer { sms->
             sms.let {
@@ -338,20 +351,99 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
 //                Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
 //                Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
+                this.smsLiveData.value = sms as MutableList<SMS>?
+//                val list:MutableList<SMS> = mutableListOf()
+//                list.addAll(it)
+//                for (item in smsQueue){
+//                    list.add(item)
+//                }
+//                this.allTypeOfSmsList.addAll(this.)
 
                 if(it.size>1)
                 this.threadID = it[it.size-1].threadID
                 Log.d(TAG, "observeViewmodelSms: sms changed")
                 Log.d(TAG, "observeViewmodelSms: last item sms  ${it[it.size-1].msgString} ")
                 Log.d(TAG, "observeViewmodelSms: last item type  ${it[it.size-1].type} ")
-                Log.d(TAG, "observeViewmodelSms: last item msgtype  ${it[it.size-1].msgType} ")
-               this.smsLiveData.value = sms as MutableList<SMS>?
-                this.allTypeOfSmsList.addAll(it)
-
-
+//                Log.d(TAG, "observeViewmodelSms: last item msgtype  ${it[it.size-1].msgType} ")
             }
         })
-        isThisNumBlocked()
+//        isThisNumBlocked()
+
+    }
+    private fun sendSmsToClient(sms: SMS?) {
+        Log.d(TAG, "sendSmsToClient: ")
+        Timer().schedule(timerTask {
+            LAST_SMS_SENT = false
+            this@IndividualSMSActivity.isSmsChannelBusy = true
+            val settings = Settings()
+            settings.useSystemSending = true;
+            settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
+            val msg = sms!!.msgString
+
+            val transaction = Transaction(this@IndividualSMSActivity, settings)
+            val message = Message(msg, "919495617494")
+//        message.setImage(mBitmap);
+
+            val smsSentIntent = Intent(this@IndividualSMSActivity, SmsStatusSentReceiver::class.java)
+            val deliveredIntent = Intent(this@IndividualSMSActivity, SmsStatusDeliveredReceiver::class.java)
+            transaction.setExplicitBroadcastForSentSms(smsSentIntent)
+            transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
+
+            transaction.sendNewMessage(message, 133)
+
+        }, 5000)
+
+
+    }
+    private fun sendSms() {
+//        messageSent.value = false
+        /**
+         * When there is no network the messages is added to the queue
+         * and at the moment user clicks send the message is added to outbox
+         * and later updated to sended in table ,meanwhile when user starts typing the messsage is added to draft
+         */
+        val smsObj = SMS()
+        smsObj.msgString = edtTxtMSg.text.toString()
+        smsObj.msgType = 4
+        smsObj.type = 4
+        this.smsLiveData.value!!.add(smsObj)
+        this.smsLiveData.value = this.smsLiveData.value
+
+//        this.smsQueue.add(smsObj)
+//        if(!smsQueue.isNullOrEmpty()){
+//            for (qitem in smsQueue){
+//                this.smsLiveData.value!!.add(qitem)
+//            }
+//        }
+//        this.smsLiveData.value = this.smsLiveData.value
+
+        this.viewModel.sendSmsToClient(smsObj, this)
+//            sendSmsToClient(smsObj)
+
+
+//        Log.d(TAG, "sendSms: clicked contact address $contactAddress")
+//        this.allTypeOfSmsList.add(SMS())
+//        val msg = edtTxtMSg.text.toString()
+////        viewModel.sendSms(msg, applicationContext, contactAddress)
+//        val settings = Settings()
+//        settings.useSystemSending = true;
+//        settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
+//
+//        val transaction = Transaction(this, settings)
+//        val message = Message(msg, "919495617494")
+////        message.setImage(mBitmap);
+//
+//        val smsSentIntent = Intent(this, SmsStatusSentReceiver::class.java)
+//        val deliveredIntent = Intent(this, SmsStatusDeliveredReceiver::class.java)
+//        transaction.setExplicitBroadcastForSentSms(smsSentIntent)
+//        transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
+//
+//        transaction.sendNewMessage(message, 133)
+
+
+
+
+
 
     }
 
@@ -573,38 +665,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     }
 
-    private fun sendSms() {
-//        messageSent.value = false
-        /**
-         * When there is no network the messages is added to the queue
-         * and at the moment user clicks send the message is added to outbox
-         * and later updated to sended in table ,meanwhile when user starts typing the messsage is added to draft
-         */
-        Log.d(TAG, "sendSms: clicked contact address $contactAddress")
-        this.allTypeOfSmsList.add(SMS())
-        val msg = edtTxtMSg.text.toString()
-//        viewModel.sendSms(msg, applicationContext, contactAddress)
-        val settings = Settings()
-        settings.useSystemSending = true;
-        settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
 
-        val transaction = Transaction(this, settings)
-        val message = Message(msg, "919495617494")
-//        message.setImage(mBitmap);
-
-        val smsSentIntent = Intent(this, SmsStatusSentReceiver::class.java)
-        val deliveredIntent = Intent(this, SmsStatusDeliveredReceiver::class.java)
-        transaction.setExplicitBroadcastForSentSms(smsSentIntent)
-        transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
-
-        transaction.sendNewMessage(message, 133)
-
-
-
-
-
-
-    }
     override fun onResume() {
         super.onResume()
 //            LocalBroadcastManager.getInstance(this).registerReceiver(

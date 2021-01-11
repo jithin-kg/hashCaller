@@ -43,7 +43,7 @@ class ActivityEnterOTP : AppCompatActivity(), View.OnClickListener {
         viemodel = EnterOtpViewModel()
 
         phoneNumber = intent.getStringExtra("phoneNumber")
-        phoneNumber = "650-555-1234"
+        phoneNumber = "+16605551234"
         mAuth = FirebaseAuth.getInstance()
         mAuth!!.firebaseAuthSettings.forceRecaptchaFlowForTesting(true)
 
@@ -75,7 +75,7 @@ class ActivityEnterOTP : AppCompatActivity(), View.OnClickListener {
 //                    TaskExecutors.MAIN_THREAD, mCallbacks
 //                )
             val options = PhoneAuthOptions.newBuilder(this.mAuth!!)
-                .setPhoneNumber("+1${this.phoneNumber!!}")       // Phone number to verify
+                .setPhoneNumber(this.phoneNumber!!)       // Phone number to verify
                 .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                 .setActivity(this)                 // Activity (for callback binding)
                 .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks

@@ -12,14 +12,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.klinker.android.send_message.Message
+import com.klinker.android.send_message.Settings
+import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
+import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 /**
@@ -33,6 +40,8 @@ class SMSIndividualViewModel(
 ): ViewModel() {
 //    public var blockedStatusOfThenumber:MutableList<SpammerInfo> =
 //        mutableListOf<SpammerInfo>()
+val smsQuee:Queue<SMS> = LinkedList<SMS>()
+
     var nameLiveData: MutableLiveData<String> = MutableLiveData("")
 
     public var blockedStatusOfThenumber:LiveData<List<SpammerInfo>>?= null
@@ -173,6 +182,37 @@ class SMSIndividualViewModel(
     fun unblock(contactAddress: String)  = viewModelScope.launch{
         spamRepository?.delete(contactAddress)
     }
+
+    fun sendSmsToClient(smsObj: SMS, individualSMSActivity: IndividualSMSActivity) = viewModelScope.launch {
+
+        smsQuee.add(smsObj)
+
+            send(individualSMSActivity)
+
+
+        }
+
+    private suspend fun send(individualSMSActivity: IndividualSMSActivity) {
+        for (item in smsQuee){
+            val settings = Settings()
+            settings.useSystemSending = true;
+            settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
+            val msg = item!!.msgString
+
+            val transaction = Transaction(individualSMSActivity, settings)
+            val message = Message(msg, "919495617494")
+//        message.setImage(mBitmap);
+            val smsSentIntent = Intent(individualSMSActivity, SmsStatusSentReceiver::class.java)
+            val deliveredIntent = Intent(individualSMSActivity, SmsStatusDeliveredReceiver::class.java)
+            transaction.setExplicitBroadcastForSentSms(smsSentIntent)
+            transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
+            transaction.sendNewMessage(message, 133)
+            smsQuee.remove()
+            delay(5000)
+    }
+
+
+}
 
 
     companion object{
