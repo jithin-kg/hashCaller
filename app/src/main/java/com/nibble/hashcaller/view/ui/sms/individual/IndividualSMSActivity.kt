@@ -419,7 +419,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 //        }
 //        this.smsLiveData.value = this.smsLiveData.value
 
-        this.viewModel.sendSmsToClient(smsObj, this)
+        this.viewModel.sendSmsToClient(smsObj, this, this.threadID, contact)
 //            sendSmsToClient(smsObj)
 
 

@@ -183,16 +183,26 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
         spamRepository?.delete(contactAddress)
     }
 
-    fun sendSmsToClient(smsObj: SMS, individualSMSActivity: IndividualSMSActivity) = viewModelScope.launch {
+    fun sendSmsToClient(
+        smsObj: SMS,
+        individualSMSActivity: IndividualSMSActivity,
+        threadID: Long,
+        phoneNum: String?
+    ) = viewModelScope.launch {
 
         smsQuee.add(smsObj)
 
-            send(individualSMSActivity)
+            send(individualSMSActivity, phoneNum, threadID)
 
 
         }
 
-    private suspend fun send(individualSMSActivity: IndividualSMSActivity) {
+    private suspend fun send(
+        individualSMSActivity: IndividualSMSActivity,
+        phoneNum: String?,
+        threadID: Long
+    ) {
+        //TODO ADD resend sms,for failed sms
         for (item in smsQuee){
             val settings = Settings()
             settings.useSystemSending = true;
@@ -200,13 +210,13 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
             val msg = item!!.msgString
 
             val transaction = Transaction(individualSMSActivity, settings)
-            val message = Message(msg, "919495617494")
+            val message = Message(msg, phoneNum)
 //        message.setImage(mBitmap);
             val smsSentIntent = Intent(individualSMSActivity, SmsStatusSentReceiver::class.java)
             val deliveredIntent = Intent(individualSMSActivity, SmsStatusDeliveredReceiver::class.java)
             transaction.setExplicitBroadcastForSentSms(smsSentIntent)
             transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
-            transaction.sendNewMessage(message, 133)
+            transaction.sendNewMessage(message, threadID)
             smsQuee.remove()
             delay(5000)
     }

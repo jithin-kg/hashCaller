@@ -44,6 +44,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private var searchQry:String? = null
     private lateinit var cntx:Context
     private var smsLIst:MutableList<SMS>? = null
+    private lateinit var sView:SearchView
 
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
@@ -151,15 +152,24 @@ class SMSListFragment : Fragment(), View.OnClickListener {
         initRecyclerView()
         initListeners()
 
-        val sView = viewMesages.rootView.findViewById(R.id.searchViewMessages) as SearchView
+         sView = viewMesages.rootView.findViewById(R.id.searchViewMessages) as SearchView
 
         Log.d(TAG, "onCreateView: $sView")
 
 
 
 
+
+        observeLive()
+        searchViewListener()
+
+    }
+
+    private fun searchViewListener() {
         sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+
             override fun onQueryTextSubmit(p0: String?): Boolean {
+                Log.d(TAG, "onQueryTextSubmit: ")
                 return true
             }
 
@@ -173,7 +183,6 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 
             }
         })
-        observeLive()
     }
 
     private fun observeLive() {

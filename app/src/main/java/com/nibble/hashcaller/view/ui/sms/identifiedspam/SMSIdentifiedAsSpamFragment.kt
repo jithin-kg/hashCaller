@@ -23,6 +23,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
+import com.nibble.hashcaller.view.ui.sms.list.SMSSpamListAdapter
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.*
@@ -30,7 +31,7 @@ import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 
 
 class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
-    var smsRecyclerAdapter: SMSListAdapter? = null
+    var smsRecyclerAdapter: SMSSpamListAdapter? = null
     private lateinit var viewmodel: SMSSpamViewModel
     private var searchQry:String? = null
 
@@ -169,7 +170,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
 
         SMSContainerFragment.recyclerViewSpamSms = this.viewMesages.rcrViewSMSSpamList
         setScrollViewListener()
-        searchViewListener()
+//        searchViewListener()
     }
 
     private fun setScrollViewListener() {
@@ -188,7 +189,8 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
             }
         })
     }
-    private fun searchViewListener() {
+    private fun
+            searchViewListener() {
         sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 return true
@@ -221,7 +223,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
             addItemDecoration(topSpacingDecorator)
 //            smsRecyclerAdapter = SMSListAdapter(context,o) { id:String->onContactItemClicked(id)}
             //TODO PASS FUNCTION TYPE AS PARAMETER FOR HANDLING DELETE BUTTON CLICK
-            smsRecyclerAdapter = SMSListAdapter(context){id:String, pos:Int,
+            smsRecyclerAdapter = SMSSpamListAdapter(context){id:String, pos:Int,
                                                          pno:String->onContactItemClicked(id, pos, pno) }
 //            smsRecyclerAdapter = SMSListAdapter(context)
             adapter = smsRecyclerAdapter
