@@ -357,7 +357,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                     .format(now)
             if(date.equals(todayDate)){
 //                only set time in view
-                 view.tvSenttime.text = time
+//                 view.tvSenttime.text = time
 //             }else{
 //                 view.tvTime.text = date
             }

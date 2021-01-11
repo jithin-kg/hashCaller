@@ -4,8 +4,6 @@ import android.content.*
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.provider.Telephony
-import android.provider.Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -23,6 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
@@ -88,7 +87,10 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_individual_s_m_s)
-
+        val itemAnimator: SimpleItemAnimator? =
+            recyclerViewSMSIndividual.itemAnimator as SimpleItemAnimator?
+//        itemAnimator?.setSupportsChangeAnimations(false)
+        recyclerViewSMSIndividual.itemAnimator = null
         spinnerSelected.value = false
 
 //        messageSent.value = false
