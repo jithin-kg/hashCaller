@@ -234,10 +234,11 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun onContactItemClicked(address: String, pos: Int, pno: String) {
-        viewmodel.update(address) // update count
+    private fun onContactItemClicked(id: String, pos: Int, pno: String) {
+        viewmodel.update(pno) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )
-        intent.putExtra(CONTACT_ADDRES, address)
+        Log.d(TAG, "onContactItemClicked: $pno")
+        intent.putExtra(CONTACT_ADDRES, pno)
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }

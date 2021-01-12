@@ -108,6 +108,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
             }else->{
             contactAddress = intent.getStringExtra(CONTACT_ADDRES)
+            Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
         }
 
@@ -220,9 +221,12 @@ class IndividualSMSActivity : AppCompatActivity(),
         viewModel.getblockedStatusOfThenumber(contactAddress)
         viewModel.blockedStatusOfThenumber?.observe(this, Observer {
             if(it!=null){
+                Log.d(TAG, "isThisNumBlocked: contact is $contact")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     isTheNumberBlocked.value = it.stream()
-                        .anyMatch { t -> t.contactAddress.equals(this.contactAddress) }
+                        .anyMatch { t -> t.contactAddress.equals(contact) }
+                    Log.d(TAG, "isThisNumBlocked: ")
+                    
                 }
 
             }
@@ -363,13 +367,13 @@ class IndividualSMSActivity : AppCompatActivity(),
 
                 if(it.size>1)
                 this.threadID = it[it.size-1].threadID
-                Log.d(TAG, "observeViewmodelSms: sms changed")
-                Log.d(TAG, "observeViewmodelSms: last item sms  ${it[it.size-1].msgString} ")
-                Log.d(TAG, "observeViewmodelSms: last item type  ${it[it.size-1].type} ")
+//                Log.d(TAG, "observeViewmodelSms: sms changed")
+//                Log.d(TAG, "observeViewmodelSms: last item sms  ${it[it.size-1].msgString} ")
+//                Log.d(TAG, "observeViewmodelSms: last item type  ${it[it.size-1].type} ")
 //                Log.d(TAG, "observeViewmodelSms: last item msgtype  ${it[it.size-1].msgType} ")
             }
         })
-//        isThisNumBlocked()
+        isThisNumBlocked()
 
     }
     private fun sendSmsToClient(sms: SMS?) {
@@ -556,7 +560,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             }
             R.id.btnBlock->{
                 Log.d(TAG, "onClick: ")
-                addToBlockList(contactAddress)
+                addToBlockList(contact!!)
             }
             R.id.imgExpand->{
                 Log.d(TAG, "onClick: img button")
@@ -644,9 +648,9 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun onNothingSelected(p0: AdapterView<*>?) {
 //        selectedRadioButton?.isChecked = true
     }
-    private fun addToBlockList(contactAddress: String) {
+    private fun addToBlockList(no: String) {
 
-        viewModel.blockThisAddress(contactAddress, this.threadID, this.spammerType, this.SPAMMER_CATEGORY )
+        viewModel.blockThisAddress(no, this.threadID, this.spammerType, this.SPAMMER_CATEGORY )
         Toast.makeText(this, "Number added to spamlist", Toast.LENGTH_LONG)
         bottomSheetDialog.hide()
         bottomSheetDialog.dismiss()

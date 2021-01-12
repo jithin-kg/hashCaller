@@ -35,7 +35,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                             private val onContactItemClickListener: (id:String)->Unit
 ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSIndividualDiffCallback()) {
-    private var smsList = emptyList<SMS>()
+    private var smsList:MutableList<SMS> = mutableListOf()
     private val VIEW_TYPE_MESSAGE_SENT = 2
     private val VIEW_TYPE_MESSAGE_RECEIVED = 1
     private val VIEW_TYPE_MESSAGE_OUTBOX  = 4
@@ -79,8 +79,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //    return smsList.size
     override fun getItemViewType(position: Int): Int {
 //        return super.getItemViewType(position)
-        Log.d(TAG, "getItemViewType: type${smsList[position].type}")
-        Log.d(TAG, "getItemViewType: msg type type${smsList[position].msgType}")
         if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
             //sent message 2
             return VIEW_TYPE_MESSAGE_SENT
@@ -121,7 +119,8 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
     }
 
     fun setList(it: List<SMS>?) {
-        smsList = it!!
+        smsList.clear()
+        smsList.addAll(it as MutableList<SMS>)
 //        Log.d(TAG, "setList: ${smsList.size}")
         this.submitList(it)
 //        if(smsList.isNotEmpty() && smsList.size < it!!.size){
