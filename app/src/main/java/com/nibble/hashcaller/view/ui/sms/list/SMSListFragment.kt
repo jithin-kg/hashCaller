@@ -71,7 +71,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
         initListeners()
         val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
 
-       observeLoadinState()
+
         observePermissionLiveData()
         return  viewMesages
     }
@@ -80,12 +80,11 @@ class SMSListFragment : Fragment(), View.OnClickListener {
             if(value == true){
                 this.viewMesages.btnSmsPermission.visibility = View.GONE
                 this.viewMesages.tvSMSPermission.visibility = View.GONE
-                this.viewMesages.pgBarSMSList.visibility = View.VISIBLE
+
                 observeSMSList()
             }else{
                 this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
                 this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
-                this.viewMesages.pgBarSMSList.visibility = View.GONE
 
                 if (this.smsListVIewModel!! != null  ) {
                     if(this.smsListVIewModel?.SMS != null)
@@ -105,19 +104,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
         }
         return true
     }
-    private fun observeLoadinState() {
-        SMSViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading->
-            if(isLoading){
-                pgBarSMSList.visibility = View.VISIBLE
-//                showSkeleton(true)
 
-            }else{
-//                showSkeleton(false)
-                pgBarSMSList.visibility = View.GONE
-            }
-            
-        })
-    }
 
 
 
@@ -192,6 +179,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
                 Log.d(TAG, "observeLive: data changed")
                 smsRecyclerAdapter?.setList(it)
+                this.viewMesages.pgBarsmslist.visibility = View.GONE
                 SMSListAdapter.searchQry = searchQry
                 this.smsLIst = it as MutableList<SMS>?
 
