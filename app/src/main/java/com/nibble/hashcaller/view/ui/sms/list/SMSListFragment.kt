@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.list
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.send.SendTestActivity
@@ -43,9 +45,10 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
     private lateinit var cntx:Context
+
     private var smsLIst:MutableList<SMS>? = null
     private lateinit var sView:SearchView
-
+    private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
@@ -54,6 +57,7 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
+
     }
 
     override fun onCreateView(
@@ -182,7 +186,6 @@ class SMSListFragment : Fragment(), View.OnClickListener {
                 this.viewMesages.pgBarsmslist.visibility = View.GONE
                 SMSListAdapter.searchQry = searchQry
                 this.smsLIst = it as MutableList<SMS>?
-
 
             }
         })

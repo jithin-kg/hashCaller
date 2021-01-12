@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import kotlinx.coroutines.launch
@@ -13,6 +14,8 @@ class SMSViewModel(
     val repository: SMSLocalRepository?
 ): ViewModel() {
     var smsLive:SMSLiveData = SMS
+    private lateinit var sharedPreferences: SharedPreferences
+
 
     companion object
     {
@@ -36,7 +39,9 @@ class SMSViewModel(
     }
 
 
+    fun getInfoForPhoneNumbers(){
 
+    }
     fun search(searchQuery: String?)  = viewModelScope.launch{
       val sms =  repository?.getSms(searchQuery)
         SMS.value = sms

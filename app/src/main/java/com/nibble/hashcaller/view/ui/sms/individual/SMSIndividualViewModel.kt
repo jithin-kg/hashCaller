@@ -154,15 +154,15 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
         spammerType: Int?,
         spammerCategory: Int
     )  = viewModelScope.launch {
-
+        async {
+            spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
+        }
        async {
            spamRepository?.report(ReportedUserDTo(contactAddress, " ",
                spammerType.toString(), spammerCategory.toString()
            ))
        }
-    async {
-        spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
-    }
+
 
         /**
          * Todo I have to handle non network condition, retry request when the

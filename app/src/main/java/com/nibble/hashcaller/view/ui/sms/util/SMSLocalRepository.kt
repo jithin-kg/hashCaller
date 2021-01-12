@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
-import android.R.id
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -13,14 +12,12 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
-import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.log
 
 
 /**
@@ -118,8 +115,8 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
     }
 
     //gets sms for SMSLiveData to show all sms
-    suspend fun fetchSMS(searchText:String?, isSpamNeeded:Boolean = false): MutableList<SMS> {
-       return fetch(null, isSpamNeeded)
+    suspend fun fetchSMS(searchText:String?, isrequestingFromSmsSpamList:Boolean = false): MutableList<SMS> {
+       return fetch(null, isrequestingFromSmsSpamList)
     }
 
     //this function fetches sms while searching
@@ -136,7 +133,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
         context.contentResolver.update(URI,cValues, "address='$addressString'",null)
 
     }
-    private suspend fun fetch(searchQuery: String?, spamNeeded: Boolean?): MutableList<SMS> {
+    private suspend fun fetch(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
         var data = ArrayList<SMS>()
     try {
 
@@ -264,7 +261,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 //                            listOfMessages.add(objSMS)
 //                    }
 
-                if(spamNeeded!!){
+                if(requestinfromSpamlistFragment!!){
                     //if we are requesting from fragment SMSIdentifiedAsSpamFragment
                     if(this.smsListHashMap.containsKey(objSMS.addressString)){
                         if(!deleteViewAdded){

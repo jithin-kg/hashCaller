@@ -40,7 +40,6 @@ class SMSLiveData(private val context: Context):
         val res =  repository.fetchSMS(null)
 
         //IMPORTANT from backgroudn thread we need to call postValue to set livedata
-        SMSViewModel.isLoading.postValue(false)
         return res
 
 //        val listOfMessages = mutableListOf<SMS>()

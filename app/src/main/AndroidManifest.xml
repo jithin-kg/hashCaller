@@ -243,7 +243,7 @@
         </receiver> <!-- from simple sms -->
         <receiver
             android:name=".utils.SmsStatusDeliveredReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
+           >
             <intent-filter >
                 <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
@@ -254,7 +254,7 @@
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter >
                 <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
-                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
