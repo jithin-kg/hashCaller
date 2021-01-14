@@ -2,13 +2,17 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.TranslateAnimation
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
@@ -22,7 +26,6 @@ import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
@@ -36,9 +39,11 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var messagesView:View
-    private lateinit var smsListVIewModel: SMSViewModel
+    private lateinit var viewmodel: SmsContainerViewModel
     private var smsListFragment:SMSListFragment? = null
     private var smsIdentifiedAsSpamFragment:SMSIdentifiedAsSpamFragment? = null
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,12 +59,54 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             messagesView =  inflater.inflate(R.layout.fragment_message_container, container, false)
             viewSms = messagesView
 
+            initViewModel()
+        if(checkContactPermission())
+        {
+            observeSMSList()
+        }
+        observePermissionLiveData()
 
-            return messagesView
+        return messagesView
 //        }else{
 //            return inflater.inflate(R.layout.request_permission, container, false)
 //        }
 
+    }
+
+    private fun observeSMSList() {
+
+    }
+
+    private fun observePermissionLiveData() {
+        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
+            if(!value){
+                observeSMSList()
+
+                if (this.viewmodel!! != null  ) {
+                    if(this.viewmodel?.SMS != null)
+                        if(this.viewmodel.SMS!!.hasObservers())
+                            this.viewmodel?.SMS?.removeObservers(this);
+                 }
+
+            }
+
+
+
+        })
+    }
+
+    private fun checkContactPermission(): Boolean {
+        val permissionContact =
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_SMS)
+        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+            return false
+        }
+        return true
+    }
+
+    private fun initViewModel() {
+        this.viewmodel = ViewModelProvider(this, SMSContainerInjectorUtil.provideViewModelFactory(context)).get(
+            SmsContainerViewModel::class.java)
     }
 
 
@@ -70,10 +117,24 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             tabLayoutMessages?.setupWithViewPager(viewPagerMessages)
 //            tabLayoutMessages.addOnTabSelectedListener(this)
             initListeners()
+        observerSmsLiveDataFromViewmodel()
+
 
 //        }
 
     }
+
+    /**
+     * gets the sms livedata and retrieve information from server
+     * for the numbers
+     */
+    private fun observerSmsLiveDataFromViewmodel() {
+        this.viewmodel.SMS.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observerSmsLiveDataFromViewmodel: ")
+            this.viewmodel.getInformationForTheseNumbers(it, activity?.packageName!!)
+        })
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if(savedInstanceState!= null){
@@ -219,5 +280,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        this.permissionGivenLiveData.value  = checkContactPermission()
+    }
 }

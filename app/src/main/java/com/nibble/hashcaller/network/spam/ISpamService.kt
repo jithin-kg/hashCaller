@@ -23,7 +23,14 @@ interface ISpamService {
 
     @POST("spam/getReleventSpamInfo")
     suspend fun syncSpamListOfOperator(
-        @Body token1: MutableList<OperatorInformationDTO>,
+        @Body ops: MutableList<OperatorInformationDTO>,
         @Header ("Authorization") token: String
     ):Response<NetWorkResponse>
+
+    @POST("multipleNumberSearch/getDetailsForNumbers")
+    suspend fun getInfoForThesePhoneNumbers(
+        @Body numbers: hashednums,
+        @Header ("Authorization") token: String
+    ):Response<NetWorkResponse>
+
 }

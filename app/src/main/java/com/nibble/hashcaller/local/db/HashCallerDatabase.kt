@@ -4,11 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nibble.hashcaller.local.db.blocklist.*
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
-import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
-import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
-import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
@@ -20,13 +17,15 @@ import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 @Database(entities = arrayOf(BlockedListPattern::class,
     ContactTable::class,
     SMSOutBox::class,
-    SpammerInfo::class
+    SpammerInfo::class,
+    SpammersInfoFromServer::class
 ), version = 1, exportSchema = false)
 abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun blocklistDAO() : BlockedLIstDao
         abstract fun contactInformationDAO() : IContactIformationDAO
         abstract fun smsDAO(): SmsOutboxListDAO
         abstract fun spamListDAO(): SpamListDAO
+        abstract fun spammerInfoFromServerDAO(): SpammerInfoFromServerDAO
 
     companion object{
 
