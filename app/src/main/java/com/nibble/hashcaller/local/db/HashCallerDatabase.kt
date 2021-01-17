@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.nibble.hashcaller.local.db.blocklist.*
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
+import com.nibble.hashcaller.local.db.sms.Converters
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 
@@ -18,14 +20,15 @@ import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
     ContactTable::class,
     SMSOutBox::class,
     SpammerInfo::class,
-    SpammersInfoFromServer::class
+    SMSSendersInfoFromServer::class
 ), version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun blocklistDAO() : BlockedLIstDao
         abstract fun contactInformationDAO() : IContactIformationDAO
         abstract fun smsDAO(): SmsOutboxListDAO
         abstract fun spamListDAO(): SpamListDAO
-        abstract fun spammerInfoFromServerDAO(): SpammerInfoFromServerDAO
+        abstract fun spammerInfoFromServerDAO(): SMSSendersInfoFromServerDAO
 
     companion object{
 

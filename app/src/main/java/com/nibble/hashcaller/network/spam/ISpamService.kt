@@ -2,6 +2,7 @@ package com.nibble.hashcaller.network.spam
 
 import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.user.IuserService
+import com.nibble.hashcaller.view.ui.sms.work.UnknownSMSsendersInfoResponse
 import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 import retrofit2.Response
 import retrofit2.http.Body
@@ -31,6 +32,6 @@ interface ISpamService {
     suspend fun getInfoForThesePhoneNumbers(
         @Body numbers: hashednums,
         @Header ("Authorization") token: String
-    ):Response<NetWorkResponse>
+    ):Response<UnknownSMSsendersInfoResponse>
 
 }

@@ -8,7 +8,7 @@ import androidx.annotation.Keep
  */
 @Keep
 data class hashednums(
-    var hashedPhoneNum: MutableList<String> = mutableListOf()
+    var hashedPhoneNum: List<String> = mutableListOf()
 ) {
 
 }
