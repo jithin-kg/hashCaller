@@ -25,5 +25,5 @@ interface SMSSendersInfoFromServerDAO {
     suspend fun getAll(): List<SMSSendersInfoFromServer>
 
     @Query("SELECT * FROM sms_senders_info_from_server WHERE contact_address=:contactAddress")
-    suspend fun get(contactAddress: String) : SMSSendersInfoFromServer
+    suspend fun get(contactAddress: String) : SMSSendersInfoFromServer?
 }

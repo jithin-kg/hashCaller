@@ -24,14 +24,20 @@ import java.util.*
  * this is the table schema
  *
  */
+
+//TODO save the hashof the five digit, and also in the carier info api use the five digits information
+
 @Entity(tableName = "sms_senders_info_from_server",indices = [Index(value =["contact_address"], unique = true)])
-data class SMSSendersInfoFromServer(
+data class SMSSendersInfoFromServer (
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name = "contact_address") val contactAddress: String?,
     @ColumnInfo(name = "type") val spammeerType: Int?,
     @ColumnInfo(name = "name") val title:String,
     @ColumnInfo(name = "informationReceivedDate") val informationReceivedDate:Date,
-    @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = -1
+    @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = -1,
+    @ColumnInfo(name = "firstFiveDigitsOfNum") var firstFiveDigits: String // we need to know the first five digits
+                                                            //to get the carrier info of a number
+
 
 ) {
 }

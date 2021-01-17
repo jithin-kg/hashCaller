@@ -2,8 +2,10 @@ package com.nibble.hashcaller.view.ui.sms.util
 
 import android.text.SpannableStringBuilder
 
-class SMS {
+class SMS() {
+    var photoURI: String? = null
     var deleteViewPresent:Boolean = false
+    var name:String? = null
     var expanded:Boolean = true
     var threadID: Long = -1L
     var isSpam: Boolean = false

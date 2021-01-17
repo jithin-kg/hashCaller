@@ -12,6 +12,8 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
@@ -188,9 +190,43 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                     val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
 //                    objSMS.address = num
+
                     objSMS.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
                     val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
+//                    val fromAddress =cursor.getColumnIndexOrThrow("from_address")
+                    //todo if the same number in server have lesser spam count than this value update server count
+                        //else vice versa
+
+//                    val spamReport = cursor.getColumnIndexOrThrow("spam_report") //her I get spam count
+//                    val res1= cursor.getColumnName(spamReport)
+//                    val res2 = cursor.getLong(spamReport)
+//                   val count2 =  cursor.getLong(spamReport)
+
+                    val protocol = cursor.getColumnIndexOrThrow("protocol")
+                    val read = cursor.getColumnIndexOrThrow("read")
+                    val resstatus = cursor.getInt(read)
+                    val data_sent = cursor.getColumnIndexOrThrow("date_sent")
+                    val status = cursor.getColumnIndexOrThrow("status")
+                    val service_center = cursor.getColumnIndexOrThrow("service_center")
+                    val servicecenterString = cursor.getString(service_center)
+
+                    val error_code = cursor.getColumnIndexOrThrow("error_code")
+                    val seen = cursor.getColumnIndexOrThrow("seen")
+                    val seenString = cursor.getString(seen)
+
+//                    val deletable = cursor.getColumnIndexOrThrow("deletable")
+//                    val sim_slot = cursor.getColumnIndexOrThrow("sim_slot")
+//                    val callback_number = cursor.getColumnIndexOrThrow("callback_number")
+//                    val teleservice_id = cursor.getColumnIndexOrThrow("teleservice_id")
+//                    val creator = cursor.getString(cursor.getColumnIndexOrThrow("creator"))
+//                    val person = cursor.getString(cursor.getColumnIndexOrThrow("person"))
+//                    The ID of the sender of the conversation, if present.
+//
+//                    Type: INTEGER (reference to item in content://contacts/people)
+//
+//                    Constant Value: "person"
+
 
                     var spannableStringBuilder: SpannableStringBuilder?
 
@@ -292,12 +328,76 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
         }
 //        data = removeSpamSmS(data)
-
+        //todo change the two function to work parellaly for increased perfomnce
         setSMSReadStatus(data)
+        setNameIfExistInContactContentProvider(data)
     }catch (e:java.lang.Exception){
         Log.d(TAG, "fetch: exception $e")
     }
         return data
+    }
+
+    private fun setNameIfExistInContactContentProvider(data: ArrayList<SMS>) {
+       for (sms in data){
+//           setContactName(sms)
+         val name =   getConactInfoForNumber(sms.addressString!!)
+           sms.name = name
+       }
+
+    }
+
+    private fun setContactName(sms: SMS) {
+        var c: Contact = Contact(1L, "", "sample phone num", "", "")
+        var cursor:Cursor? = null
+        try {
+            val phoneNumber = sms.addressString
+            var phoneNumField = ContactsContract.CommonDataKinds.Phone.NUMBER
+            cursor = context.contentResolver.query(
+                IndividualContactLiveData.URI,
+                null,
+                "'$phoneNumField' ='%${phoneNumber}%'",
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME
+            )
+            if(cursor != null && cursor.moveToFirst()){
+                do{
+
+                    //                val id = cursor.getLong(0)
+                    //                val name = cursor.getString(1)
+                    val id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.NAME_RAW_CONTACT_ID))
+                    Log.d(TAG, "id is $id ")
+                    val name =
+                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                    val photoURI =  cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
+                    val times_used = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+
+
+                    val phoneNo =
+                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+                    Log.d(TAG, "phone num is $phoneNo")
+                    Log.d(TAG, "name is  $name")
+                    if(name!=null){
+
+                        c = Contact(id, name, photoURI, "photoThumnail", photoURI)
+
+                    }
+
+
+
+                }while (cursor.moveToNext())
+                sms.name = c.name
+                sms.photoURI = c.photoURI
+
+            }
+
+        }catch (e:Exception){
+            Log.d(TAG, "setContactName: exception $e")
+        }finally {
+            cursor?.close()
+
+
+        }
     }
 
 

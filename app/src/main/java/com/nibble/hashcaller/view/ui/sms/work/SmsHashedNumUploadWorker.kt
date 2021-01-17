@@ -4,8 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.nibble.hashcaller.Secrets
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
@@ -31,19 +33,39 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
     override suspend fun doWork(): Result {
         try {
+            Log.d(TAG, "doWork: ")
 
-            val smsrepoLocal =
-                SMSLocalRepository(
-                    context,
-                    spamListDAO
-                )
-            val allsmswithoutspam = smsrepoLocal.fetchSMS(null)
-            val unkownsmsnumberslist = smsTracker.getUnknownNumbersList(allsmswithoutspam, context.packageName)
-            if(!unkownsmsnumberslist.isNullOrEmpty()){
-                val response =  repository.uploadNumbersToGetInfo(hashednums(unkownsmsnumberslist))
-                Log.d(TAG, "doWork: response is $response")
-                Log.d(TAG, "doWork: response body ${response.body()}")
+            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO) // to get content provided sms
+            val allsmsincontentProvider = smsrepoLocalRepository.fetchSMS(null)
+            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spammerInfoFromServerDAO() }
+            val senderListTobeSendToServer: MutableList<String> = mutableListOf()
+
+            for (sms in allsmsincontentProvider){
+                val encodedAndHashedPhoneNumber = Secrets().managecipher(context?.packageName!!, sms.addressString.toString()) // encoding the
+
+               val smssenderInfo=  smssendersInfoDAO.get(encodedAndHashedPhoneNumber)
+                if(smssenderInfo == null){
+
+                    senderListTobeSendToServer.add(encodedAndHashedPhoneNumber)
+                    //save the details once and update when the result comes from the server
+//                    val rowSmssenderInfo = SMSSendersInfoFromServer(null,
+//                        encodedAndHashedPhoneNumber, -1,
+//                        sms.addressString.toString(), )
+                }
             }
+
+
+//            val unkownsmsnumberslist = smsTracker.getUnknownNumbersList(allsmswithoutspam, context.packageName)
+//            if(!unkownsmsnumberslist.isNullOrEmpty() ){
+//                if(unkownsmsnumberslist.isNotEmpty()){
+//                    val response =  repository.uploadNumbersToGetInfo(hashednums(unkownsmsnumberslist))
+//                    Log.d(TAG, "doWork: response is $response")
+//                    Log.d(TAG, "doWork: response body ${response.body()}")
+//                }
+//
+//            }else{
+//                Log.d(TAG, "doWork: unkownsmsnumberslist is empty")
+//            }
 
         }catch (e: HttpException){
             return Result.retry()

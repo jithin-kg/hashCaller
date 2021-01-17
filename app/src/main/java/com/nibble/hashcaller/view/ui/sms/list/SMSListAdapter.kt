@@ -138,8 +138,12 @@ class SMSListAdapter(private val context: Context,
 
 //            highlightSearhcField(sms) // to highlight the search result
 //            if(searchQry == null){
-                name.text = sms.address
-                view.tvSMSMPeek.text = sms.msg
+                if(!sms.name.isNullOrEmpty())
+                    name.text = sms.name
+                else
+                    name.text = sms.address
+
+            view.tvSMSMPeek.text = sms.msg
                 view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
                 if(sms.unReadSMSCount == 0 ){
                     view.tvUnreadSMSCount.visibility = View.GONE

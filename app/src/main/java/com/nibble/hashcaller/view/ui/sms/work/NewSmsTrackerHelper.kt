@@ -54,43 +54,21 @@ class NewSmsTrackerHelper(
             }
 
         }
-        val numberToBeUploadedOfSize10 = smWithoutSendersInformation.slice(0..9)
+        var numberToBeUploadedOfSize10:MutableList<String> =  mutableListOf()
+        if(!smWithoutSendersInformation.isNullOrEmpty())
+            if(smWithoutSendersInformation.size > 20)
+             numberToBeUploadedOfSize10.addAll(smWithoutSendersInformation.slice(0..9))
+            else
+                numberToBeUploadedOfSize10.addAll(smWithoutSendersInformation)
 
-
-//        var  hashedPhoneNumbers:MutableList<String> = mutableListOf()
-//        var phoneNumbersAvailableInlocalDB:MutableList<String> = mutableListOf()
-//
-//
-//        if (smslist != null) {
-//            for (sms in smslist){
-//                val secret = sms.addressString?.let { Secrets().managecipher(packageName, it) }
-//                val hashedNum = secret?.let { hashPhoneNum(it) }
-//                hashedNum?.let { hashedPhoneNumbers.add(it) }
-//            }
-//        }
-//        for (spammer in smsSendersfromLocalDb){
-//            if(hashedPhoneNumbers.contains(spammer.contactAddress)){
-//                spammer.contactAddress?.let { phoneNumbersAvailableInlocalDB.add(it) }
-//            }
-//        }
-//        var numberToBeUploaded =  hashedPhoneNumbers - phoneNumbersAvailableInlocalDB
-        //because sending more than 10 items will slow down server and increases load
-
-//        val numberToBeUploadedOfSize10 = numberToBeUploaded.slice(0..9)
-
-//        val obj = hashednums(numberToBeUploadedOfSize10)//object for transfering or dto
-//        obj.hashedPhoneNum.addAll(numberToBeUploadedOfSize10)
-
-//        if(!numberToBeUploadedOfSize10.isNullOrEmpty()){
-//            //schedule work
-//            val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
-//            WorkManager.getInstance().enqueue(oneTimeWorkRequest)
-//
-//        }
         return numberToBeUploadedOfSize10
 
     }
 
+    /**
+     * @param informationReceivedDate : date at which the data is inserted in db
+     * @param limit : number of day in which a lookup for the current number should perform
+     */
     private fun isCurrentDateAndPrevDateisGreaterThanLimit(
         informationReceivedDate: Date,
         limit: Int
