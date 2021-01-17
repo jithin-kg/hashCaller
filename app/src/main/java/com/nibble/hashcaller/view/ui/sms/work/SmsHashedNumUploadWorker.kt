@@ -40,7 +40,6 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
             val allsmswithoutspam = smsrepoLocal.fetchSMS(null)
             val unkownsmsnumberslist = smsTracker.getUnknownNumbersList(allsmswithoutspam, context.packageName)
             if(!unkownsmsnumberslist.isNullOrEmpty()){
-
                 val response =  repository.uploadNumbersToGetInfo(hashednums(unkownsmsnumberslist))
                 Log.d(TAG, "doWork: response is $response")
                 Log.d(TAG, "doWork: response body ${response.body()}")

@@ -19,6 +19,7 @@ class SmsContainerViewModel(
     val repository: SMScontainerRepository?,
     val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
 ) :ViewModel(){
+
     fun getInformationForTheseNumbers(
         smslist: List<SMS>?,
         packageName: String
@@ -45,18 +46,22 @@ class SmsContainerViewModel(
         }
        var numberToBeUploaded =  hashedPhoneNumbers - phoneNumbersAvailableInlocalDB
         //because sending more than 10 items will slow down server and increases load
+        //and increases response time
+        if(!numberToBeUploaded.isNullOrEmpty())
+            if(numberToBeUploaded.size > 10){
+                val numberToBeUploadedOfSize10 = numberToBeUploaded.slice(0..9)
 
-        val numberToBeUploadedOfSize10 = numberToBeUploaded.slice(0..9)
-
-      val obj = hashednums(numberToBeUploadedOfSize10)//object for transfering or dto
+                val obj = hashednums(numberToBeUploadedOfSize10)//object for transfering or dto
 //        obj.hashedPhoneNum.addAll(numberToBeUploadedOfSize10)
+                if(!numberToBeUploadedOfSize10.isNullOrEmpty()){
+                    //schedule work
+                    Log.d(TAG, "getInformationForTheseNumbers: ")
+                    val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
+                    WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
-        if(!numberToBeUploadedOfSize10.isNullOrEmpty()){
-            //schedule work
-            val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
-            WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+                }
+            }
 
-        }
 
 //        repository.uploadNumbersToGetInfo(obj)
     }

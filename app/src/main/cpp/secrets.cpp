@@ -51,7 +51,7 @@ Java_com_nibble_hashcaller_Secrets_managecipher(JNIEnv *pEnv, jobject pThis, jst
     Crypto c;
 const char *keyP = pEnv->GetStringUTFChars(key, NULL);
 //    std::string output1 = sha512(keyP);
-   std:: string output1 =  c.doSomething(keyP);
+   std:: string output1 =  c.doSomething(keyP);//this is where I call my secret function
 //   sha512("jf");
 
     const char *cString = output1.c_str();

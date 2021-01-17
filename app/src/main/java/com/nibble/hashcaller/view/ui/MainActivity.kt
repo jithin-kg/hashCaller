@@ -160,7 +160,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun mangeCipherInSharedPref() {
         if(!isCipherInSharedPreferences()){
-            KeyManager.setCipherInSharedPreferences(this)
+//            KeyManager.setCipherInSharedPreferences(this)
         }
     }
 

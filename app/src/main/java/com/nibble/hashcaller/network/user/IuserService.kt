@@ -9,7 +9,8 @@ import retrofit2.http.POST
 
 interface IuserService {
     companion object{
-        public const val BASE_URL: String = "http://api.hashcaller.com:8000/"
+        public const val BASE_URL: String = "http://192.168.43.148:8000/"
+//        public const val BASE_URL: String = "http://api.hashcaller.com:8000/"
 //        public const val BASE_URL: String = "https://hashcalllerapi001.herokuapp.com/"
     }
 
