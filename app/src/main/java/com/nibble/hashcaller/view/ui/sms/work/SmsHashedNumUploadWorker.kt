@@ -34,25 +34,30 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     override suspend fun doWork(): Result {
         try {
             Log.d(TAG, "doWork: ")
-
-            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO) // to get content provided sms
-            val allsmsincontentProvider = smsrepoLocalRepository.fetchSMS(null)
-            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spammerInfoFromServerDAO() }
-            val senderListTobeSendToServer: MutableList<String> = mutableListOf()
-
-            for (sms in allsmsincontentProvider){
-                val encodedAndHashedPhoneNumber = Secrets().managecipher(context?.packageName!!, sms.addressString.toString()) // encoding the
-
-               val smssenderInfo=  smssendersInfoDAO.get(encodedAndHashedPhoneNumber)
-                if(smssenderInfo == null){
-
-                    senderListTobeSendToServer.add(encodedAndHashedPhoneNumber)
-                    //save the details once and update when the result comes from the server
-//                    val rowSmssenderInfo = SMSSendersInfoFromServer(null,
-//                        encodedAndHashedPhoneNumber, -1,
-//                        sms.addressString.toString(), )
-                }
-            }
+            //working on
+//            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO) // to get content provided sms
+//            val allsmsincontentProvider = smsrepoLocalRepository.fetchSMS(null)
+//            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spammerInfoFromServerDAO() }
+//            val smsContainerRepository = SMScontainerRepository(context, smssendersInfoDAO )
+//            val senderListTobeSendToServer: MutableList<String> = mutableListOf()
+//
+//            for (sms in allsmsincontentProvider){
+//                val encodedAndHashedPhoneNumber = Secrets().managecipher(context?.packageName!!, sms.addressString.toString()) // encoding the
+//
+//               val smssenderInfo=  smssendersInfoDAO.get(encodedAndHashedPhoneNumber)
+//                if(smssenderInfo == null){
+//
+//                    senderListTobeSendToServer.add(encodedAndHashedPhoneNumber)
+//
+//                }else{
+////                    if(sms.currentDate)
+//                    //Todo compare dates
+//                }
+//
+//
+//            }
+//
+//            smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderListTobeSendToServer))
 
 
 //            val unkownsmsnumberslist = smsTracker.getUnknownNumbersList(allsmswithoutspam, context.packageName)

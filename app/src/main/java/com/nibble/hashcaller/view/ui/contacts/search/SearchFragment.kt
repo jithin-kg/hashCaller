@@ -127,6 +127,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 //        this.viewSearch.edtTextPhoneSearch.setText(newText)
         //TODO move this to view model,this is a computation running on ui thread
         val secret = Secrets().managecipher(activity?.packageName!!, newText!!)//encoding the number with my algorithm
+        Log.d(TAG, "onQueryTextChange: secret is ${secret}")
         this.searchViewmodel.search(secret!!, key)
 
         Log.d(TAG, "got secret $secret")

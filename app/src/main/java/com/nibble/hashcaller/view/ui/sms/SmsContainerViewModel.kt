@@ -26,7 +26,7 @@ class SmsContainerViewModel(
         packageName: String
     ) = viewModelScope.launch {
 
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(NewSMSSaveToLocalDbWorker::class.java).build()
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
 //        Log.d(TAG, "getInformationForTheseNumbers: ")

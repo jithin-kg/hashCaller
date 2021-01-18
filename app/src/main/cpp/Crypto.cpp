@@ -70,8 +70,10 @@ public:
 
     std::basic_string<char, std::char_traits<char>, std::allocator<char>> doSomething(const char *string) {
 
-        std::string hash = sha512(string);
-        return strToBinary(hash);
+//        std::string hash = sha512(string);
+//        return strToBinary(hash);
+            std::string strtobin = strToBinary(string);
+            return sha512(strtobin);
     }
 
 };
