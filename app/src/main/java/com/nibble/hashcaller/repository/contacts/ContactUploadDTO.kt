@@ -16,7 +16,9 @@ import androidx.annotation.Keep
 @Keep
 data class ContactUploadDTO(
   var name:String="",
-   var phoneNumber:String="") {
+   var phoneNumber:String="",
+    var firstNDigits:String = ""
+  ) {
 
 
 }

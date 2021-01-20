@@ -2,7 +2,7 @@ package com.nibble.hashcaller.network.contact
 
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.IuserService
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -30,11 +30,17 @@ interface IContactsService  {
         const val BASE_URL: String = IuserService.BASE_URL;
     }
 
-@POST("contacts/uploadcontacts")
-suspend fun uploadContacts(
-    @Body contacts: List<ContactUploadDTO>,
-    @Header("Authorization") token:String
-):Response<SerachRes>
+//@POST("contacts/uploadcontacts")
+//suspend fun uploadContacts(
+//    @Body contacts: ContactsSyncDTO,
+//    @Header("Authorization") token:String
+//):Response<SerachRes>
+
+    @POST("contacts/uploadcontacts")
+    suspend fun uploadContacts(
+        @Body contacts: ContactsSyncDTO,
+        @Header("Authorization") token:String
+    ):Response<SerachRes>
 
 //    @GET("getContacts")
 //    fun getContacts(token: String?): Call<JsonObject?>?

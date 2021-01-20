@@ -1,6 +1,11 @@
 import android.content.Context
 import android.provider.ContactsContract
+import android.telephony.TelephonyManager
+import androidx.core.content.ContextCompat.getSystemService
+import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.stubs.Contact
+import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -22,6 +27,8 @@ class ContactRepository(context: Context) {
             null, null, null,
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
         )
+ 
+
         if (cursor?.count ?: 0 > 0) {
             while (cursor!!.moveToNext()) {
                 var contact = ContactUploadDTO()
@@ -31,13 +38,27 @@ class ContactRepository(context: Context) {
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 phoneNo = phoneNo.trim { it <= ' ' }.replace(" ", "")
                 phoneNo = phoneNo.replace("-", "")
+                phoneNo = phoneNo.replace("(","")
+                phoneNo = phoneNo.replace(")","")
+
                 val photoUri =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
                 val duplicate =
                     AtomicBoolean(false)
 
                 if (lastNumber != phoneNo) {
+//                    contact.name = name
+//                    contact.phoneNumber = phoneNo
+                    //add first 8 number digits for getting  geographical information about a number in api
+                    if(phoneNo.length>7){
+                        contact.firstNDigits = phoneNo
+                    }else{
+                        contact.firstNDigits = phoneNo
+                    }
                     contact.name = name
+
+                    //encode and hash phone number
+                    phoneNo = Secrets().managecipher(context.packageName, phoneNo)
                     contact.phoneNumber = phoneNo
                     contacts.add(contact)
                     lastNumber = phoneNo
@@ -45,7 +66,15 @@ class ContactRepository(context: Context) {
             }
             cursor.close()
         }
-        return contacts
+
+        return sortAndSet(contacts)
+    }
+
+    private fun sortAndSet(contacts:  MutableList<ContactUploadDTO>): ArrayList<ContactUploadDTO> {
+        val s: LinkedHashSet<ContactUploadDTO> = LinkedHashSet(contacts)
+        val data = ArrayList(s)
+
+        return data
     }
 
 

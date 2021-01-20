@@ -170,6 +170,7 @@ dependencies {
 
     //https://github.com/klinker41/android-smsmms
     implementation 'com.klinkerapps:android-smsmms:5.2.6'
+    implementation "io.michaelrocks:libphonenumber-android:8.12.16"
 }
 repositories {
     mavenCentral()

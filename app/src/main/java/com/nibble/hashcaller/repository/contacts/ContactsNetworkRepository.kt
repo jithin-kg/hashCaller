@@ -36,7 +36,9 @@ class ContactsNetworkRepository (private val context: Context){
 
     @SuppressLint("LongLogTag")
     suspend fun
-            uploadContacts(contacts:MutableList<ContactUploadDTO>): Response<SerachRes>? {
+            uploadContacts(
+        contacts: ContactsSyncDTO
+    ): Response<SerachRes>? {
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 

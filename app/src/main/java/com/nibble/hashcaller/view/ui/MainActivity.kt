@@ -13,8 +13,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.telephony.SubscriptionInfo
-import android.telephony.SubscriptionManager
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -25,8 +23,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.viewpager.widget.ViewPager
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,14 +40,14 @@ import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
-import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 import com.nibble.hashcaller.view.utils.spam.SpamSyncManager
+import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 /**
  * This is a extension function which set the default fragment
@@ -249,51 +248,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        variableData2 = savedInstanceState.getString("AStringKey2")
     }
     private fun syncSpamList() {
-        val list = getSimOperator()
+        val list = CountrycodeHelper(this).getCountrycode()
         val spamSyncRepository = SpamSyncRepository()
-        SpamSyncManager.sync(list, spamSyncRepository, this)
+//        SpamSyncManager.sync(list, spamSyncRepository, this)
 
     }
 
-    private fun getSimOperator(): MutableList<OperatorInformationDTO> {
-        val subscriptionInfoList = mutableListOf<OperatorInformationDTO>()
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.READ_PHONE_STATE
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
-                val subscriptionInfos:List<SubscriptionInfo> =subscriptionManager.activeSubscriptionInfoList
 
-
-
-                SubscriptionManager.ACTION_REFRESH_SUBSCRIPTION_PLANS
-                for (element in subscriptionInfos) {
-                    val lsuSubscriptionInfo: SubscriptionInfo = element
-                    val operatorDisplayName = lsuSubscriptionInfo.displayName
-                    Log.d(TAG, "getNumber " + lsuSubscriptionInfo.getNumber())
-//                    val tel =  getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager;
-//                    val operator = tel.networkOperator
-//                    val simOperator = tel.simOperator
-
-                    Log.d(
-                        TAG,
-                        "network display : $operatorDisplayName"
-                    )
-
-                    Log.d(TAG,
-                        "getCountryIso   ${lsuSubscriptionInfo.countryIso}"
-                    )
-                    subscriptionInfoList.add(OperatorInformationDTO(operatorDisplayName.toString(), lsuSubscriptionInfo.countryIso ))
-                }
-
-            }else{
-                Log.d(TAG, "permission not granted: ")
-            }
-
-        return subscriptionInfoList
-
-    }
 
     /**
      * This function set the default fragment status of each fragment
@@ -472,11 +433,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         /**
          * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
          */
-//        val intent = intent
-//        intent.getByteArrayExtra("key")
-//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-//            .build()
-//        WorkManager.getInstance().enqueue(request)
+        val intent = intent
+        intent.getByteArrayExtra("key")
+        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+            .build()
+        WorkManager.getInstance().enqueue(request)
 
         ft.commit()
     }

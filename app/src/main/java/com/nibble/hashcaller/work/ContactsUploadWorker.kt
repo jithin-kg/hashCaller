@@ -13,6 +13,8 @@ import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
+import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import retrofit2.HttpException
 
 /**
@@ -30,8 +32,22 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     override suspend fun doWork(): Result {
         try {
 
+            Log.d(TAG, "doWork: ")
+//                uploadContactsToServer()
+            val contactRepository = ContactRepository(context)
+            contacts.addAll(contactRepository.fetchContacts())
+            val countryCodeHelper = CountrycodeHelper(context)
+            val countryCode =   countryCodeHelper.getCountrycode()
+            val countryISO = countryCodeHelper.getCountryISO()
 
-                uploadContactsToServer()
+            val contactSyncDto = ContactsSyncDTO(contacts, countryCode.toString(), countryISO)
+            val contactsNetworkRepository = ContactsNetworkRepository(context)
+            val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+            Log.d(TAG, "result:$result")
+            Log.d(TAG, "body:${result?.body()}")
+            val cntcts = result?.body()?.cntcts
+            //save the contacts in the local db
+            saveContactsToLocalDB(cntcts)
 
         }catch (e: HttpException){
             return Result.retry()
@@ -41,15 +57,15 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     }
 
     private suspend fun uploadContactsToServer() {
-        val contactRepository = ContactRepository(context)
-        contacts.addAll(contactRepository.fetchContacts())
-        val contactsNetworkRepository = ContactsNetworkRepository(context)
-        val result = contactsNetworkRepository.uploadContacts(contacts)
-        Log.d(TAG, "result:$result")
-        Log.d(TAG, "body:${result?.body()}")
-        val cntcts = result?.body()?.cntcts
-        //save the contacts in the local db
-        saveContactsToLocalDB(cntcts)
+//        val contactRepository = ContactRepository(context)
+//        contacts.addAll(contactRepository.fetchContacts())
+//        val contactsNetworkRepository = ContactsNetworkRepository(context)
+//        val result = contactsNetworkRepository.uploadContacts(contacts)
+//        Log.d(TAG, "result:$result")
+//        Log.d(TAG, "body:${result?.body()}")
+//        val cntcts = result?.body()?.cntcts
+//        //save the contacts in the local db
+//        saveContactsToLocalDB(cntcts)
 
 
 
