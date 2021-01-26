@@ -40,7 +40,7 @@ interface IContactsService  {
     suspend fun uploadContacts(
         @Body contacts: ContactsSyncDTO,
         @Header("Authorization") token:String
-    ):Response<SerachRes>
+    ):Response<ContactsUploadResponse>
 
 //    @GET("getContacts")
 //    fun getContacts(token: String?): Call<JsonObject?>?

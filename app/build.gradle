@@ -5,7 +5,9 @@ apply plugin: 'kotlin-android-extensions' // synthetic binding
 apply plugin: 'com.google.gms.google-services' // firebase
 
 apply plugin: 'com.klaxit.hiddensecrets'
+
 android {
+
 
 
     /**This 'compileOptions' is added by me for build time error
@@ -42,6 +44,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//   https://stackoverflow.com/questions/27186726/java-lang-unsatisfiedlinkerror-dalvik-system-pathclassloader/46051246
+        ndk{
+            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+        }
     }
 
     buildTypes {

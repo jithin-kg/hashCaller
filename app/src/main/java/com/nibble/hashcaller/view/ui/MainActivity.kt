@@ -151,10 +151,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        /**
 //         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
 //         */
-//        val request =
-//            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-//                .build()
-//        WorkManager.getInstance().enqueue(request)
+        val request =
+            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                .build()
+        WorkManager.getInstance().enqueue(request)
     }
 
     private fun mangeCipherInSharedPref() {

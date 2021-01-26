@@ -6,6 +6,7 @@ import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.network.contact.ContactsUploadResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EncryptorObject
@@ -38,7 +39,7 @@ class ContactsNetworkRepository (private val context: Context){
     suspend fun
             uploadContacts(
         contacts: ContactsSyncDTO
-    ): Response<SerachRes>? {
+    ): Response<ContactsUploadResponse>? {
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 

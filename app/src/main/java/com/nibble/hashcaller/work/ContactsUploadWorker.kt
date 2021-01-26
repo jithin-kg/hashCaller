@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
-import com.nibble.hashcaller.network.search.model.Cntct
+import com.nibble.hashcaller.network.contact.ContactUploadResponseItem
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
@@ -37,8 +37,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             val contactRepository = ContactRepository(context)
             contacts.addAll(contactRepository.fetchContacts())
             val countryCodeHelper = CountrycodeHelper(context)
-            val countryCode =   countryCodeHelper.getCountrycode()
-            val countryISO = countryCodeHelper.getCountryISO()
+//            val countryCode =   countryCodeHelper.getCountrycode()
+            val countryCode =   "91" //for emulator country code should be 91
+//            val countryISO = countryCodeHelper.getCountryISO()
+            val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
 
             val contactSyncDto = ContactsSyncDTO(contacts, countryCode.toString(), countryISO)
             val contactsNetworkRepository = ContactsNetworkRepository(context)
@@ -71,17 +73,18 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     }
 
-    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<Cntct>?) {
+    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<ContactUploadResponseItem>?) {
 
         var cts:MutableList<ContactTable>? = mutableListOf();
 
         if (cntactsFromServer != null) {
             for(item in cntactsFromServer){
-                cts?.add(ContactTable(null, item.phoneNumber, item.name,
-                    item.carrier,item.location, item.country, item.spammerStatus.spamCount))
+                cts?.add(ContactTable(null, item.firstNDigits, "sample",
+                    item.carrier,item.location, "india", item.spamCount))
             }
         }
-
+        Log.d(TAG, "saveContactsToLocalDB: inserting ${cts}")
+        Log.d(TAG, "saveContactsToLocalDB: inserting size is  ${cts!!.size}")
         contactLocalSyncRepository.insertContacts(cts!!)
     }
 
