@@ -14,6 +14,7 @@ import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.view.utils.hashPhoneNum
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.security.KeyFactory
@@ -68,7 +69,8 @@ class SearchViewModel(
 //                 val encPhone = encryptPhoneNum("hi", key)
 //                 Log.d(TAG, "search: enc hi is $encPhone")
 //                 val encPhone = encryptPhoneNum(hashedPhone, key)
-                 hashedPhoneNum.value = Secrets().managecipher(packageName, phoneNumber!!)//encoding the number with my algorithm
+                 val num = formatPhoneNumber(phoneNumber)
+                 hashedPhoneNum.value = Secrets().managecipher(packageName, num!!)//encoding the number with my algorithm
 
                  res = searchNetworkRepository.search(hashedPhoneNum.value!!)
                  val result = res?.body()?.cntcts?.get(0)

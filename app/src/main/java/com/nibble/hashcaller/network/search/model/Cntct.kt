@@ -10,8 +10,8 @@ data class Cntct(
     @SerializedName("phoneNumber")
     val phoneNumber: String,
 
-    @SerializedName("spammerStatus")
-    val spammerStatus : SpammerStatus,
+    @SerializedName("spamCount")
+    val spamCount : Int,
     @SerializedName("carrier")
     val carrier: String,
     @SerializedName("location")

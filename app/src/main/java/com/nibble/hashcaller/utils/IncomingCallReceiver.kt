@@ -9,15 +9,20 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.Observer
+import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
@@ -41,7 +46,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 //            context.startActivity(i)
             Log.e(
-                LOG_TAG,
+                TAG,
                 String.format(
                     "IncomingCallReceiver called with incorrect intent action: %s",
                     intent.action
@@ -49,11 +54,11 @@ class IncomingCallReceiver : BroadcastReceiver(){
             )
             return
         }
-        Log.d(LOG_TAG, "call recieved")
+        Log.d(TAG, "call recieved")
 
         val newState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
         Log.d(
-            LOG_TAG,
+            TAG,
             String.format("Call state changed to %s", newState)
         )
         if (TelephonyManager.EXTRA_STATE_RINGING == newState) {
@@ -95,13 +100,13 @@ class IncomingCallReceiver : BroadcastReceiver(){
 
             if (phoneNumber == null) {
                 Log.d(
-                    LOG_TAG,
+                    TAG,
                     "Ignoring call; for some reason every state change is doubled"
                 )
                 return
             }
             Log.i(
-                LOG_TAG,
+                TAG,
                 String.format("Incoming call from %s", phoneNumber)
             )
             blockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
@@ -119,41 +124,12 @@ class IncomingCallReceiver : BroadcastReceiver(){
             val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
             val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
             val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
-            val i = Intent(context, ActivityIncommingCallView::class.java)
+
 //            var obj = cntcts[0]
 //            i.putExtra("SerachRes" ,obj)
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(i)
 
-//            viewModel.search(phoneNumber!!).observeForever( androidx.lifecycle.Observer {
-//                it.let {
-//                        resource ->
-//                    when(resource.status){
-//                        Status.SUCCESS->{
-//                            Log.d(TAG, " mhan: $it")
-//                            resource.data?.let {
-//                                    searchResult->
-//                                Log.d(TAG, "getCallerInfo: $searchResult")
-//                                Log.d(TAG, "getCallerInfo: ${searchResult.cntcts[0]}")
-//                                //start Caller Info activity
-//                              startCallerInfoActivity(context, searchResult.cntcts)
-//
-//                            }
-//                        }
-//                        Status.LOADING->{
-//                            //show loading
-//
-//                            Log.d(TAG, "onQueryTextChange: Loading....")
-//                        }
-//                        else ->{
-//                            Log.d(TAG, "onQueryTextChange: Error ${resource}")
-//
-//                            Toast.makeText(context.applicationContext, it.message, Toast.LENGTH_LONG).show()
-//                        }
-//                    }
-//                }
-//
-//            })
+            searchForNumberInServer(phoneNumber, viewModel, context)
+
 
 
 
@@ -173,6 +149,45 @@ class IncomingCallReceiver : BroadcastReceiver(){
              */
 
         }
+    }
+
+    private fun searchForNumberInServer(
+        phoneNumber: String?,
+        viewModel: SearchViewModel,
+        context: Context
+    ) {
+        Log.d(TAG, "searchForNumberInServer: ")
+        var num = formatPhoneNumber(phoneNumber!!)
+        num = Secrets().managecipher(context.packageName, num!!)//encoding the number with my algorithm
+      
+        CoroutineScope(Dispatchers.IO).launch {
+            val res = SearchNetworkRepository(context).search(num)
+            val result = res?.body()?.cntcts?.get(0)
+            Log.d(TAG, "searchForNumberInServer: result $result")
+            if(result!!.spamCount > 0){
+
+            }
+            val i = Intent(context, ActivityIncommingCallView::class.java)
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            i.putExtra("name", result.name)
+            context.startActivity(i)
+        }
+        
+        
+       
+    }
+
+    private fun observeSearchLiveData(
+        viewModel: SearchViewModel,
+        context: Context
+    ) {
+//        viewModel.searchResultLiveData.observeForever(Observer {
+//            Log.d(TAG, "observeSearchLiveData: ")
+//            if(it!=null){
+//                Log.d(TAG, "observeSearchLiveData: ${it}")
+//            }
+//        })
+
     }
 
     private fun startCallerInfoActivity(
@@ -222,8 +237,8 @@ class IncomingCallReceiver : BroadcastReceiver(){
 
 
     companion object {
-        private const val LOG_TAG = "__IncommingCallReceiver"
+//        private const val LOG_TAG = "__IncommingCallReceiver"
         private const val MyPREFERENCES = "onlyIncCallFromContact"
-        private const val TAG = "IncomingCallReceiver"
+        private const val TAG = "__IncomingCallReceiver"
     }
 }
