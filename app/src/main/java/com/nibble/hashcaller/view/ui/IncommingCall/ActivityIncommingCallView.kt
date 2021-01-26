@@ -1,23 +1,17 @@
 package com.nibble.hashcaller.view.ui.IncommingCall
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.network.search.model.SpammerStatus
 import kotlinx.android.synthetic.main.activity_incomming_call_view.*
-import kotlinx.android.synthetic.main.fragment_call.*
 
 /**
  * !!important to have theme Theme.Holo.Dialog.NoActionBar,
@@ -29,11 +23,20 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private lateinit var viewModel:IncommingCallViewModel
     private lateinit var callerInfo:Cntct
     @SuppressLint("LongLogTag")
+    private  var name :String = ""
+    private  var phoneNumber :String = ""
+    private  var location :String = ""
+    private  var carrier :String = ""
+    private  var spamcount : Int = 0
+    @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        var i = intent
-
+         name = intent.getStringExtra("name")
+         phoneNumber = intent.getStringExtra("phoneNumber")
+         spamcount = intent.getIntExtra("spamcount", 0)
+        location  = intent.getStringExtra("location")
+        carrier  = intent.getStringExtra("carrier")
 //        setTheme(R.style.AppTheme)
 //        callerInfo = i.getSerializableExtra("SerachRes") as Cntct
 
@@ -60,22 +63,22 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             IncommingCallViewModel::class.java)
 
         val callerInfo = Cntct("jithin", "803830",
-            SpammerStatus(0, false), "vodafone",
+            0, "vodafone",
         "banglore", "IN")
 
 
 
         btnReportCaller.setOnClickListener(this)
-        txtVPhoneNum.text = callerInfo.phoneNumber
-        txtVCarrier.text =  callerInfo.carrier
-        txtVCity.text =  callerInfo.location
-        txtVCountry.text =  callerInfo.country
-        if(callerInfo.spammerStatus !=null)
-        if(callerInfo.spammerStatus?.spamCount > 10){
+        txtVPhoneNum.text = phoneNumber
+        txtVCarrier.text =  name
+        txtVCity.text =  location
+        txtVCountry.text =  carrier
+//        if(callerInfo.spammerStatus !=null)
+        if(spamcount > 0){
             Log.d(TAG, "onCreate: spammer calling");
             layoutIncommingCall.setBackgroundColor(Color.parseColor("#E80000"))
         }else{
-            Log.d(TAG, "onCreate: ${callerInfo.spammerStatus.spamCount}")
+            Log.d(TAG, "onCreate: spam count less than 1 ${spamcount}")
             layoutIncommingCall.setBackgroundColor(Color.parseColor("#0CBDEA"))
 
         }
@@ -90,17 +93,17 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
         when(v?.id){
-//            R.id.btnReportCaller->{
-//                Log.d(TAG, "onClick: btn")
-//                reportuser()
-//            }
+            R.id.btnReportCaller->{
+                Log.d(TAG, "onClick: btn")
+                reportuser()
+            }
         }
     }
 
     @SuppressLint("LongLogTag")
     private fun reportuser() {
-//        viewModel.report(callerInfo.phoneNumber).observe(this, Observer {
-//            Log.d(TAG, "reportuser: observing")
-//        })
+        viewModel.report(phoneNumber, packageName).observe(this, Observer {
+            Log.d(TAG, "reportuser: observing")
+        })
     }
 }

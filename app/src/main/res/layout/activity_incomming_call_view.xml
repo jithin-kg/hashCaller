@@ -6,9 +6,9 @@
     android:id="@+id/layoutIncommingCall"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#0CBDEA"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:background="#0CBDEA"
     android:excludeFromRecents="true"
     tools:context=".view.ui.IncommingCall.ActivityIncommingCallView">
 
@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="call recieved dude"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@+id/txtVCountry"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -29,11 +29,11 @@
         android:layout_width="112dp"
         android:layout_height="17dp"
         android:layout_marginBottom="8dp"
-        android:text="call recieved dude"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@+id/txtVCity"
-        app:layout_constraintEnd_toEndOf="@+id/txtVcallerName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/txtVcallerName"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtVCarrier" />
 
     <TextView
@@ -41,11 +41,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="call recieved dude"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@+id/btnReportCaller"
-        app:layout_constraintEnd_toEndOf="@+id/btnReportCaller"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/btnReportCaller"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtVPhoneNum" />
 
     <TextView
@@ -53,11 +53,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="call recieved dude"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@+id/txtVCarrier"
-        app:layout_constraintEnd_toEndOf="@+id/txtVCarrier"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/txtVCarrier"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtVcallerName" />
 
     <TextView
@@ -65,11 +65,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="call recieved dude"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@+id/txtVPhoneNum"
-        app:layout_constraintEnd_toEndOf="@+id/txtVPhoneNum"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/txtVPhoneNum"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtVCountry" />
 
     <Button

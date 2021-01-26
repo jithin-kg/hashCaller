@@ -164,12 +164,17 @@ class IncomingCallReceiver : BroadcastReceiver(){
             val res = SearchNetworkRepository(context).search(num)
             val result = res?.body()?.cntcts?.get(0)
             Log.d(TAG, "searchForNumberInServer: result $result")
-            if(result!!.spamCount > 0){
-
+            if(result!!.spammCount > 0){
+                val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
+                    inComingCallManager.endIncommingCall(context)
             }
             val i = Intent(context, ActivityIncommingCallView::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             i.putExtra("name", result.name)
+            i.putExtra("phoneNumber", phoneNumber)
+            i.putExtra("spamcount", result.spammCount)
+            i.putExtra("carrier", result.carrier)
+            i.putExtra("location", result.location)
             context.startActivity(i)
         }
         

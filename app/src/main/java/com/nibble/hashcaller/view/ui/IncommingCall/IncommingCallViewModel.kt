@@ -2,10 +2,12 @@ package com.nibble.hashcaller.view.ui.IncommingCall
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 
 import retrofit2.Response
@@ -26,7 +28,7 @@ class IncommingCallViewModel(
 
 
 
-    fun report(phoneNumber:String) = liveData(Dispatchers.IO) {
+    fun report(phoneNumber: String, packageName: String) = liveData(Dispatchers.IO) {
                 emit(Resource.loading(data=null))
         var res: Response<NetWorkResponse>? = null
              try {
@@ -34,10 +36,11 @@ class IncommingCallViewModel(
 //                    mt.value  = cntctsFromDb?.value
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
 
-                 
+                    var number = formatPhoneNumber(phoneNumber)
+                    number = Secrets().managecipher(packageName, number)
                    res = spamNetworkRepository.report(ReportedUserDTo(
-                       phoneNumber,
-                       "sample",
+                       number,
+                       "",
                        "",
                        ""
                    ))

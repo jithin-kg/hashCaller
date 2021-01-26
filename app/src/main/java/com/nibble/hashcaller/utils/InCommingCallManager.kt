@@ -45,6 +45,7 @@ class InCommingCallManager(
     @RequiresApi(Build.VERSION_CODES.N)
     fun getBLockedLists()  = GlobalScope.launch(Dispatchers.IO) {
         Log.d(TAG, "phoneNum: $phoneNumber")
+        Log.d(TAG, "phoneNum: $phoneNumber")
           val job =  async { repository.getListOfdata() }
 //        runBlocking {
             val list = job.await()
@@ -72,7 +73,7 @@ class InCommingCallManager(
     }
 
 
-    private fun endIncommingCall(context: Context) {
+     fun endIncommingCall(context: Context) {
         val c =  CallEnder(context)
         c.endIncomingCall()
     }

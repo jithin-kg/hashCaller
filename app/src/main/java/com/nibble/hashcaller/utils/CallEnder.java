@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.telecom.TelecomManager;
@@ -18,6 +19,7 @@ public class CallEnder implements ITelephony {
     public CallEnder(Context context){
         this.context = context;
     }
+    @SuppressLint("MissingPermission")
     public boolean endIncomingCall(){
 
             boolean callEnded =false;
