@@ -10,21 +10,18 @@ import androidx.room.Query
  * Created by Jithin KG on 01,August,2020
  */
 @Dao
-interface IContactIformationDAO {
+interface IContactLastSycnedDateDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(contacts: List<ContactTable>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSingleItem(contacts: ContactTable)
+    suspend fun insert(date: ContactLastSyncedDate)
 
     /**
      * when returning data using live data we don't need to use suspend function
      */
-    @Query("SELECT * FROM contacts_information")
-     fun getContacts(): LiveData<List<ContactTable>>
+    @Query("SELECT * FROM contact_last_synced_date")
+     fun getLastSyncedDate(): ContactLastSyncedDate
 
-    @Query("SELECT COUNT(number) FROM contacts_information")
-     fun getCount(): LiveData<Int>
+    @Query("DELETE FROM contact_last_synced_date")
+     fun delteAll()
 //WHERE number LIKE '%'|| :phonNumber || '%'
     /**
      * Do not return Live data while searching, because live data observe to change,

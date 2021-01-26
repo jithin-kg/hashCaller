@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.nibble.hashcaller.Secrets
-
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
@@ -97,7 +96,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
      * @param informationReceivedDate : date at which the data is inserted in db
      * @param limit : number of day in which a lookup for the current number should perform
      */
-    private fun isCurrentDateAndPrevDateisGreaterThanLimit(
+
+     fun isCurrentDateAndPrevDateisGreaterThanLimit(
         informationReceivedDate: Date,
         limit: Int
     ): Boolean {
@@ -110,6 +110,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         if(days > limit)
             return true
         return false
+
     }
 
 //    private suspend fun uploadnumbersToServer(allsmswithoutspam: MutableList<SMS>): Response<UnknownSMSsendersInfoResponse> {

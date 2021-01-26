@@ -33,6 +33,9 @@ class ContactLocalSyncRepository(
 
     }
 
+    suspend fun insertSingleContactItem(c: ContactTable) {
+    contactLisDAO!!.insertSingleItem(c)
+    }
 
 
     companion object{

@@ -149,7 +149,7 @@
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/txtVMailDesc"
+        android:id="@+id/txtLineTypeDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewCarrier"
@@ -158,10 +158,10 @@
         android:text="Email" />
 
     <TextView
-        android:id="@+id/textViewMail"
+        android:id="@+id/textViewLineType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtVMailDesc"
+        android:layout_below="@+id/txtLineTypeDesc"
         android:layout_marginTop="12dp"
         android:layout_marginLeft="32dp"
         android:text="TextView" />

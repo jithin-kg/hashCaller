@@ -6,8 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.nibble.hashcaller.local.db.blocklist.*
+import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
+import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
 import com.nibble.hashcaller.local.db.sms.Converters
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
@@ -20,7 +22,8 @@ import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
     ContactTable::class,
     SMSOutBox::class,
     SpammerInfo::class,
-    SMSSendersInfoFromServer::class
+    SMSSendersInfoFromServer::class,
+    ContactLastSyncedDate::class
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class HashCallerDatabase: RoomDatabase() {
@@ -29,7 +32,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun smsDAO(): SmsOutboxListDAO
         abstract fun spamListDAO(): SpamListDAO
         abstract fun spammerInfoFromServerDAO(): SMSSendersInfoFromServerDAO
-
+        abstract fun  contactLastSyncedDate():IContactLastSycnedDateDAO
     companion object{
 
         //singleton prevents multiple instances of database opening at same time

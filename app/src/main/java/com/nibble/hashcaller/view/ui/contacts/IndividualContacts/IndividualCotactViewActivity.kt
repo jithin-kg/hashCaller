@@ -31,12 +31,14 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         setContentView(R.layout.activity_individual_cotact_view)
-
         val phoneNum = intent.getStringExtra(CONTACT_ID)
         val name = intent.getStringExtra("name")
         val id = intent.getLongExtra("id",0L)
          photoURI = intent.getStringExtra("photo")
+//        getMoreInfoForNumber(phoneNum)
+
         setImage(photoURI)
+
         initListeners()
         Log.d(TAG, "onCreate: name $name")
         IndividualContactInjectorUtil.phoneNumber = phoneNum
@@ -53,9 +55,26 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
         viewModel.getPhoto(id, phoneNum)
 
         viewModel.getContactsFromDb(phoneNum)
-
+        observeContactMoreInfo()
 
     }
+
+    @SuppressLint("LongLogTag")
+    private fun observeContactMoreInfo() {
+        this.viewModel.mt.observe(this, Observer {
+            if(it!=null){
+                Log.d(TAG, "observeContactMoreInfo: ")
+                textViewLocation.text = it?.location
+                textViewCarrier.text = it?.carrier
+//            textViewLineType.text = it.
+            }
+
+        })
+    }
+
+//    private fun getMoreInfoForNumber(phoneNum: String?) {
+//        viewModel.getMoreInfoforNumber(phoneNum)
+//    }
 
     private fun initListeners() {
         imgViewAvatar.setOnClickListener(this)

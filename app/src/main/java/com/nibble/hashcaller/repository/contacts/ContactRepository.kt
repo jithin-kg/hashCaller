@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -36,10 +37,7 @@ class ContactRepository(context: Context) {
                     cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                 var phoneNo =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                phoneNo = phoneNo.trim { it <= ' ' }.replace(" ", "")
-                phoneNo = phoneNo.replace("-", "")
-                phoneNo = phoneNo.replace("(","")
-                phoneNo = phoneNo.replace(")","")
+                phoneNo = formatPhoneNumber(phoneNo)
 
                 val photoUri =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
@@ -55,11 +53,13 @@ class ContactRepository(context: Context) {
                     }else{
                         contact.firstNDigits = phoneNo
                     }
+
                     contact.name = name
 
                     //encode and hash phone number
                     phoneNo = Secrets().managecipher(context.packageName, phoneNo)
                     contact.phoneNumber = phoneNo
+
                     contacts.add(contact)
                     lastNumber = phoneNo
                 }

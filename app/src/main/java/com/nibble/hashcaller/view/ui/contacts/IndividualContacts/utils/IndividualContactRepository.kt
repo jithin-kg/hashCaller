@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils
 
-import android.R
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
@@ -11,7 +10,6 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
-import com.nibble.hashcaller.BuildConfig
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import java.io.ByteArrayInputStream
@@ -197,10 +195,14 @@ class IndividualContactRepository(private val dao: IContactIformationDAO, privat
                return null
 
 
-           Log.d(TAG, "getContactFromContentProvider: $cursor")
-           if(cursor!=null && cursor.moveToFirst()){
-               Log.d(TAG, "getContactFromContentProvider: ")
-           }
+//           Log.d(TAG, "getContactFromContentProvider: $cursor")
+//           if(cursor!=null && cursor.moveToFirst()){
+//               Log.d(TAG, "getContactFromContentProvider: ")
+//           }
+       }
+
+       fun getMoreInfoFOrNumber(phoneNum: String?) {
+//           this.dao.getInfoForNumber(phoneNum)
        }
 //   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<Contact>{
 //       var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)

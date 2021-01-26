@@ -15,8 +15,11 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import kotlinx.android.synthetic.main.contact_list.*
+import kotlinx.android.synthetic.main.contact_list.textVContactName
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
+import kotlinx.android.synthetic.main.search_result_item.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -67,8 +70,22 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
         initListeners()
         observerPhoneHashValue()
+        observeSearchResults()
 
 
+    }
+
+    private fun observeSearchResults() {
+        this.searchViewmodel.searchResultLiveData.observe(viewLifecycleOwner, Observer {
+            if(it!=null){
+                layoutSearchResult.visibility = View.VISIBLE
+                textVContactName.text = it.name
+                tvSearchResultLocation.text = it.location
+                tvSearchResultNameFirstLetter.text  = it.name[0].toString()
+
+            }
+
+        })
     }
 
     private fun observerPhoneHashValue() {
@@ -126,11 +143,9 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     override fun onQueryTextChange(newText: String?): Boolean {
 //        this.viewSearch.edtTextPhoneSearch.setText(newText)
         //TODO move this to view model,this is a computation running on ui thread
-        val secret = Secrets().managecipher(activity?.packageName!!, newText!!)//encoding the number with my algorithm
-        Log.d(TAG, "onQueryTextChange: secret is ${secret}")
-        this.searchViewmodel.search(secret!!, key)
+        layoutSearchResult.visibility = View.GONE
+        this.searchViewmodel.search(newText!!, key, requireActivity().packageName)
 
-        Log.d(TAG, "got secret $secret")
         //public key comes from server, saved in shared preferences
 //        phone number is hashed and encoded in and while sending encrypted
 
