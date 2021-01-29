@@ -1,11 +1,12 @@
 package com.nibble.hashcaller.view.ui.auth
 
+
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -15,6 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.nibble.hashcaller.R
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
+
 
 class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private var verificationInProgress = false
@@ -31,6 +33,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_testauth)
+
         phoneNumber = intent.getStringExtra("phoneNumber")
 
         // Restore instance state
@@ -42,10 +45,12 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         // Initialize Firebase Auth
         auth = Firebase.auth
         registerCallback()
-        startPhoneNumberVerification("+91$phoneNumber")
+        startPhoneNumberVerification("+$phoneNumber")
 
 
     }
+
+
 
     private fun registerCallback() {
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -60,7 +65,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 Log.d(TAG, "onVerificationCompleted:$credential")
                 // [START_EXCLUDE silent]
                 code = credential.smsCode
-                if(code == null) code = "123456" //Only for testing purpose
+//                if(code == null) code = "123456" //Only for testing purpose
                 if (code != null) {
                     verifycode(code!!)
                     Log.d(TAG, "onVerificationCompleted: $code")
@@ -118,6 +123,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 resendToken = token
                 verifyManually.isEnabled = true
                 pgBarOtpVerify.visibility = View.GONE
+                tvOTPInfo.text = "we just sent you an SMS verification code to +${phoneNumber}"
                 // [START_EXCLUDE]
                 // Update UI
 //                updateUI(STATE_CODE_SENT)
@@ -241,7 +247,8 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
 
             R.id.verifyManually ->{
-                verifycode("123456")
+
+                verifycode(otpview.text.toString())
             }
         }
     }
@@ -263,6 +270,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 if (task.isSuccessful) {
                     Log.d(TAG, "successfull: ")
                     onSignedInInitialize(code)
+                    otpview.setText(code)
                     Toast.makeText(this, "verified", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.d(TAG, "something went wrong: ")

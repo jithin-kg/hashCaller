@@ -6,7 +6,7 @@
             <!-- set the shadow color here -->
             <stroke
                 android:width="2.5dp"
-                android:color="#D8D9DA" />
+                android:color="@color/edtxt_phone_auth_bg" />
 
             <!-- setting the thickness of shadow (positive value will give shadow on that side) -->
 
@@ -23,7 +23,7 @@
     <!--White Background -->
     <item>
         <shape>
-            <solid android:color="#fff" />
+            <solid android:color="@color/edtxt_phone_auth_bg" />
             <corners android:radius="2dp" />
         </shape>
     </item>

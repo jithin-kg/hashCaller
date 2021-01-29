@@ -10,6 +10,7 @@
 <!--    <include-->
 <!--        android:id="@+id/include2"-->
 <!--        layout="@layout/content_activity_enter_o_t_p" />-->
+
     <Button
         android:id="@+id/button2"
         android:layout_width="0dp"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/colorBackground"
     tools:context="com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth">
 
     <pl.droidsonroids.gif.GifImageView
@@ -26,7 +26,8 @@
         android:layout_marginTop="24dp"
         android:background="@drawable/edit_text_phone_num"
         android:ems="10"
-        android:text="6605551234"
+        android:textColor="@color/textColor"
+        android:text="916605551234"
         android:inputType="phone"
         app:layout_constraintBottom_toTopOf="@+id/buttonGo"
         app:layout_constraintEnd_toStartOf="@+id/guideline10"
@@ -63,8 +64,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/btn_go"
         android:elevation="6dp"
+
+        android:minHeight="56dp"
         android:onClick="passPhoneNumber"
         android:text="Go"
         android:textColor="#ffff"

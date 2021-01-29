@@ -101,6 +101,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     //added for ItemTouchHelper class, which is used fo swipe to delete feature
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    //otp view
+    implementation 'com.chaos.view:pinview:1.4.4'
 
 
     //google codelabs mvvm room

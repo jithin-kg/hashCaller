@@ -6,14 +6,17 @@
 <!--    Color of navigation icon and overflow icon is determined by textColorSecondary-->
 <!--    colorAceent attribute is responsible for tint of editTex,checkbox,radiobutton,fab-->
 <!--Ripple animation on button click is controlled by colorControlHighlight-->
-    <color name="colorPrimary">#2178D4</color>
+<!--    <color name="colorPrimary">#4B53BC</color>-->
+    <color name="colorPrimary">#4F57BF</color>
+    <color name="colorPrimaryLight">#2374BF</color>
+<!--    <color name="colorPrimaryDark">#6264AA</color>-->
+    <color name="colorPrimaryDark">#262A69</color>
+
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
     <!--   cololr of statusBar is determined by the  colorPrimaryDark attribute   -->
-    <color name="colorPrimaryDark">#3366CC</color>
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorNavItemsLight">#2B80D7</color>
-    <color name="colorPrimaryLight">#6BBFE5</color>
 
 <!--    color of bottom nav item default -->
     <color name="colorControlNormal">#CCCCCC</color>
@@ -36,6 +39,7 @@
     <color name="textColor">#232323</color>
     <color name="textColorSecondary">#2E2D2D</color>
     <color name="lineColor"> #22000000</color>
+    <color name="edtxt_phone_auth_bg">#D8D9DA</color>
 
 
 </resources>
