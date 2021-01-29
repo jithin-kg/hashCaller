@@ -59,7 +59,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun initListeners() {
         btnRequestPermission.setOnClickListener(this)
-        btnSetAsDefaultSMS.setOnClickListener(this)
+
     }
 
     override fun onClick(v: View?) {

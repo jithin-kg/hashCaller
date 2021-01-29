@@ -10,10 +10,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.safetynet.SafetyNet
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
@@ -29,7 +25,6 @@ import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
-import com.nibble.hashcaller.view.ui.auth.testauth
 import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
@@ -312,29 +307,17 @@ companion object{
 
 //            IdpResponse response = IdpResponse.fromResultIntent(data);
 //            if (resultCode == Activity.RESULT_OK) {
-                phoneNumber = rcfirebaseAuth?.currentUser!!.phoneNumber
-                 user = rcfirebaseAuth?.currentUser
+            if(rcfirebaseAuth.currentUser!=null){
+                phoneNumber = rcfirebaseAuth?.currentUser?.phoneNumber
+                user = rcfirebaseAuth?.currentUser
                 val uid = user!!.uid
-                //                IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
+
+                onSignedInInitialize()
+            }
 
 
-                //determine if the user who just signed in is an existing or new one
-//               if(checkIfNewUser()){
-//                   Log.d(TAG, "startGetUserInfoActivity")
-//                   startGetUserInfoAcitvity()
-//               }else{
-                   onSignedInInitialize()
 
 
-//               }
-
-//                TODO crete new user in the firestore with the unique phone,firstName,lastName or google signin
-//                Log.d(TAG, phoneNumber)
-//                Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show()
-//            } else if (resultCode == Activity.RESULT_CANCELED) {
-//                Toast.makeText(this, "Signed in cancelled", Toast.LENGTH_SHORT).show()
-//                finish()
-//            }
         }
         if(requestCode == PERMISSION_REQUEST_CODE ){
             Log.d(TAG, "onActivityResult: Permission given")

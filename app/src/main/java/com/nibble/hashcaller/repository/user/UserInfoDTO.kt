@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 data class UserInfoDTO(
     var firstName:String="",
     var lastName:String="",
-    var phoneNumber:String = "",
+    var phoneNumber:String = "912",
     var email:String = "",
-    var gender:String = ""
+    var gender:String = "32"
 )

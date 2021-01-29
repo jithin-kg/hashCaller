@@ -6,8 +6,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nibble.hashcaller.R
 import kotlinx.android.synthetic.main.activity_phone_auth.*
@@ -52,7 +50,7 @@ class ActivityPhoneAuth : AppCompatActivity() {
     fun passPhoneNumber(view: View?) {
         val phoneNumber =
             editTextPhone?.text.toString().trim { it <= ' ' }
-        val i = Intent(this@ActivityPhoneAuth, testauth::class.java)
+        val i = Intent(this@ActivityPhoneAuth, ActivityVerifyOTP::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
         i.putExtra("phoneNumber", phoneNumber)
         startActivity(i)

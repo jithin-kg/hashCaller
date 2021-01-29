@@ -89,7 +89,7 @@
         </service>
 
         <activity
-            android:name=".view.ui.auth.testauth"
+            android:name=".view.ui.auth.ActivityVerifyOTP"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.schedule.ScheduleActivity"

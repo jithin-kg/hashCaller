@@ -16,7 +16,7 @@ import com.nibble.hashcaller.R
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
 
-class testauth : AppCompatActivity(), View.OnClickListener {
+class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private var verificationInProgress = false
     private var storedVerificationId: String? = ""
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
@@ -38,8 +38,7 @@ class testauth : AppCompatActivity(), View.OnClickListener {
             onRestoreInstanceState(savedInstanceState)
         }
         verifyManually.setOnClickListener(this)
-        buttonStartVerification.setOnClickListener(this)
-        buttonVerifyPhone.setOnClickListener(this)
+
         // Initialize Firebase Auth
         auth = Firebase.auth
         registerCallback()
@@ -117,7 +116,8 @@ class testauth : AppCompatActivity(), View.OnClickListener {
                 // Save verification ID and resending token so we can use them later
                 storedVerificationId = verificationId
                 resendToken = token
-
+                verifyManually.isEnabled = true
+                pgBarOtpVerify.visibility = View.GONE
                 // [START_EXCLUDE]
                 // Update UI
 //                updateUI(STATE_CODE_SENT)
@@ -238,27 +238,11 @@ class testauth : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.buttonStartVerification -> {
-                if (!validatePhoneNumber()) {
-                    return
-                }
 
-                startPhoneNumberVerification("+16505551234")
-            }
-            R.id.buttonVerifyPhone -> {
-//                val code = binding.fieldVerificationCode.text.toString()
-//                if (TextUtils.isEmpty(code)) {
-//                    binding.fieldVerificationCode.error = "Cannot be empty."
-//                    return
-//                }
 
-                verifyPhoneNumberWithCode(storedVerificationId, "1234")
-            }
             R.id.verifyManually ->{
                 verifycode("123456")
             }
-//            R.id.buttonResend -> resendVerificationCode(binding.fieldPhoneNumber.text.toString(), resendToken)
-            R.id.signOutButton -> signOut()
         }
     }
 
