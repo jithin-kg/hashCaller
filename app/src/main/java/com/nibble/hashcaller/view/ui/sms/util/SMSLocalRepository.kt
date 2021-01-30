@@ -188,6 +188,8 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     //TODO check if phone number exists in contact, if then add the contact information too
                     val objSMS = SMS()
                     objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                    objSMS.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                    Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                     val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
 //                    objSMS.address = num
 
@@ -215,17 +217,6 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     val seen = cursor.getColumnIndexOrThrow("seen")
                     val seenString = cursor.getString(seen)
 
-//                    val deletable = cursor.getColumnIndexOrThrow("deletable")
-//                    val sim_slot = cursor.getColumnIndexOrThrow("sim_slot")
-//                    val callback_number = cursor.getColumnIndexOrThrow("callback_number")
-//                    val teleservice_id = cursor.getColumnIndexOrThrow("teleservice_id")
-//                    val creator = cursor.getString(cursor.getColumnIndexOrThrow("creator"))
-//                    val person = cursor.getString(cursor.getColumnIndexOrThrow("person"))
-//                    The ID of the sender of the conversation, if present.
-//
-//                    Type: INTEGER (reference to item in content://contacts/people)
-//
-//                    Constant Value: "person"
 
 
                     var spannableStringBuilder: SpannableStringBuilder?
@@ -276,26 +267,14 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     val dateMilli = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 
 
-
-
-
                     objSMS.time = dateMilli
-
 
                     if (cursor.getString(cursor.getColumnIndexOrThrow("type")).contains("1")) {
                         objSMS.folderName = "inbox"
                     } else {
                         objSMS.folderName = "sent"
                     }
-//                    if(spamNeeded!!){
-//                        //if we are requesting from fragment SMSIdentifiedAsSpamFragment
-//                        if(isThisAddressSpam(objSMS.addressString))
-//                            listOfMessages.add(objSMS)
-//                    }else{
-//                        //we are requesting from SMSListFragment
-//                        if(!isThisAddressSpam(objSMS.addressString))
-//                            listOfMessages.add(objSMS)
-//                    }
+
 
                 if(requestinfromSpamlistFragment!!){
                     //if we are requesting from fragment SMSIdentifiedAsSpamFragment
@@ -365,7 +344,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     //                val id = cursor.getLong(0)
                     //                val name = cursor.getString(1)
                     val id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.NAME_RAW_CONTACT_ID))
-                    Log.d(TAG, "id is $id ")
+//                    Log.d(TAG, "id is $id ")
                     val name =
                         cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                     val photoURI =  cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
@@ -375,8 +354,8 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     val phoneNo =
                         cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
-                    Log.d(TAG, "phone num is $phoneNo")
-                    Log.d(TAG, "name is  $name")
+//                    Log.d(TAG, "phone num is $phoneNo")
+//                    Log.d(TAG, "name is  $name")
                     if(name!=null){
 
                         c = Contact(id, name, photoURI, "photoThumnail", photoURI)
@@ -493,6 +472,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
                     sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
                     sms.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+
                     sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
                     sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
                     sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
@@ -539,7 +519,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
     fun addMessageToOutBox(msg: String, contactAddress: String): String {
 //        Log.d(TAG, "addMessageToOutBox: ")
         var time = System.currentTimeMillis().toString()
-        Log.d(TAG, "addMessageToOutBox: time is $time")
+//        Log.d(TAG, "addMessageToOutBox: time is $time")
         val values = ContentValues().apply {
             put("body", "this the the  message while addinig to outbox")
             put("address", contactAddress)
@@ -559,7 +539,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 //            saveSMSIdToDatabase(id)
 
 
-            Log.d(TAG, "addMessageToOutBox: $res")
+//            Log.d(TAG, "addMessageToOutBox: $res")
         }catch (e:java.lang.Exception){
             Log.d(TAG, "addMessageToOutBox: exception $e")
         }
@@ -569,8 +549,8 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
     }
 
     fun moveFromoutBoxToSent(time: String?, address: String){
-        Log.d(TAG, "moveFromoutBoxToSent:  id $time")
-        Log.d(TAG, "moveFromoutBoxToSent:  address $address")
+//        Log.d(TAG, "moveFromoutBoxToSent:  id $time")
+//        Log.d(TAG, "moveFromoutBoxToSent:  address $address")
         val values = ContentValues().apply {
             put("type", "2")
         }
@@ -585,7 +565,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
        val res =  context.contentResolver.update(SMSContract.ALL_SMS_URI, values,
            "date_sent = '$time' AND address = '$address'",null)
 //        val res =context.contentResolver.delete(SMSContract.SMS_OUTBOX_URI, "_id='$id'",null)
-        Log.d(TAG, "moveFromoutBoxToSent: $res")
+//        Log.d(TAG, "moveFromoutBoxToSent: $res")
     }
 
     private fun saveSMSIdToDatabase(id: Int) {
@@ -601,7 +581,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
         while(m.find()) {
            id = m.group()
         }
-        Log.d(TAG, "extractIdFromUri: $id")
+//        Log.d(TAG, "extractIdFromUri: $id")
         return id.toInt()
 
     }
@@ -619,7 +599,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                         java.lang.String.valueOf(spamer.threadId)
                     )
                 )
-                Log.d(TAG, "deleteAllSpamSMS: deleted: $deleted")
+//                Log.d(TAG, "deleteAllSpamSMS: deleted: $deleted")
             }
         }
 
@@ -628,11 +608,11 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
     fun getConactInfoForNumber( pno: String): String? {
         var cursor:Cursor? = null
-        Log.d(TAG, "getConactInfoForNumber: pno $pno")
+//        Log.d(TAG, "getConactInfoForNumber: pno $pno")
 //        val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
         var name:String? = null
         val phoneNum = pno.replace("+", "").trim()
-        Log.d(TAG, "getConactInfoForNumber: phoneNum $phoneNum")
+//        Log.d(TAG, "getConactInfoForNumber: phoneNum $phoneNum")
 //        try {
 //
 //             cursor = context.contentResolver.query(
@@ -675,10 +655,10 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
         val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
             try{
                 if(cursor2!=null && cursor2.moveToFirst()){
-                    Log.d(TAG, "getConactInfoForNumber: data exist")
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
                     name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
                 }else{
-                    Log.d(TAG, "getConactInfoForNumber: no date")
+//                    Log.d(TAG, "getConactInfoForNumber: no date")
                 }
 
             }catch (e:Exception){

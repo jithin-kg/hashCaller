@@ -34,8 +34,8 @@ data class SMSSendersInfoFromServer (
     @ColumnInfo(name = "type") val spammeerType: Int?,
     @ColumnInfo(name = "name") val title:String,
     @ColumnInfo(name = "informationReceivedDate") val informationReceivedDate:Date,
-    @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = -1,
-    @ColumnInfo(name = "firstFiveDigitsOfNum") var firstFiveDigits: String // we need to know the first five digits
+    @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = -1
+    // we need to know the first five digits
                                                             //to get the carrier info of a number
 
 

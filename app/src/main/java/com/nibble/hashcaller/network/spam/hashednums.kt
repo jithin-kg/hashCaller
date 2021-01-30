@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.network.spam
 
 import androidx.annotation.Keep
+import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 
 /**
  * for requesting multiple number search feature
@@ -8,7 +9,7 @@ import androidx.annotation.Keep
  */
 @Keep
 data class hashednums(
-    var hashedPhoneNum: List<String> = mutableListOf()
+    var hashedPhoneNum: List<ContactAddressWithHashDTO> = mutableListOf()
 ) {
 
 }
