@@ -40,6 +40,7 @@
     <color name="textColorSecondary">#2E2D2D</color>
     <color name="lineColor"> #22000000</color>
     <color name="edtxt_phone_auth_bg">#D8D9DA</color>
+    <color name="appBarBackgroundColor">#fff</color>
 
 
 </resources>

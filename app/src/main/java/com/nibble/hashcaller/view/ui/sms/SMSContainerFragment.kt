@@ -23,10 +23,13 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
+import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.work.DESTINATION_ACTIVITY
+import com.nibble.hashcaller.work.INDIVIDUAL_SMS_ACTIVITY
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 
@@ -58,7 +61,6 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 //        if(checkPermission()){
             messagesView =  inflater.inflate(R.layout.fragment_message_container, container, false)
             viewSms = messagesView
-
             initViewModel()
         if(checkContactPermission())
         {
@@ -161,6 +163,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         tabLayoutMessages.addOnTabSelectedListener(this)
         this.messagesView.fabBtnDeleteSMS.setOnClickListener(this)
         this.messagesView.fabBtnDeleteSMSExpanded.setOnClickListener(this)
+        this.fabSendNewSMS.setOnClickListener(this)
     }
 
     private fun setupViewPager(viewPagerMessages: ViewPager?) {
@@ -260,6 +263,11 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         when(v?.id){
             R.id.fabBtnDeleteSMS, R.id.fabBtnDeleteSMSExpanded ->{
                 val i = Intent(activity, ScheduleActivity::class.java)
+                startActivity(i)
+            }
+            R.id.fabSendNewSMS ->{
+                val i = Intent(context, ContactSelectorActivity::class.java )
+                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
                 startActivity(i)
             }
         }

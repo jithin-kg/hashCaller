@@ -10,12 +10,17 @@ import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
+import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
+import com.nibble.hashcaller.view.ui.sms.SMSContainerInjectorUtil
+import com.nibble.hashcaller.view.ui.sms.SmsContainerViewModel
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.fragment_call.*
 
@@ -43,6 +48,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     var layoutBottomSheet: ConstraintLayout? = null
     private lateinit var dialerFragment: DialerFragment
+    private lateinit var viewmodel: CallContainerViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,12 +58,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         Log.d(TAG, "onCreateView: ")
         // Inflate the layout for this fragment
         callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
-
+        initViewModel()
 
 //        addFragmentDialer()
         return callFragment
 
     }
+
+    private fun initViewModel() {
+        this.viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context)).get(
+            CallContainerViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)

@@ -173,16 +173,9 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
                 contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
 
-//                setContacts()
-
-//                adapter.onItemClick =
             }
 
-//            val horizontalDecoration =  DividerItemDecoration(rcrViewContactsList.context,
-//                DividerItemDecoration.VERTICAL);
-//            val horizontalDivider = ContextCompat.getDrawable(this!!.requireActivity(), R.drawable.horizontal_line);
-//            horizontalDecoration.setDrawable(horizontalDivider!!);
-//            rcrViewContactsList.addItemDecoration(horizontalDecoration)
+
 
 
         }

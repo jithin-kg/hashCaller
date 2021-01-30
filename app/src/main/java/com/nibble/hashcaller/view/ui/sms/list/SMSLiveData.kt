@@ -42,66 +42,6 @@ class SMSLiveData(private val context: Context):
         //IMPORTANT from backgroudn thread we need to call postValue to set livedata
         return res
 
-//        val listOfMessages = mutableListOf<SMS>()
-//        var data = ArrayList<SMS>()
-//
-//        val projection = arrayOf(
-//            CallLog.Calls.NUMBER,
-//            CallLog.Calls.TYPE,
-//            CallLog.Calls.DURATION,
-//            CallLog.Calls.CACHED_NAME,
-//            CallLog.Calls._ID,
-//            CallLog.Calls.DATE
-//
-//
-//        )
-//        var selectionArgs: Array<String>? = null
-//
-//        val cursor = context.contentResolver.query(
-//            URI,
-//            null,
-//            null,
-//            null,
-//            SMSContract.SORT_DESC
-//        )
-//        if(cursor != null && cursor.moveToFirst()){
-//            do{
-//
-//                try{
-//                    //TODO check if phone number exists in contact, if then add the contact information too
-//                    val objSMS = SMS()
-//                    objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-//                    val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
-//                    objSMS.address = num
-//                    objSMS.msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
-//                    objSMS.readState = cursor.getString(cursor.getColumnIndex("read"))
-//                    val dateMilli = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-//
-//
-//
-//
-//
-//                    objSMS.time = dateMilli
-//
-//
-//                    if (cursor.getString(cursor.getColumnIndexOrThrow("type")).contains("1")) {
-//                        objSMS.folderName = "inbox"
-//                    } else {
-//                        objSMS.folderName = "sent"
-//                    }
-//
-//                    listOfMessages.add(objSMS)
-//                }catch (e:Exception){
-//                    Log.d(TAG, "getMessages: $e")
-//                }
-//
-//            }while (cursor.moveToNext())
-//
-//             data = sortAndSet(listOfMessages)
-//            cursor.close()
-//        }
-
-//        return data
 
     }
 

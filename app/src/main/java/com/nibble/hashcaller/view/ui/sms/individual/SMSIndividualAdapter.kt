@@ -79,18 +79,25 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //    return smsList.size
     override fun getItemViewType(position: Int): Int {
 //        return super.getItemViewType(position)
-        if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
-            //sent message 2
-            return VIEW_TYPE_MESSAGE_SENT
+        if(smsList.isNotEmpty()){
+            if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
+                //sent message 2
+                return VIEW_TYPE_MESSAGE_SENT
 
-        }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX ){
-            return VIEW_TYPE_MESSAGE_RECEIVED
-        }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX){
+            }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX ){
+                return VIEW_TYPE_MESSAGE_RECEIVED
+            }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX){
 //            Log.d(TAG, "getItemViewType: outbox msg ${Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX}")
-            return VIEW_TYPE_MESSAGE_OUTBOX
+                return VIEW_TYPE_MESSAGE_OUTBOX
+            }
+            else{
+                return  VIEW_TYPE_DATE
+            }
         }
+
         else{
-            return  VIEW_TYPE_DATE
+            return VIEW_TYPE_DATE
+
         }
 
 

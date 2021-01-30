@@ -13,6 +13,8 @@ import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateD
 import com.nibble.hashcaller.local.db.sms.Converters
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -23,7 +25,8 @@ import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
     SMSOutBox::class,
     SpammerInfo::class,
     SMSSendersInfoFromServer::class,
-    ContactLastSyncedDate::class
+    ContactLastSyncedDate::class,
+    CallersInfoFromServer::class
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class HashCallerDatabase: RoomDatabase() {
@@ -32,6 +35,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun smsDAO(): SmsOutboxListDAO
         abstract fun spamListDAO(): SpamListDAO
         abstract fun spammerInfoFromServerDAO(): SMSSendersInfoFromServerDAO
+        abstract fun callersInfoFromServerDAO(): CallersInfoFromServerDAO
         abstract fun  contactLastSyncedDate():IContactLastSycnedDateDAO
     companion object{
 
