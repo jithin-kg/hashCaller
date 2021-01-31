@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.auth
+package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -19,8 +19,6 @@ import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
-import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import kotlinx.android.synthetic.main.activity_get_initial_user_info.*
 import retrofit2.Response
@@ -28,7 +26,7 @@ import retrofit2.Response
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
-    private lateinit var userInfoViewModel:UserInfoViewModel
+    private lateinit var userInfoViewModel: UserInfoViewModel
 
 
     @SuppressLint("LongLogTag")
@@ -38,7 +36,8 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         setContentView(R.layout.activity_get_initial_user_info)
 
         btnUserContinue.setOnClickListener(this)
-        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
+        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(
+            UserInfoViewModel::class.java)
 
 
 
@@ -63,6 +62,7 @@ private fun sendUserInfo() {
     val lastName = editTextLName.text.toString().trim()
     val email = editTextEmail.text.toString().trim()
 
+
     editTextFName.error = null
     editTextEmail.error = null
     editTextLName.error = null
@@ -74,12 +74,17 @@ private fun sendUserInfo() {
         userInfo.lastName =  lastName;
         userInfo.email = email;
 
-       upload(userInfo)
+
+
+        upload(userInfo)
     }
 
 
 }
 
+
+
+    @SuppressLint("LongLogTag")
     private fun upload(userInfo: UserInfoDTO) {
         userInfoViewModel.upload(userInfo).observe(this, Observer {
             it?.let { resource: Resource<Response<NetWorkResponse>?> ->

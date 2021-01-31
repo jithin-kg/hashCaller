@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Context
@@ -27,6 +28,8 @@ import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -38,6 +41,7 @@ import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
@@ -50,6 +54,8 @@ import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.drawer_header.*
+import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -67,6 +73,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private val viewPager: ViewPager? = null
     var fab: FloatingActionButton? = null
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userInfoViewModel: UserInfoViewModel
 
 
     private lateinit var callFragment: CallFragment
@@ -88,33 +95,57 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        setTheme(R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
 
         hideKeyboard(this)
-//        AppCompatDelegate.setDefaultNi
-//        ghtMode(AppCompatDelegate.MODE_NIGHT_YES);
+
         setContentView(R.layout.activity_main)
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
-        actionbarDrawertToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.start, R.string.close)
-
-        drawerLayout.addDrawerListener(actionbarDrawertToggle)
-        actionbarDrawertToggle.syncState()
-
-        navigationView.setNavigationItemSelectedListener(this)
+        initViewModel()
+        setupNavigationDrawer()
 
         if(this.searchFragment !=null)
         if(this.searchFragment?.isAdded!!){
             bottomNavigationView.visibility = View.GONE
         }
 
+        manageSavedInstanceState(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            requestScreeningRole()
+        }
+        setInfoInNavigationDrawer()
+        fabBtnShowDialpad.setOnClickListener(this)
+        setBottomSheetListener()
 
-        Log.d(TAG, "onCreate  height of bottom nav: ${bottomNavigationView.height}")
-//        t his.applicationContext
-//                .contentResolver
-//                .registerContentObserver(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-//                        true, ContactObserver(Handler()))
+        mangeCipherInSharedPref()
+        observeUserInfoLiveData()
+        setupContactUploadWork()
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun observeUserInfoLiveData() {
+        this.userInfoViewModel.userInfo.observe(this, Observer {
+            Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
+            if(it !=null)
+            if(!it.firstname.isNullOrEmpty()){
+                
+                val header =navigationView.getHeaderView(0)
+                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
+            }
+
+        })
+    }
+
+    private fun setupContactUploadWork() {
+        val request =
+            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                .build()
+        WorkManager.getInstance().enqueue(request)
+    }
+
+    private fun manageSavedInstanceState(savedInstanceState: Bundle?) {
+
         if (savedInstanceState == null) {
             Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
@@ -136,41 +167,32 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         }else{
 
-           setFragmentsFromSavedInstanceState(savedInstanceState)
+            setFragmentsFromSavedInstanceState(savedInstanceState)
 //            this.ft = supportFragmentManager.beginTransaction()
 
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            requestScreeningRole()
-        }
-        fabBtnShowDialpad.setOnClickListener(this)
-        setBottomSheetListener()
+    }
 
-        mangeCipherInSharedPref()
+    private fun initViewModel() {
+        userInfoViewModel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(this)).get(
+            UserInfoViewModel::class.java)
+    }
 
-        //TODO check if contacts are uploaded
-//        check internet connection
-//        contactsUploadWorkManager = new ContactsUploadWorkManager(getApplicationContext(), );
-//
-//        contactsUploadWorkManager.uploadContacts();
-//        boolean contactsUploaded = false;
-//
-//        if(!contactsUploaded) {
-//            ContactsUploder contactsUploder = new ContactsUploder(getApplicationContext());
-//            contactsUploder.uploadContacts();
-//        }
+    private fun setInfoInNavigationDrawer() {
+        this.userInfoViewModel.getUserInfo()
+    }
 
-//        NetworkChecker networkChecker = new NetworkChecker(getApplicationContext());
+    private fun setupNavigationDrawer() {
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+        actionbarDrawertToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.start, R.string.close)
 
+        drawerLayout.addDrawerListener(actionbarDrawertToggle)
+        actionbarDrawertToggle.syncState()
+
+        navigationView.setNavigationItemSelectedListener(this)
 
 
-//        /**
-//         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
-//         */
-        val request =
-            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-                .build()
-        WorkManager.getInstance().enqueue(request)
     }
 
     private fun mangeCipherInSharedPref() {

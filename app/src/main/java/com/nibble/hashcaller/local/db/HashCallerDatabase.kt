@@ -13,6 +13,8 @@ import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateD
 import com.nibble.hashcaller.local.db.sms.Converters
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 
@@ -26,7 +28,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
     SpammerInfo::class,
     SMSSendersInfoFromServer::class,
     ContactLastSyncedDate::class,
-    CallersInfoFromServer::class
+    CallersInfoFromServer::class,
+    UserInfo::class
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class HashCallerDatabase: RoomDatabase() {
@@ -37,6 +40,8 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun spammerInfoFromServerDAO(): SMSSendersInfoFromServerDAO
         abstract fun callersInfoFromServerDAO(): CallersInfoFromServerDAO
         abstract fun  contactLastSyncedDate():IContactLastSycnedDateDAO
+        abstract fun userInfoDAo(): UserInfoDAO
+
     companion object{
 
         //singleton prevents multiple instances of database opening at same time

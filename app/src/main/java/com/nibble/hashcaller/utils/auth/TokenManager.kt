@@ -4,12 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
-import android.view.View
-import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
 
 import java.io.IOException
 import java.security.*
-import java.security.cert.CertificateException
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException

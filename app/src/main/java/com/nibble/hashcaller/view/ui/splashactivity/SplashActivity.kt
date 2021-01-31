@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui
+package com.nibble.hashcaller.view.ui.splashactivity
 
 
 import android.content.Context
@@ -22,11 +22,12 @@ import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
-import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
-import com.nibble.hashcaller.view.ui.auth.utils.UserInfoInjectorUtil
-import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import retrofit2.Response
@@ -65,7 +66,7 @@ companion object{
     private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
 
     private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
-    private lateinit var userInfoViewModel:UserInfoViewModel
+    private lateinit var userInfoViewModel: UserInfoViewModel
 //    private lateinit var skey:SecretKey
 }
     override fun onPause() {
@@ -78,58 +79,21 @@ companion object{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-//        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
-//            // The SafetyNet Attestation API is available.
-//            Log.d(TAG, "onCreate: csafetynet attstation api available")
-//
-//            SafetyNet.getClient(this).attest("12345678911234567".toByteArray(), "AIzaSyDkpiDiYb84psGet7KKcqNG3DN3dgfyy18")
-//                .addOnSuccessListener(this) {
-//                    // Indicates communication with the service was successful.
-//                    // Use response.getJwsResult() to get the result data.
-//                    Log.d(TAG, "onCreate: success safety net")
-//                }
-//                .addOnFailureListener(this) { e ->
-//                    // An error occurred while communicating with the service.
-//                    if (e is ApiException) {
-//                        // An error with the Google Play services API contains some
-//                        // additional details.
-//                        val apiException = e as ApiException
-//
-//                        // You can retrieve the status code using the
-//                        // apiException.statusCode property.
-//                    } else {
-//                        // A different, unknown type of error occurred.
-//                        Log.d(TAG, "Error: " + e.message)
-//                    }
-//                }
-//        } else {
-//            // Prompt user to update Google Play services.
-//            Log.d(TAG, "onCreate: csafetynet attstation api not available")
-//
-//        }
+
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
-        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(UserInfoViewModel::class.java)
+        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(
+            UserInfoViewModel::class.java)
 
         //Start home activity
-//        startActivity(new Intent(SplashActivity.this, MainActivity.class));
 //         close splash activity
         if (checkPermission()) {
             firebaseAuthListener()
         } else {
             val i = Intent(this@SplashActivity, PermissionRequestActivity::class.java)
             startActivityForResult(i, PERMISSION_REQUEST_CODE)
-
-//            startActivity(Intent(this, ActivityRequestPermission::class.java))
-//            finish()
-//            Log.i("SplashActivity", "permission requesting on  progress")
         }
-//        rcfirebaseAuth.addAuthStateListener(rcAuthStateListener);
-//
-//        Intent i = new Intent(this, MainActivity.class);
-//        startActivity(i);
-//        finish();
+
     }
 
     private fun firebaseAuthListener() {
@@ -139,7 +103,7 @@ companion object{
                 //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
                 if (user != null) {
                     //user is signed in
-                    //                        Toast.makeText(this, "You are now signed in", Toast.LENGTH_SHORT).show();
+
                     onSignedInInitialize()
 
 
@@ -223,35 +187,14 @@ companion object{
     }
 
 
-    private fun initCrypto() {
-        encryptor = EnCryptor()
-        try {
-            decryptor = Decryptor()
-        } catch (e: CertificateException) {
-            e.printStackTrace()
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        } catch (e: KeyStoreException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-
     private fun onSignedInInitialize() {
-//        getAuthToken()
-
         user!!.getIdToken(true)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     var idToken = task.result?.token
                     // Send token to your backend via HTTPS
 
-                    // ...
-
                     saveToken(idToken)
-
                     //check if we have a loggedInstatus in sharedPreference
                     val loggedIn = sharedPreferences.getBoolean("IS_LOGGEDIN", false)
 
@@ -261,15 +204,19 @@ companion object{
                          if(isNewUserInFirebase){
                              Log.d(TAG, "onSignedInInitialize:checkIfNewUser Returned true")
                              startGetUserInfoAcitvity()
+
                          }else{
 
                              if(isNewUserInServer()){
 
                                  val i = Intent(this, GetInitialUserInfoActivity::class.java)
                                  startActivity(i)
+
                              }else{
                                  //already existing user in server
                                  saveToSharedPref(true)
+                                 //if ther is no user info in local db navigate to getInitial info activity
+
                                  val i = Intent(this, MainActivity::class.java)
                                  startActivity(i)
                              }
@@ -278,6 +225,7 @@ companion object{
                      }else{
                          //user logged in
                          Log.d(TAG, "onSignedInInitialize: userLogged in  ")
+
                          val i = Intent(this, MainActivity::class.java)
                          startActivity(i)
                      }
@@ -290,6 +238,8 @@ companion object{
 
 
     }
+
+
 
     private fun onSingnedOutcleanUp() {}
 
@@ -366,7 +316,6 @@ companion object{
 
                         }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
                             Log.d(UserUploadHelper.TAG, "upload: user already exist")
-//                            val i  = Intent(applicationContext, MainActivity::class.java)
 //                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 //                            //set userLogedIn = true in shared preferecce
                             saveToSharedPref(true)

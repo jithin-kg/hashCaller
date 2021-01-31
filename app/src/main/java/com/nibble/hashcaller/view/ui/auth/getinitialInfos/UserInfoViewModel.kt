@@ -1,21 +1,33 @@
-package com.nibble.hashcaller.view.ui.auth.viewmodel
+package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.network.user.Resource
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import kotlinx.coroutines.*
 import java.lang.Exception
 
-class UserInfoViewModel(private val userNetworkRepository: UserNetworkRepository) :ViewModel(){
-
+class UserInfoViewModel(
+    private val userNetworkRepository: UserNetworkRepository
+) :ViewModel(){
+    var userInfo : MutableLiveData<UserInfo> = MutableLiveData()
 
     fun upload(userInfo: UserInfoDTO)= liveData(Dispatchers.IO){
+
+
+
         Log.d(TAG, "upload: inside ")
             emit(Resource.loading(null))
+        /**
+         * saving user info in local db
+         */
+        saveUserInfoInLocalDb(userInfo)
 //            userNetworkRepository.signup(userInfo)
         try {
             Log.d(TAG, "upload: try")
@@ -41,6 +53,17 @@ class UserInfoViewModel(private val userNetworkRepository: UserNetworkRepository
 
 
     }
+
+    private suspend fun saveUserInfoInLocalDb(userInfo: UserInfoDTO) {
+        this.userNetworkRepository.saveUserInfoInLocalDb(userInfo)
+    }
+
+    fun getUserInfo() = viewModelScope.launch {
+       val result  = userNetworkRepository.getUserInfo()
+        userInfo.value = result
+        Log.d(TAG, "getUserInfo: $result")
+    }
+
     companion object{
         const val TAG = "__UserInfoViewModel"
     }

@@ -107,7 +107,7 @@
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
             android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
-            android:name=".view.ui.auth.GetInitialUserInfoActivity"
+            android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.contacts.search.ActivitySearchPhone"
@@ -123,7 +123,7 @@
             android:name=".view.ui.auth.ActivityPhoneAuth"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".view.ui.SplashActivity"
+            android:name=".view.ui.splashactivity.SplashActivity"
             android:theme="@style/Theme.MyDarkTheme">
             <meta-data
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"

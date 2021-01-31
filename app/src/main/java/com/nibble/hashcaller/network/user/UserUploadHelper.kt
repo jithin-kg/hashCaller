@@ -4,19 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.lifecycle.liveData
 import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
-import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.SplashActivity
-import com.nibble.hashcaller.view.ui.auth.GetInitialUserInfoActivity
-import com.nibble.hashcaller.view.ui.auth.viewmodel.UserInfoViewModel
-import com.nibble.hashcaller.view.ui.contacts.utils.SHAREDPREF_LOGGEDIN
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 
 class UserUploadHelper(

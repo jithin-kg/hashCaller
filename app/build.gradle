@@ -180,8 +180,8 @@ dependencies {
     implementation 'com.klinkerapps:android-smsmms:5.2.6'
     implementation "io.michaelrocks:libphonenumber-android:8.12.16"
 
-    //navifation drawer
-    implementation 'com.google.android.material:material:1.0.0'
+//    //navifation drawer
+//    implementation 'com.google.android.material:material:1.0.0'
 }
 repositories {
     mavenCentral()
