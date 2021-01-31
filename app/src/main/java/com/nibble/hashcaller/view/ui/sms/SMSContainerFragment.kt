@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
@@ -35,7 +37,8 @@ import kotlinx.android.synthetic.main.fragment_message_container.view.*
 
 
 class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
-    TabLayout.OnTabSelectedListener, View.OnClickListener {
+    TabLayout.OnTabSelectedListener, View.OnClickListener,
+    androidx.appcompat.widget.Toolbar.OnMenuItemClickListener {
     private var isDflt = false
 
     // TODO: Rename and change types of parameters
@@ -47,6 +50,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private var smsIdentifiedAsSpamFragment:SMSIdentifiedAsSpamFragment? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    private lateinit var toolbarSms:androidx.appcompat.widget.Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +65,14 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 //        if(checkPermission()){
             messagesView =  inflater.inflate(R.layout.fragment_message_container, container, false)
             viewSms = messagesView
+         toolbarSms = messagesView.findViewById(R.id.toolbarSmS)
+        toolbarSms.setOnMenuItemClickListener(this)
+        toolbarSms.setNavigationOnClickListener(View.OnClickListener {
+            Log.d(TAG, "onCreateView:item clicked ")
+            (activity as MainActivity).showDrawer(it)
+        })
+//        (activity as AppCompatActivity).setSupportActionBar(toolbarSmS)
+
             initViewModel()
         if(checkContactPermission())
         {
@@ -291,5 +303,10 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     override fun onResume() {
         super.onResume()
         this.permissionGivenLiveData.value  = checkContactPermission()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        Log.d(TAG, "onMenuItemClick: ")
+        return true
     }
 }

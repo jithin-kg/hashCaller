@@ -25,8 +25,9 @@
         >
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbarSmS"
             android:layout_width="match_parent"
+            app:navigationIcon="@drawable/ic_baseline_menu_24"
             android:layout_height="?attr/actionBarSize"
 
 

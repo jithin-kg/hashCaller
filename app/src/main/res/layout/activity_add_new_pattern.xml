@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     tools:context="com.nibble.hashcaller.view.ui.ActivityAddNewPattern">
 
+
     <!--    <com.hbb20.CountryCodePicker-->
     <!--        android:id="@+id/countryCodeHolder"-->
     <!--        android:layout_width="wrap_content"-->

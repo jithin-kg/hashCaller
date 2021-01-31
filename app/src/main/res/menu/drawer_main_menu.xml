@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawerHome"
+            android:title="Home"
+            android:icon="@drawable/ic_baseline_settings_24"
+           />
+        <item
+            android:id="@+id/sample"
+            android:title="sdf"
+            android:icon="@drawable/ic_baseline_settings_24"
+            />
+        <item
+            android:id="@+id/sample2"
+            android:title="saf"
+            android:icon="@drawable/ic_baseline_settings_24"
+            />
+
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/profile"
+            android:title="Home"
+            android:icon="@drawable/ic_baseline_settings_24"
+            />
+        <menu>
+            <item
+                android:id="@+id/sample22"
+                android:title="saf"
+                android:icon="@drawable/ic_baseline_settings_24"
+                />
+            <item
+                android:id="@+id/sample222"
+                android:title="saf"
+                android:icon="@drawable/ic_baseline_settings_24"
+                />
+        </menu>
+
+
+    </group>
+</menu>
