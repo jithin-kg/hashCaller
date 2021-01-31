@@ -17,7 +17,6 @@ import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
-import kotlinx.coroutines.channels.consumesAll
 import retrofit2.HttpException
 import java.util.*
 
@@ -28,6 +27,7 @@ import java.util.*
 class ContactsUploadWorker(private val context: Context,private val params:WorkerParameters ) :
         CoroutineWorker(context, params){
     val contacts = mutableListOf<ContactUploadDTO>()
+    private lateinit var contactsListOf12: List<List<ContactUploadDTO>>
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
 
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
@@ -38,15 +38,36 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         try {
 
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
-            if(lastDate==null ){
-               sendContactsToServer()
-            }else{
-                val date = lastDate.date;
-                val dateCompareHelper = DateCompareHelper()
-                if(dateCompareHelper.isSyncDateLimitReached(date, 7)){
-                    sendContactsToServer()
+
+            setNewlySavedContactsList()
+            if(!contactsListOf12.isNullOrEmpty()){
+
+                for (contactSublist in contactsListOf12){
+
+                    val countryCode =   "91" //for emulator country code should be 91
+//            val countryISO = countryCodeHelper.getCountryISO()
+                    val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
+
+                    val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
+                    val contactsNetworkRepository = ContactsNetworkRepository(context)
+                    val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+                    Log.d(TAG, "result:$result")
+                    Log.d(TAG, "body:${result?.body()}")
+                    val cntcts = result?.body()?.cntcts
+                    saveContactsToLocalDB(cntcts)
+                    saveDateInContactLastSycnDate()
                 }
             }
+
+//            if(lastDate==null ){
+//               sendContactsToServer()
+//            }else{
+//                val date = lastDate.date;
+//                val dateCompareHelper = DateCompareHelper()
+//                if(dateCompareHelper.isSyncDateLimitReached(date, 7)){
+//                    sendContactsToServer()
+//                }
+//            }
             //if the previous contact synced date is greater than 7 perform the work
 
             Log.d(TAG, "doWork:")
@@ -58,6 +79,20 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             Log.d(TAG, "doWork: retry")
         }
         return Result.success()
+    }
+
+    private suspend fun setNewlySavedContactsList() {
+        val contactRepository = ContactRepository(context)
+        val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
+        val allcontactsInContentProvider = contactRepository.fetchContacts()
+        for(contact in allcontactsInContentProvider){
+            val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
+            val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
+            if(res.isNullOrEmpty()){
+                contacts.add(contact)
+            }
+        }
+        contactsListOf12 = contacts.chunked(12)
     }
 
     private suspend fun sendContactsToServer() {

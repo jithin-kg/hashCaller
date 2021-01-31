@@ -31,7 +31,7 @@ interface IContactIformationDAO {
      * here change in data in database only occur when new data is inserted
      */
     @Query("SELECT * FROM contacts_information WHERE number LIKE '%'|| :phonNumber || '%' LIMIT 3")
-     suspend fun    search(phonNumber: String):List<ContactTable>
+     suspend fun  search(phonNumber: String):List<ContactTable>
 
 
 //    suspend fun getInfoForNumber(phoneNum: String?) :ContactTable

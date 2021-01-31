@@ -57,7 +57,7 @@ class ContactRepository(context: Context) {
                     contact.name = name
 
                     //encode and hash phone number
-                    phoneNo = Secrets().managecipher(context.packageName, phoneNo)
+//                    phoneNo = Secrets().managecipher(context.packageName, phoneNo)
                     contact.phoneNumber = phoneNo
 
                     contacts.add(contact)
