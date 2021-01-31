@@ -1,10 +1,6 @@
 import android.content.Context
 import android.provider.ContactsContract
-import android.telephony.TelephonyManager
-import androidx.core.content.ContextCompat.getSystemService
-import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
@@ -49,9 +45,9 @@ class ContactRepository(context: Context) {
 //                    contact.phoneNumber = phoneNo
                     //add first 8 number digits for getting  geographical information about a number in api
                     if(phoneNo.length>7){
-                        contact.firstNDigits = phoneNo
+                        contact.hashedPhoneNumber = phoneNo
                     }else{
-                        contact.firstNDigits = phoneNo
+                        contact.hashedPhoneNumber = phoneNo
                     }
 
                     contact.name = name

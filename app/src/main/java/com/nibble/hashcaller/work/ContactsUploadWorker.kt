@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.nibble.hashcaller.Secrets
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
@@ -54,6 +55,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     Log.d(TAG, "result:$result")
                     Log.d(TAG, "body:${result?.body()}")
                     val cntcts = result?.body()?.cntcts
+
                     saveContactsToLocalDB(cntcts)
                     saveDateInContactLastSycnDate()
                 }
@@ -89,7 +91,9 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
             val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
             if(res.isNullOrEmpty()){
-                contacts.add(contact)
+                val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
+                contacts.add(cntctDtoObj)
             }
         }
         contactsListOf12 = contacts.chunked(12)
@@ -140,7 +144,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
         if (cntactsFromServer != null) {
             for(item in cntactsFromServer){
-                val c = ContactTable(null, item.firstNDigits, "sample",
+                val c = ContactTable(null, item.phoneNumber, "sample",
                     item.carrier,item.location, "india", item.spamCount)
                 contactLocalSyncRepository.insertSingleContactItem(c)
                 cts?.add(c)

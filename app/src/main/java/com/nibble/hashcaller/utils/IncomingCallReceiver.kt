@@ -162,23 +162,34 @@ class IncomingCallReceiver : BroadcastReceiver(){
       
         CoroutineScope(Dispatchers.IO).launch {
             val res = SearchNetworkRepository(context).search(num)
-            val result = res?.body()?.cntcts?.get(0)
-            Log.d(TAG, "searchForNumberInServer: result $result")
-            if(result!!.spammCount > 0){
-                val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
+            if(!res?.body()?.cntcts.isNullOrEmpty()){
+                val result = res?.body()?.cntcts?.get(0)
+                Log.d(TAG, "searchForNumberInServer: result $result")
+                if(result!!.spammCount > 0){
+                    val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
                     inComingCallManager.endIncommingCall(context)
+                }
+                val i = Intent(context, ActivityIncommingCallView::class.java)
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                i.putExtra("name", result.name)
+                i.putExtra("phoneNumber", phoneNumber)
+                i.putExtra("spamcount", result.spammCount)
+                i.putExtra("carrier", result.carrier)
+                i.putExtra("location", result.location)
+                context.startActivity(i)
+            }else{
+                //if there is no info about the caller in server db
+                val i = Intent(context, ActivityIncommingCallView::class.java)
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                i.putExtra("name", "")
+                i.putExtra("phoneNumber", phoneNumber)
+                i.putExtra("spamcount", "")
+                i.putExtra("carrier", "")
+                i.putExtra("location", "")
+                context.startActivity(i)
             }
-            val i = Intent(context, ActivityIncommingCallView::class.java)
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            i.putExtra("name", result.name)
-            i.putExtra("phoneNumber", phoneNumber)
-            i.putExtra("spamcount", result.spammCount)
-            i.putExtra("carrier", result.carrier)
-            i.putExtra("location", result.location)
-            context.startActivity(i)
+
         }
-        
-        
        
     }
 

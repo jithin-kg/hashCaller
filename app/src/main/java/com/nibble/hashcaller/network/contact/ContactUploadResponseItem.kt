@@ -5,8 +5,8 @@ import com.nibble.hashcaller.network.search.model.SpammerStatus
 import java.io.Serializable
 
 data class ContactUploadResponseItem(
-    @SerializedName("firstNDigits")
-    val firstNDigits: String,
+    @SerializedName("phoneNumber")
+    val phoneNumber: String,
     @SerializedName("carrier")
     val carrier : String,
 
@@ -19,8 +19,11 @@ data class ContactUploadResponseItem(
     @SerializedName("lineType")
     val lineType:String,
 
-    @SerializedName("spamCount:number")
-    val spamCount:Int
+    @SerializedName("spamCount")
+    val spamCount:Int,
+
+    @SerializedName("name")
+    val name:String
 
 ) : Serializable{
 }
