@@ -91,6 +91,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         smssendersInfoDAO: SMSSendersInfoFromServerDAO
     ) {
 
+
         senderListTobeSendToServer  = mutableListOf()
 
         for (sms in allsmsincontentProvider){
@@ -102,6 +103,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 Log.d(TAG, "doWork: no data recieved from server")
 
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
+
                 val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                 senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))
 

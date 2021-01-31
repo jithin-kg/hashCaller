@@ -356,6 +356,7 @@ companion object{
         startActivity(i)
 //        finish()
     }
+    //todo if existing user get first and last name from server and save in db
 
     override fun onStart() {
         super.onStart()
