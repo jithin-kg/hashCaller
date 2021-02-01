@@ -70,7 +70,7 @@ class SearchViewModel(
 //                 Log.d(TAG, "search: enc hi is $encPhone")
 //                 val encPhone = encryptPhoneNum(hashedPhone, key)
                  val num = formatPhoneNumber(phoneNumber)
-                 hashedPhoneNum.value = Secrets().managecipher(packageName, num!!)//encoding the number with my algorithm
+                 hashedPhoneNum.value = Secrets().managecipher(packageName, num)//encoding the number with my algorithm
 
                  res = searchNetworkRepository.search(hashedPhoneNum.value!!)
                  val result = res?.body()?.cntcts?.get(0)

@@ -9,7 +9,6 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.Observer
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
@@ -161,13 +160,17 @@ class IncomingCallReceiver : BroadcastReceiver(){
         num = Secrets().managecipher(context.packageName, num!!)//encoding the number with my algorithm
       
         CoroutineScope(Dispatchers.IO).launch {
-            val res = SearchNetworkRepository(context).search(num)
+            val searchRepository = SearchNetworkRepository(context)
+            val res = searchRepository.search(num)
             if(!res?.body()?.cntcts.isNullOrEmpty()){
                 val result = res?.body()?.cntcts?.get(0)
                 Log.d(TAG, "searchForNumberInServer: result $result")
                 if(result!!.spammCount > 0){
                     val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
                     inComingCallManager.endIncommingCall(context)
+
+                    incrementTotalSpamCountByHashCallerInServer(searchRepository)
+
                 }
                 val i = Intent(context, ActivityIncommingCallView::class.java)
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -191,6 +194,16 @@ class IncomingCallReceiver : BroadcastReceiver(){
 
         }
        
+    }
+
+    /**
+     * increment the total number of calls blocked by hash caller in server
+     * for analytics
+     */
+    private suspend fun incrementTotalSpamCountByHashCallerInServer(
+        searchRepository: SearchNetworkRepository
+    ) {
+            searchRepository.incrementTotalSpamCount()
     }
 
     private fun observeSearchLiveData(

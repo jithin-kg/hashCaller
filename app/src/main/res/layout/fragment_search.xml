@@ -7,6 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".view.ui.contacts.search.SearchFragment">
 
+    <ImageView
+        android:id="@+id/imgViewLock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:src="@drawable/ic_baseline_green_lock"
+        app:layout_constraintBottom_toBottomOf="@+id/shimmer_view_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/shimmer_view_container" />
+
     <Button
         android:id="@+id/btnSampleTransition"
         android:layout_width="wrap_content"
@@ -14,8 +24,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="sample"
-        android:visibility="gone"
         android:transitionName="@string/transition_btn"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,6 +34,7 @@
         android:id="@+id/searchViewPhoneNum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:iconifiedByDefault="true"
         android:transitionName="@string/search_view_transition"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shimmer_view_container"
@@ -31,32 +42,61 @@
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_view_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:shimmer_repeat_count="1"
-        app:shimmer_auto_start="false"
-        android:layout_marginTop="24dp"
+        android:layout_width="0dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
         app:layout_constraintEnd_toStartOf="@+id/btnSampleTransition"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
-    <EditText
-        android:id="@+id/edtTextPhoneSearch"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:ems="10"
-        android:inputType="textPersonName"
-         />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imgViewLock"
+        app:layout_constraintTop_toBottomOf="@+id/tvSearchIndicator"
+        app:shimmer_auto_start="false"
+        app:shimmer_colored="false"
+        app:shimmer_repeat_count="1">
+
+        <EditText
+            android:id="@+id/edtTextPhoneSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textColor="@color/textColor" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <include
         android:id="@+id/layoutSearchResult"
-        android:visibility="gone"
         layout="@layout/search_result_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shimmer_view_container" />
+
+    <TextView
+        android:id="@+id/tvSearchIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text=""
+        android:textColor="@color/textColor"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.042"
+        app:layout_constraintStart_toEndOf="@+id/imgViewLock"
+        app:layout_constraintTop_toBottomOf="@+id/imgVSearchBack" />
+
+    <ImageView
+        android:id="@+id/imgVSearchBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

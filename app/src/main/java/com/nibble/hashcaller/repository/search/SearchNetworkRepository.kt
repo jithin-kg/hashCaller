@@ -28,6 +28,15 @@ class SearchNetworkRepository(private val context: Context){
 //        return response
          return retrofitService?.search(SearchDTO(phoneNum), token)
     }
+
+    suspend fun incrementTotalSpamCount() {
+        retrofitService = RetrofitClient.createaService(ISearchService::class.java)
+        val tokenManager = TokenManager(context)
+        val token = tokenManager.getToken()
+
+        retrofitService!!.incrementTotalSpamCount(token)
+    }
+
     companion object{
         private const val TAG = "__SearchNetworkRepository"
     }

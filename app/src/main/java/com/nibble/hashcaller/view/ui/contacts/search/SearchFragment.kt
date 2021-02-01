@@ -1,24 +1,23 @@
 package com.nibble.hashcaller.view.ui.contacts.search
 
+import android.content.Context
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
-import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.contact_list.textVContactName
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
+
 import kotlinx.android.synthetic.main.search_result_item.*
 
 
@@ -39,6 +38,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     private var param2: String? = null
     private lateinit var viewSearch:View
     private lateinit  var searchViewmodel: SearchViewModel
+    private lateinit var searchViewPhone: SearchView
     private var key:String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +60,33 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
         // Inflate the layout for this fragment
         viewSearch =  inflater.inflate(R.layout.fragment_search, container, false)
-
+        this.searchViewPhone = viewSearch.findViewById(R.id.searchViewPhoneNum)
+        requestPreventSoftInputMovingLayoutItems()
+        showKeyboardOnLoad()
+        setHasOptionsMenu(true) // for having toolbar
         return viewSearch
+    }
+
+    private fun showKeyboardOnLoad() {
+
+
+        this.searchViewPhone.isIconifiedByDefault = true;
+        this.searchViewPhone.isFocusable = true;
+        this.searchViewPhone.isIconified = false;
+        this.searchViewPhone.requestFocusFromTouch();
+        val imgr =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        Log.d(TAG, "onCreateOptionsMenu: ")
+        inflater.inflate(R.menu.search_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun requestPreventSoftInputMovingLayoutItems() {
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,10 +103,12 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     private fun observeSearchResults() {
         this.searchViewmodel.searchResultLiveData.observe(viewLifecycleOwner, Observer {
             if(it!=null){
+                Log.d(TAG, "observeSearchResults: ")
                 layoutSearchResult.visibility = View.VISIBLE
                 textVContactName.text = it.name
                 tvSearchResultLocation.text = it.location
                 tvSearchResultNameFirstLetter.text  = it.name[0].toString()
+
 
             }
 
@@ -92,6 +119,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         this.searchViewmodel.hashedPhoneNum.observe(viewLifecycleOwner, Observer {
             no->
             edtTextPhoneSearch.setText(no)
+            tvSearchIndicator.text = "Searching for"
             shimmer_view_container.startShimmer()
         } )
     }
@@ -142,9 +170,16 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
     override fun onQueryTextChange(newText: String?): Boolean {
 //        this.viewSearch.edtTextPhoneSearch.setText(newText)
-        //TODO move this to view model,this is a computation running on ui thread
-        layoutSearchResult.visibility = View.GONE
-        this.searchViewmodel.search(newText!!, key, requireActivity().packageName)
+        tvSearchIndicator.text = ""
+        if(!newText.isNullOrEmpty()){
+            layoutSearchResult.visibility = View.GONE
+            this.searchViewmodel.search(newText!!, key, requireActivity().packageName)
+        }else{
+            edtTextPhoneSearch.setText("")
+            tvSearchIndicator.text = ""
+        }
+
+
 
         //public key comes from server, saved in shared preferences
 //        phone number is hashed and encoded in and while sending encrypted

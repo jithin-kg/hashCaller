@@ -18,4 +18,5 @@
     <string name="safety_net_api_key">AIzaSyDkpiDiYb84psGet7KKcqNG3DN3dgfyy18</string>
     <string name="start">start</string>
     <string name="close">close</string>
+    <string name="searching_in_progress">Searching for</string>
 </resources>

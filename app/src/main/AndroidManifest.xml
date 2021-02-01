@@ -141,7 +141,10 @@
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
             android:parentActivityName=".view.ui.MainActivity"
-            android:theme="@style/AppTheme"> <!-- prent activity is need to define the natural hierarchy of the application / navigation -->
+            android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/AppTheme">
+<!--              android:windowSoftInputMode="adjustNothing" https://stackoverflow.com/questions/4207880/android-how-do-i-prevent-the-soft-keyboard-from-pushing-my-view-up#:~:text=I%20was%20able%20to%20avoid,that%20sits%20above%20the%20buttons.&text=didnt.&text=This%20worked%20like%20a%20charm,Its%20smoother.> -->
+            <!-- prent activity is need to define the natural hierarchy of the application / navigation -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
