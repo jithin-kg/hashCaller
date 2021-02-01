@@ -1,12 +1,14 @@
 package com.nibble.hashcaller.view.ui.contacts.search
 
-import android.content.Context
+import android.app.Activity
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageButton
 import android.widget.SearchView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +19,6 @@ import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import kotlinx.android.synthetic.main.contact_list.textVContactName
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
-
 import kotlinx.android.synthetic.main.search_result_item.*
 
 
@@ -40,6 +41,8 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     private lateinit  var searchViewmodel: SearchViewModel
     private lateinit var searchViewPhone: SearchView
     private var key:String? = null
+    private lateinit var imgBtnBack:ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -60,11 +63,20 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 
         // Inflate the layout for this fragment
         viewSearch =  inflater.inflate(R.layout.fragment_search, container, false)
-        this.searchViewPhone = viewSearch.findViewById(R.id.searchViewPhoneNum)
+
+        initLayoutItems()
         requestPreventSoftInputMovingLayoutItems()
         showKeyboardOnLoad()
         setHasOptionsMenu(true) // for having toolbar
         return viewSearch
+    }
+
+    /**
+     * initialises view elements on OncreateView otherwise kotlin synthetic binding causing nullPointer exceptions
+     */
+    private fun initLayoutItems() {
+        this.searchViewPhone = viewSearch.findViewById(R.id.searchViewPhoneNum)
+        this.imgBtnBack =  viewSearch.findViewById(R.id.imgBtnSearchBack)
     }
 
     private fun showKeyboardOnLoad() {
@@ -74,10 +86,10 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         this.searchViewPhone.isFocusable = true;
         this.searchViewPhone.isIconified = false;
         this.searchViewPhone.requestFocusFromTouch();
-        val imgr =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+       showSoftInput()
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         Log.d(TAG, "onCreateOptionsMenu: ")
@@ -86,7 +98,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     }
 
     private fun requestPreventSoftInputMovingLayoutItems() {
-        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -128,6 +140,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         viewSearch.btnSampleTransition.setOnClickListener(this)
         viewSearch.searchViewPhoneNum.setOnQueryTextFocusChangeListener(this)
         searchViewPhoneNum.setOnQueryTextListener(this)
+        this.imgBtnBack.setOnClickListener(this)
 
 
     }
@@ -154,10 +167,34 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     }
 
     override fun onClick(v: View?) {
-       requireActivity().onBackPressed();
+            when(v?.id){
+                R.id.imgBtnSearchBack ->{
+                    closeSearchFragment()
+                }
+            }
 //        (activity as MainActivity).removeSearchFragment()
 //        (activity as MainActivity).addFragmentsAgain()
 
+    }
+
+    private fun closeSearchFragment() {
+        hideSoftInput()
+        requireActivity().onBackPressed()
+    }
+
+    /**
+     * shows keyboard
+     */
+    private fun showSoftInput() {
+//        val imgr =
+//            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//        imgr.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.RESULT_SHOWN);
+    }
+
+    private fun hideSoftInput() {
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
     }
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {

@@ -82,12 +82,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
+    var  searchFragment: SearchFragment? = null
+
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
 
-    var  searchFragment: SearchFragment? = null
 //    var layoutBottomSheet: ConstraintLayout
 
     //    MainActivityHelper firebaseHelper;
@@ -443,11 +444,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
         }
+        if(searchFragment!=null)
+        if(searchFragment!!.isAdded){
+            ft.hide(searchFragment!!)
+        }
         // Commit changes
         ft.commit()
     }
 
-    private fun showContactsFragment() {
+     fun showContactsFragment() {
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
         if (contactFragment.isAdded) { // if the fragment is already in container
@@ -467,6 +472,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
         }
+         if(searchFragment!=null)
+             if(searchFragment!!.isAdded){
+                 ft.hide(searchFragment!!)
+             }
 //        // Commit changes
         /**
          * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
@@ -536,8 +545,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun showDialPad() {}
      fun showCallFragment() {
         val ft = supportFragmentManager.beginTransaction()
-        if (callFragment.isAdded) { // if the fragment is already in container
-            ft.show(callFragment)
+        if (callFragment.isAdded) { // if the fragment is already in container(callFragment)
             fabBtnShowDialpad.visibility = View.VISIBLE
         }
         // Hide fragment B
