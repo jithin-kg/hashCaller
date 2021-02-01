@@ -45,9 +45,9 @@ class SearchViewModel(
     fun getContactsFromDb(phoneNumber: String)= viewModelScope.launch {
 
         if(!phoneNumber.trim().equals("")) {
-            val c = contactLocalSyncRepository.getContact(phoneNumber)
-            Log.d(TAG, "size is ${c?.size} ")
-            mt.value = c
+//            val c = contactLocalSyncRepository.getContact(phoneNumber)
+//            Log.d(TAG, "size is ${c?.size} ")
+//            mt.value = c
         }else{
             mt.value = emptyList()
         }

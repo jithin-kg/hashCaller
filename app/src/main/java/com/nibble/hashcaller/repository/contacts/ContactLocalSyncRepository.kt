@@ -18,7 +18,7 @@ class ContactLocalSyncRepository(
 
     var  contactsFomLocalDB = contactLisDAO?.getContacts()
 
-    suspend fun getContact(phonNumber:String): List<ContactTable>? {
+    suspend fun getContact(phonNumber:String): ContactTable? {
         val res = contactLisDAO?.search(phonNumber)
 //        val res = contactLisDAO?.search()
 //        contactsFomLocalDB = res

@@ -28,7 +28,7 @@ import java.util.*
 class ContactsUploadWorker(private val context: Context,private val params:WorkerParameters ) :
         CoroutineWorker(context, params){
     val contacts = mutableListOf<ContactUploadDTO>()
-    private lateinit var contactsListOf12: List<List<ContactUploadDTO>>
+    private  var contactsListOf12: List<List<ContactUploadDTO>> = mutableListOf()
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
 
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
@@ -44,7 +44,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             if(!contactsListOf12.isNullOrEmpty()){
 
                 for (contactSublist in contactsListOf12){
-
+                    Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
                     val countryCode =   "91" //for emulator country code should be 91
 //            val countryISO = countryCodeHelper.getCountryISO()
                     val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
@@ -55,7 +55,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     Log.d(TAG, "result:$result")
                     Log.d(TAG, "body:${result?.body()}")
                     val cntcts = result?.body()?.cntcts
-
+                    Log.d("__size", "doWork: result list size is ${cntcts!!.size}")
                     saveContactsToLocalDB(cntcts)
                     saveDateInContactLastSycnDate()
                 }
@@ -87,35 +87,40 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         val contactRepository = ContactRepository(context)
         val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
         val allcontactsInContentProvider = contactRepository.fetchContacts()
+
         for(contact in allcontactsInContentProvider){
-            val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
-            val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
-            if(res.isNullOrEmpty()){
-                val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
-                val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
-                contacts.add(cntctDtoObj)
+
+            if(!contact.phoneNumber.isNullOrEmpty()){
+                val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
+                val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
+                if(res==null){
+                    Log.d("__NOTINDB", "$formattedPhoneNum")
+                    val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                    val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
+                    contacts.add(cntctDtoObj)
+                }
             }
         }
         contactsListOf12 = contacts.chunked(12)
     }
 
-    private suspend fun sendContactsToServer() {
-        val contactRepository = ContactRepository(context)
-        contacts.addAll(contactRepository.fetchContacts())
-        val countryCodeHelper = CountrycodeHelper(context)
-//            val countryCode =   countryCodeHelper.getCountrycode()
-        val countryCode =   "91" //for emulator country code should be 91
-//            val countryISO = countryCodeHelper.getCountryISO()
-        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
+    
+    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<ContactUploadResponseItem>?) {
+        Log.d(TAG, "saveContactsToLocalDB:  ")
+        var cts:MutableList<ContactTable>? = mutableListOf();
 
-        val contactSyncDto = ContactsSyncDTO(contacts, countryCode.toString(), countryISO)
-        val contactsNetworkRepository = ContactsNetworkRepository(context)
-        val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
-        Log.d(TAG, "result:$result")
-        Log.d(TAG, "body:${result?.body()}")
-        val cntcts = result?.body()?.cntcts
-        saveContactsToLocalDB(cntcts)
-        saveDateInContactLastSycnDate()
+        if (cntactsFromServer != null) {
+            for(item in cntactsFromServer){
+                Log.d(TAG, "saveContactsToLocalDB: inserting ${item}")
+                val c = ContactTable(null, item.phoneNumber, "sample",
+                    item.carrier,item.location, "india", item.spamCount)
+                contactLocalSyncRepository.insertSingleContactItem(c)
+                cts?.add(c)
+            }
+        }
+        Log.d(TAG, "saveContactsToLocalDB: inserting ${cts}")
+        Log.d(TAG, "saveContactsToLocalDB: inserting size is  ${cts!!.size}")
+        contactLocalSyncRepository.insertContacts(cts!!)
     }
 
     private suspend fun saveDateInContactLastSycnDate() {
@@ -123,6 +128,24 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         this.contactsLastSyncedDateDAO.insert(ContactLastSyncedDate(null, Date()))
     }
 
+//    private suspend fun sendContactsToServer() {
+//        val contactRepository = ContactRepository(context)
+//        contacts.addAll(contactRepository.fetchContacts())
+//        val countryCodeHelper = CountrycodeHelper(context)
+////            val countryCode =   countryCodeHelper.getCountrycode()
+//        val countryCode =   "91" //for emulator country code should be 91
+////            val countryISO = countryCodeHelper.getCountryISO()
+//        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
+//
+//        val contactSyncDto = ContactsSyncDTO(contacts, countryCode.toString(), countryISO)
+//        val contactsNetworkRepository = ContactsNetworkRepository(context)
+//        val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+//        Log.d(TAG, "result:$result")
+//        Log.d(TAG, "body:${result?.body()}")
+//        val cntcts = result?.body()?.cntcts
+////        saveContactsToLocalDB(cntcts)
+//        saveDateInContactLastSycnDate()
+//    }
     private suspend fun uploadContactsToServer() {
 //        val contactRepository = ContactRepository(context)
 //        contacts.addAll(contactRepository.fetchContacts())
@@ -138,22 +161,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     }
 
-    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<ContactUploadResponseItem>?) {
-
-        var cts:MutableList<ContactTable>? = mutableListOf();
-
-        if (cntactsFromServer != null) {
-            for(item in cntactsFromServer){
-                val c = ContactTable(null, item.phoneNumber, "sample",
-                    item.carrier,item.location, "india", item.spamCount)
-                contactLocalSyncRepository.insertSingleContactItem(c)
-                cts?.add(c)
-            }
-        }
-        Log.d(TAG, "saveContactsToLocalDB: inserting ${cts}")
-        Log.d(TAG, "saveContactsToLocalDB: inserting size is  ${cts!!.size}")
-        contactLocalSyncRepository.insertContacts(cts!!)
-    }
+   
 
     companion object{
         private const val TAG = "__ContactsUploadWorker"

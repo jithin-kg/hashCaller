@@ -34,13 +34,13 @@ class IndividualcontactViewModel(
         if(!phoneNumber.trim().equals("")) {
             var  num:String = phoneNumber
 
-            num =  num.replace(Regex("[^A-Za-z0-9]"), "")
+//            num =  num.replace(Regex("[^A-Za-z0-9]"), "")
             Log.d(TAG, "getContactsFromDb: num is $num")
 
             val c = repository.getIndividualContact(num)
             Log.d(TAG, "size is $c ")
-            if(c!=null && c.size>=1){
-                mt.value = c[0]
+            if(c!=null ){
+                mt.value = c
             }
 
         }else{

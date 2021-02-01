@@ -41,7 +41,7 @@ class IndividualContactRepository(private val dao: IContactIformationDAO, privat
      * Returns the contact information for the IndividualcontactViewactivity
      * from the local db with additional contact information succh as location, carrier..
      */
-    suspend fun getIndividualContact(phoneNum: String): List<ContactTable> {
+    suspend fun getIndividualContact(phoneNum: String): ContactTable {
         val res = dao.search(phoneNum)
         return res
     }
