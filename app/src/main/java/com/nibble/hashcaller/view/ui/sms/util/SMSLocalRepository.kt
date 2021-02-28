@@ -190,7 +190,8 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                     objSMS.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
                     Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
-                    val num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                    var num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                    num = num.replace("+", "")
 //                    objSMS.address = num
 
                     objSMS.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
@@ -256,7 +257,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                         objSMS.address = SpannableStringBuilder(num)
                     }
 
-                    objSMS.addressString = num
+                    objSMS.addressString = num.replace("+","")
 
 
 //                    val count =setSMSReadStatus(objSMS, objSMS.addressString!!)
@@ -309,7 +310,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 //        data = removeSpamSmS(data)
         //todo change the two function to work parellaly for increased perfomnce
         setSMSReadStatus(data)
-        setNameIfExistInContactContentProvider(data)
+//        setNameIfExistInContactContentProvider(data)
     }catch (e:java.lang.Exception){
         Log.d(TAG, "fetch: exception $e")
     }

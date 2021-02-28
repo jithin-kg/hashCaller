@@ -107,7 +107,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
             }else->{
-            contactAddress = intent.getStringExtra(CONTACT_ADDRES)
+            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
         }

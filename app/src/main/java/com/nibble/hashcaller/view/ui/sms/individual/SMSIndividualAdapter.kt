@@ -79,7 +79,9 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 //    return smsList.size
     override fun getItemViewType(position: Int): Int {
 //        return super.getItemViewType(position)
+        
         if(smsList.isNotEmpty()){
+            Log.d(TAG, "getItemViewType: ${smsList[position].type }")
             if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
                 //sent message 2
                 return VIEW_TYPE_MESSAGE_SENT
@@ -89,6 +91,11 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX){
 //            Log.d(TAG, "getItemViewType: outbox msg ${Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX}")
                 return VIEW_TYPE_MESSAGE_OUTBOX
+            }
+            else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_ALL){
+                Log.d(TAG, "getItemViewType: 0 ")
+                return VIEW_TYPE_MESSAGE_RECEIVED
+
             }
             else{
                 return  VIEW_TYPE_DATE
@@ -114,6 +121,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 (holder as SentSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
             VIEW_TYPE_MESSAGE_RECEIVED->{
+                Log.d(TAG, "onBindViewHolder:VIEW_TYPE_MESSAGE_RECEIVED ")
                 (holder as ReceivedSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
             VIEW_TYPE_DATE->{
