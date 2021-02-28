@@ -112,6 +112,7 @@ private fun sendUserInfo() {
                             saveToSharedPref(true)
                             val i  = Intent(this, MainActivity::class.java)
                             startActivity(i)
+                            finish()
 
                         }
                         Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")

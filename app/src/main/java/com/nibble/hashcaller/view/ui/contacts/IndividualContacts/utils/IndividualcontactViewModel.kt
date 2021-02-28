@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.launch
 
 /**
@@ -31,9 +32,11 @@ class IndividualcontactViewModel(
     @SuppressLint("LongLogTag")
     fun getContactsFromDb(phoneNumber: String)= viewModelScope.launch {
 
-        if(!phoneNumber.trim().equals("")) {
-            var  num:String = phoneNumber
+        if(phoneNumber.trim() != "") {
 
+
+            var  num:String = phoneNumber
+            num = formatPhoneNumber(num)
 //            num =  num.replace(Regex("[^A-Za-z0-9]"), "")
             Log.d(TAG, "getContactsFromDb: num is $num")
 

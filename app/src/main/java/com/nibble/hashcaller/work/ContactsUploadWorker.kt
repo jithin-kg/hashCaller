@@ -112,7 +112,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         if (cntactsFromServer != null) {
             for(item in cntactsFromServer){
                 Log.d(TAG, "saveContactsToLocalDB: inserting ${item}")
-                val c = ContactTable(null, item.phoneNumber, "sample",
+                val c = ContactTable(null, item.phoneNumber, item.name,
                     item.carrier,item.location, "india", item.spamCount)
                 contactLocalSyncRepository.insertSingleContactItem(c)
                 cts?.add(c)

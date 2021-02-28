@@ -205,12 +205,15 @@ companion object{
                              Log.d(TAG, "onSignedInInitialize:checkIfNewUser Returned true")
                              startGetUserInfoAcitvity()
 
-                         }else{
 
+                         }else{
+                             Log.d(TAG, "onSignedInInitialize: else part going in ")
                              if(isNewUserInServer()){
 
-                                 val i = Intent(this, GetInitialUserInfoActivity::class.java)
-                                 startActivity(i)
+//                                 val i = Intent(this, GetInitialUserInfoActivity::class.java)
+//                                 startActivity(i)
+                                 startGetUserInfoAcitvity()
+
 
                              }else{
                                  //already existing user in server
@@ -219,6 +222,7 @@ companion object{
 
                                  val i = Intent(this, MainActivity::class.java)
                                  startActivity(i)
+                                 finish()
                              }
                          }
 
@@ -228,6 +232,7 @@ companion object{
 
                          val i = Intent(this, MainActivity::class.java)
                          startActivity(i)
+                         finish()
                      }
 
 //                    generateEncryptedKey()
@@ -254,7 +259,7 @@ companion object{
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-
+            Log.d(TAG, "onActivityResult: note this ")
 //            IdpResponse response = IdpResponse.fromResultIntent(data);
 //            if (resultCode == Activity.RESULT_OK) {
             if(rcfirebaseAuth.currentUser!=null){
@@ -262,7 +267,7 @@ companion object{
                 user = rcfirebaseAuth?.currentUser
                 val uid = user!!.uid
 
-                onSignedInInitialize()
+//                onSignedInInitialize()
             }
 
 
@@ -351,10 +356,10 @@ companion object{
     }
 
     private fun startGetUserInfoAcitvity() {
-
+        Log.d(TAG, "startGetUserInfoAcitvity: called")
         val i = Intent(this, GetInitialUserInfoActivity::class.java)
         startActivity(i)
-//        finish()
+        finish()
     }
     //todo if existing user get first and last name from server and save in db
 

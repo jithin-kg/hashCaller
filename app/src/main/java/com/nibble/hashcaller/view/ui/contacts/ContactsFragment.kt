@@ -46,6 +46,7 @@ private const val ARG_PARAM2 = "param2"
  * A simple [Fragment] subclass.
  * Use the [ContactsFragment.newInstance] factory method to
  * create an instance of this fragment.
+ *
  */
 class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
     private var isDflt = false

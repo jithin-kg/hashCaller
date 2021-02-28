@@ -38,6 +38,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:iconifiedByDefault="true"
+        android:queryHint="Enter phone Number here.."
         android:transitionName="@string/search_view_transition"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
-
             android:inputType="textPersonName"
             android:textColor="@color/textColor" />
     </com.facebook.shimmer.ShimmerFrameLayout>
@@ -74,6 +74,7 @@
         layout="@layout/search_result_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

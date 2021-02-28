@@ -31,14 +31,20 @@ class ActivityPhoneAuth : AppCompatActivity() {
                 before: Int,
                 count: Int
             ) {
-                val hashGenerator = HasValueGenerator()
-                val hashValue: String? =
-                    hashGenerator.generateHash(editTextPhone?.text.toString())
-                if (!displayedInstruction) {
-                    textViewInstruction?.setText("Take a look at how we save your phone number")
-                    displayedInstruction = true
+                if(editTextPhone.text.isEmpty()){
+                    textViewHashValue.text = ""
+                    textViewInstruction?.text = ""
+                }else{
+                    val hashGenerator = HasValueGenerator()
+                    val hashValue: String? =
+                        hashGenerator.generateHash(editTextPhone?.text.toString())
+                    if (!displayedInstruction) {
+                        textViewInstruction?.text = "Take a look at how we save your phone number"
+                        displayedInstruction = true
+                    }
+                    textViewHashValue?.text = hashValue
                 }
-                textViewHashValue?.text = hashValue
+
             }
 
             override fun afterTextChanged(s: Editable) {
