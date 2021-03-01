@@ -7,10 +7,9 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.OnLongClickListener
-import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -121,7 +120,7 @@ class SMSListAdapter(private val context: Context,
             }
         }
     }
-    inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
          var layoutExpandable: ConstraintLayout = view.layoutExpandable
          private val name = view.textVSMSContactName
          private val circle = view.textViewSMScontactCrclr;
@@ -168,7 +167,7 @@ class SMSListAdapter(private val context: Context,
 
             view.setOnLongClickListener(OnLongClickListener { v ->
 //                listener.onLongItemClick(v, viewHolder.getAdapterPosition())
-                    longPresHandler.onLongPressed(v, this.adapterPosition, sms.id,
+                    longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
                         sms.addressString!!
                     )
                 true
@@ -308,7 +307,20 @@ class SMSListAdapter(private val context: Context,
              }
          }
 
-     }
+//        https://stackoverflow.com/questions/26466877/how-to-create-context-menu-for-recyclerview
+        override fun onCreateContextMenu(
+            menu: ContextMenu?,
+            v: View?,
+            menuInfo: ContextMenu.ContextMenuInfo?
+        ) {
+            menu!!.add(
+                Menu.NONE, R.id.deleteMenuItem,
+                Menu.NONE, "delete");
+
+        }
+        
+
+    }
     class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 //            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id

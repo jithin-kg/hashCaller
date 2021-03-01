@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="?attr/actionBarSize"
+    tools:context=".view.ui.MainActivity"
     android:id="@+id/MessagesFragment">
 
     <FrameLayout
@@ -12,7 +14,6 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="?attr/actionBarSize"
         android:focusableInTouchMode="true">
-
     </FrameLayout>
 
 
@@ -30,20 +31,66 @@
             app:navigationIcon="@drawable/ic_baseline_menu_24"
             android:layout_height="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways">
-            <SearchView
-                android:id="@+id/searchViewMessages"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/smsToolbarLayoutItems"
                 android:layout_width="match_parent"
-                android:cursorVisible="false"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:focusedByDefault="false"
-                android:iconifiedByDefault="false"
-                android:hint="search phone, name, hash..."
-                android:focusable="false"
-                android:background="#00000000"
-                android:paddingBottom="10dp"
-                android:queryHint="Search numbers, names" />
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/imgBtnTbrBlock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:visibility="invisible"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_baseline_block_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnTbrArchive" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnTbrArchive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:visibility="invisible"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_baseline_archive_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnTbrDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="invisible"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_delete_blue_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrArchive"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                    <SearchView
+                    android:id="@+id/searchViewMessages"
+                    android:layout_width="match_parent"
+                    android:cursorVisible="false"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:focusedByDefault="false"
+                    android:iconifiedByDefault="false"
+                    android:hint="search phone, name, hash..."
+                    android:focusable="false"
+                    android:background="#00000000"
+                    android:paddingBottom="10dp"
+                    android:queryHint="Search numbers, names" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.appcompat.widget.Toolbar>
 

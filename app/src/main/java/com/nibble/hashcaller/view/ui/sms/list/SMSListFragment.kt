@@ -20,19 +20,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.send.SendTestActivity
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
-
 import kotlinx.android.synthetic.main.fragment_messages_list.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
+import kotlinx.android.synthetic.main.sms_list_view.view.*
 
 
 class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPressHandler {
@@ -45,6 +45,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
     private lateinit var cntx:Context
+    private lateinit var recyclerV:RecyclerView
 
     private var smsLIst:MutableList<SMS>? = null
     private lateinit var sView:SearchView
@@ -53,12 +54,16 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var markingStarted = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
 
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,8 +82,21 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 
 
         observePermissionLiveData()
+        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
+        registerForContextMenu( this.recyclerV) // context menu registering
         return  viewMesages
     }
+
+//    override fun onCreateContextMenu(
+//        menu: ContextMenu,
+//        v: View,
+//        menuInfo: ContextMenu.ContextMenuInfo?
+//    ) {
+//        Log.d(TAG, "onCreateContextMenu: ")
+//        super.onCreateContextMenu(menu, v, menuInfo)
+//        requireActivity().menuInflater.inflate(R.menu.sms_container_menu, menu);
+//    }
+
     private fun observePermissionLiveData() {
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
             if(value == true){
@@ -268,6 +286,20 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         Log.d(TAG, "onLongPressed: pos ${pos}")
         Log.d(TAG, "onLongPressed: id ${id}")
         Log.d(TAG, "onLongPressed: addresss ${address}")
+        (parentFragment as SMSContainerFragment?)!!.hideSearchView()
+        (parentFragment as SMSContainerFragment?)!!.showToolbarButtons()
+
+        markItem(v, id, address)
+    }
+
+    /**
+     * mark for deletion or archival or block of sms list
+     */
+    private fun markItem(v: View, id: Long, address: String) {
+        v.smsMarked.visibility = View.VISIBLE
+        MarkedItemsHandler.markedItems.add(id)
+//        v.textViewSMScontactCrclr.background = requireContext().getDrawable(R.drawable.contact_circular_marked_background)
+
     }
 
 

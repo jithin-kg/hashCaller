@@ -15,9 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -54,7 +52,6 @@ import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.drawer_header.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -123,9 +120,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         setupContactUploadWork()
 
     }
+//    override fun onCreateContextMenu(menu: ContextMenu, v: View,
+//                                     menuInfo: ContextMenu.ContextMenuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo)
+//        val inflater: MenuInflater = menuInflater
+//        inflater.inflate(R.menu.sms_container_menu, menu)
+//    }
 
     @SuppressLint("SetTextI18n")
     private fun observeUserInfoLiveData() {
+
         this.userInfoViewModel.userInfo.observe(this, Observer {
             Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
             if(it !=null)
@@ -508,7 +512,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.show(callFragment)
             fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
-        }else{
+        }else if(messagesFragment.isVisible){
+           if(!messagesFragment.isSearchViewVisible()){
+               messagesFragment.showSearchView()
+           }else{
+               super.onBackPressed()
+
+           }
+
+        }
+
+        else{
             bottomNavigationView.visibility = View.VISIBLE
 
             //for hiding search fragment

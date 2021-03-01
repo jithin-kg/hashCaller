@@ -29,6 +29,8 @@ import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.work.DESTINATION_ACTIVITY
 import com.nibble.hashcaller.work.INDIVIDUAL_SMS_ACTIVITY
@@ -67,6 +69,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             viewSms = messagesView
          toolbarSms = messagesView.findViewById(R.id.toolbarSmS)
         toolbarSms.setOnMenuItemClickListener(this)
+//        toolbarSms.inflateMenu(R.menu.sms_container_menu)
         toolbarSms.setNavigationOnClickListener(View.OnClickListener {
             Log.d(TAG, "onCreateView:item clicked ")
             (activity as MainActivity).showDrawer(it)
@@ -174,10 +177,13 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
     }
     private fun initListeners() {
+
         tabLayoutMessages.addOnTabSelectedListener(this)
         this.messagesView.fabBtnDeleteSMS.setOnClickListener(this)
         this.messagesView.fabBtnDeleteSMSExpanded.setOnClickListener(this)
         this.fabSendNewSMS.setOnClickListener(this)
+        this.imgBtnTbrDelete.setOnClickListener(this)
+
     }
 
     private fun setupViewPager(viewPagerMessages: ViewPager?) {
@@ -284,8 +290,19 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                 i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
                 startActivity(i)
             }
+            R.id.imgBtnTbrDelete ->{
+                deleteMarkedSMSThreads()
+            }
         }
     }
+
+    private fun deleteMarkedSMSThreads() {
+        for(id in markedItems){
+            this.viewmodel.deleteThread(id)
+            markedItems.remove(id)
+        }
+    }
+
     companion object {
         private const val TAG = "__SMSContainerFragment"
         var recyclerViewSpamSms:RecyclerView? = null
@@ -310,5 +327,30 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         Log.d(TAG, "onMenuItemClick: ")
         return true
+    }
+
+    fun hideSearchView() {
+        searchViewMessages.visibility = View.INVISIBLE
+    }
+
+    fun showToolbarButtons() {
+        imgBtnTbrDelete.visibility = View.VISIBLE
+        imgBtnTbrArchive.visibility = View.VISIBLE
+        imgBtnTbrBlock.visibility = View.VISIBLE
+
+    }
+
+    fun showSearchView() {
+        searchViewMessages.visibility = View.VISIBLE
+        imgBtnTbrDelete.visibility = View.INVISIBLE
+        imgBtnTbrArchive.visibility = View.INVISIBLE
+        imgBtnTbrBlock.visibility = View.INVISIBLE
+
+    }
+
+    fun isSearchViewVisible(): Boolean {
+        if(searchViewMessages.visibility== View.VISIBLE)
+            return true
+        return false
     }
 }
