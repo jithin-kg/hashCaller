@@ -35,7 +35,7 @@ import kotlinx.android.synthetic.main.fragment_messages_list.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 
 
-class SMSListFragment : Fragment(), View.OnClickListener {
+class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPressHandler {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -195,8 +195,9 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private fun initRecyclerView() {
         rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
-            smsRecyclerAdapter = SMSListAdapter(context){id:String, pos:Int,
-                                                         pno:String->onContactItemClicked(id, pos, pno) }
+            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){id:String, pos:Int,
+                                                         pno:String->onContactItemClicked(id, pos, pno)  }
+//            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter
 
 //                setContacts()
@@ -207,6 +208,11 @@ class SMSListFragment : Fragment(), View.OnClickListener {
     private fun onDeleteItemClicked(){
 
     }
+    private fun onLongpressClickLister(v:View, position:Int) {
+
+
+    }
+
     private fun onContactItemClicked(id: String, pos: Int, pno: String) {
         Log.d(TAG, "onContactItemClicked address is : $pno")
 //        val newList:MutableList<SMS> = mutableListOf()
@@ -255,5 +261,14 @@ class SMSListFragment : Fragment(), View.OnClickListener {
         val metrics: DisplayMetrics = resources.getDisplayMetrics()
         return metrics.heightPixels
     }
+
+    override fun onLongPressed(v:View, pos:Int, id: Long, address:String) {
+
+        Log.d(TAG, "onLongPressed:view  ${v}")
+        Log.d(TAG, "onLongPressed: pos ${pos}")
+        Log.d(TAG, "onLongPressed: id ${id}")
+        Log.d(TAG, "onLongPressed: addresss ${address}")
+    }
+
 
 }

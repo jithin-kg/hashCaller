@@ -9,6 +9,7 @@ import android.text.style.BackgroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +20,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
-import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -33,6 +33,7 @@ import java.util.*
 
 
 class SMSListAdapter(private val context: Context,
+                     private val longPresHandler:LongPressHandler,
                      private val onContactItemClickListener: (id:String, pos:Int, pno:String)->Unit
  ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
@@ -120,7 +121,7 @@ class SMSListAdapter(private val context: Context,
             }
         }
     }
-     class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
          var layoutExpandable: ConstraintLayout = view.layoutExpandable
          private val name = view.textVSMSContactName
          private val circle = view.textViewSMScontactCrclr;
@@ -165,10 +166,18 @@ class SMSListAdapter(private val context: Context,
                 generateCircleView(context);
 
 
+            view.setOnLongClickListener(OnLongClickListener { v ->
+//                listener.onLongItemClick(v, viewHolder.getAdapterPosition())
+                    longPresHandler.onLongPressed(v, this.adapterPosition, sms.id,
+                        sms.addressString!!
+                    )
+                true
+            })
                 view.setOnClickListener{v->
                   onContactItemClickListener(sms.id.toString(), this.adapterPosition,
                       sms.addressString!!
                   )
+
 //                    if(SMSListAdapter.prevView !=null ){
 //
 //                        SMSListAdapter.prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
@@ -336,6 +345,10 @@ class SMSListAdapter(private val context: Context,
            //TODO compare both messages and if the addres is same and message
         }
 
+    }
+
+    interface LongPressHandler{
+        fun onLongPressed(view:View, pos:Int, id: Long, address:String)
     }
 
 

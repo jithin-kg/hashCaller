@@ -153,8 +153,10 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         super.onActivityCreated(savedInstanceState)
         if(savedInstanceState!= null){
             if(childFragmentManager.getFragment(savedInstanceState, "smsListFragment") != null){
+
                 this.smsListFragment = childFragmentManager.getFragment(savedInstanceState, "smsListFragment") as SMSListFragment?
                 this.smsIdentifiedAsSpamFragment = childFragmentManager.getFragment(savedInstanceState, "smsIdentifiedAsSpamFragment") as SMSIdentifiedAsSpamFragment?
+
             }
 
         }
