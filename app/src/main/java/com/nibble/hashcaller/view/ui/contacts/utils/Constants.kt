@@ -15,3 +15,5 @@ const val FROM_SMS_RECIEVER = "from_sms_receiver"
 const val INTANT_SMS_BRECIEVER_TIME = "timeofsmssent"
 
 var LAST_SMS_SENT = false
+
+var markingStarted = false // to use in recyclerview long press to mark item for deleting, blocking etc..

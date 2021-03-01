@@ -292,15 +292,20 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             }
             R.id.imgBtnTbrDelete ->{
                 deleteMarkedSMSThreads()
+                deleteList()
             }
         }
+    }
+
+    private fun deleteList() {
+        markedItems.clear()
     }
 
     private fun deleteMarkedSMSThreads() {
         for(id in markedItems){
             this.viewmodel.deleteThread(id)
-            markedItems.remove(id)
         }
+
     }
 
     companion object {

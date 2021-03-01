@@ -46,6 +46,7 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -516,6 +517,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
            if(!messagesFragment.isSearchViewVisible()){
                messagesFragment.showSearchView()
            }else{
+               markingStarted = false
                super.onBackPressed()
 
            }

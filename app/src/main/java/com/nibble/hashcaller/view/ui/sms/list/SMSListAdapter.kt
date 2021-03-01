@@ -33,7 +33,7 @@ import java.util.*
 
 class SMSListAdapter(private val context: Context,
                      private val longPresHandler:LongPressHandler,
-                     private val onContactItemClickListener: (id:String, pos:Int, pno:String)->Unit
+                     private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String)->Unit
  ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_DELETE = 1;
@@ -108,14 +108,14 @@ class SMSListAdapter(private val context: Context,
 
         fun bind(
             sms: SMS, context: Context,
-            onDeleteItemclickLIstener: (id: String, pos: Int, pno: String) -> Unit,
+            onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String) -> Unit,
             position: Int
         ) {
             btnEmptySms.setOnClickListener{
 //                view.tvUnreadSMSCount.text = ""
 //                view.tvUnreadSMSCount.visibility = View.INVISIBLE
 
-                onDeleteItemclickLIstener("", 0, ",")
+                onDeleteItemclickLIstener(it,0L, 0, ",")
 
             }
         }
@@ -128,7 +128,7 @@ class SMSListAdapter(private val context: Context,
 
         fun bind(
             sms: SMS, context: Context,
-            onContactItemClickListener: (id: String, position:Int, pno:String) -> Unit,
+            onContactItemClickListener: (view:View, threadId: Long, position:Int, pno:String) -> Unit,
             position: Int
         ) {
             Log.d(TAG, "bind: ")
@@ -173,7 +173,7 @@ class SMSListAdapter(private val context: Context,
                 true
             })
                 view.setOnClickListener{v->
-                  onContactItemClickListener(sms.id.toString(), this.adapterPosition,
+                  onContactItemClickListener(v, sms.threadID, this.adapterPosition,
                       sms.addressString!!
                   )
 

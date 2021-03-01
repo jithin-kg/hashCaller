@@ -25,6 +25,7 @@ import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -54,7 +55,6 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
-    private var markingStarted = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -213,8 +213,8 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private fun initRecyclerView() {
         rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
-            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){id:String, pos:Int,
-                                                         pno:String->onContactItemClicked(id, pos, pno)  }
+            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
+                                                         pno:String->onContactItemClicked(view,threadId, pos, pno)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter
 
@@ -226,23 +226,20 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private fun onDeleteItemClicked(){
 
     }
-    private fun onLongpressClickLister(v:View, position:Int) {
 
 
-    }
-
-    private fun onContactItemClicked(id: String, pos: Int, pno: String) {
+    private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String) {
         Log.d(TAG, "onContactItemClicked address is : $pno")
-//        val newList:MutableList<SMS> = mutableListOf()
-//        newList.addAll(this.smsLIst!!)
-//        this.smsLIst!![pos].expanded = !(this.smsLIst!![pos].expanded)
-//        this.smsListVIewModel.SMS.value = smsLIst
-//        smsRecyclerAdapter?.submitList(newList)
-//        smsListVIewModel.update(address) // update count
-        val intent = Intent(context, IndividualSMSActivity::class.java )
-        intent.putExtra(CONTACT_ADDRES, pno)
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
+        if(markingStarted){
+            markItem(view, threadId, pno)
+
+        }else{
+            val intent = Intent(context, IndividualSMSActivity::class.java )
+            intent.putExtra(CONTACT_ADDRES, pno)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
+        }
+
 //            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
 
     }
@@ -286,8 +283,10 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         Log.d(TAG, "onLongPressed: pos ${pos}")
         Log.d(TAG, "onLongPressed: id ${id}")
         Log.d(TAG, "onLongPressed: addresss ${address}")
+
         (parentFragment as SMSContainerFragment?)!!.hideSearchView()
         (parentFragment as SMSContainerFragment?)!!.showToolbarButtons()
+        markingStarted = true
 
         markItem(v, id, address)
     }
@@ -301,6 +300,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 //        v.textViewSMScontactCrclr.background = requireContext().getDrawable(R.drawable.contact_circular_marked_background)
 
     }
+
 
 
 }
