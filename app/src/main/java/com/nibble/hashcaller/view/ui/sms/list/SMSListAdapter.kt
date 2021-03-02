@@ -167,6 +167,7 @@ class SMSListAdapter(private val context: Context,
 
             view.setOnLongClickListener(OnLongClickListener { v ->
 //                listener.onLongItemClick(v, viewHolder.getAdapterPosition())
+                Log.d(TAG, "bind: threadID ${sms.threadID}")
                     longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
                         sms.addressString!!
                     )

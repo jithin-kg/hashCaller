@@ -279,10 +279,6 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 
     override fun onLongPressed(v:View, pos:Int, id: Long, address:String) {
 
-        Log.d(TAG, "onLongPressed:view  ${v}")
-        Log.d(TAG, "onLongPressed: pos ${pos}")
-        Log.d(TAG, "onLongPressed: id ${id}")
-        Log.d(TAG, "onLongPressed: addresss ${address}")
 
         (parentFragment as SMSContainerFragment?)!!.hideSearchView()
         (parentFragment as SMSContainerFragment?)!!.showToolbarButtons()
@@ -297,10 +293,18 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private fun markItem(v: View, id: Long, address: String) {
         v.smsMarked.visibility = View.VISIBLE
         MarkedItemsHandler.markedItems.add(id)
+        MarkedItemsHandler.markedViews.add(v)
 //        v.textViewSMScontactCrclr.background = requireContext().getDrawable(R.drawable.contact_circular_marked_background)
 
     }
 
+    override fun onPause() {
+        Log.d(TAG, "onPause: ")
+        super.onPause()
+    }
 
-
+    override fun onStop() {
+        Log.d(TAG, "onStop: ")
+        super.onStop()
+    }
 }

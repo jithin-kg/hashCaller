@@ -47,6 +47,7 @@ import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -434,6 +435,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val ft = supportFragmentManager.beginTransaction()
         if (blockConfigFragment.isAdded) { // if the fragment is already in container
             ft.show(blockConfigFragment)
+            unMarkItems()
+            messagesFragment.showSearchView()
+
         }
         // Hide fragment contact
         if (contactFragment.isAdded) {
@@ -458,10 +462,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
      fun showContactsFragment() {
+
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
+            unMarkItems()
+            messagesFragment.showSearchView()
+
+
         }
 //        // Hide fragment B
         if (blockConfigFragment.isAdded) {
@@ -563,6 +572,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val ft = supportFragmentManager.beginTransaction()
         if (callFragment.isAdded) { // if the fragment is already in container(callFragment)
             fabBtnShowDialpad.visibility = View.VISIBLE
+            unMarkItems()
+            messagesFragment.showSearchView()
+
         }
         // Hide fragment B
         if (blockConfigFragment.isAdded) {
@@ -589,6 +601,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         // Hide fragment B
         if (blockConfigFragment.isAdded) {
             ft.hide(blockConfigFragment)
+            unMarkItems()
+            messagesFragment.showSearchView()
+
         }
         // Hide fragment C
         if (contactFragment.isAdded) {

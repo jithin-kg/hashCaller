@@ -26,6 +26,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
@@ -350,6 +351,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         imgBtnTbrDelete.visibility = View.INVISIBLE
         imgBtnTbrArchive.visibility = View.INVISIBLE
         imgBtnTbrBlock.visibility = View.INVISIBLE
+
+        unMarkItems()
 
     }
 
