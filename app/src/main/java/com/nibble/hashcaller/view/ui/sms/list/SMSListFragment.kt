@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -26,6 +27,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItem
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -231,7 +233,14 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String) {
         Log.d(TAG, "onContactItemClicked address is : $pno")
         if(markingStarted){
-            markItem(view, threadId, pno)
+            //if the view is already marked, then uncheck it
+            val imgVSmsMarked = view.findViewById<ImageView>(R.id.smsMarked)
+            if(imgVSmsMarked.visibility == View.VISIBLE){
+                unMarkItem(imgVSmsMarked, threadId)
+
+            }else{
+                markItem(view, threadId, pno)
+            }
 
         }else{
             val intent = Intent(context, IndividualSMSActivity::class.java )
@@ -294,7 +303,8 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         v.smsMarked.visibility = View.VISIBLE
         MarkedItemsHandler.markedItems.add(id)
         MarkedItemsHandler.markedViews.add(v)
-//        v.textViewSMScontactCrclr.background = requireContext().getDrawable(R.drawable.contact_circular_marked_background)
+        SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
+//
 
     }
 

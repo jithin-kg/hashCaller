@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.sms
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequest
@@ -15,7 +16,7 @@ class SmsContainerViewModel(
     val repository: SMScontainerRepository?,
     val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
 ) :ViewModel(){
-
+    var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(0)
     fun getInformationForTheseNumbers(
         smslist: List<SMS>?,
         packageName: String
@@ -27,7 +28,8 @@ class SmsContainerViewModel(
     }
 
     fun deleteThread(id: Long) = viewModelScope.launch {
-        repository!!.deleteSmsThread(id)
+       val numRowsDeleted =  repository!!.deleteSmsThread(id)
+        numRowsDeletedLiveData.value = numRowsDeleted
     }
 
     companion object{

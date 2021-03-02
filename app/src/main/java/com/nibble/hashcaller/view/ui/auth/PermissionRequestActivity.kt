@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.activity_permission_request.*
 
 class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var sharedPreferences: SharedPreferences
-    private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
+        private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
 
     companion object{
         private const val TAG = "__PermissionRequestActivity"

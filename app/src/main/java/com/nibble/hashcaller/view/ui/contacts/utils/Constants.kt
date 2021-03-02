@@ -1,9 +1,13 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedViews
 
 /**
  * Created by Jithin KG on 23,July,2020
@@ -30,5 +34,18 @@ fun unMarkItems(){
     for(view in MarkedItemsHandler.markedViews){
         view.findViewById<ImageView>(R.id.smsMarked).visibility = View.INVISIBLE
     }
-    MarkedItemsHandler.markedViews.clear()
+    markedViews.clear()
+    markedItems.clear()
+    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
+
+}
+
+fun unMarkItem(view:View, threadId:Long){
+    view.visibility = View.INVISIBLE
+    markedViews.remove(view)
+    markedItems.remove(threadId)
+    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
+
+
+
 }

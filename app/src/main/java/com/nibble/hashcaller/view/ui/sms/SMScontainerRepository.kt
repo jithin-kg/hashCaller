@@ -44,38 +44,18 @@ class SMScontainerRepository(val context: Context, val dao: SMSSendersInfoFromSe
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun deleteSmsThread(id: Long) {
+    suspend fun deleteSmsThread(id: Long): Int {
         Log.d(TAG, "deleteSmsThread: threadid $id")
-//        val thread = Uri.parse("content://sms")
-//        val deleted: Int = context.contentResolver.delete(
-//            thread,
-//            "thread_id=?",
-//            arrayOf<String>(
-//                java.lang.String.valueOf(id)
-//            )
-//
-//        )
-
-//        val mUri = Uri.parse("content://sms/conversations/$id")
-//        context.getContentResolver().delete(mUri, null, null)
-//        val uriSms = Uri.parse("content://sms/inbox")
-//        val c: Cursor = context.contentResolver.query(uriSms, null, null, null, null)!!
-//        val id: Int = c.getInt(0)
-//        val thread_id: Int = c.getInt(1) //get the thread_id
-//
-//       context.contentResolver.delete(
-//            Uri.parse("content://sms/conversations/$id"),
-//            null,
-//            null
-//        )
+        var numRowsDeleted = 0
         var uri = Telephony.Sms.CONTENT_URI
         val selection = "${Telephony.Sms.THREAD_ID} = ?"
         val selectionArgs = arrayOf(id.toString())
         try {
-            context.contentResolver.delete(uri, selection, selectionArgs)
+           numRowsDeleted =  context.contentResolver.delete(uri, selection, selectionArgs)
         } catch (e: Exception) {
             Log.d(TAG, "deleteSmsThread: exception $e")
         }
+        return numRowsDeleted
     }
 
     companion object{

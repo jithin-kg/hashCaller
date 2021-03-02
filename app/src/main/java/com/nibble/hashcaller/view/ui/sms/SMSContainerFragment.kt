@@ -1,9 +1,13 @@
 package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Telephony
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -25,7 +29,11 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
@@ -42,6 +50,7 @@ import kotlinx.android.synthetic.main.fragment_message_container.view.*
 class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     TabLayout.OnTabSelectedListener, View.OnClickListener,
     androidx.appcompat.widget.Toolbar.OnMenuItemClickListener {
+
     private var isDflt = false
 
     // TODO: Rename and change types of parameters
@@ -54,6 +63,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private lateinit var toolbarSms:androidx.appcompat.widget.Toolbar
+    private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
+    private var defaultSmsHandlerLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +89,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 //        (activity as AppCompatActivity).setSupportActionBar(toolbarSmS)
 
             initViewModel()
+        observerDefaulsSmshandlerPermission()
+        observeNumOfRowsDeleted()
         if(checkContactPermission())
         {
             observeSMSList()
@@ -89,6 +102,19 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 //            return inflater.inflate(R.layout.request_permission, container, false)
 //        }
 
+    }
+
+
+
+
+
+    private fun observerDefaulsSmshandlerPermission() {
+        this.permissionGivenLiveDAta.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observerDefaulsSmshandlerPermission: $it")
+            if(it == true){
+                deleteSms()
+            }
+        })
     }
 
     private fun observeSMSList() {
@@ -201,6 +227,40 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
     }
 
+    private fun checkSmsWritePermission(): Boolean {
+        var permissionGiven = false
+        //persmission
+        Dexter.withContext(this.activity)
+            .withPermissions(
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.RECEIVE_MMS,
+                Manifest.permission.SEND_RESPOND_VIA_MESSAGE
+
+
+                ).withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
+//
+                    report.let {
+                        if(report?.areAllPermissionsGranted()!!){
+                            permissionGiven = true
+//                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
+
+                        }else{
+                            Log.d(TAG, "onPermissionsChecked: not given------")
+                        }
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest?>?,
+                    token: PermissionToken?
+                ) { /* ... */
+                    token?.continuePermissionRequest()
+//                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
+                }
+            }).check()
+        return permissionGiven
+    }
     private fun checkPermission(): Boolean {
         var permissionGiven = false
         //persmission
@@ -209,6 +269,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                 Manifest.permission.RECEIVE_SMS,
                 Manifest.permission.READ_SMS,
                 Manifest.permission.SEND_SMS
+
             ).withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
 //
@@ -273,7 +334,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                     this.messagesView.fabSendNewSMS.visibility = View.INVISIBLE
                     this.messagesView.fabBtnDeleteSMSExpanded.visibility = View.VISIBLE
                     this.messagesView.fabBtnDeleteSMS.visibility = View.INVISIBLE
-
+                    unMarkItems()
+                    showSearchView()
 
                 }
             }
@@ -293,7 +355,6 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             }
             R.id.imgBtnTbrDelete ->{
                 deleteMarkedSMSThreads()
-                deleteList()
             }
         }
     }
@@ -301,18 +362,105 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private fun deleteList() {
         markedItems.clear()
     }
-
+    private fun observeNumOfRowsDeleted() {
+        this.viewmodel.numRowsDeletedLiveData.observe(viewLifecycleOwner, Observer {
+            if(it == 0 ){
+                Log.d(TAG, "observeNumOfRowsDeleted: $it")
+                checkDefaultSMSHandlerPermission()
+            }
+        })
+    }
     private fun deleteMarkedSMSThreads() {
+          deleteSms()
+       }
+
+
+
+    private fun deleteSms() {
+        Log.d(TAG, "deleteSms: called")
         for(id in markedItems){
             this.viewmodel.deleteThread(id)
         }
+        deleteList()
+        markingStarted = false
+        resetMarkingOptions()
+    }
 
+    private fun checkDefaultSMSHandlerPermission(): Boolean {
+            var requestCode=  222
+            var resultCode = 232
+            var isDefault = false
+            try{
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val roleManager: RoleManager = requireContext().getSystemService(RoleManager::class.java)
+                    // check if the app is having permission to be as default SMS app
+                    val isRoleAvailable =
+                        roleManager.isRoleAvailable(RoleManager.ROLE_SMS)
+                    if (isRoleAvailable) {
+                        // check whether your app is already holding the default SMS app role.
+                        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
+                        if (!isRoleHeld) {
+                            val roleRequestIntent =
+                                roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                            startActivityForResult(roleRequestIntent, requestCode)
+                        }else{
+                            isDefault = true
+                            requesetPermission(requireContext())
+                        }
+                    }
+                } else {
+                    val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, requireContext().packageName)
+                    startActivityForResult(intent, requestCode)
+                }
+
+            }catch (e:Exception){
+                Log.d(TAG, "checkDefaultSettings: exception $e")
+            }
+        Log.d(TAG, "checkDefaultSMSHandlerPermission: isDefault $isDefault")
+            if(!isDefault){
+               resetMarkingOptions()
+
+            }
+            return isDefault
+
+    }
+
+    /**
+     * change visibility of view items to as beginning
+     */
+    private fun resetMarkingOptions() {
+        markingStarted = false
+        unMarkItems()
+        this.searchViewMessages.visibility = View.VISIBLE
+        this.imgBtnTbrArchive.visibility = View.INVISIBLE
+        this.imgBtnTbrBlock.visibility = View.INVISIBLE
+        this.imgBtnTbrDelete.visibility = View.INVISIBLE
+        this.tvSelectedCount.visibility = View.INVISIBLE
     }
 
     companion object {
         private const val TAG = "__SMSContainerFragment"
         var recyclerViewSpamSms:RecyclerView? = null
         var viewSms:View? = null
+
+        fun updateSelectedItemCount(count:Int){
+            if(count>0){
+                viewSms!!.tvSelectedCount.visibility = View.VISIBLE
+                viewSms!!.tvSelectedCount.text = "$count Selected"
+            }else{
+                viewSms!!.tvSelectedCount.visibility = View.INVISIBLE
+                viewSms!!.tvSelectedCount.text = ""
+                markingStarted = false
+//                unMarkItems()
+                viewSms!!.searchViewMessages.visibility = View.VISIBLE
+                viewSms!!.imgBtnTbrArchive.visibility = View.INVISIBLE
+                viewSms!!.imgBtnTbrBlock.visibility = View.INVISIBLE
+                viewSms!!.imgBtnTbrDelete.visibility = View.INVISIBLE
+                viewSms!!.tvSelectedCount.visibility = View.INVISIBLE
+            }
+        }
         fun show(){
 
 
@@ -343,6 +491,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         imgBtnTbrDelete.visibility = View.VISIBLE
         imgBtnTbrArchive.visibility = View.VISIBLE
         imgBtnTbrBlock.visibility = View.VISIBLE
+        tvSelectedCount.visibility = View.VISIBLE
 
     }
 
@@ -351,6 +500,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         imgBtnTbrDelete.visibility = View.INVISIBLE
         imgBtnTbrArchive.visibility = View.INVISIBLE
         imgBtnTbrBlock.visibility = View.INVISIBLE
+        tvSelectedCount.visibility = View.INVISIBLE
 
         unMarkItems()
 
@@ -361,4 +511,26 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             return true
         return false
     }
+    @SuppressLint("LongLogTag")
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        /**
+         * Set as default SMS app onActivityResult if user chosen as deafult SMS app
+         * is -1
+         * else the result is 0
+         */
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode== -1 && requestCode == 222){
+            permissionGivenLiveDAta.value  = true
+
+        }
+        Log.d(TAG, "onActivityResult: requestCode :$requestCode")
+        Log.d(TAG, "onActivityResult: resultCode :$resultCode")
+
+    }
+
+
 }
