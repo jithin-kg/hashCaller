@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 
 
@@ -12,12 +13,15 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 class SMSCotainerViewModelFactory(
     private val SMSLiveData: SMSLiveData?,
     private val repository: SMScontainerRepository?,
-    private val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
+    private val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?,
+    private val mutedSendersDAO: IMutedSendersDAO?
 ) :
     ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         //preparing view model
 
-        return SmsContainerViewModel(this!!.SMSLiveData!!, repository, SMSSendersInfoFromServerDAO) as T
+        return SmsContainerViewModel(this!!.SMSLiveData!!,
+            repository,
+            SMSSendersInfoFromServerDAO) as T
     }
 }

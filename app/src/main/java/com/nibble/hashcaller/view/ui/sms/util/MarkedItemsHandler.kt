@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 object MarkedItemsHandler {
      var markedItems:MutableSet<Long> = mutableSetOf()
      var markedViews:MutableSet<View> = mutableSetOf()
+     var markedContactAddress:MutableSet<String> = mutableSetOf()
 
 
 //     fun pushNewItemId(id:Long){

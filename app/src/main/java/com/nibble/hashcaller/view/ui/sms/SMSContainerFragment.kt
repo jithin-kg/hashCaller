@@ -29,16 +29,14 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.work.DESTINATION_ACTIVITY
@@ -210,6 +208,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         this.messagesView.fabBtnDeleteSMSExpanded.setOnClickListener(this)
         this.fabSendNewSMS.setOnClickListener(this)
         this.imgBtnTbrDelete.setOnClickListener(this)
+        this.messagesView.imgBtnTbrMuteSender.setOnClickListener(this)
 
     }
 
@@ -355,12 +354,20 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             }
             R.id.imgBtnTbrDelete ->{
                 deleteMarkedSMSThreads()
+            }R.id.imgBtnTbrMuteSender ->{
+                muteSender()
             }
         }
     }
 
+    private fun muteSender() {
+        this.viewmodel.muteMarkedSenders()
+        resetMarkingOptions()
+    }
+
     private fun deleteList() {
         markedItems.clear()
+        markedContactAddress.clear()
     }
     private fun observeNumOfRowsDeleted() {
         this.viewmodel.numRowsDeletedLiveData.observe(viewLifecycleOwner, Observer {
@@ -428,13 +435,14 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     }
 
     /**
-     * change visibility of view items to as beginning
+     * change visibility of view items to as beginning, ie
+     * remove all marking/checked items hide delete,mute etc buttons in toolbar
      */
     private fun resetMarkingOptions() {
         markingStarted = false
         unMarkItems()
         this.searchViewMessages.visibility = View.VISIBLE
-        this.imgBtnTbrArchive.visibility = View.INVISIBLE
+        this.imgBtnTbrMuteSender.visibility = View.INVISIBLE
         this.imgBtnTbrBlock.visibility = View.INVISIBLE
         this.imgBtnTbrDelete.visibility = View.INVISIBLE
         this.tvSelectedCount.visibility = View.INVISIBLE
@@ -445,6 +453,9 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         var recyclerViewSpamSms:RecyclerView? = null
         var viewSms:View? = null
 
+        /**
+         * function to update marked item count in fragment
+         */
         fun updateSelectedItemCount(count:Int){
             if(count>0){
                 viewSms!!.tvSelectedCount.visibility = View.VISIBLE
@@ -455,7 +466,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                 markingStarted = false
 //                unMarkItems()
                 viewSms!!.searchViewMessages.visibility = View.VISIBLE
-                viewSms!!.imgBtnTbrArchive.visibility = View.INVISIBLE
+                viewSms!!.imgBtnTbrMuteSender.visibility = View.INVISIBLE
                 viewSms!!.imgBtnTbrBlock.visibility = View.INVISIBLE
                 viewSms!!.imgBtnTbrDelete.visibility = View.INVISIBLE
                 viewSms!!.tvSelectedCount.visibility = View.INVISIBLE
@@ -489,7 +500,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
     fun showToolbarButtons() {
         imgBtnTbrDelete.visibility = View.VISIBLE
-        imgBtnTbrArchive.visibility = View.VISIBLE
+        imgBtnTbrMuteSender.visibility = View.VISIBLE
         imgBtnTbrBlock.visibility = View.VISIBLE
         tvSelectedCount.visibility = View.VISIBLE
 
@@ -498,7 +509,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     fun showSearchView() {
         searchViewMessages.visibility = View.VISIBLE
         imgBtnTbrDelete.visibility = View.INVISIBLE
-        imgBtnTbrArchive.visibility = View.INVISIBLE
+        imgBtnTbrMuteSender.visibility = View.INVISIBLE
         imgBtnTbrBlock.visibility = View.INVISIBLE
         tvSelectedCount.visibility = View.INVISIBLE
 

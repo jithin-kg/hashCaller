@@ -14,6 +14,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_NAME
@@ -21,16 +24,25 @@ import com.nibble.hashcaller.view.ui.contacts.utils.FROM_SMS_RECIEVER
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.services.SaveSmsService
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
+import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.internal.wait
 
+/**
+ * Broadcast receiver for incomming Sms,and manages notifications
+ */
 
 class SmsReceiver : BroadcastReceiver() {
+
     private val TAG = "__SmsReceiver"
+    private var mutedSendersDAO:IMutedSendersDAO? = null
     private lateinit var notificationManagerCmpt:  NotificationManagerCompat
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive: ")
-        if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
+         mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
 
-            Log.e(TAG, "smsReceiver")
+        if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
 
             notificationManagerCmpt = NotificationManagerCompat.from(context)
 
@@ -41,13 +53,23 @@ class SmsReceiver : BroadcastReceiver() {
                     for (aObject in pdu_Objects) {
                         val currentSMS = getIncomingMessage(aObject, bundle)
                         val senderNo = currentSMS.displayOriginatingAddress
-                        val message = currentSMS.displayMessageBody
+                        //check if the sender is spammer or muted chat, if muted or spam => no notification should be shown
+                        var isBlokcedOrMuted = false
+//                        GlobalScope.launch {
+                            isBlokcedOrMuted = isBlockedUser(senderNo)
+//                            Log.d(TAG, "onReceive isBlockedOrMuted: $isBlokcedOrMuted")
+                            if(!isBlokcedOrMuted){
+                                val message = currentSMS.displayMessageBody
 
-                        //Log.d(TAG, "senderNum: " + senderNo + " :\n message: " + message);
+                                //Log.d(TAG, "senderNum: " + senderNo + " :\n message: " + message);
 //                        issueNotification(context, senderNo, message)
-
-                        showNotification(context, senderNo, message)
+                                showNotification(context, senderNo, message)
+                            }
+    //todo if that number is blocked then I don't need to call  saveSmsInInbox(context, currentSMS)
                         saveSmsInInbox(context, currentSMS)
+
+//                        }
+
                     }
                     abortBroadcast()
                     // End of loop
@@ -58,6 +80,31 @@ class SmsReceiver : BroadcastReceiver() {
         if(intent.action == "android.provider.Telephony.SMS_DELIVER"){
             Log.d(TAG, "onReceive: action sms deliver")
         }
+
+    }
+
+    /**
+     * Returns true if the senderNo is blocked or muted.
+     *
+     * @param senderNo Phone number of the incoming Sms sender
+     * @return Boolean
+     */
+    private  fun isBlockedUser(senderNo: String): Boolean {
+        var res: MutedSenders? = null
+        val job = GlobalScope.launch {
+             res =  mutedSendersDAO!!.find(formatPhoneNumber(senderNo))
+            Log.d(TAG, "isBlockedUser: res in launch is $res")
+        }
+        runBlocking {
+            job.join()
+            Log.d(TAG, "isBlockedUser: withing runblocking ")
+
+        }
+        Log.d(TAG, "isBlockedUser: res is $res")
+        if(res != null)
+            return true
+        return false
+
 
     }
 

@@ -17,7 +17,6 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
-import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import retrofit2.HttpException
 import java.util.*
 
@@ -32,7 +31,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
 
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
-    private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDate()
+    private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO)
 
     override suspend fun doWork(): Result {

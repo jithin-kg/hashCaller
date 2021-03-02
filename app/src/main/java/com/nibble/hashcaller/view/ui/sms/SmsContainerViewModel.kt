@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
@@ -15,6 +16,7 @@ class SmsContainerViewModel(
     val SMS: SMSLiveData,
     val repository: SMScontainerRepository?,
     val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
+
 ) :ViewModel(){
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(0)
     fun getInformationForTheseNumbers(
@@ -30,6 +32,10 @@ class SmsContainerViewModel(
     fun deleteThread(id: Long) = viewModelScope.launch {
        val numRowsDeleted =  repository!!.deleteSmsThread(id)
         numRowsDeletedLiveData.value = numRowsDeleted
+    }
+
+    fun muteMarkedSenders() = viewModelScope.launch {
+        repository!!.muteSenders()
     }
 
     companion object{

@@ -31,6 +31,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItem
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import kotlinx.android.synthetic.main.fragment_messages_list.*
@@ -230,21 +231,21 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     }
 
 
-    private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String) {
-        Log.d(TAG, "onContactItemClicked address is : $pno")
+    private fun onContactItemClicked(view: View, threadId: Long, pos: Int, address: String) {
+        Log.d(TAG, "onContactItemClicked address is : $address")
         if(markingStarted){
             //if the view is already marked, then uncheck it
             val imgVSmsMarked = view.findViewById<ImageView>(R.id.smsMarked)
             if(imgVSmsMarked.visibility == View.VISIBLE){
-                unMarkItem(imgVSmsMarked, threadId)
+                unMarkItem(imgVSmsMarked, threadId, address)
 
             }else{
-                markItem(view, threadId, pno)
+                markItem(view, threadId, address)
             }
 
         }else{
             val intent = Intent(context, IndividualSMSActivity::class.java )
-            intent.putExtra(CONTACT_ADDRES, pno)
+            intent.putExtra(CONTACT_ADDRES, address)
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             startActivity(intent)
         }
@@ -303,6 +304,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         v.smsMarked.visibility = View.VISIBLE
         MarkedItemsHandler.markedItems.add(id)
         MarkedItemsHandler.markedViews.add(v)
+        markedContactAddress.add(address)
         SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
 //
 

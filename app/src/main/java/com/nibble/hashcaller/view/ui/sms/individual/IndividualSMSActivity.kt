@@ -72,7 +72,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private  var spammerType:Int = -1
     var spamTypes:MutableList<String> = ArrayList<String>()
-    var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData(mutableListOf(SMS()))
+    var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
     private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
     private var smsQueueLiveData:MutableLiveData<Queue<SMS>> = MutableLiveData()
     private var smsQueue:Queue<SMS> = LinkedList<SMS>()
@@ -107,7 +107,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
             }else->{
-            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
+//            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
+            contactAddress =  intent.getStringExtra(CONTACT_ADDRES)!!
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
         }
@@ -316,7 +317,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun observeSmsLiveData() {
         this.smsLiveData.observe(this, Observer {
-            Log.d(TAG, "observeSmsLiveData: ")
+            Log.d(TAG, "observeSmsLiveData: ${it.size} ")
+
 
             adapter.setList(it)
 //            if(!isSmsChannelBusy && !smsQueue.isEmpty()){

@@ -2,20 +2,26 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.database.Cursor
-import android.net.Uri
 import android.provider.Telephony
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.work.UnknownSMSsendersInfoResponse
+import com.nibble.hashcaller.work.formatPhoneNumber
 import retrofit2.Response
 
-class SMScontainerRepository(val context: Context, val dao: SMSSendersInfoFromServerDAO) {
+class SMScontainerRepository(
+    val context: Context,
+    val dao: SMSSendersInfoFromServerDAO,
+    val mutedSendersDAO: IMutedSendersDAO?
+) {
 
     private var retrofitService:ISpamService? = null
 
@@ -56,6 +62,19 @@ class SMScontainerRepository(val context: Context, val dao: SMSSendersInfoFromSe
             Log.d(TAG, "deleteSmsThread: exception $e")
         }
         return numRowsDeleted
+    }
+
+    /***
+     * function to add contact address to muted_senders table,
+     * no notification for incoming sms from muted senders
+     */
+    suspend fun muteSenders() {
+        var addressList: MutableList<MutedSenders> = mutableListOf()
+        for (address in MarkedItemsHandler.markedContactAddress){
+            val mutedSender = MutedSenders(formatPhoneNumber(address))
+            addressList.add(mutedSender)
+        }
+        mutedSendersDAO!!.insert(addressList)
     }
 
     companion object{
