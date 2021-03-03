@@ -12,6 +12,9 @@ object MarkedItemsHandler {
      var markedViews:MutableSet<View> = mutableSetOf()
      var markedContactAddress:MutableSet<String> = mutableSetOf()
 
+     var markedTheadIdForBlocking:Long = 0L
+     var markedContactAddressForBlocking:String = ""
+
 
 //     fun pushNewItemId(id:Long){
 //            markedItems.add(id)

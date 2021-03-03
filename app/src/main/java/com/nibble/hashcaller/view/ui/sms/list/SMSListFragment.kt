@@ -198,12 +198,16 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     }
 
     private fun observeLive() {
+
         smsListVIewModel.smsLive.observe(viewLifecycleOwner, Observer { sms->
             sms.let {
                 Log.d(TAG, "observeLive: size ${sms.size}")
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
                 Log.d(TAG, "observeLive: data changed")
                 smsRecyclerAdapter?.setList(it)
+
+                smsListVIewModel.getNameForUnknownSender(it)
+
                 this.viewMesages.pgBarsmslist.visibility = View.GONE
                 SMSListAdapter.searchQry = searchQry
                 this.smsLIst = it as MutableList<SMS>?
@@ -301,6 +305,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
      * mark for deletion or archival or block of sms list
      */
     private fun markItem(v: View, id: Long, address: String) {
+
         v.smsMarked.visibility = View.VISIBLE
         MarkedItemsHandler.markedItems.add(id)
         MarkedItemsHandler.markedViews.add(v)

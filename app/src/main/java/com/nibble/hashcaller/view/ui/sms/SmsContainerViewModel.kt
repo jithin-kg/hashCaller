@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
-import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class SmsContainerViewModel(
@@ -36,6 +38,23 @@ class SmsContainerViewModel(
 
     fun muteMarkedSenders() = viewModelScope.launch {
         repository!!.muteSenders()
+    }
+
+    fun blockThisAddress(contactAddress: String, threadID: Long, spammerType: Int, spammerCategory: Int) = viewModelScope.launch {
+
+        async {
+
+            repository?.save(BlockedOrSpamSenders(contactAddress, 1, "", "" ))
+        }
+
+        async {
+            repository?.report(
+                ReportedUserDTo(contactAddress, " ",
+                spammerType.toString(), spammerCategory.toString()
+            )
+            )
+        }
+
     }
 
     companion object{

@@ -32,14 +32,16 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
     private val sMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).spammerInfoFromServerDAO()
     private val mutedSendersDAO = HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO()
+    private val blockedOrSpamSenders = HashCallerDatabase.getDatabaseInstance(context).blockedOrSpamSendersDAO()
+    private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
 
     private val repository: SMScontainerRepository = SMScontainerRepository(
         context,
         sMSSendersInfoFromServerDAO,
-        mutedSendersDAO
+        mutedSendersDAO,
+        blockedOrSpamSenders
     )
     private val smsTracker:NewSmsTrackerHelper = NewSmsTrackerHelper( repository, sMSSendersInfoFromServerDAO)
-    private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
     private lateinit var senderListChuckOfSize12: List<List<ContactAddressWithHashDTO>>
 
@@ -50,13 +52,14 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         try {
             Log.d(TAG, "doWork: ")
 
-            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO) // to get content provided sms
+            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSMS(null)
             val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spammerInfoFromServerDAO() }
             val smsContainerRepository = SMScontainerRepository(
                 context,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                blockedOrSpamSenders
             )
 
 

@@ -6,10 +6,14 @@ import android.provider.Telephony
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
+import com.nibble.hashcaller.local.db.sms.block.IBlockedOrSpamSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.spam.ISpamService
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -20,7 +24,8 @@ import retrofit2.Response
 class SMScontainerRepository(
     val context: Context,
     val dao: SMSSendersInfoFromServerDAO,
-    val mutedSendersDAO: IMutedSendersDAO?
+    val mutedSendersDAO: IMutedSendersDAO?,
+    val blockedOrSpamSenderDAO: IBlockedOrSpamSendersDAO?
 ) {
 
     private var retrofitService:ISpamService? = null
@@ -75,6 +80,18 @@ class SMScontainerRepository(
             addressList.add(mutedSender)
         }
         mutedSendersDAO!!.insert(addressList)
+    }
+
+    suspend fun save(spammerInfo: BlockedOrSpamSenders) {
+        val list = listOf<BlockedOrSpamSenders>(spammerInfo)
+        blockedOrSpamSenderDAO!!.insert(list)
+    }
+
+    suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
+        retrofitService = RetrofitClient.createaService(ISpamService::class.java)
+        val tokenManager = TokenManager(context)
+        val token = tokenManager.getToken()
+        return retrofitService?.report(callerInfo, token)
     }
 
     companion object{

@@ -15,6 +15,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
+import com.nibble.hashcaller.local.db.sms.block.IBlockedOrSpamSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.utils.notifications.HashCaller
@@ -28,7 +30,6 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
 
 /**
  * Broadcast receiver for incomming Sms,and manages notifications
@@ -38,9 +39,11 @@ class SmsReceiver : BroadcastReceiver() {
 
     private val TAG = "__SmsReceiver"
     private var mutedSendersDAO:IMutedSendersDAO? = null
+    private var blockedOrSpamSendersDAO: IBlockedOrSpamSendersDAO? = null
     private lateinit var notificationManagerCmpt:  NotificationManagerCompat
     override fun onReceive(context: Context, intent: Intent) {
          mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+         blockedOrSpamSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
 
         if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
 
@@ -54,21 +57,25 @@ class SmsReceiver : BroadcastReceiver() {
                         val currentSMS = getIncomingMessage(aObject, bundle)
                         val senderNo = currentSMS.displayOriginatingAddress
                         //check if the sender is spammer or muted chat, if muted or spam => no notification should be shown
-                        var isBlokcedOrMuted = false
-//                        GlobalScope.launch {
-                            isBlokcedOrMuted = isBlockedUser(senderNo)
-//                            Log.d(TAG, "onReceive isBlockedOrMuted: $isBlokcedOrMuted")
-                            if(!isBlokcedOrMuted){
-                                val message = currentSMS.displayMessageBody
 
-                                //Log.d(TAG, "senderNum: " + senderNo + " :\n message: " + message);
+                        var isMutedAddress = false
+                        if(!isBlockedOrSpam(senderNo)){
+                            //if senderNo is not spam or manually blocked
+                                isMutedAddress = isMutedUser(senderNo)
+//                            Log.d(TAG, "onReceive isBlockedOrMuted: $isBlokcedOrMuted")
+                                if(!isMutedAddress){
+                                    val message = currentSMS.displayMessageBody
+
+                                    //Log.d(TAG, "senderNum: " + senderNo + " :\n message: " + message);
 //                        issueNotification(context, senderNo, message)
-                                showNotification(context, senderNo, message)
-                            }
-    //todo if that number is blocked then I don't need to call  saveSmsInInbox(context, currentSMS)
-                        saveSmsInInbox(context, currentSMS)
+                                    showNotification(context, senderNo, message)
+                                }
+                                //todo if that number is blocked then I don't need to call  saveSmsInInbox(context, currentSMS)
+                                saveSmsInInbox(context, currentSMS)
 
 //                        }
+                        }
+//
 
                     }
                     abortBroadcast()
@@ -82,14 +89,39 @@ class SmsReceiver : BroadcastReceiver() {
         }
 
     }
-
     /**
-     * Returns true if the senderNo is blocked or muted.
+     * Returns true if the senderNo is  Blocked or spam.
      *
      * @param senderNo Phone number of the incoming Sms sender
      * @return Boolean
      */
-    private  fun isBlockedUser(senderNo: String): Boolean {
+    private  fun isBlockedOrSpam(senderNo: String): Boolean {
+        var res: BlockedOrSpamSenders? = null
+        val job = GlobalScope.launch {
+            res =  blockedOrSpamSendersDAO!!.find(formatPhoneNumber(senderNo))
+            Log.d(TAG, "isBlockedUser: res in launch is $res")
+        }
+        //Here we are running this runblocking because because the if(res != null) check
+        //only needs to be processed only after that task is completed
+        runBlocking {
+            job.join()
+            Log.d(TAG, "isBlockedUser: withing runblocking ")
+
+        }
+        Log.d(TAG, "isBlockedUser: res is $res")
+        if(res != null)
+            return true
+        return false
+
+
+    }
+    /**
+     * Returns true if the senderNo is  muted.
+     *
+     * @param senderNo Phone number of the incoming Sms sender
+     * @return Boolean
+     */
+    private  fun isMutedUser(senderNo: String): Boolean {
         var res: MutedSenders? = null
         val job = GlobalScope.launch {
              res =  mutedSendersDAO!!.find(formatPhoneNumber(senderNo))

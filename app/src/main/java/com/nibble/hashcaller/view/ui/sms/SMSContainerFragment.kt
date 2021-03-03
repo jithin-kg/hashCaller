@@ -5,14 +5,21 @@ import android.annotation.SuppressLint
 import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -20,6 +27,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -34,20 +42,28 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.Permissio
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragment
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
+import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
+import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.DESTINATION_ACTIVITY
 import com.nibble.hashcaller.work.INDIVIDUAL_SMS_ACTIVITY
+import kotlinx.android.synthetic.main.bottom_sheet_block.*
+import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 
 
 class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     TabLayout.OnTabSelectedListener, View.OnClickListener,
-    androidx.appcompat.widget.Toolbar.OnMenuItemClickListener {
+    androidx.appcompat.widget.Toolbar.OnMenuItemClickListener, ConfirmationClickListener,
+    PopupMenu.OnMenuItemClickListener {
 
     private var isDflt = false
 
@@ -63,6 +79,12 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private lateinit var toolbarSms:androidx.appcompat.widget.Toolbar
     private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
     private var defaultSmsHandlerLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
+    private  var selectedRadioButton: RadioButton? = null
+    private  var spammerType:Int = -1
+    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +111,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             initViewModel()
         observerDefaulsSmshandlerPermission()
         observeNumOfRowsDeleted()
+        setupBottomSheet()
+
         if(checkContactPermission())
         {
             observeSMSList()
@@ -101,7 +125,6 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 //        }
 
     }
-
 
 
 
@@ -209,6 +232,12 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         this.fabSendNewSMS.setOnClickListener(this)
         this.imgBtnTbrDelete.setOnClickListener(this)
         this.messagesView.imgBtnTbrMuteSender.setOnClickListener(this)
+        this.messagesView.imgBtnTbrBlock.setOnClickListener(this)
+
+        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioScam.setOnClickListener(this)
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+        bottomSheetDialog.btnBlock.setOnClickListener(this)
 
     }
 
@@ -357,6 +386,97 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             }R.id.imgBtnTbrMuteSender ->{
                 muteSender()
             }
+            R.id.imgBtnTbrBlock ->{
+                blockUser()
+            }
+            R.id.imgExpand->{
+                Log.d(IndividualSMSActivity.TAG, "onClick: img button")
+                val popup = PopupMenu(this.requireActivity(), bottomSheetDialog.viewPopup)
+                popup.inflate(R.menu.image_chooser_popup)
+                popup.setOnMenuItemClickListener(this)
+                popup.show()
+
+            }
+            R.id.btnBlock->{
+                Log.d(TAG, "onClick: ")
+                addToBlockList(MarkedItemsHandler.markedContactAddressForBlocking!!)
+            }
+        }
+    }
+
+
+    //todo i cannot let user mark and block,
+    //then we will not get information about that spammer
+    private fun blockUser() {
+        //check if markedItems.size ==1, if > 1 then show alert that block one contactAdress at a time
+
+        if(markedItems.size>1){
+           val dialog = ConfirmDialogFragment(this, "Please block one contact address at a time", 1)
+           dialog.show(childFragmentManager,"block")
+        }else{
+            //set threadId and contact Address
+            var num = ""
+            var tId = 0L
+            for (item in MarkedItemsHandler.markedContactAddress){
+               num = item
+            }
+            for (item in MarkedItemsHandler.markedItems){
+                tId = item
+            }
+
+            MarkedItemsHandler.markedContactAddressForBlocking = num
+            MarkedItemsHandler.markedTheadIdForBlocking = tId
+            bottomSheetDialog.show()
+        }
+    }
+
+    /**
+     * To block a contact address
+     * @param contact contact address
+     *
+     */
+    private fun addToBlockList(contact: String) {
+        this.viewmodel.blockThisAddress(contact, MarkedItemsHandler.markedTheadIdForBlocking, this.spammerType, this.SPAMMER_CATEGORY )
+
+        Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
+        bottomSheetDialog.hide()
+        bottomSheetDialog.dismiss()
+        bottomSheetDialogfeedback.show()
+        var txt = "$contact can no longer send SMS or call you."
+        val  sb =  SpannableStringBuilder(txt);
+        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
+        sb.setSpan(bss, 0, contact.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
+        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+        resetMarkingOptions()
+    }
+
+    override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+        this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+        return true
+    }
+    private fun setupBottomSheet() {
+        bottomSheetDialog = BottomSheetDialog(this.requireActivity())
+        bottomSheetDialogfeedback = BottomSheetDialog(this.requireActivity())
+        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+        val viewSheetFeedback = layoutInflater.inflate(R.layout.bottom_sheet_block_feedback, null)
+
+        bottomSheetDialog.setContentView(viewSheet)
+        bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
+
+        selectedRadioButton = bottomSheetDialog.radioScam
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+
+
+
+
+//        if(this.view?.visibility == View.VISIBLE){
+//            bottomSheetDialog.hide()
+
+//        }
+
+        bottomSheetDialog.setOnDismissListener{
+            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+
         }
     }
 
@@ -384,6 +504,14 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
 
     private fun deleteSms() {
+        val dialog = ConfirmDialogFragment(this, "Delete conversation?", 2)
+        dialog.show(childFragmentManager, "sample")
+    }
+
+    /**
+     * callback of ConfirmDialogfragment
+     */
+    override fun onYesConfirmation() {
         Log.d(TAG, "deleteSms: called")
         for(id in markedItems){
             this.viewmodel.deleteThread(id)
@@ -489,10 +617,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         this.permissionGivenLiveData.value  = checkContactPermission()
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        Log.d(TAG, "onMenuItemClick: ")
-        return true
-    }
+
 
     fun hideSearchView() {
         searchViewMessages.visibility = View.INVISIBLE
@@ -542,6 +667,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         Log.d(TAG, "onActivityResult: resultCode :$resultCode")
 
     }
+
+
 
 
 }

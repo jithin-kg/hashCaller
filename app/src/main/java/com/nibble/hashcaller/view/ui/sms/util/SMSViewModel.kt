@@ -13,7 +13,8 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
-    var smsLive:SMSLiveData = SMS
+    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
+
     private lateinit var sharedPreferences: SharedPreferences
 
 
@@ -59,8 +60,30 @@ class SMSViewModel(
 
     fun changelist(smsLIst: List<SMS>, context:Context)  = viewModelScope.launch{
 
-        smsLive = SMSLiveData(context)
-        smsLive.value = smsLIst as List<SMS>
+//        smsLive = SMSLiveData(context)
+//        smsLive.value = smsLIst as List<SMS>
+    }
+
+    /**
+     * @param smslist list of sms from content provider
+     * function to get name for sms senders
+     * if the address is a number(5555, 801238312) not a name('jio, vodafone-pay,etc')
+     * then we need to get info for that number in locally
+     * for address that is not in contact we need to search for that in server
+     * even if that is of type number(5555, 801238312) or a name('jio, vodafone-pay,etc')
+     *
+     */
+    fun getNameForUnknownSender(smslist: List<SMS>) = viewModelScope.launch {
+        getInfoFromContacts(smslist)
+
+    }
+
+    private fun getInfoFromContacts(smslist: List<SMS>) {
+        //I dont need to update smsLive.value because list is passed as reference,
+        //since I am updating the list with name in getInfoFromContacts(smslist) from repository
+        //automatically update the value
+        //******Here list is passed as Reference ********
+        repository!!.getInfoFromContacts(smslist)
     }
 
 

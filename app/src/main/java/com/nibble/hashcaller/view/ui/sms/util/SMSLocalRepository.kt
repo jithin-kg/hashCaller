@@ -14,6 +14,7 @@ import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
+import com.nibble.hashcaller.work.formatPhoneNumber
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
@@ -197,14 +198,6 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
                     objSMS.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
                     val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
-//                    val fromAddress =cursor.getColumnIndexOrThrow("from_address")
-                    //todo if the same number in server have lesser spam count than this value update server count
-                        //else vice versa
-
-//                    val spamReport = cursor.getColumnIndexOrThrow("spam_report") //her I get spam count
-//                    val res1= cursor.getColumnName(spamReport)
-//                    val res2 = cursor.getLong(spamReport)
-//                   val count2 =  cursor.getLong(spamReport)
 
                     val protocol = cursor.getColumnIndexOrThrow("protocol")
                     val read = cursor.getColumnIndexOrThrow("read")
@@ -592,6 +585,10 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
     }
 
+    /**
+     * function to get contact info for numbers
+     * @param pno phone number
+     */
     fun getConactInfoForNumber( pno: String): String? {
         var cursor:Cursor? = null
 //        Log.d(TAG, "getConactInfoForNumber: pno $pno")
@@ -655,6 +652,35 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
 //
         return name
+    }
+
+    /**
+     * get info of sms senders from contentprovider contacts
+     * @param smslist list of sms from conentprovider
+     * Here the smslist is passed as refernce so I dont need to return value
+     * so whenever there is a change it will reflect in original list
+     */
+    fun getInfoFromContacts(smslist: List<SMS>): List<SMS> {
+
+        val regex = "[0-9]+"
+        val pattern = Pattern.compile(regex)
+        Log.d(TAG, "getInfoFromContacts: before updating, name is ${smslist[0].name}")
+        for(sms in smslist){
+            val formattedNumber = formatPhoneNumber(sms.addressString!!)
+            val m = pattern.matcher(formattedNumber)
+            if(m.matches()){
+                //if the address is not name ("jio-4g, ideacareetc")
+                //ie the address is number 34834,555,802383213
+               val name = getConactInfoForNumber(sms.addressString!!)
+                Log.d(TAG, "getInfoFromContacts: name is $name")
+
+                sms.name = name
+            }
+            
+        }
+        Log.d(TAG, "getInfoFromContacts: after updating, name: ${smslist[0].name}")
+        return smslist
+
     }
 
 

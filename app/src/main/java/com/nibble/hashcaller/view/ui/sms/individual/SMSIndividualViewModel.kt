@@ -154,6 +154,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
         spammerType: Int?,
         spammerCategory: Int
     )  = viewModelScope.launch {
+
         async {
             spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
         }
