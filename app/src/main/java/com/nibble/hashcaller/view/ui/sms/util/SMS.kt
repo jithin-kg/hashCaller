@@ -4,6 +4,21 @@ import android.text.SpannableStringBuilder
 import com.google.gson.Gson
 
 class SMS() {
+    var sub:String = ""
+    var subject:String = ""
+    var ct_t:String = ""
+    var read_status:String = ""
+    var reply_path_present:String = ""
+    var body:String = ""
+    var msg_box:String = ""
+    var thread_id:String = ""
+    var sub_cs:String = ""
+    var resp_st:String = ""
+    var retr_st:String = ""
+    var text_only:String = ""
+    var locked:String = ""
+
+    //------------------------//
     var spammerType  = 0
     var spamCount: Long = 0L
     var photoURI: String? = null

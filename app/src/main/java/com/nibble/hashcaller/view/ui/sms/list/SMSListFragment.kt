@@ -27,6 +27,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.page
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItem
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -58,8 +59,10 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var layoutMngr:LinearLayoutManager? = null
 
-
+    private var isLoading = false
+    var limit = 12
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
@@ -90,6 +93,30 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         return  viewMesages
     }
 
+    private fun addScrollListener() {
+        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+//                if(dy>0){
+                    //scrollview scrolled vertically
+                    //get the visible item count
+                    if(layoutMngr!=null){
+                        val visibleItemCount = layoutMngr!!.childCount
+                        val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
+                        val recyclerViewSize = smsRecyclerAdapter!!.itemCount
+                        if(!isLoading){
+                            if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
+                                //we have reached the bottom
+                                 page+=3
+                                smsListVIewModel.getNextSmsPage()
+                            }
+                        }
+
+                    }
+//                }
+            }
+        })
+    }
 
 
 //    override fun onCreateContextMenu(
@@ -220,6 +247,8 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         observeLive()
         observeMutabeLiveData()
         searchViewListener()
+        addScrollListener()
+
 
     }
 
@@ -251,6 +280,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private fun initRecyclerView() {
         rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
+            layoutMngr = layoutManager as LinearLayoutManager
             smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
                                                          pno:String->onContactItemClicked(view,threadId, pos, pno)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}

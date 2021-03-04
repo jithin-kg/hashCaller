@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /**
@@ -159,6 +160,13 @@ class SMSViewModel(
         this.smsLiveData.value = sms
         getNameForUnknownSender(sms!!)
 
+    }
+
+    fun getNextSmsPage()  = viewModelScope.launch{
+        val res = async { repository!!.fetchSMS(null) }
+        val newpage = res.await()
+        smsLiveData.value!!.addAll(newpage)
+        smsLiveData.value = smsLiveData.value
     }
 
 
