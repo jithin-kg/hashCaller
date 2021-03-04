@@ -23,9 +23,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
@@ -87,6 +89,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
 //    var layoutBottomSheet: ConstraintLayout
 
@@ -839,6 +842,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     drawerLayout.openDrawer(Gravity.LEFT)
 
     }
+
+    fun setContactsHashMap(){
+        this.userInfoViewModel.setContactsHashMap()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
+
+
 }
 
 

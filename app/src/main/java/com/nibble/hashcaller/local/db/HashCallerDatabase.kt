@@ -43,7 +43,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun contactInformationDAO() : IContactIformationDAO
         abstract fun smsDAO(): SmsOutboxListDAO
         abstract fun spamListDAO(): SpamListDAO
-        abstract fun spammerInfoFromServerDAO(): SMSSendersInfoFromServerDAO
+        abstract fun smsSenderInfoFromServerDAO(): SMSSendersInfoFromServerDAO
         abstract fun callersInfoFromServerDAO(): CallersInfoFromServerDAO
         abstract fun  contactLastSyncedDateDAO():IContactLastSycnedDateDAO
         abstract fun userInfoDAo(): UserInfoDAO

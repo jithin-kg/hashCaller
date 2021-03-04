@@ -38,7 +38,7 @@ class SMSListAdapter(private val context: Context,
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_DELETE = 1;
     private val VIEW_TYPE_SMS = 2;
-    private var smsList = emptyList<SMS>()
+    private var smsList:MutableList<SMS> = mutableListOf()
     companion object{
         private const val TAG = "__SMSListAdapter";
         public var searchQry:String? = null
@@ -94,9 +94,11 @@ class SMSListAdapter(private val context: Context,
     }
 }
 
-    fun setList(it: List<SMS>?) {
+    fun setList(it: MutableList<SMS>?) {
         this.smsList = it!!
-        this.submitList(this.smsList)
+//        val copy:MutableList<SMS> = mutableListOf()
+//        this.smsList.forEach{copy.add(it)}
+        this.submitList(it)
 
     }
 
@@ -337,24 +339,29 @@ class SMSListAdapter(private val context: Context,
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-
             //is different we have new message for a chat
             //update the badge of that addres
-            Log.d(TAG, "areContentsTheSame: oldItem ${oldItem.expanded}")
-            Log.d(TAG, "areContentsTheSame: newItem ${newItem.expanded}")
-            if(oldItem.address == newItem.address){
-                if(oldItem.msgString != newItem.msgString){
-                    //we have a new message for this addess
-                    //set badge counter for this number/address
-                    //or i should get the count when i listng sms and if data change compare newcount
-
-                }
+//            Log.d(TAG, "areContentsTheSame: oldItem ${oldItem.expanded}")
+//            Log.d(TAG, "areContentsTheSame: newItem ${newItem.expanded}")
+//            if(oldItem.address == newItem.address){
+//                if(oldItem.msgString != newItem.msgString){
+//                    //we have a new message for this addess
+//                    //set badge counter for this number/address
+//                    //or i should get the count when i listng sms and if data change compare newcount
+//
+//                }
+//            }
+            if(oldItem.name == newItem.name){
+                Log.d(TAG, "areContentsTheSame: name are equal ${oldItem.name}, ${newItem.name}")
+            }else{
+                Log.d(TAG, "areContentsTheSame: name are not equal ${oldItem.name}, ${newItem.name}")
             }
-            if(oldItem.expanded == newItem.expanded)
-                Log.d(TAG, "areContentsTheSame: yes")
-            else
-                Log.d(TAG, "areContentsTheSame: no")
-            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
+//            if(oldItem.expanded == newItem.expanded)
+//                Log.d(TAG, "areContentsTheSame: yes")
+//            else
+//                Log.d(TAG, "areContentsTheSame: no")
+//            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
+            return  oldItem.name== newItem.name
            //TODO compare both messages and if the addres is same and message
         }
 

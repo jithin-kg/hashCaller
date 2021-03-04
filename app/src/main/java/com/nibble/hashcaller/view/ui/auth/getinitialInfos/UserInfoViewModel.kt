@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
+import ContactRepository
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,12 +10,13 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
+import com.nibble.hashcaller.view.utils.ContactRepositoryTwo
 import kotlinx.coroutines.*
 import java.lang.Exception
 
 class UserInfoViewModel(
-    private val userNetworkRepository: UserNetworkRepository
+    private val userNetworkRepository: UserNetworkRepository,
+    private val contactsRepository: ContactRepositoryTwo
 ) :ViewModel(){
     var userInfo : MutableLiveData<UserInfo> = MutableLiveData()
 
@@ -62,6 +64,10 @@ class UserInfoViewModel(
        val result  = userNetworkRepository.getUserInfo()
         userInfo.value = result
         Log.d(TAG, "getUserInfo: $result")
+    }
+
+    fun setContactsHashMap() = viewModelScope.launch {
+            contactsRepository.setContactsMetaInfoHashMap()
     }
 
     companion object{

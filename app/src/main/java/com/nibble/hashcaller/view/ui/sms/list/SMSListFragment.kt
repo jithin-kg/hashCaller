@@ -83,12 +83,14 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         initListeners()
         val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
 
-
+        observeSendersInfoFromServer()
         observePermissionLiveData()
         this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
         registerForContextMenu( this.recyclerV) // context menu registering
         return  viewMesages
     }
+
+
 
 //    override fun onCreateContextMenu(
 //        menu: ContextMenu,
@@ -121,6 +123,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
             }
         })
     }
+
     private fun checkContactPermission(): Boolean {
         val permissionContact =
             ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_SMS)
@@ -142,6 +145,14 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
             SMSViewModel::class.java)
     }
 
+
+    private fun observeSendersInfoFromServer() {
+        smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observeSendersInfoFromServer: $it")
+            smsListVIewModel.updateWithNewSenderInfo(it, this.smsLIst)
+        })
+    }
+
     private fun observeSMSList() {
 //        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
 //            sms.let {
@@ -153,6 +164,40 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 //
 //            }
 //        })
+    }
+    private fun observeMutabeLiveData() {
+        this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
+            this.smsLIst = it as MutableList<SMS>?
+            Log.d(TAG, "observeMutabeLiveData: ")
+            var newList:MutableList<SMS> = mutableListOf()
+
+            it.forEach{sms-> newList.add(sms.deepCopy())}
+            smsRecyclerAdapter?.setList(newList)
+
+            this.viewMesages.pgBarsmslist.visibility = View.GONE
+            SMSListAdapter.searchQry = searchQry
+        })
+    }
+    private fun observeLive() {
+
+        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
+            sms.let {
+//                smsRecyclerAdapter?.setSMSList(it, searchQry)
+//                if(!it.isNullOrEmpty()){
+//                    Log.d(TAG, "observeLive: last item name ${it[0].name}")
+//                }
+                this.smsListVIewModel.updateLiveData(sms)
+//                smsRecyclerAdapter?.setList(it)
+//
+//
+//                smsListVIewModel.getNameForUnknownSender(it)
+//
+//                this.viewMesages.pgBarsmslist.visibility = View.GONE
+//                SMSListAdapter.searchQry = searchQry
+//                this.smsLIst = it as MutableList<SMS>?
+
+            }
+        })
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -173,9 +218,12 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 
 
         observeLive()
+        observeMutabeLiveData()
         searchViewListener()
 
     }
+
+
 
     private fun searchViewListener() {
         sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
@@ -197,24 +245,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         })
     }
 
-    private fun observeLive() {
 
-        smsListVIewModel.smsLive.observe(viewLifecycleOwner, Observer { sms->
-            sms.let {
-                Log.d(TAG, "observeLive: size ${sms.size}")
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-                Log.d(TAG, "observeLive: data changed")
-                smsRecyclerAdapter?.setList(it)
-
-                smsListVIewModel.getNameForUnknownSender(it)
-
-                this.viewMesages.pgBarsmslist.visibility = View.GONE
-                SMSListAdapter.searchQry = searchQry
-                this.smsLIst = it as MutableList<SMS>?
-
-            }
-        })
-    }
 
 
     private fun initRecyclerView() {

@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.individual
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
@@ -27,8 +28,9 @@ class SMSIndividualLiveData(
     }
     private fun getMessages(context: Context): List<SMS> {
 
+        val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
 
-        val repository = SMSLocalRepository(context, spamListDAO)
+        val repository = SMSLocalRepository(context, spamListDAO, smssendersInfoDAO)
         return repository.fetchIndividualSMS(contact)
 
 //        val listOfMessages = mutableListOf<SMS>()

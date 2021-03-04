@@ -37,9 +37,11 @@ import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
+import kotlin.system.measureTimeMillis
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -129,9 +131,27 @@ class IndividualSMSActivity : AppCompatActivity(),
         observeContactname()
         configureToolbar()
 
-
+       GlobalScope.launch(Dispatchers.IO) {
+          val time = measureTimeMillis {
+              val res1 = async {suspendOne()  }
+              val res2 =  async { suspendTwo() }
+              Log.d("__suspend", "res1 is ${res1.await()}")
+              Log.d("__suspend", "res2 is ${res2.await()}")
+          }
+           Log.d("__suspend", "request took $time milliseconds")
+       }
+        Log.d("__suspend", "after of launch: ")
     }
 
+    private suspend fun suspendTwo(): String {
+        delay(3000L)
+        return "1"
+    }
+
+    private suspend fun suspendOne(): String {
+        delay(3000L)
+        return "1"
+    }
 
 
     private fun observeContactname() {

@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -11,16 +12,23 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
+import androidx.lifecycle.LiveData
+import com.google.android.gms.tasks.Tasks.await
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
+import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -80,7 +88,8 @@ Constant Value: "seen"
 
 class SMSLocalRepository(
     private val context: Context,
-    private val spamListDAO: SpamListDAO?
+    private val spamListDAO: SpamListDAO?,
+    val smssendersInfoDAO: SMSSendersInfoFromServerDAO?
 ){
 private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
 
@@ -136,178 +145,209 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
         context.contentResolver.update(URI,cValues, "address='$addressString'",null)
 
     }
+    @SuppressLint("LongLogTag")
     private suspend fun fetch(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
         var data = ArrayList<SMS>()
-    try {
+
+        val timeTook = measureTimeMillis {
+            try {
 
 
-        var deleteViewAdded = false
-        val listOfMessages = mutableListOf<SMS>()
-        var selectionArgs: Array<String>? = null
-        var selection: String? = null
-        var count = 0
-        var map: HashMap<String?, String?> = HashMap()
-        smsListHashMap = map
+                var deleteViewAdded = false
+                val listOfMessages = mutableListOf<SMS>()
+                var selectionArgs: Array<String>? = null
+                var selection: String? = null
+                var count = 0
+                var map: HashMap<String?, String?> = HashMap()
+                smsListHashMap = map
 
-        if (searchQuery != null) {
-            selection = SMSContract.SMS_SELECTION_SEARCH
-            selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
-        }
-
-
-        val projection = arrayOf(
-            CallLog.Calls.NUMBER,
-            CallLog.Calls.TYPE,
-            CallLog.Calls.DURATION,
-            CallLog.Calls.CACHED_NAME,
-            CallLog.Calls._ID,
-            CallLog.Calls.DATE
-
-
-        )
-
-
-        val cursor = context.contentResolver.query(
-            SMSContract.ALL_SMS_URI,
-            null,
-            selection,
-            selectionArgs,
-            SMSContract.SORT_DESC
-        )
-
-        if(cursor != null && cursor.moveToFirst()){
-            val spammersList = spamListDAO?.getAll()
-
-            if (spammersList != null) {
-                for (spamer in spammersList){
-                    this.smsListHashMap.put(spamer.contactAddress, spamer.id.toString())
+                if (searchQuery != null) {
+                    selection = SMSContract.SMS_SELECTION_SEARCH
+                    selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
                 }
-            }
-            do{
 
-                try{
-                    //TODO check if phone number exists in contact, if then add the contact information too
-                    val objSMS = SMS()
-                    objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-                    objSMS.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-                    Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
-                    var num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                    num = num.replace("+", "")
+
+                val projection = arrayOf(
+                    CallLog.Calls.NUMBER,
+                    CallLog.Calls.TYPE,
+                    CallLog.Calls.DURATION,
+                    CallLog.Calls.CACHED_NAME,
+                    CallLog.Calls._ID,
+                    CallLog.Calls.DATE
+
+
+                )
+
+
+                val cursor = context.contentResolver.query(
+                    SMSContract.ALL_SMS_URI,
+                    null,
+                    selection,
+                    selectionArgs,
+                    SMSContract.SORT_DESC
+                )
+
+                if(cursor != null && cursor.moveToFirst()){
+//            val spammersList = spamListDAO?.getAll()
+
+//            if (spammersList != null) {
+//                for (spamer in spammersList){
+//                    this.smsListHashMap.put(spamer.contactAddress, spamer.id.toString())
+//                }
+//            }
+                    val fullLop =  GlobalScope.async {
+                        val insideLoop =  async {
+                            do{
+
+                                val res =  GlobalScope.async {
+                                    async {
+                                        try{
+                                            //TODO check if phone number exists in contact, if then add the contact information too
+                                            val objSMS = SMS()
+                                            objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                                            objSMS.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+                                            var num = cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                                            num = num.replace("+", "")
 //                    objSMS.address = num
 
-                    objSMS.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+                                            objSMS.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
-                    val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                                            val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
 
-                    val protocol = cursor.getColumnIndexOrThrow("protocol")
-                    val read = cursor.getColumnIndexOrThrow("read")
-                    val resstatus = cursor.getInt(read)
-                    val data_sent = cursor.getColumnIndexOrThrow("date_sent")
-                    val status = cursor.getColumnIndexOrThrow("status")
-                    val service_center = cursor.getColumnIndexOrThrow("service_center")
-                    val servicecenterString = cursor.getString(service_center)
+                                            val protocol = cursor.getColumnIndexOrThrow("protocol")
+                                            val read = cursor.getColumnIndexOrThrow("read")
+                                            val resstatus = cursor.getInt(read)
+                                            val data_sent = cursor.getColumnIndexOrThrow("date_sent")
+                                            val status = cursor.getColumnIndexOrThrow("status")
+                                            val service_center = cursor.getColumnIndexOrThrow("service_center")
+                                            val servicecenterString = cursor.getString(service_center)
 
-                    val error_code = cursor.getColumnIndexOrThrow("error_code")
-                    val seen = cursor.getColumnIndexOrThrow("seen")
-                    val seenString = cursor.getString(seen)
+                                            val error_code = cursor.getColumnIndexOrThrow("error_code")
+                                            val seen = cursor.getColumnIndexOrThrow("seen")
+                                            val seenString = cursor.getString(seen)
 
 
 
-                    var spannableStringBuilder: SpannableStringBuilder?
+                                            var spannableStringBuilder: SpannableStringBuilder?
 
-                    if(searchQuery!=null ){
-                        val lowercaseMsg = msg.toLowerCase()
-                        val lowerSearchQuery = searchQuery.toLowerCase()
+                                            if(searchQuery!=null ){
+                                                val lowercaseMsg = msg.toLowerCase()
+                                                val lowerSearchQuery = searchQuery.toLowerCase()
 
-                        if(lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()){
-                            val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
-                            val endPos = startPos +lowerSearchQuery.length
-                            val yellow =
-                                BackgroundColorSpan(Color.YELLOW)
-                           spannableStringBuilder =
-                                SpannableStringBuilder(msg)
-                            spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                            objSMS.msg = spannableStringBuilder
-                            objSMS.address = SpannableStringBuilder(num)
-                        }else if(num.contains(searchQuery) && searchQuery.isNotEmpty()){
-                            val startPos = num.indexOf(searchQuery)
-                            val endPos = startPos + searchQuery.length
-                            val yellow = BackgroundColorSpan(Color.YELLOW)
-                            spannableStringBuilder = SpannableStringBuilder(num)
-                            spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                            objSMS.address = spannableStringBuilder
-                            objSMS.msg = SpannableStringBuilder(msg)
-                        }else{
-                            spannableStringBuilder =
-                                SpannableStringBuilder(msg)
-                            objSMS.msg = spannableStringBuilder
-                            objSMS.address = SpannableStringBuilder(num)
-                        }
-                    }else{
-                        spannableStringBuilder =
-                            SpannableStringBuilder(msg)
-                        objSMS.msg = spannableStringBuilder
-                        objSMS.address = SpannableStringBuilder(num)
-                    }
+                                                if(lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()){
+                                                    val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
+                                                    val endPos = startPos +lowerSearchQuery.length
+                                                    val yellow =
+                                                        BackgroundColorSpan(Color.YELLOW)
+                                                    spannableStringBuilder =
+                                                        SpannableStringBuilder(msg)
+                                                    spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                                    objSMS.msg = spannableStringBuilder
+                                                    objSMS.address = SpannableStringBuilder(num)
+                                                }else if(num.contains(searchQuery) && searchQuery.isNotEmpty()){
+                                                    val startPos = num.indexOf(searchQuery)
+                                                    val endPos = startPos + searchQuery.length
+                                                    val yellow = BackgroundColorSpan(Color.YELLOW)
+                                                    spannableStringBuilder = SpannableStringBuilder(num)
+                                                    spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                                                    objSMS.address = spannableStringBuilder
+                                                    objSMS.msg = SpannableStringBuilder(msg)
+                                                }else{
+                                                    spannableStringBuilder =
+                                                        SpannableStringBuilder(msg)
+                                                    objSMS.msg = spannableStringBuilder
+                                                    objSMS.address = SpannableStringBuilder(num)
+                                                }
+                                            }else{
+                                                spannableStringBuilder =
+                                                    SpannableStringBuilder(msg)
+                                                objSMS.msg = spannableStringBuilder
+                                                objSMS.address = SpannableStringBuilder(num)
+                                            }
 
-                    objSMS.addressString = num.replace("+","")
+                                            objSMS.addressString = num.replace("+","")
 
 
 //                    val count =setSMSReadStatus(objSMS, objSMS.addressString!!)
 //                    objSMS.unReadSMSCount = count!!
 
 
-                    objSMS.readState = cursor.getInt(cursor.getColumnIndex("read"))
-                    val dateMilli = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+                                            objSMS.readState = cursor.getInt(cursor.getColumnIndex("read"))
+                                            val dateMilli = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 
 
-                    objSMS.time = dateMilli
+                                            objSMS.time = dateMilli
 
-                    if (cursor.getString(cursor.getColumnIndexOrThrow("type")).contains("1")) {
-                        objSMS.folderName = "inbox"
-                    } else {
-                        objSMS.folderName = "sent"
-                    }
+                                            if (cursor.getString(cursor.getColumnIndexOrThrow("type")).contains("1")) {
+                                                objSMS.folderName = "inbox"
+                                            } else {
+                                                objSMS.folderName = "sent"
+                                            }
 
-
-                if(requestinfromSpamlistFragment!!){
-                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
-                    if(this.smsListHashMap.containsKey(objSMS.addressString)){
-                        if(!deleteViewAdded){
-                            val delViewObj = SMS()
-                            delViewObj.deleteViewPresent = true
-                            listOfMessages.add(delViewObj)
-                            deleteViewAdded = true
-                        }
-                        listOfMessages.add(objSMS)
-                    }
-                }else{
-                    //we are requesting from SMSListFragment
-                    if(!this.smsListHashMap.containsKey(objSMS.addressString)){
-                        listOfMessages.add(objSMS)
-                    }
-                }
+                                            if(requestinfromSpamlistFragment!!){
+                                                //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+                                                if(smsListHashMap.containsKey(objSMS.addressString)){
+                                                    if(!deleteViewAdded){
+                                                        val delViewObj = SMS()
+                                                        delViewObj.deleteViewPresent = true
+                                                        listOfMessages.add(delViewObj)
+                                                        deleteViewAdded = true
+                                                    }
+                                                    listOfMessages.add(objSMS)
+                                                }
+                                            }else{
+                                                //we are requesting from SMSListFragment
+                                                if(!smsListHashMap.containsKey(objSMS.addressString)){
+                                                    listOfMessages.add(objSMS)
+                                                }
+                                            }
 
 //                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
-                count = listOfMessages.size - 1
+                                            count = listOfMessages.size - 1
 
-                }catch (e:Exception){
-                    Log.d(TAG, "getMessages: $e")
+                                        }catch (e:Exception){
+                                            Log.d(TAG, "getMessages: $e")
+                                        }
+                                    }
+                                }
+                                res.await()
+
+                            }while (cursor.moveToNext())
+                        }
+                        insideLoop.await()
+                    }
+                    fullLop.await()
+                    data = sortAndSet(listOfMessages)
+
                 }
-
-            }while (cursor.moveToNext())
-
-            data = sortAndSet(listOfMessages)
-
-        }
 //        data = removeSpamSmS(data)
-        //todo change the two function to work parellaly for increased perfomnce
-        setSMSReadStatus(data)
+                //todo change the two function to work parellaly for increased perfomnce
+             val r2 =  GlobalScope.async {
+                 val r =  async {
+                      setSMSReadStatus(data)
+                  }
+                  r.await()
+              }
+            r2.await()
+                setMetadata(data)
 //        setNameIfExistInContactContentProvider(data)
-    }catch (e:java.lang.Exception){
-        Log.d(TAG, "fetch: exception $e")
-    }
+            }catch (e:java.lang.Exception){
+                Log.d(TAG, "fetch: exception $e")
+            }
+        }
+        Log.d("__timesmslocalrepository", "fetch: $timeTook  milliseconds")
+
         return data
+    }
+
+    private fun setMetadata(data: ArrayList<SMS>) {
+//        for(sms in data){
+//           val res = contactWithMetaDataForSms.get(sms.addressString)
+//            if(res !=null){
+//                sms.name = res.name
+//            }
+//        }
     }
 
     private fun setNameIfExistInContactContentProvider(data: ArrayList<SMS>) {
@@ -394,17 +434,26 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
     /**
      * Function to check whether the current message is opened/readed by the user
      */
-    private fun setSMSReadStatus(
+    private suspend fun setSMSReadStatus(
         smsList: ArrayList<SMS> ) {
+        Log.d("__time", "setSMSReadStatus: called")
 
-       for (sms in smsList){
-           if(sms.readState ==0 )
-                setCount(sms)
-       }
+           val time =  measureTimeMillis {
+                val res = GlobalScope.async {
+                    for (sms in smsList) {
+                        if (sms.readState == 0)
 
+                            async { setCount(sms) }
+
+                    }
+                }
+
+                res.await()
+            }
+        Log.d("__time", "setSMSReadStatus: time took is $time")
     }
 
-    private fun setCount(sms: SMS) {
+    private suspend fun setCount(sms: SMS) {
         val addressString = sms.addressString
         var cnt:Int? = 0
         val cursorSMSCount = context.contentResolver.query(
@@ -664,7 +713,6 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
         val regex = "[0-9]+"
         val pattern = Pattern.compile(regex)
-        Log.d(TAG, "getInfoFromContacts: before updating, name is ${smslist[0].name}")
         for(sms in smslist){
             val formattedNumber = formatPhoneNumber(sms.addressString!!)
             val m = pattern.matcher(formattedNumber)
@@ -678,9 +726,73 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
             }
             
         }
-        Log.d(TAG, "getInfoFromContacts: after updating, name: ${smslist[0].name}")
+
         return smslist
 
+    }
+
+    /**
+     * function to get information of each sms sender from localDB
+     * these information in local db(SMSSendersInfoFromServer) is saved via SmsHashedNumUploadWorker
+     *
+     */
+     fun getInfoFromLocalDb(smslist: List<SMS>) {
+        for(sms in smslist){
+            Log.d(TAG, "getInfoFromLocalDb: ")
+            //replace all special character and search in db
+            var num = sms.addressString
+            var res:SMSSendersInfoFromServer? = null
+                num = formatPhoneNumber(num!!)
+             res = smssendersInfoDAO!!.find(num!!)
+            if(sms.name.isNullOrEmpty()){
+                sms.name = res?.name
+                Log.d(TAG, "getInfoFromLocalDb:  empty ")
+
+            }else{
+                Log.d(TAG, "getInfoFromLocalDb: not empty ")
+            }
+
+//            try {
+//                GlobalScope.launch(Dispatchers.Main) {
+//                   val res = withContext(Dispatchers.IO)  {
+////                        res = getSenderInfo(num).await()
+//                        smssendersInfoDAO!!.find(num!!)
+//
+//                    }
+//                    sms.name = "Moriarity"
+//                }
+//
+//
+//            }catch (e:java.lang.Exception){
+//                Log.d(TAG, "getInfoFromLocalDb: exception $e")
+//            }finally {
+//
+//                if(res !=null){
+//                    Log.d(TAG, "getInfoFromLocalDb: not  empty $res")
+//                    if(sms.name.isNullOrEmpty()){
+//                        Log.d(TAG, "getInfoFromLocalDb: name is  null result name is ${res!!.name}")
+//                        sms.name = "Adam"
+//                    }else{
+//                        Log.d(TAG, "getInfoFromLocalDb: name is not null ${sms.name} ")
+//                    }
+//                    sms.spamCount = res!!.spamReportCount
+//                    sms.spammerType = res!!.spammerType!!
+//
+//                }else{
+//                    Log.d(TAG, "getInfoFromLocalDb:  empty $res")
+//                }
+//            }
+
+
+        }
+    }
+
+    private fun getSenderInfo(num: String) = GlobalScope.async{
+        smssendersInfoDAO!!.find(num!!)
+    }
+
+     fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>> {
+        return smssendersInfoDAO!!.getAllLiveData()
     }
 
 

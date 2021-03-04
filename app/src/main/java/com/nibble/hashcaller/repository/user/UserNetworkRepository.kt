@@ -1,8 +1,9 @@
 package com.nibble.hashcaller.repository.user
 
+import ContactRepository
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.user.IuserService
@@ -16,7 +17,8 @@ import retrofit2.Response
  */
 class UserNetworkRepository(
     private val context: Context,
-    private val userInfoDAO: UserInfoDAO
+    private val userInfoDAO: UserInfoDAO,
+    private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO
 ){
     private var retrofitService:IuserService? = null
     
@@ -37,6 +39,10 @@ class UserNetworkRepository(
 
     suspend fun getUserInfo(): UserInfo {
         return this.userInfoDAO.get()
+    }
+
+    suspend fun setContactsInHashMap() {
+
     }
 
     companion object{

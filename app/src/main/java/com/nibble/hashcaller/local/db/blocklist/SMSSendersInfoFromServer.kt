@@ -31,8 +31,8 @@ import java.util.*
 data class SMSSendersInfoFromServer (
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name = "contact_address") val contactAddress: String?,
-    @ColumnInfo(name = "type") val spammeerType: Int?,
-    @ColumnInfo(name = "name") val title:String,
+    @ColumnInfo(name = "type") val spammerType: Int,
+    @ColumnInfo(name = "name") val name:String,
     @ColumnInfo(name = "informationReceivedDate") val informationReceivedDate:Date,
     @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = -1
     // we need to know the first five digits

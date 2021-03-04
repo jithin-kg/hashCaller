@@ -24,6 +24,11 @@ interface SMSSendersInfoFromServerDAO {
     @Query("SELECT * FROM sms_senders_info_from_server")
     suspend fun getAll(): List<SMSSendersInfoFromServer>
 
+    @Query("SELECT * FROM sms_senders_info_from_server")
+    fun getAllLiveData(): LiveData<List<SMSSendersInfoFromServer>>
+
     @Query("SELECT * FROM sms_senders_info_from_server WHERE contact_address=:contactAddress")
-    suspend fun find(contactAddress: String) : SMSSendersInfoFromServer?
+     fun find(contactAddress: String) : SMSSendersInfoFromServer?
+    @Query("DELETE FROM sms_senders_info_from_server")
+    suspend fun deleteAll()
 }

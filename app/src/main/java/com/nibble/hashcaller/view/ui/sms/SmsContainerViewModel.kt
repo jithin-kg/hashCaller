@@ -57,6 +57,10 @@ class SmsContainerViewModel(
 
     }
 
+    fun deleteAllSmsindb() = viewModelScope.launch{
+        SMSSendersInfoFromServerDAO!!.deleteAll()
+    }
+
     companion object{
         const val TAG = "__SmsContainerViewModel"
     }

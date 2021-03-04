@@ -3,7 +3,9 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.*
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 /**
@@ -13,7 +15,11 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
-    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
+    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
+
+//    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
+    var smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
+
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -25,6 +31,10 @@ class SMSViewModel(
     }
 
 
+
+    fun getSmsSendersInfoFromServer(): LiveData<List<SMSSendersInfoFromServer>> {
+        return smsSenersInfoFromDB
+    }
 
     var unreadMSCount:MutableLiveData<Int>? = null
      var filteredSms: MutableLiveData<String>? = null
@@ -74,16 +84,81 @@ class SMSViewModel(
      *
      */
     fun getNameForUnknownSender(smslist: List<SMS>) = viewModelScope.launch {
-        getInfoFromContacts(smslist)
+//        getInfoFromContacts(smslist)
+        getInfoFromDB(smslist)
+
 
     }
 
-    private fun getInfoFromContacts(smslist: List<SMS>) {
+    private suspend fun getInfoFromDB(smslist: List<SMS>) {
+        GlobalScope.launch {
+            repository!!.getInfoFromLocalDb(smslist)
+        }
+    }
+
+
+    private suspend fun getInfoFromContacts(smslist: List<SMS>) {
         //I dont need to update smsLive.value because list is passed as reference,
         //since I am updating the list with name in getInfoFromContacts(smslist) from repository
         //automatically update the value
         //******Here list is passed as Reference ********
+
         repository!!.getInfoFromContacts(smslist)
+
+    }
+
+    /**
+     * called when there is a change in sender_infor_from_server changes
+     */
+    fun updateWithNewSenderInfo(
+        dataFromDB: List<SMSSendersInfoFromServer>?,
+        smsLIst: MutableList<SMS>?
+    ) {
+//------
+
+//        if (this.smsLiveData.value != null) {
+//            for(sms in this.smsLiveData.value!!){
+//                sms.name = "sammm"
+//
+//            }
+//            val result:MutableList<SMS> = mutableListOf()
+//            result.addAll(this.smsLiveData.value!!)
+//            this.smsLiveData.value = result
+//
+//        }
+
+        //-------
+
+        var mapofAddressAndValues: HashMap<String, SMS> = HashMap()
+
+        for(sms in dataFromDB!!){
+            val obj = SMS()
+            obj.name = sms.name
+            obj.type = sms.spammerType
+            obj.spamCount = sms.spamReportCount
+            mapofAddressAndValues.put(sms.contactAddress!!, obj)
+        }
+        var lst:MutableList<SMS>  = mutableListOf()
+        if(smsLiveData.value!=null){
+            for(sms in smsLiveData.value!!){
+                val res = mapofAddressAndValues.get(sms.addressString)
+                val obj = sms
+
+                if(res!=null){
+                    sms.name = res.name
+
+                }
+                lst.add(obj)
+            }
+//            smsLive.value = lst
+            smsLiveData.value = smsLiveData.value
+        }
+    }
+
+    fun updateLiveData(sms: MutableList<SMS>?)  {
+        this.smsLiveData.value = sms
+        getNameForUnknownSender(sms!!)
+
     }
 
 

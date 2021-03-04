@@ -1,8 +1,11 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
 import android.text.SpannableStringBuilder
+import com.google.gson.Gson
 
 class SMS() {
+    var spammerType  = 0
+    var spamCount: Long = 0L
     var photoURI: String? = null
     var deleteViewPresent:Boolean = false
     var name:String? = null
@@ -31,6 +34,13 @@ class SMS() {
 
     override fun hashCode(): Int {
         return address.hashCode()
+    }
+
+    /**
+     * THIS IS FOR DEEP CLONING ELSE DIFFUTIL NOT RECOGNIZING CHANGES SOME TIMES
+     */
+    fun deepCopy() : SMS {
+        return Gson().fromJson(Gson().toJson(this), this.javaClass)
     }
 
 }

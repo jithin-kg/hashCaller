@@ -16,8 +16,9 @@ object SMSListInjectorUtil {
             )
         }
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
+        val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
 
-        val repository = context?.let { SMSLocalRepository(it, spamListDAO) }
+        val repository = context?.let { SMSLocalRepository(it, spamListDAO, smssendersInfoDAO) }
 
         return SMSListViewModelFactory(messagesLiveData, repository)
     }

@@ -377,9 +377,10 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                 startActivity(i)
             }
             R.id.fabSendNewSMS ->{
-                val i = Intent(context, ContactSelectorActivity::class.java )
-                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
-                startActivity(i)
+                this.viewmodel.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
+//                val i = Intent(context, ContactSelectorActivity::class.java )
+//                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
+//                startActivity(i)
             }
             R.id.imgBtnTbrDelete ->{
                 deleteMarkedSMSThreads()

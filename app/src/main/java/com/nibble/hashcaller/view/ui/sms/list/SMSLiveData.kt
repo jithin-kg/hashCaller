@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -16,13 +17,16 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SMSLiveData(private val context: Context):
-    ContentProviderLiveData<List<SMS>>(context,
+    ContentProviderLiveData<MutableList<SMS>>(context,
         URI
     )  {
+
     private lateinit var spamListDAO:SpamListDAO
+    private lateinit var smssendersInfoDAO : SMSSendersInfoFromServerDAO
+
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
 
-    companion object{
+    companion object {
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri =
             SMSContract.INBOX_SMS_URI
@@ -32,10 +36,14 @@ class SMSLiveData(private val context: Context):
 
         SMSViewModel.isLoading.postValue(true)
           spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
-        val repository =
+         smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+
+         val repository =
             SMSLocalRepository(
                 context,
-                spamListDAO
+                spamListDAO,
+                smssendersInfoDAO
             )
         val res =  repository.fetchSMS(null)
 
@@ -68,7 +76,8 @@ class SMSLiveData(private val context: Context):
         val repository =
             SMSLocalRepository(
                 context,
-                spamListDAO
+                spamListDAO,
+                smssendersInfoDAO
             )
         repository.update(address)
     }

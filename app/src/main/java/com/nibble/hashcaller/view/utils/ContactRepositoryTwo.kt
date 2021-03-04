@@ -1,19 +1,14 @@
+package com.nibble.hashcaller.view.utils
+
 import android.content.Context
 import android.provider.ContactsContract
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
-import com.nibble.hashcaller.view.utils.ContactGlobal
 import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
 
-
-/**
- * Created by Jithin KG on 21,July,2020
- * This ContactsRepository class is used to upload contacts to server
- *
- */
-class ContactRepository(context: Context) {
+class ContactRepositoryTwo(context: Context) {
 
     private val context: Context? = context
     private var contacts: MutableList<ContactUploadDTO> = ArrayList()
@@ -26,7 +21,7 @@ class ContactRepository(context: Context) {
             null, null, null,
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
         )
- 
+
 
         if (cursor?.count ?: 0 > 0) {
             while (cursor!!.moveToNext()) {

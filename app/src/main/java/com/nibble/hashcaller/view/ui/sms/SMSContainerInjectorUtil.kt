@@ -12,7 +12,7 @@ object SMSContainerInjectorUtil {
     fun provideViewModelFactory(context: Context?):SMSCotainerViewModelFactory{
 
 
-        val spammerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spammerInfoFromServerDAO() }
+        val spammerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val blockedOrSpamSenders = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
         val repository = context?.let { SMScontainerRepository(it, spammerInfoFromServerDAO!!, mutedSendersDAO, blockedOrSpamSenders) }

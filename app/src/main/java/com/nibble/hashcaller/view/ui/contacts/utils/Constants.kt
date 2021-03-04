@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.nibble.hashcaller.R
@@ -9,6 +8,9 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedViews
+import com.nibble.hashcaller.view.utils.ContactGlobal
+import com.nibble.hashcaller.work.formatPhoneNumber
+import java.util.regex.Pattern
 
 /**
  * Created by Jithin KG on 23,July,2020
@@ -49,6 +51,32 @@ fun unMarkItem(view:View, threadId:Long, address:String){
     markedContactAddress.remove(address)
     SMSContainerFragment.updateSelectedItemCount(markedItems.size)
 
+}
 
+
+
+/**
+ * to check if a string containing only numbers, not alphabets and special numbers
+ * return true if string contains only number else false
+ * @param stringValue
+ * @return boolean
+ */
+fun isNumericOnlyString(stringValue: String): Boolean {
+    val regex = "[0-9]+"
+    val pattern = Pattern.compile(regex)
+    val m = pattern.matcher(stringValue)
+    if(m.matches()){
+        return true
+    }
+    return false
 
 }
+
+
+/**
+ * contacts hashMap with key as phone number and value as
+ */
+
+var contactWithMetaDataForSms : HashMap<String, ContactGlobal> = hashMapOf()
+
+
