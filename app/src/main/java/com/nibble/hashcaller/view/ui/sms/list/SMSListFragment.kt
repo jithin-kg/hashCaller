@@ -52,7 +52,6 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private lateinit var cntx:Context
     private lateinit var recyclerV:RecyclerView
 
-    private var smsLIst:MutableList<SMS>? = null
     private lateinit var sView:SearchView
     private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
@@ -176,7 +175,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private fun observeSendersInfoFromServer() {
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
-            smsListVIewModel.updateWithNewSenderInfo(it, this.smsLIst)
+            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
         })
     }
 
@@ -194,7 +193,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     }
     private fun observeMutabeLiveData() {
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
-            this.smsLIst = it as MutableList<SMS>?
+            smsListVIewModel.smsLIst = it as MutableList<SMS>?
             Log.d(TAG, "observeMutabeLiveData: ")
             var newList:MutableList<SMS> = mutableListOf()
 

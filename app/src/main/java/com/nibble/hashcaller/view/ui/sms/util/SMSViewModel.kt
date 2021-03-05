@@ -20,6 +20,7 @@ class SMSViewModel(
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
     var smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
+     var smsLIst:MutableList<SMS>? = null
 
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -86,7 +87,7 @@ class SMSViewModel(
      */
     fun getNameForUnknownSender(smslist: List<SMS>) = viewModelScope.launch {
 //        getInfoFromContacts(smslist)
-        getInfoFromDB(smslist)
+//        getInfoFromDB(smslist)
 
 
     }
