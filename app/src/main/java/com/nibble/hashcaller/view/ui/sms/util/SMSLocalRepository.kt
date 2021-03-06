@@ -155,21 +155,21 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
 
         val projection = arrayOf(
-            CallLog.Calls.NUMBER,
-            CallLog.Calls.TYPE,
-            CallLog.Calls.DURATION,
-            CallLog.Calls.CACHED_NAME,
-            CallLog.Calls._ID,
-            CallLog.Calls.DATE
-
+            "DISTINCT thread_id",
+            "_id",
+            "address",
+            "type",
+            "body",
+            "read",
+            "date"
 
         )
 
-
+//        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
         val cursor = context.contentResolver.query(
             SMSContract.ALL_SMS_URI,
+            projection,
             null,
-            selection,
             selectionArgs,
             SMSContract.SORT_DESC
         )
@@ -206,17 +206,17 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 //                    val res2 = cursor.getLong(spamReport)
 //                   val count2 =  cursor.getLong(spamReport)
 
-                    val protocol = cursor.getColumnIndexOrThrow("protocol")
-                    val read = cursor.getColumnIndexOrThrow("read")
-                    val resstatus = cursor.getInt(read)
-                    val data_sent = cursor.getColumnIndexOrThrow("date_sent")
-                    val status = cursor.getColumnIndexOrThrow("status")
-                    val service_center = cursor.getColumnIndexOrThrow("service_center")
-                    val servicecenterString = cursor.getString(service_center)
-
-                    val error_code = cursor.getColumnIndexOrThrow("error_code")
-                    val seen = cursor.getColumnIndexOrThrow("seen")
-                    val seenString = cursor.getString(seen)
+//                    val protocol = cursor.getColumnIndexOrThrow("protocol")
+//                    val read = cursor.getColumnIndexOrThrow("read")
+//                    val resstatus = cursor.getInt(read)
+//                    val data_sent = cursor.getColumnIndexOrThrow("date_sent")
+//                    val status = cursor.getColumnIndexOrThrow("status")
+//                    val service_center = cursor.getColumnIndexOrThrow("service_center")
+//                    val servicecenterString = cursor.getString(service_center)
+//
+//                    val error_code = cursor.getColumnIndexOrThrow("error_code")
+//                    val seen = cursor.getColumnIndexOrThrow("seen")
+//                    val seenString = cursor.getString(seen)
 
 
 
