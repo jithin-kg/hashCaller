@@ -155,7 +155,7 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
 
         val projection = arrayOf(
-            "DISTINCT thread_id",
+            "thread_id",
             "_id",
             "address",
             "type",
@@ -169,19 +169,19 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
         val cursor = context.contentResolver.query(
             SMSContract.ALL_SMS_URI,
             projection,
-            null,
+            "thread_id IS NOT NULL) GROUP BY (thread_id",
             selectionArgs,
             SMSContract.SORT_DESC
         )
-
+//https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
         if(cursor != null && cursor.moveToFirst()){
             val spammersList = spamListDAO?.getAll()
 
-            if (spammersList != null) {
-                for (spamer in spammersList){
-                    this.smsListHashMap.put(spamer.contactAddress, spamer.id.toString())
-                }
-            }
+//            if (spammersList != null) {
+//                for (spamer in spammersList){
+//                    this.smsListHashMap.put(spamer.contactAddress, spamer.id.toString())
+//                }
+//            }
             do{
 
                 try{
@@ -304,17 +304,23 @@ private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>
 
             }while (cursor.moveToNext())
 
-            data = sortAndSet(listOfMessages)
+
 
         }
-//        data = removeSpamSmS(data)
-        //todo change the two function to work parellaly for increased perfomnce
+
+//        data = sortAndSet(listOfMessages)
+        data.addAll(listOfMessages)
         setSMSReadStatus(data)
+        setSpamDetails(data)
 //        setNameIfExistInContactContentProvider(data)
     }catch (e:java.lang.Exception){
         Log.d(TAG, "fetch: exception $e")
     }
         return data
+    }
+
+    private fun setSpamDetails(data: ArrayList<SMS>) {
+
     }
 
     private fun setNameIfExistInContactContentProvider(data: ArrayList<SMS>) {
