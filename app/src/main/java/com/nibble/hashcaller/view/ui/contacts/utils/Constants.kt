@@ -81,5 +81,6 @@ fun isNumericOnlyString(stringValue: String): Boolean {
 
 var contactWithMetaDataForSms : HashMap<String, ContactGlobal> = hashMapOf()
 
-
-var page = 0
+object pageOb{
+    var page = 0
+}

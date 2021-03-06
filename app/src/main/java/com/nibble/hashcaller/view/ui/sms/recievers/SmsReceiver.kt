@@ -23,7 +23,8 @@ import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.FROM_SMS_RECIEVER
-import com.nibble.hashcaller.view.ui.contacts.utils.page
+
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.services.SaveSmsService
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -45,9 +46,10 @@ class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
          mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
          blockedOrSpamSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
+        page = 0
 
         if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
-            page = 0
+
             notificationManagerCmpt = NotificationManagerCompat.from(context)
 
             val bundle = intent.extras

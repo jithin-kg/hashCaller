@@ -21,7 +21,8 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
-import com.nibble.hashcaller.view.ui.contacts.utils.page
+
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
@@ -185,9 +186,9 @@ class SMSLocalRepository(
                 val cursor = context.contentResolver.query(
                     SMSContract.ALL_SMS_URI,
                     projection,
-                    "thread_id IS NOT NULL) GROUP BY (thread_id",
+                    "address IS NOT NULL) GROUP BY (address",
                     selectionArgs,
-                    SMSContract.SORT_DESC + " limit 12 offset $page"
+                    "_id DESC limit 12 offset $page"
                 )
 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
@@ -361,6 +362,8 @@ class SMSLocalRepository(
 
         }
         Log.d(TAG, "fetch: size of list is ${data.size}")
+        if(data.size >= 1)
+        Log.d(TAG, "fetch: first item msg is  ${data[0].msg}")
         return data
     }
 
