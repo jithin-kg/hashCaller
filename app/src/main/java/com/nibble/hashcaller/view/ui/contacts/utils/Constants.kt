@@ -62,9 +62,11 @@ fun unMarkItem(view:View, threadId:Long, address:String){
  * @return boolean
  */
 fun isNumericOnlyString(stringValue: String): Boolean {
+    var str = stringValue
+    str = formatPhoneNumber(str)
     val regex = "[0-9]+"
     val pattern = Pattern.compile(regex)
-    val m = pattern.matcher(stringValue)
+    val m = pattern.matcher(str)
     if(m.matches()){
         return true
     }
@@ -80,4 +82,4 @@ fun isNumericOnlyString(stringValue: String): Boolean {
 var contactWithMetaDataForSms : HashMap<String, ContactGlobal> = hashMapOf()
 
 
-var page = 3
+var page = 0

@@ -20,6 +20,7 @@ import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
+import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 import com.nibble.hashcaller.view.ui.contacts.utils.page
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -186,7 +187,7 @@ class SMSLocalRepository(
                     projection,
                     "thread_id IS NOT NULL) GROUP BY (thread_id",
                     selectionArgs,
-                    SMSContract.SORT_DESC
+                    SMSContract.SORT_DESC + " limit 12 offset $page"
                 )
 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
@@ -343,17 +344,39 @@ class SMSLocalRepository(
                 }
 
 //        data = sortAndSet(listOfMessages)
-                data.addAll(listOfMessages)
-        setSMSReadStatus(data)
+        data.addAll(listOfMessages)
+//        setAdditionalData(data)
+                GlobalScope.launch {
+                   val r1 =  async {  setSMSReadStatus(data) }
 //        setSpamDetails(data)
-//        setNameIfExistInContactContentProvider(data)
+                    val r2 = async {  setNameIfExistInContactContentProvider(data) }
+                    r1.await()
+                    r2.await()
+                }.join()
+
             } catch (e: java.lang.Exception) {
                 Log.d(TAG, "fetch: exception $e")
             }
 
 
         }
+        Log.d(TAG, "fetch: size of list is ${data.size}")
         return data
+    }
+
+    /**
+     * to add data in sms_senders_info from server
+     */
+    private fun setAdditionalData(data: ArrayList<SMS>) {
+//           for (sms in data){
+//              val res =  smssendersInfoDAO!!.find(sms.addressString!!)
+//               if(res !=null){
+//
+//                   sms.spamCount =res.spamReportCount
+//                   sms.spammerType = res.spammerType
+//                   if(sms)
+//               }
+//           }
     }
 
     private fun setSpamDetails(data: ArrayList<SMS>) {
@@ -363,9 +386,13 @@ class SMSLocalRepository(
 
     private fun setNameIfExistInContactContentProvider(data: ArrayList<SMS>) {
         for (sms in data){
-//           setContactName(sms)
-            val name =   getConactInfoForNumber(sms.addressString!!)
-            sms.name = name
+            if(isNumericOnlyString(sms.addressString!!)){
+                val name =   getConactInfoForNumber(sms.addressString!!)
+                sms.name = name
+            }else{
+                continue
+            }
+
         }
 
     }

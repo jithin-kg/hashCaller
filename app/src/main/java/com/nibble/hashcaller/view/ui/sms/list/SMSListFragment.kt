@@ -106,7 +106,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
                         if(!isLoading){
                             if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
                                 //we have reached the bottom
-                                 page+=3
+                                 page+=12
                                 smsListVIewModel.getNextSmsPage()
                             }
                         }
