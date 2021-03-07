@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
@@ -144,7 +145,12 @@ class SMSListAdapter(private val context: Context,
                     name.text = sms.name
                 else
                     name.text = sms.address
+            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
+                view.smsMarked.visibility = View.VISIBLE
+            }else{
+                view.smsMarked.visibility = View.INVISIBLE
 
+            }
             view.tvSMSMPeek.text = sms.msg
                 view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
                 if(sms.unReadSMSCount == 0 ){
