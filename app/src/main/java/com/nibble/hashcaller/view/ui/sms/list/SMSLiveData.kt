@@ -8,6 +8,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -33,6 +34,7 @@ class SMSLiveData(private val context: Context):
         private const val TAG = "__MessagesLiveData"
     }
      private suspend fun getMessages(context: Context): MutableList<SMS> {
+         pageOb.page = 0 //set page size to 0 when there is a change in sms
 
         SMSViewModel.isLoading.postValue(true)
           spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()

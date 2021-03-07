@@ -486,10 +486,10 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         resetMarkingOptions()
     }
 
-    private fun deleteList() {
-        markedItems.clear()
-        markedContactAddress.clear()
-    }
+//    private fun deleteList() {
+//        markedItems.clear()
+//        markedContactAddress.clear()
+//    }
     private fun observeNumOfRowsDeleted() {
         this.viewmodel.numRowsDeletedLiveData.observe(viewLifecycleOwner, Observer {
             if(it == 0 ){
@@ -514,11 +514,11 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
      */
     override fun onYesConfirmation() {
         Log.d(TAG, "deleteSms: called")
-        for(id in markedItems){
-            this.viewmodel.deleteThread(id)
-        }
-        deleteList()
-        markingStarted = false
+//        for(id in markedItems){
+            this.viewmodel.deleteThread()
+//        }
+//        deleteList()
+
         resetMarkingOptions()
     }
 

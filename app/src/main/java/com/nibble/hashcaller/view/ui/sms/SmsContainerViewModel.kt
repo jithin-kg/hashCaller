@@ -32,8 +32,8 @@ class SmsContainerViewModel(
 
     }
 
-    fun deleteThread(id: Long) = viewModelScope.launch {
-       val numRowsDeleted =  repository!!.deleteSmsThread(id)
+    fun deleteThread() = viewModelScope.launch {
+       val numRowsDeleted =  repository!!.deleteSmsThread()
         pageOb.page = 0
         numRowsDeletedLiveData.value = numRowsDeleted
     }

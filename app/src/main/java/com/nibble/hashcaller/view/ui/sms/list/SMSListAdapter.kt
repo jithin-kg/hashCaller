@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
@@ -145,6 +146,15 @@ class SMSListAdapter(private val context: Context,
                     name.text = sms.name
                 else
                     name.text = sms.address
+
+            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
+              view.pgBarSmsListItem.visibility = View.VISIBLE
+            }else{
+                view.pgBarSmsListItem.visibility = View.INVISIBLE
+            }
+            /**
+             * This is important to check else double/ duplicate marking of items occur
+             */
             if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
                 view.smsMarked.visibility = View.VISIBLE
             }else{
@@ -368,7 +378,7 @@ class SMSListAdapter(private val context: Context,
 //            else
 //                Log.d(TAG, "areContentsTheSame: no")
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
-            return  oldItem.name== newItem.name && oldItem.msg == newItem.msg
+            return  oldItem.name== newItem.name && oldItem.msg == newItem.msg && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
            //TODO compare both messages and if the addres is same and message
         }
 

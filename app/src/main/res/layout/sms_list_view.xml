@@ -5,12 +5,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
-    android:paddingTop="16dp"
     android:animateLayoutChanges="true"
-    android:foreground="?android:attr/selectableItemBackground"
     android:background="@drawable/recyclere_view_background"
-    android:focusable="true">
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:paddingTop="16dp">
+
+    <ProgressBar
+        android:id="@+id/pgBarSmsListItem"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:fromDegrees="0"
+        android:toDegrees="180"
+        android:visibility="invisible"
+        android:gravity="center_vertical|center_horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintStart_toStartOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintTop_toTopOf="@+id/textViewSMScontactCrclr"
+        />
+
 
     <TextView
         android:id="@+id/textViewSMScontactCrclr"
@@ -29,13 +44,13 @@
         android:id="@+id/smsMarked"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:visibility="invisible"
         android:layout_marginStart="32dp"
         android:src="@drawable/contact_circular_marked_background"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4"/>
+        app:layout_constraintVertical_bias="0.4" />
 
     <TextView
         android:id="@+id/textVSMSContactName"
@@ -117,9 +132,9 @@
         android:id="@+id/layoutExpandable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgViewDevider"
 

@@ -16,7 +16,10 @@ import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.work.UnknownSMSsendersInfoResponse
 import com.nibble.hashcaller.work.formatPhoneNumber
 import retrofit2.Response
@@ -55,18 +58,27 @@ class SMScontainerRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun deleteSmsThread(id: Long): Int {
-        Log.d(TAG, "deleteSmsThread: threadid $id")
+    suspend fun deleteSmsThread(): Int {
         var numRowsDeleted = 0
-        var uri = Telephony.Sms.CONTENT_URI
-        val selection = "${Telephony.Sms.THREAD_ID} = ?"
-        val selectionArgs = arrayOf(id.toString())
-        try {
-           numRowsDeleted =  context.contentResolver.delete(uri, selection, selectionArgs)
-        } catch (e: Exception) {
-            Log.d(TAG, "deleteSmsThread: exception $e")
+        for(id in markedItems) {
+            Log.d(TAG, "deleteSmsThread: threadid $id")
+            var uri = Telephony.Sms.CONTENT_URI
+            val selection = "${Telephony.Sms.THREAD_ID} = ?"
+            val selectionArgs = arrayOf(id.toString())
+            try {
+                numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
+            } catch (e: Exception) {
+                Log.d(TAG, "deleteSmsThread: exception $e")
+            }
         }
+        deleteList()
         return numRowsDeleted
+    }
+
+    private fun deleteList() {
+        markedItems.clear()
+        markedContactAddress.clear()
+        markingStarted = false
     }
 
     /***

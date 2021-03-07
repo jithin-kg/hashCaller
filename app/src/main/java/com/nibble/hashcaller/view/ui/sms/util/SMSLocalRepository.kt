@@ -393,6 +393,7 @@ class SMSLocalRepository(
                 val name =   getConactInfoForNumber(formattedNum)
                 if (name != null){
                     sms.name = name
+                    sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                 }else{
 
                     getDetailsFromDB(formattedNum, sms)
@@ -418,6 +419,8 @@ class SMSLocalRepository(
             sms.name = res?.name
             sms.spamCount  = res.spamReportCount
             sms.spammerType = res.spammerType
+            sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+
         }
     }
 

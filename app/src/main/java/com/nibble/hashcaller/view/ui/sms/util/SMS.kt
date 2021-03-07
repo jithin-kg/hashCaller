@@ -3,6 +3,10 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.text.SpannableStringBuilder
 import com.google.gson.Gson
 
+
+const val SENDER_INFO_SEARCHING = 0
+const val SENDER_INFO_FROM_DB= 1
+const val SENDER_INFO_FROM_CONTENT_PROVIDER = 2
 class SMS() {
     var sub:String = ""
     var subject:String = ""
@@ -36,11 +40,13 @@ class SMS() {
     var msgType:Int = 0
     var currentDate:String? = null
     var unReadSMSCount:Int = 0
-    var readState //"0" for have not read sms and "1" for have read sms
-            : Int = 0
+    var readState : Int = 0 //"0" for have not read sms and "1" for have read sms
     var time: Long?= 0L;
     var folderName: String? = null
     var color = 0
+    var senderInfoFoundFrom = SENDER_INFO_SEARCHING // to indicate from
+    // where additional info about a number got from , ie either localdb,
+            // contentprovider or still searching
 
     override fun equals(obj: Any?): Boolean {
         val sms = obj as SMS?
