@@ -50,49 +50,49 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
-//        try {
-//            Log.d(TAG, "doWork: ")
-//
-//            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO, smssendersInfoDAO) // to get content provided sms
-//            val allsmsincontentProvider = smsrepoLocalRepository.fetchSMS(null)
-//            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
-//            val smsContainerRepository = SMScontainerRepository(
-//                context,
-//                smssendersInfoDAO,
-//                mutedSendersDAO,
-//                blockedOrSpamSenders
-//            )
-//
-//
-//            setlistOfAllUnknownSenders(allsmsincontentProvider, smssendersInfoDAO )
-//
-//
-//            if(senderListChuckOfSize12.isNotEmpty()){
-//                for (senderInfoSublist in senderListChuckOfSize12){
-//
-//                    val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
-//
-//                    var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
-//
-//                    for(cntct in result.body()!!.contacts){
-//
-//                        val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(null,
-//                            cntct.phoneNumber, 0, cntct.name,
-//                            Date(), cntct.spamCount)
-//                        smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
-//                    }
-//                    smssendersInfoDAO.insert(smsSenderlistToBeSavedToLocalDb)
-//                }
-//            }else{
-//                Log.d(TAG, "doWork: size less than 1")
-//            }
-//
-//
-//
-//        }catch (e: HttpException){
-//            return Result.retry()
-//            Log.d(TAG, "doWork: retry")
-//        }
+        try {
+            Log.d(TAG, "doWork: ")
+
+            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO, smssendersInfoDAO) // to get content provided sms
+            val allsmsincontentProvider = smsrepoLocalRepository.fetchSMS(null)
+            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+            val smsContainerRepository = SMScontainerRepository(
+                context,
+                smssendersInfoDAO,
+                mutedSendersDAO,
+                blockedOrSpamSenders
+            )
+
+
+            setlistOfAllUnknownSenders(allsmsincontentProvider, smssendersInfoDAO )
+
+
+            if(senderListChuckOfSize12.isNotEmpty()){
+                for (senderInfoSublist in senderListChuckOfSize12){
+
+                    val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+
+                    var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
+
+                    for(cntct in result.body()!!.contacts){
+
+                        val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(null,
+                            cntct.phoneNumber, 0, cntct.name,
+                            Date(), cntct.spamCount)
+                        smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
+                    }
+                    smssendersInfoDAO.insert(smsSenderlistToBeSavedToLocalDb)
+                }
+            }else{
+                Log.d(TAG, "doWork: size less than 1")
+            }
+
+
+
+        }catch (e: HttpException){
+            return Result.retry()
+            Log.d(TAG, "doWork: retry")
+        }
         return Result.success()
     }
 

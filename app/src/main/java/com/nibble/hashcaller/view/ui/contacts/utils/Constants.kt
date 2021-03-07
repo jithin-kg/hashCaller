@@ -62,11 +62,11 @@ fun unMarkItem(view:View, threadId:Long, address:String){
  * @return boolean
  */
 fun isNumericOnlyString(stringValue: String): Boolean {
-    var str = stringValue
-    str = formatPhoneNumber(str)
+//    var str = stringValue
+//    str = formatPhoneNumber(str)
     val regex = "[0-9]+"
     val pattern = Pattern.compile(regex)
-    val m = pattern.matcher(str)
+    val m = pattern.matcher(stringValue)
     if(m.matches()){
         return true
     }

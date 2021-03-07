@@ -333,7 +333,7 @@ class SMSListAdapter(private val context: Context,
                 Log.d(TAG, "areItemsTheSame: yes")
             else
                 Log.d(TAG, "areItemsTheSame: no")
-            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id
+            return oldItem.expanded == newItem.expanded &&  oldItem.threadID == newItem.threadID
 
 
         }

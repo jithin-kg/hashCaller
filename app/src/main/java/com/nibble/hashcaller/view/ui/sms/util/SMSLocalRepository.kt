@@ -6,20 +6,17 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
-import android.provider.CallLog
 import android.provider.ContactsContract
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
-import com.google.android.gms.tasks.Tasks.await
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
-import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
@@ -389,15 +386,38 @@ class SMSLocalRepository(
 
     private fun setNameIfExistInContactContentProvider(data: ArrayList<SMS>) {
         for (sms in data){
-            if(isNumericOnlyString(sms.addressString!!)){
-                val name =   getConactInfoForNumber(sms.addressString!!)
-                sms.name = name
+            var formattedNum = formatPhoneNumber(sms.addressString!!)
+
+            if(isNumericOnlyString(formattedNum)){
+                val name =   getConactInfoForNumber(formattedNum)
+                if (name != null){
+                    sms.name = name
+                }else{
+
+                    getDetailsFromDB(formattedNum, sms)
+                }
             }else{
-                continue
+                getDetailsFromDB(formattedNum, sms)
             }
 
         }
 
+    }
+
+    /**
+     * function to get information from local db sms_senders_info_from_db
+     * @param formattedNum , phone number
+     */
+    private fun getDetailsFromDB(
+        num: String,
+        sms: SMS
+    ) {
+        val res = smssendersInfoDAO!!.find(num!!)
+        if(res!=null){
+            sms.name = res?.name
+            sms.spamCount  = res.spamReportCount
+            sms.spammerType = res.spammerType
+        }
     }
 
     private fun setContactName(sms: SMS) {
