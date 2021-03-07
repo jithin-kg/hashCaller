@@ -136,11 +136,13 @@ class SMSViewModel(
         var mapofAddressAndValues: HashMap<String, SMS> = HashMap()
 
         for(sms in dataFromDB!!){
+            //creating a map of senderinfo that is received from DB
             val obj = SMS()
             obj.name = sms.name
             obj.type = sms.spammerType
             obj.spamCount = sms.spamReportCount
             mapofAddressAndValues.put(sms.contactAddress!!, obj)
+
         }
         var lst:MutableList<SMS>  = mutableListOf()
         if(smsLiveData.value!=null){
@@ -150,7 +152,7 @@ class SMSViewModel(
 
                 if(res!=null){
                     sms.name = res.name
-
+                    sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                 }
                 lst.add(obj)
             }

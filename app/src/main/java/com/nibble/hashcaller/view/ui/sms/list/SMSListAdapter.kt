@@ -367,17 +367,18 @@ class SMSListAdapter(private val context: Context,
 //
 //                }
 //            }
-            if(oldItem.name == newItem.name){
-                Log.d(TAG, "areContentsTheSame: name are equal ${oldItem.name}, ${newItem.name}")
-            }else{
-                Log.d(TAG, "areContentsTheSame: name are not equal ${oldItem.name}, ${newItem.name}")
-            }
-            Log.d(TAG, "areContentsTheSame:msg old ${oldItem.msg}  msg new ${newItem.msg}")
-//            if(oldItem.expanded == newItem.expanded)
+//            if(oldItem.name == newItem.name){
+//                Log.d(TAG, "areContentsTheSame: name are equal ${oldItem.name}, ${newItem.name}")
+//            }else{
+//                Log.d(TAG, "areContentsTheSame: name are not equal ${oldItem.name}, ${newItem.name}")
+//            }
+//            Log.d(TAG, "areContentsTheSame:msg old ${oldItem.msg}  msg new ${newItem.msg}")
+////            if(oldItem.expanded == newItem.expanded)
 //                Log.d(TAG, "areContentsTheSame: yes")
 //            else
 //                Log.d(TAG, "areContentsTheSame: no")
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
+            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
             return  oldItem.name== newItem.name && oldItem.msg == newItem.msg && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
            //TODO compare both messages and if the addres is same and message
         }
