@@ -8,6 +8,7 @@ import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
@@ -33,6 +34,7 @@ class SmsContainerViewModel(
 
     fun deleteThread(id: Long) = viewModelScope.launch {
        val numRowsDeleted =  repository!!.deleteSmsThread(id)
+        pageOb.page = 0
         numRowsDeletedLiveData.value = numRowsDeleted
     }
 

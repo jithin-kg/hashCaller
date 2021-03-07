@@ -26,6 +26,7 @@ import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItem
@@ -108,6 +109,12 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
                                 //we have reached the bottom
                                  page+=12
                                 smsListVIewModel.getNextSmsPage()
+                               if(dy > 0){
+                                   if(!isSizeEqual){
+                                       viewMesages.shimmer_view_container.visibility = View.VISIBLE
+                                       viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+                                   }
+                               }
                             }
                         }
 
@@ -180,16 +187,18 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     }
 
     private fun observeSMSList() {
-//        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
-//            sms.let {
-////                smsRecyclerAdapter?.setSMSList(it, searchQry)
+        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
+            sms.let {
+//                smsRecyclerAdapter?.setSMSList(it, searchQry)
 //                Log.d(TAG, "observeSMSList: data changed")
 //                smsRecyclerAdapter?.submitList(it)
 //                SMSListAdapter.searchQry = searchQry
 //                this.smsLIst = it as MutableList<SMS>?
-//
-//            }
-//        })
+                Log.d(TAG, "observeSMSList: ")
+                this.smsListVIewModel.updateLiveData(sms)
+
+            }
+        })
     }
     private fun observeMutabeLiveData() {
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
@@ -200,7 +209,9 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
             it.forEach{sms-> newList.add(sms.deepCopy())}
             smsRecyclerAdapter?.setList(newList)
 
-            this.viewMesages.pgBarsmslist.visibility = View.GONE
+//            this.viewMesages.pgBarsmslist.visibility = View.GONE
+            this.viewMesages.shimmer_view_container.visibility = View.GONE
+            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
             SMSListAdapter.searchQry = searchQry
         })
     }

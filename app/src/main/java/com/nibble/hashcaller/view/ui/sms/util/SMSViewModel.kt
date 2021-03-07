@@ -2,8 +2,10 @@ package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
+import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -28,7 +30,7 @@ class SMSViewModel(
 
     companion object
     {
-        private const val TAG ="__DialerViewModel"
+        private const val TAG ="__SMSViewModel"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
     }
 
@@ -166,7 +168,19 @@ class SMSViewModel(
     fun getNextSmsPage()  = viewModelScope.launch{
         val res = async { repository!!.fetchSMS(null) }
         val newpage = res.await()
+        var prevSize = 0
+        if(smsLiveData.value !=null){
+            prevSize = smsLiveData.value!!.size
+        }
+
         smsLiveData.value!!.addAll(newpage)
+        var sizeAfterAddingPage = smsLiveData.value!!.size
+        Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
+        if(prevSize == sizeAfterAddingPage){
+            isSizeEqual = true
+        }else{
+            isSizeEqual = false
+        }
         smsLiveData.value = smsLiveData.value
     }
 

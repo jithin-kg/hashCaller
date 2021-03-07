@@ -187,6 +187,7 @@ class SMSLocalRepository(
                     selectionArgs,
                     "_id DESC limit 12 offset $page"
                 )
+                Log.d(TAG, "fetch: page is   $page")
 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
                     val spammersList = spamListDAO?.getAll()
@@ -851,6 +852,99 @@ class SMSLocalRepository(
         return smssendersInfoDAO!!.getAllLiveData()
     }
 
+    /**
+     * function to return sms and address in content provider for SmsHashedNumUploadWorker
+     */
+    @SuppressLint("LongLogTag")
+     suspend fun fetchSmsForWorker(): MutableList<SMS> {
+        var data = ArrayList<SMS>()
+            try {
+                val listOfMessages = mutableListOf<SMS>()
+                var selectionArgs: Array<String>? = null
+
+
+
+                val projection = arrayOf(
+                    "thread_id",
+                    "_id",
+                    "address",
+                    "type",
+                    "body",
+                    "read",
+                    "date"
+
+
+                )
+
+//        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
+                val cursor = context.contentResolver.query(
+                    SMSContract.ALL_SMS_URI,
+                    projection,
+                    "address IS NOT NULL) GROUP BY (address",
+                    selectionArgs,
+                    "_id DESC"
+                )
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+
+                        try {
+                            //TODO check if phone number exists in contact, if then add the contact information too
+                            val objSMS = SMS()
+                            objSMS.id =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                            objSMS.threadID =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+                            var num =
+                                cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                            num = num.replace("+", "")
+
+                            objSMS.type =
+                                cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                            val msg =
+                                cursor.getString(cursor.getColumnIndexOrThrow("body"))
+
+                            objSMS.addressString = num.replace("+", "")
+
+                            objSMS.readState =
+                                cursor.getInt(cursor.getColumnIndex("read"))
+                            val dateMilli =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+
+                            objSMS.time = dateMilli
+
+                            if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                                    .contains("1")
+                            ) {
+                                objSMS.folderName = "inbox"
+                            } else {
+                                objSMS.folderName = "sent"
+                            }
+
+//
+                            listOfMessages.add(objSMS)
+
+                        } catch (e: Exception) {
+                            Log.d(TAG, "getMessages: $e")
+                        }
+
+                    } while (cursor.moveToNext())
+
+                }
+                data.addAll(listOfMessages)
+
+            } catch (e: java.lang.Exception) {
+                Log.d(TAG, "fetchSmsForWorker: exception $e")
+            }
+
+
+
+        Log.d(TAG, "fetchSmsForWorker: size of list is ${data.size}")
+        if(data.size >= 1)
+            Log.d(TAG, "fetchSmsForWorker: first item msg is  ${data[0].msg}")
+        return data
+    }
 
 }
 
