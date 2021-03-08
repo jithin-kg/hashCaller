@@ -49,6 +49,7 @@ import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.setStatusBarColor
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
@@ -104,6 +105,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         hideKeyboard(this)
 
         setContentView(R.layout.activity_main)
+
+        setStatusBarColor(this)// change status bar color according to app theme->dark and light
         initViewModel()
         setupNavigationDrawer()
 
@@ -125,6 +128,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         setupContactUploadWork()
 
     }
+
+
+
 //    override fun onCreateContextMenu(menu: ContextMenu, v: View,
 //                                     menuInfo: ContextMenu.ContextMenuInfo) {
 //        super.onCreateContextMenu(menu, v, menuInfo)

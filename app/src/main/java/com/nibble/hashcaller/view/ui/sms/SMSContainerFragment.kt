@@ -27,6 +27,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.karumi.dexter.Dexter
@@ -76,7 +77,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private var smsIdentifiedAsSpamFragment:SMSIdentifiedAsSpamFragment? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private lateinit var toolbarSms:androidx.appcompat.widget.Toolbar
+    private lateinit var toolbarSms:MaterialToolbar
     private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
     private var defaultSmsHandlerLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private lateinit var bottomSheetDialog: BottomSheetDialog

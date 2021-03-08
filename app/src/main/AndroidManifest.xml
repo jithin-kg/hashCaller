@@ -124,7 +124,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.splashactivity.SplashActivity"
-            android:theme="@style/Theme.MyDarkTheme">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
                 android:value="@string/safety_net_api_key" />

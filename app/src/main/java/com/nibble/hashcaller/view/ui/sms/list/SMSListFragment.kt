@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.list
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -12,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SearchView
@@ -53,7 +55,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private lateinit var cntx:Context
     private lateinit var recyclerV:RecyclerView
 
-    private lateinit var sView:SearchView
+    private lateinit var sView:EditText
     private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
@@ -241,12 +243,13 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         rcrViewSMSList.adapter  = null
     }
 
+    @SuppressLint("WrongViewCast")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initListeners()
 
-         sView = viewMesages.rootView.findViewById(R.id.searchViewMessages) as SearchView
+         sView = viewMesages.rootView.findViewById(R.id.searchViewMessages)
 
         Log.d(TAG, "onCreateView: $sView")
 
@@ -265,23 +268,23 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 
 
     private fun searchViewListener() {
-        sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                Log.d(TAG, "onQueryTextSubmit: ")
-                return true
-            }
-
-            override fun onQueryTextChange(searchQuery: String?): Boolean {
-                Log.d(TAG, "onQueryTextChange: $searchQuery")
-                searchQry = searchQuery
-
-                smsListVIewModel.search(searchQuery)
-
-                return true
-
-            }
-        })
+//        sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+//
+//            override fun onQueryTextSubmit(p0: String?): Boolean {
+//                Log.d(TAG, "onQueryTextSubmit: ")
+//                return true
+//            }
+//
+//            override fun onQueryTextChange(searchQuery: String?): Boolean {
+//                Log.d(TAG, "onQueryTextChange: $searchQuery")
+//                searchQry = searchQuery
+//
+//                smsListVIewModel.search(searchQuery)
+//
+//                return true
+//
+//            }
+//        })
     }
 
 

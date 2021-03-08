@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,7 +37,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     private var searchQry:String? = null
 
     private lateinit var viewMesages:View
-    private lateinit var sView:SearchView
+    private lateinit var sView:EditText
     private var smsListSize:MutableLiveData<Int> = MutableLiveData(0)
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -162,7 +163,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
 //                "according to your spam delete cycle"
        val height = activity?.bottomNavigationView?.height
         Log.d(TAG, "onViewCreated: height $height")
-         sView = viewMesages.rootView.findViewById(R.id.searchViewMessages) as SearchView
+         sView = viewMesages.rootView.findViewById(R.id.searchViewMessages)
         
 
 
@@ -191,22 +192,22 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
     private fun
             searchViewListener() {
-        sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                return true
-            }
-
-            @SuppressLint("LongLogTag")
-            override fun onQueryTextChange(searchQuery: String?): Boolean {
-                Log.d(TAG, "onQueryTextChange: $searchQuery")
-                searchQry = searchQuery
-
-                viewmodel.search(searchQuery)
-
-                return true
-
-            }
-        })
+//        sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+//            override fun onQueryTextSubmit(p0: String?): Boolean {
+//                return true
+//            }
+//
+//            @SuppressLint("LongLogTag")
+//            override fun onQueryTextChange(searchQuery: String?): Boolean {
+//                Log.d(TAG, "onQueryTextChange: $searchQuery")
+//                searchQry = searchQuery
+//
+//                viewmodel.search(searchQuery)
+//
+//                return true
+//
+//            }
+//        })
     }
 
     private fun initListeners() {
@@ -234,6 +235,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    @SuppressLint("LongLogTag")
     private fun onContactItemClicked(id: String, pos: Int, pno: String) {
         viewmodel.update(pno) // update count
         val intent = Intent(context, IndividualSMSActivity::class.java )

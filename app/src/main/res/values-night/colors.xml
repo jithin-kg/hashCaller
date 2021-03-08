@@ -2,10 +2,12 @@
 <resources>
     <color name="colorPrimary">#4B53BC</color>
     <color name="colorPrimaryLight">#2374BF</color>
-    <color name="colorPrimaryDark">#262A69</color>
+    <color name="colorPrimaryDark">#2B3078</color>
 <!--    <color name="colorBackgroundDark">#000000</color>-->
     <color name="colorBackground">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="statusBar">#000000</color>
+
     <color name="colorlightBlueviking">#79BEDB</color>
     <color name="colorbrightTurquoiseLightBlue">#10C8CD</color>
     <color name="lightGray">#E8EAEA</color>
@@ -25,6 +27,7 @@
     <color name="lineColor">#22A5A2A2</color>
     <color name="edtxt_phone_auth_bg">#0F1B27</color>
     <color name="appBarBackgroundColor">#2E2D2D</color>
-
+    <!--    colors for toolbar-->
+    <color name="toolbarBackground">#2E2D2D</color>
 
 </resources>

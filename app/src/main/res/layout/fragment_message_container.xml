@@ -25,28 +25,42 @@
         android:backgroundTint="@color/colorBackground"
         android:background="@color/appBarBackgroundColor"
         >
-
-        <androidx.appcompat.widget.Toolbar
+<!--!! important to five elecation, elevation give shadow-->
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbarSmS"
+
             android:layout_width="match_parent"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
             android:layout_height="?attr/actionBarSize"
-            android:backgroundTint="@color/colorBackground"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="4dp"
+            android:background="@drawable/toolbar_background"
+            app:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetEnd="0dp"
+            app:contentInsetRight="0dp"
+            style="@style/toolbarStyle"
+            app:contentInsetStartWithNavigation="0dp"
+            app:navigationIcon="@drawable/ic_baseline_menu_24"
             app:layout_scrollFlags="scroll|enterAlways">
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/smsToolbarLayoutItems"
                 android:layout_width="match_parent"
-                android:backgroundTint="@color/colorBackground"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginStart="0dp"
+                android:backgroundTint="@color/colorBackground">
 
                 <ImageButton
                     android:id="@+id/imgBtnTbrBlock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
-                    android:visibility="invisible"
                     android:background="?android:selectableItemBackground"
                     android:src="@drawable/ic_baseline_block_24"
+                    android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnTbrMuteSender" />
 
@@ -55,9 +69,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
-                    android:visibility="invisible"
                     android:background="?android:selectableItemBackground"
                     android:src="@drawable/ic_baseline_notifications_off"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"
                     app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete" />
@@ -91,39 +105,40 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                    <SearchView
+                <EditText
                     android:id="@+id/searchViewMessages"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#00000000"
+                    android:backgroundTint="@color/colorBackground"
                     android:cursorVisible="false"
                     android:focusable="false"
-                    android:backgroundTint="@color/colorBackground"
                     android:focusedByDefault="false"
                     android:hint="search phone, name, hash..."
                     android:iconifiedByDefault="false"
-                    android:paddingBottom="10dp"
+                    android:queryBackground="@android:color/transparent"
+
                     android:queryHint="Search numbers, names"
-                    tools:layout_editor_absoluteX="0dp"
-                    tools:layout_editor_absoluteY="16dp" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:layout_editor_absoluteX="0dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
 
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayoutMessages"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
+            android:layout_height="wrap_content"
             app:tabGravity="fill"
             android:backgroundTint="@color/colorBackground"
             app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
             app:tabInlineLabel="true"
             app:tabIndicatorColor="@color/colorPrimaryDark"
-            app:tabIndicatorHeight="2dp"
+            app:tabIndicatorHeight="4dp"
             app:tabPaddingBottom="16dp"
-            app:tabPaddingTop="16dp"
             app:tabMaxWidth="0dp"
             app:tabMode="fixed" />
     </com.google.android.material.appbar.AppBarLayout>

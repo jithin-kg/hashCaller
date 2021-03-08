@@ -1,7 +1,10 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
+import android.app.Activity
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -9,7 +12,6 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAd
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedViews
 import com.nibble.hashcaller.view.utils.ContactGlobal
-import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.regex.Pattern
 
 /**
@@ -86,3 +88,22 @@ object pageOb{
 }
 
 var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerview
+
+/**
+ * function to set staus bar color according to system theme
+ * ie dark and light
+ * @param activity calling activity
+ */
+
+ fun setStatusBarColor(activity:Activity) {
+    val window =activity.getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+    window.setStatusBarColor(ContextCompat.getColor(activity,R.color.statusBar))
+}

@@ -10,7 +10,7 @@
     <color name="colorPrimary">#4F57BF</color>
     <color name="colorPrimaryLight">#2374BF</color>
 <!--    <color name="colorPrimaryDark">#6264AA</color>-->
-    <color name="colorPrimaryDark">#262A69</color>
+    <color name="colorPrimaryDark">#2B3078</color>
 
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
@@ -22,6 +22,7 @@
     <color name="colorControlNormal">#CCCCCC</color>
 
     <color name="colorWhite">#FFFFFF</color>
+    <color name="statusBar">#FFFFFF</color>
     <color name="colorlightBlueviking">#79BEDB</color>
     <color name="colorbrightTurquoiseLightBlue">#10C8CD</color>
     <color name="lightGray">#E8EAEA</color>
@@ -42,6 +43,10 @@
     <color name="edtxt_phone_auth_bg">#D8D9DA</color>
     <color name="appBarBackgroundColor">#fff</color>
     <color name="secure_lock_color">#6EE93C</color>
+
+    <!--    colors for toolbar-->
+    <color name="toolbarBackground">#FFFFFF</color>
+
 
 
 </resources>

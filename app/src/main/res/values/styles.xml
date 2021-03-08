@@ -10,6 +10,13 @@
         <item name="backgroundColor">@color/colorBackground</item>
         <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
         <item name="fontFamily"> sans-serif</item>
+
+        <!-- android:windowLightStatusBar is important, this makes status bar item colors dark
+               so that it is visible when layout colorPrimaryDark is white-->
+        <item name="android:windowLightStatusBar">true</item>
+<!--        end -->
+
+
         <item name="android:windowContentTransitions">true</item>
     </style>
 
@@ -99,6 +106,9 @@
 
     </style>
 
+    <style name="toolbarStyle" parent="@style/Widget.MaterialComponents.Toolbar.Surface">
+        <item name="android:radius">18dp</item>
+    </style>
     <!--    splash screen-->
 <!--    <style name="AppTheme.Launcher">-->
 <!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
