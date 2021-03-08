@@ -136,7 +136,7 @@
             android:backgroundTint="@color/colorBackground"
             app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
             app:tabInlineLabel="true"
-            app:tabIndicatorColor="@color/colorPrimaryDark"
+            app:tabIndicatorColor="@color/colorPrimaryDarkest"
             app:tabIndicatorHeight="4dp"
             app:tabPaddingBottom="16dp"
             app:tabMaxWidth="0dp"

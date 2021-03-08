@@ -2,8 +2,10 @@
 <resources>
     <color name="colorPrimary">#4B53BC</color>
     <color name="colorPrimaryLight">#2374BF</color>
-    <color name="colorPrimaryDark">#2B3078</color>
-<!--    <color name="colorBackgroundDark">#000000</color>-->
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorPrimaryDarkest">#4A51B6</color>
+
+    <!--    <color name="colorBackgroundDark">#000000</color>-->
     <color name="colorBackground">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="statusBar">#000000</color>

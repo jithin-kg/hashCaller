@@ -80,7 +80,6 @@ companion object{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStatusBarColor(this)
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
         userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(

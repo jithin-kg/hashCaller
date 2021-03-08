@@ -99,14 +99,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
         hideKeyboard(this)
 
         setContentView(R.layout.activity_main)
 
-        setStatusBarColor(this)// change status bar color according to app theme->dark and light
+
         initViewModel()
         setupNavigationDrawer()
 

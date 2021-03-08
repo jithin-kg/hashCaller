@@ -95,7 +95,7 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
  * @param activity calling activity
  */
 
- fun setStatusBarColor(activity:Activity) {
+     fun setStatusBarColor(activity:Activity) {
     val window =activity.getWindow();
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
