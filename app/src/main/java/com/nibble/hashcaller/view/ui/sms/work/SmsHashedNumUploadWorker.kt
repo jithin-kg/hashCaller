@@ -16,6 +16,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.nibble.hashcaller.work.replaceSpecialChars
 import retrofit2.HttpException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -75,9 +76,9 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                     var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 
                     for(cntct in result.body()!!.contacts){
-
+                        val formatedNum = replaceSpecialChars(cntct.phoneNumber)
                         val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(null,
-                            cntct.phoneNumber, 0, cntct.name,
+                            formatedNum, 0, cntct.name,
                             Date(), cntct.spamCount)
                         smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
                     }

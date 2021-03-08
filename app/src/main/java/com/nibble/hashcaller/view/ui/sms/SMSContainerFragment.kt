@@ -181,6 +181,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             setupViewPager(viewPagerMessages)
             tabLayoutMessages?.setupWithViewPager(viewPagerMessages)
 //            tabLayoutMessages.addOnTabSelectedListener(this)
+        tabLayoutMessages.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_message_24)
+        tabLayoutMessages.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_block_no_color)
             initListeners()
         observerSmsLiveDataFromViewmodel()
 
@@ -206,6 +208,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             if(childFragmentManager.getFragment(savedInstanceState, "smsListFragment") != null){
 
                 this.smsListFragment = childFragmentManager.getFragment(savedInstanceState, "smsListFragment") as SMSListFragment?
+
                 this.smsIdentifiedAsSpamFragment = childFragmentManager.getFragment(savedInstanceState, "smsIdentifiedAsSpamFragment") as SMSIdentifiedAsSpamFragment?
 
             }

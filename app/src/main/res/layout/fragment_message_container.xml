@@ -19,9 +19,10 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
         app:layout_scrollFlags="scroll|enterAlways"
+        android:backgroundTint="@color/colorBackground"
         android:background="@color/appBarBackgroundColor"
         >
 
@@ -30,10 +31,12 @@
             android:layout_width="match_parent"
             app:navigationIcon="@drawable/ic_baseline_menu_24"
             android:layout_height="?attr/actionBarSize"
+            android:backgroundTint="@color/colorBackground"
             app:layout_scrollFlags="scroll|enterAlways">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/smsToolbarLayoutItems"
                 android:layout_width="match_parent"
+                android:backgroundTint="@color/colorBackground"
                 android:layout_height="match_parent">
 
                 <ImageButton
@@ -82,6 +85,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text=""
+                    android:textColor="@color/colorPrimaryLight"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -94,6 +98,7 @@
                     android:background="#00000000"
                     android:cursorVisible="false"
                     android:focusable="false"
+                    android:backgroundTint="@color/colorBackground"
                     android:focusedByDefault="false"
                     android:hint="search phone, name, hash..."
                     android:iconifiedByDefault="false"
@@ -110,12 +115,15 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayoutMessages"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="72dp"
             app:tabGravity="fill"
+            android:backgroundTint="@color/colorBackground"
+            app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
+            app:tabInlineLabel="true"
             app:tabIndicatorColor="@color/colorPrimaryDark"
             app:tabIndicatorHeight="2dp"
-            app:tabPaddingBottom="25dp"
+            app:tabPaddingBottom="16dp"
+            app:tabPaddingTop="16dp"
             app:tabMaxWidth="0dp"
             app:tabMode="fixed" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -193,6 +201,7 @@
 <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPagerMessages"
+        android:backgroundTint="@color/colorBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"

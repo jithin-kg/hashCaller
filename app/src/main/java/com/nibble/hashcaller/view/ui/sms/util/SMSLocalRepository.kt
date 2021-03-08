@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -396,10 +397,10 @@ class SMSLocalRepository(
                     sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                 }else{
 
-                    getDetailsFromDB(formattedNum, sms)
+                    getDetailsFromDB(sms.addressString!!, sms)
                 }
             }else{
-                getDetailsFromDB(formattedNum, sms)
+                getDetailsFromDB(sms.addressString!!, sms)
             }
 
         }
@@ -414,7 +415,8 @@ class SMSLocalRepository(
         num: String,
         sms: SMS
     ) {
-        val res = smssendersInfoDAO!!.find(num!!)
+        val frmtedNum = replaceSpecialChars(num)
+        val res = smssendersInfoDAO!!.find(frmtedNum)
         if(res!=null){
             sms.name = res?.name
             sms.spamCount  = res.spamReportCount

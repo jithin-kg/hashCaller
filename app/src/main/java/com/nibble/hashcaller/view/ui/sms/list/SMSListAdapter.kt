@@ -149,6 +149,7 @@ class SMSListAdapter(private val context: Context,
 
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
               view.pgBarSmsListItem.visibility = View.VISIBLE
+                Log.d(TAG, "bind: searching for ${sms.addressString}")
             }else{
                 view.pgBarSmsListItem.visibility = View.INVISIBLE
             }
