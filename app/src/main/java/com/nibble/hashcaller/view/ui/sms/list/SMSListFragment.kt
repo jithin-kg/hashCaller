@@ -34,16 +34,15 @@ import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItem
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.*
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
-import com.nibble.hashcaller.view.ui.sms.util.SMS
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import kotlinx.android.synthetic.main.fragment_messages_list.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 
 
-class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPressHandler {
+class SMSListFragment : Fragment(), View.OnClickListener,
+    SMSListAdapter.LongPressHandler {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -54,7 +53,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     private var searchQry:String? = null
     private lateinit var cntx:Context
     private lateinit var recyclerV:RecyclerView
-
+    
     private lateinit var sView:EditText
     private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
@@ -62,9 +61,10 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     var inflater: LayoutInflater? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     private var layoutMngr:LinearLayoutManager? = null
-
+    private lateinit var searchViewMessages: EditText
     private var isLoading = false
     var limit = 12
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
@@ -92,6 +92,7 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         observePermissionLiveData()
         this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
         registerForContextMenu( this.recyclerV) // context menu registering
+
         return  viewMesages
     }
 
@@ -246,10 +247,11 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
     @SuppressLint("WrongViewCast")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//        this.searchViewMessages = viewMesages.rootView.findViewById(R.id.searchViewMessages)
         initRecyclerView()
         initListeners()
 
-         sView = viewMesages.rootView.findViewById(R.id.searchViewMessages)
+         sView = viewMesages.rootView.findViewById(R.id.searchViewSms)
 
         Log.d(TAG, "onCreateView: $sView")
 
@@ -259,33 +261,16 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
 
         observeLive()
         observeMutabeLiveData()
-        searchViewListener()
         addScrollListener()
 
 
+
+
     }
 
 
 
-    private fun searchViewListener() {
-//        sView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-//
-//            override fun onQueryTextSubmit(p0: String?): Boolean {
-//                Log.d(TAG, "onQueryTextSubmit: ")
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(searchQuery: String?): Boolean {
-//                Log.d(TAG, "onQueryTextChange: $searchQuery")
-//                searchQry = searchQuery
-//
-//                smsListVIewModel.search(searchQuery)
-//
-//                return true
-//
-//            }
-//        })
-    }
+
 
 
 
@@ -398,4 +383,8 @@ class SMSListFragment : Fragment(), View.OnClickListener, SMSListAdapter.LongPre
         Log.d(TAG, "onStop: ")
         super.onStop()
     }
+
+
+
+
 }

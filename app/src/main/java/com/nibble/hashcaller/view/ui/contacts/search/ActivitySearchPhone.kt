@@ -41,7 +41,7 @@ class ActivitySearchPhone : AppCompatActivity() {
 //        window.enterTransition = enterAnimation
 
         setContentView(R.layout.activity_search_phone)
-        owner = this
+//        owner = this
 
 
 //        searchViewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(this)).get(

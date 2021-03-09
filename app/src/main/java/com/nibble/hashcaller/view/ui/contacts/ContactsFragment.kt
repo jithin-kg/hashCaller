@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -33,6 +34,7 @@ import com.nibble.hashcaller.view.ui.contacts.search.DetailsTransition
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_contacts.*
 import kotlinx.android.synthetic.main.fragment_search.*
 
@@ -151,32 +153,35 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
 
     private fun startSearchActivity() {
-//        val intent = Intent(activity, ActivitySearchPhone::class.java)
-//        intent.putExtra("animation", "explode")
-//        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
+        val intent = Intent(activity, ActivitySearchPhone::class.java)
+        intent.putExtra("animation", "explode")
+        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
+        val p1 = android.util.Pair(searchViewContacts as View,"editTextTransition")
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,p1 )
 //        val options  = ActivityOptionsCompat.makeSceneTransitionAnimation(
 //            this!!.requireActivity(), btnSampleTransition,
 //            ViewCompat.getTransitionName(btnSampleTransition)!!
 //        )
-//        startActivity(intent, options.toBundle())
+        startActivity(intent, options.toBundle())
 
-        val kittenDetails = (activity as MainActivity).searchFragment
-
-        kittenDetails?.setSharedElementEnterTransition(DetailsTransition())
-        kittenDetails?.setEnterTransition(Fade())
-        //Todo add exit transition other than fade, fade is laggy in view for exit
-//        exitTransition = Fade()
-
-        kittenDetails?.setSharedElementReturnTransition(DetailsTransition())
-
-        (activity as MainActivity).bottomNavigationView.visibility = View.GONE
-
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .addSharedElement(searchViewContacts, searchViewContacts.transitionName)
-            .replace(R.id.frame_fragmentholder, kittenDetails!!)
-            .addToBackStack(null)
-            .commit()
+//        val kittenDetails = (activity as MainActivity).searchFragment
+//
+//        kittenDetails?.setSharedElementEnterTransition(DetailsTransition())
+//        kittenDetails?.setEnterTransition(Fade())
+//        //Todo add exit transition other than fade, fade is laggy in view for exit
+////        exitTransition = Fade()
+//
+//        kittenDetails?.setSharedElementReturnTransition(DetailsTransition())
+//
+//        (activity as MainActivity).bottomNavigationView.visibility = View.GONE
+//
+//        requireActivity().supportFragmentManager
+//            .beginTransaction()
+//            .addSharedElement(searchViewContacts, searchViewContacts.transitionName)
+//            .replace(R.id.frame_fragmentholder, kittenDetails!!)
+//            .addToBackStack(null)
+//            .commit()
 
     }
 

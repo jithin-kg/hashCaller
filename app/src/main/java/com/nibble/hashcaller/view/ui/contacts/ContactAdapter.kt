@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import kotlinx.android.synthetic.main.contact_list.view.*
 import java.util.*
 
@@ -76,7 +77,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 view.textViewcontactCrclr.visibility = View.INVISIBLE
                 view.imgViewCntct.visibility = View.VISIBLE
                 view.contactCard.visibility = View.VISIBLE
-                view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
+                loadImage(view.context, view.imgViewCntct, contact.photoThumnail)
+
+
             }else{
                 view.imgViewCntct.setImageURI(Uri.parse(""))
                 view.imgViewCntct.visibility = View.INVISIBLE

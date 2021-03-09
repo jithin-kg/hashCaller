@@ -156,39 +156,18 @@ class SMSLocalRepository(
 
                 var deleteViewAdded = false
                 val listOfMessages = mutableListOf<SMS>()
-                var selectionArgs: Array<String>? = null
-                var selection: String? = null
                 var count = 0
                 var map: HashMap<String?, String?> = HashMap()
                 smsListHashMap = map
 
-                if (searchQuery != null) {
-                    selection = SMSContract.SMS_SELECTION_SEARCH
-                    selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
-                }
 
 
-                val projection = arrayOf(
-                    "thread_id",
-                    "_id",
-                    "address",
-                    "type",
-                    "body",
-                    "read",
-                    "date"
 
-
-                )
 
 //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
-                val cursor = context.contentResolver.query(
-                    SMSContract.ALL_SMS_URI,
-                    projection,
-                    "address IS NOT NULL) GROUP BY (address",
-                    selectionArgs,
-                    "_id DESC limit 12 offset $page"
-                )
+                val cursor = createCursor(searchQuery)
                 Log.d(TAG, "fetch: page is   $page")
+
 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
                     val spammersList = spamListDAO?.getAll()
@@ -364,6 +343,51 @@ class SMSLocalRepository(
         if(data.size >= 1)
         Log.d(TAG, "fetch: first item msg is  ${data[0].msg}")
         return data
+    }
+
+    private fun createCursor(searchQuery: String?): Cursor? {
+
+        var selectionArgs: Array<String>? = null
+        var selection: String? = null
+
+        if (searchQuery != null) {
+            selection = SMSContract.SMS_SELECTION_SEARCH
+            selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
+        }
+        val projection = arrayOf(
+            "thread_id",
+            "_id",
+            "address",
+            "type",
+            "body",
+            "read",
+            "date"
+
+
+        )
+        if(searchQuery == null){
+
+            val cursor =  context.contentResolver.query(
+                SMSContract.ALL_SMS_URI,
+                projection,
+                "address IS NOT NULL) GROUP BY (address",
+                selectionArgs,
+                "_id DESC limit 12 offset $page"
+            )
+            return cursor
+        }else{
+            //search query
+            val cursor =  context.contentResolver.query(
+                SMSContract.ALL_SMS_URI,
+                projection,
+                null,
+                selectionArgs,
+                SMSContract.SORT_DESC
+            )
+            return cursor
+        }
+
+
     }
 
     /**

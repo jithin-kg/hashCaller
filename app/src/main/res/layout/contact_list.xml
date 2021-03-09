@@ -32,6 +32,7 @@
         android:maxLines="1"
         android:padding="2dp"
         android:text=""
+        android:transitionName="contactNameTransition"
         android:textSize="14sp"
         android:fontFamily="sans-serif"
         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -50,6 +51,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
+        android:alpha="0.12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr"
@@ -70,6 +72,7 @@
             android:id="@+id/imgViewCntct"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:transitionName="contactImageTransition"
             android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
 

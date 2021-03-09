@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
@@ -38,7 +40,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contactSelector.ContactSelectorActivity
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -46,19 +47,18 @@ import com.nibble.hashcaller.view.ui.sms.identifiedspam.SMSIdentifiedAsSpamFragm
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.schedule.ScheduleActivity
+import com.nibble.hashcaller.view.ui.sms.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
-import com.nibble.hashcaller.work.DESTINATION_ACTIVITY
-import com.nibble.hashcaller.work.INDIVIDUAL_SMS_ACTIVITY
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
+import kotlinx.android.synthetic.main.fragment_search.*
 
 
 class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
@@ -85,6 +85,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = -1
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+    private lateinit var sView: EditText
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +99,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     ): View? {
         // Inflate the layout for this fragment
 //        if(checkPermission()){
+        Log.d(TAG, "onCreateView: markedItems size ${markedItems.size}")
+
             messagesView =  inflater.inflate(R.layout.fragment_message_container, container, false)
             viewSms = messagesView
          toolbarSms = messagesView.findViewById(R.id.toolbarSmS)
@@ -178,7 +181,14 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated:  markedItems size ${markedItems.size}")
 //        if(checkPermission()){
+        if(markedItems.size > 0){
+            Log.d(TAG, "onViewCreated: greater than one")
+            showToolbarButtons()
+            hideSearchView()
+        }
+        this.sView = this.messagesView.rootView.findViewById(R.id.searchViewSms)
             setupViewPager(viewPagerMessages)
             tabLayoutMessages?.setupWithViewPager(viewPagerMessages)
 //            tabLayoutMessages.addOnTabSelectedListener(this)
@@ -204,6 +214,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onActivityCreated:  markedItems size ${markedItems.size}")
         super.onActivityCreated(savedInstanceState)
         if(savedInstanceState!= null){
             if(childFragmentManager.getFragment(savedInstanceState, "smsListFragment") != null){
@@ -242,6 +253,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         bottomSheetDialog.radioScam.setOnClickListener(this)
         bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
+        this.sView.setOnClickListener(this)
 
     }
 
@@ -406,7 +418,25 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                 Log.d(TAG, "onClick: ")
                 addToBlockList(MarkedItemsHandler.markedContactAddressForBlocking!!)
             }
+            R.id.searchViewSms ->{
+                startSearchActivity()
+            }
         }
+    }
+
+    private fun startSearchActivity() {
+        Log.d(TAG, "startSearchActivity: ")
+        val intent = Intent(activity, SearchActivity::class.java)
+        intent.putExtra("animation", "explode")
+        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
+//        val p1 = android.util.Pair(searchViewContacts as View,"editTextTransition")
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity )
+//        val options  = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//            this!!.requireActivity(), btnSampleTransition,
+//            ViewCompat.getTransitionName(btnSampleTransition)!!
+//        )
+        startActivity(intent)
     }
 
 
@@ -574,7 +604,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     private fun resetMarkingOptions() {
         markingStarted = false
         unMarkItems()
-        this.searchViewMessages.visibility = View.VISIBLE
+        this.searchViewSms.visibility = View.VISIBLE
         this.imgBtnTbrMuteSender.visibility = View.INVISIBLE
         this.imgBtnTbrBlock.visibility = View.INVISIBLE
         this.imgBtnTbrDelete.visibility = View.INVISIBLE
@@ -598,7 +628,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
                 viewSms!!.tvSelectedCount.text = ""
                 markingStarted = false
 //                unMarkItems()
-                viewSms!!.searchViewMessages.visibility = View.VISIBLE
+                viewSms!!.searchViewSms.visibility = View.VISIBLE
                 viewSms!!.imgBtnTbrMuteSender.visibility = View.INVISIBLE
                 viewSms!!.imgBtnTbrBlock.visibility = View.INVISIBLE
                 viewSms!!.imgBtnTbrDelete.visibility = View.INVISIBLE
@@ -625,10 +655,12 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
 
     fun hideSearchView() {
-        searchViewMessages.visibility = View.INVISIBLE
+        Log.d(TAG, "hideSearchView: ")
+        searchViewSms.visibility = View.INVISIBLE
     }
 
     fun showToolbarButtons() {
+        Log.d(TAG, "showToolbarButtons: ")
         imgBtnTbrDelete.visibility = View.VISIBLE
         imgBtnTbrMuteSender.visibility = View.VISIBLE
         imgBtnTbrBlock.visibility = View.VISIBLE
@@ -637,7 +669,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     }
 
     fun showSearchView() {
-        searchViewMessages.visibility = View.VISIBLE
+        searchViewSms.visibility = View.VISIBLE
         imgBtnTbrDelete.visibility = View.INVISIBLE
         imgBtnTbrMuteSender.visibility = View.INVISIBLE
         imgBtnTbrBlock.visibility = View.INVISIBLE
@@ -648,7 +680,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
     }
 
     fun isSearchViewVisible(): Boolean {
-        if(searchViewMessages.visibility== View.VISIBLE)
+        if(searchViewSms.visibility== View.VISIBLE)
             return true
         return false
     }

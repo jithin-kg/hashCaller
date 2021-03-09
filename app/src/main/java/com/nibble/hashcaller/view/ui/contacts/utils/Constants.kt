@@ -1,10 +1,13 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
 import android.app.Activity
+import android.content.Context
+import android.net.Uri
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -106,4 +109,19 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
 
 // finally change the color
     window.setStatusBarColor(ContextCompat.getColor(activity,R.color.statusBar))
+}
+
+/**
+ * function to load image into imageviews using glide
+ * @param context Context
+ * @param view : ImageView
+ *
+ */
+fun loadImage(context: Context, imgView: ImageView, photoUri: String? ) {
+
+    if(photoUri!=null){
+        Glide.with(context).load(Uri.parse(photoUri))
+            .into(imgView)
+    }
+
 }

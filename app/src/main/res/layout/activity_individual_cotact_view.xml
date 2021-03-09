@@ -45,6 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:text="Victoria fergusan"
+                    android:transitionName="contactNameTransition"
                     card_view:layout_constraintBottom_toTopOf="@+id/textViewNumber"
                     card_view:layout_constraintEnd_toEndOf="parent"
                     card_view:layout_constraintHorizontal_bias="0.5"
@@ -105,6 +106,7 @@
             android:layout_height="100dp"
             android:clickable="true"
             android:focusable="true"
+            android:transitionName="contactImageTransition"
             android:layout_centerHorizontal="true"
             android:elevation="13dp"
             android:src="@drawable/contact_circular_background" />

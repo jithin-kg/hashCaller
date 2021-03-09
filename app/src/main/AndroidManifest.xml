@@ -40,8 +40,12 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
-        <activity android:name=".view.ui.contactSelector.ContactSelectorActivity"
-            android:theme="@style/AppTheme"/>
+        <activity android:name=".view.ui.sms.search.SearchActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:theme="@style/AppTheme" ></activity>
+        <activity
+            android:name=".view.ui.contactSelector.ContactSelectorActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.send.SendTestActivity"
             android:theme="@style/AppTheme">
@@ -137,13 +141,14 @@
         </activity>
         <activity
             android:name=".view.ui.contacts.IndividualContacts.IndividualCotactViewActivity"
-            android:theme="@style/Theme.MyDarkTheme" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
+            android:theme="@style/AppTheme" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
             android:parentActivityName=".view.ui.MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme">
-<!--              android:windowSoftInputMode="adjustNothing" https://stackoverflow.com/questions/4207880/android-how-do-i-prevent-the-soft-keyboard-from-pushing-my-view-up#:~:text=I%20was%20able%20to%20avoid,that%20sits%20above%20the%20buttons.&text=didnt.&text=This%20worked%20like%20a%20charm,Its%20smoother.> -->
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- android:windowSoftInputMode="adjustNothing" https://stackoverflow.com/questions/4207880/android-how-do-i-prevent-the-soft-keyboard-from-pushing-my-view-up#:~:text=I%20was%20able%20to%20avoid,that%20sits%20above%20the%20buttons.&text=didnt.&text=This%20worked%20like%20a%20charm,Its%20smoother.> -->
             <!-- prent activity is need to define the natural hierarchy of the application / navigation -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

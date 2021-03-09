@@ -1,16 +1,20 @@
 package com.nibble.hashcaller.view.ui.contacts.IndividualContacts
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.Window
+import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat.finishAfterTransition
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.IndividualContactInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.IndividualcontactViewModel
@@ -48,15 +52,24 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
         viewModel =ViewModelProvider(this, IndividualContactInjectorUtil.provideUserInjectorUtil(this)).get(
             IndividualcontactViewModel::class.java)
         setDetailsInview(phoneNum, name)
-        viewModel.photoUri.observe(this, Observer { photoUri->
-            Log.d(TAG, "observer photo uri $photoUri")
-
-        })
-        viewModel.getPhoto(id, phoneNum)
+//        viewModel.photoUri.observe(this, Observer { photoUri->
+//            Log.d(TAG, "observer photo uri $photoUri")
+//
+//        })
+//        viewModel.getPhoto(id, phoneNum)
 
         viewModel.getContactsFromDb(phoneNum)
         observeContactMoreInfo()
 
+
+
+    }
+
+    @SuppressLint("LongLogTag")
+    override fun onBackPressed() {
+        Log.d(TAG, "onBackPressed: ")
+        this.finishAfterTransition()
+//        super.onBackPressed()
     }
 
     @SuppressLint("LongLogTag")
@@ -81,7 +94,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setImage(photo: String?) {
-        imgViewAvatar.setImageURI(Uri.parse(photo))
+        Glide.with(this).load(photo).into(imgViewAvatar)
     }
 
     private fun setDetailsInview(phoneNum: String?, name: String?) {

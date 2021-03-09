@@ -178,11 +178,7 @@ class SMSViewModel(
         smsLiveData.value!!.addAll(newpage)
         var sizeAfterAddingPage = smsLiveData.value!!.size
         Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
-        if(prevSize == sizeAfterAddingPage){
-            isSizeEqual = true
-        }else{
-            isSizeEqual = false
-        }
+        isSizeEqual = prevSize == sizeAfterAddingPage
         smsLiveData.value = smsLiveData.value
     }
 

@@ -9,6 +9,15 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
         <item name="fontFamily"> sans-serif</item>
+
+        <!--        For enabling window activity transition-->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!--        end -->
+        <!-- android:windowLightStatusBar is important, this makes status bar item colors dark
+              so that it is visible when layout colorPrimaryDark is white-->
+        <item name="android:windowLightStatusBar">true</item>
+        <!--        end -->
     </style>
 
     <style name="Theme.MyDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
