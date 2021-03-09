@@ -119,7 +119,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
             contactAddress = bundle!!.getString(CONTACT_ADDRES)!!
             chatId = bundle!!.getString(SMS_CHAT_ID)!!
-            queryText = bundle!!.getString(QUERY_STRING)!!
+            queryText = bundle!!.getString(QUERY_STRING)
             Log.d(TAG, "onCreate: chatId $chatId")
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
@@ -559,7 +559,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         var chatId = ""
         var chatScrollToPosition = 0 //incase intent from SearchActivity we need
                                     // to scroll to thatexact sms
-        var queryText = ""
+        var queryText:String? =null
         var contact:String? = null
         const val TAG = "__IndividualSMSActivity"
         lateinit var dotedPg:HorizontalDottedProgress

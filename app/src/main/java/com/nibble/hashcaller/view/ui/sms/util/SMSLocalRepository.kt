@@ -615,8 +615,8 @@ class SMSLocalRepository(
                     if(IndividualSMSActivity.chatId.isNotEmpty()){
                         if(sms.id.toString() == IndividualSMSActivity.chatId){
                             IndividualSMSActivity.chatScrollToPosition = counter
-                            val startPos = sms.msgString!!.indexOf(IndividualSMSActivity.queryText)
-                            val endPos = startPos + IndividualSMSActivity.queryText.length
+                            val startPos = sms.msgString!!.indexOf(IndividualSMSActivity.queryText!!)
+                            val endPos = startPos + IndividualSMSActivity.queryText!!.length
 
                             val yellow = BackgroundColorSpan(Color.YELLOW)
 
