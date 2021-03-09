@@ -197,27 +197,7 @@ class SMSLocalRepository(
 
                             val msg =
                                 cursor.getString(cursor.getColumnIndexOrThrow("body"))
-//                    val fromAddress =cursor.getColumnIndexOrThrow("from_address")
-                            //todo if the same number in server have lesser spam count than this value update server count
-                            //else vice versa
-
-//                    val spamReport = cursor.getColumnIndexOrThrow("spam_report") //her I get spam count
-//                    val res1= cursor.getColumnName(spamReport)
-//                    val res2 = cursor.getLong(spamReport)
-//                   val count2 =  cursor.getLong(spamReport)
-
-//                    val protocol = cursor.getColumnIndexOrThrow("protocol")
-//                    val read = cursor.getColumnIndexOrThrow("read")
-//                    val resstatus = cursor.getInt(read)
-//                    val data_sent = cursor.getColumnIndexOrThrow("date_sent")
-//                    val status = cursor.getColumnIndexOrThrow("status")
-//                    val service_center = cursor.getColumnIndexOrThrow("service_center")
-//                    val servicecenterString = cursor.getString(service_center)
 //
-//                    val error_code = cursor.getColumnIndexOrThrow("error_code")
-//                    val seen = cursor.getColumnIndexOrThrow("seen")
-//                    val seenString = cursor.getString(seen)
-
 
                             var spannableStringBuilder: SpannableStringBuilder?
 
@@ -226,6 +206,7 @@ class SMSLocalRepository(
                                 val lowerSearchQuery = searchQuery.toLowerCase()
 
                                 if (lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()) {
+                                    //search query pressent in sms body
                                     val startPos =
                                         lowercaseMsg.indexOf(lowerSearchQuery)
                                     val endPos = startPos + lowerSearchQuery.length
@@ -345,6 +326,11 @@ class SMSLocalRepository(
         return data
     }
 
+    /**
+     * function to create cursor
+     * if search query is null create cursor with paging
+     * else create normal cursor with selection arguments
+     */
     private fun createCursor(searchQuery: String?): Cursor? {
 
         var selectionArgs: Array<String>? = null
@@ -362,11 +348,9 @@ class SMSLocalRepository(
             "body",
             "read",
             "date"
-
-
         )
         if(searchQuery == null){
-
+            //from list sms fragment
             val cursor =  context.contentResolver.query(
                 SMSContract.ALL_SMS_URI,
                 projection,
@@ -376,11 +360,13 @@ class SMSLocalRepository(
             )
             return cursor
         }else{
-            //search query
+            //from search sms activity
+            selection = SMSContract.SMS_SELECTION_SEARCH
+            selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
             val cursor =  context.contentResolver.query(
                 SMSContract.ALL_SMS_URI,
                 projection,
-                null,
+                selection,
                 selectionArgs,
                 SMSContract.SORT_DESC
             )

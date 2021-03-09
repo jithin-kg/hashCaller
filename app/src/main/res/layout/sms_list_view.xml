@@ -81,12 +81,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-
-        android:layout_marginEnd="24dp"
-        android:maxLines="1"
-        android:paddingEnd="16dp"
-        android:text="tvsmspeeek"
-
+        android:layout_marginEnd="16dp"
+        android:maxLines="2"
+        android:text=""
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -114,20 +111,18 @@
         app:layout_constraintStart_toEndOf="@+id/textVSMSContactName" />
 
 <!--important to give alpha to 12 % according to material design list guidelines-->
+
     <ImageView
         android:id="@+id/imgViewDevider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
         android:alpha="0.12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSMScontactCrclr"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textVSMSContactName"
+        app:layout_constraintTop_toBottomOf="@+id/tvSMSMPeek"
+        app:layout_constraintVertical_bias="0.923"
         app:srcCompat="@drawable/horizontal_line" />
 
     <androidx.constraintlayout.widget.ConstraintLayout

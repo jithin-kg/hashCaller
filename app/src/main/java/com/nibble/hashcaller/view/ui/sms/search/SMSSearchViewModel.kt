@@ -7,8 +7,10 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -38,8 +40,9 @@ class SMSSearchViewModel(
 
 
 
-    fun search(searchQuery: String?)  = viewModelScope.launch{
-      val sms =  repository?.getSms(searchQuery)
+     fun search(searchQuery: String?): LiveData<List<SMS>> = liveData<List<SMS>>{
+
+     emit(repository!!.getSms(searchQuery))
 
     }
 }

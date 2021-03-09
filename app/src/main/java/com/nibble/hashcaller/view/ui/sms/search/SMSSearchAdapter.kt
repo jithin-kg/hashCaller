@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.sms.list
+package com.nibble.hashcaller.view.ui.sms.search
 
 import android.content.Context
 import android.graphics.Color
@@ -33,16 +33,16 @@ import java.util.*
  */
 
 
-class SMSListAdapter(private val context: Context,
-                     private val longPresHandler:LongPressHandler,
-                     private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String)->Unit
+class SMSSearchAdapter(private val context: Context,
+                       private val longPresHandler:LongPressHandler,
+                       private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String, id:Long?)->Unit
  ) :
-    androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
+    androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSSearchItemDiffCallback()) {
     private val VIEW_TYPE_DELETE = 1;
     private val VIEW_TYPE_SMS = 2;
-    private var smsList:MutableList<SMS> = mutableListOf()
+    private var smsList:List<SMS> = mutableListOf()
     companion object{
-        private const val TAG = "__SMSListAdapter";
+        private const val TAG = "__SMSSearchAdapter";
         public var searchQry:String? = null
         var prevView:View? = null
         var prevPos:Int? = null
@@ -96,7 +96,7 @@ class SMSListAdapter(private val context: Context,
     }
 }
 
-    fun setList(it: MutableList<SMS>?) {
+    fun setList(it: List<SMS>?) {
         this.smsList = it!!
 //        val copy:MutableList<SMS> = mutableListOf()
 //        this.smsList.forEach{copy.add(it)}
@@ -107,19 +107,19 @@ class SMSListAdapter(private val context: Context,
 
 
 
-    class DeleteViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class DeleteViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val btnEmptySms = view.btnEmptySpamSMS
 
         fun bind(
             sms: SMS, context: Context,
-            onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String) -> Unit,
+            onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String, id:Long?) -> Unit,
             position: Int
         ) {
             btnEmptySms.setOnClickListener{
 //                view.tvUnreadSMSCount.text = ""
 //                view.tvUnreadSMSCount.visibility = View.INVISIBLE
 
-                onDeleteItemclickLIstener(it,0L, 0, ",")
+                onDeleteItemclickLIstener(it,0L, 0, ",", sms.id)
 
             }
         }
@@ -132,7 +132,7 @@ class SMSListAdapter(private val context: Context,
 
         fun bind(
             sms: SMS, context: Context,
-            onContactItemClickListener: (view:View, threadId: Long, position:Int, pno:String) -> Unit,
+            onContactItemClickListener: (view:View, threadId: Long, position:Int, pno:String, id:Long?) -> Unit,
             position: Int
         ) {
             Log.d(TAG, "bind: ")
@@ -194,7 +194,7 @@ class SMSListAdapter(private val context: Context,
             })
                 view.setOnClickListener{v->
                   onContactItemClickListener(v, sms.threadID, this.adapterPosition,
-                      sms.addressString!!
+                      sms.addressString!!, sms.id
                   )
 
 //                    if(SMSListAdapter.prevView !=null ){
@@ -226,32 +226,7 @@ class SMSListAdapter(private val context: Context,
 
          private fun highlightSearhcField(sms: SMS) {
 
-//             if(searchQry!=null){
-////                 val lowercaseMsg = sms.msg!!.toLowerCase()
-//                 val lowerSearchQuery = searchQry!!.toLowerCase()
-//                 if(sms.address!!.contains(searchQry!!)){
-//                     Log.d(TAG, "address pattern matches")
-//                     val startPos = sms.address!!.indexOf(searchQry!!)
-//                     val endPos = startPos + searchQry!!.length
-//                     view.tvSMSMPeek.text = sms.msg
-//                    setSpan(sms.address!!, startPos, endPos, view.textVSMSContactName)
-//
-//                 }else if(lowercaseMsg.contains(lowerSearchQuery)){
-//
-//                     Log.d(TAG, "lowercase: $lowercaseMsg")
-//                     val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
-//                     val endPos = startPos +lowerSearchQuery.length
-//                     name.text = sms.address
-////                     setSpan(sms.msg!!, startPos, endPos, view.tvSMSMPeek)
-//
-//                 }else{
-//                     name.text = sms.address
-//                     view.tvSMSMPeek.text = sms.msg
-//                 }
-//             }else{
-//                 name.text = sms.address
-//                 view.tvSMSMPeek.text = sms.msg
-//             }
+
 
          }
 
@@ -341,7 +316,7 @@ class SMSListAdapter(private val context: Context,
         
 
     }
-    class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
+     class SMSSearchItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 //            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id
             Log.d(TAG, "areItemsTheSame: oldItem ${oldItem.expanded}")
