@@ -27,11 +27,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
-import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
-import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItem
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.*
@@ -308,8 +305,12 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
         }else{
             val intent = Intent(context, IndividualSMSActivity::class.java )
-            intent.putExtra(CONTACT_ADDRES, address)
+            val bundle = Bundle()
+            bundle.putString(CONTACT_ADDRES, address)
+            bundle.putString(SMS_CHAT_ID, "")
+
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtras(bundle)
             startActivity(intent)
         }
 
