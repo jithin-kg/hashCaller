@@ -1,24 +1,19 @@
 package com.nibble.hashcaller.view.ui.sms.search
 
-import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.local.db.sms.search.SmsSearchQueries
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
 class SMSSearchViewModel(
-    val repository: SMSLocalRepository?
+    val repository: SMSLocalRepository?,
+    val smsSearchRepository: SMSSearchRepository
 ): ViewModel() {
     private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
@@ -43,6 +38,16 @@ class SMSSearchViewModel(
      fun search(searchQuery: String?): LiveData<List<SMS>> = liveData<List<SMS>>{
 
      emit(repository!!.getSms(searchQuery))
+
+    }
+
+    fun saveSearchQueryToDB(queryText: String) = viewModelScope.launch {
+        smsSearchRepository.insertSearchQueryToDB(queryText)
+    }
+
+    fun getAllSearchHistory(): LiveData<List<SmsSearchQueries>> =
+        liveData<List<SmsSearchQueries>> {
+        emit(smsSearchRepository.getAllSearchHistory())
 
     }
 }

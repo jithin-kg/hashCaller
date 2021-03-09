@@ -17,6 +17,8 @@ import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
 import com.nibble.hashcaller.local.db.sms.block.IBlockedOrSpamSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
+import com.nibble.hashcaller.local.db.sms.search.ISmsQueriesDAO
+import com.nibble.hashcaller.local.db.sms.search.SmsSearchQueries
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -35,7 +37,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
     CallersInfoFromServer::class,
     UserInfo::class,
     MutedSenders::class,
-    BlockedOrSpamSenders::class
+    BlockedOrSpamSenders::class,
+    SmsSearchQueries::class
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class HashCallerDatabase: RoomDatabase() {
@@ -49,6 +52,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun userInfoDAo(): UserInfoDAO
         abstract fun mutedSendersDAO(): IMutedSendersDAO
         abstract fun blockedOrSpamSendersDAO(): IBlockedOrSpamSendersDAO
+        abstract fun smsSearchQueriesDAO(): ISmsQueriesDAO
 
     companion object{
 

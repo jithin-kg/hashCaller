@@ -12,10 +12,12 @@ object SmsSearchInjectorUtil {
 
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+        val smsSearchQueriesDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSearchQueriesDAO() }
 
         val repository = context?.let { SMSLocalRepository(it, spamListDAO, smssendersInfoDAO) }
-
-        return SmsSearchViewModelFactory( repository)
+        val smsSearchRepository =
+            SMSSearchRepository(smsSearchQueriesDAO!!)
+        return SmsSearchViewModelFactory( repository, smsSearchRepository)
     }
 
 }

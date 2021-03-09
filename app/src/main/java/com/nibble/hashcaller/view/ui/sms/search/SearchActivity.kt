@@ -1,31 +1,30 @@
 package com.nibble.hashcaller.view.ui.sms.search
 
-import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
-import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.android.synthetic.main.fragment_messages_list.*
 
 class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler {
     private lateinit var editTextListener: TextChangeListener
     private lateinit var viewmodel:SMSSearchViewModel
     private  var searchAdapter: SMSSearchAdapter? = null
     private lateinit var recyclerV: RecyclerView
-
+    private var queryText = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +34,13 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         initRecyclerView()
         initListeners()
         initViewModel()
+        getSearchHistory()
+    }
+
+    private fun getSearchHistory() {
+        this.viewmodel.getAllSearchHistory().observe(this, Observer {
+            Log.d(TAG, "getSearchHistory: size ${it.size}")
+        })
     }
 
     private fun initRecyclerView() {
@@ -50,8 +56,22 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     }
 
     private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String, id:Long?) {
-        Log.d(TAG, "onContactItemClicked: ")
+        saveSearchQueryToLocalDB()
+
+        val intent = Intent(this, IndividualSMSActivity::class.java )
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val bundle = Bundle()
+        bundle.putString(CONTACT_ADDRES, pno)
+        bundle.putString(SMS_CHAT_ID, id.toString())
+        intent.putExtras(bundle)
+
+        startActivity(intent)
     }
+
+    private fun saveSearchQueryToLocalDB() {
+        this.viewmodel.saveSearchQueryToDB(queryText)
+    }
+
     override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
 
     }
@@ -69,11 +89,17 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     }
 
     override fun onTextChanged(text: String) {
-        viewmodel.search(text).observe(this, Observer {
-            Log.d(TAG, "onTextChanged: $it")
-            Log.d(TAG, "onTextChanged:size ${it.size}")
-           this.searchAdapter!!.setList(it)
-        })
+        if(text.isNullOrEmpty()){
+            val lst : List<SMS> = emptyList()
+            this.searchAdapter!!.setList(lst) //if search query is empty empty recyclerview
+
+        }else{
+            viewmodel.search(text).observe(this, Observer {
+                this.searchAdapter!!.setList(it) //set search result to recyclerview
+                queryText = text
+            })
+        }
+
     }
 
     override fun afterTextChanged(s: Editable) {

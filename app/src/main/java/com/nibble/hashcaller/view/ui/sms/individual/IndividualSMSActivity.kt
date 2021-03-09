@@ -31,6 +31,7 @@ import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
+import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
@@ -78,6 +79,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
     private var smsQueueLiveData:MutableLiveData<Queue<SMS>> = MutableLiveData()
     private var smsQueue:Queue<SMS> = LinkedList<SMS>()
+
     //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
 //    private var time:String? = null
     private var address = ""
@@ -109,8 +111,10 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
             }else->{
+            //normal within app intent
 //            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
             contactAddress =  intent.getStringExtra(CONTACT_ADDRES)!!
+            chatId = intent.getStringExtra(SMS_CHAT_ID)
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
         }
@@ -337,18 +341,27 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun observeSmsLiveData() {
         this.smsLiveData.observe(this, Observer {
-            Log.d(TAG, "observeSmsLiveData: ${it.size} ")
-
 
             adapter.setList(it)
+
 //            if(!isSmsChannelBusy && !smsQueue.isEmpty()){
 //                sendSmsToClient(smsQueue.remove())
 //                isSmsChannelBusy = true
 //            }
-            if(firstime){
-                recyclerView.scrollToPosition(it.size - 1);
-                firstime = false
+            if(chatId.isNotEmpty()){
+
+                Log.d(TAG, "observeSmsLiveData:chat id  $chatId")
+                //intent from sms search activity
+                Log.d(TAG, "observeSmsLiveData: scrollToPosition $chatScrollToPosition")
+                recyclerView.scrollToPosition(chatScrollToPosition);
+            }else{
+                if(firstime){
+                    recyclerView.scrollToPosition(it.size - 1);
+                    firstime = false
+                }
             }
+
+
             if(!recyclerViewAtEnd){
                 countNewItem = it.size - oldLIstSize
                 tvcountShow.text = countNewItem.toString()
@@ -537,6 +550,10 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     companion object{
+        var chatId = ""
+        var chatScrollToPosition = 0 //incase intent from SearchActivity we need
+                                    // to scroll to thatexact sms
+
         var contact:String? = null
         const val TAG = "__IndividualSMSActivity"
         lateinit var dotedPg:HorizontalDottedProgress
@@ -738,6 +755,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+
 
             return false
     }

@@ -20,6 +20,7 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.*
@@ -170,7 +171,7 @@ class SMSLocalRepository(
 
 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
-                    val spammersList = spamListDAO?.getAll()
+//                    val spammersList = spamListDAO?.getAll()
 
 //            if (spammersList != null) {
 //                for (spamer in spammersList){
@@ -195,7 +196,7 @@ class SMSLocalRepository(
                             objSMS.type =
                                 cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
-                            val msg =
+                            var msg =
                                 cursor.getString(cursor.getColumnIndexOrThrow("body"))
 //
 
@@ -207,9 +208,14 @@ class SMSLocalRepository(
 
                                 if (lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()) {
                                     //search query pressent in sms body
-                                    val startPos =
-                                        lowercaseMsg.indexOf(lowerSearchQuery)
-                                    val endPos = startPos + lowerSearchQuery.length
+                                    var startPos =
+                                        lowercaseMsg.indexOf(lowerSearchQuery) //getting the index of search query in msg body
+                                   var endPos = 0
+                                    if(startPos > 50){
+                                        msg = "... " + msg.substring(startPos)
+                                        startPos = 4
+                                    }
+                                     endPos = startPos + lowerSearchQuery.length
                                     val yellow =
                                         BackgroundColorSpan(Color.YELLOW)
                                     spannableStringBuilder =
@@ -528,6 +534,7 @@ class SMSLocalRepository(
     private suspend fun setCount(sms: SMS) {
         val addressString = sms.addressString
         var cnt:Int? = 0
+
         val cursorSMSCount = context.contentResolver.query(
             URI,
             emptyArray<String>(),
@@ -556,8 +563,10 @@ class SMSLocalRepository(
 
     fun fetchIndividualSMS(contact: String?): List<SMS> {
         var count = 0
+        var smsRef : SMS = SMS()
         var prevDate = ""
         var selectionArgs: Array<String>? = null
+        var counter = 0 //counter to decide where to scroll, for Search Activity
         selectionArgs = arrayOf(contact!!)
         var smslist = mutableListOf<SMS>()
 
@@ -597,17 +606,35 @@ class SMSLocalRepository(
                 sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
                 sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
-                smslist.add(sms)
-                try {
 
-                } catch (e: java.lang.Exception) {
-                    Log.d(TAG, "fetchIndividualSMS: $e")
+                smslist.add(sms)
+//                try {
+//
+//                } catch (e: java.lang.Exception) {
+//                    Log.d(TAG, "fetchIndividualSMS: $e")
+//                }
+
+            if(IndividualSMSActivity.chatId.isNotEmpty()){
+                if(sms.id.toString() == IndividualSMSActivity.chatId){
+                    IndividualSMSActivity.chatScrollToPosition = counter
                 }
+            }
+                counter++
+
             } while (cursor.moveToNext())
 
         }
 
         cursor?.close()
+//        if(IndividualSMSActivity.chatId.isNotEmpty()){
+//            //intent came from SmsearchActivity to IndividualSMSActivity
+//            for ((c, sms) in smslist.withIndex()){
+//                if(sms.id.toString() == IndividualSMSActivity.chatId){
+//                    IndividualSMSActivity.chatScrollToPosition = c
+//                }
+//            }
+//            Log.d(TAG, "fetchIndividualSMS: setting scrollpos ${IndividualSMSActivity.chatScrollToPosition}")
+//        }
         Log.d(TAG, "fetchIndividualSMS: sizeL${smslist.size}, count:$count")
 //        update(contact)
         return smslist
