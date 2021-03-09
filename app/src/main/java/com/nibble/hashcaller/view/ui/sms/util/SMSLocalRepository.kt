@@ -226,6 +226,7 @@ class SMSLocalRepository(
                                         endPos,
                                         Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                                     )
+
                                     objSMS.msg = spannableStringBuilder
                                     objSMS.address = SpannableStringBuilder(num)
                                 } else if (num.contains(searchQuery) && searchQuery.isNotEmpty()) {
@@ -569,74 +570,91 @@ class SMSLocalRepository(
         var counter = 0 //counter to decide where to scroll, for Search Activity
         selectionArgs = arrayOf(contact!!)
         var smslist = mutableListOf<SMS>()
+        var cursor:Cursor? = null
 
-        val cursor = context.contentResolver.query(
-            SMSContract.ALL_SMS_URI,
-            null,
-            SMSContract.SMS_SELECTION,
-            selectionArgs,
-            SMSContract.SORT_ASC
-        )
-        if(cursor != null && cursor.moveToFirst()) {
-            do {
-                count++
-                val smsWithCurrentDate = SMS()
-                smsWithCurrentDate.type = -1 // cause this is just date, ie does not belong to any
-                //sms type so I can filer this from adapter
-                val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
-                val currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
-
-
-                if(currentDate != prevDate){
-                    //for the first time add the date
-                    //and if sms from different dates are in inbox then show date accoringly
-                    prevDate = currentDate
-                    smsWithCurrentDate.currentDate = prevDate
-                    smslist.add(smsWithCurrentDate)
+        try {
+             cursor = context.contentResolver.query(
+                SMSContract.ALL_SMS_URI,
+                null,
+                SMSContract.SMS_SELECTION,
+                selectionArgs,
+                SMSContract.SORT_ASC
+            )
+            if(cursor != null && cursor.moveToFirst()) {
+                do {
+                    count++
+                    val smsWithCurrentDate = SMS()
+                    smsWithCurrentDate.type = -1 // cause this is just date, ie does not belong to any
+                    //sms type so I can filer this from adapter
+                    val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                    val currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
 
 
-                }
-                val sms = SMS()
-                sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
-                sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
-                sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
-                sms.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-
-                sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
-                sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
-                sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+                    if(currentDate != prevDate){
+                        //for the first time add the date
+                        //and if sms from different dates are in inbox then show date accoringly
+                        prevDate = currentDate
+                        smsWithCurrentDate.currentDate = prevDate
+                        smslist.add(smsWithCurrentDate)
 
 
-                smslist.add(sms)
-//                try {
-//
-//                } catch (e: java.lang.Exception) {
-//                    Log.d(TAG, "fetchIndividualSMS: $e")
-//                }
+                    }
+                    val sms = SMS()
+                    sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                    sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
+                    val mgsStr = sms.msgString
+                    sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
+                    sms.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
 
-            if(IndividualSMSActivity.chatId.isNotEmpty()){
-                if(sms.id.toString() == IndividualSMSActivity.chatId){
-                    IndividualSMSActivity.chatScrollToPosition = counter
-                }
+                    sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
+                    sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+                    sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+
+
+                    if(IndividualSMSActivity.chatId.isNotEmpty()){
+                        if(sms.id.toString() == IndividualSMSActivity.chatId){
+                            IndividualSMSActivity.chatScrollToPosition = counter
+                            val startPos = sms.msgString!!.indexOf(IndividualSMSActivity.queryText)
+                            val endPos = startPos + IndividualSMSActivity.queryText.length
+
+                            val yellow = BackgroundColorSpan(Color.YELLOW)
+
+                            val spannableStringBuilder =
+                                SpannableStringBuilder(mgsStr)
+
+                            spannableStringBuilder.setSpan(
+                                yellow,
+                                startPos,
+                                endPos,
+                                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            )
+                            sms.msg = spannableStringBuilder
+                        }else{
+                            val spannableStringBuilder =
+                                SpannableStringBuilder(mgsStr)
+                            sms.msg = spannableStringBuilder
+                        }
+                    }else{
+                        val spannableStringBuilder =
+                            SpannableStringBuilder(mgsStr)
+                        sms.msg = spannableStringBuilder
+
+                    }
+                    smslist.add(sms)
+                    counter++
+
+                } while (cursor.moveToNext())
+
             }
-                counter++
-
-            } while (cursor.moveToNext())
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "fetchIndividualSMS: exception $e")
+        }finally {
+            cursor!!?.close()
 
         }
-
-        cursor?.close()
-//        if(IndividualSMSActivity.chatId.isNotEmpty()){
-//            //intent came from SmsearchActivity to IndividualSMSActivity
-//            for ((c, sms) in smslist.withIndex()){
-//                if(sms.id.toString() == IndividualSMSActivity.chatId){
-//                    IndividualSMSActivity.chatScrollToPosition = c
-//                }
-//            }
-//            Log.d(TAG, "fetchIndividualSMS: setting scrollpos ${IndividualSMSActivity.chatScrollToPosition}")
-//        }
         Log.d(TAG, "fetchIndividualSMS: sizeL${smslist.size}, count:$count")
-//        update(contact)
+
         return smslist
     }
 

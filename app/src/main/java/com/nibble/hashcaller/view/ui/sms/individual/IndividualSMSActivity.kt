@@ -31,6 +31,7 @@ import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
+import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
@@ -53,6 +54,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
     private var contactAddress = ""
+
     private var oldLIstSize = 0
     private var countNewItem = 0
     private var recyclerViewAtEnd = true
@@ -113,8 +115,12 @@ class IndividualSMSActivity : AppCompatActivity(),
             }else->{
             //normal within app intent
 //            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
-            contactAddress =  intent.getStringExtra(CONTACT_ADDRES)!!
-            chatId = intent.getStringExtra(SMS_CHAT_ID)
+            val bundle = intent.getExtras()
+
+            contactAddress = bundle!!.getString(CONTACT_ADDRES)!!
+            chatId = bundle!!.getString(SMS_CHAT_ID)!!
+            queryText = bundle!!.getString(QUERY_STRING)!!
+            Log.d(TAG, "onCreate: chatId $chatId")
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
         }
@@ -553,7 +559,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         var chatId = ""
         var chatScrollToPosition = 0 //incase intent from SearchActivity we need
                                     // to scroll to thatexact sms
-
+        var queryText = ""
         var contact:String? = null
         const val TAG = "__IndividualSMSActivity"
         lateinit var dotedPg:HorizontalDottedProgress

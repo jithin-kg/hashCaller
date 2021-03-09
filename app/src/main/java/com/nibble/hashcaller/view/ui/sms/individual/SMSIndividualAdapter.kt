@@ -198,7 +198,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text = if (sms.msgString == null) " null" else sms.msgString
+            msg.text = if (sms.msg == null) "null" else sms.msg
 
             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
 
@@ -286,7 +286,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text = if (sms.msgString == null) " null" else sms.msgString
+            msg.text = if (sms.msg == null) " null" else sms.msg
 
 //            val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
 
@@ -321,7 +321,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text =  sms.msgString
+            msg.text =  sms.msg
 
             setTimeInView(sms.time)
             view.setOnClickListener{

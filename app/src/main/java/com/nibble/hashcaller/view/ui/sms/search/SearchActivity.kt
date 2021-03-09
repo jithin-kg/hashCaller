@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
@@ -60,9 +61,12 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
         val intent = Intent(this, IndividualSMSActivity::class.java )
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        val bundle = Bundle()
+        var bundle = Bundle()
+        Log.d(TAG, "onContactItemClicked: chatId is $id")
         bundle.putString(CONTACT_ADDRES, pno)
         bundle.putString(SMS_CHAT_ID, id.toString())
+        bundle.putString(QUERY_STRING,queryText)
+
         intent.putExtras(bundle)
 
         startActivity(intent)
