@@ -15,7 +15,10 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAd
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedViews
 import com.nibble.hashcaller.view.utils.ContactGlobal
+import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
+import kotlin.collections.HashMap
 
 /**
  * Created by Jithin KG on 23,July,2020
@@ -126,5 +129,25 @@ fun loadImage(context: Context, imgView: ImageView, photoUri: String? ) {
         Glide.with(context).load(Uri.parse(photoUri))
             .into(imgView)
     }
+
+}
+/**
+ * @param informationReceivedDate : date at which the data is inserted in db
+ * @param limit : number of day in which a lookup for the current number should perform
+ */
+
+fun isCurrentDateAndPrevDateisGreaterThanLimit(
+    informationReceivedDate: Date,
+    limit: Int
+): Boolean {
+    val today = Date()
+    val miliSeconds: Long = today.getTime() - informationReceivedDate.getTime()
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds)
+    val minute = seconds / 60
+    val hour = minute / 60
+    val days = hour / 24
+    if(days > limit)
+        return true
+    return false
 
 }

@@ -1,5 +1,8 @@
 package com.nibble.hashcaller
 
+import androidx.annotation.Keep
+
+@Keep
 class Secrets {
 
     //Method calls will be added by gradle task addObfuscatedKey

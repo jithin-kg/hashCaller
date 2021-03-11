@@ -1,12 +1,14 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
 import android.text.SpannableStringBuilder
+import androidx.annotation.Keep
 import com.google.gson.Gson
 
 
 const val SENDER_INFO_SEARCHING = 0
 const val SENDER_INFO_FROM_DB= 1
 const val SENDER_INFO_FROM_CONTENT_PROVIDER = 2
+@Keep
 class SMS() {
     var sub:String = ""
     var subject:String = ""
@@ -44,6 +46,7 @@ class SMS() {
     var time: Long?= 0L;
     var folderName: String? = null
     var color = 0
+    var relativeTime:String = ""
     var senderInfoFoundFrom = SENDER_INFO_SEARCHING // to indicate from
     // where additional info about a number got from , ie either localdb,
             // contentprovider or still searching

@@ -56,7 +56,6 @@
 
 # Top-level functions that can only be used by Kotlin.
 -dontwarn retrofit2.KotlinExtensions
--dontwarn retrofit2.KotlinExtensions$*
 
 # With R8 full mode, it sees no subtypes of Retrofit interfaces since they are created with a Proxy
 # and replaces all potential values with null. Explicitly keeping the interfaces prevents this.
@@ -98,4 +97,20 @@
 }
 #-------------------------------end--------------------------------------------
 
+#this actually saved me from all errors, but lets see
+-keepclassmembers class * extends com.google**{
+ <fields>;
+}
 
+
+
+#https://medium.com/androiddevelopers/practical-proguard-rules-examples-5640a3907dc9
+
+##okhtttp
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+#to retain source file names and line numbers for stack traces to make debugging easier:
+-keepattributes SourceFile, LineNumberTable
+
+#Sometimes it’s required to retain type information and annotations that are read at runtime, as opposed to compile time
+-keepattributes *Annotation*, Signature, Exception

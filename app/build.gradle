@@ -52,9 +52,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            shrinkResources false
-            zipAlignEnabled false
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         //this is added by me to debud c++, should remove in production
@@ -62,11 +62,16 @@ android {
             debuggable true
         }
         //up to this
+
         debug {
             minifyEnabled false
             shrinkResources false
 //            zipAlignEnabled true
+            useProguard false
+
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            matchingFallbacks = ['debug']
         }
     }
     kotlinOptions {
@@ -187,6 +192,9 @@ dependencies {
 
 //    //navifation drawer
 //    implementation 'com.google.android.material:material:1.0.0'
+
+    
+
 }
 repositories {
     mavenCentral()

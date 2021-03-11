@@ -21,11 +21,15 @@ import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
+import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.*
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
@@ -269,6 +273,7 @@ class SMSLocalRepository(
 
 
                             objSMS.time = dateMilli
+                            setRelativeTime(objSMS, dateMilli)
 
                             if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                     .contains("1")
@@ -331,6 +336,38 @@ class SMSLocalRepository(
         if(data.size >= 1)
         Log.d(TAG, "fetch: first item msg is  ${data[0].msg}")
         return data
+    }
+
+    private fun setRelativeTime(objSMS: SMS, dateMilli: Long) {
+        val today = Date()
+        val miliSeconds: Long = today.time - dateMilli!!
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds)
+        val minute = seconds / 60
+        val hour = minute / 60
+        val days = hour / 24
+        if(days == 0L ){
+
+//                 val time = String.format("%02d" , c.get(Calendar.HOUR))+":"+
+//                     String.format("%02d" , c.get(Calendar.MINUTE))
+//                 val ftime = SimpleDateFormat("hh:mm:ss" ).format(time * 1000L)
+            val cc =  Calendar.getInstance()
+            cc.timeInMillis = dateMilli
+            val formatter: DateFormat = SimpleDateFormat("hh:mm")
+
+
+
+            objSMS.relativeTime =  formatter.format(cc.time)
+
+
+        }else if(days == 1L){
+
+            objSMS.relativeTime = "Yesterday"
+        }else{
+//                 view.tvSMSTime.text = "prev days"
+
+            val date = SimpleDateFormat("dd/MM/yyyy").format(Date(dateMilli))
+            objSMS.relativeTime = date
+        }
     }
 
     /**

@@ -2,14 +2,12 @@ package com.nibble.hashcaller.view.ui.sms.list
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import android.view.*
 import android.view.View.OnLongClickListener
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -21,11 +19,10 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
+import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -135,7 +132,7 @@ class SMSListAdapter(private val context: Context,
             onContactItemClickListener: (view:View, threadId: Long, position:Int, pno:String) -> Unit,
             position: Int
         ) {
-            Log.d(TAG, "bind: ")
+//            Log.d(TAG, "bind: ")
 //            layoutExpandable?.visibility   = if(sms.expanded) View.VISIBLE else View.GONE
 //            if(!sms.isSpam){
                 //        Log.i(TAG, String.valueOf(no));
@@ -149,7 +146,7 @@ class SMSListAdapter(private val context: Context,
 
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
               view.pgBarSmsListItem.visibility = View.VISIBLE
-                Log.d(TAG, "bind: searching for ${sms.addressString}")
+//                Log.d(TAG, "bind: searching for ${sms.addressString}")
             }else{
                 view.pgBarSmsListItem.visibility = View.INVISIBLE
             }
@@ -173,8 +170,8 @@ class SMSListAdapter(private val context: Context,
 //            }
 
 
-                setTimeInView(sms.time)
 
+            view.tvSMSTime.text = sms.relativeTime
 
                 setNameFirstChar(sms)
 
@@ -186,7 +183,7 @@ class SMSListAdapter(private val context: Context,
 
             view.setOnLongClickListener(OnLongClickListener { v ->
 //                listener.onLongItemClick(v, viewHolder.getAdapterPosition())
-                Log.d(TAG, "bind: threadID ${sms.threadID}")
+//                Log.d(TAG, "bind: threadID ${sms.threadID}")
                     longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
                         sms.addressString!!
                     )
@@ -260,8 +257,8 @@ class SMSListAdapter(private val context: Context,
                  BackgroundColorSpan(Color.YELLOW)
              val spannableStringBuilder =
                  SpannableStringBuilder(str)
-             Log.d(TAG, "setSpan: startPos:$startPos")
-             Log.d(TAG, "setSpan: endPos:$endPos")
+//             Log.d(TAG, "setSpan: startPos:$startPos")
+//             Log.d(TAG, "setSpan: endPos:$endPos")
              try{
                  spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
              }catch (e:IndexOutOfBoundsException){
@@ -269,36 +266,6 @@ class SMSListAdapter(private val context: Context,
              }
 
              v.text = spannableStringBuilder
-         }
-
-         private fun setTimeInView(time: Long?) {
-             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))
-              val time =   SimpleDateFormat("hh:mm:ss").format(time * 1000)
-//             Log.d(TAG, "date: $date")
-//             Log.d(TAG, "time: $time")
-//             val now: ZonedDateTime  = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));(
-             /**
-              * now(),ofPattern(), format() requires min api 26
-              */
-             val now =
-                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                     ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
-                 } else {
-                     TODO("VERSION.SDK_INT < O")
-                 }
-             val todayDate =
-                 DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                     .format(now)
-             if(date.equals(todayDate)){
-                 //only set time in view
-                 view.tvSMSTime.text = time
-             }else{
-                 view.tvSMSTime.text = date
-             }
-//             Log.d(TAG, "today: $todayDate")
-//             Log.d(TAG, "setTimeInView: $d2")
-
-
          }
 
          private fun setNameFirstChar(sms: SMS) {
@@ -344,12 +311,12 @@ class SMSListAdapter(private val context: Context,
     class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 //            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id
-            Log.d(TAG, "areItemsTheSame: oldItem ${oldItem.expanded}")
-            Log.d(TAG, "areItemsTheSame: newItem ${newItem.expanded}")
-            if(oldItem.expanded == newItem.expanded)
-                Log.d(TAG, "areItemsTheSame: yes")
-            else
-                Log.d(TAG, "areItemsTheSame: no")
+//            Log.d(TAG, "areItemsTheSame: oldItem ${oldItem.expanded}")
+//            Log.d(TAG, "areItemsTheSame: newItem ${newItem.expanded}")
+//            if(oldItem.expanded == newItem.expanded)
+////                Log.d(TAG, "areItemsTheSame: yes")
+//            else
+//                Log.d(TAG, "areItemsTheSame: no")
             return oldItem.expanded == newItem.expanded &&  oldItem.threadID == newItem.threadID
 
 
@@ -379,7 +346,7 @@ class SMSListAdapter(private val context: Context,
 //            else
 //                Log.d(TAG, "areContentsTheSame: no")
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
-            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
+//            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
             return  oldItem.name== newItem.name && oldItem.msg == newItem.msg && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
            //TODO compare both messages and if the addres is same and message
         }

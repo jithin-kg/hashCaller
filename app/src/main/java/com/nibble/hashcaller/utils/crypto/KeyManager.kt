@@ -2,6 +2,7 @@ package com.nibble.hashcaller.utils.crypto
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.nibble.hashcaller.repository.cipher.CipherNetworkRepository
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 /**
  * saves public keys received from server in encrypted shared preferences
  */
+@Keep
 object KeyManager {
 
     fun isKeyPresent(context:Context){
@@ -25,7 +27,7 @@ object KeyManager {
             "my_secret_prefs",
             keyAlias,
             context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
         val reslt  = encSharedPref.getString("keyOne","no")
