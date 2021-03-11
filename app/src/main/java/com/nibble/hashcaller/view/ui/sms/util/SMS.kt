@@ -44,6 +44,7 @@ class SMS() {
     var unReadSMSCount:Int = 0
     var readState : Int = 0 //"0" for have not read sms and "1" for have read sms
     var time: Long?= 0L;
+    var timeString = ""
     var folderName: String? = null
     var color = 0
     var relativeTime:String = ""

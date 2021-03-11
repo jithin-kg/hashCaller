@@ -21,10 +21,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
-import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -339,24 +337,13 @@ class SMSLocalRepository(
     }
 
     private fun setRelativeTime(objSMS: SMS, dateMilli: Long) {
-        val today = Date()
-        val miliSeconds: Long = today.time - dateMilli!!
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds)
-        val minute = seconds / 60
-        val hour = minute / 60
-        val days = hour / 24
+        val days = getDaysDifference(dateMilli)
         if(days == 0L ){
 
 //                 val time = String.format("%02d" , c.get(Calendar.HOUR))+":"+
 //                     String.format("%02d" , c.get(Calendar.MINUTE))
 //                 val ftime = SimpleDateFormat("hh:mm:ss" ).format(time * 1000L)
-            val cc =  Calendar.getInstance()
-            cc.timeInMillis = dateMilli
-            val formatter: DateFormat = SimpleDateFormat("hh:mm")
-
-
-
-            objSMS.relativeTime =  formatter.format(cc.time)
+            setHourAndMinute(objSMS, dateMilli)
 
 
         }else if(days == 1L){
@@ -368,6 +355,38 @@ class SMSLocalRepository(
             val date = SimpleDateFormat("dd/MM/yyyy").format(Date(dateMilli))
             objSMS.relativeTime = date
         }
+    }
+
+    private fun setHourAndMinute(objSMS: SMS, dateMilli: Long): String {
+        val cc =  Calendar.getInstance()
+        cc.timeInMillis = dateMilli
+        val formatter: DateFormat = SimpleDateFormat("hh:mm")
+        val formattedIn24Hr: DateFormat = SimpleDateFormat("HH")
+
+
+
+        objSMS.relativeTime =  formatter.format(cc.time)
+        val time24HrFormat = formattedIn24Hr.format(cc.time)
+        if(time24HrFormat.toInt()>12){
+            objSMS.relativeTime = objSMS.relativeTime + " pm"
+        }else{
+            objSMS.relativeTime = objSMS.relativeTime + " am"
+
+        }
+        return objSMS.relativeTime
+    }
+
+    /**
+     * function to return difference between today and passed date in milli secods
+     */
+    private fun getDaysDifference(dateMilli: Long): Long {
+        val today = Date()
+        val miliSeconds: Long = today.time - dateMilli!!
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds)
+        val minute = seconds / 60
+        val hour = minute / 60
+        val days = hour / 24
+        return days
     }
 
     /**
@@ -624,8 +643,14 @@ class SMSLocalRepository(
                     smsWithCurrentDate.type = -1 // cause this is just date, ie does not belong to any
                     //sms type so I can filer this from adapter
                     val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
-                    val currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
+                    var currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
 
+                    val days = getDaysDifference(t)
+                    if(days == 0L){
+                        currentDate = "Today"
+                    }else if(days == 1L){
+                        currentDate = "Yesterday"
+                    }
 
                     if(currentDate != prevDate){
                         //for the first time add the date
@@ -638,6 +663,7 @@ class SMSLocalRepository(
                     }
                     val sms = SMS()
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                   sms.timeString = setHourAndMinute(sms, sms.time!!)
                     sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
                     val mgsStr = sms.msgString
                     sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))

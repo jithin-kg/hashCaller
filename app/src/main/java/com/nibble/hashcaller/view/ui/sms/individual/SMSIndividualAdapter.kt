@@ -202,8 +202,8 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
 
-            setTimeInView(sms.time)
-
+//            setTimeInView(sms.time)
+            view.tvRecivedTime.text = sms.timeString
             view.setOnClickListener{
 
 //                onContactItemClickListener(pNo)
