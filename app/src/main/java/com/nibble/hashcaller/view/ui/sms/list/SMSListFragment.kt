@@ -370,6 +370,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         MarkedItemsHandler.markedItems.add(id)
         MarkedItemsHandler.markedViews.add(v)
         markedContactAddress.add(address)
+        SMSContainerFragment.showHideBlockButton()
         SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
 //
 

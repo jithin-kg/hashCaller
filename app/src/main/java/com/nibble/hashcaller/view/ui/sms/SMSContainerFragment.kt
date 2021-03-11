@@ -112,7 +112,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
         })
 //        (activity as AppCompatActivity).setSupportActionBar(toolbarSmS)
 
-            initViewModel()
+        initViewModel()
         observerDefaulsSmshandlerPermission()
         observeNumOfRowsDeleted()
         setupBottomSheet()
@@ -645,6 +645,15 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
             viewSms?.fabBtnDeleteSMSExpanded?.shrink()
 
         }
+
+        fun showHideBlockButton() {
+            if(markedItems.size == 1){
+                viewSms!!.imgBtnTbrBlock.visibility = View.VISIBLE
+            }else{
+                viewSms!!.imgBtnTbrBlock.visibility = View.INVISIBLE
+            }
+
+        }
     }
 
     override fun onResume() {
@@ -661,6 +670,7 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
 
     fun showToolbarButtons() {
         Log.d(TAG, "showToolbarButtons: ")
+
         imgBtnTbrDelete.visibility = View.VISIBLE
         imgBtnTbrMuteSender.visibility = View.VISIBLE
         imgBtnTbrBlock.visibility = View.VISIBLE
