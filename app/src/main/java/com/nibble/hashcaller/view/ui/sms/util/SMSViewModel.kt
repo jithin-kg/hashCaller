@@ -113,61 +113,65 @@ class SMSViewModel(
     }
 
     /**
-     * called when there is a change in sender_infor_from_server changes
+     * called when there is a change in table sender_infor_from_server changes
      */
     fun updateWithNewSenderInfo(
         dataFromDB: List<SMSSendersInfoFromServer>?,
         smsLIst: MutableList<SMS>?
     ) {
-//------
 
-//        if (this.smsLiveData.value != null) {
-//            for(sms in this.smsLiveData.value!!){
-//                sms.name = "sammm"
+
+
+         viewModelScope.launch {
+
+//             var mapofAddressAndValues: HashMap<String, SMS> = HashMap() //hold all sms sender
+//             // info found fom db
 //
-//            }
-//            val result:MutableList<SMS> = mutableListOf()
-//            result.addAll(this.smsLiveData.value!!)
-//            this.smsLiveData.value = result
+//             for(sms in dataFromDB!!){
+//                 //creating a map of senderinfo that is received from DB
+//                 val obj = SMS()
+//                 obj.name = sms.name
+//                 obj.type = sms.spammerType
+//                 obj.spamCount = sms.spamReportCount
+//                 mapofAddressAndValues.put(sms.contactAddress!!, obj)
 //
-//        }
-
-        //-------
-
-        var mapofAddressAndValues: HashMap<String, SMS> = HashMap() //hold all sms sender
-                                                            // info found fom db
-
-        for(sms in dataFromDB!!){
-            //creating a map of senderinfo that is received from DB
-            val obj = SMS()
-            obj.name = sms.name
-            obj.type = sms.spammerType
-            obj.spamCount = sms.spamReportCount
-            mapofAddressAndValues.put(sms.contactAddress!!, obj)
-
-        }
-        var lst:MutableList<SMS>  = mutableListOf()
-        if(smsLiveData.value!=null){
-            for(sms in smsLiveData.value!!){
-                val res = mapofAddressAndValues.get(sms.addressString)
-                val obj = sms
-
-                if(res!=null){
-                    sms.name = res.name
-                    sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-                    if(res.spamCount <1){
-                        lst.add(obj)
+//             }
+//             var lst:MutableList<SMS>  = mutableListOf()
+//
+//
+////                 repository!!.fetchSmsForWorker().apply {
+//                     if(smsLiveData.value!=null)
+//                     for(sms in smsLiveData.value!!){
+//                         val res = mapofAddressAndValues.get(sms.addressString)
+//                         val obj = sms
+//
+//                         if(res!=null){
+//                             sms.name = res.name
+//                             sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+//                             if(res.spamCount <1){
+//                                 lst.add(obj)
+//                             }
+//                         }else{
+//
+//                             lst.add(sms)
+//
+//                         }
+//                     }
+                   val r = async {
+                        repository!!.getSMSForViewModel(null, requestinfromSpamlistFragment = false, isFullSmsNeeded = true)
                     }
-                }else{
-                    lst.add(obj)
 
-                }
-            }
+                     val lst = r.await()
+                     smsLiveData.value = lst
+//                 }
+
+
 //            smsLive.value = lst
-            smsLiveData.value = lst
+
+         }
 //            smsLiveData.value = smsLiveData.value
 
-        }
+
     }
 
     fun updateLiveData(sms: MutableList<SMS>?)  {

@@ -20,12 +20,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
+import com.nibble.hashcaller.view.ui.sms.list.SMSListFragment
 import com.nibble.hashcaller.view.ui.sms.list.SMSSpamListAdapter
+import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 
@@ -34,11 +39,14 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     var smsRecyclerAdapter: SMSSpamListAdapter? = null
     private lateinit var viewmodel: SMSSpamViewModel
     private var searchQry:String? = null
+    private lateinit var recyclerV:RecyclerView
 
     private lateinit var viewMesages:View
     private lateinit var sView:EditText
     private var smsListSize:MutableLiveData<Int> = MutableLiveData(0)
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var layoutMngr:LinearLayoutManager? = null
+    private var isLoading = false
 
 
 
@@ -55,14 +63,20 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
 
         viewMesages = inflater.inflate(R.layout.fragment_spam_messages, container, false)
+        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSSpamList)
+
         initVieModel()
         if(checkContactPermission()){
             observeSMSList()
+            observeMutabeLiveData()
+            observeSendersInfoFromServer()
+            addScrollListener()
         }
         initListeners()
         observeLoadinState()
         observeSmsSize()
         observePermissionLiveData()
+
 
         return  viewMesages
     }
@@ -74,6 +88,9 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
                 this.viewMesages.tvSMSPermissionInfo.visibility = View.GONE
                 this.viewMesages.pgBarSMSSpamList.visibility = View.VISIBLE
                 observeSMSList()
+                observeMutabeLiveData()
+                observeSendersInfoFromServer()
+                addScrollListener()
             }else{
                 this.viewMesages.btnSmsReadPermission.visibility = View.VISIBLE
                 this.viewMesages.tvSMSPermissionInfo.visibility = View.VISIBLE
@@ -108,7 +125,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
 
 
                 } else {
-                    viewMesages.imgViewNoSpam.visibility = View.VISIBLE
+//                    viewMesages.imgViewNoSpam.visibility = View.VISIBLE
 //                    viewMesages.layoutDeleteSpamInfo.visibility = View.GONE
                 }
             }
@@ -133,22 +150,90 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         this.permissionGivenLiveData.value  = checkContactPermission()
     }
     @SuppressLint("LongLogTag")
+    private fun observeSendersInfoFromServer() {
+        viewmodel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observeSendersInfoFromServer: $it")
+
+            viewmodel.updateWithNewSenderInfo(it)
+
+        })
+    }
+
+    private fun addScrollListener() {
+        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+//                if(dy>0){
+                //scrollview scrolled vertically
+                //get the visible item count
+                if(layoutMngr!=null){
+                    val visibleItemCount = layoutMngr!!.childCount
+                    val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
+                    val recyclerViewSize = smsRecyclerAdapter!!.itemCount
+                    if(!isLoading){
+                        if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
+                            //we have reached the bottom
+                            pageOb.pageSpam +=3
+                            viewmodel.getNextSmsPage()
+                            if(dy > 0){
+                                if(!isSizeEqual){
+//                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
+//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+                                }
+                            }
+                        }
+                    }
+
+                }
+//                }
+            }
+        })
+    }
+    @SuppressLint("LongLogTag")
     private fun observeSMSList() {
         viewmodel.SMS.observe(viewLifecycleOwner, Observer { sms->
+            Log.d(TAG, "observeSMSList: ${sms.size}")
+            sms.let {
+//                smsRecyclerAdapter?.setSMSList(it, searchQry)
+//                Log.d(TAG, "observeSMSList: data changed")
+//                smsRecyclerAdapter?.submitList(it)
+//                SMSListAdapter.searchQry = searchQry
+//                this.smsLIst = it as MutableList<SMS>?
+//                smsRecyclerAdapter?.submitList(it)
+                this.viewmodel.updateLiveData(sms)
+
+            }
             if(sms == null){
                this.smsListSize.value = 0
             }else{
               this.smsListSize.value = sms.size
             }
-            sms.let {
+//            sms.let {
+//
+////                smsRecyclerAdapter?.setSMSList(it, searchQry)
+////                smsRecyclerAdapter?.submitList(it)
+//                smsRecyclerAdapter?.setList(it)
+//                this.smsListSize.value = it.size
+//                SMSListAdapter.searchQry = searchQry
+//
+//            }
+        })
+    }
+    @SuppressLint("LongLogTag")
+    private fun observeMutabeLiveData() {
+        viewmodel.smsLiveDataSpam.observe(viewLifecycleOwner, Observer {
+            viewmodel.smsLIstSpam = it as MutableList<SMS>?
+            Log.d(TAG, "observeMutabeLiveData: ")
+            var newList:MutableList<SMS> = mutableListOf()
 
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-//                smsRecyclerAdapter?.submitList(it)
-                smsRecyclerAdapter?.setList(it)
-                this.smsListSize.value = it.size
-                SMSListAdapter.searchQry = searchQry
+            it.forEach{sms-> newList.add(sms.deepCopy())}
+            smsRecyclerAdapter?.setList(newList)
+//            smsRecyclerAdapter?.setList(newList)
 
-            }
+//            this.viewMesages.pgBarsmslist.visibility = View.GONE
+//            this.viewMesages.shimmer_view_container.visibility = View.GONE
+//            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
+//            SMSListAdapter.searchQry = searchQry
         })
     }
 
@@ -174,20 +259,20 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setScrollViewListener() {
-        viewMesages.rcrViewSMSSpamList?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            @SuppressLint("LongLogTag")
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                Log.d(TAG, "onScrolled: ")
-                if (dy > 0 || dy < 0 ) SMSContainerFragment.hide()
-            }
-
-            @SuppressLint("LongLogTag")
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) SMSContainerFragment.show()
-                Log.d(TAG, "onScrollStateChanged: ")
-                super.onScrollStateChanged(recyclerView, newState)
-            }
-        })
+//        viewMesages.rcrViewSMSSpamList?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            @SuppressLint("LongLogTag")
+//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                Log.d(TAG, "onScrolled: ")
+//                if (dy > 0 || dy < 0 ) SMSContainerFragment.hide()
+//            }
+//
+//            @SuppressLint("LongLogTag")
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) SMSContainerFragment.show()
+//                Log.d(TAG, "onScrollStateChanged: ")
+//                super.onScrollStateChanged(recyclerView, newState)
+//            }
+//        })
     }
     private fun
             searchViewListener() {
@@ -216,6 +301,8 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     private fun initRecyclerView() {
         rcrViewSMSSpamList?.apply {
             layoutManager = LinearLayoutManager(activity)
+            layoutMngr = layoutManager as LinearLayoutManager
+
             val topSpacingDecorator =
                 TopSpacingItemDecoration(
                     30

@@ -107,7 +107,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
                         if(!isLoading){
                             if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
                                 //we have reached the bottom
-                                 page+=12
+                                 page+=3
                                 smsListVIewModel.getNextSmsPage()
                                if(dy > 0){
                                    if(!isSizeEqual){
@@ -182,9 +182,9 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun observeSendersInfoFromServer() {
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
-            if(!it.isNullOrEmpty()){
+
                 smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
-            }
+
         })
     }
 

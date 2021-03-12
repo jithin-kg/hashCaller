@@ -165,79 +165,13 @@ class SMSSpamListAdapter(private val context: Context,
                   onContactItemClickListener(sms.id.toString(), this.adapterPosition,
                       sms.addressString!!
                   )
-//                    if(SMSListAdapter.prevView !=null ){
-//
-//                        SMSListAdapter.prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
-//                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
-//                    }else if(SMSListAdapter.prevView == v ){
-//                        if(v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility == View.VISIBLE){
-//                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.GONE
-//                        }else{
-//                            v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
-//                        }
-//                    }
-//                    else{
-//                        SMSListAdapter.prevView = v
-//                        v.findViewById<ConstraintLayout>(R.id.layoutExpandable).visibility = View.VISIBLE
-//
-//                    }
-
-//                view.tvUnreadSMSCount.text = ""
-//                view.tvUnreadSMSCount.visibility = View.INVISIBLE
-//                    onContactItemClickListener(sms.addressString!!)
-//                    onContactItemClickListener(sms.addressString!!, pos)
-//
-//                    sms.expanded = true
                 }
             }
 //        }
 
-         private fun highlightSearhcField(sms: SMS) {
 
-//             if(searchQry!=null){
-////                 val lowercaseMsg = sms.msg!!.toLowerCase()
-//                 val lowerSearchQuery = searchQry!!.toLowerCase()
-//                 if(sms.address!!.contains(searchQry!!)){
-//                     Log.d(TAG, "address pattern matches")
-//                     val startPos = sms.address!!.indexOf(searchQry!!)
-//                     val endPos = startPos + searchQry!!.length
-//                     view.tvSMSMPeek.text = sms.msg
-//                    setSpan(sms.address!!, startPos, endPos, view.textVSMSContactName)
-//
-//                 }else if(lowercaseMsg.contains(lowerSearchQuery)){
-//
-//                     Log.d(TAG, "lowercase: $lowercaseMsg")
-//                     val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
-//                     val endPos = startPos +lowerSearchQuery.length
-//                     name.text = sms.address
-////                     setSpan(sms.msg!!, startPos, endPos, view.tvSMSMPeek)
-//
-//                 }else{
-//                     name.text = sms.address
-//                     view.tvSMSMPeek.text = sms.msg
-//                 }
-//             }else{
-//                 name.text = sms.address
-//                 view.tvSMSMPeek.text = sms.msg
-//             }
 
-         }
 
-         private fun setSpan(str:String, startPos:Int, endPos:Int, v: TextView) {
-             val yellow =
-                 BackgroundColorSpan(Color.YELLOW)
-             val spannableStringBuilder =
-                 SpannableStringBuilder(str)
-             Log.d(TAG, "setSpan: startPos:$startPos")
-             Log.d(TAG, "setSpan: endPos:$endPos")
-             try{
-                 spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-             }catch (e:IndexOutOfBoundsException){
-                 Log.d(TAG, "setSpan: $e")
-             }
-
-             v.text = spannableStringBuilder
-         }
 
          private fun setTimeInView(time: Long?) {
              val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))

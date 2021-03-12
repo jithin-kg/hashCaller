@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SMSSpamLiveData(private val context: Context):
-    ContentProviderLiveData<List<SMS>>(context,
+    ContentProviderLiveData<MutableList<SMS>>(context,
         URI
     )  {
     private lateinit var spamListDAO:SpamListDAO
@@ -41,7 +41,7 @@ class SMSSpamLiveData(private val context: Context):
                 spamListDAO,
                 smssendersInfoDAO
             )
-        val res =  repository.fetchSMS(null, true)
+        val res =  repository.getSMSForViewModel(null, true)
 
         //IMPORTANT from backgroudn thread we need to call postValue to set livedata
         SMSSpamViewModel.isLoading.postValue(false)

@@ -20,6 +20,7 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -154,195 +155,191 @@ class SMSLocalRepository(
         var data = ArrayList<SMS>()
 
         val timeTook = measureTimeMillis {
-            try {
+        try {
 
 
-                var deleteViewAdded = false
-                val listOfMessages = mutableListOf<SMS>()
-                var count = 0
-                var map: HashMap<String?, String?> = HashMap()
-                smsListHashMap = map
+            var deleteViewAdded = false
+            val listOfMessages = mutableListOf<SMS>()
+            var count = 0
+            var map: HashMap<String?, String?> = HashMap()
+            smsListHashMap = map
 
+    //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
+            val cursor = createCursor(searchQuery)
+            Log.d(TAG, "fetch: page is   $page")
 
+    //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
+            if (cursor != null && cursor.moveToFirst()) {
+    //                    val spammersList = spamListDAO?.getAll()
+                do {
 
+                    try {
+                        //TODO check if phone number exists in contact, if then add the contact information too
+                        val objSMS = SMS()
+                        objSMS.id =
+                            cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                        objSMS.threadID =
+                            cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                        Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+                        var num =
+                            cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                        num = num.replace("+", "")
+    //                    objSMS.address = num
 
+                        objSMS.type =
+                            cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
-//        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
-                val cursor = createCursor(searchQuery)
-                Log.d(TAG, "fetch: page is   $page")
+                        var msg =
+                            cursor.getString(cursor.getColumnIndexOrThrow("body"))
+    //
 
-//https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
-                if (cursor != null && cursor.moveToFirst()) {
-//                    val spammersList = spamListDAO?.getAll()
+                        setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
+                        // spannable string builder function to setup spannable string builder
+                        objSMS.addressString = num.replace("+", "")
 
-//            if (spammersList != null) {
-//                for (spamer in spammersList){
-//                    this.smsListHashMap.put(spamer.contactAddress, spamer.id.toString())
-//                }
-//            }
-                    do {
+                        objSMS.readState =
+                            cursor.getInt(cursor.getColumnIndex("read"))
+                        val dateMilli =
+                            cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 
-                        try {
-                            //TODO check if phone number exists in contact, if then add the contact information too
-                            val objSMS = SMS()
-                            objSMS.id =
-                                cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-                            objSMS.threadID =
-                                cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
-                            var num =
-                                cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                            num = num.replace("+", "")
-//                    objSMS.address = num
+                        objSMS.time = dateMilli
+                        setRelativeTime(objSMS, dateMilli)
 
-                            objSMS.type =
-                                cursor.getInt(cursor.getColumnIndexOrThrow("type"))
-
-                            var msg =
-                                cursor.getString(cursor.getColumnIndexOrThrow("body"))
-//
-
-                            var spannableStringBuilder: SpannableStringBuilder?
-
-                            if (searchQuery != null) {
-                                val lowercaseMsg = msg.toLowerCase()
-                                val lowerSearchQuery = searchQuery.toLowerCase()
-
-                                if (lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()) {
-                                    //search query pressent in sms body
-                                    var startPos =
-                                        lowercaseMsg.indexOf(lowerSearchQuery) //getting the index of search query in msg body
-                                   var endPos = 0
-                                    if(startPos > 50){
-                                        msg = "... " + msg.substring(startPos)
-                                        startPos = 4
-                                    }
-                                     endPos = startPos + lowerSearchQuery.length
-                                    val yellow =
-                                        BackgroundColorSpan(Color.YELLOW)
-                                    spannableStringBuilder =
-                                        SpannableStringBuilder(msg)
-                                    spannableStringBuilder.setSpan(
-                                        yellow,
-                                        startPos,
-                                        endPos,
-                                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                                    )
-
-                                    objSMS.msg = spannableStringBuilder
-                                    objSMS.address = SpannableStringBuilder(num)
-                                } else if (num.contains(searchQuery) && searchQuery.isNotEmpty()) {
-                                    val startPos = num.indexOf(searchQuery)
-                                    val endPos = startPos + searchQuery.length
-                                    val yellow = BackgroundColorSpan(Color.YELLOW)
-                                    spannableStringBuilder = SpannableStringBuilder(num)
-                                    spannableStringBuilder.setSpan(
-                                        yellow,
-                                        startPos,
-                                        endPos,
-                                        Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                                    )
-                                    objSMS.address = spannableStringBuilder
-                                    objSMS.msg = SpannableStringBuilder(msg)
-                                } else {
-                                    spannableStringBuilder =
-                                        SpannableStringBuilder(msg)
-                                    objSMS.msg = spannableStringBuilder
-                                    objSMS.address = SpannableStringBuilder(num)
-                                }
-                            } else {
-                                spannableStringBuilder =
-                                    SpannableStringBuilder(msg)
-                                objSMS.msg = spannableStringBuilder
-                                objSMS.address = SpannableStringBuilder(num)
+                        if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                                .contains("1")
+                        ) {
+                            objSMS.folderName = "inbox"
+                        } else {
+                            objSMS.folderName = "sent"
+                        }
+                        getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
+                            if(this!=null){
+                                objSMS.name = this?.name
+                                objSMS.spamCount  = this.spamReportCount
+                                objSMS.spammerType = this.spammerType
+                                objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                             }
 
-                            objSMS.addressString = num.replace("+", "")
-
-
-//                    val count =setSMSReadStatus(objSMS, objSMS.addressString!!)
-//                    objSMS.unReadSMSCount = count!!
-
-
-                            objSMS.readState =
-                                cursor.getInt(cursor.getColumnIndex("read"))
-                            val dateMilli =
-                                cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-
-
-                            objSMS.time = dateMilli
-                            setRelativeTime(objSMS, dateMilli)
-
-                            if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
-                                    .contains("1")
-                            ) {
-                                objSMS.folderName = "inbox"
-                            } else {
-                                objSMS.folderName = "sent"
-                            }
-
-                            if (requestinfromSpamlistFragment!!) {
-                                //if we are requesting from fragment SMSIdentifiedAsSpamFragment
-                                if (smsListHashMap.containsKey(objSMS.addressString)) {
-                                    if (!deleteViewAdded) {
-                                        val delViewObj = SMS()
-                                        delViewObj.deleteViewPresent = true
-                                        listOfMessages.add(delViewObj)
-                                        deleteViewAdded = true
-                                    }
-                                    listOfMessages.add(objSMS)
+                        if (requestinfromSpamlistFragment!!) {
+                            //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
+                                if (!deleteViewAdded) {
+                                    val delViewObj = SMS()
+                                    delViewObj.deleteViewPresent = true
+                                    listOfMessages.add(delViewObj)
+                                    deleteViewAdded = true
                                 }
-                            } else {
-                                //we are requesting from SMSListFragment
-//                                if (!smsListHashMap.containsKey(objSMS.addressString)) {
-//                                    listOfMessages.add(objSMS)
-//                                }
-                                val res = getDetailsFromDB(objSMS.addressString!!, objSMS)
-                                if(res!=null){
-                                    objSMS.name = res?.name
-                                    objSMS.spamCount  = res.spamReportCount
-                                    objSMS.spammerType = res.spammerType
-                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-                                }
+                            if(objSMS.spamCount>0)
+                                listOfMessages.add(objSMS)
+    //                                }
+                        } else {
+                            //we are requesting from SMSListFragment
 
+
+                                if(objSMS.spamCount<1)
                                 listOfMessages.add(objSMS)
 
+                             }
                             }
 
-//                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
-                            count = listOfMessages.size - 1
-                        } catch (e: Exception) {
-                            Log.d(TAG, "getMessages: $e")
-                        }
 
-                    } while (cursor.moveToNext())
-//                            })
-//                        }
+    //                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
+                        count = listOfMessages.size - 1
+                    } catch (e: Exception) {
+                        Log.d(TAG, "getMessages: $e")
+                    }
+
+                } while (cursor.moveToNext())
+    //                            })
+    //                        }
 
 
-                }
-
-//        data = sortAndSet(listOfMessages)
-        data.addAll(listOfMessages)
-//        setAdditionalData(data)
-                GlobalScope.launch {
-                   val r1 =  async {  setSMSReadStatus(data) }
-//        setSpamDetails(data)
-                    val r2 = async {  setNameIfExistInContactContentProvider(data) }
-                    r1.await()
-                    r2.await()
-                }.join()
-
-            } catch (e: java.lang.Exception) {
-                Log.d(TAG, "fetch: exception $e")
             }
+
+    //        data = sortAndSet(listOfMessages)
+    data.addAll(listOfMessages)
+    //        setAdditionalData(data)
+                        GlobalScope.launch {
+               val r1 =  async {  setSMSReadStatus(data) }
+    //        setSpamDetails(data)
+                val r2 = async {  setNameIfExistInContactContentProvider(data) }
+                r1.await()
+                r2.await()
+            }.join()
+
+        } catch (e: java.lang.Exception) {
+            Log.d(TAG, "fetch: exception $e")
+        }
 
 
         }
-        Log.d(TAG, "fetch: size of list is ${data.size}")
-        if(data.size >= 1)
-        Log.d(TAG, "fetch: first item msg is  ${data[0].msg}")
+
+
         return data
+    }
+
+    private fun setSpannableStringBuilder(
+        objSMS: SMS,
+        searchQuery: String?,
+        mssg: String,
+        num: String
+    ) {
+        var msg = mssg
+        var spannableStringBuilder: SpannableStringBuilder?
+
+        if (searchQuery != null) {
+            val lowercaseMsg = msg.toLowerCase()
+            val lowerSearchQuery = searchQuery.toLowerCase()
+
+            if (lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()) {
+                //search query pressent in sms body
+                var startPos =
+                    lowercaseMsg.indexOf(lowerSearchQuery) //getting the index of search query in msg body
+                var endPos = 0
+                if(startPos > 50){
+                    msg = "... " + msg.substring(startPos)
+                    startPos = 4
+                }
+                endPos = startPos + lowerSearchQuery.length
+                val yellow =
+                    BackgroundColorSpan(Color.YELLOW)
+                spannableStringBuilder =
+                    SpannableStringBuilder(msg)
+                spannableStringBuilder.setSpan(
+                    yellow,
+                    startPos,
+                    endPos,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+
+                objSMS.msg = spannableStringBuilder
+                objSMS.address = SpannableStringBuilder(num)
+            } else if (num.contains(searchQuery) && searchQuery.isNotEmpty()) {
+                val startPos = num.indexOf(searchQuery)
+                val endPos = startPos + searchQuery.length
+                val yellow = BackgroundColorSpan(Color.YELLOW)
+                spannableStringBuilder = SpannableStringBuilder(num)
+                spannableStringBuilder.setSpan(
+                    yellow,
+                    startPos,
+                    endPos,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+                objSMS.address = spannableStringBuilder
+                objSMS.msg = SpannableStringBuilder(msg)
+            } else {
+                spannableStringBuilder =
+                    SpannableStringBuilder(msg)
+                objSMS.msg = spannableStringBuilder
+                objSMS.address = SpannableStringBuilder(num)
+            }
+        } else {
+            spannableStringBuilder =
+                SpannableStringBuilder(msg)
+            objSMS.msg = spannableStringBuilder
+            objSMS.address = SpannableStringBuilder(num)
+        }
+
     }
 
     private fun setRelativeTime(objSMS: SMS, dateMilli: Long) {
@@ -408,6 +405,7 @@ class SMSLocalRepository(
         var selectionArgs: Array<String>? = null
         var selection: String? = null
 
+
         if (searchQuery != null) {
             selection = SMSContract.SMS_SELECTION_SEARCH
             selectionArgs = arrayOf("%$searchQuery%", "%$searchQuery%")
@@ -428,8 +426,9 @@ class SMSLocalRepository(
                 projection,
                 "address IS NOT NULL) GROUP BY (address",
                 selectionArgs,
-                "_id DESC limit 12 offset $page"
+                "_id DESC limit 3 offset $page"
             )
+
             return cursor
         }else{
             //from search sms activity
@@ -469,25 +468,21 @@ class SMSLocalRepository(
     }
 
     private fun setNameIfExistInContactContentProvider(data: ArrayList<SMS>) {
-        for (sms in data){
-            var formattedNum = formatPhoneNumber(sms.addressString!!)
+            for (sms in data){
+                if(sms.addressString != null){
+                    var formattedNum = formatPhoneNumber(sms.addressString!!)
 
-            if(isNumericOnlyString(formattedNum)){
-                val name =   getConactInfoForNumber(formattedNum)
-                if (name != null){
-                    sms.name = name
-                    sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+                    if(isNumericOnlyString(formattedNum)){
+                        val name =   getConactInfoForNumber(formattedNum)
+                        if (name != null){
+                            sms.name = name
+                            sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+                        }
+                    }
+
                 }
-//                else{
-//
-//                    getDetailsFromDB(sms.addressString!!, sms)
-//                }
-            }
-//            else{
-//                getDetailsFromDB(sms.addressString!!, sms)
-//            }
 
-        }
+            }
 
     }
 
@@ -1059,8 +1054,8 @@ class SMSLocalRepository(
                             } else {
                                 objSMS.folderName = "sent"
                             }
+                            setSpannableStringBuilder(objSMS, null, msg, num)
 
-//
                             listOfMessages.add(objSMS)
 
                         } catch (e: Exception) {
@@ -1081,6 +1076,299 @@ class SMSLocalRepository(
         Log.d(TAG, "fetchSmsForWorker: size of list is ${data.size}")
         if(data.size >= 1)
             Log.d(TAG, "fetchSmsForWorker: first item msg is  ${data[0].msg}")
+        return data
+    }
+
+
+    /**
+     * function for fetching sms for smspam viewmodel
+     */
+    @SuppressLint("LongLogTag")
+    private suspend fun fetchForVidemodel(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
+        var data = ArrayList<SMS>()
+
+        val timeTook = measureTimeMillis {
+            try {
+
+
+                var deleteViewAdded = false
+                val listOfMessages = mutableListOf<SMS>()
+                var count = 0
+                var map: HashMap<String?, String?> = HashMap()
+                smsListHashMap = map
+
+                //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
+                val cursor = createCursor(searchQuery)
+                Log.d(TAG, "fetch: page is   $page")
+
+                //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
+                if (cursor != null && cursor.moveToFirst()) {
+                    //                    val spammersList = spamListDAO?.getAll()
+                    do {
+
+                        try {
+                            //TODO check if phone number exists in contact, if then add the contact information too
+                            val objSMS = SMS()
+                            objSMS.id =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                            objSMS.threadID =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+                            var num =
+                                cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                            num = num.replace("+", "")
+                            //                    objSMS.address = num
+
+                            objSMS.type =
+                                cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                            var msg =
+                                cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                            //
+
+                            setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
+                            // spannable string builder function to setup spannable string builder
+                            objSMS.addressString = num.replace("+", "")
+
+                            objSMS.readState =
+                                cursor.getInt(cursor.getColumnIndex("read"))
+                            val dateMilli =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+
+                            objSMS.time = dateMilli
+                            setRelativeTime(objSMS, dateMilli)
+
+                            if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                                    .contains("1")
+                            ) {
+                                objSMS.folderName = "inbox"
+                            } else {
+                                objSMS.folderName = "sent"
+                            }
+                            getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
+                                if(this!=null){
+                                    objSMS.name = this?.name
+                                    objSMS.spamCount  = this.spamReportCount
+                                    objSMS.spammerType = this.spammerType
+                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+                                }
+
+                                if (requestinfromSpamlistFragment!!) {
+                                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+                                    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
+                                    if (!deleteViewAdded) {
+                                        val delViewObj = SMS()
+                                        delViewObj.deleteViewPresent = true
+                                        listOfMessages.add(delViewObj)
+                                        deleteViewAdded = true
+                                    }
+                                    if(objSMS.spamCount>0)
+                                        listOfMessages.add(objSMS)
+                                    //                                }
+                                } else {
+                                    //we are requesting from SMSListFragment
+
+
+                                    if(objSMS.spamCount<1)
+                                        listOfMessages.add(objSMS)
+
+                                }
+                            }
+
+
+                            //                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
+                            count = listOfMessages.size - 1
+                        } catch (e: Exception) {
+                            Log.d(TAG, "getMessages: $e")
+                        }
+
+                    } while (cursor.moveToNext())
+                    //                            })
+                    //                        }
+
+
+                }
+
+                //        data = sortAndSet(listOfMessages)
+                data.addAll(listOfMessages)
+                //        setAdditionalData(data)
+                GlobalScope.launch {
+                    val r1 =  async {  setSMSReadStatus(data) }
+                    //        setSpamDetails(data)
+                    val r2 = async {  setNameIfExistInContactContentProvider(data) }
+                    r1.await()
+                    r2.await()
+                }.join()
+
+            } catch (e: java.lang.Exception) {
+                Log.d(TAG, "fetch: exception $e")
+            }
+
+
+        }
+
+
+        return data
+    }
+
+
+
+    suspend fun getSMSForViewModel(searchQuery: String?, requestinfromSpamlistFragment: Boolean?,
+                                   isFullSmsNeeded :Boolean = false): MutableList<SMS> {
+        var data = ArrayList<SMS>()
+        Log.d(TAG, "getSMSForSpammList: ")
+        val timeTook = measureTimeMillis {
+            try {
+
+
+                var deleteViewAdded = false
+                val listOfMessages = mutableListOf<SMS>()
+                var count = 0
+                var map: HashMap<String?, String?> = HashMap()
+                smsListHashMap = map
+
+                //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
+//                val cursor = createCursor(searchQuery)
+
+                var selectionArgs: Array<String>? = null
+                var selection: String? = null
+                val projection = arrayOf(
+                    "thread_id",
+                    "_id",
+                    "address",
+                    "type",
+                    "body",
+                    "read",
+                    "date"
+                )
+               val cursor = if(isFullSmsNeeded){
+                    //requesting from smsspam viewmodel after smssenderinfofromserver changed
+                      context.contentResolver.query(
+                        SMSContract.ALL_SMS_URI,
+                        projection,
+                        "address IS NOT NULL) GROUP BY (address",
+                        selectionArgs,
+                        "_id DESC"
+                    )
+                }else{
+                     context.contentResolver.query(
+                        SMSContract.ALL_SMS_URI,
+                        projection,
+                        "address IS NOT NULL) GROUP BY (address",
+                        selectionArgs,
+                        "_id DESC limit 3 offset $pageSpam"
+                    )
+                }
+
+//                Log.d(TAG, "fetch: page is   $pageSpa")
+
+                //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
+                if (cursor != null && cursor.moveToFirst()) {
+                    //                    val spammersList = spamListDAO?.getAll()
+                    do {
+
+                        try {
+                            //TODO check if phone number exists in contact, if then add the contact information too
+                            val objSMS = SMS()
+                            objSMS.id =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                            objSMS.threadID =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                            Log.d(TAG, "getSMSForSpammList: threadid ${objSMS.threadID}")
+                            var num =
+                                cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                            num = num.replace("+", "")
+                            //                    objSMS.address = num
+
+                            objSMS.type =
+                                cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                            var msg =
+                                cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                            //
+
+                            setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
+                            // spannable string builder function to setup spannable string builder
+                            objSMS.addressString = num.replace("+", "")
+
+                            objSMS.readState =
+                                cursor.getInt(cursor.getColumnIndex("read"))
+                            val dateMilli =
+                                cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+
+                            objSMS.time = dateMilli
+                            setRelativeTime(objSMS, dateMilli)
+
+                            if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                                    .contains("1")
+                            ) {
+                                objSMS.folderName = "inbox"
+                            } else {
+                                objSMS.folderName = "sent"
+                            }
+                            getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
+                                if(this!=null){
+                                    objSMS.name = this?.name
+                                    objSMS.spamCount  = this.spamReportCount
+                                    objSMS.spammerType = this.spammerType
+                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+                                }
+
+                                if (requestinfromSpamlistFragment!!) {
+                                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+                                    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
+//                                    if (!deleteViewAdded) {
+////                                        val delViewObj = SMS()
+////                                        delViewObj.deleteViewPresent = true
+////                                        listOfMessages.add(delViewObj)
+////                                        deleteViewAdded = true
+//                                    }
+                                    if(objSMS.spamCount>0)
+                                        listOfMessages.add(objSMS)
+                                    //                                }
+                                } else {
+                                    //we are requesting from SMSListFragment
+
+
+                                    if(objSMS.spamCount<1)
+                                        listOfMessages.add(objSMS)
+
+                                }
+                            }
+
+
+                            //                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
+                            count = listOfMessages.size - 1
+                        } catch (e: Exception) {
+                            Log.d(TAG, "getSMSForSpammList: $e")
+                        }
+
+                    } while (cursor.moveToNext())
+                    //                            })
+                    //                        }
+
+
+                }
+
+                //        data = sortAndSet(listOfMessages)
+                data.addAll(listOfMessages)
+                //        setAdditionalData(data)
+                GlobalScope.launch {
+                    val r1 =  async {  setSMSReadStatus(data) }
+                    //        setSpamDetails(data)
+                    val r2 = async {  setNameIfExistInContactContentProvider(data) }
+                    r1.await()
+                    r2.await()
+                }.join()
+
+            } catch (e: java.lang.Exception) {
+                Log.d(TAG, "getSMSForSpammList: exception $e")
+            }
+
+
+        }
+        Log.d(TAG, "getSMSForSpammList: size is  ${data.size}")
+
         return data
     }
 
