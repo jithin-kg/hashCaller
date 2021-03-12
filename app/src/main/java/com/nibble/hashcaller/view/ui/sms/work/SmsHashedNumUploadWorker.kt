@@ -77,7 +77,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                     for(cntct in result.body()!!.contacts){
                         val formatedNum = replaceSpecialChars(cntct.phoneNumber)
-                        val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(null,
+                        val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(
                             formatedNum, 0, cntct.name,
                             Date(), cntct.spamCount)
                         smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)

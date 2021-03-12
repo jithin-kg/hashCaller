@@ -29,8 +29,8 @@ import java.util.*
 
 @Entity(tableName = "sms_senders_info_from_server",indices = [Index(value =["contact_address"], unique = true)])
 data class SMSSendersInfoFromServer (
-    @PrimaryKey(autoGenerate = true) val id: Int?,
-    @ColumnInfo(name = "contact_address") val contactAddress: String?,
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "contact_address") val contactAddress: String,
     @ColumnInfo(name = "type") val spammerType: Int,
     @ColumnInfo(name = "name") val name:String,
     @ColumnInfo(name = "informationReceivedDate") val informationReceivedDate:Date,

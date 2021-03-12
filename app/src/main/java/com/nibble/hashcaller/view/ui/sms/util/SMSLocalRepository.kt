@@ -294,14 +294,23 @@ class SMSLocalRepository(
                                 }
                             } else {
                                 //we are requesting from SMSListFragment
-                                if (!smsListHashMap.containsKey(objSMS.addressString)) {
-                                    listOfMessages.add(objSMS)
+//                                if (!smsListHashMap.containsKey(objSMS.addressString)) {
+//                                    listOfMessages.add(objSMS)
+//                                }
+                                val res = getDetailsFromDB(objSMS.addressString!!, objSMS)
+                                if(res!=null){
+                                    objSMS.name = res?.name
+                                    objSMS.spamCount  = res.spamReportCount
+                                    objSMS.spammerType = res.spammerType
+                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
+
+                                listOfMessages.add(objSMS)
+
                             }
 
 //                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
                             count = listOfMessages.size - 1
-
                         } catch (e: Exception) {
                             Log.d(TAG, "getMessages: $e")
                         }
@@ -468,13 +477,15 @@ class SMSLocalRepository(
                 if (name != null){
                     sms.name = name
                     sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                }else{
-
-                    getDetailsFromDB(sms.addressString!!, sms)
                 }
-            }else{
-                getDetailsFromDB(sms.addressString!!, sms)
+//                else{
+//
+//                    getDetailsFromDB(sms.addressString!!, sms)
+//                }
             }
+//            else{
+//                getDetailsFromDB(sms.addressString!!, sms)
+//            }
 
         }
 
@@ -484,18 +495,20 @@ class SMSLocalRepository(
      * function to get information from local db sms_senders_info_from_db
      * @param formattedNum , phone number
      */
-    private fun getDetailsFromDB(
+    private suspend fun getDetailsFromDB(
         num: String,
         sms: SMS
-    ) {
+    ): SMSSendersInfoFromServer?  {
         val frmtedNum = replaceSpecialChars(num)
-        val res = smssendersInfoDAO!!.find(frmtedNum)
-        if(res!=null){
-            sms.name = res?.name
-            sms.spamCount  = res.spamReportCount
-            sms.spammerType = res.spammerType
-            sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-
+        //        if(res!=null){
+//            sms.name = res?.name
+//            sms.spamCount  = res.spamReportCount
+//            sms.spammerType = res.spammerType
+//            sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+//
+//        }
+         smssendersInfoDAO!!.find(frmtedNum).apply {
+            return this
         }
     }
 
@@ -916,21 +929,23 @@ class SMSLocalRepository(
      * these information in local db(SMSSendersInfoFromServer) is saved via SmsHashedNumUploadWorker
      *
      */
-    fun getInfoFromLocalDb(smslist: List<SMS>) {
+    suspend fun getInfoFromLocalDb(smslist: List<SMS>) {
         for(sms in smslist){
             Log.d(TAG, "getInfoFromLocalDb: ")
             //replace all special character and search in db
             var num = sms.addressString
             var res:SMSSendersInfoFromServer? = null
             num = formatPhoneNumber(num!!)
-            res = smssendersInfoDAO!!.find(num!!)
-            if(sms.name.isNullOrEmpty()){
-                sms.name = res?.name
-                Log.d(TAG, "getInfoFromLocalDb:  empty ")
+            res = smssendersInfoDAO!!.find(num!!).apply {
+                if(sms.name.isNullOrEmpty()){
+                    sms.name = res?.name
+                    Log.d(TAG, "getInfoFromLocalDb:  empty ")
 
-            }else{
-                Log.d(TAG, "getInfoFromLocalDb: not empty ")
+                }else{
+                    Log.d(TAG, "getInfoFromLocalDb: not empty ")
+                }
             }
+
 
 //            try {
 //                GlobalScope.launch(Dispatchers.Main) {
@@ -971,7 +986,7 @@ class SMSLocalRepository(
         smssendersInfoDAO!!.find(num!!)
     }
 
-    fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>> {
+     fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>> {
         return smssendersInfoDAO!!.getAllLiveData()
     }
 

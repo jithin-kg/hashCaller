@@ -18,7 +18,7 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
-    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
+//    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
     var smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
@@ -37,7 +37,8 @@ class SMSViewModel(
 
 
     fun getSmsSendersInfoFromServer(): LiveData<List<SMSSendersInfoFromServer>> {
-        return smsSenersInfoFromDB
+        return repository!!.getSmsSenderInforFromDB()
+//        return smsSenersInfoFromDB
     }
 
     var unreadMSCount:MutableLiveData<Int>? = null
@@ -133,7 +134,8 @@ class SMSViewModel(
 
         //-------
 
-        var mapofAddressAndValues: HashMap<String, SMS> = HashMap()
+        var mapofAddressAndValues: HashMap<String, SMS> = HashMap() //hold all sms sender
+                                                            // info found fom db
 
         for(sms in dataFromDB!!){
             //creating a map of senderinfo that is received from DB
@@ -153,11 +155,18 @@ class SMSViewModel(
                 if(res!=null){
                     sms.name = res.name
                     sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+                    if(res.spamCount <1){
+                        lst.add(obj)
+                    }
+                }else{
+                    lst.add(obj)
+
                 }
-                lst.add(obj)
             }
 //            smsLive.value = lst
-            smsLiveData.value = smsLiveData.value
+            smsLiveData.value = lst
+//            smsLiveData.value = smsLiveData.value
+
         }
     }
 

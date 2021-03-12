@@ -12,7 +12,7 @@ import androidx.room.Query
  */
 @Dao
 interface SMSSendersInfoFromServerDAO {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(spamerlist: List<SMSSendersInfoFromServer>)
 
     @Query("DELETE from sms_senders_info_from_server WHERE contact_address=:address")
@@ -28,7 +28,7 @@ interface SMSSendersInfoFromServerDAO {
     fun getAllLiveData(): LiveData<List<SMSSendersInfoFromServer>>
 
     @Query("SELECT * FROM sms_senders_info_from_server WHERE contact_address=:contactAddress")
-     fun find(contactAddress: String) : SMSSendersInfoFromServer?
+    suspend fun find(contactAddress: String) : SMSSendersInfoFromServer?
     @Query("DELETE FROM sms_senders_info_from_server")
     suspend fun deleteAll()
 }

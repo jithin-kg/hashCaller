@@ -15,7 +15,7 @@ class SMSSearchViewModel(
     val repository: SMSLocalRepository?,
     val smsSearchRepository: SMSSearchRepository
 ): ViewModel() {
-    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
+//    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
 

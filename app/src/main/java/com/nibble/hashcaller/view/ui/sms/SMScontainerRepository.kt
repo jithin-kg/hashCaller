@@ -23,10 +23,11 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.work.UnknownSMSsendersInfoResponse
 import com.nibble.hashcaller.work.formatPhoneNumber
 import retrofit2.Response
+import java.util.*
 
 class SMScontainerRepository(
     val context: Context,
-    val dao: SMSSendersInfoFromServerDAO,
+    val smsSenderInfoDAO: SMSSendersInfoFromServerDAO,
     val mutedSendersDAO: IMutedSendersDAO?,
     val blockedOrSpamSenderDAO: IBlockedOrSpamSendersDAO?
 ) {
@@ -42,7 +43,7 @@ class SMScontainerRepository(
      * this is the table schema
      */
     suspend fun geSmsSendersStoredInLocalDB(): List<SMSSendersInfoFromServer> {
-       val list =  dao.getAll()
+       val list =  smsSenderInfoDAO.getAll()
         return list
     }
 
@@ -94,9 +95,26 @@ class SMScontainerRepository(
         mutedSendersDAO!!.insert(addressList)
     }
 
-    suspend fun save(spammerInfo: BlockedOrSpamSenders) {
-        val list = listOf<BlockedOrSpamSenders>(spammerInfo)
-        blockedOrSpamSenderDAO!!.insert(list)
+    /**
+     * Adding a new sms sender info who is a spammer
+     */
+    suspend fun save(contactAddress: String, i: Int, s: String, s1: String) {
+        var name = ""
+        var spamCount = 0L
+       smsSenderInfoDAO.find(contactAddress).apply {
+           if(this!=null){
+               name = this.name
+               spamCount = this.spamReportCount
+
+           }
+           spamCount+=1
+           val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
+           val list = listOf<SMSSendersInfoFromServer>(info)
+
+           smsSenderInfoDAO!!.insert(list)
+        }
+
+
     }
 
     suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {

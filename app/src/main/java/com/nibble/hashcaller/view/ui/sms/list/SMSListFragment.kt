@@ -182,7 +182,9 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun observeSendersInfoFromServer() {
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
-            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+            if(!it.isNullOrEmpty()){
+                smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+            }
         })
     }
 

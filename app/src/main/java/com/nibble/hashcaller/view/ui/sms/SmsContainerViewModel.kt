@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
-import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
@@ -46,7 +45,7 @@ class SmsContainerViewModel(
 
         async {
 
-            repository?.save(BlockedOrSpamSenders(contactAddress, 1, "", "" ))
+            repository?.save(contactAddress, 1, "", "" )
         }
 
         async {
