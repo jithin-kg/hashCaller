@@ -54,6 +54,7 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
+import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
@@ -471,7 +472,8 @@ class SMSContainerFragment : Fragment(), IDefaultFragmentSelection,
      *
      */
     private fun addToBlockList(contact: String) {
-        this.viewmodel.blockThisAddress(contact, MarkedItemsHandler.markedTheadIdForBlocking, this.spammerType, this.SPAMMER_CATEGORY )
+
+        this.viewmodel.blockThisAddress(replaceSpecialChars(contact), MarkedItemsHandler.markedTheadIdForBlocking, this.spammerType, this.SPAMMER_CATEGORY )
 
         Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
         bottomSheetDialog.hide()

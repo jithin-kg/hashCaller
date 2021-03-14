@@ -16,7 +16,7 @@ fun formatPhoneNumber(number:String): String {
  */
 fun replaceSpecialChars(number:String): String {
     val fNum = number.replace(Regex("[^A-Za-z0-9]"), " ")
-    return fNum
+    return fNum.trim()
 }
 
 const val DESTINATION_ACTIVITY = "destinationFragment"
