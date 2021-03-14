@@ -29,6 +29,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.*
@@ -50,7 +51,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private var searchQry:String? = null
     private lateinit var cntx:Context
     private lateinit var recyclerV:RecyclerView
-    
+
     private lateinit var sView:EditText
     private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
@@ -77,7 +78,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         // Inflate the layout for this fragment
         viewMesages = inflater.inflate(R.layout.fragment_messages_list, container, false)
 
-       initVieModel()
+        initVieModel()
         if(checkContactPermission())
         {
             observeSMSList()
@@ -98,27 +99,31 @@ class SMSListFragment : Fragment(), View.OnClickListener,
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 //                if(dy>0){
-                    //scrollview scrolled vertically
-                    //get the visible item count
-                    if(layoutMngr!=null){
-                        val visibleItemCount = layoutMngr!!.childCount
-                        val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
-                        val recyclerViewSize = smsRecyclerAdapter!!.itemCount
-                        if(!isLoading){
-                            if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
-                                //we have reached the bottom
-                                 page+=3
-                                smsListVIewModel.getNextSmsPage()
-                               if(dy > 0){
-                                   if(!isSizeEqual){
-                                       viewMesages.shimmer_view_container.visibility = View.VISIBLE
-                                       viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
-                                   }
-                               }
+                //scrollview scrolled vertically
+                //get the visible item count
+                if(layoutMngr!=null){
+                    val visibleItemCount = layoutMngr!!.childCount
+                    val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
+                    val recyclerViewSize = smsRecyclerAdapter!!.itemCount
+                    if(!isLoading){
+                        if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
+                            //we have reached the bottom
+                            Log.d(TAG, "onScrolled:page: $page, totalsms count $totalSMSCount ")
+//                                if(page+12 <= totalSMSCount ){
+                            page+=12
+                            smsListVIewModel.getNextSmsPage()
+                            if(dy > 0){
+                                if(!isSizeEqual){
+                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
+                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+                                }
+//                                    }
                             }
-                        }
 
+                        }
                     }
+
+                }
 //                }
             }
         })
@@ -183,7 +188,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-                smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
 
         })
     }
@@ -206,10 +211,10 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
             smsListVIewModel.smsLIst = it as MutableList<SMS>?
             Log.d(TAG, "observeMutabeLiveData: ")
-            var newList:MutableList<SMS> = mutableListOf()
+//            var newList:MutableList<SMS> = mutableListOf()
 
-            it.forEach{sms-> newList.add(sms.deepCopy())}
-            smsRecyclerAdapter?.setList(newList)
+//            it.forEach{sms-> newList.add(sms.deepCopy())}
+            smsRecyclerAdapter?.setList(it)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
             this.viewMesages.shimmer_view_container.visibility = View.GONE
@@ -219,24 +224,24 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     }
     private fun observeLive() {
 
-        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
-            sms.let {
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-//                if(!it.isNullOrEmpty()){
-//                    Log.d(TAG, "observeLive: last item name ${it[0].name}")
-//                }
-                this.smsListVIewModel.updateLiveData(sms)
-//                smsRecyclerAdapter?.setList(it)
+//        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
+//            sms.let {
+////                smsRecyclerAdapter?.setSMSList(it, searchQry)
+////                if(!it.isNullOrEmpty()){
+////                    Log.d(TAG, "observeLive: last item name ${it[0].name}")
+////                }
+//                this.smsListVIewModel.updateLiveData(sms)
+////                smsRecyclerAdapter?.setList(it)
+////
+////
+////                smsListVIewModel.getNameForUnknownSender(it)
+////
+////                this.viewMesages.pgBarsmslist.visibility = View.GONE
+////                SMSListAdapter.searchQry = searchQry
+////                this.smsLIst = it as MutableList<SMS>?
 //
-//
-//                smsListVIewModel.getNameForUnknownSender(it)
-//
-//                this.viewMesages.pgBarsmslist.visibility = View.GONE
-//                SMSListAdapter.searchQry = searchQry
-//                this.smsLIst = it as MutableList<SMS>?
-
-            }
-        })
+//            }
+//        })
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -250,7 +255,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         initRecyclerView()
         initListeners()
 
-         sView = viewMesages.rootView.findViewById(R.id.searchViewSms)
+        sView = viewMesages.rootView.findViewById(R.id.searchViewSms)
 
         Log.d(TAG, "onCreateView: $sView")
 
@@ -279,7 +284,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
             layoutManager = LinearLayoutManager(activity)
             layoutMngr = layoutManager as LinearLayoutManager
             smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
-                                                         pno:String->onContactItemClicked(view,threadId, pos, pno)  }
+                                                                               pno:String->onContactItemClicked(view,threadId, pos, pno)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter
 
@@ -325,7 +330,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     }
 
     companion object {
-    private const val TAG = "__SMSListFragment"
+        private const val TAG = "__SMSListFragment"
     }
 
     override fun onClick(v: View?) {

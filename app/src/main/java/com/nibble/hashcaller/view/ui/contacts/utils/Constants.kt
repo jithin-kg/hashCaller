@@ -97,6 +97,7 @@ var contactWithMetaDataForSms : HashMap<String, ContactGlobal> = hashMapOf()
 object pageOb{
     var page = 0
     var pageSpam = 0
+    var totalSMSCount = 0
 }
 
 var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerview
