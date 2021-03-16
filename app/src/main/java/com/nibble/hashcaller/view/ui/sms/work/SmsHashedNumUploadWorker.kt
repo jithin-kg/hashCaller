@@ -54,7 +54,12 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         try {
             Log.d(TAG, "doWork: ")
 
-            val smsrepoLocalRepository = SMSLocalRepository(context, spamListDAO, smssendersInfoDAO) // to get content provided sms
+            val smsrepoLocalRepository = SMSLocalRepository(
+                context,
+                spamListDAO,
+                smssendersInfoDAO,
+                mutedSendersDAO
+            ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
             val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
             val smsContainerRepository = SMScontainerRepository(

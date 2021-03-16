@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.provider.ContactsContract
+import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -15,16 +16,27 @@ import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
+import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.network.contact.NetWorkResponse
+import com.nibble.hashcaller.network.spam.ISpamService
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
+import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.*
+import retrofit2.Response
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,7 +106,8 @@ Constant Value: "seen"
 class SMSLocalRepository(
     private val context: Context,
     private val spamListDAO: SpamListDAO?,
-    val smssendersInfoDAO: SMSSendersInfoFromServerDAO?
+    val smssendersInfoDAO: SMSSendersInfoFromServerDAO?,
+    private val mutedSendersDAO: IMutedSendersDAO?
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
 
@@ -221,34 +234,8 @@ class SMSLocalRepository(
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
 
-                                if (requestinfromSpamlistFragment!!) {
-                                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
-                                    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
-                                    if (!deleteViewAdded) {
-                                        val delViewObj = SMS()
-                                        delViewObj.deleteViewPresent = true
-                                        listOfMessages.add(delViewObj)
-                                        deleteViewAdded = true
-                                    }
-                                    if(objSMS.spamCount>0){
-                                        if(objSMS.msgString!=null){
-                                            listOfMessages.add(objSMS)
-                                        }
-                                    }
+                                listOfMessages.add(objSMS)
 
-                                    //                                }
-                                } else {
-                                    //we are requesting from SMSListFragment
-
-
-                                    if(objSMS.spamCount<1){
-                                        if(objSMS.msgString!=null){
-                                            listOfMessages.add(objSMS)
-                                        }
-                                    }
-
-
-                                }
                             }
 
                         } catch (e: Exception) {
@@ -1322,26 +1309,28 @@ class SMSLocalRepository(
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
 
-                                if (requestinfromSpamlistFragment!!) {
-                                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
-                                    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
-//                                    if (!deleteViewAdded) {
-////                                        val delViewObj = SMS()
-////                                        delViewObj.deleteViewPresent = true
-////                                        listOfMessages.add(delViewObj)
-////                                        deleteViewAdded = true
-//                                    }
-                                    if(objSMS.spamCount>0)
-                                        listOfMessages.add(objSMS)
-                                    //                                }
-                                } else {
-                                    //we are requesting from SMSListFragment
+//                                if (requestinfromSpamlistFragment!!) {
+//                                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
+//                                    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
+////                                    if (!deleteViewAdded) {
+//////                                        val delViewObj = SMS()
+//////                                        delViewObj.deleteViewPresent = true
+//////                                        listOfMessages.add(delViewObj)
+//////                                        deleteViewAdded = true
+////                                    }
+//                                    if(objSMS.spamCount>0)
+//                                        listOfMessages.add(objSMS)
+//                                    //                                }
+//                                } else {
+//                                    //we are requesting from SMSListFragment
+//
+//
+//                                    if(objSMS.spamCount<1)
+//                                        listOfMessages.add(objSMS)
+//
+//                                }
+                                listOfMessages.add(objSMS)
 
-
-                                    if(objSMS.spamCount<1)
-                                        listOfMessages.add(objSMS)
-
-                                }
                             }
 
 
@@ -1378,6 +1367,75 @@ class SMSLocalRepository(
         Log.d(TAG, "getSMSForSpammList: size is  ${data.size}")
 
         return data
+    }
+
+    /**
+     * Adding a new sms sender info who is a spammer
+     */
+    suspend fun save(contactAddress: String, i: Int, s: String, s1: String) {
+        var name = ""
+        var spamCount = 0L
+        smssendersInfoDAO!!.find(contactAddress).apply {
+            if(this!=null){
+                name = this.name
+                spamCount = this.spamReportCount
+
+            }
+            spamCount+=1
+            val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
+            val list = listOf<SMSSendersInfoFromServer>(info)
+
+            smssendersInfoDAO!!.insert(list)
+            pageOb.page = 0
+        }
+
+    }
+    suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
+        var retrofitService:ISpamService? = null
+
+        retrofitService = RetrofitClient.createaService(ISpamService::class.java)
+        val tokenManager = TokenManager(context)
+        val token = tokenManager.getToken()
+        return retrofitService?.report(callerInfo, token)
+    }
+
+
+    @SuppressLint("LongLogTag")
+    suspend fun deleteSmsThread(): Int {
+        var numRowsDeleted = 0
+        for(id in MarkedItemsHandler.markedItems) {
+            Log.d(TAG, "deleteSmsThread: threadid $id")
+            var uri = Telephony.Sms.CONTENT_URI
+            val selection = "${Telephony.Sms.THREAD_ID} = ?"
+            val selectionArgs = arrayOf(id.toString())
+            try {
+                numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
+            } catch (e: Exception) {
+                Log.d(SMScontainerRepository.TAG, "deleteSmsThread: exception $e")
+            }
+        }
+        deleteList()
+        return numRowsDeleted
+    }
+
+
+    private fun deleteList() {
+        MarkedItemsHandler.markedItems.clear()
+        MarkedItemsHandler.markedContactAddress.clear()
+        markingStarted = false
+    }
+
+    /***
+     * function to add contact address to muted_senders table,
+     * no notification for incoming sms from muted senders
+     */
+    suspend fun muteSenders() {
+        var addressList: MutableList<MutedSenders> = mutableListOf()
+        for (address in MarkedItemsHandler.markedContactAddress){
+            val mutedSender = MutedSenders(formatPhoneNumber(address))
+            addressList.add(mutedSender)
+        }
+        mutedSendersDAO!!.insert(addressList)
     }
 
 }

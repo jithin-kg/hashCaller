@@ -22,11 +22,18 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
     CoroutineWorker(context, params){
     private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
     private val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+    private val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+
     private val sMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
-            val smsrepoLocal = SMSLocalRepository(context, spamListDAO, smssendersInfoDAO) // to get content provided sms
+            val smsrepoLocal = SMSLocalRepository(
+                context,
+                spamListDAO,
+                smssendersInfoDAO,
+                mutedSendersDAO
+            ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMS(null)
             var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 

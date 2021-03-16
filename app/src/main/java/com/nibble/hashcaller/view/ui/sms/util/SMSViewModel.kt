@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -18,6 +20,8 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
+    var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(0)
+
 //    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
@@ -193,6 +197,36 @@ class SMSViewModel(
         Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
         isSizeEqual = prevSize == sizeAfterAddingPage
         smsLiveData.value = smsLiveData.value
+    }
+
+    fun blockThisAddress(contactAddress: String,
+                         threadID: Long, spammerType: Int,
+                         spammerCategory: Int) = viewModelScope.launch {
+
+        async {
+
+            repository?.save(contactAddress, 1, "", "" )
+        }
+
+        async {
+            repository?.report(
+                ReportedUserDTo(contactAddress, " ",
+                    spammerType.toString(), spammerCategory.toString()
+                )
+            )
+        }
+
+
+    }
+
+    fun muteMarkedSenders() = viewModelScope.launch {
+        repository!!.muteSenders()
+    }
+
+    fun deleteThread() = viewModelScope.launch {
+        val numRowsDeleted =  repository!!.deleteSmsThread()
+        pageOb.page = 0
+        numRowsDeletedLiveData.value = numRowsDeleted
     }
 
 

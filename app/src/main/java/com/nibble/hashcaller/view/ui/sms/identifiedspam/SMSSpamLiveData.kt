@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
@@ -21,6 +23,7 @@ class SMSSpamLiveData(private val context: Context):
     )  {
     private lateinit var spamListDAO:SpamListDAO
     private lateinit var smssendersInfoDAO:SMSSendersInfoFromServerDAO
+    private lateinit var mutedSendersDAO: IMutedSendersDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
 
     companion object{
@@ -34,12 +37,14 @@ class SMSSpamLiveData(private val context: Context):
         SMSSpamViewModel.isLoading.postValue(true)
           spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
          smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
+         mutedSendersDAO = HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO()
 
         val repository =
             SMSLocalRepository(
                 context,
                 spamListDAO,
-                smssendersInfoDAO
+                smssendersInfoDAO,
+                mutedSendersDAO
             )
         val res =  repository.getSMSForViewModel(null, true)
 
@@ -134,7 +139,8 @@ class SMSSpamLiveData(private val context: Context):
             SMSLocalRepository(
                 context,
                 spamListDAO,
-                smssendersInfoDAO
+                smssendersInfoDAO,
+                mutedSendersDAO
             )
         repository.update(address)
     }

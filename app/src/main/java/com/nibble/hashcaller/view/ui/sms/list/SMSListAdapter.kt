@@ -19,10 +19,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -35,10 +32,10 @@ class SMSListAdapter(private val context: Context,
                      private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String)->Unit
 ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
-    private val VIEW_TYPE_DELETE = 1;
     private val VIEW_TYPE_SMS = 2;
+    private val VIEW_TYPE_SPAM = 3;
     private var smsList:MutableList<SMS> = mutableListOf()
-    companion object{
+    companion object {
         private const val TAG = "__SMSListAdapter";
         public var searchQry:String? = null
         var prevView:View? = null
@@ -50,11 +47,11 @@ class SMSListAdapter(private val context: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if(viewType == VIEW_TYPE_DELETE){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_spam_delete_item, parent, false)
-            return DeleteViewHolder(view)
-
-        }else{
+       if(viewType == VIEW_TYPE_SPAM){
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
+            return SpamViewHolder(view)
+        }
+        else{
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
             return SmsViewHolder(view)
         }
@@ -64,9 +61,10 @@ class SMSListAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(this.smsList.isNotEmpty() && position < smsList.size)
-            if(this.smsList[position].deleteViewPresent){
-                return VIEW_TYPE_DELETE
-            }else{
+            if(this.smsList[position].spamCount > 0){
+                return VIEW_TYPE_SPAM
+            }
+            else{
                 return VIEW_TYPE_SMS
             }
         return VIEW_TYPE_SMS
@@ -83,10 +81,12 @@ class SMSListAdapter(private val context: Context,
                 (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position)
 
             }
-            VIEW_TYPE_DELETE ->{
+            VIEW_TYPE_SPAM ->{
+//                ED4133 -> letter red  FAE0DE-> light
+
                 val item =  getItem(position)
 
-                (holder as DeleteViewHolder).bind(item,context, onContactItemClickListener, position)
+                (holder as SpamViewHolder).bind(item,context, onContactItemClickListener, position)
             }
 
 
@@ -104,21 +104,75 @@ class SMSListAdapter(private val context: Context,
 
 
 
-    class DeleteViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class SpamViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val btnEmptySms = view.btnEmptySpamSMS
-
+        private val name = view.textVSMSContactName
+        private val circle = view.textViewSMScontactCrclr;
         fun bind(
             sms: SMS, context: Context,
             onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String) -> Unit,
             position: Int
         ) {
-            btnEmptySms.setOnClickListener{
-//                view.tvUnreadSMSCount.text = ""
-//                view.tvUnreadSMSCount.visibility = View.INVISIBLE
+            if(!sms.name.isNullOrEmpty())
+                name.text = sms.name
+            else
+                name.text = sms.address
 
-                onDeleteItemclickLIstener(it,0L, 0, ",")
+            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
+                view.pgBarSmsListItem.visibility = View.VISIBLE
+//                Log.d(TAG, "bind: searching for ${sms.addressString}")
+            }else{
+                view.pgBarSmsListItem.visibility = View.INVISIBLE
+            }
+            /**
+             * This is important to check else double/ duplicate marking of items occur
+             */
+            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
+                view.smsMarked.visibility = View.VISIBLE
+            }else{
+                view.smsMarked.visibility = View.INVISIBLE
 
             }
+            view.tvSMSMPeek.text = sms.msg
+            view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
+            if(sms.unReadSMSCount == 0 ){
+                view.tvUnreadSMSCount.visibility = View.GONE
+            }else{
+                view.tvUnreadSMSCount.visibility = View.VISIBLE
+            }
+
+
+
+            view.tvSMSTime.text = sms.relativeTime
+
+            setNameFirstChar(sms)
+            generateCircleView(context);
+
+
+            view.setOnLongClickListener(OnLongClickListener { v ->
+                longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
+                    sms.addressString!!
+                )
+                true
+            })
+            view.setOnClickListener{v->
+                onContactItemClickListener(v, sms.threadID, this.adapterPosition,
+                    sms.addressString!!
+                )
+
+            }
+        }
+
+        private fun generateCircleView(context: Context) {
+            circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
+        }
+
+        private fun setNameFirstChar(sms: SMS) {
+            val name: String = sms.address.toString()
+//             val firstLetter = name[0]
+            val firstLetter = sms.addressString!![0]
+            val firstLetterString = firstLetter.toString().toUpperCase()
+            circle.text = firstLetterString
         }
     }
     inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {

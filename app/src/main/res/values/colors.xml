@@ -23,6 +23,7 @@
     <color name="colorControlNormal">#CCCCCC</color>
 
     <color name="colorWhite">#FFFFFF</color>
+    <color name="spamText">#ED4133</color>
     <color name="statusBar">#FFFFFF</color>
     <color name="colorlightBlueviking">#79BEDB</color>
     <color name="colorbrightTurquoiseLightBlue">#10C8CD</color>
