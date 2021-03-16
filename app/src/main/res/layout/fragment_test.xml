@@ -100,7 +100,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/searchViewSms"
+                    android:id="@+id/searchViewSmsTest"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:backgroundTint="@color/colorBackground"

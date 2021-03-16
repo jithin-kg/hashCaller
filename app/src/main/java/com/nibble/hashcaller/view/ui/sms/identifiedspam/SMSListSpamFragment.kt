@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.sms.list
+package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -29,26 +29,31 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
+import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
+import com.nibble.hashcaller.view.ui.sms.list.SMSSpamListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.*
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
+import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import kotlinx.android.synthetic.main.fragment_message_container.*
-import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_messages_list.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
+import kotlinx.android.synthetic.main.fragment_spam_messages.*
+import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 
 
-class SMSListFragment : Fragment(), View.OnClickListener,
-    SMSListAdapter.LongPressHandler {
+class SMSListSpamFragment : Fragment(), View.OnClickListener{
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var viewMesages:View
-    private lateinit var smsListVIewModel:SMSViewModel
-    var smsRecyclerAdapter: SMSListAdapter? = null
+    private lateinit var smsListVIewModel:SMSSpamViewModel
+    var smsRecyclerAdapter: SMSSpamListAdapter? = null
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
     private lateinit var cntx:Context
@@ -78,7 +83,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        viewMesages = inflater.inflate(R.layout.fragment_messages_list, container, false)
+        viewMesages = inflater.inflate(R.layout.fragment_spam_messages, container, false)
 
         initVieModel()
         if(checkContactPermission())
@@ -90,7 +95,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
         observeSendersInfoFromServer()
         observePermissionLiveData()
-        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
+        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSSpamList)
         registerForContextMenu( this.recyclerV) // context menu registering
 
         return  viewMesages
@@ -112,12 +117,12 @@ class SMSListFragment : Fragment(), View.OnClickListener,
                             //we have reached the bottom
                             Log.d(TAG, "onScrolled:page: $page, totalsms count $totalSMSCount ")
 //                                if(page+12 <= totalSMSCount ){
-                            page+=12
+                            pageSpam+=12
                             smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
                                 if(!isSizeEqual){
-                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
-                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+//                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
+//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
                                 }
 //                                    }
                             }
@@ -145,13 +150,13 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun observePermissionLiveData() {
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
             if(value == true){
-                this.viewMesages.btnSmsPermission.visibility = View.GONE
-                this.viewMesages.tvSMSPermission.visibility = View.GONE
+                this.viewMesages.btnSmsReadPermission.visibility = View.GONE
+                this.viewMesages.tvSMSPermissionInfo.visibility = View.GONE
 
                 observeSMSList()
             }else{
-                this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
-                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
+                this.viewMesages.btnSmsReadPermission.visibility = View.VISIBLE
+                this.viewMesages.tvSMSPermissionInfo.visibility = View.VISIBLE
 
                 if (this.smsListVIewModel!! != null  ) {
                     if(this.smsListVIewModel?.SMS != null)
@@ -177,12 +182,12 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
 
     private fun initListeners() {
-        viewMesages.btnSmsPermission.setOnClickListener(this)
+        viewMesages.btnSmsReadPermission.setOnClickListener(this)
     }
 
     private fun initVieModel() {
-        smsListVIewModel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context)).get(
-            SMSViewModel::class.java)
+        smsListVIewModel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(context)).get(
+            SMSSpamViewModel::class.java)
     }
 
 
@@ -190,7 +195,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+            smsListVIewModel.updateWithNewSenderInfo(it)
 
         })
     }
@@ -198,53 +203,30 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun observeSMSList() {
         smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
             sms.let {
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-//                Log.d(TAG, "observeSMSList: data changed")
-//                smsRecyclerAdapter?.submitList(it)
-//                SMSListAdapter.searchQry = searchQry
-//                this.smsLIst = it as MutableList<SMS>?
-                Log.d(TAG, "observeSMSList: ")
+
+                Log.d(TAG, "observeSMSList: size is ${sms.size} ")
                 this.smsListVIewModel.updateLiveData(sms)
 
             }
+
         })
     }
-    private fun observeMutabeLiveData() {
-        this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
-            smsListVIewModel.smsLIst = it as MutableList<SMS>?
-            Log.d(TAG, "observeMutabeLiveData: ")
+    private fun     observeMutabeLiveData() {
+//        this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
+//            smsListVIewModel.smsLIst = it as MutableList<SMS>?
+//            Log.d(TAG, "observeMutabeLiveData: ")
 //            var newList:MutableList<SMS> = mutableListOf()
 
 //            it.forEach{sms-> newList.add(sms.deepCopy())}
-            smsRecyclerAdapter?.setList(it)
+//            smsRecyclerAdapter?.setList(it)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
-            this.viewMesages.shimmer_view_container.visibility = View.GONE
-            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
-            SMSListAdapter.searchQry = searchQry
-        })
-    }
-    private fun observeLive() {
-
-//        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
-//            sms.let {
-////                smsRecyclerAdapter?.setSMSList(it, searchQry)
-////                if(!it.isNullOrEmpty()){
-////                    Log.d(TAG, "observeLive: last item name ${it[0].name}")
-////                }
-//                this.smsListVIewModel.updateLiveData(sms)
-////                smsRecyclerAdapter?.setList(it)
-////
-////
-////                smsListVIewModel.getNameForUnknownSender(it)
-////
-////                this.viewMesages.pgBarsmslist.visibility = View.GONE
-////                SMSListAdapter.searchQry = searchQry
-////                this.smsLIst = it as MutableList<SMS>?
-//
-//            }
+//            this.viewMesages.shimmer_view_container.visibility = View.GONE
+//            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
+//            SMSListAdapter.searchQry = searchQry
 //        })
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         rcrViewSMSList.adapter  = null
@@ -257,15 +239,10 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         initRecyclerView()
         initListeners()
 
-        sView = viewMesages.rootView.findViewById(R.id.searchViewSms)
+//        sView = viewMesages.rootView.findViewById(R.id.searchViewSms)
 
         Log.d(TAG, "onCreateView: $sView")
 
-
-
-
-
-        observeLive()
         observeMutabeLiveData()
         addScrollListener()
 
@@ -282,11 +259,11 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
 
     private fun initRecyclerView() {
-        rcrViewSMSList?.apply {
+        rcrViewSMSSpamList?.apply {
             layoutManager = LinearLayoutManager(activity)
             layoutMngr = layoutManager as LinearLayoutManager
-            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
-                                                                               pno:String->onContactItemClicked(view,threadId, pos, pno)  }
+//            smsRecyclerAdapter = SMSSpamListAdapter(context, this@SMSListSpamFragment){ view:View, threadId:Long, pos:Int,
+//                                                                                    pno:String->onContactItemClicked(view,threadId, pos, pno)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter
 
@@ -337,7 +314,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.btnSmsPermission ->{
+            R.id.btnSmsReadPermission ->{
                 this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
             }
             else ->{
@@ -360,15 +337,15 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         return metrics.heightPixels
     }
 
-    override fun onLongPressed(v:View, pos:Int, id: Long, address:String) {
+//    override fun onLongPressed(v:View, pos:Int, id: Long, address:String) {
 
 
 //        (parentFragment as SMSContainerFragment?)!!.hideSearchView()
 //        (parentFragment as SMSContainerFragment?)!!.showToolbarButtons()
-        markingStarted = true
+//        markingStarted = true
 
-        markItem(v, id, address)
-    }
+//        markItem(v, id, address)
+//    }
 
     /**
      * mark for deletion or archival or block of sms list
@@ -376,13 +353,11 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun markItem(v: View, id: Long, address: String) {
 
         v.smsMarked.visibility = View.VISIBLE
-        MarkedItemsHandler.markedItems.add(id)
-        MarkedItemsHandler.markedViews.add(v)
-        markedContactAddress.add(address)
+//        MarkedItemsHandler.markedItemsSpam.add(id)
+//        MarkedItemsHandler.markedViewsSpam.add(v)
+//        markedContactAddressSpam.add(address)
 //        SMSContainerFragment.showHideBlockButton()
-//        SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
-//
-
+//        SMSContainerFragment.updateSelectedItemCountOfspam(MarkedItemsHandler.markedItemsSpam.size)
     }
 
     override fun onPause() {
