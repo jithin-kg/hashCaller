@@ -418,14 +418,15 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
 
         }else{
-            val intent = Intent(context, IndividualSMSActivity::class.java )
-            val bundle = Bundle()
-            bundle.putString(CONTACT_ADDRES, address)
-            bundle.putString(SMS_CHAT_ID, "")
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            intent.putExtras(bundle)
-            startActivity(intent)
+            smsListVIewModel.update(CONTACT_ADDRES)
+//            val intent = Intent(context, IndividualSMSActivity::class.java )
+//            val bundle = Bundle()
+//            bundle.putString(CONTACT_ADDRES, address)
+//            bundle.putString(SMS_CHAT_ID, "")
+//
+//            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//            intent.putExtras(bundle)
+//            startActivity(intent)
         }
 
 //            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
@@ -670,7 +671,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     /**
-     * callback of ConfirmDialogfragment
+     * callback of ConfirmDialogfragment for deleting sms
      */
     override fun onYesConfirmation() {
         Log.d(TAG, "deleteSms: called")
@@ -715,6 +716,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                     }
                 }
             } else {
+
                 val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
                 intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, requireContext().packageName)
                 startActivityForResult(intent, requestCode)

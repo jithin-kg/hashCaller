@@ -28,14 +28,15 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -156,11 +157,33 @@ class SMSLocalRepository(
     }
 
     fun update(addressString: String){
-        val cValues = ContentValues().apply {
-            put("read", 1)
+        try {
+            /**
+             * This commented out code marks all sms as read
+             */
+//            val values = ContentValues()
+//            values.put(Telephony.Sms.READ, 1)
+//            context.getContentResolver().update(
+//                Telephony.Sms.Inbox.CONTENT_URI,
+//                values, Telephony.Sms.READ + "=0", null
+//            )
 
+                    val cValues = ContentValues().apply {
+                    put("read", 1)
+
+                    }
+
+        context.contentResolver.update(URI,cValues, "address='43198714'",null)
+
+
+        }catch (e:Exception){
+            Log.d(TAG, "update: exception $e")
         }
-        context.contentResolver.update(URI,cValues, "address='$addressString'",null)
+
+
+//
+//        Log.d(TAG, "update: sms read count")
+
 
     }
     @SuppressLint("LongLogTag")
@@ -1401,6 +1424,8 @@ class SMSLocalRepository(
             val selectionArgs = arrayOf(id.toString())
             try {
                 numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
+                Log.d(TAG, "deleteSmsThread: number  of  rows deleted $numRowsDeleted")
+
             } catch (e: Exception) {
                 Log.d(SMScontainerRepository.TAG, "deleteSmsThread: exception $e")
             }

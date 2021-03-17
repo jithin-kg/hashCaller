@@ -349,11 +349,12 @@ class SMSListAdapter(private val context: Context,
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 
             val res =  oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
-            Log.d(TAG, "areContentsTheSame: ${oldItem.msgString} ${newItem.msgString} & res:$res")
+            Log.d(TAG, "areContentsTheSame: ${oldItem.unReadSMSCount} ${newItem.unReadSMSCount} & res:$res")
 
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
 //            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
-            return   oldItem.spamCount == newItem.spamCount && oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
+            return  oldItem.unReadSMSCount == newItem.unReadSMSCount &&
+                    oldItem.spamCount == newItem.spamCount && oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
             //TODO compare both messages and if the addres is same and message
         }
 

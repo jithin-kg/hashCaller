@@ -177,7 +177,7 @@ class SMSViewModel(
                      val lst = r.await()
 
 
-             smsLiveData.value = sortByTime()
+             smsLiveData.value = sortedSMSByTime()
 
 
 
@@ -187,7 +187,7 @@ class SMSViewModel(
 
     }
 
-    private fun sortByTime(): MutableList<SMS> {
+    private fun sortedSMSByTime(): MutableList<SMS> {
         val lstofSMS =  mapofAddressAndSMS.values
         val sorted = lstofSMS.sortedByDescending { it.time }
         val lt:MutableList<SMS> = mutableListOf()
@@ -206,14 +206,42 @@ class SMSViewModel(
         repository!!.deleteAllSMmsendersINo()
     }
 
+    /**
+     * function called when there is a change in sms from content providder
+     */
     fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
         //remove duplicates
         var lst:MutableList<SMS> = mutableListOf()
 
 
-        smsLiveData.value = sortByTime()
+        smsLiveData.value = sortedSMSByTime()
+        var lstt:MutableList<SMS>?  = mutableListOf()
+        viewModelScope.launch {
+           lstt = async { removeDeletedSMS() }.await()
+
+        }.join()
+        smsLiveData.value = lstt
 
 
+
+    }
+
+    /**
+     * function to make sure that deleted sms in contentprovider are delted from mapofAddressAndSMS
+     */
+    private suspend fun removeDeletedSMS(): MutableList<SMS>? {
+        var smsList:MutableList<SMS> = mutableListOf()
+       viewModelScope.launch {
+            smsList = async { repository!!.getSMSForViewModel(null, false, true) }.await()
+       }.join()
+        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
+        for(sms in smsList){
+            //create new hashmap of updated list
+            newSMSHashmap.put(sms.addressString!!, sms)
+        }
+        mapofAddressAndSMS = newSMSHashmap
+
+        return sortedSMSByTime()
     }
 
     fun getNextSmsPage()  = viewModelScope.launch{
@@ -230,7 +258,7 @@ class SMSViewModel(
         Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
         isSizeEqual = prevSize == sizeAfterAddingPage
 
-        smsLiveData.value = sortByTime()
+        smsLiveData.value = sortedSMSByTime()
     }
 
     fun blockThisAddress(contactAddress: String,
