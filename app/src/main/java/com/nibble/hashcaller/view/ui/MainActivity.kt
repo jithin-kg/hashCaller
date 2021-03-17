@@ -9,13 +9,16 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -49,7 +52,6 @@ import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
-import com.nibble.hashcaller.view.ui.contacts.utils.setStatusBarColor
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
@@ -103,9 +105,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
 
         hideKeyboard(this)
-
+//        setStatusBarColor(this)
         setContentView(R.layout.activity_main)
 
+        Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
+        val c = ContextCompat.getColor(this, R.color.textColor);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            val decor = window.decorView
+//            if (true) {
+//                decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+//            } else {
+//                // We want to change tint color to white again.
+//                // You can also record the flags in advance so that you can turn UI back completely if
+//                // you have set other flags before, such as translucent or full screen.
+//                decor.systemUiVisibility = 0
+//            }
+//        }
 
         initViewModel()
         setupNavigationDrawer()
@@ -793,6 +809,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         init {
             Log.d("ContactObserver", "ContactObserver constructor ")
         }
+    }
+    fun isDarkThemeOn(): Boolean {
+        return resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
     }
 
     companion object {

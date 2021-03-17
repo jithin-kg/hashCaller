@@ -118,7 +118,7 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
 // finally change the color
-    window.setStatusBarColor(ContextCompat.getColor(activity,R.color.statusBar))
+    window.setStatusBarColor(ContextCompat.getColor(activity,R.color.textColor))
 }
 
 /**
