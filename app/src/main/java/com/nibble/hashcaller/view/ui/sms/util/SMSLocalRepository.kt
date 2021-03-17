@@ -30,6 +30,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
+import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -1416,6 +1417,7 @@ class SMSLocalRepository(
 
     @SuppressLint("LongLogTag")
     suspend fun deleteSmsThread(): Int {
+        smsDeletingStarted = true
         var numRowsDeleted = 0
         for(id in MarkedItemsHandler.markedItems) {
             Log.d(TAG, "deleteSmsThread: threadid $id")

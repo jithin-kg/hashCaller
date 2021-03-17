@@ -10,6 +10,7 @@ import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
+import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -207,20 +208,22 @@ class SMSViewModel(
     }
 
     /**
-     * function called when there is a change in sms from content providder
+     * function called when there is a change in sms from content provider
      */
     fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
         //remove duplicates
         var lst:MutableList<SMS> = mutableListOf()
 
 
-        smsLiveData.value = sortedSMSByTime()
-        var lstt:MutableList<SMS>?  = mutableListOf()
-        viewModelScope.launch {
-           lstt = async { removeDeletedSMS() }.await()
+//            smsLiveData.value = sortedSMSByTime()
+            var lstt:MutableList<SMS>?  = mutableListOf()
+            viewModelScope.launch {
+                lstt = async { removeDeletedSMS() }.await()
 
-        }.join()
-        smsLiveData.value = lstt
+            }.join()
+            smsLiveData.value = lstt
+
+
 
 
 

@@ -37,6 +37,7 @@ const val INTANT_SMS_BRECIEVER_TIME = "timeofsmssent"
 const val SMS_CHAT_ID = "chatId" //intent key for single chat text sms id
 const val QUERY_STRING = "queryString" //for sending intent os searchActivity, sms
 
+var smsDeletingStarted = false
 var LAST_SMS_SENT = false
 
 var markingStarted = false // to use in recyclerview long press to mark item for deleting, blocking etc..
