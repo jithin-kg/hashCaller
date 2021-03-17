@@ -418,7 +418,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
 
         }else{
-            smsListVIewModel.update(CONTACT_ADDRES)
+            smsListVIewModel.update(address)
 //            val intent = Intent(context, IndividualSMSActivity::class.java )
 //            val bundle = Bundle()
 //            bundle.putString(CONTACT_ADDRES, address)

@@ -84,7 +84,7 @@ class SMSViewModel(
     }
 
     fun update(address: String)  = viewModelScope.launch{
-     SMS?.update(address)
+     repository!!.markSMSAsRead(address)
     }
 
     fun changelist(smsLIst: List<SMS>, context:Context)  = viewModelScope.launch{

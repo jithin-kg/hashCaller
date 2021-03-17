@@ -115,6 +115,7 @@ class SMSLocalRepository(
 
     companion object{
         private val URI: Uri = SMSContract.INBOX_SMS_URI
+
         private const val TAG = "__SMSLocalRepository"
 
     }
@@ -157,24 +158,37 @@ class SMSLocalRepository(
         return fetch(searchQuery, false)
     }
 
-    fun update(addressString: String){
+    fun markSMSAsRead(addressString: String){
         try {
             /**
              * This commented out code marks all sms as read
              */
 //            val values = ContentValues()
 //            values.put(Telephony.Sms.READ, 1)
-//            context.getContentResolver().update(
+//            val selectionArgs:Array<String> = arrayOf("address='$addressString'")
+//            context.contentResolver.update(
 //                Telephony.Sms.Inbox.CONTENT_URI,
-//                values, Telephony.Sms.READ + "=0", null
+//                values, Telephony.Sms.READ + "=0 ",
+//                null
 //            )
+            Log.d(TAG, "markSMSAsRead: address is $addressString")
+            val values = ContentValues()
+            values.put(Telephony.Sms.READ, 1)
+            val selectionArgs:Array<String> = arrayOf("address='$addressString'")
+            context.contentResolver.update(
+                Telephony.Sms.Inbox.CONTENT_URI,
+                values, Telephony.Sms.ADDRESS + "=$addressString",
+                null
+            )
+
+//            Telephony.Sms.READ
 
                     val cValues = ContentValues().apply {
                     put("read", 1)
 
                     }
 
-        context.contentResolver.update(URI,cValues, "address='43198714'",null)
+//        context.contentResolver.update(URI,cValues, "address='$addressString'",null)
 
 
         }catch (e:Exception){

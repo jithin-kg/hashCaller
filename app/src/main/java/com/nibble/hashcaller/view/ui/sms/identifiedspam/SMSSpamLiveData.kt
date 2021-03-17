@@ -8,7 +8,6 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
-import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
@@ -142,7 +141,7 @@ class SMSSpamLiveData(private val context: Context):
                 smssendersInfoDAO,
                 mutedSendersDAO
             )
-        repository.update(address)
+        repository.markSMSAsRead(address)
     }
 
     override suspend fun getContentProviderValue(searchText:String?) = getMessages(context)

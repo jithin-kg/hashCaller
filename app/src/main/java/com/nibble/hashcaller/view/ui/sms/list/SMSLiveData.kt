@@ -85,7 +85,7 @@ class SMSLiveData(private val context: Context):
                 smssendersInfoDAO,
                 mutedSendersDAO
             )
-        repository.update(address)
+        repository.markSMSAsRead(address)
     }
 
     override suspend fun getContentProviderValue(searchText:String?) = getMessages(context)
