@@ -167,7 +167,7 @@ class SMSLocalRepository(
     private suspend fun fetch(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
         var data = ArrayList<SMS>()
 
-        val timeTook = measureTimeMillis {
+        GlobalScope.launch {
             val cursor = createCursor(searchQuery)
             try {
 
@@ -227,17 +227,18 @@ class SMSLocalRepository(
                             } else {
                                 objSMS.folderName = "sent"
                             }
-                            getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
-                                if(this!=null){
-                                    objSMS.name = this?.name
-                                    objSMS.spamCount  = this.spamReportCount
-                                    objSMS.spammerType = this.spammerType
+
+                          val r =  async {  getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS) }.await()
+                                if(r!=null){
+                                    objSMS.name = r?.name
+                                    objSMS.spamCount  = r.spamReportCount
+                                    objSMS.spammerType = r.spammerType
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
+                               setSMSHashMap(objSMS)
+
 
                                 listOfMessages.add(objSMS)
-
-                            }
 
                         } catch (e: Exception) {
                             Log.d(TAG, "getMessages: $e")
@@ -266,12 +267,27 @@ class SMSLocalRepository(
             }finally {
                 cursor?.close()
             }
+        }.join()
 
 
-        }
+
+
+
 
 
         return data
+    }
+
+    private fun setSMSHashMap(objSMS: SMS) {
+        val mr = SMSViewModel.mapofAddressAndSMS.get(objSMS.addressString!!)
+        if(mr==null){
+            SMSViewModel.mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+        }else{
+            if(mr.time!! < objSMS.time!!){
+                //new message is objsms.time
+                SMSViewModel.mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+            }
+        }
     }
 
     private fun setSpannableStringBuilder(
@@ -490,17 +506,13 @@ class SMSLocalRepository(
         num: String,
         sms: SMS
     ): SMSSendersInfoFromServer?  {
-        val frmtedNum = replaceSpecialChars(num)
-        //        if(res!=null){
-//            sms.name = res?.name
-//            sms.spamCount  = res.spamReportCount
-//            sms.spammerType = res.spammerType
-//            sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-//
-//        }
-        smssendersInfoDAO!!.find(frmtedNum).apply {
-            return this
-        }
+        var r: SMSSendersInfoFromServer? = null
+//        val frmtedNum = replaceSpecialChars(num)
+        GlobalScope.launch {
+            r = async {  smssendersInfoDAO!!.find(num) }.await()
+        }.join()
+        return r
+
     }
 
     private fun setContactName(sms: SMS) {
@@ -1213,7 +1225,7 @@ class SMSLocalRepository(
                                    isFullSmsNeeded :Boolean = false): MutableList<SMS> {
         var data = ArrayList<SMS>()
         Log.d(TAG, "getSMSForSpammList: ")
-        val timeTook = measureTimeMillis {
+        GlobalScope.launch {
             try {
 
 
@@ -1303,41 +1315,16 @@ class SMSLocalRepository(
                             } else {
                                 objSMS.folderName = "sent"
                             }
-                            getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
-                                if(this!=null){
-                                    objSMS.name = this?.name
-                                    objSMS.spamCount  = this.spamReportCount
-                                    objSMS.spammerType = this.spammerType
+                          val r = async { getDetailsFromDB(objSMS.addressString!!, objSMS)  }.await()
+                                if(r!=null){
+                                    objSMS.name = r?.name
+                                    objSMS.spamCount  = r.spamReportCount
+                                    objSMS.spammerType = r.spammerType
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-                                }
-
-//                                if (requestinfromSpamlistFragment!!) {
-//                                    //if we are requesting from fragment SMSIdentifiedAsSpamFragment
-//                                    //                                if (smsListHashMap.containsKey(objSMS.addressString)) {
-////                                    if (!deleteViewAdded) {
-//////                                        val delViewObj = SMS()
-//////                                        delViewObj.deleteViewPresent = true
-//////                                        listOfMessages.add(delViewObj)
-//////                                        deleteViewAdded = true
-////                                    }
-//                                    if(objSMS.spamCount>0)
-//                                        listOfMessages.add(objSMS)
-//                                    //                                }
-//                                } else {
-//                                    //we are requesting from SMSListFragment
-//
-//
-//                                    if(objSMS.spamCount<1)
-//                                        listOfMessages.add(objSMS)
-//
-//                                }
-                                listOfMessages.add(objSMS)
 
                             }
-
-
-                            //                this.smsListHashMap.put(objSMS.addressString!!,count.toString())
-                            count = listOfMessages.size - 1
+                            setSMSHashMap(objSMS)
+                            listOfMessages.add(objSMS)
                         } catch (e: Exception) {
                             Log.d(TAG, "getSMSForSpammList: $e")
                         }
@@ -1362,11 +1349,13 @@ class SMSLocalRepository(
 
             } catch (e: java.lang.Exception) {
                 Log.d(TAG, "getSMSForSpammList: exception $e")
+
             }
-
-
-        }
+        }.join()
         Log.d(TAG, "getSMSForSpammList: size is  ${data.size}")
+
+
+
 
         return data
     }

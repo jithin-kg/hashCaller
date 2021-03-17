@@ -7,7 +7,6 @@ import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
@@ -17,6 +16,7 @@ import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.LinkedHashSet
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -25,8 +25,10 @@ class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
+
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(0)
 
+    var mapofAddressAndPos: HashMap<String, Long> = hashMapOf() // for findin duplicate sms in list
 //    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
@@ -41,6 +43,8 @@ class SMSViewModel(
     {
         private const val TAG ="__SMSViewModel"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
+        var mapofAddressAndSMS: HashMap<String, SMS> = hashMapOf() // for findin duplicate sms in list
+
     }
 
 
@@ -171,31 +175,51 @@ class SMSViewModel(
                     }
 
                      val lst = r.await()
-                     smsLiveData.value = lst
-//                 }
 
 
-//            smsLive.value = lst
+             smsLiveData.value = sortByTime()
+
+
 
          }
-//            smsLiveData.value = smsLiveData.value
 
 
+
+    }
+
+    private fun sortByTime(): MutableList<SMS> {
+        val lstofSMS =  mapofAddressAndSMS.values
+        val sorted = lstofSMS.sortedByDescending { it.time }
+        val lt:MutableList<SMS> = mutableListOf()
+        lt.addAll(sorted)
+        return lt
+    }
+
+    private fun sortAndSet(listOfMessages: MutableList<SMS>): ArrayList<SMS> {
+        val s: Set<SMS> = LinkedHashSet(listOfMessages)
+        val data = ArrayList(s)
+
+        return data
     }
 
     fun deleteAllSmsindb() = viewModelScope.launch{
         repository!!.deleteAllSMmsendersINo()
     }
 
-    fun updateLiveData(sms: MutableList<SMS>?)  {
-        this.smsLiveData.value = sms
-        getNameForUnknownSender(sms!!)
+    fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
+        //remove duplicates
+        var lst:MutableList<SMS> = mutableListOf()
+
+
+        smsLiveData.value = sortByTime()
+
 
     }
 
     fun getNextSmsPage()  = viewModelScope.launch{
         val res = async { repository!!.fetchSMS(null) }
         val newpage = res.await()
+
         var prevSize = 0
         if(smsLiveData.value !=null){
             prevSize = smsLiveData.value!!.size
@@ -205,7 +229,8 @@ class SMSViewModel(
         var sizeAfterAddingPage = smsLiveData.value!!.size
         Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
         isSizeEqual = prevSize == sizeAfterAddingPage
-        smsLiveData.value = smsLiveData.value
+
+        smsLiveData.value = sortByTime()
     }
 
     fun blockThisAddress(contactAddress: String,
@@ -253,9 +278,3 @@ class SMSViewModel(
 
     }
 }
-//class ContactsViewModel(application: Application): AndroidViewModel(application) {
-//
-//    val contacts =
-//        ContactLiveData(application.applicationContext)
-//
-//}

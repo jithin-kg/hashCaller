@@ -17,7 +17,15 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
+import kotlinx.android.synthetic.main.sms_list_item_spam.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
+import kotlinx.android.synthetic.main.sms_list_view.view.layoutExpandable
+import kotlinx.android.synthetic.main.sms_list_view.view.pgBarSmsListItem
+import kotlinx.android.synthetic.main.sms_list_view.view.smsMarked
+import kotlinx.android.synthetic.main.sms_list_view.view.textVSMSContactName
+import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSMPeek
+import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSTime
+import kotlinx.android.synthetic.main.sms_list_view.view.tvUnreadSMSCount
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
 import java.util.*
 
@@ -107,7 +115,8 @@ class SMSListAdapter(private val context: Context,
     inner class SpamViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val btnEmptySms = view.btnEmptySpamSMS
         private val name = view.textVSMSContactName
-        private val circle = view.textViewSMScontactCrclr;
+        private val circle = view.falseTextSMScontactCrclr;
+        private val circleImg = view.imgViewSMScontactCrclr;
         fun bind(
             sms: SMS, context: Context,
             onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String) -> Unit,
@@ -172,7 +181,7 @@ class SMSListAdapter(private val context: Context,
 //             val firstLetter = name[0]
             val firstLetter = sms.addressString!![0]
             val firstLetterString = firstLetter.toString().toUpperCase()
-            circle.text = firstLetterString
+            circleImg.setImageResource(R.drawable.ic_baseline_block_red)
         }
     }
     inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
@@ -331,10 +340,11 @@ class SMSListAdapter(private val context: Context,
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 //            else
 //                Log.d(TAG, "areItemsTheSame: no")
-            return  oldItem.threadID == newItem.threadID
+            return  oldItem.addressString == newItem.addressString
 
 
         }
+
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 
@@ -343,7 +353,7 @@ class SMSListAdapter(private val context: Context,
 
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
 //            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
-            return   oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
+            return   oldItem.spamCount == newItem.spamCount && oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
             //TODO compare both messages and if the addres is same and message
         }
 

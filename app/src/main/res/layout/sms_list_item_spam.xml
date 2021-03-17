@@ -20,25 +20,49 @@
         android:toDegrees="180"
         android:visibility="invisible"
         android:gravity="center_vertical|center_horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewSMScontactCrclr"
-        app:layout_constraintEnd_toEndOf="@+id/textViewSMScontactCrclr"
-        app:layout_constraintStart_toStartOf="@+id/textViewSMScontactCrclr"
-        app:layout_constraintTop_toTopOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintBottom_toBottomOf="@+id/lyout"
+        app:layout_constraintEnd_toEndOf="@+id/lyout"
+        app:layout_constraintStart_toStartOf="@+id/lyout"
+        app:layout_constraintTop_toTopOf="@+id/lyout"
         />
 
-
-    <TextView
-        android:id="@+id/textViewSMScontactCrclr"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lyout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:gravity="center_vertical|center_horizontal"
-        android:textColor="@color/spamText"
-        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.4"
+        >
+
+        <TextView
+            android:id="@+id/falseTextSMScontactCrclr"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/spamText"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgViewSMScontactCrclr"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/spamText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/smsMarked"
@@ -62,11 +86,11 @@
         android:maxLines="1"
         android:padding="2dp"
         android:text=""
-        android:textColor="@color/spamText"
+        android:textColor="@color/textColor"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toTopOf="@+id/tvSMSMPeek"
         app:layout_constraintEnd_toStartOf="@+id/tvUnreadSMSCount"
-        app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintStart_toEndOf="@+id/lyout"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -74,7 +98,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/spamText"
-
         app:layout_constraintEnd_toStartOf="@+id/tvSMSMPeek"
         app:layout_constraintStart_toStartOf="@+id/textVSMSContactName"
         app:layout_constraintTop_toBottomOf="@+id/textVSMSContactName" />
@@ -88,7 +111,6 @@
         android:maxLines="2"
         android:text=""
         android:textColor="@color/spamText"
-
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -103,7 +125,6 @@
         android:layout_marginEnd="24dp"
         android:text="time"
         android:textColor="@color/spamText"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tvUnreadSMSCount"
