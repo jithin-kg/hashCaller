@@ -4,11 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
+import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -178,6 +183,10 @@ class SMSViewModel(
 
     }
 
+    fun deleteAllSmsindb() = viewModelScope.launch{
+        repository!!.deleteAllSMmsendersINo()
+    }
+
     fun updateLiveData(sms: MutableList<SMS>?)  {
         this.smsLiveData.value = sms
         getNameForUnknownSender(sms!!)
@@ -205,12 +214,13 @@ class SMSViewModel(
 
         async {
 
-            repository?.save(contactAddress, 1, "", "" )
+            repository?.save(replaceSpecialChars(contactAddress), 1, "", "" )
         }
 
         async {
             repository?.report(
-                ReportedUserDTo(contactAddress, " ",
+                ReportedUserDTo(
+                    replaceSpecialChars(contactAddress), " ",
                     spammerType.toString(), spammerCategory.toString()
                 )
             )
@@ -229,7 +239,19 @@ class SMSViewModel(
         numRowsDeletedLiveData.value = numRowsDeleted
     }
 
+    /**
+     * called when there is a change in sms data
+     * to get information abount a sender
+     */
+    fun getInformationForTheseNumbers(
+        smslist: List<SMS>?,
+        packageName: String
+    ) = viewModelScope.launch {
 
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
+        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+
+    }
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {
 //

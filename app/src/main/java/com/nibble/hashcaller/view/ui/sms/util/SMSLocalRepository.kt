@@ -210,6 +210,7 @@ class SMSLocalRepository(
                             setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                             // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
+                            objSMS.addressString = replaceSpecialChars(num)
 
                             objSMS.readState =
                                 cursor.getInt(cursor.getColumnIndex("read"))
@@ -1285,6 +1286,7 @@ class SMSLocalRepository(
                             setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                             // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
+                            objSMS.addressString = replaceSpecialChars(num)
 
                             objSMS.readState =
                                 cursor.getInt(cursor.getColumnIndex("read"))
@@ -1436,6 +1438,10 @@ class SMSLocalRepository(
             addressList.add(mutedSender)
         }
         mutedSendersDAO!!.insert(addressList)
+    }
+
+    suspend fun deleteAllSMmsendersINo() {
+        smssendersInfoDAO!!.deleteAll()
     }
 
 }

@@ -210,6 +210,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         viewMesages.searchViewSms.setOnClickListener(this)
         viewMesages.imgBtnTbrMuteSender.setOnClickListener(this)
         viewMesages.imgBtnTbrBlock.setOnClickListener(this)
+        viewMesages.imgBtnTbrDelete.setOnClickListener(this)
+        this.fabSendNewSMS.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -299,6 +301,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                this.smsLIst = it as MutableList<SMS>?
                 Log.d(TAG, "observeSMSList: ")
                 this.smsListVIewModel.updateLiveData(sms)
+                this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
+
 
             }
         })
@@ -523,6 +527,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 Log.d(TAG, "onClick: ")
                 addToBlockList(MarkedItemsHandler.markedContactAddressForBlocking!!)
             }
+            R.id.fabSendNewSMS ->{
+                this.smsListVIewModel.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
+//                val i = Intent(context, ContactSelectorActivity::class.java )
+//                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
+//                startActivity(i)
+            }
+
             else ->{
                 smsListVIewModel.getUnrealMsgCount()
 

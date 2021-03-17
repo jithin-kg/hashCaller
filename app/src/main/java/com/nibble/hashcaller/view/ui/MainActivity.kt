@@ -52,6 +52,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.setStatusBarColor
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -531,13 +532,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
         }else if(messagesFragment.isVisible){
-           if(!messagesFragment.isSearchViewVisible()){
-               messagesFragment.showSearchView()
-           }else{
-               markingStarted = false
-               super.onBackPressed()
-
-           }
+            if(markedItems.size > 0){
+                unMarkItems()
+                markingStarted = false
+            }else{
+                super.onBackPressed()
+            }
+//           if(!messagesFragment.isSearchViewVisible()){
+//               messagesFragment.showSearchView()
+//           }else{
+//               markingStarted = false
+//               super.onBackPressed()
+//
+//           }
 
         }
 
