@@ -25,12 +25,10 @@ import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
-import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
-import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
+import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
-import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.mapofAddressAndSMS
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -211,8 +209,10 @@ class SMSLocalRepository(
     @SuppressLint("LongLogTag")
     private suspend fun fetch(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
         var data = ArrayList<SMS>()
-
-        GlobalScope.launch {
+        Log.d(TAG, "fetch: called")
+        var prevAddress = ""
+        var prevTime = 0L
+//       val r1= GlobalScope.async {
             val cursor = createCursor(searchQuery)
             try {
 
@@ -225,7 +225,7 @@ class SMSLocalRepository(
 
                 //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
 
-                Log.d(TAG, "fetch: page is   $page")
+//                Log.d(TAG, "fetch: page is   $page")
 
                 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
@@ -239,7 +239,7 @@ class SMSLocalRepository(
                                 cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                             objSMS.threadID =
                                 cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                             var num =
                                 cursor.getString(cursor.getColumnIndexOrThrow("address"))
                             num = num.replace("+", "")
@@ -261,7 +261,12 @@ class SMSLocalRepository(
                                 cursor.getInt(cursor.getColumnIndex("read"))
                             val dateMilli =
                                 cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-
+                            if(prevAddress != objSMS.addressString){
+                                prevAddress = objSMS.addressString!!
+                            }else{
+                                //equal
+                                continue
+                            }
                             objSMS.time = dateMilli
                             setRelativeTime(objSMS, dateMilli)
 
@@ -269,24 +274,40 @@ class SMSLocalRepository(
                                     .contains("1")
                             ) {
                                 objSMS.folderName = "inbox"
+                                Log.d(TAG, "fetch: inbox")
                             } else {
                                 objSMS.folderName = "sent"
+                                Log.d(TAG, "fetch: sent")
+
                             }
 
-                          val r =  async {  getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS) }.await()
-                                if(r!=null){
-                                    objSMS.name = r?.name
-                                    objSMS.spamCount  = r.spamReportCount
-                                    objSMS.spammerType = r.spammerType
+//                          val r =  async {  getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS) }.await()
+//                                if(r!=null){
+//                                    objSMS.name = r?.name
+//                                    objSMS.spamCount  = r.spamReportCount
+//                                    objSMS.spammerType = r.spammerType
+//                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+//                                }
+
+                            getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS).apply {
+                                if(this!=null){
+                                    objSMS.name = this?.name
+                                    objSMS.spamCount  = this.spamReportCount
+                                    objSMS.spammerType = this.spammerType
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
-                               setSMSHashMap(objSMS)
+                            }
+                            Log.d(TAG, "fetch: message is   ${objSMS.msgString}")
+                            if(!objSMS.msgString.isNullOrEmpty()){
+                                setSMSHashMap(objSMS)
+
+                            }
 
 
                                 listOfMessages.add(objSMS)
 
                         } catch (e: Exception) {
-                            Log.d(TAG, "getMessages: $e")
+                            Log.d(TAG, "getMessages: exception $e")
                         }
 
                     } while (cursor.moveToNext())
@@ -296,41 +317,41 @@ class SMSLocalRepository(
 
                 }
 
-                //        data = sortAndSet(listOfMessages)
                 data.addAll(listOfMessages)
-                //        setAdditionalData(data)
-                GlobalScope.launch {
-                    val r1 =  async {  setSMSReadStatus(data) }
-                    //        setSpamDetails(data)
-                    val r2 = async {  setNameIfExistInContactContentProvider(data) }
-                    r1.await()
-                    r2.await()
-                }.join()
+                setSMSReadStatus(data)
+                setNameIfExistInContactContentProvider(data)
+
 
             } catch (e: java.lang.Exception) {
                 Log.d(TAG, "fetch: exception $e")
             }finally {
                 cursor?.close()
             }
-        }.join()
-
-
-
-
-
-
+//        }
+//        r1.await()
 
         return data
     }
 
+    @SuppressLint("LongLogTag")
     private fun setSMSHashMap(objSMS: SMS) {
-        val mr = SMSViewModel.mapofAddressAndSMS.get(objSMS.addressString!!)
+        MESSAGE_STRING = objSMS.msgString!!
+        Log.d(TAG, "setSMSHashMap: ")
+
+        val mr = mapofAddressAndSMS[objSMS.addressString!!]
         if(mr==null){
-            SMSViewModel.mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+            mapofAddressAndSMS[objSMS.addressString!!] = objSMS
+            //mexici 1616080210162
+            //hmm    1616048239368
         }else{
-            if(mr.time!! < objSMS.time!!){
+            val timFromMap = mr.time!!.toLong()
+            val timeFromCProvider = objSMS.time!!.toLong()
+            if( timFromMap < timeFromCProvider){
                 //new message is objsms.time
-                SMSViewModel.mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+                Log.d(TAG+"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
+                mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+            }else{
+                Log.d(TAG, "setSMSHashMap: greater")
             }
         }
     }
@@ -635,8 +656,9 @@ class SMSLocalRepository(
     /**
      * Function to check whether the current message is opened/readed by the user
      */
-    private suspend fun setSMSReadStatus(
+    private fun setSMSReadStatus(
         smsList: ArrayList<SMS> ) {
+
 
         Log.d("__time", "setSMSReadStatus: called")
 
@@ -649,7 +671,7 @@ class SMSLocalRepository(
 
     }
 
-    private suspend fun setCount(sms: SMS) {
+    private  fun setCount(sms: SMS) {
         val addressString = sms.addressString
         var cnt:Int? = 0
 
@@ -1368,7 +1390,7 @@ class SMSLocalRepository(
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
 
                             }
-                            setSMSHashMap(objSMS)
+//                            setSMSHashMap(objSMS)
                             listOfMessages.add(objSMS)
                         } catch (e: Exception) {
                             Log.d(TAG, "getSMSForSpammList: $e")

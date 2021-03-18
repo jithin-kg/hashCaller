@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.contacts.utils.MESSAGE_STRING
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -207,6 +208,7 @@ class SMSListAdapter(private val context: Context,
             }else{
                 view.pgBarSmsListItem.visibility = View.INVISIBLE
             }
+
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
@@ -216,7 +218,10 @@ class SMSListAdapter(private val context: Context,
                 view.smsMarked.visibility = View.INVISIBLE
 
             }
-            view.tvSMSMPeek.text = sms.msg
+//            view.tvSMSMPeek.text = MESSAGE_STRING
+            view.tvSMSMPeek.text = sms.msgString
+            Log.d(TAG, "bind: messageString is ${sms.msgString}")
+
             view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
             if(sms.unReadSMSCount == 0 ){
                 view.tvUnreadSMSCount.visibility = View.GONE

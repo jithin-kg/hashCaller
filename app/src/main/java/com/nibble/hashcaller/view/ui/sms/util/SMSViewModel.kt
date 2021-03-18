@@ -11,6 +11,7 @@ import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.mapofAddressAndSMS
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -175,7 +176,7 @@ class SMSViewModel(
                      val lst = r.await()
 
 
-             smsLiveData.value = sortedSMSByTime()
+//             smsLiveData.value = sortedSMSByTime()
 
 
 
@@ -185,13 +186,13 @@ class SMSViewModel(
 
     }
 
-    private fun sortedSMSByTime(): MutableList<SMS> {
-        val lstofSMS =  mapofAddressAndSMS.values
-        val sorted = lstofSMS.sortedByDescending { it.time }
-        val lt:MutableList<SMS> = mutableListOf()
-        lt.addAll(sorted)
-        return lt
-    }
+//    private fun sortedSMSByTime(): MutableList<SMS> {
+//        val lstofSMS =  mapofAddressAndSMS.values
+//        val sorted = lstofSMS.sortedByDescending { it.time }
+//        val lt:MutableList<SMS> = mutableListOf()
+//        lt.addAll(sorted)
+//        return lt
+//    }
 
     private fun sortAndSet(listOfMessages: MutableList<SMS>): ArrayList<SMS> {
         val s: Set<SMS> = LinkedHashSet(listOfMessages)
@@ -214,11 +215,15 @@ class SMSViewModel(
 
 //            smsLiveData.value = sortedSMSByTime()
             var lstt:MutableList<SMS>?  = mutableListOf()
-            viewModelScope.launch {
-                lstt = async { removeDeletedSMS() }.await()
-
-            }.join()
-            smsLiveData.value = lstt
+//            viewModelScope.launch {
+////                lstt = async { removeDeletedSMS() }.await()
+//
+//            }.join()
+//            smsLiveData.value = lstt
+        val l:MutableList<SMS> = mutableListOf()
+        l.addAll(mapofAddressAndSMS.values)
+        Log.d(TAG, "updateLiveData: size after adding map values ${l.size}")
+            smsLiveData.value = l
 
 
 
@@ -229,20 +234,20 @@ class SMSViewModel(
     /**
      * function to make sure that deleted sms in contentprovider are delted from mapofAddressAndSMS
      */
-    private suspend fun removeDeletedSMS(): MutableList<SMS>? {
-        var smsList:MutableList<SMS> = mutableListOf()
-       viewModelScope.launch {
-            smsList = async { repository!!.getSMSForViewModel(null, false, true) }.await()
-       }.join()
-        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
-        for(sms in smsList){
-            //create new hashmap of updated list
-            newSMSHashmap.put(sms.addressString!!, sms)
-        }
-        mapofAddressAndSMS = newSMSHashmap
-
-        return sortedSMSByTime()
-    }
+//    private suspend fun removeDeletedSMS(): MutableList<SMS>? {
+//        var smsList:MutableList<SMS> = mutableListOf()
+//       viewModelScope.launch {
+//            smsList = async { repository!!.getSMSForViewModel(null, false, true) }.await()
+//       }.join()
+//        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
+//        for(sms in smsList){
+//            //create new hashmap of updated list
+//            newSMSHashmap.put(sms.addressString!!, sms)
+//        }
+//        mapofAddressAndSMS = newSMSHashmap
+//
+//        return sortedSMSByTime()
+//    }
 
     fun getNextSmsPage()  = viewModelScope.launch{
         val res = async { repository!!.fetchSMS(null) }
@@ -258,7 +263,7 @@ class SMSViewModel(
         Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
         isSizeEqual = prevSize == sizeAfterAddingPage
 
-        smsLiveData.value = sortedSMSByTime()
+//        smsLiveData.value = sortedSMSByTime()
     }
 
     fun blockThisAddress(contactAddress: String,
@@ -311,7 +316,6 @@ class SMSViewModel(
         //todo save color of round in this map, so that color does not change for miner change of sms
         private const val TAG ="__SMSViewModel"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
-        var mapofAddressAndSMS: HashMap<String, SMS> = hashMapOf() // for findin duplicate sms in list
 
     }
 }

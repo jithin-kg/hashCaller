@@ -146,7 +146,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                             Log.d(TAG, "onScrolled:page: ${pageOb.page}, totalsms count ${pageOb.totalSMSCount} ")
 //                                if(page+12 <= totalSMSCount ){
                             pageOb.page +=12
-                            smsListVIewModel.getNextSmsPage()
+//                            smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
 
                                 if(!isSizeEqual){
@@ -293,7 +293,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+//            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
 
         })
     }
@@ -308,7 +308,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                this.smsLIst = it as MutableList<SMS>?
                 Log.d(TAG, "observeSMSList: ")
                 this.smsListVIewModel.updateLiveData(sms)
-                this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
+//                this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
 
 
             }
@@ -428,14 +428,14 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         }else{
             smsListVIewModel.markSMSAsRead(address)
-//            val intent = Intent(context, IndividualSMSActivity::class.java )
-//            val bundle = Bundle()
-//            bundle.putString(CONTACT_ADDRES, address)
-//            bundle.putString(SMS_CHAT_ID, "")
-//
-//            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//            intent.putExtras(bundle)
-//            startActivity(intent)
+            val intent = Intent(context, IndividualSMSActivity::class.java )
+            val bundle = Bundle()
+            bundle.putString(CONTACT_ADDRES, address)
+            bundle.putString(SMS_CHAT_ID, "")
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtras(bundle)
+            startActivity(intent)
         }
 
 //            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
@@ -473,6 +473,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         private  var viewMesagesRef: View?=null
 
 
+        var mapofAddressAndSMS: HashMap<String, SMS> = hashMapOf() // for findin duplicate sms in list
 
         var recyclerViewSpamSms:RecyclerView? = null
 

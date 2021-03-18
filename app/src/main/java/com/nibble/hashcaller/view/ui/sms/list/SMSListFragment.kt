@@ -113,7 +113,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
                             Log.d(TAG, "onScrolled:page: $page, totalsms count $totalSMSCount ")
 //                                if(page+12 <= totalSMSCount ){
                             page+=12
-                            smsListVIewModel.getNextSmsPage()
+//                            smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
                                 if(!isSizeEqual){
                                     viewMesages.shimmer_view_container.visibility = View.VISIBLE
@@ -190,7 +190,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+//            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
 
         })
     }
@@ -204,7 +204,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 //                SMSListAdapter.searchQry = searchQry
 //                this.smsLIst = it as MutableList<SMS>?
                 Log.d(TAG, "observeSMSList: ")
-                this.smsListVIewModel.updateLiveData(sms)
+//                this.smsListVIewModel.updateLiveData(sms)
 
             }
         })

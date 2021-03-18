@@ -42,7 +42,7 @@ var LAST_SMS_SENT = false
 
 var markingStarted = false // to use in recyclerview long press to mark item for deleting, blocking etc..
 
-
+var MESSAGE_STRING = ""
 /**
  * unmark all recylcelerview list item
  */
