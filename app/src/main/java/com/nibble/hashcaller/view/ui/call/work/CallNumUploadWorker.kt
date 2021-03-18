@@ -38,45 +38,45 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
-//            Log.d(TAG, "doWork: ")
-            val callersLocalRepository =
-                CallLocalRepository(
-                    context
-                )
-            val allcallsincontentProvider = callersLocalRepository.getCallLog()
-            val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
-            val callContainerRepository =
-                CallContainerRepository(
-                    context,
-                    callersInfoFromServerDAO
-                )
-
-
-            setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
-
-
-            if(callersListChunkOfSize12.isNotEmpty()){
-                for (senderInfoSublist in callersListChunkOfSize12){
-
-                    /**
-                     * send the list to server
-                     */
-                    val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
-
-                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-
-                    for(cntct in result.body()!!.contacts){
-
-                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                            cntct.phoneNumber, 0, cntct.name,
-                            Date(), cntct.spamCount)
-                        callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
-                    }
-                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
-                }
-            }else{
-                Log.d(TAG, "doWork: size less than 1")
-            }
+            Log.d(TAG, "doWork: ")
+//            val callersLocalRepository =
+//                CallLocalRepository(
+//                    context
+//                )
+//            val allcallsincontentProvider = callersLocalRepository.getCallLog()
+//            val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
+//            val callContainerRepository =
+//                CallContainerRepository(
+//                    context,
+//                    callersInfoFromServerDAO
+//                )
+//
+//
+//            setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
+//
+//
+//            if(callersListChunkOfSize12.isNotEmpty()){
+//                for (senderInfoSublist in callersListChunkOfSize12){
+//
+//                    /**
+//                     * send the list to server
+//                     */
+//                    val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+//
+//                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+//
+//                    for(cntct in result.body()!!.contacts){
+//
+//                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
+//                            cntct.phoneNumber, 0, cntct.name,
+//                            Date(), cntct.spamCount)
+//                        callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+//                    }
+//                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
+//                }
+//            }else{
+//                Log.d(TAG, "doWork: size less than 1")
+//            }
                 
 
 

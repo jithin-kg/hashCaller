@@ -18,8 +18,6 @@ class CallContainerViewModel(
 ) :ViewModel(){
     init {
 
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java).build()
-        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
     }
     fun getInformationForTheseNumbers(
         smslist: List<SMS>?,

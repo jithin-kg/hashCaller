@@ -111,6 +111,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         observeSendersInfoFromServer()
         observePermissionLiveData()
+        observeNumOfRowsDeleted()
         this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
         registerForContextMenu( this.recyclerV) // context menu registering
         setupBottomSheet()
@@ -146,7 +147,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                             Log.d(TAG, "onScrolled:page: ${pageOb.page}, totalsms count ${pageOb.totalSMSCount} ")
 //                                if(page+12 <= totalSMSCount ){
                             pageOb.page +=12
-//                            smsListVIewModel.getNextSmsPage()
+                            smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
 
                                 if(!isSizeEqual){
@@ -293,7 +294,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-//            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
 
         })
     }
@@ -308,7 +309,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                this.smsLIst = it as MutableList<SMS>?
                 Log.d(TAG, "observeSMSList: ")
                 this.smsListVIewModel.updateLiveData(sms)
-//                this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
+                this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
 
 
             }
@@ -329,27 +330,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             SMSListAdapter.searchQry = searchQry
         })
     }
-    private fun observeLive() {
 
-//        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
-//            sms.let {
-////                smsRecyclerAdapter?.setSMSList(it, searchQry)
-////                if(!it.isNullOrEmpty()){
-////                    Log.d(TAG, "observeLive: last item name ${it[0].name}")
-////                }
-//                this.smsListVIewModel.updateLiveData(sms)
-////                smsRecyclerAdapter?.setList(it)
-////
-////
-////                smsListVIewModel.getNameForUnknownSender(it)
-////
-////                this.viewMesages.pgBarsmslist.visibility = View.GONE
-////                SMSListAdapter.searchQry = searchQry
-////                this.smsLIst = it as MutableList<SMS>?
-//
-//            }
-//        })
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         rcrViewSMSList.adapter  = null
@@ -371,7 +352,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
 
-        observeLive()
+
         observeMutabeLiveData()
         addScrollListener()
         if(markedItems.size > 0){

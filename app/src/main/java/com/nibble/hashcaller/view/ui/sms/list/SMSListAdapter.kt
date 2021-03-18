@@ -143,7 +143,7 @@ class SMSListAdapter(private val context: Context,
                 view.smsMarked.visibility = View.INVISIBLE
 
             }
-            view.tvSMSMPeek.text = sms.msg
+            view.tvSMSMPeek.text = sms.msgString
             view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
             if(sms.unReadSMSCount == 0 ){
                 view.tvUnreadSMSCount.visibility = View.GONE

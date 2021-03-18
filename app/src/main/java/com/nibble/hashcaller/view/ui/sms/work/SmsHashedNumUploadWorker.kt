@@ -52,7 +52,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
-//            Log.d(TAG, "doWork: ")
+            Log.d(TAG, "doWork: ")
 
             val smsrepoLocalRepository = SMSLocalRepository(
                 context,
@@ -87,6 +87,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                             Date(), cntct.spamCount)
                         smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
                     }
+
                     smssendersInfoDAO.insert(smsSenderlistToBeSavedToLocalDb)
                 }
             }else{

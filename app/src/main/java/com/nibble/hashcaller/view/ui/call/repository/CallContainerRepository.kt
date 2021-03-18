@@ -42,7 +42,7 @@ class CallContainerRepository(val context: Context, val dao: CallersInfoFromServ
     }
 
     companion object{
-        const val TAG = "__SMScontainerRepository"
+        const val TAG = "__CallContainerRepository"
     }
 
 }

@@ -135,40 +135,6 @@ class SMSViewModel(
 
 
          viewModelScope.launch {
-
-//             var mapofAddressAndValues: HashMap<String, SMS> = HashMap() //hold all sms sender
-//             // info found fom db
-//
-//             for(sms in dataFromDB!!){
-//                 //creating a map of senderinfo that is received from DB
-//                 val obj = SMS()
-//                 obj.name = sms.name
-//                 obj.type = sms.spammerType
-//                 obj.spamCount = sms.spamReportCount
-//                 mapofAddressAndValues.put(sms.contactAddress!!, obj)
-//
-//             }
-//             var lst:MutableList<SMS>  = mutableListOf()
-//
-//
-////                 repository!!.fetchSmsForWorker().apply {
-//                     if(smsLiveData.value!=null)
-//                     for(sms in smsLiveData.value!!){
-//                         val res = mapofAddressAndValues.get(sms.addressString)
-//                         val obj = sms
-//
-//                         if(res!=null){
-//                             sms.name = res.name
-//                             sms.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-//                             if(res.spamCount <1){
-//                                 lst.add(obj)
-//                             }
-//                         }else{
-//
-//                             lst.add(sms)
-//
-//                         }
-//                     }
                    val r = async {
                         repository!!.getSMSForViewModel(null, requestinfromSpamlistFragment = false, isFullSmsNeeded = true)
                     }
@@ -176,7 +142,7 @@ class SMSViewModel(
                      val lst = r.await()
 
 
-//             smsLiveData.value = sortedSMSByTime()
+             smsLiveData.value = sortedSMSByTime()
 
 
 
@@ -186,13 +152,13 @@ class SMSViewModel(
 
     }
 
-//    private fun sortedSMSByTime(): MutableList<SMS> {
-//        val lstofSMS =  mapofAddressAndSMS.values
-//        val sorted = lstofSMS.sortedByDescending { it.time }
-//        val lt:MutableList<SMS> = mutableListOf()
-//        lt.addAll(sorted)
-//        return lt
-//    }
+    private fun sortedSMSByTime(): MutableList<SMS> {
+        val lstofSMS =  mapofAddressAndSMS.values
+        val sorted = lstofSMS.sortedByDescending { it.time }
+        val lt:MutableList<SMS> = mutableListOf()
+        lt.addAll(sorted)
+        return lt
+    }
 
     private fun sortAndSet(listOfMessages: MutableList<SMS>): ArrayList<SMS> {
         val s: Set<SMS> = LinkedHashSet(listOfMessages)
@@ -220,10 +186,10 @@ class SMSViewModel(
 //
 //            }.join()
 //            smsLiveData.value = lstt
-        val l:MutableList<SMS> = mutableListOf()
-        l.addAll(mapofAddressAndSMS.values)
-        Log.d(TAG, "updateLiveData: size after adding map values ${l.size}")
-            smsLiveData.value = l
+//        val l:MutableList<SMS> = mutableListOf()
+//        l.addAll(mapofAddressAndSMS.values)
+//        Log.d(TAG, "updateLiveData: size after adding map values ${l.size}")
+            smsLiveData.value = sortedSMSByTime()
 
 
 
@@ -258,12 +224,12 @@ class SMSViewModel(
             prevSize = smsLiveData.value!!.size
         }
 
-        smsLiveData.value!!.addAll(newpage)
-        var sizeAfterAddingPage = smsLiveData.value!!.size
-        Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
-        isSizeEqual = prevSize == sizeAfterAddingPage
+//        smsLiveData.value!!.addAll(newpage)
+//        var sizeAfterAddingPage = smsLiveData.value!!.size
+//        Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
+//        isSizeEqual = prevSize == sizeAfterAddingPage
 
-//        smsLiveData.value = sortedSMSByTime()
+        smsLiveData.value = sortedSMSByTime()
     }
 
     fun blockThisAddress(contactAddress: String,

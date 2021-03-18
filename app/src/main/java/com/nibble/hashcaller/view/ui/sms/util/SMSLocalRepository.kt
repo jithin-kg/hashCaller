@@ -335,25 +335,25 @@ class SMSLocalRepository(
 
     @SuppressLint("LongLogTag")
     private fun setSMSHashMap(objSMS: SMS) {
-        MESSAGE_STRING = objSMS.msgString!!
-        Log.d(TAG, "setSMSHashMap: ")
+        if(!objSMS.addressString.isNullOrEmpty()){
+            Log.d(TAG, "setSMSHashMap: ")
 
-        val mr = mapofAddressAndSMS[objSMS.addressString!!]
-        if(mr==null){
-            mapofAddressAndSMS[objSMS.addressString!!] = objSMS
-            //mexici 1616080210162
-            //hmm    1616048239368
-        }else{
-            val timFromMap = mr.time!!.toLong()
-            val timeFromCProvider = objSMS.time!!.toLong()
-            if( timFromMap < timeFromCProvider){
-                //new message is objsms.time
-                Log.d(TAG+"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
-                mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+            val mr = mapofAddressAndSMS[objSMS.addressString!!]
+            if(mr==null){
+                mapofAddressAndSMS[objSMS.addressString!!] = objSMS
             }else{
-                Log.d(TAG, "setSMSHashMap: greater")
+                val timFromMap = mr.time!!.toLong()
+                val timeFromCProvider = objSMS.time!!.toLong()
+                if( timFromMap < timeFromCProvider){
+                    //new message is objsms.time
+                    Log.d(TAG+"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
+                    mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+                }else{
+                    Log.d(TAG, "setSMSHashMap: greater")
+                }
             }
         }
+
     }
 
     private fun setSpannableStringBuilder(
@@ -1390,7 +1390,7 @@ class SMSLocalRepository(
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
 
                             }
-//                            setSMSHashMap(objSMS)
+                            setSMSHashMap(objSMS)
                             listOfMessages.add(objSMS)
                         } catch (e: Exception) {
                             Log.d(TAG, "getSMSForSpammList: $e")
