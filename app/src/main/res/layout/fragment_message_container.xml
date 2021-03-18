@@ -6,6 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="?attr/actionBarSize"
     tools:context=".view.ui.MainActivity"
+    android:background="@color/colorBackground"
+    android:backgroundTint="@color/colorBackground"
+
     android:id="@+id/MessagesFragment">
 
 
@@ -15,27 +18,22 @@
         android:id="@+id/appbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        app:elevation="0dp"
+        android:elevation="0dp"
+       android:layout_margin="12dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:backgroundTint="@color/colorBackground"
-        android:background="@color/appBarBackgroundColor"
+        android:background="@color/colorBackground"
+
         >
         <!--!! important to five elecation, elevation give shadow-->
-        <com.google.android.material.appbar.MaterialToolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbarSmS"
-
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:elevation="4dp"
             android:background="@drawable/toolbar_background"
-            app:contentInsetStart="0dp"
-            app:contentInsetLeft="0dp"
-            app:contentInsetEnd="0dp"
-            app:contentInsetRight="0dp"
-            style="@style/toolbarStyle"
+            app:elevation="4dp"
+            android:elevation="4dp"
+            android:layout_margin="4dp"
             app:contentInsetStartWithNavigation="0dp"
             app:navigationIcon="@drawable/ic_baseline_menu_24"
             app:layout_scrollFlags="scroll|enterAlways">
@@ -47,7 +45,18 @@
                 android:layout_marginStart="0dp"
                 android:backgroundTint="@color/colorBackground">
 
-                <ImageButton
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnTbrMore"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrBlock"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnTbrBlock"
+                    app:srcCompat="@drawable/ic_baseline_more_vert" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnTbrBlock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -55,7 +64,7 @@
                     android:background="?android:selectableItemBackground"
                     android:src="@drawable/ic_baseline_block_24"
                     android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnTbrMuteSender" />
 
                 <androidx.appcompat.widget.AppCompatImageButton
@@ -101,26 +110,27 @@
 
                 <EditText
                     android:id="@+id/searchViewSms"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:background="?android:attr/selectableItemBackground"
                     android:backgroundTint="@color/colorBackground"
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusedByDefault="false"
                     android:hint=" Search in sms"
-                    android:background="?android:attr/selectableItemBackground"
                     android:iconifiedByDefault="false"
                     android:queryBackground="@android:color/transparent"
 
                     android:queryHint="Search numbers, names"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:layout_editor_absoluteX="0dp" />
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"
+                    app:layout_constraintStart_toEndOf="@+id/tvSelectedCount"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </com.google.android.material.appbar.MaterialToolbar>
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
     <com.facebook.shimmer.ShimmerFrameLayout
@@ -149,7 +159,9 @@
             <include layout="@layout/skeleton_shimmer_layout" />
 
             <include layout="@layout/skeleton_shimmer_layout" />
+
             <include layout="@layout/skeleton_shimmer_layout" />
+
             <include layout="@layout/skeleton_shimmer_layout" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </com.facebook.shimmer.ShimmerFrameLayout>
@@ -158,8 +170,9 @@
         android:id="@+id/rcrViewSMSList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorBackground"
-        android:backgroundTint="@color/colorBackground"
+        android:background="#ffff"
+        android:backgroundTint="#ffff"
+
         android:clipToPadding="false"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

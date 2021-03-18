@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ActivityOptions
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
@@ -22,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -52,20 +52,13 @@ import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
-import kotlinx.android.synthetic.main.fragment_message_container.imgBtnTbrBlock
-import kotlinx.android.synthetic.main.fragment_message_container.imgBtnTbrDelete
-import kotlinx.android.synthetic.main.fragment_message_container.imgBtnTbrMuteSender
-import kotlinx.android.synthetic.main.fragment_message_container.rcrViewSMSList
-import kotlinx.android.synthetic.main.fragment_message_container.tvSelectedCount
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
-import kotlinx.android.synthetic.main.fragment_messages_list.*
-import kotlinx.android.synthetic.main.fragment_messages_list.view.*
-import kotlinx.android.synthetic.main.fragment_test.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
-SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, ConfirmationClickListener {
+SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, ConfirmationClickListener,
+    android.widget.PopupMenu.OnMenuItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -133,6 +126,17 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 //scrollview scrolled vertically
                 //get the visible item count
                 if(layoutMngr!=null){
+
+//                   val h =  (toolbarSmS.height!!).toFloat()
+//                    if(dy>0){
+//                        toolbarSmS.animate().translationY(-h)
+//                            .setInterpolator(DecelerateInterpolator()).start()
+//                    }
+//                    else if(dy<0){
+//                        toolbarSmS.animate().translationY(h)
+//                            .setInterpolator(DecelerateInterpolator()).start()
+//                    }
+
                     val visibleItemCount = layoutMngr!!.childCount
                     val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
                     val recyclerViewSize = smsRecyclerAdapter!!.itemCount
@@ -144,12 +148,14 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                             pageOb.page +=12
                             smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
+
                                 if(!isSizeEqual){
                                     viewMesages.shimmer_view_container.visibility = View.VISIBLE
                                     viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
                                 }
 //                                    }
                             }
+
 
                         }
                     }
@@ -210,6 +216,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         viewMesages.searchViewSms.setOnClickListener(this)
         viewMesages.imgBtnTbrMuteSender.setOnClickListener(this)
         viewMesages.imgBtnTbrBlock.setOnClickListener(this)
+        viewMesages.imgBtnTbrMore.setOnClickListener(this)
         viewMesages.imgBtnTbrDelete.setOnClickListener(this)
         this.fabSendNewSMS.setOnClickListener(this)
 
@@ -377,6 +384,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
 
+
+
     }
 
 
@@ -418,7 +427,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
 
         }else{
-            smsListVIewModel.update(address)
+            smsListVIewModel.markSMSAsRead(address)
 //            val intent = Intent(context, IndividualSMSActivity::class.java )
 //            val bundle = Bundle()
 //            bundle.putString(CONTACT_ADDRES, address)
@@ -511,11 +520,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 blockUser()
             }
             R.id.imgExpand->{
-                Log.d(IndividualSMSActivity.TAG, "onClick: img button")
-                val popup = PopupMenu(this.requireActivity(), bottomSheetDialog.viewPopup)
-                popup.inflate(R.menu.image_chooser_popup)
-                popup.setOnMenuItemClickListener(this)
-                popup.show()
+                showPopupMenu(R.menu.image_chooser_popup, bottomSheetDialog.viewPopup)
 
             }
             R.id.imgBtnTbrDelete ->{
@@ -534,12 +539,36 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
 //                startActivity(i)
             }
+            R.id.imgBtnTbrMore->{
+                showPopupMenu(R.menu.sms_list_more_popup,imgBtnTbrMore)
+            }
 
             else ->{
                 smsListVIewModel.getUnrealMsgCount()
 
             }
         }
+    }
+
+    private fun showPopupMenu(menu: Int, anchorView: View) {
+        Log.d(IndividualSMSActivity.TAG, "onClick: img button")
+
+        val popup = PopupMenu(this.requireActivity(), anchorView )
+        popup.inflate(menu)
+        popup.setOnMenuItemClickListener(this)
+        popup.show()
+    }
+    override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+        when (menuItem!!.itemId){
+         R.id.popupMarkAllAsRead->{
+             smsListVIewModel.markSMSAsRead(null)
+             return true
+         }else ->{
+            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+            return true
+        }
+        }
+       
     }
 
     private fun blockUser() {
@@ -665,10 +694,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         return false
     }
 
-    override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
-        this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
-        return true
-    }
+
 
     /**
      * callback of ConfirmDialogfragment for deleting sms

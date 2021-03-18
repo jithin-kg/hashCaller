@@ -40,13 +40,7 @@ class SMSViewModel(
     private lateinit var sharedPreferences: SharedPreferences
 
 
-    companion object
-    {
-        private const val TAG ="__SMSViewModel"
-        var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
-        var mapofAddressAndSMS: HashMap<String, SMS> = hashMapOf() // for findin duplicate sms in list
 
-    }
 
 
 
@@ -83,7 +77,10 @@ class SMSViewModel(
         unreadMSCount?.value = count
     }
 
-    fun update(address: String)  = viewModelScope.launch{
+    /**
+     * if addresstring is null then all sms has to be marked as read
+     */
+    fun markSMSAsRead(address: String?)  = viewModelScope.launch{
      repository!!.markSMSAsRead(address)
     }
 
@@ -306,6 +303,15 @@ class SMSViewModel(
 
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+
+    }
+
+    companion object
+    {
+        //todo save color of round in this map, so that color does not change for miner change of sms
+        private const val TAG ="__SMSViewModel"
+        var isLoading:MutableLiveData<Boolean> = MutableLiveData(false)
+        var mapofAddressAndSMS: HashMap<String, SMS> = hashMapOf() // for findin duplicate sms in list
 
     }
 }

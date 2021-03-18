@@ -28,7 +28,7 @@ object SpamLocalListManager{
 
 
         when(menuItem?.itemId){
-            R.id.publicService->{
+            R.id.popupMarkAllAsRead->{
                 setTextInMoreview(menuItem.title, bottomSheetDialog)
 
                 return SpamLocalListManager.SPAMM_TYPE_PUBLIC_SERVICE
