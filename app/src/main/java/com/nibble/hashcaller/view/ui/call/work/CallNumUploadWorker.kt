@@ -38,7 +38,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
-            Log.d(TAG, "doWork: ")
+//            Log.d(TAG, "doWork: ")
             val callersLocalRepository =
                 CallLocalRepository(
                     context
@@ -114,7 +114,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 val today = Date()
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(smssenderInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
                     //We need to check if new data information about the number is available server
-                    Log.d(TAG, "doWork: outdated data")
+                    //todo this is getting called all the time, need to check on this
+
+//                    Log.d(TAG, "doWork: outdated data")
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                     callersListTobeSendToServer.add(ContactAddressWithHashDTO(caller.number!!, hashedAddress))
@@ -165,7 +167,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
 
     companion object{
-        private const val TAG = "__SmsHashedNumUploadWorker"
+        private const val TAG = "__CallNumUploadWorker"
         const val NUMBER_OF_DAYS = 1
     }
 

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ContactFragment">
 
     <FrameLayout
@@ -17,66 +18,178 @@
 
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_height="100dp"
+        android:id="@+id/appbarCallContainer"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        app:elevation="0dp"
+        android:elevation="0dp"
+        android:layout_margin="12dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:background="@color/appBarBackgroundColor"
-
+        android:background="@color/colorBackground"
         >
-
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbarCall"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-
-
-            app:layout_scrollFlags="scroll|enterAlways">
-
-            <EditText
-                android:id="@+id/searchViewCall"
+            android:background="@drawable/toolbar_background"
+            app:elevation="4dp"
+            android:elevation="4dp"
+            android:layout_margin="4dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:navigationIcon="@drawable/ic_baseline_menu_24"
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/callToolbarLayoutItems"
                 android:layout_width="match_parent"
-                android:cursorVisible="false"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:focusedByDefault="false"
-                android:iconifiedByDefault="false"
-                android:hint="search phone, name, hash..."
-                android:focusable="false"
-                android:background="#00000000"
-                android:paddingBottom="10dp"
-                android:queryHint="Search numbers, names" />
+                android:layout_marginStart="0dp"
+                android:backgroundTint="@color/colorBackground">
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnCallTbrMore"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock"
+                    app:srcCompat="@drawable/ic_baseline_more_vert" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnCallTbrBlock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_baseline_block_24"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrMuteSender" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnCallTbrMuteSender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_baseline_notifications_off"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnCallTbrDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_delete_blue_24"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMuteSender"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/tvCallSelectedCount"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvCallSelectedCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text=""
+                    android:textColor="@color/textColor"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/searchViewCall"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:backgroundTint="@color/colorBackground"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusedByDefault="false"
+                    android:hint=" Search in sms"
+                    android:iconifiedByDefault="false"
+                    android:queryBackground="@android:color/transparent"
+
+                    android:queryHint="Search numbers, names"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
+                    app:layout_constraintStart_toEndOf="@+id/tvCallSelectedCount"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
-
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayoutCall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            app:tabGravity="fill"
-            app:tabIndicatorColor="@color/colorPrimaryDark"
-            app:tabIndicatorHeight="2dp"
-            app:tabPaddingBottom="25dp"
-            app:tabMaxWidth="0dp"
-            app:tabMode="fixed" />
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/fabBtnShowDialpad"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom|end"-->
-<!--        android:layout_margin="30dp"-->
-<!--        android:onClick="actionShowDialPad"-->
-<!--        android:backgroundTint="@color/colorPrimary"-->
+<!--    <androidx.viewpager.widget.ViewPager-->
+<!--        android:id="@+id/viewPagerCall"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"-->
 <!--        />-->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPagerCall"
+
+
+<!--    /***********/-->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_view_container_call"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        />
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:shimmer_duration="800">
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+
+            <include layout="@layout/skeleton_shimmer_layout" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcrViewCallHistoryLogs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffff"
+        android:backgroundTint="#ffff"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/contact_list" />
+
+    <Button
+        android:id="@+id/btnCallhistoryPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:visibility="gone"
+        android:gravity="center"
+         />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

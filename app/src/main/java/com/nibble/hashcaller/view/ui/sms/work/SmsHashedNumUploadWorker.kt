@@ -52,7 +52,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
-            Log.d(TAG, "doWork: ")
+//            Log.d(TAG, "doWork: ")
 
             val smsrepoLocalRepository = SMSLocalRepository(
                 context,
@@ -131,7 +131,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 val today = Date()
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(smssenderInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
                     //We need to check if new data information about the number is available server
-                    Log.d(TAG, "doWork: outdated data")
+                    //todo uncomment this and run, because this is called always and need to check on that
+//                    Log.d(TAG, "doWork: outdated data")
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                     senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))

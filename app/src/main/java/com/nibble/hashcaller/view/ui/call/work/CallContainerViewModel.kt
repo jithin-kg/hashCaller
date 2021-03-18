@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.work
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequest
@@ -11,7 +12,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.coroutines.launch
 
 class CallContainerViewModel(
-    val SMS: CallLogLiveData,
+    val callLogs: CallLogLiveData,
     val repository: CallContainerRepository?,
     val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?
 ) :ViewModel(){
@@ -29,6 +30,20 @@ class CallContainerViewModel(
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
 //
+    }
+
+
+    /**********from callhistory frgment************/
+    private var phoneNumber: MutableLiveData<String>? = null
+
+
+    fun getPhoneNumber(): MutableLiveData<String>? {
+        if (phoneNumber == null) {
+            phoneNumber = MutableLiveData<String>()
+            return phoneNumber
+        }
+        return phoneNumber
+
     }
 
     companion object{
