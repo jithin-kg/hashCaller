@@ -31,6 +31,7 @@ class SMS() {
     var photoURI: String? = null
     var deleteViewPresent:Boolean = false
     var name:String? = null
+    var nameForDisplay:String = ""
     var expanded:Boolean = true
     var threadID: Long = -1L
     var isSpam: Boolean = false

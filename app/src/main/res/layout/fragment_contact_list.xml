@@ -5,6 +5,7 @@
     android:id="@+id/nestedScrollViewSMS"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior`">
 
     <Button
@@ -44,7 +45,7 @@
         android:id="@+id/rcrViewContactsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        android:background="@color/colorBackground"
         tools:listitem="@layout/contact_list">
 
     </androidx.recyclerview.widget.RecyclerView>

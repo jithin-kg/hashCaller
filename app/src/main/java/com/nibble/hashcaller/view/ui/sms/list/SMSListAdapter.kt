@@ -196,10 +196,7 @@ class SMSListAdapter(private val context: Context,
             position: Int
         ) {
 
-            if(!sms.name.isNullOrEmpty())
-                name.text = sms.name
-            else
-                name.text = sms.address
+                name.text = sms.nameForDisplay
 
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
                 view.pgBarSmsListItem.visibility = View.VISIBLE
@@ -232,7 +229,10 @@ class SMSListAdapter(private val context: Context,
 
             view.tvSMSTime.text = sms.relativeTime
 
-            setNameFirstChar(sms)
+            if(!sms.nameForDisplay.isNullOrEmpty()){
+                circle.text = sms.nameForDisplay[0].toString()
+
+            }
             generateCircleView(context);
 
 

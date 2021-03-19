@@ -217,6 +217,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
             val deliveredIntent = Intent(individualSMSActivity, SmsStatusDeliveredReceiver::class.java)
             transaction.setExplicitBroadcastForSentSms(smsSentIntent)
             transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
+
             transaction.sendNewMessage(message, threadID)
             smsQuee.remove()
             delay(5000)

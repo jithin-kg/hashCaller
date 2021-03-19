@@ -170,9 +170,7 @@
         android:id="@+id/rcrViewSMSList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffff"
-        android:backgroundTint="#ffff"
-
+        android:background="@color/colorBackground"
         android:clipToPadding="false"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -214,7 +212,6 @@
         app:iconTint="@color/colorWhite"
         app:icon="@drawable/ic_baseline_send_24"
         android:backgroundTint="@color/colorPrimary" />
-
 <!--    <androidx.viewpager.widget.ViewPager-->
 <!--        android:id="@+id/viewPagerMessages"-->
 <!--        android:layout_width="match_parent"-->

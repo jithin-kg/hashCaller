@@ -528,6 +528,72 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.commit()
     }
 
+    fun showCallFragment() {
+        val ft = supportFragmentManager.beginTransaction()
+        if (messagesFragment.isAdded) { // if the fragment is already in container(callFragment)
+            unMarkItems()
+            messagesFragment.showSearchView()
+
+        }
+        // Hide fragment B
+        if (blockConfigFragment.isAdded) {
+            ft.hide(blockConfigFragment)
+        }
+        // Hide fragment C
+        if (contactFragment.isAdded) {
+            ft.hide(contactFragment)
+        }
+        if (dialerFragment.isAdded) {
+            ft.hide(dialerFragment)
+        }
+        if (messagesFragment.isAdded) {
+            ft.hide(messagesFragment)
+        }
+        if(callFragment.isAdded){
+            fabBtnShowDialpad.visibility = View.VISIBLE
+
+            ft.show(callFragment)
+        }
+
+        // Commit changes
+        ft.commit()
+    }
+
+    private fun showMessagesFragment() {
+        val ft = supportFragmentManager.beginTransaction()
+
+        // Hide fragment B
+        if (blockConfigFragment.isAdded) {
+            ft.hide(blockConfigFragment)
+            unMarkItems()
+            messagesFragment.showSearchView()
+
+        }
+        // Hide fragment C
+        if (contactFragment.isAdded) {
+            ft.hide(contactFragment)
+        }
+        if (callFragment.isAdded) {
+            ft.hide(callFragment)
+        }
+//        if (callFragment.isAdded) {
+//            ft.hide(callFragment)
+//        }
+        if(dialerFragment.isAdded){
+            ft.hide(dialerFragment)
+        }
+        if (messagesFragment.isAdded) { // if the fragment is already in container
+//            ft.addToBackStack(messagesFragment.javaClass.name)
+            ft.show(messagesFragment)
+//            setDefaultFragment(R.id.bottombaritem_messages)
+
+        }else{
+            Log.d(TAG, "showMessagesFragment:messagesFragment not added")
+        }
+
+        // Commit changes
+        ft.commit()
+    }
 
 
     //        @Override
@@ -599,68 +665,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    }
 
     private fun showDialPad() {}
-     fun showCallFragment() {
-        val ft = supportFragmentManager.beginTransaction()
-        if (callFragment.isAdded) { // if the fragment is already in container(callFragment)
-            fabBtnShowDialpad.visibility = View.VISIBLE
-            unMarkItems()
-            messagesFragment.showSearchView()
 
-        }
-        // Hide fragment B
-        if (blockConfigFragment.isAdded) {
-            ft.hide(blockConfigFragment)
-        }
-        // Hide fragment C
-        if (contactFragment.isAdded) {
-            ft.hide(contactFragment)
-        }
-        if (dialerFragment.isAdded) {
-            ft.hide(dialerFragment)
-        }
-        if (messagesFragment.isAdded) {
-            ft.hide(messagesFragment)
-        }
-
-        // Commit changes
-        ft.commit()
-    }
-
-    private fun showMessagesFragment() {
-        val ft = supportFragmentManager.beginTransaction()
-
-        // Hide fragment B
-        if (blockConfigFragment.isAdded) {
-            ft.hide(blockConfigFragment)
-            unMarkItems()
-            messagesFragment.showSearchView()
-
-        }
-        // Hide fragment C
-        if (contactFragment.isAdded) {
-            ft.hide(contactFragment)
-        }
-        if (callFragment.isAdded) {
-            ft.hide(callFragment)
-        }
-//        if (callFragment.isAdded) {
-//            ft.hide(callFragment)
-//        }
-        if(dialerFragment.isAdded){
-            ft.hide(dialerFragment)
-        }
-        if (messagesFragment.isAdded) { // if the fragment is already in container
-//            ft.addToBackStack(messagesFragment.javaClass.name)
-            ft.show(messagesFragment)
-//            setDefaultFragment(R.id.bottombaritem_messages)
-
-        }else{
-            Log.d(TAG, "showMessagesFragment:messagesFragment not added")
-        }
-
-        // Commit changes
-        ft.commit()
-    }
 
 //    private fun checkPermission() {
 //        val permissionsUtil = PermissionsUtil(this)

@@ -51,15 +51,23 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
 
+//    override fun onActivityCreated(savedInstanceState: Bundle?) {
+//        Log.d(TAG, "onActivityCreated: ")
+//        super.onActivityCreated(savedInstanceState)
+//        if(savedInstanceState!= null){
+//
+//        }
+//    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         Log.d(TAG, "onCreateView: ")
+        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
+
         initViewModel()
 
         // Inflate the layout for this fragment
-        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
         if(checkContactPermission()){
             observeCallLog()
 
@@ -73,14 +81,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
     private fun observePermissionLiveData() {
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
-            if(it){
+            if(it == true){
                 Log.d(TAG, "observePermissionLiveData: permission given")
                 observeCallLog()
                 this.callFragment!!.btnCallhistoryPermission.visibility = View.GONE
             }else{
                 this.callFragment!!.btnCallhistoryPermission.visibility =View.VISIBLE
                 Log.d(TAG, "observePermissionLiveData: permission not given")
-                if (viewmodel!! != null  ) {
+                if (this.viewmodel!! != null  ) {
 
                     if(this.viewmodel?.callLogs != null)
                         if(this.viewmodel.callLogs!!.hasObservers())
@@ -212,13 +220,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
     }
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onActivityCreated: ")
-        super.onActivityCreated(savedInstanceState)
-        if(savedInstanceState!= null){
 
-        }
-    }
 
     private fun addFragmentDialer() {
 

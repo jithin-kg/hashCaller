@@ -48,7 +48,7 @@
 
     <!--    colors for toolbar-->
     <color name="toolbarBackground">#FFFFFF</color>
-
+    <color name="chat_background_color">#FAFAFA</color>
 
 
 </resources>

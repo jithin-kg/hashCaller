@@ -3,19 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/layoutContainerMsg"
     android:layout_marginBottom="16dp"
+    android:background="@color/chat_background_color"
     xmlns:android="http://schemas.android.com/apk/res/android">
-<!--  !!IMPORTANT  I should ser layout_width=0dp and
+    <!--  !!IMPORTANT  I should set layout_width=0dp and
 app:layout_constraintWidth_default="wrap"  to avoid text  overflow
 out of the screen-->
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/child"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/runded_rectangular_blue_chat"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintWidth_default="wrap"
         app:layout_constraintWidth_max="wrap">
 
@@ -25,34 +32,45 @@ out of the screen-->
             android:id="@+id/tvSentMsg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:fontFamily="@font/roboto"
             android:letterSpacing="0.1"
             android:padding="8dp"
             android:text="hi man, how are you?"
             android:textColor="#ffffff"
-            android:textSize="16dp"
+            android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_weight="3"
-            app:layout_constraintStart_toStartOf="@id/child"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_default="wrap" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.nibble.hashcaller.view.utils.HorizontalDottedProgress
-        android:id="@+id/dotedPgSMSSengingOutbox"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="64dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+
+
+    <TextView
+        android:id="@+id/tvTimeSMSSent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:visibility="gone"
-        android:layout_alignWithParentIfMissing="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/child"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/child"
-        app:layout_constraintVertical_bias="0.428" />
+        android:text=""
+        app:layout_constraintEnd_toEndOf="@+id/child"
+        app:layout_constraintTop_toBottomOf="@+id/child" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >-->
+
+<!--    <item>-->
+<!--        <shape>-->
+<!--            &lt;!&ndash; set the shadow color here &ndash;&gt;-->
+<!--&lt;!&ndash;            <stroke&ndash;&gt;-->
+<!--&lt;!&ndash;                android:width="2.5dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:color="@color/edtxt_phone_auth_bg" />&ndash;&gt;-->
+
+<!--            &lt;!&ndash; setting the thickness of shadow (positive value will give shadow on that side) &ndash;&gt;-->
+
+<!--            &lt;!&ndash;Set shadow width as per your requirement &ndash;&gt;-->
+<!--&lt;!&ndash;            <padding&ndash;&gt;-->
+<!--&lt;!&ndash;                android:bottom="2dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:left="0.5dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                android:top="0.5dp" />&ndash;&gt;-->
+
+<!--            <corners android:radius="2dp" />-->
+<!--        </shape>-->
+<!--    </item>-->
+
+    <!--White Background -->
+<!--    <item>-->
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="@color/edtxt_phone_auth_bg" />
+            <corners android:radius="32dp" />
+        </shape>
+<!--    </item>-->
+
+<!--</layer-list>-->

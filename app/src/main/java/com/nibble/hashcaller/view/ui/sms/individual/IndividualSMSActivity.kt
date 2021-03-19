@@ -169,6 +169,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun observeContactname() {
         this.viewModel.nameLiveData.observe(this, Observer {
             if(!it.isNullOrBlank()){
+                name = it
                 Log.d(TAG, "observeContactname: $it")
                 contactAddress = it
                 tvSMSAddress.text = contactAddress
@@ -332,7 +333,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
     private fun initListners() {
-        imgBtnSend.setOnClickListener(this)
+        imgBtnSendSMS.setOnClickListener(this)
         imgBtnBackSmsIndividual.setOnClickListener(this)
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -558,6 +559,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     companion object{
+        var name = ""
         var chatId = ""
         var chatScrollToPosition = 0 //incase intent from SearchActivity we need
                                     // to scroll to thatexact sms
@@ -598,7 +600,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
                 recyclerView.scrollToPosition(adapter.itemCount - 1)
                 clearNewMessageIndication()
-            }R.id.imgBtnSend->{
+            }R.id.imgBtnSendSMS->{
             Log.d(TAG, "onClick: ")
                     sendSms()
             }

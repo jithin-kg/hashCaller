@@ -90,6 +90,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
+        pageOb.page = 0
 
     }
 

@@ -257,6 +257,7 @@ class SMSLocalRepository(
                             // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
                             objSMS.addressString = replaceSpecialChars(num)
+                            objSMS.nameForDisplay = objSMS.addressString!!
 
                             objSMS.readState =
                                 cursor.getInt(cursor.getColumnIndex("read"))
@@ -293,6 +294,9 @@ class SMSLocalRepository(
                             getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS).apply {
                                 if(this!=null){
                                     objSMS.name = this?.name
+                                    if(!this.name.isNullOrEmpty()){
+                                        objSMS.nameForDisplay = this.name
+                                    }
                                     objSMS.spamCount  = this.spamReportCount
                                     objSMS.spammerType = this.spammerType
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
@@ -555,6 +559,7 @@ class SMSLocalRepository(
                     val name =   getConactInfoForNumber(formattedNum)
                     if (name != null){
                         sms.name = name
+                        sms.nameForDisplay = name
                         sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                     }
                 }

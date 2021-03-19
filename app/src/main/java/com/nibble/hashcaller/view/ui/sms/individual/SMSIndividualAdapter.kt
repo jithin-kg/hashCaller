@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.provider.Telephony
+import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -13,10 +14,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.sms_indiivdual_date.view.*
 import kotlinx.android.synthetic.main.sms_individual_outbox_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
@@ -199,15 +202,26 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                 positionTracker.otherPosition()
             }
             msg.text = if (sms.msg == null) "null" else sms.msg
-
             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
 
 //            setTimeInView(sms.time)
-            view.tvRecivedTime.text = sms.timeString
+            view.tvSMSRecivedTime.text = sms.timeString
             view.setOnClickListener{
 
 //                onContactItemClickListener(pNo)
             }
+        }
+
+        private fun getFirstChar(sms: SMS): CharSequence? {
+            var firstChar = ""
+            if(IndividualSMSActivity.name.isNullOrEmpty()){
+
+                 firstChar = formatPhoneNumber(sms.addressString!!)[0].toString().toUpperCase()
+
+            }else{
+                firstChar =IndividualSMSActivity.name[0].toString()
+            }
+            return firstChar
         }
 
         private fun highlightSearhcField(sms: SMS) {
@@ -251,9 +265,9 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
                     .format(now)
             if(date.equals(todayDate)){
 //                only set time in view
-                 view.tvRecivedTime.text = time
+                 view.tvSMSRecivedTime.text = time
              }else{
-                 view.tvRecivedTime.text = date
+                 view.tvSMSRecivedTime.text = date
             }
 //             Log.d(TAG, "today: $todayDate")
 //             Log.d(TAG, "setTimeInView: $d2")
@@ -323,7 +337,10 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }
             msg.text =  sms.msg
 
-            setTimeInView(sms.time)
+//            msg.setText(Html.fromHtml(convertToHtml(txtMsgFrom.getText().toString()) + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"))
+            view.tvTimeSMSSent.text = sms.timeString
+//            setTimeInView(sms.time)
+
             view.setOnClickListener{
 
 //                onContactItemClickListener(pNo)
