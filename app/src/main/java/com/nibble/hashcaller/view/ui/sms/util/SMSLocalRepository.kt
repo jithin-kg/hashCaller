@@ -242,6 +242,7 @@ class SMSLocalRepository(
 //                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                             var num =
                                 cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                            objSMS.addresStringNonFormated = num
                             num = num.replace("+", "")
                             //                    objSMS.address = num
 
@@ -701,13 +702,15 @@ class SMSLocalRepository(
         return data
     }
 
+    @SuppressLint("LongLogTag")
     fun fetchIndividualSMS(contact: String?): List<SMS> {
+        Log.d(TAG+"individual", "contact is $contact ")
         var count = 0
         var smsRef : SMS = SMS()
         var prevDate = ""
         var selectionArgs: Array<String>? = null
         var counter = 0 //counter to decide where to scroll, for Search Activity
-        selectionArgs = arrayOf(contact!!)
+        selectionArgs = arrayOf("$contact")
         var smslist = mutableListOf<SMS>()
         var cursor:Cursor? = null
 
@@ -719,6 +722,13 @@ class SMSLocalRepository(
                 selectionArgs,
                 SMSContract.SORT_ASC
             )
+//            cursor = context.contentResolver.query(
+//                SMSContract.ALL_SMS_URI,
+//                null,
+//                "address  ()",
+//                selectionArgs,
+//                SMSContract.SORT_ASC
+//            )
             if(cursor != null && cursor.moveToFirst()) {
                 do {
                     count++
@@ -741,8 +751,6 @@ class SMSLocalRepository(
                         prevDate = currentDate
                         smsWithCurrentDate.currentDate = prevDate
                         smslist.add(smsWithCurrentDate)
-
-
                     }
                     val sms = SMS()
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
@@ -757,7 +765,6 @@ class SMSLocalRepository(
                     sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
 
-
                     if(IndividualSMSActivity.chatId.isNotEmpty()){
                         if(sms.id.toString() == IndividualSMSActivity.chatId){
                             IndividualSMSActivity.chatScrollToPosition = counter
@@ -765,7 +772,6 @@ class SMSLocalRepository(
                             val endPos = startPos + IndividualSMSActivity.queryText!!.length
 
                             val yellow = BackgroundColorSpan(Color.YELLOW)
-
                             val spannableStringBuilder =
                                 SpannableStringBuilder(mgsStr)
 
@@ -794,12 +800,12 @@ class SMSLocalRepository(
 
             }
         }catch (e:java.lang.Exception){
-            Log.d(TAG, "fetchIndividualSMS: exception $e")
+            Log.d(TAG+"individual", "fetchIndividualSMS: exception $e")
         }finally {
             cursor!!?.close()
 
         }
-        Log.d(TAG, "fetchIndividualSMS: sizeL${smslist.size}, count:$count")
+        Log.d(TAG+"individual", "fetchIndividualSMS: sizeL${smslist.size}, count:$count")
 
         return smslist
     }

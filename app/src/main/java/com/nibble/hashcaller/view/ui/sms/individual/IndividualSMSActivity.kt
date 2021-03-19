@@ -107,13 +107,14 @@ class IndividualSMSActivity : AppCompatActivity(),
         this.spamTypes.add("Survey")
         when{
             intent.action == Intent.ACTION_SENDTO->{
+                //intent from invite, etc
                 Log.d(TAG, "onCreate: send sms to ")
                 val body = intent.getStringExtra("sms_body")
                 contactAddress = intent.data.toString()
 
 
             }else->{
-            //normal within app intent
+            //normal intent within app intent
 //            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
             val bundle = intent.getExtras()
 
@@ -126,6 +127,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         }
 
         contact = contactAddress
+        Log.d(TAG, "onCreate: contact is $contact")
         setupBottomSheet()
         observerSmsSent()
         initViewModel()
@@ -140,28 +142,28 @@ class IndividualSMSActivity : AppCompatActivity(),
         getContactInformation()
         observeContactname()
         configureToolbar()
-
-       GlobalScope.launch(Dispatchers.IO) {
-          val time = measureTimeMillis {
-              val res1 = async {suspendOne()  }
-              val res2 =  async { suspendTwo() }
-              Log.d("__suspend", "res1 is ${res1.await()}")
-              Log.d("__suspend", "res2 is ${res2.await()}")
-          }
-           Log.d("__suspend", "request took $time milliseconds")
-       }
-        Log.d("__suspend", "after of launch: ")
+//
+//       GlobalScope.launch(Dispatchers.IO) {
+//          val time = measureTimeMillis {
+//              val res1 = async {suspendOne()  }
+//              val res2 =  async { suspendTwo() }
+//              Log.d("__suspend", "res1 is ${res1.await()}")
+//              Log.d("__suspend", "res2 is ${res2.await()}")
+//          }
+//           Log.d("__suspend", "request took $time milliseconds")
+//       }
+//        Log.d("__suspend", "after of launch: ")
     }
 
-    private suspend fun suspendTwo(): String {
-        delay(3000L)
-        return "1"
-    }
-
-    private suspend fun suspendOne(): String {
-        delay(3000L)
-        return "1"
-    }
+//    private suspend fun suspendTwo(): String {
+//        delay(3000L)
+//        return "1"
+//    }
+//
+//    private suspend fun suspendOne(): String {
+//        delay(3000L)
+//        return "1"
+//    }
 
 
     private fun observeContactname() {

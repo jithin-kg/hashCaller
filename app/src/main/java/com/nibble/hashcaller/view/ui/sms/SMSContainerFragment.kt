@@ -49,6 +49,7 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
@@ -397,14 +398,15 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private fun onContactItemClicked(view: View, threadId: Long, pos: Int, address: String) {
         Log.d(TAG, "onContactItemClicked address is : $address")
+        val formatedNum = formatPhoneNumber(address)
         if(markingStarted){
             //if the view is already marked, then uncheck it
             val imgVSmsMarked = view.findViewById<ImageView>(R.id.smsMarked)
             if(imgVSmsMarked.visibility == View.VISIBLE){
-                unMarkItem(imgVSmsMarked, threadId, address)
+                unMarkItem(imgVSmsMarked, threadId, formatedNum)
 
             }else{
-                markItem(view, threadId, address)
+                markItem(view, threadId, formatedNum)
             }
 
         }else{

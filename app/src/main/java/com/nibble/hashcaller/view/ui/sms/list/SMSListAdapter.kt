@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.utils.MESSAGE_STRING
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -167,7 +166,7 @@ class SMSListAdapter(private val context: Context,
             })
             view.setOnClickListener{v->
                 onContactItemClickListener(v, sms.threadID, this.adapterPosition,
-                    sms.addressString!!
+                    sms.addresStringNonFormated!!
                 )
 
             }
@@ -245,7 +244,7 @@ class SMSListAdapter(private val context: Context,
             })
             view.setOnClickListener{v->
                 onContactItemClickListener(v, sms.threadID, this.adapterPosition,
-                    sms.addressString!!
+                    sms.addresStringNonFormated!!
                 )
 
             }

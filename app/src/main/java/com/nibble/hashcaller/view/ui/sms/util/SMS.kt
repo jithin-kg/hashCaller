@@ -10,6 +10,7 @@ const val SENDER_INFO_FROM_DB= 1
 const val SENDER_INFO_FROM_CONTENT_PROVIDER = 2
 @Keep
 class SMS() {
+    var addresStringNonFormated: String = ""
     var sub:String = ""
     var subject:String = ""
     var ct_t:String = ""
