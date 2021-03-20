@@ -40,6 +40,9 @@ class SMSSearchViewModel(
      emit(repository!!.getSms(searchQuery))
 
     }
+//    fun searchForIndividualSMS(text: String) LiveData<List<SMS>> = liveData<List<SMS>> {
+//
+//    }
 
     fun saveSearchQueryToDB(queryText: String) = viewModelScope.launch {
         smsSearchRepository.insertSearchQueryToDB(queryText)
@@ -50,6 +53,8 @@ class SMSSearchViewModel(
         emit(smsSearchRepository.getAllSearchHistory())
 
     }
+
+
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {
 //

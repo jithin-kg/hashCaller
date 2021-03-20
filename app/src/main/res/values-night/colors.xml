@@ -4,7 +4,7 @@
     <color name="colorPrimaryLight">#2374BF</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorPrimaryDarkest">#4A51B6</color>
-    <color name="chat_background_color">#00FAFAFA</color>
+    <color name="chat_background_color">#3B3B3B</color>
 
     <!--    <color name="colorBackgroundDark">#000000</color>-->
     <color name="colorBackground">#000000</color>
@@ -33,5 +33,6 @@
     <color name="appBarBackgroundColor">#2E2D2D</color>
     <!--    colors for toolbar-->
     <color name="toolbarBackground">#2E2D2D</color>
+    <color name="textcolor_recieved_sms">#ffff</color>
 
 </resources>

@@ -237,7 +237,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
 
 
     companion object{
-        private const val TAG ="__DialerViewModel"
+        private const val TAG ="__SMSIndividualViewModel"
     }
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {

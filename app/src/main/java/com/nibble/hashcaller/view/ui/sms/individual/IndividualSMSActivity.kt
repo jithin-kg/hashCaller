@@ -36,6 +36,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
@@ -345,7 +346,11 @@ class IndividualSMSActivity : AppCompatActivity(),
         bottomSheetDialog.radioScam.setOnClickListener(this)
         bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
+        imgViewCallBtn.setOnClickListener(this)
+        imgBtnSearchSMS.setOnClickListener(this)
+
 //        bottomSheetDialog.btnBlock.setOnClickListener(this)
+//        imgViewCallBtn.setOnClickListener(this)
 //        bottomSheetDialog.radioButtonSales.setOnClickListener(this)
 //        bottomSheetDialog.radioButtonScam.setOnClickListener(this)
 ////        bottomSheetDialog.radioButtonSales.setOnCheckedChangeListener(this)
@@ -380,7 +385,11 @@ class IndividualSMSActivity : AppCompatActivity(),
             if(!recyclerViewAtEnd){
                 countNewItem = it.size - oldLIstSize
                 tvcountShow.text = countNewItem.toString()
-                tvcountShow.visibility = View.VISIBLE
+                if(countNewItem>0){
+                    tvcountShow.beVisible()
+                }else{
+                    tvcountShow.beInvisible()
+                }
             }else{
                 clearNewMessageIndication()
                 oldLIstSize = it.size
@@ -581,7 +590,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun clearNewMessageIndication() {
         tvcountShow.visibility = View.GONE
         tvcountShow.text = ""
-        tvNewMsgIndication.visibility = View.GONE
+        smsGoDownIndication.beGone()
 
     }
 
@@ -632,7 +641,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun setupClickListerner() {
-        tvNewMsgIndication.setOnClickListener(this)
+        smsGoDownIndication.setOnClickListener(this)
     }
 
     private fun onContactitemClicked(id: String) {
@@ -658,13 +667,14 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun lastItemReached() {
 
         this.recyclerViewAtEnd = true
-        tvNewMsgIndication.visibility = View.GONE
+        smsGoDownIndication.beGone()
         clearNewMessageIndication()
+
     }
 
      override fun otherPosition() {
         this.recyclerViewAtEnd = false
-        tvNewMsgIndication.visibility = View.VISIBLE
+        smsGoDownIndication.beVisible()
     }
 
     override fun shouldWeScroll() {
@@ -677,10 +687,11 @@ class IndividualSMSActivity : AppCompatActivity(),
 
         when(v?.id){
             
-            R.id.tvNewMsgIndication->{
-
+            R.id.smsGoDownIndication->{
                 recyclerView.scrollToPosition(adapter.itemCount - 1)
                 clearNewMessageIndication()
+                smsGoDownIndication.beGone()
+
             }R.id.imgBtnSendSMS->{
             Log.d(TAG, "onClick: ")
                     sendSms()
@@ -700,6 +711,13 @@ class IndividualSMSActivity : AppCompatActivity(),
                 popup.show()
 
             }
+            R.id.imgViewCallBtn->{
+                call(contactAddress)
+            }
+            R.id.imgBtnSearchSMS->{
+                Log.d(TAG, "onClick: imgBtnSearchSMS")
+                startSearchActivity()
+            }
 //            R.id.btnUpdate->{
 //            viewModel.update()
 //        }
@@ -710,6 +728,16 @@ class IndividualSMSActivity : AppCompatActivity(),
         }
 
 
+    }
+
+    private fun startSearchActivity() {
+        val intent = Intent(this, SearchActivity::class.java)
+        intent.putExtra("animation", "explode")
+//        val extras = Bundle()
+//        extras.putString(CONTACT_ADDRES, contactAddress)
+//        extras.putString("animation", "explode")
+        intent.putExtra(CONTACT_ADDRES, contactAddress)
+        startActivity(intent)
     }
 
     private fun radioButtonClickPerformed(v: View?) {
@@ -845,6 +873,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+        Log.d(TAG, "onMenuItemClick:id ${menuItem!!.itemId}")
            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
 
 

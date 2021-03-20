@@ -23,7 +23,7 @@
     <!--White Background -->
 <!--    <item>-->
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="@color/edtxt_phone_auth_bg" />
+            <solid android:color="@color/chat_background_color" />
             <corners android:radius="32dp" />
         </shape>
 <!--    </item>-->

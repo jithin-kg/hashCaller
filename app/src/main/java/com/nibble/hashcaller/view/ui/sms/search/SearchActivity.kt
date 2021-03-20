@@ -26,16 +26,23 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private  var searchAdapter: SMSSearchAdapter? = null
     private lateinit var recyclerV: RecyclerView
     private var queryText = ""
-
+    private var contactAddress:String? = ""
+    private var isIntentFromIndividualSMS = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
+        contactAddress = intent.getStringExtra(CONTACT_ADDRES) // this intent extra is received when
+                                                            //intented from individualsmsactivity
+        Log.d(TAG, "onCreate: contactaddresvia intent $contactAddress")
+        if(contactAddress!!.isNotEmpty()){
+            isIntentFromIndividualSMS = true
+        }
         initRecyclerView()
         initListeners()
         initViewModel()
-        getSearchHistory()
+        if(!isIntentFromIndividualSMS)
+         getSearchHistory()
     }
 
     private fun getSearchHistory() {
@@ -93,15 +100,21 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     }
 
     override fun onTextChanged(text: String) {
-        if(text.isNullOrEmpty()){
-            val lst : List<SMS> = emptyList()
-            this.searchAdapter!!.setList(lst) //if search query is empty empty recyclerview
-
+        if(isIntentFromIndividualSMS){
+            //searching for individual sms
+            viewmodel.searchForIndividualSMS(text)
         }else{
-            viewmodel.search(text).observe(this, Observer {
-                this.searchAdapter!!.setList(it) //set search result to recyclerview
-                queryText = text
-            })
+            //get sms of all chats
+            if(text.isNullOrEmpty()){
+                val lst : List<SMS> = emptyList()
+                this.searchAdapter!!.setList(lst) //if search query is empty empty recyclerview
+
+            }else{
+                viewmodel.search(text).observe(this, Observer {
+                    this.searchAdapter!!.setList(it) //set search result to recyclerview
+                    queryText = text
+                })
+            }
         }
 
     }
