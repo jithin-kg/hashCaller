@@ -21,6 +21,7 @@ import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
+import com.nibble.hashcaller.view.ui.sms.individual.util.SIMCard
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.async
@@ -41,6 +42,8 @@ class SMSIndividualViewModel(
 //    public var blockedStatusOfThenumber:MutableList<SpammerInfo> =
 //        mutableListOf<SpammerInfo>()
 val smsQuee:Queue<SMS> = LinkedList<SMS>()
+    val availableSIMCards = ArrayList<SIMCard>()
+     var currentSIMCardIndex = 0
 
     var nameLiveData: MutableLiveData<String> = MutableLiveData("")
 
@@ -205,11 +208,17 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
     ) {
         //TODO ADD resend sms,for failed sms
         for (item in smsQuee){
+
             val settings = Settings()
             settings.useSystemSending = true;
             settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
             val msg = item!!.msgString
 
+            //chosing sim card
+            val simId = availableSIMCards.get(currentSIMCardIndex).subscriptionId
+            if(simId != null){
+                settings.subscriptionId = simId
+            }
             val transaction = Transaction(individualSMSActivity, settings)
             val message = Message(msg, phoneNum)
 //        message.setImage(mBitmap);

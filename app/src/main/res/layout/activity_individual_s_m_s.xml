@@ -171,6 +171,32 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/thread_select_sim_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:alpha="0.9"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_baseline_sim_card"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/edtTxtMSg"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/thread_select_sim_number"
+            android:layout_width="0dp"
+            android:layout_height="21dp"
+
+            android:layout_marginEnd="24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/thread_select_sim_icon"
+            app:layout_constraintEnd_toStartOf="@+id/thread_select_sim_icon"
+            app:layout_constraintTop_toTopOf="@+id/thread_select_sim_icon" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

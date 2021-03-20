@@ -1,9 +1,11 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.telephony.SubscriptionManager
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -33,17 +35,16 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
-import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
-import kotlin.system.measureTimeMillis
 
 
 class IndividualSMSActivity : AppCompatActivity(),
@@ -81,6 +82,10 @@ class IndividualSMSActivity : AppCompatActivity(),
     private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
     private var smsQueueLiveData:MutableLiveData<Queue<SMS>> = MutableLiveData()
     private var smsQueue:Queue<SMS> = LinkedList<SMS>()
+    private var participants = ArrayList<SimpleContact>()
+
+
+
 
     //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
 //    private var time:String? = null
@@ -142,6 +147,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         getContactInformation()
         observeContactname()
         configureToolbar()
+        setupSIMSelector()
 //
 //       GlobalScope.launch(Dispatchers.IO) {
 //          val time = measureTimeMillis {
@@ -444,6 +450,81 @@ class IndividualSMSActivity : AppCompatActivity(),
         }, 5000)
 
 
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setupSIMSelector() {
+        val availableSIMs = SubscriptionManager.from(this).activeSubscriptionInfoList ?: return
+        if (availableSIMs.size > 1) {
+            var index = 0
+            for(subscriptionInfo in availableSIMs){
+                var label = subscriptionInfo.displayName?.toString() ?: ""
+                if (subscriptionInfo.number?.isNotEmpty() == true) {
+                    label += " (${subscriptionInfo.number})"
+                }
+                val SIMCard =
+                    SIMCard(
+                        index + 1,
+                        subscriptionInfo.subscriptionId,
+                        label
+                    )
+                viewModel.availableSIMCards.add(SIMCard)
+                index++
+
+            }
+//            availableSIMs.forEachIndexed { index, subscriptionInfo ->
+//                var label = subscriptionInfo.displayName?.toString() ?: ""
+//                if (subscriptionInfo.number?.isNotEmpty() == true) {
+//                    label += " (${subscriptionInfo.number})"
+//                }
+//                val SIMCard =
+//                    SIMCard(
+//                        index + 1,
+//                        subscriptionInfo.subscriptionId,
+//                        label
+//                    )
+//                availableSIMCards.add(SIMCard)
+//            }
+
+            val numbers = ArrayList<String>()
+            for(simpleContact in participants){
+                for(num in simpleContact.phoneNumbers){
+                    numbers.add(num)
+
+                }
+            }
+//            participants.forEach {
+//                it.phoneNumbers.forEach {
+//                    numbers.add(it)
+//                }
+//            }
+
+//            if (numbers.isEmpty()) {
+//                return
+//            }
+//            for(it in availableSIMs){
+//                if(it.subscriptionId == )
+//            }
+            viewModel.currentSIMCardIndex = 0
+//            currentSIMCardIndex = availableSIMs.indexOfFirstOrNull { it.subscriptionId == config.getUseSIMIdAtNumber(numbers.first()) } ?: 0
+
+            thread_select_sim_icon.applyColorFilter(config.textColor)
+            thread_select_sim_icon.beVisible()
+            thread_select_sim_number.beVisible()
+
+            if (viewModel.availableSIMCards.isNotEmpty()) {
+                thread_select_sim_icon.setOnClickListener {
+                    Log.d(TAG, "setupSIMSelector: ")
+                    viewModel.currentSIMCardIndex = (viewModel.currentSIMCardIndex + 1) % viewModel.availableSIMCards.size
+                    val currentSIMCard = viewModel.availableSIMCards[viewModel.currentSIMCardIndex]
+                    thread_select_sim_number.text = currentSIMCard.id.toString()
+                    toast(currentSIMCard.label)
+                }
+            }
+
+            thread_select_sim_number.setTextColor(config.textColor.getContrastColor())
+            thread_select_sim_number.text = (viewModel.availableSIMCards[viewModel.currentSIMCardIndex].id).toString()
+        }
     }
     private fun sendSms() {
 //        messageSent.value = false
