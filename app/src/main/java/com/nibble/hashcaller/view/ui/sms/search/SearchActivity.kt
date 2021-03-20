@@ -102,7 +102,10 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     override fun onTextChanged(text: String) {
         if(isIntentFromIndividualSMS){
             //searching for individual sms
-            viewmodel.searchForIndividualSMS(text)
+//            viewmodel.searchForIndividualSMS(text, contactAddress).observe(this, Observer {
+//                Log.d(TAG, "onSearchIndividualSMS: $it")
+//                this.searchAdapter!!.setList(it)
+//            })
         }else{
             //get sms of all chats
             if(text.isNullOrEmpty()){

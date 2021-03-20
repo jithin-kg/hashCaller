@@ -1514,5 +1514,104 @@ class SMSLocalRepository(
         smssendersInfoDAO!!.deleteAll()
     }
 
+    fun searchSmsForIndividualSMS(text: String, contactAddress: String?): List<SMS> {
+        var selectionArgs: Array<String>? = null
+        var selection: String? = null
+
+
+
+            selection = SMSContract.SMS_SELECTION_SEARCH
+            selectionArgs = arrayOf("%$contactAddress%", "%$text%")
+
+        val projection = arrayOf(
+            "thread_id",
+            "_id",
+            "address",
+            "type",
+            "body",
+            "read",
+            "date"
+        )
+
+        selection = SMSContract.SMS_SELECTION_SEARCH_INDIVIDUAL
+        val cursor =  context.contentResolver.query(
+            SMSContract.ALL_SMS_URI,
+            projection,
+            selection,
+            selectionArgs,
+            SMSContract.SORT_DESC
+        )
+        var smslist = mutableListOf<SMS>()
+
+        try {
+            if(cursor != null && cursor.moveToFirst()) {
+                do {
+
+                    val smsWithCurrentDate = SMS()
+                    smsWithCurrentDate.type = -1 // cause this is just date, ie does not belong to any
+                    //sms type so I can filer this from adapter
+                    val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                    var currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
+
+                    val days = getDaysDifference(t)
+                    if(days == 0L){
+                        currentDate = "Today"
+                    }else if(days == 1L){
+                        currentDate = "Yesterday"
+                    }
+
+                    val sms = SMS()
+                    sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
+                    sms.timeString = setHourAndMinute(sms, sms.time!!)
+                    sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
+                    val mgsStr = sms.msgString
+                    sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
+                    sms.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+
+                    sms.addressString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("address"))
+                    sms.msgType = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+                    sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+
+                    if(IndividualSMSActivity.chatId.isNotEmpty()){
+                        if(sms.id.toString() == IndividualSMSActivity.chatId){
+                            val startPos = sms.msgString!!.indexOf(IndividualSMSActivity.queryText!!)
+                            val endPos = startPos + IndividualSMSActivity.queryText!!.length
+
+                            val yellow = BackgroundColorSpan(Color.YELLOW)
+                            val spannableStringBuilder =
+                                SpannableStringBuilder(mgsStr)
+
+                            spannableStringBuilder.setSpan(
+                                yellow,
+                                startPos,
+                                endPos,
+                                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            )
+                            sms.msg = spannableStringBuilder
+                        }else{
+                            val spannableStringBuilder =
+                                SpannableStringBuilder(mgsStr)
+                            sms.msg = spannableStringBuilder
+                        }
+                    }else{
+                        val spannableStringBuilder =
+                            SpannableStringBuilder(mgsStr)
+                        sms.msg = spannableStringBuilder
+
+                    }
+                    smslist.add(sms)
+
+
+                } while (cursor.moveToNext())
+
+            }
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "getSmsForIndividualSMS: exception $e")
+        }
+
+        return  smslist
+    }
+
 }
 

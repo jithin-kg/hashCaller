@@ -18,6 +18,7 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -36,7 +37,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.view.ui.sms.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
@@ -51,7 +51,7 @@ import kotlin.concurrent.timerTask
 class IndividualSMSActivity : AppCompatActivity(),
     SMSIndividualAdapter.ItemPositionTracker, View.OnClickListener,
     AdapterView.OnItemSelectedListener, android.widget.PopupMenu.OnMenuItemClickListener,
-    PopupMenu.OnMenuItemClickListener {
+    PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener {
     private lateinit var viewModel:SMSIndividualViewModel
     private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
@@ -79,7 +79,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private  var spammerType:Int = -1
     var spamTypes:MutableList<String> = ArrayList<String>()
-    var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
+//    var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
     private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
     private var smsQueueLiveData:MutableLiveData<Queue<SMS>> = MutableLiveData()
     private var smsQueue:Queue<SMS> = LinkedList<SMS>()
@@ -348,6 +348,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         bottomSheetDialog.btnBlock.setOnClickListener(this)
         imgViewCallBtn.setOnClickListener(this)
         imgBtnSearchSMS.setOnClickListener(this)
+        sViewIndividualSMS.setOnQueryTextListener(this)
 
 //        bottomSheetDialog.btnBlock.setOnClickListener(this)
 //        imgViewCallBtn.setOnClickListener(this)
@@ -360,23 +361,28 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun observeSmsLiveData() {
-        this.smsLiveData.observe(this, Observer {
+        viewModel.smsLiveData.observe(this, Observer {
 
             adapter.setList(it)
-
 //            if(!isSmsChannelBusy && !smsQueue.isEmpty()){
 //                sendSmsToClient(smsQueue.remove())
 //                isSmsChannelBusy = true
 //            }
             if(chatId.isNotEmpty()){
-
+                SCROLL_TO_POSITION = null
                 Log.d(TAG, "observeSmsLiveData:chat id  $chatId")
                 //intent from sms search activity
-                Log.d(TAG, "observeSmsLiveData: scrollToPosition $chatScrollToPosition")
-                recyclerView.scrollToPosition(chatScrollToPosition);
-            }else{
+//                recyclerView.scrollToPosition(chatScrollToPosition);
+                scrollTOPosition(chatScrollToPosition, layoutMngr)
+            }else if(SCROLL_TO_POSITION!=null){
+                scrollTOPosition(SCROLL_TO_POSITION!!, layoutMngr)
+
+            }
+
+            else{
                 if(firstime){
-                    recyclerView.scrollToPosition(it.size - 1);
+                    scrollTOPosition(it.size - 1 , layoutMngr)
+//                    recyclerView.scrollToPosition(it.size - 1);
                     firstime = false
                 }
             }
@@ -416,7 +422,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                Log.d(TAG, "setupViewmodelObserver: msg of last item ${it[it.size-1].msgString}")
 //                Log.d(TAG, "setupViewmodelObserver: msg address ${it[it.size-1].addressString}")
 //                Log.d(TAG, "setupViewmodelObserver: msg time ${it[it.size-1].time}")
-                this.smsLiveData.value = sms as MutableList<SMS>?
+                viewModel.smsLiveData.value = sms as MutableList<SMS>?
 //                val list:MutableList<SMS> = mutableListOf()
 //                list.addAll(it)
 //                for (item in smsQueue){
@@ -546,8 +552,8 @@ class IndividualSMSActivity : AppCompatActivity(),
         smsObj.msgString = edtTxtMSg.text.toString()
         smsObj.msgType = 4
         smsObj.type = 4
-        this.smsLiveData.value!!.add(smsObj)
-        this.smsLiveData.value = this.smsLiveData.value
+        viewModel.smsLiveData.value!!.add(smsObj)
+        viewModel.smsLiveData.value = viewModel.smsLiveData.value
 
 //        this.smsQueue.add(smsObj)
 //        if(!smsQueue.isNullOrEmpty()){
@@ -716,7 +722,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             }
             R.id.imgBtnSearchSMS->{
                 Log.d(TAG, "onClick: imgBtnSearchSMS")
-                startSearchActivity()
+                showSearchView()
             }
 //            R.id.btnUpdate->{
 //            viewModel.update()
@@ -730,14 +736,23 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     }
 
+    private fun showSearchView() {
+        sViewIndividualSMS.requestFocus()
+        sViewIndividualSMS.beVisible()
+        imgBtnBackSmsIndividual.beInvisible()
+        tvSMSAddress.beGone()
+        imgViewCallBtn.beGone()
+        imgBtnSearchSMS.beGone()
+    }
+
     private fun startSearchActivity() {
-        val intent = Intent(this, SearchActivity::class.java)
-        intent.putExtra("animation", "explode")
-//        val extras = Bundle()
-//        extras.putString(CONTACT_ADDRES, contactAddress)
-//        extras.putString("animation", "explode")
-        intent.putExtra(CONTACT_ADDRES, contactAddress)
-        startActivity(intent)
+//        val intent = Intent(this, SearchActivity::class.java)
+//        intent.putExtra("animation", "explode")
+////        val extras = Bundle()
+////        extras.putString(CONTACT_ADDRES, contactAddress)
+////        extras.putString("animation", "explode")
+//        intent.putExtra(CONTACT_ADDRES, contactAddress)
+//        startActivity(intent)
     }
 
     private fun radioButtonClickPerformed(v: View?) {
@@ -880,7 +895,14 @@ class IndividualSMSActivity : AppCompatActivity(),
             return false
     }
 
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        viewModel.searchForSMS(query)
+        return true
+    }
 
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
+    }
 
 
 }

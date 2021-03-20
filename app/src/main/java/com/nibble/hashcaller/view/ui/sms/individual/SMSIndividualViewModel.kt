@@ -1,12 +1,18 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.os.Bundle
 import android.telephony.SmsManager
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +27,7 @@ import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
+import com.nibble.hashcaller.view.ui.sms.individual.util.SCROLL_TO_POSITION
 import com.nibble.hashcaller.view.ui.sms.individual.util.SIMCard
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -37,11 +44,14 @@ class SMSIndividualViewModel(
     val SMS: SMSIndividualLiveData,
     private val repository: SMSLocalRepository?,
     private val smsDAODAO: SmsOutboxListDAO?,
-    private val spamRepository: SpamNetworkRepository?
+    private val spamRepository: SpamNetworkRepository?,
+    private val smsLocalRepository: SMSLocalRepository
 ): ViewModel() {
 //    public var blockedStatusOfThenumber:MutableList<SpammerInfo> =
 //        mutableListOf<SpammerInfo>()
-val smsQuee:Queue<SMS> = LinkedList<SMS>()
+var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
+
+    val smsQuee:Queue<SMS> = LinkedList<SMS>()
     val availableSIMCards = ArrayList<SIMCard>()
      var currentSIMCardIndex = 0
 
@@ -58,6 +68,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
     }
      var filteredSms: MutableLiveData<String>? = null
 
+    @SuppressLint("LongLogTag")
     fun getContactInfoForNumber(pno:String) = viewModelScope.launch {
         val name = repository?.getConactInfoForNumber(pno)
         Log.d(TAG, "getContactInfoForNumber: name from repository is $name")
@@ -72,6 +83,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
 
     }
 
+    @SuppressLint("LongLogTag")
     fun addMessageToOutBox(
         msg: String,
         contactAddress: String
@@ -85,6 +97,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
         return time
     }
 
+    @SuppressLint("LongLogTag")
     fun moveToSent(time: String?, address: String?) = viewModelScope.launch {
         Log.d(TAG, "moveToSent: address $address")
         repository?.moveFromoutBoxToSent(time, address!!)
@@ -94,6 +107,7 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
     /**
      * send sms and manages outbox id
      */
+    @SuppressLint("LongLogTag")
     fun sendSms(
         msg: String,
         applicationContext: Context,
@@ -234,6 +248,53 @@ val smsQuee:Queue<SMS> = LinkedList<SMS>()
 
 
 }
+
+    fun searchForSMS(query: String?) = viewModelScope.launch {
+        SCROLL_TO_POSITION = null
+        val smsList = smsLocalRepository.fetchIndividualSMS(IndividualSMSActivity.contact)
+        var mutableSMSLIst:MutableList<SMS> = mutableListOf()
+        mutableSMSLIst.addAll(smsList)
+        if(mutableSMSLIst !=null){
+
+            mutableSMSLIst.forEachIndexed {index, sms->
+                if(sms.msgString!=null){
+                    if(sms.msgString!!.contains(query!!)){
+                        val msgStr = sms.msgString
+                        val spannableStringBuilder =
+                            SpannableStringBuilder(msgStr)
+                        val startPos = sms.msgString!!.indexOf(query)
+                        val endPos = startPos + query!!.length
+                        val yellow = BackgroundColorSpan(Color.YELLOW)
+
+                        spannableStringBuilder.setSpan(
+                            yellow,
+                            startPos,
+                            endPos,
+                            Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                        val forgroundColor = ForegroundColorSpan(Color.BLACK)
+                        spannableStringBuilder.setSpan(forgroundColor, startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                        sms.msg = spannableStringBuilder
+                        if(SCROLL_TO_POSITION == null)
+                        SCROLL_TO_POSITION = index
+                    }else{
+                        val msgStr = sms.msgString
+                        val spannableStringBuilder =
+                            SpannableStringBuilder(msgStr)
+
+                        sms.msg = spannableStringBuilder
+                    }
+                }
+
+
+            }
+            smsLiveData.value = mutableSMSLIst
+
+        }
+
+
+//        smsLiveData.value = smsLiveData.value
+    }
 
 
     companion object{

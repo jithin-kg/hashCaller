@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.individual.util
 import android.graphics.Color
 import android.os.Build
 import android.os.Looper
+import androidx.recyclerview.widget.LinearLayoutManager
 
 const val APP_NAME = "app_name"
 const val APP_LICENSES = "app_licenses"
@@ -207,4 +208,20 @@ fun ensureBackgroundThread(callback: () -> Unit) {
     } else {
         callback()
     }
+}
+
+
+var SCROLL_TO_POSITION:Int ? = null
+
+/**
+ * funciton to scroll recyclerview to a position
+ * @param position, the posoition to which the recyclerview should be scrolling
+ */
+fun scrollTOPosition(position:Int, layoutMngr: LinearLayoutManager ){
+    val firstVisibleItemPosition = layoutMngr.findFirstVisibleItemPosition()
+    val lastVisibleItemPosition = layoutMngr.findLastVisibleItemPosition()
+    val middle = (firstVisibleItemPosition + lastVisibleItemPosition) / 2
+    layoutMngr.scrollToPositionWithOffset(position, middle)
+    var SCROLL_TO_POSITION:Int ? = null
+
 }

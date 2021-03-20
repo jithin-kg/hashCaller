@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.sms_indiivdual_date.view.*
 import kotlinx.android.synthetic.main.sms_individual_outbox_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_sent_item.view.*
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -413,24 +414,18 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
             }
 
 //            Log.d(TAG, "areItemsTheSame: ${newItem.currentDate}")
-            return oldItem.id == newItem.id
+            return oldItem.id == newItem.id 
 
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-//            Log.d(TAG, "areContentsTheSame: type ${oldItem.type == newItem.type}")
-//            Log.d(TAG, "areContentsTheSame: ")
-            if(oldItem == newItem){
-//                Log.d(TAG, "areContentsTheSame:  equal")
-            }else{
-//                Log.d(TAG, "areContentsTheSame: not equal")
-
+            try {
+              val b=  oldItem.msg == newItem.msg && oldItem.type == newItem.type && oldItem.time == newItem.time
+                Log.d(TAG, "areContentsTheSame: b is $b")
+            }catch (e:Exception){
+                Log.d(TAG, "areContentsTheSame: exception $e")
             }
-            val b = oldItem == newItem && oldItem.time == newItem.time
-
-//            Log.d(TAG, "areContentsTheSame: b : $b")
-            return oldItem.time == newItem.time &&
-                    oldItem.msgString == newItem.msgString && oldItem.type == newItem.type
+            return oldItem.msg == newItem.msg && oldItem.type == newItem.type && oldItem.time == newItem.time
 
         }
 

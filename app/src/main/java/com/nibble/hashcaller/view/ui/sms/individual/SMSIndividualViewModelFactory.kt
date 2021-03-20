@@ -14,12 +14,14 @@ class SMSIndividualViewModelFactory(
     private val SMSLiveData: SMSIndividualLiveData?,
     private val repository: SMSLocalRepository?,
     private val smsDAODAO: SmsOutboxListDAO?,
-    private val spamNetworkRepository: SpamNetworkRepository?
+    private val spamNetworkRepository: SpamNetworkRepository?,
+    private val smsLocalRepository: SMSLocalRepository
 ) :
     ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         //preparing view model
 
-        return SMSIndividualViewModel(this!!.SMSLiveData!!, repository, smsDAODAO, spamNetworkRepository) as T
+        return SMSIndividualViewModel(this!!.SMSLiveData!!, repository,
+            smsDAODAO, spamNetworkRepository, smsLocalRepository) as T
     }
 }

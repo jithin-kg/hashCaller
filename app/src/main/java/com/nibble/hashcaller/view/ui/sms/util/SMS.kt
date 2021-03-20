@@ -40,6 +40,7 @@ class SMS() {
     var type:Int = 0
     var addressString: String? = null
     var msg: SpannableStringBuilder? = null
+    var searchIndex = 0
     var msgString:String? = null
     var msgType:Int = 0
     var currentDate:String? = null

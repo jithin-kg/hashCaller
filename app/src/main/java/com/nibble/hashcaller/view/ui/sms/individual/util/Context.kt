@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.work.formatPhoneNumber
 
 val Context.config: Config get() = Config.newInstance(applicationContext)
@@ -53,3 +54,5 @@ private fun doToast(context: Context, message: String, length: Int) {
         Toast.makeText(context, message, length).show()
     }
 }
+
+

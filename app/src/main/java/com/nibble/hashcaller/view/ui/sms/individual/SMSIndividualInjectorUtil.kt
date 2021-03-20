@@ -24,7 +24,7 @@ object SMSIndividualInjectorUtil {
             mutedSendersDAO
         ) }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }
-
+        val smsLocalRepository = SMSLocalRepository(context!!, spamListDAO, smssendersInfoDAO, mutedSendersDAO)
 
         val messagesLiveData = context?.let {
             SMSIndividualLiveData(
@@ -32,7 +32,7 @@ object SMSIndividualInjectorUtil {
                 spamListDAO
             )
         }
-        return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO, spamNetworkRepository)
+        return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO, spamNetworkRepository, smsLocalRepository)
     }
 
 }

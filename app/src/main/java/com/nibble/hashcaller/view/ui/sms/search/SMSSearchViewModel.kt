@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.sms.search
 
 import android.content.SharedPreferences
 import androidx.lifecycle.*
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.sms.search.SmsSearchQueries
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -40,8 +39,8 @@ class SMSSearchViewModel(
      emit(repository!!.getSms(searchQuery))
 
     }
-//    fun searchForIndividualSMS(text: String) LiveData<List<SMS>> = liveData<List<SMS>> {
-//
+//    fun searchForIndividualSMS(text: String, contactAddress: String?): LiveData<List<SMS>> = liveData<List<SMS>> {
+////        emit(repository!!.searchSmsForIndividualSMS(text, contactAddress))
 //    }
 
     fun saveSearchQueryToDB(queryText: String) = viewModelScope.launch {
