@@ -1,8 +1,10 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.Manifest
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.transition.Fade
@@ -17,24 +19,39 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Scene
 import androidx.transition.Transition
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.adapter.ViewPagerAdapter
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
 import com.nibble.hashcaller.view.ui.contacts.search.DetailsTransition
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
+import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.contact_list.*
+import kotlinx.android.synthetic.main.fragment_contact_list.*
+import kotlinx.android.synthetic.main.fragment_contact_list.view.*
 import kotlinx.android.synthetic.main.fragment_contacts.*
 import kotlinx.android.synthetic.main.fragment_search.*
 
@@ -59,12 +76,11 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     private lateinit var searchViewContacts:EditText
     private var contactListFragment: ContactListFragment? = null
 
-    private lateinit var scene1:Scene
-    private lateinit var scene2:Scene
-    private lateinit var currentScene:Scene
-    private lateinit var transition:Transition
+    private lateinit  var contactViewModel: ContactsViewModel
+    private lateinit var contactsView: View
+    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
+    var contactsRecyclerAdapter: ContactAdapter? = null
 
-    var ContactViewFragment: View? = null
 //    private val contactViewModel: ContactViewModel? = null
 
 //        private RecyclerView contactsList;
@@ -77,20 +93,10 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(savedInstanceState!= null){
-            if(childFragmentManager.getFragment(savedInstanceState, "contactListFragment") != null)
-                this.contactListFragment = childFragmentManager.getFragment(savedInstanceState, "contactListFragment") as ContactListFragment
-        }
+
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if(this.contactListFragment!=null){
-            if(this.contactListFragment!!.isAdded){
-                childFragmentManager.putFragment(outState,"contactListFragment",
-                    this.contactListFragment!!
-                )
-            }
-        }
 
     }
 
@@ -111,43 +117,62 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         // clone the inflater using the ContextThemeWrapper
         val localInflater = inflater.cloneInContext(contextThemeWrapper)
         // Inflate the layout for this fragment
-        ContactViewFragment = localInflater.inflate(R.layout.fragment_contacts, container, false)
+        contactsView = inflater.inflate(R.layout.fragment_contact_list, container, false)
 
-
-
-//        if (!checkPermission()) {
-//            return null
-//        }
-
-        initialize()
-        setupViewPager(viewPager)
-        tabLayout!!.setupWithViewPager(viewPager)
-
-
-
-        searchViewContacts.onFocusChangeListener = OnFocusChangeListener { view, hasFocus ->
-
-            if (hasFocus) {
-                if((activity as MainActivity).searchFragment!=null)
-                startSearchActivity()
-            }
+        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
+        if(checkContactPermission()){
+            observerContactList()
         }
 
-//        searchViewContacts.setOnQueryTextListener(object :
-//            SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String): Boolean {
-//                Log.d(TAG, "onQueryTextSubmit: ")
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                //    adapter.getFilter().filter(newText);
-//                Log.d(TAG, "onQueryTextChange: ")
-//                return false
-//            }
-//        })
-        searchViewContacts.setOnClickListener(this)
-        return ContactViewFragment
+        observePermissionLiveData()
+
+
+
+        return contactsView
+    }
+    private fun initListeners() {
+        this.contactsView.btnGivecontactPermission.setOnClickListener(this)
+        toolbar = contactsView?.findViewById(R.id.toolbar)
+
+        searchViewContacts = contactsView?.findViewById(R.id.searchViewContacts)!!
+
+    }
+    private fun observePermissionLiveData() {
+        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
+            if(value == true){
+                this.contactsView.btnGivecontactPermission.visibility = View.GONE
+                this.contactsView.tvCntctPermissionInfo.visibility = View.GONE
+//                this.contactsView.pgBarCntcList.visibility = View.VISIBLE
+                observerContactList()
+            }else{
+                this.contactsView.btnGivecontactPermission.visibility = View.VISIBLE
+                this.contactsView.tvCntctPermissionInfo.visibility = View.VISIBLE
+//                this.contactsView.pgBarCntcList.visibility = View.GONE
+
+                if (this.contactViewModel!! != null  ) {
+                    if(this.contactViewModel?.contacts != null)
+                        if(this.contactViewModel.contacts!!.hasObservers())
+                            this.contactViewModel?.contacts?.removeObservers(this);
+                }
+
+
+            }
+        })
+    }
+
+    private fun observerContactList() {
+        try {
+            contactViewModel.contacts?.observe(viewLifecycleOwner, Observer{contacts->
+                contacts.let {
+//                    this.contactsView.pgBarCntcList.visibility = View.GONE
+                    contactsRecyclerAdapter?.setContactList(it)
+                    ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
+                }
+            })
+        }catch (e:Exception){
+            Log.d(TAG, "observerContactList: exception $e")
+        }
+
     }
 
 
@@ -159,53 +184,12 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         val p1 = android.util.Pair(searchViewContacts as View,"editTextTransition")
 
         val options = ActivityOptions.makeSceneTransitionAnimation(activity,p1 )
-//        val options  = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//            this!!.requireActivity(), btnSampleTransition,
-//            ViewCompat.getTransitionName(btnSampleTransition)!!
-//        )
         startActivity(intent, options.toBundle())
 
-//        val kittenDetails = (activity as MainActivity).searchFragment
-//
-//        kittenDetails?.setSharedElementEnterTransition(DetailsTransition())
-//        kittenDetails?.setEnterTransition(Fade())
-//        //Todo add exit transition other than fade, fade is laggy in view for exit
-////        exitTransition = Fade()
-//
-//        kittenDetails?.setSharedElementReturnTransition(DetailsTransition())
-//
-//        (activity as MainActivity).bottomNavigationView.visibility = View.GONE
-//
-//        requireActivity().supportFragmentManager
-//            .beginTransaction()
-//            .addSharedElement(searchViewContacts, searchViewContacts.transitionName)
-//            .replace(R.id.frame_fragmentholder, kittenDetails!!)
-//            .addToBackStack(null)
-//            .commit()
 
     }
 
 
-    private fun initialize() {
-        toolbar = ContactViewFragment?.findViewById(R.id.toolbar)
-        tabLayout = ContactViewFragment?.findViewById(R.id.tabLayout)
-        viewPager = ContactViewFragment?.findViewById(R.id.viewPager)
-        searchViewContacts = ContactViewFragment?.findViewById(R.id.searchViewContacts)!!
-
-
-    }
-
-
-    //nested
-    private fun setupViewPager(viewPager: ViewPager?) {
-        if(this.contactListFragment == null){
-            this.contactListFragment = ContactListFragment()
-        }
-        val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPagerAdapter.addFragment(this.contactListFragment!!, "Contacts")
-//        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
-        viewPager!!.adapter = viewPagerAdapter
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -224,20 +208,93 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
 
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: searchview")
-        if((activity as MainActivity).searchFragment!=null){
-            startSearchActivity()
+        when(v?.id){
+            R.id.btnGivecontactPermission ->{
+                Log.d(TAG, "onClick: request permission")
+                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+            }else->{
 
-        }else{
-            Log.d(TAG, "onClick: searchfragment is null")
+            if((activity as MainActivity).searchFragment!=null){
+                startSearchActivity()
+
+            }else{
+                Log.d(TAG, "onClick: searchfragment is null")
+            }
         }
+        }
+
       }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        btnTest.setOnClickListener(this)
+
+        initListeners()
         ViewCompat.setTransitionName(searchViewContacts, searchViewContacts.transitionName)
+        initRecyclerView()
+        searchViewContacts.onFocusChangeListener = OnFocusChangeListener { view, hasFocus ->
+
+            if (hasFocus) {
+                if((activity as MainActivity).searchFragment!=null)
+                    startSearchActivity()
+            }
+        }
+        searchViewContacts.setOnClickListener(this)
+
 
     }
+
+    private fun initRecyclerView() {
+
+        rcrViewContactsList?.apply {
+            layoutManager = LinearLayoutManager(activity)
+            val topSpacingDecorator =
+                TopSpacingItemDecoration(
+                    30
+                )
+//                addItemDecoration(topSpacingDecorator)
+            contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
+            adapter = contactsRecyclerAdapter
+
+        }
+
+
+
+
+    }
+    private fun onContactItemClicked(contactItem: Contact){
+        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
+        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+        intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
+        intent.putExtra("name", contactItem.name )
+        intent.putExtra("id", contactItem.id)
+        intent.putExtra("photo", contactItem.photoURI)
+
+        val pairList = ArrayList<android.util.Pair<View, String>>()
+        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+        val p2 = android.util.Pair(textVContactName as View, "contactNameTransition")
+        pairList.add(p1)
+        pairList.add(p2)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0], pairList[1]  )
+
+
+        startActivity(intent, options.toBundle())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        this.permissionGivenLiveData.value  = checkContactPermission()
+
+    }
+    private fun checkContactPermission(): Boolean {
+        val permissionContact =
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CALL_LOG)
+        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+            return false
+        }
+        return true
+    }
+
+
 
     override var isDefaultFgmnt: Boolean
         get() = isDflt

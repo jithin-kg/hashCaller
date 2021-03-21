@@ -100,12 +100,12 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
             if(value == true){
                 this.contactsView.btnGivecontactPermission.visibility = View.GONE
                 this.contactsView.tvCntctPermissionInfo.visibility = View.GONE
-                this.contactsView.pgBarCntcList.visibility = View.VISIBLE
+//                this.contactsView.pgBarCntcList.visibility = View.VISIBLE
                 observerContactList()
             }else{
                 this.contactsView.btnGivecontactPermission.visibility = View.VISIBLE
                 this.contactsView.tvCntctPermissionInfo.visibility = View.VISIBLE
-                this.contactsView.pgBarCntcList.visibility = View.GONE
+//                this.contactsView.pgBarCntcList.visibility = View.GONE
 
                 if (this.contactViewModel!! != null  ) {
                     if(this.contactViewModel?.contacts != null)
@@ -122,10 +122,10 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
     private fun observerIsLoading() {
         ContactsViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading->
             if(isLoading){
-                pgBarCntcList.visibility = View.VISIBLE
+//                pgBarCntcList.visibility = View.VISIBLE
 
             }else{
-                pgBarCntcList.visibility = View.GONE
+//                pgBarCntcList.visibility = View.GONE
             }
          })
     }
@@ -134,7 +134,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         try {
             contactViewModel.contacts?.observe(viewLifecycleOwner, Observer{contacts->
                 contacts.let {
-                    this.contactsView.pgBarCntcList.visibility = View.GONE
+//                    this.contactsView.pgBarCntcList.visibility = View.GONE
                     contactsRecyclerAdapter?.setContactList(it)
                     ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
                 }
