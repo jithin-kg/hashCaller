@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.individual.util
 
 import android.Manifest
 import android.app.Activity
+import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,8 +10,9 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.work.formatPhoneNumber
 
 val Context.config: Config get() = Config.newInstance(applicationContext)
@@ -19,7 +21,21 @@ fun Context.getSharedPrefs() = getSharedPreferences(PREFS_KEY, Context.MODE_PRIV
 val Context.baseConfig: BaseConfig get() = BaseConfig.newInstance(this)
 
 
-
+/**
+ * Request focus for searchview and show soft input focused on searchView
+ * @param searchView Searchview
+ * @param activity : Activity calling from
+ */
+fun Context.requestSearchViewFocus(
+    searchView: SearchView,
+    activity: AppCompatActivity ){
+    val searchManager  =  getSystemService(AppCompatActivity.SEARCH_SERVICE) as SearchManager;
+    searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.componentName));
+    searchView.setIconifiedByDefault(false);
+    searchView.setFocusable(true);
+    searchView.setIconified(false);
+    searchView.requestFocusFromTouch();
+}
 
 fun Context.call(phoneNum:String){
     var formatedNum = "+" +formatPhoneNumber(phoneNum)

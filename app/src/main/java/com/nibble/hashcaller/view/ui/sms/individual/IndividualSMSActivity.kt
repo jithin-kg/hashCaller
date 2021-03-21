@@ -349,6 +349,8 @@ class IndividualSMSActivity : AppCompatActivity(),
         imgViewCallBtn.setOnClickListener(this)
         imgBtnSearchSMS.setOnClickListener(this)
         sViewIndividualSMS.setOnQueryTextListener(this)
+        imgBtnSMSUp.setOnClickListener(this)
+        imgBtnSMSDown.setOnClickListener(this)
 
 //        bottomSheetDialog.btnBlock.setOnClickListener(this)
 //        imgViewCallBtn.setOnClickListener(this)
@@ -364,6 +366,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         viewModel.smsLiveData.observe(this, Observer {
 
             adapter.setList(it)
+
 //            if(!isSmsChannelBusy && !smsQueue.isEmpty()){
 //                sendSmsToClient(smsQueue.remove())
 //                isSmsChannelBusy = true
@@ -375,7 +378,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                recyclerView.scrollToPosition(chatScrollToPosition);
                 scrollTOPosition(chatScrollToPosition, layoutMngr)
             }else if(SCROLL_TO_POSITION!=null){
-                scrollTOPosition(SCROLL_TO_POSITION!!, layoutMngr)
+//                scrollTOPosition(null, layoutMngr)
+                    SearchUpAndDownHandler.scrollUp(layoutMngr)
 
             }
 
@@ -703,7 +707,7 @@ class IndividualSMSActivity : AppCompatActivity(),
                     sendSms()
             }
             R.id.imgBtnBackSmsIndividual->{
-                finish()
+                onBackPressedIn()
             }
             R.id.btnBlock->{
                 Log.d(TAG, "onClick: ")
@@ -724,6 +728,13 @@ class IndividualSMSActivity : AppCompatActivity(),
                 Log.d(TAG, "onClick: imgBtnSearchSMS")
                 showSearchView()
             }
+            R.id.imgBtnSMSUp->{
+                scrollUp()
+
+            }R.id.imgBtnSMSDown->{
+            scrollDown()
+
+        }
 //            R.id.btnUpdate->{
 //            viewModel.update()
 //        }
@@ -736,13 +747,64 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     }
 
+
+
+    private fun scrollUp() {
+        Log.d(TAG, "scrollUp: clicked")
+        SearchUpAndDownHandler.scrollUp(layoutMngr)
+        
+    }
+
+    private fun scrollDown() {
+        SearchUpAndDownHandler.scrollDown(layoutMngr)
+
+
+
+//        if(scrollToPositions.isNotEmpty()){
+//            val index = scrollToPositions.indexOf(SCROLL_TO_POSITION)
+//            if(index - 1 > 0){
+//                scrollTOPosition(scrollToPositions[index-1], layoutMngr)
+//
+//            }
+//        }
+    }
+
+    private fun onBackPressedIn() {
+        if(sViewIndividualSMS.visibility == View.VISIBLE){
+
+            sViewIndividualSMS.beGone()
+            imgBtnBackSmsIndividual.beGone()
+            imgBtnSMSUp.beInvisible()
+            imgBtnSMSDown.beInvisible()
+            tvSMSAddress.beVisible()
+            imgViewCallBtn.beVisible()
+            imgBtnSearchSMS.beVisible()
+
+            toolbarSMSIndividual.menu.findItem(R.id.itemBlock).isVisible = true
+            toolbarSMSIndividual.menu.findItem(R.id.itemUnBlock).isVisible = true
+            toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = true
+
+        }else{
+            finish()
+
+        }
+    }
+
     private fun showSearchView() {
-        sViewIndividualSMS.requestFocus()
+//        sViewIndividualSMS.requestFocus()
         sViewIndividualSMS.beVisible()
-        imgBtnBackSmsIndividual.beInvisible()
+        imgBtnBackSmsIndividual.beVisible()
+        imgBtnSMSUp.beVisible()
+        imgBtnSMSDown.beVisible()
         tvSMSAddress.beGone()
         imgViewCallBtn.beGone()
         imgBtnSearchSMS.beGone()
+
+        toolbarSMSIndividual.menu.findItem(R.id.itemBlock).isVisible = false
+        toolbarSMSIndividual.menu.findItem(R.id.itemUnBlock).isVisible = false
+        toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = false
+       requestSearchViewFocus(sViewIndividualSMS, this)
+
     }
 
     private fun startSearchActivity() {

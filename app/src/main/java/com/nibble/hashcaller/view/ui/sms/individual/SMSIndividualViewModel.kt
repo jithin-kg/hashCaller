@@ -14,6 +14,7 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,8 +28,8 @@ import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
-import com.nibble.hashcaller.view.ui.sms.individual.util.SCROLL_TO_POSITION
-import com.nibble.hashcaller.view.ui.sms.individual.util.SIMCard
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.individual.util.SearchUpAndDownHandler.STACK_ONE
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.async
@@ -249,8 +250,15 @@ var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
 
 }
 
+    /**
+     * searching and creating spannable string for sms based on search query
+     * @param query
+     */
     fun searchForSMS(query: String?) = viewModelScope.launch {
+        SearchUpAndDownHandler.clearStacks()
         SCROLL_TO_POSITION = null
+        scrollToPositions.clear()
+
         val smsList = smsLocalRepository.fetchIndividualSMS(IndividualSMSActivity.contact)
         var mutableSMSLIst:MutableList<SMS> = mutableListOf()
         mutableSMSLIst.addAll(smsList)
@@ -258,11 +266,17 @@ var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
 
             mutableSMSLIst.forEachIndexed {index, sms->
                 if(sms.msgString!=null){
-                    if(sms.msgString!!.contains(query!!)){
+                    if(sms.msgString!!.toLowerCase().contains(query!!.toLowerCase())){
+//                        scrollToPositions.add(index)
+                        //add positions to stack
+
+                        SearchUpAndDownHandler.addToStackOne( index)
+
                         val msgStr = sms.msgString
                         val spannableStringBuilder =
                             SpannableStringBuilder(msgStr)
-                        val startPos = sms.msgString!!.indexOf(query)
+
+                        val startPos = sms.msgString!!.toLowerCase().indexOf(query.toLowerCase())
                         val endPos = startPos + query!!.length
                         val yellow = BackgroundColorSpan(Color.YELLOW)
 
@@ -291,7 +305,8 @@ var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
             smsLiveData.value = mutableSMSLIst
 
         }
-
+        if(mutableSMSLIst.isEmpty())
+        Toast.makeText(this@SMSIndividualViewModel.applicationContext, "Not found", Toast.LENGTH_SHORT).show()
 
 //        smsLiveData.value = smsLiveData.value
     }

@@ -212,7 +212,7 @@ fun ensureBackgroundThread(callback: () -> Unit) {
 
 
 var SCROLL_TO_POSITION:Int ? = null
-
+var SCROLL_TO_POSITION_BY_TAPING: Int? = null
 /**
  * funciton to scroll recyclerview to a position
  * @param position, the posoition to which the recyclerview should be scrolling
@@ -221,7 +221,14 @@ fun scrollTOPosition(position:Int, layoutMngr: LinearLayoutManager ){
     val firstVisibleItemPosition = layoutMngr.findFirstVisibleItemPosition()
     val lastVisibleItemPosition = layoutMngr.findLastVisibleItemPosition()
     val middle = (firstVisibleItemPosition + lastVisibleItemPosition) / 2
+//    layoutMngr.scrollToPositionWithOffset(position, middle)
     layoutMngr.scrollToPositionWithOffset(position, middle)
-    var SCROLL_TO_POSITION:Int ? = null
-
+     SCROLL_TO_POSITION = null
 }
+
+/**
+ * for storing positions of of search results
+ * to be scrolled while clicking up and down arrow mark
+ */
+var scrollToPositions:MutableList<Int> = mutableListOf()
+var scrollToCount : Int ? = null

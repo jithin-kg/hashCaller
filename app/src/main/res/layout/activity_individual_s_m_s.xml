@@ -35,25 +35,60 @@
                 android:layout_height="match_parent"
                 app:layout_constraintStart_toStartOf="parent">
 
+
+                <ImageButton
+                    android:id="@+id/imgBtnSMSDown"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+
+                    android:visibility="invisible"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_down" />
+
+                <ImageButton
+                    android:id="@+id/imgBtnSMSUp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:visibility="invisible"
+
+                    android:padding="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnSMSDown"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_arrow_up" />
+
+
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/sViewIndividualSMS"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="16dp"
                     app:defaultQueryHint="Seach..."
-                    android:visibility="invisible"
+                    android:visibility="gone"
+                    android:focusableInTouchMode="true"
+                    android:iconifiedByDefault="true"
+                    app:showAsAction="always"
+                    app:iconifiedByDefault="true"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnSMSUp"
                     app:layout_constraintStart_toEndOf="@+id/imgBtnBackSmsIndividual"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/imgBtnBackSmsIndividual"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:padding="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -63,11 +98,11 @@
                     android:id="@+id/tvSMSAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:text="TextView"
                     android:textColor="@color/textColor"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgViewCallBtn"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/imgBtnBackSmsIndividual"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -75,6 +110,8 @@
                     android:id="@+id/imgViewCallBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:padding="4dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
