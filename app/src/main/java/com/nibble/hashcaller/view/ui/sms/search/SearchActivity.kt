@@ -35,7 +35,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         contactAddress = intent.getStringExtra(CONTACT_ADDRES) // this intent extra is received when
                                                             //intented from individualsmsactivity
         Log.d(TAG, "onCreate: contactaddresvia intent $contactAddress")
-        if(contactAddress!!.isNotEmpty()){
+        if(!contactAddress.isNullOrEmpty()){
             isIntentFromIndividualSMS = true
         }
         initRecyclerView()
@@ -65,7 +65,6 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
     private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String, id:Long?) {
         saveSearchQueryToLocalDB()
-
         val intent = Intent(this, IndividualSMSActivity::class.java )
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         var bundle = Bundle()
