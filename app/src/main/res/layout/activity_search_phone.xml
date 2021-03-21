@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <SearchView
-            android:id="@+id/searchViewPhoneNum"
+            android:id="@+id/searchViewPhoneNum2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -59,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imgViewLock"
-        app:layout_constraintTop_toBottomOf="@+id/imgBtnSearchBack"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnSearchBack2"
         app:shimmer_auto_start="false"
         app:shimmer_colored="false"
         app:shimmer_repeat_count="1">
@@ -95,18 +95,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.042"
         app:layout_constraintStart_toEndOf="@+id/imgViewLock"
-        app:layout_constraintTop_toBottomOf="@+id/imgBtnSearchBack" />
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnSearchBack2" />
 
     <ImageButton
-        android:id="@+id/imgBtnSearchBack"
+        android:id="@+id/imgBtnSearchBack2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
         android:background="?android:selectableItemBackground"
         android:src="@drawable/ic_baseline_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcclrView1"
@@ -120,9 +119,15 @@
         android:id="@+id/recyclrViewLocal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/seachViewLayout"
         app:layout_constraintTop_toBottomOf="@+id/rcclrView1"
         tools:layout_editor_absoluteX="117dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.06" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

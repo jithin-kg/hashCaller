@@ -113,8 +113,11 @@
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:theme="@style/AppTheme" />
+<!--        https://developer.android.com/training/keyboard-input/visibility-->
+<!-- important adjust resize ensure that view that all of your layout content is accessible -->
         <activity
             android:name=".view.ui.contacts.search.ActivitySearchPhone"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.auth.ActivityEnterOTP"
