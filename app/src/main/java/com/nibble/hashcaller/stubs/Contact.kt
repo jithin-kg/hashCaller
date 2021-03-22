@@ -1,5 +1,7 @@
 package com.nibble.hashcaller.stubs
 
+import android.graphics.drawable.Drawable
+import android.text.SpannableStringBuilder
 import androidx.annotation.Keep
 
 /**
@@ -11,7 +13,10 @@ class Contact(
     val name: String,
     var phoneNumber: String = "",
     var photoThumnail: String?,
-    var photoURI: String = ""
+    var photoURI: String = "",
+    var drawable: Drawable? = null,
+    var nameSpann: SpannableStringBuilder? = null,
+    var phoneSpann: SpannableStringBuilder? = null
 
 )  {
 

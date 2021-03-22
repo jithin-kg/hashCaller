@@ -22,8 +22,8 @@ import kotlin.collections.mutableListOf
 class ContactLiveData(private val context: Context):
     ContentProviderLiveData<List<Contact>>(context,
         URI) {
-    private var lastNumber = "0"
-    private var prevName = "Aadithyan Bb"
+    private var lastNumber = ""
+    private var prevName = ""
     companion object{
 //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri =ContactsContract.CommonDataKinds.Phone.CONTENT_URI
@@ -83,7 +83,14 @@ class ContactLiveData(private val context: Context):
                     var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
                     if(name!=null){
                         if(this.prevName != name && this.lastNumber != phoneNo){
-                            listOfContacts.add(Contact(id, name, phoneNo, photoThumnail, photoURI))
+                            listOfContacts.add(Contact(
+                                id,
+                                name,
+                                phoneNo,
+                                photoThumnail,
+                                photoURI
+
+                            ))
                             this.lastNumber = phoneNo
                             this.prevName = name
                         }

@@ -20,7 +20,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 import kotlinx.android.synthetic.main.activity_search.*
 
-class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler {
+class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler {
     private lateinit var editTextListener: TextChangeListener
     private lateinit var viewmodel:SMSSearchViewModel
     private  var searchAdapter: SMSSearchAdapter? = null
@@ -55,12 +55,12 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
         this.recyclerV = findViewById<RecyclerView>(R.id.reclrSmsSearchResult)
 
-        this@SearchActivity.searchAdapter = SMSSearchAdapter(this, this@SearchActivity)
+        this@SearchSMSActivity.searchAdapter = SMSSearchAdapter(this, this@SearchSMSActivity)
         { view: View, threadId:Long, pos:Int,
           pno:String, id:Long?->onContactItemClicked(view,threadId, pos, pno,id )  }
 
-        recyclerV.layoutManager = LinearLayoutManager(this@SearchActivity)
-        recyclerV.adapter = this@SearchActivity.searchAdapter
+        recyclerV.layoutManager = LinearLayoutManager(this@SearchSMSActivity)
+        recyclerV.adapter = this@SearchSMSActivity.searchAdapter
     }
 
     private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String, id:Long?) {

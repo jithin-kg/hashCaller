@@ -3,22 +3,16 @@ package com.nibble.hashcaller.utils
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.network.user.Status
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
-import kotlinx.android.synthetic.main.activity_search_phone.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.Observer
 import java.util.regex.Pattern
 
 /**
@@ -37,7 +31,7 @@ class InCommingCallManager(
     val serchNetworkRepo = SearchNetworkRepository(context)
     //        var searchResult = serchNetworkRepo.search(phoneNumber)
     val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
-    val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
+    val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
 
     val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
 

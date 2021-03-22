@@ -588,7 +588,13 @@ class SMSLocalRepository(
     }
 
     private fun setContactName(sms: SMS) {
-        var c: Contact = Contact(1L, "", "sample phone num", "", "")
+        var c: Contact = Contact(
+            1L,
+            "",
+            "sample phone num",
+            "",
+            ""
+        )
         var cursor:Cursor? = null
         try {
             val phoneNumber = sms.addressString
@@ -620,7 +626,13 @@ class SMSLocalRepository(
 //                    Log.d(TAG, "name is  $name")
                     if(name!=null){
 
-                        c = Contact(id, name, photoURI, "photoThumnail", photoURI)
+                        c = Contact(
+                            id,
+                            name,
+                            photoURI,
+                            "photoThumnail",
+                            photoURI
+                        )
 
                     }
 

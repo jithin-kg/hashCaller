@@ -116,7 +116,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         this.searchViewmodel.searchResultLiveData.observe(viewLifecycleOwner, Observer {
             if(it!=null){
                 Log.d(TAG, "observeSearchResults: ")
-                layoutSearchResult.visibility = View.VISIBLE
+//                layoutSearchResult.visibility = View.VISIBLE
                 textVContactName.text = it.name
                 tvSearchResultLocation.text = it.location
                 tvSearchResultNameFirstLetter.text  = it.name[0].toString()
@@ -209,7 +209,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 //        this.viewSearch.edtTextPhoneSearch.setText(newText)
         tvSearchIndicator.text = ""
         if(!newText.isNullOrEmpty()){
-            layoutSearchResult.visibility = View.GONE
+//            layoutSearchResult.visibility = View.GONE
             this.searchViewmodel.search(newText!!, key, requireActivity().packageName)
         }else{
             edtTextPhoneSearch.setText("")

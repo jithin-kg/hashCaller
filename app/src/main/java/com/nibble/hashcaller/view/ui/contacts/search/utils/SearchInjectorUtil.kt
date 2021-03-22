@@ -9,7 +9,7 @@ object SearchInjectorUtil {
     fun provideUserInjectorUtil(context:Context) : SearchViewModelFactory {
         val searchNetworkRepository = SearchNetworkRepository(context)
         val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
-        val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
+        val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
 
         return SearchViewModelFactory(searchNetworkRepository, contactLocalSyncRepository)
     }

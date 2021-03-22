@@ -70,7 +70,7 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <include
-        android:id="@+id/layoutSearchResult"
+        android:id="@+id/layoutSearchResult2"
         layout="@layout/search_result_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

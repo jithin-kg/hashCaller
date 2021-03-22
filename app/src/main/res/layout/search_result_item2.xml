@@ -14,7 +14,7 @@
 
 
     <TextView
-        android:id="@+id/textViewcontactCrclr"
+        android:id="@+id/textViewcontactCrclr2"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textVContactName"
+        android:id="@+id/textVContactName2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -39,7 +39,7 @@
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr"
+        app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr2"
         app:layout_constraintTop_toTopOf="parent" />
 
 <!--    <ImageView-->
@@ -55,8 +55,27 @@
 <!--        app:layout_constraintTop_toBottomOf="@+id/textViewcontactCrclr"-->
 <!--        app:srcCompat="@drawable/horizontal_line" />-->
 
+    <TextView
+        android:id="@+id/textVContactNum2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif"
+        android:maxLines="1"
+        android:padding="2dp"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat"
+
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr2"
+        app:layout_constraintTop_toBottomOf="@+id/textVContactName2" />
+
     <androidx.cardview.widget.CardView
-        android:id="@+id/contactCard"
+        android:id="@+id/contactCard2"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
@@ -66,19 +85,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imgViewCntct"
+            android:id="@+id/imgViewCntct2"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:scaleType="centerCrop" />
 
         <TextView
-            android:id="@+id/tvSearchResultNameFirstLetter"
+            android:id="@+id/tvSearchResultNameFirstLetter2"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:gravity="center_vertical|center_horizontal"
             android:textColor="@color/colorWhite"
             android:textSize="24sp"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -90,12 +108,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="location from xml"
-        android:textColor="#000000"
-        app:layout_constraintEnd_toEndOf="@+id/textVContactName"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="@+id/textVContactName2"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textVContactName"
-        app:layout_constraintTop_toBottomOf="@+id/textVContactName" />
+        app:layout_constraintStart_toStartOf="@+id/textVContactName2"
+        app:layout_constraintTop_toBottomOf="@+id/textVContactName2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -39,6 +39,8 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:focusedByDefault="false"
+                android:drawableLeft="@drawable/ic_baseline_search"
+                android:drawablePadding="16dp"
                 android:iconifiedByDefault="false"
                 android:transitionName="@string/search_view_transition"
                 android:hint="search phone, name, hash..."

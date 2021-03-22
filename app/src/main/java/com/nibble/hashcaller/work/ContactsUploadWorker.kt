@@ -32,7 +32,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
-    private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO)
+    private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
 
     override suspend fun doWork(): Result {
         try {

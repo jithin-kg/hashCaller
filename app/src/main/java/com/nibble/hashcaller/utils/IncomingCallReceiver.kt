@@ -121,7 +121,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
              */
             val serchNetworkRepo = SearchNetworkRepository(context)
             val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
-            val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO)
+            val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
             val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
 
 //            var obj = cntcts[0]

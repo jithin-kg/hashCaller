@@ -19,7 +19,7 @@ object ContacInjectorUtil {
         // creating the dao here we can easily pass context just right here)
         // for ContactLocalSyncReposirorty
 
-        val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO)
+        val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context!!)
         val contactNetworkRepository  = context?.let { ContactsNetworkRepository(it) }
         val contactsRepository = context?.let { ContactSearchRepository(it) }
 

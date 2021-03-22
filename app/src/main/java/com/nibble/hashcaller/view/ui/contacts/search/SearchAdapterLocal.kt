@@ -9,13 +9,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
+import com.nibble.hashcaller.stubs.Contact
 import kotlinx.android.synthetic.main.search_result_layout.view.*
 import java.util.*
 
 class SearchAdapterLocal (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private  var contacts: List<ContactTable>? = null
+    private  var contacts: List<Contact>? = null
     companion object{
         private val TAG  = "__SearchAdapter"
 
@@ -31,7 +32,7 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
 //        Log.d(TAG, "getItemCount: ${contacts?.size}")
         return contacts?.size?:0
     }
-    fun setContactList(it: List<ContactTable>) {
+    fun setContactList(it: List<Contact>) {
         contacts = emptyList()
         contacts = it
 
@@ -65,14 +66,14 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
             private val country = view.textViewSearchCountry
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-        fun bind(contact: ContactTable, context: Context, onContactItemClickListener :(id:Long)->Unit ) {
+        fun bind(contact: Contact, context: Context, onContactItemClickListener :(id:Long)->Unit ) {
             name.text = contact.name
-            location.text = contact.location
-            country.text = contact.country
+//            location.text = contact.location
+//            country.text = contact.country
             Log.d("__ViewHolder", "contact from table $contact ")
 
             generateCircleView(context)
-            setNameFirstChar(contact)
+//            setNameFirstChar(contact)
 
             Log.d("__ViewHolder", "bind:")
 //            name.text = contact.name

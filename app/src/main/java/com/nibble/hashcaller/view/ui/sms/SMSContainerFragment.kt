@@ -21,7 +21,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -40,7 +39,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
-import com.nibble.hashcaller.view.ui.sms.search.SearchActivity
+import com.nibble.hashcaller.view.ui.sms.search.SearchSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -579,7 +578,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private fun startSearchActivity() {
         Log.d(TAG, "startSearchActivity: ")
-        val intent = Intent(activity, SearchActivity::class.java)
+        val intent = Intent(activity, SearchSMSActivity::class.java)
         intent.putExtra("animation", "explode")
 //        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
 //        val p1 = android.util.Pair(searchViewContacts as View,"editTextTransition")

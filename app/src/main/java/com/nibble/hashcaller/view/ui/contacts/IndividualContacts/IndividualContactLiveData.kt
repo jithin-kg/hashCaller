@@ -24,7 +24,13 @@ ContentProviderLiveData<Contact>(context, URI) {
 private fun getContacts(context: Context):Contact{
 
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
-        var c:Contact = Contact(1L, "sample name", "sample phone num", "photoThumnail", "photoURI")
+        var c:Contact = Contact(
+            1L,
+            "sample name",
+            "sample phone num",
+            "photoThumnail",
+            "photoURI"
+        )
 //        val listOfContacts = mutableListOf<Contact>()
         var cursor: Cursor? = null
         val projection = arrayOf(
@@ -60,7 +66,13 @@ private fun getContacts(context: Context):Contact{
                     Log.d(TAG, "name is  $name")
                     if(name!=null){
 
-                         c = Contact(id, name, photoURI, "photoThumnail", photoURI)
+                         c = Contact(
+                             id,
+                             name,
+                             photoURI,
+                             "photoThumnail",
+                             photoURI
+                         )
 
                     }
 
