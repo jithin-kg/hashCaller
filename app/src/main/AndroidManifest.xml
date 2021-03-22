@@ -40,9 +40,11 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
-        <activity android:name=".view.ui.sms.search.SearchSMSActivity"
-            android:windowSoftInputMode="stateVisible"
-            android:theme="@style/AppTheme" ></activity>
+        <activity android:name=".view.ui.contacts.search.FulllSearchResultsActivity"></activity>
+        <activity
+            android:name=".view.ui.sms.search.SearchSMSActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".view.ui.contactSelector.ContactSelectorActivity"
             android:theme="@style/AppTheme" />
@@ -112,13 +114,12 @@
             android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
-            android:theme="@style/AppTheme" />
-<!--        https://developer.android.com/training/keyboard-input/visibility-->
-<!-- important adjust resize ensure that view that all of your layout content is accessible -->
+            android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->
+        <!-- important adjust resize ensure that view that all of your layout content is accessible -->
         <activity
             android:name=".view.ui.contacts.search.ActivitySearchPhone"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.ui.auth.ActivityEnterOTP"
             android:theme="@style/AppTheme">

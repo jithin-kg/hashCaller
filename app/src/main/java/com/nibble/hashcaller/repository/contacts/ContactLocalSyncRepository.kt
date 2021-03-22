@@ -17,7 +17,9 @@ import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.generateCircleView
+import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
+import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
 /**
@@ -61,6 +63,7 @@ class ContactLocalSyncRepository(
         val listOfContacts = mutableListOf<Contact>()
          var lastNumber = ""
          var prevName = ""
+        var count = 0
         val cursor:Cursor? = createCursor(queryString)
         try {
             if(cursor != null && cursor.moveToFirst()){
@@ -81,6 +84,19 @@ class ContactLocalSyncRepository(
 
 //                    Log.d(TAG, "phone num is $phoneNo")
 //                    Log.d(TAG, "name is  $name")
+                    var drawable = context.generateCircleView()
+                    //we are doing this is ensure that the first 3items and
+                    //recycler view 3 items have same color for circle
+                    if(count < 2){
+                       if(count==0){
+                           drawable = context.generateCircleView(ActivitySearchPhone.num1)
+                       }else if(count==1){
+                           drawable = context.generateCircleView(ActivitySearchPhone.num2)
+
+                       }
+                        count++
+
+                    }
                     var id = cursor.getString(0).toLong()
                     var name = cursor.getString(1)
                     var phoneNo = cursor.getString(2)
@@ -90,9 +106,15 @@ class ContactLocalSyncRepository(
                     var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
                     if(name!=null){
                         if(prevName != name && lastNumber != phoneNo){
-                            val drawable = context.generateCircleView()
                             val nameSpann = getSpannableStringBuilderName(name,  queryString)
                             val phoneSpann = getSpnabelStringPhone(phoneNo, queryString)
+                            var firstLetter = ""
+                            if(name.isNotEmpty()){
+                                firstLetter = name[0].toString()
+                            }else{
+                                val formatedNum = formatPhoneNumber(phoneNo)
+                                firstLetter = formatedNum[0].toString()
+                            }
                             val add = listOfContacts.add(
                                 Contact(
                                     id,
@@ -102,7 +124,8 @@ class ContactLocalSyncRepository(
                                     photoURI,
                                     drawable,
                                     nameSpann,
-                                    phoneSpann
+                                    phoneSpann,
+                                    firstLetter
                                 )
                             )
                             lastNumber = phoneNo
@@ -121,6 +144,8 @@ class ContactLocalSyncRepository(
         return listOfContacts
 
     }
+
+
 
     private fun getSpnabelStringPhone(phoneNo: String?, queryString: String): SpannableStringBuilder? {
         return getSpannedString(phoneNo!!, queryString)

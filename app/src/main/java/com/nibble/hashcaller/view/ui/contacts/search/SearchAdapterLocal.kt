@@ -19,27 +19,19 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
     private  var contacts: List<Contact>? = null
     companion object{
         private val TAG  = "__SearchAdapter"
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.search_result_layout, parent, false)
-
         return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-//        Log.d(TAG, "getItemCount: ${contacts?.size}")
         return contacts?.size?:0
     }
     fun setContactList(it: List<Contact>) {
         contacts = emptyList()
         contacts = it
-
-//        Log.d(TAG, "setContactList: ${newContactList.size}")
-//        Log.d(TAG, "setContactList: size of contacts ${contacts?.size}")
-//        Log.d(TAG, "setContactList: size of contacts ${newContactList.size}")
-
         notifyDataSetChanged()
     }
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -53,13 +45,7 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
 
         }
     }
-//    fun setSearchResult(newContactList: List<Contact>) {
-////        contacts = newContactList
-//
-//        notifyDataSetChanged()
-//    }
-    class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-
+    inner class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
             private val name = view.textViewSearchContactName
             private val circle = view.textViewSearchCrclr;
             private val location = view.textViewSearchLocation
@@ -68,56 +54,15 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
 
         fun bind(contact: Contact, context: Context, onContactItemClickListener :(id:Long)->Unit ) {
             name.text = contact.name
-//            location.text = contact.location
-//            country.text = contact.country
-            Log.d("__ViewHolder", "contact from table $contact ")
-
-            generateCircleView(context)
-//            setNameFirstChar(contact)
+            view.textViewSearchCrclr.text = contact.firstletter
+            view.textViewSearchCrclr.background = contact.drawable
 
             Log.d("__ViewHolder", "bind:")
-//            name.text = contact.name
-//            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
             view.setOnClickListener{
                 onContactItemClickListener(1L)
             }
         }
-    private fun setNameFirstChar(contact: ContactTable) {
-        val name: String = contact.name
-        val firstLetter = name[0]
-        val firstLetterString = firstLetter.toString().toUpperCase()
-        circle.text = firstLetterString
-    }
-    private fun generateCircleView(context: Context) {
-        val rand = Random()
-        when (rand.nextInt(5 - 1) + 1) {
-            1 -> {
-                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                circle.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorPrimary)
-                )
-            }
-            2 -> {
-                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                circle.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorlightBlueviking)
-                )
-            }
-            3 -> {
-                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                circle.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorbrightTurquoiseLightBlue
-                    )
-                )
-            }
-            else -> {
-                circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                circle.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorPrimaryDark)
-                )
-            }
-        }
-    }
+
 
     }
 

@@ -16,7 +16,8 @@ class Contact(
     var photoURI: String = "",
     var drawable: Drawable? = null,
     var nameSpann: SpannableStringBuilder? = null,
-    var phoneSpann: SpannableStringBuilder? = null
+    var phoneSpann: SpannableStringBuilder? = null,
+    var firstletter:String = ""
 
 )  {
 
