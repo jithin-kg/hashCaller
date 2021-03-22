@@ -35,7 +35,8 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, private val context: Context,
+class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
+                            private val  longPresHandler:LongPressHandler, private val context: Context,
                             private val onContactItemClickListener: (id:String)->Unit
 ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSIndividualDiffCallback()) {
@@ -211,6 +212,12 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
 
 //                onContactItemClickListener(pNo)
             }
+
+            view.setOnLongClickListener(View.OnLongClickListener { v ->
+                longPresHandler.onLongPressed(
+                    v, this.adapterPosition, sms.id)
+                true
+            })
         }
 
         private fun getFirstChar(sms: SMS): CharSequence? {
@@ -436,7 +443,9 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker, pri
         fun otherPosition()
         fun shouldWeScroll()
     }
-
+    interface LongPressHandler{
+        fun onLongPressed(view:View, pos:Int, id: Long)
+    }
 
 }
 

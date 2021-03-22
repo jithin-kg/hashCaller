@@ -16,14 +16,5 @@ object MarkedItemsHandler {
      var markedContactAddressForBlocking:String = ""
 
 
-//     fun pushNewItemId(id:Long){
-//            markedItems.add(id)
-//    }
-//
-//    fun getMakrdItemIdList(){
-//
-//        markedItems.
-//    }
-
 
 }

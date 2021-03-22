@@ -19,9 +19,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -37,12 +40,19 @@ import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.getMarkedViews
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.isMarkedViewsEmpty
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
@@ -51,7 +61,8 @@ import kotlin.concurrent.timerTask
 class IndividualSMSActivity : AppCompatActivity(),
     SMSIndividualAdapter.ItemPositionTracker, View.OnClickListener,
     AdapterView.OnItemSelectedListener, android.widget.PopupMenu.OnMenuItemClickListener,
-    PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener {
+    PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener,
+    SMSIndividualAdapter.LongPressHandler {
     private lateinit var viewModel:SMSIndividualViewModel
     private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
@@ -149,6 +160,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         observeContactname()
         configureToolbar()
         setupSIMSelector()
+        observeMarkedViews()
 //
 //       GlobalScope.launch(Dispatchers.IO) {
 //          val time = measureTimeMillis {
@@ -161,6 +173,17 @@ class IndividualSMSActivity : AppCompatActivity(),
 //       }
 //        Log.d("__suspend", "after of launch: ")
     }
+
+    private fun observeMarkedViews() {
+        this.viewModel.markedViewsLiveData.observe(this, Observer {
+            Log.d(TAG, "observeMarkedViews: $it")
+            if(it !=null) {
+                val view = it.findViewById<ConstraintLayout>(R.id.layoutSMSReceivedItem)
+                view.setBackgroundColor(resources.getColor(R.color.numbersInnerTextColor))
+            }
+        })
+    }
+
 
 //    private suspend fun suspendTwo(): String {
 //        delay(3000L)
@@ -366,6 +389,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         viewModel.smsLiveData.observe(this, Observer {
 
             adapter.setList(it)
+            viewModel.setHashMap(it)
 
 //            if(!isSmsChannelBusy && !smsQueue.isEmpty()){
 //                sendSmsToClient(smsQueue.remove())
@@ -473,6 +497,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     @SuppressLint("MissingPermission")
     private fun setupSIMSelector() {
+
         val availableSIMs = SubscriptionManager.from(this).activeSubscriptionInfoList ?: return
         if (availableSIMs.size > 1) {
             var index = 0
@@ -635,7 +660,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
 
 
-        adapter = SMSIndividualAdapter(this, applicationContext ){ id:String -> onContactitemClicked(id) }
+        adapter = SMSIndividualAdapter(this,this,  applicationContext ){ id:String -> onContactitemClicked(id) }
 
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -885,6 +910,8 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
     private fun addToBlockList(no: String) {
 
+
+
         viewModel.blockThisAddress(no, this.threadID, this.spammerType, this.SPAMMER_CATEGORY )
         Toast.makeText(this, "Number added to spamlist", Toast.LENGTH_LONG)
         bottomSheetDialog.hide()
@@ -964,6 +991,49 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     override fun onQueryTextChange(newText: String?): Boolean {
         return false
+    }
+
+
+    override fun onLongPressed(view: View, pos: Int, id: Long) {
+        Log.d(TAG, "onLongPressed: $pos , id : $id")
+
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.markItem(id, view, pos).collect{
+                if(it!=null){
+                    val view = it.findViewById<ConstraintLayout>(R.id.layoutSMSReceivedItem)
+                    view.setBackgroundColor(ContextCompat.getColor(this@IndividualSMSActivity, R.color.numbersInnerTextColor))
+                }
+            }
+        }
+//        if(!isMarkedViewsEmpty()){
+//            val flow = flow<View> {
+//                viewModel.markItem(id, view, pos)
+//
+//                for(view in getMarkedViews()){
+//                    emit(view)
+//                }
+//
+//            }
+//            //important to call launch when started there by
+//            //only launch coroutine when app is running,
+//            //launch will work even if app is in background, and app will
+//            //crash if we access view elements from launch
+//            lifecycleScope.launchWhenStarted {
+//                flow.collect{
+//                    if(it!=null){
+//                       val view = it.findViewById<ConstraintLayout>(R.id.layoutSMSReceivedItem)
+//                        view.setBackgroundColor(ContextCompat.getColor(this@IndividualSMSActivity, R.color.numbersInnerTextColor))
+//
+//                    }
+//            }
+//
+//            }
+//        }
+
+
+
+
     }
 
 

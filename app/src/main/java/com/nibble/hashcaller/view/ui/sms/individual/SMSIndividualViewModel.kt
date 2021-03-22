@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.telephony.SmsManager
@@ -14,14 +15,15 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.*
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
@@ -29,12 +31,17 @@ import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.view.ui.sms.individual.util.SearchUpAndDownHandler.STACK_ONE
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.addToMarkedViews
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.addTomarkedItemsById
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.getMarkedViews
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.isMarkedViewsEmpty
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.Flow
 import java.util.*
 
 
@@ -51,7 +58,7 @@ class SMSIndividualViewModel(
 //    public var blockedStatusOfThenumber:MutableList<SpammerInfo> =
 //        mutableListOf<SpammerInfo>()
 var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
-
+var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
     val smsQuee:Queue<SMS> = LinkedList<SMS>()
     val availableSIMCards = ArrayList<SIMCard>()
      var currentSIMCardIndex = 0
@@ -309,6 +316,44 @@ var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
         Toast.makeText(this@SMSIndividualViewModel.applicationContext, "Not found", Toast.LENGTH_SHORT).show()
 
 //        smsLiveData.value = smsLiveData.value
+    }
+
+    fun markItem(
+        id: Long,
+        view: View,
+        pos: Int
+    ):kotlinx.coroutines.flow.Flow<View> = flow {
+        addTomarkedItemsById(id)
+        addToMarkedViews(view)
+       if(!isMarkedViewsEmpty()){
+           for(view in getMarkedViews()){
+//               markedViewsLiveData.value = view
+               emit(view)
+           }
+       }
+
+//        markItemsInView(resources)
+
+    }
+
+//    private fun markItemsInView(resources: Resources) {
+//        if(!isMarkedViewsEmpty()){
+//            for(view in getMarkedViews() ){
+//                ContextCompat.getColor(this, R.color.numbersInnerTextColor)
+//               val view = view.findViewById<ConstraintLayout>(R.id.layoutSMSReceivedItem)
+//                view.setBackgroundColor(resources.getColor(R.color.numbersInnerTextColor))
+//
+//            }
+//        }
+//
+//    }
+
+    /**
+     * function to create and maintain/update a hashmap of thread Ids of sms
+     * when an sms is long pressed
+     */
+    fun setHashMap(smslist: MutableList<SMS>) {
+
     }
 
 
