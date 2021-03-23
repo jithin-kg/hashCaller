@@ -35,6 +35,8 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.text.DateFormat
@@ -509,7 +511,7 @@ class SMSLocalRepository(
                 projection,
                 "address IS NOT NULL) GROUP BY (address",
                 selectionArgs,
-                "_id DESC limit 12 offset $page"
+                "_id DESC"
             )
 
             return cursor
@@ -1623,6 +1625,95 @@ class SMSLocalRepository(
         }
 
         return  smslist
+    }
+
+    fun fetchFlowSMS(): Flow<SMS> = flow {
+        var selectionArgs: Array<String>? = null
+        var selection: String? = null
+        val projection = arrayOf(
+            "thread_id",
+            "_id",
+            "address",
+            "type",
+            "body",
+            "read",
+            "date"
+        )
+
+        val cursor =  context.contentResolver.query(
+            SMSContract.ALL_SMS_URI,
+            projection,
+            null,
+            selectionArgs,
+            "_id DESC"
+        )
+
+
+        if (cursor != null && cursor.moveToFirst()) {
+            //                    val spammersList = spamListDAO?.getAll()
+            do {
+
+                try {
+                    //TODO check if phone number exists in contact, if then add the contact information too
+                    val objSMS = SMS()
+                    objSMS.id =
+                        cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                    objSMS.threadID =
+                        cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+                    var num =
+                        cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                    objSMS.addresStringNonFormated = num
+                    num = num.replace("+", "")
+                    //                    objSMS.address = num
+
+                    objSMS.type =
+                        cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                    var msg =
+                        cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                    objSMS.msgString = msg
+
+//                    setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
+                    // spannable string builder function to setup spannable string builder
+                    objSMS.addressString = num.replace("+", "")
+                    objSMS.addressString = replaceSpecialChars(num)
+                    objSMS.nameForDisplay = objSMS.addressString!!
+
+                    objSMS.readState =
+                        cursor.getInt(cursor.getColumnIndex("read"))
+                    val dateMilli =
+                        cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+//                    if(prevAddress != objSMS.addressString){
+//                        prevAddress = objSMS.addressString!!
+//                    }else{
+//                        //equal
+//                        continue
+//                    }
+                    objSMS.time = dateMilli
+                    setRelativeTime(objSMS, dateMilli)
+
+                    if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                            .contains("1")
+                    ) {
+                        objSMS.folderName = "inbox"
+                        Log.d(TAG, "fetch: inbox")
+                    } else {
+                        objSMS.folderName = "sent"
+                        Log.d(TAG, "fetch: sent")
+
+                    }
+
+                    emit(objSMS)
+                } catch (e: Exception) {
+                    Log.d(TAG, "getMessages: exception $e")
+                }
+
+            } while (cursor.moveToNext())
+
+
+
+        }
     }
 
 }

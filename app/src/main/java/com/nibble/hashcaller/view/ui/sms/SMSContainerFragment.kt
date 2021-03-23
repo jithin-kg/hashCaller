@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
@@ -37,23 +38,27 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.Permissio
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.list.SMSHelperFlow
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
 import com.nibble.hashcaller.view.ui.sms.search.SearchSMSActivity
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.util.*
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
-import com.nibble.hashcaller.view.ui.sms.util.SMS
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
@@ -69,7 +74,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private var searchQry:String? = null
     private lateinit var cntx: Context
     private lateinit var recyclerV: RecyclerView
-
+    private lateinit var smsFlowHelper:SMSHelperFlow
     private lateinit var sView: EditText
     private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
@@ -86,6 +91,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
@@ -106,6 +112,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         if(checkContactPermission())
         {
             observeSMSList()
+            smsFlowHelper = SMSHelperFlow(this.requireContext())
         }
 //        initListeners()
 //        val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
@@ -148,7 +155,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                             Log.d(TAG, "onScrolled:page: ${pageOb.page}, totalsms count ${pageOb.totalSMSCount} ")
 //                                if(page+12 <= totalSMSCount ){
                             pageOb.page +=12
-                            smsListVIewModel.getNextSmsPage()
+//                            smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
 
                                 if(!isSizeEqual){
@@ -301,6 +308,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun observeSMSList() {
+        
         smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
             sms.let {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
@@ -308,8 +316,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                smsRecyclerAdapter?.submitList(it)
 //                SMSListAdapter.searchQry = searchQry
 //                this.smsLIst = it as MutableList<SMS>?
-                Log.d(TAG, "observeSMSList: ")
-                this.smsListVIewModel.updateLiveData(sms)
+//                this.smsListVIewModel.updateFlowList(sms)
+                Log.d(TAG, "observeSMSList: $sms")
+                smsListVIewModel.updateLiveData(sms)
+//                this.smsListVIewModel.updateLiveData(sms)
                 this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
 
 
@@ -337,6 +347,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         rcrViewSMSList.adapter  = null
     }
 
+    @InternalCoroutinesApi
     @SuppressLint("WrongViewCast")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -344,6 +355,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         initRecyclerView()
         initListeners()
+
 
 //        sView = viewMesages.findViewById(R.id.searchViewSms)
 
@@ -355,7 +367,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
         observeMutabeLiveData()
-        addScrollListener()
+//        addScrollListener()
         if(markedItems.size > 0){
             Log.d(TAG, "onViewCreated: greater than one")
             showToolbarButtons()
@@ -363,6 +375,14 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             showToolbarButtons()
         }
 
+        lifecycleScope.launchWhenStarted {
+            var lst:MutableList<SMS> = mutableListOf()
+            smsFlowHelper.fetchFlowSMS().collect {
+                lst.add(it)
+                smsListVIewModel.updateLiveData(lst)
+//                smsRecyclerAdapter!!.setList(lst)
+            }
+        }
 
 
 
@@ -440,6 +460,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         this.viewMesages?.fabBtnDeleteSMSExpanded?.shrink()
 
     }
+
+
 
 
     private fun deleteMarkedSMSThreads() {

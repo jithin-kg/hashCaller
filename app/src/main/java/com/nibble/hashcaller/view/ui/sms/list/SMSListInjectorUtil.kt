@@ -11,7 +11,7 @@ object SMSListInjectorUtil {
     fun provideDialerViewModelFactory(context: Context?):SMSListViewModelFactory{
 
         val messagesLiveData = context?.let {
-            SMSLiveData(
+            SMSLiveDataFlow(
                 it
             )
         }

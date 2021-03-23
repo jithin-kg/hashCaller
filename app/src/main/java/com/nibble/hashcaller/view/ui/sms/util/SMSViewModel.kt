@@ -13,10 +13,13 @@ import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.mapofAddressAndSMS
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.view.ui.sms.list.SMSLiveDataFlow
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.LinkedHashSet
 
@@ -24,7 +27,7 @@ import java.util.LinkedHashSet
  * Created by Jithin KG on 22,July,2020
  */
 class SMSViewModel(
-    val SMS: SMSLiveData,
+    val SMS: SMSLiveDataFlow,
     val repository: SMSLocalRepository?
 ): ViewModel() {
 
@@ -35,7 +38,7 @@ class SMSViewModel(
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
     var smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
-     var smsLIst:MutableList<SMS>? = null
+     var smsLIst:MutableList<SMS>? = mutableListOf()
 
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -69,7 +72,7 @@ class SMSViewModel(
     }
     fun search(searchQuery: String?)  = viewModelScope.launch{
       val sms =  repository?.getSms(searchQuery)
-        SMS.value = sms
+//        SMS.value = sms
 
     }
 
@@ -274,6 +277,23 @@ class SMSViewModel(
 
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+
+    }
+
+    fun updateFlowList(sms: Flow<SMS>?) = viewModelScope.launch{
+        sms!!.collect {
+            if(it!=null){
+                smsLIst!!.add(it!!)
+            }
+        }
+        if(smsLIst!=null){
+            var lst = sortAndSet(smsLIst!!)
+            this@SMSViewModel.smsLiveData.value = lst
+        }
+
+    }
+
+    fun updateLiveDataFromFlow(lst: MutableList<SMS>) {
 
     }
 
