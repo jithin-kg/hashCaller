@@ -184,13 +184,13 @@ class SMSViewModel(
 
 //            smsLiveData.value = sortedSMSByTime()
             var lstt:MutableList<SMS>?  = mutableListOf()
-//            viewModelScope.launch {
-////                lstt = async { removeDeletedSMS() }.await()
-//
-//            }.join()
-//            smsLiveData.value = lstt
-//        val l:MutableList<SMS> = mutableListOf()
-//        l.addAll(mapofAddressAndSMS.values)
+            viewModelScope.launch {
+                lstt = async { removeDeletedSMS() }.await()
+
+            }.join()
+            smsLiveData.value = lstt
+        val l:MutableList<SMS> = mutableListOf()
+        l.addAll(mapofAddressAndSMS.values)
 //        Log.d(TAG, "updateLiveData: size after adding map values ${l.size}")
             smsLiveData.value = sortedSMSByTime()
 
@@ -203,20 +203,20 @@ class SMSViewModel(
     /**
      * function to make sure that deleted sms in contentprovider are delted from mapofAddressAndSMS
      */
-//    private suspend fun removeDeletedSMS(): MutableList<SMS>? {
-//        var smsList:MutableList<SMS> = mutableListOf()
-//       viewModelScope.launch {
-//            smsList = async { repository!!.getSMSForViewModel(null, false, true) }.await()
-//       }.join()
-//        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
-//        for(sms in smsList){
-//            //create new hashmap of updated list
-//            newSMSHashmap.put(sms.addressString!!, sms)
-//        }
-//        mapofAddressAndSMS = newSMSHashmap
-//
-//        return sortedSMSByTime()
-//    }
+    private suspend fun removeDeletedSMS(): MutableList<SMS>? {
+        var smsList:MutableList<SMS> = mutableListOf()
+       viewModelScope.launch {
+            smsList = async { repository!!.fetchSMS(null, false) }.await()
+       }.join()
+        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
+        for(sms in smsList){
+            //create new hashmap of updated list
+            newSMSHashmap.put(sms.addressString!!, sms)
+        }
+        mapofAddressAndSMS = newSMSHashmap
+
+        return sortedSMSByTime()
+    }
 
     fun getNextSmsPage()  = viewModelScope.launch{
         val res = async { repository!!.fetchSMS(null) }

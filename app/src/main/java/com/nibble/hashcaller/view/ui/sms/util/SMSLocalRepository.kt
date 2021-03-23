@@ -1356,7 +1356,7 @@ class SMSLocalRepository(
                         projection,
                         "address IS NOT NULL) GROUP BY (address",
                         selectionArgs,
-                        "_id DESC limit 3 offset $pageSpam"
+                        "_id DESC "
                     )
                 }
 
