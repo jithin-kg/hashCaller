@@ -1,10 +1,13 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.role.RoleManager
 import android.content.*
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.provider.Telephony
 import android.telephony.SubscriptionManager
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -29,16 +32,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.contacts.utils.LAST_SMS_SENT
-import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
-import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.getMarkedViews
 import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.isMarkedViewsEmpty
@@ -86,6 +92,8 @@ class IndividualSMSActivity : AppCompatActivity(),
     private  var spinnerSelected: MutableLiveData<Boolean> = MutableLiveData(false);
     private  var selectedRadioButton:RadioButton? = null
     private var isSmsChannelBusy = false // to know whether there is an sms is currently sending
+    private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var defaultSMSHandlerLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
 
     private  var spammerType:Int = -1
@@ -110,6 +118,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_individual_s_m_s)
+
         val itemAnimator: SimpleItemAnimator? =
             recyclerViewSMSIndividual.itemAnimator as SimpleItemAnimator?
 //        itemAnimator?.setSupportsChangeAnimations(false)
@@ -150,18 +159,20 @@ class IndividualSMSActivity : AppCompatActivity(),
         initViewModel()
         initAdapter()
         initListners()
+        checkDefaultSettings()
         setupClickListerner()
         registerAdapterListener()
         observeViewmodelSms()
+        setupSIMSelector()
         observeSmsLiveData()
+        observeDefaultSMSHandlerPermission()
         observeSpinnerSelected()
         addOrRemoveMenuItem()
         getContactInformation()
         observeContactname()
         configureToolbar()
-        setupSIMSelector()
         observeMarkedViews()
-//
+        observerPermission()
 //       GlobalScope.launch(Dispatchers.IO) {
 //          val time = measureTimeMillis {
 //              val res1 = async {suspendOne()  }
@@ -172,6 +183,33 @@ class IndividualSMSActivity : AppCompatActivity(),
 //           Log.d("__suspend", "request took $time milliseconds")
 //       }
 //        Log.d("__suspend", "after of launch: ")
+    }
+
+    private fun observeDefaultSMSHandlerPermission() {
+        this.defaultSMSHandlerLiveData.observe(this, Observer {
+            if(it==true){
+                btnMakeDefaultSMS.beInvisible()
+                layoutSend.beVisible()
+            }else{
+                btnMakeDefaultSMS.beVisible()
+                layoutSend.beInvisible()
+            }
+        })
+    }
+
+    private fun observerPermission() {
+        permissionGivenLiveDAta.observe(this, Observer {
+                it->
+//            run {
+            if (it == true) {
+//                setSharedPref(true)
+                val i = Intent()
+                setResult(PERMISSION_RESULT_CODE, i)
+//                finish()
+
+            }
+//            }
+        })
     }
 
     private fun observeMarkedViews() {
@@ -374,6 +412,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         sViewIndividualSMS.setOnQueryTextListener(this)
         imgBtnSMSUp.setOnClickListener(this)
         imgBtnSMSDown.setOnClickListener(this)
+        btnMakeDefaultSMS.setOnClickListener(this)
 
 //        bottomSheetDialog.btnBlock.setOnClickListener(this)
 //        imgViewCallBtn.setOnClickListener(this)
@@ -469,6 +508,116 @@ class IndividualSMSActivity : AppCompatActivity(),
         isThisNumBlocked()
 
     }
+
+    private fun checkDefaultSettings(): Boolean {
+        var requestCode=  222
+        var resultCode = 232
+        var isDefault = false
+        try{
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val roleManager: RoleManager = this.getSystemService(RoleManager::class.java)
+                // check if the app is having permission to be as default SMS app
+                val isRoleAvailable =
+                    roleManager.isRoleAvailable(RoleManager.ROLE_SMS)
+                if (isRoleAvailable) {
+                    // check whether your app is already holding the default SMS app role.
+                    val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
+                    if (!isRoleHeld) {
+//                        is not defauls sms app, so show request button
+//                        val roleRequestIntent =
+//                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+//                        startActivityForResult(roleRequestIntent, requestCode)
+                        layoutSend.beInvisible()
+                        btnMakeDefaultSMS.beVisible()
+                    }else{
+                        layoutSend.beVisible()
+                        btnMakeDefaultSMS.beInvisible()
+
+//                        requesetPermission()
+                    }
+                }
+            } else {
+                layoutSend.beInvisible()
+                btnMakeDefaultSMS.beVisible()
+//                val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+//                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+//                startActivityForResult(intent, requestCode)
+            }
+
+        }catch (e:Exception){
+            Log.d(TAG, "checkDefaultSettings: exception $e")
+        }
+        return isDefault
+    }
+
+    private fun requesetPermission(): Boolean {
+        var permissionGiven = false
+        //persmission
+        Dexter.withContext(this)
+            .withPermissions(
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.ANSWER_PHONE_CALLS,
+                Manifest.permission.READ_CALL_LOG,
+                Manifest.permission.RECEIVE_MMS,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.READ_SMS
+
+            ).withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
+//
+                    report.let {
+                        if(report?.areAllPermissionsGranted()!!){
+                            permissionGiven = true
+//                            setSharedPref(true)
+                            permissionGivenLiveDAta.value = true
+//                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
+
+                        }
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest?>?,
+                    token: PermissionToken?
+                ) { /* ... */
+                    token?.continuePermissionRequest()
+//                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
+                }
+            }).check()
+        return permissionGiven
+    }
+
+
+    @SuppressLint("LongLogTag")
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        /**
+         * Set as default SMS app onActivityResult if user chosen as deafult SMS app
+         * is -1
+         * else the result is 0
+         */
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode== -1 && requestCode == 222){
+            permissionGivenLiveDAta.value  = true
+
+            if(requesetPermission()){
+
+//                setSharedPref(true)
+                defaultSMSHandlerLiveData.value = true
+            }else{
+//                setSharedPref(false)
+                defaultSMSHandlerLiveData.value = false
+            }
+        }
+        Log.d(TAG, "onActivityResult: requestCode :$requestCode")
+        Log.d(TAG, "onActivityResult: resultCode :$resultCode")
+
+    }
     private fun sendSmsToClient(sms: SMS?) {
         Log.d(TAG, "sendSmsToClient: ")
         Timer().schedule(timerTask {
@@ -497,8 +646,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     @SuppressLint("MissingPermission")
     private fun setupSIMSelector() {
-
         val availableSIMs = SubscriptionManager.from(this).activeSubscriptionInfoList ?: return
+
         if (availableSIMs.size > 1) {
             var index = 0
             for(subscriptionInfo in availableSIMs){
@@ -759,7 +908,10 @@ class IndividualSMSActivity : AppCompatActivity(),
             }R.id.imgBtnSMSDown->{
             scrollDown()
 
-        }
+             }
+            R.id.btnMakeDefaultSMS->{
+               requestDefaultSMSrole()
+            }
 //            R.id.btnUpdate->{
 //            viewModel.update()
 //        }
@@ -768,10 +920,44 @@ class IndividualSMSActivity : AppCompatActivity(),
             }
 
         }
-
-
     }
 
+    private fun requestDefaultSMSrole() {
+            var requestCode=  222
+            var resultCode = 232
+            var isDefault = false
+            try{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val roleManager: RoleManager = this.getSystemService(RoleManager::class.java)
+                    // check if the app is having permission to be as default SMS app
+                    val isRoleAvailable =
+                        roleManager.isRoleAvailable(RoleManager.ROLE_SMS)
+                    if (isRoleAvailable) {
+                        // check whether your app is already holding the default SMS app role.
+                        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
+                        if (!isRoleHeld) {
+//                        is not defauls sms app, so show request button
+                        val roleRequestIntent =
+                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                        startActivityForResult(roleRequestIntent, requestCode)
+//                            layoutSend.beInvisible()
+//                            btnMakeDefaultSMS.beVisible()
+                        }else{
+//                            layoutSend.beInvisible()
+//                            btnMakeDefaultSMS.beVisible()
+                        requesetPermission()
+                        }
+                    }
+                } else {
+                    val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+                    startActivityForResult(intent, requestCode)
+                }
+            }catch (e:Exception){
+                Log.d(TAG, "checkDefaultSettings: exception $e")
+            }
+//            return isDefault
+    }
 
 
     private fun scrollUp() {

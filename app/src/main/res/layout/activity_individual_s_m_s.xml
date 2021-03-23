@@ -191,6 +191,19 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <Button
+        android:id="@+id/btnMakeDefaultSMS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/edit_text_send_sms"
+        android:orientation="horizontal"
+        android:text="Enable Hashcaller for SMS"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutSend"
         android:layout_width="match_parent"
@@ -200,9 +213,12 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/edit_text_send_sms"
         android:orientation="horizontal"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+
 
         <EditText
             android:id="@+id/edtTxtMSg"
@@ -213,11 +229,11 @@
             android:hint="Type a message"
             android:inputType="text"
             android:padding="16dp"
-            tools:ignore="Autofill"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnSendSMS"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="Autofill" />
 
         <Button
             android:id="@+id/imgBtnSendSMS"

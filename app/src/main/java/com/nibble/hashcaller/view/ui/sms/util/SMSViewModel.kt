@@ -2,17 +2,13 @@ package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
-import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.mapofAddressAndSMS
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveDataFlow
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -31,7 +27,7 @@ class SMSViewModel(
     val repository: SMSLocalRepository?
 ): ViewModel() {
 
-    var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(0)
+    var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(-1)
 
     var mapofAddressAndPos: HashMap<String, Long> = hashMapOf() // for findin duplicate sms in list
 //    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
@@ -174,25 +170,27 @@ class SMSViewModel(
         repository!!.deleteAllSMmsendersINo()
     }
 
+
+    fun updateLiveDataByFlow(lst: MutableList<SMS>) {
+        smsLiveData.value = sortedSMSByTime()
+    }
+
     /**
      * function called when there is a change in sms from content provider
      */
     fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
         //remove duplicates
         var lst:MutableList<SMS> = mutableListOf()
+        //remove delted sms from hashmap
+        var lstt:MutableList<SMS>?  = mutableListOf()
 
 
-//            smsLiveData.value = sortedSMSByTime()
-            var lstt:MutableList<SMS>?  = mutableListOf()
-            viewModelScope.launch {
-                lstt = async { removeDeletedSMS() }.await()
+//        smsLiveData.value = lstt
+//        val l:MutableList<SMS> = mutableListOf()
+//        l.addAll(mapofAddressAndSMS.values)
+        smsLiveData.value = async { removeDeletedSMS(smsList) }.await()
 
-            }.join()
-            smsLiveData.value = lstt
-        val l:MutableList<SMS> = mutableListOf()
-        l.addAll(mapofAddressAndSMS.values)
-//        Log.d(TAG, "updateLiveData: size after adding map values ${l.size}")
-            smsLiveData.value = sortedSMSByTime()
+
 
 
 
@@ -203,15 +201,13 @@ class SMSViewModel(
     /**
      * function to make sure that deleted sms in contentprovider are delted from mapofAddressAndSMS
      */
-    private suspend fun removeDeletedSMS(): MutableList<SMS>? {
-        var smsList:MutableList<SMS> = mutableListOf()
-       viewModelScope.launch {
-            smsList = async { repository!!.fetchSMS(null, false) }.await()
-       }.join()
+    private suspend fun removeDeletedSMS(smsList: MutableList<SMS>?): MutableList<SMS>? {
         var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
-        for(sms in smsList){
-            //create new hashmap of updated list
-            newSMSHashmap.put(sms.addressString!!, sms)
+        if (smsList != null) {
+            for(sms in smsList){
+                //create new hashmap of updated list
+                newSMSHashmap.put(sms.addressString!!, sms)
+            }
         }
         mapofAddressAndSMS = newSMSHashmap
 
@@ -296,6 +292,7 @@ class SMSViewModel(
     fun updateLiveDataFromFlow(lst: MutableList<SMS>) {
 
     }
+
 
     companion object
     {

@@ -8,6 +8,7 @@ import com.nibble.hashcaller.R
 import java.util.*
 
 
+
 fun Context.isVisible(view:View): Boolean {
     if(view.visibility== View.VISIBLE){
         return true
