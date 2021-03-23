@@ -199,7 +199,7 @@
         android:background="@drawable/edit_text_send_sms"
         android:orientation="horizontal"
         android:text="Enable Hashcaller for SMS"
-
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -254,14 +254,14 @@
             android:id="@+id/thread_select_sim_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="8dp"
             android:alpha="0.9"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/ic_baseline_sim_card"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/edtTxtMSg"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSendSMS"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

@@ -78,8 +78,14 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
 
     @SuppressLint("LongLogTag")
     fun getContactInfoForNumber(pno:String) = viewModelScope.launch {
-        val name = repository?.getConactInfoForNumber(pno)
+        var name = repository?.getConactInfoForNumber(pno)
         Log.d(TAG, "getContactInfoForNumber: name from repository is $name")
+        if(name.isNullOrEmpty()){
+          val infoFromDb =   async { repository!!.getContactInfoFRomDB(pno) }.await()
+            if(infoFromDb!=null){
+                name = infoFromDb
+            }
+        }
         nameLiveData.value = name
     }
     fun getPhoneNumber(): MutableLiveData<String>? {

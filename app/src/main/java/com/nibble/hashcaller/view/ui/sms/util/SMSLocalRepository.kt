@@ -1716,5 +1716,32 @@ class SMSLocalRepository(
         }
     }
 
+    /**
+     * function to get name for a contact address from DB in individual sms activity
+     */
+    suspend fun getContactInfoFRomDB(pno: String): String? {
+        val numWithoutSpecialChars = replaceSpecialChars(pno)
+        var result : SMSSendersInfoFromServer? = null
+        var name :String ? = null
+        if(isNumericOnlyString(numWithoutSpecialChars)){
+            var formatednum = formatPhoneNumber(numWithoutSpecialChars)
+              smssendersInfoDAO!!.find(formatednum).apply {
+                  result =this
+            }
+        }else{
+            //number of type containing sring like jio
+              smssendersInfoDAO!!.find(numWithoutSpecialChars).apply {
+                  result = this
+            }
+
+        }
+        if(result!=null){
+            name = result!!.name
+        }
+        return name
+
+
+    }
+
 }
 

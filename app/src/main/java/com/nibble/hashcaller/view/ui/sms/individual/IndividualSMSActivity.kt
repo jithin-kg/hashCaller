@@ -604,15 +604,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode== -1 && requestCode == 222){
             permissionGivenLiveDAta.value  = true
-
-            if(requesetPermission()){
-
-//                setSharedPref(true)
-                defaultSMSHandlerLiveData.value = true
-            }else{
-//                setSharedPref(false)
-                defaultSMSHandlerLiveData.value = false
-            }
+            defaultSMSHandlerLiveData.value = requesetPermission()
         }
         Log.d(TAG, "onActivityResult: requestCode :$requestCode")
         Log.d(TAG, "onActivityResult: resultCode :$resultCode")
@@ -728,10 +720,18 @@ class IndividualSMSActivity : AppCompatActivity(),
          */
         val smsObj = SMS()
         smsObj.msgString = edtTxtMSg.text.toString()
-        smsObj.msgType = 4
-        smsObj.type = 4
-        viewModel.smsLiveData.value!!.add(smsObj)
-        viewModel.smsLiveData.value = viewModel.smsLiveData.value
+        Log.d(TAG, "sendSms: ${edtTxtMSg.text}")
+        if(edtTxtMSg.text.isNotEmpty()){
+            smsObj.msgType = 4
+            smsObj.type = 4
+            viewModel.smsLiveData.value!!.add(smsObj)
+            viewModel.smsLiveData.value = viewModel.smsLiveData.value
+            this.viewModel.sendSmsToClient(smsObj, this, this.threadID, contact)
+
+        }else{
+            toast("please Enter a message to send ", Toast.LENGTH_SHORT)
+        }
+
 
 //        this.smsQueue.add(smsObj)
 //        if(!smsQueue.isNullOrEmpty()){
@@ -741,7 +741,6 @@ class IndividualSMSActivity : AppCompatActivity(),
 //        }
 //        this.smsLiveData.value = this.smsLiveData.value
 
-        this.viewModel.sendSmsToClient(smsObj, this, this.threadID, contact)
 //            sendSmsToClient(smsObj)
 
 
