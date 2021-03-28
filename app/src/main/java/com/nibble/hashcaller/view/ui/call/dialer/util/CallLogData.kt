@@ -11,7 +11,8 @@ class CallLogData(
     var name: String? = "",
     val date: String,
     var expanded:Boolean = false,
-    var dateInMilliseconds:String = ""
+    var dateInMilliseconds:String = "",
+    var spamCount:Long = 0
 
 )  {
 

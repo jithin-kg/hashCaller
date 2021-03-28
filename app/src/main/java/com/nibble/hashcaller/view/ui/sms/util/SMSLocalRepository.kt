@@ -158,6 +158,7 @@ class SMSLocalRepository(
         return fetch(searchQuery, false)
     }
 
+    @SuppressLint("LongLogTag")
     fun markSMSAsRead(addressString: String?){
         try {
             /**
@@ -180,11 +181,12 @@ class SMSLocalRepository(
                 val values = ContentValues()
                 values.put(Telephony.Sms.READ, 1)
                 val selectionArgs:Array<String> = arrayOf("address='$addressString'")
-                context.contentResolver.update(
+                val updatedRowcount = context.contentResolver.update(
                     Telephony.Sms.Inbox.CONTENT_URI,
                     values, Telephony.Sms.ADDRESS + "=$addressString",
                     null
                 )
+                Log.d(TAG+"markAsRead", "markSMSAsRead: updatedRowCount $updatedRowcount")
 
 //            Telephony.Sms.READ
 

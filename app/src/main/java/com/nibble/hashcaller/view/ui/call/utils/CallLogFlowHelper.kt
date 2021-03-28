@@ -1,28 +1,26 @@
-package com.nibble.hashcaller.view.ui.call.dialer.util
+package com.nibble.hashcaller.view.ui.call.utils
 
 import android.content.Context
 import android.database.Cursor
-import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
-import java.lang.Exception
+import com.nibble.hashcaller.view.ui.call.CallFragment
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 
+/**
+ * helper class to get call logs as a stream/flow
+ */
 
-class CallLogLiveData(private val context: Context):
-    ContentProviderLiveData<MutableList<CallLogData>>(context,
-    URI
-)  {
-    companion object{
-        //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
-        val URI: Uri = CallLog.Calls.CONTENT_URI
-        private const val TAG = "__CallLogLiveData"
-        var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
-    }
-    private fun getCallLog(context: Context):MutableList<CallLogData>{
-        val listOfCallLogs = mutableListOf<CallLogData>()
+
+
+object CallLogFlowHelper {
+
+    fun fetchCallLogFlow(context:Context): Flow<CallLogData> = flow {
+
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
             CallLog.Calls.TYPE,
@@ -32,11 +30,11 @@ class CallLogLiveData(private val context: Context):
             CallLog.Calls.DATE
 
         )
-        var cursor:Cursor? = null
+        var cursor: Cursor? = null
 
         try {
-          cursor = context.contentResolver.query(
-                URI,
+            cursor = context.contentResolver.query(
+                CallLogLiveData.URI,
                 projection,
                 null,
                 null,
@@ -66,21 +64,44 @@ class CallLogLiveData(private val context: Context):
                     dateInMilliseconds += name + id + Math.random().toString();
 
                     val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
-                    
-                    listOfCallLogs.add(log)
+                    setCallHashMap(log)
+                    emit(log)
                 }while (cursor.moveToNext())
 
             }
-        }catch (e:Exception){
+        }catch (e: Exception){
             Log.d(TAG, "getCallLog: exception $e")
         }finally {
             cursor?.close()
-            isLoading.postValue(false)
+
         }
 
+    }
 
-        return listOfCallLogs
+    fun setCallHashMap(callLogData: CallLogData) {
+        if(callLogData.id !=null){
+            Log.d(TAG, "setSMSHashMap: ")
+
+//            val mr = CallFragment.mapofIdsAndCallLogs[callLogData.id]
+//            if(mr==null){
+//                CallFragment.mapofIdsAndCallLogs[callLogData.id] = callLogData
+//            }
+
+//            else{
+//                val timFromMap = mr.time!!.toLong()
+//                val timeFromCProvider = callLogData.time!!.toLong()
+//                if( timFromMap < timeFromCProvider){
+//                    //new message is objsms.time
+//                    Log.d(SMSHelperFlow.TAG +"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
+//                    SMSContainerFragment.mapofAddressAndSMS.put(callLogData.addressString!!, callLogData)
+//                }else{
+//                    Log.d(SMSHelperFlow.TAG, "setSMSHashMap: greater")
+//                }
+//            }
+        }
 
     }
-    override suspend fun getContentProviderValue(text: String?): MutableList<CallLogData> = getCallLog(context)
+//companion object{
+    const val TAG = "__CallLogFlowHelper"
+//}
 }

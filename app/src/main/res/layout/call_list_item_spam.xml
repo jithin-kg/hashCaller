@@ -14,14 +14,14 @@
     android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutcallMain"
+        android:id="@+id/layoutcallMainSpam"
         android:layout_width="match_parent"
         android:background="@color/colorBackground"
 
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/textViewCrclr"
+            android:id="@+id/textViewCallCrclrSpam"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="16dp"
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textVcallerName"
+            android:id="@+id/textVcallerNameSpam"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -39,47 +39,49 @@
             android:maxLines="1"
             android:padding="2dp"
             android:text="ContactName"
+            android:textColor="@color/spamText"
             android:textAppearance="@style/TextAppearance.AppCompat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.209"
-            app:layout_constraintStart_toEndOf="@+id/textViewCrclr"
+            app:layout_constraintStart_toEndOf="@+id/textViewCallCrclrSpam"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.19" />
 
         <ImageView
-            android:id="@+id/imgVPhone"
+            android:id="@+id/imgVPhoneSpam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintEnd_toStartOf="@+id/imgVCallType"
-            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
+            app:layout_constraintEnd_toStartOf="@+id/imgVCallTypeSpam"
+            app:layout_constraintStart_toStartOf="@+id/textVcallerNameSpam"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerNameSpam"
             app:srcCompat="@drawable/ic_baseline_call_24" />
 
         <ImageView
-            android:id="@+id/imgVCallType"
+            android:id="@+id/imgVCallTypeSpam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="196dp"
-            app:layout_constraintEnd_toStartOf="@+id/textViewTime"
-            app:layout_constraintStart_toEndOf="@+id/imgVPhone"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
+            app:layout_constraintEnd_toStartOf="@+id/textViewTimeSpam"
+            app:layout_constraintStart_toEndOf="@+id/imgVPhoneSpam"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerNameSpam"
             app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_baseline_call_received_24" />
 
         <TextView
-            android:id="@+id/textViewTime"
+            android:id="@+id/textViewTimeSpam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
+            android:textColor="@color/spamText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.874"
-            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
+            app:layout_constraintStart_toEndOf="@+id/imgVCallTypeSpam"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerNameSpam" />
 
         <ImageView
-            android:id="@+id/dividerCall"
+            android:id="@+id/dividerCallSpam"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginStart="40dp"
@@ -89,8 +91,8 @@
             app:srcCompat="@drawable/horizontal_line"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
-            app:layout_constraintTop_toBottomOf="@+id/imgVCallType" />
+            app:layout_constraintStart_toStartOf="@+id/textVcallerNameSpam"
+            app:layout_constraintTop_toBottomOf="@+id/imgVCallTypeSpam" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -98,7 +100,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutExpandableCall"
+        android:id="@+id/layoutExpandableCallSpam"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -107,7 +109,7 @@
         >
 
         <TextView
-            android:id="@+id/tvExpandNumCall"
+            android:id="@+id/tvExpandNumCallSpam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -119,53 +121,53 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/imgBtnCallExpand"
+            android:id="@+id/imgBtnCallExpandSpam"
             android:layout_width="101dp"
             android:layout_height="38dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintEnd_toStartOf="@+id/imageButtonCallExpand"
+            app:layout_constraintEnd_toStartOf="@+id/imageButtonCallExpandSpam"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpand"
+            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpandSpam"
             app:srcCompat="@drawable/ic_baseline_call_24"
             android:foreground="?android:attr/selectableItemBackground"/>
 
         <ImageButton
-            android:id="@+id/imageButtonCallExpand"
+            android:id="@+id/imageButtonCallExpandSpam"
             android:layout_width="102dp"
             android:layout_height="38dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpandSpam"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imgBtnCallExpand"
-            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnCallExpandSpam"
+            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCallSpam"
             app:srcCompat="@drawable/ic_baseline_call_24"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:foreground="?android:attr/selectableItemBackground"
             />
 
         <ImageButton
-            android:id="@+id/imgBtnSmsExpand"
+            android:id="@+id/imgBtnSmsExpandSpam"
             android:layout_width="101dp"
             android:layout_height="38dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnInfoExpand"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnInfoExpandSpam"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageButtonCallExpand"
-            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpand"
+            app:layout_constraintStart_toEndOf="@+id/imageButtonCallExpandSpam"
+            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpandSpam"
             app:srcCompat="@drawable/ic_baseline_textsms_24"
             android:foreground="?android:attr/selectableItemBackground"
             />
 
         <ImageButton
-            android:id="@+id/imgBtnInfoExpand"
+            android:id="@+id/imgBtnInfoExpandSpam"
             android:layout_width="102dp"
             android:layout_height="38dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imgBtnSmsExpand"
-            app:layout_constraintTop_toTopOf="@+id/imgBtnSmsExpand"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnSmsExpandSpam"
+            app:layout_constraintTop_toTopOf="@+id/imgBtnSmsExpandSpam"
             app:srcCompat="@drawable/ic_baseline_info_24"
             android:foreground="?android:attr/selectableItemBackground"
             />
@@ -177,7 +179,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonCallExpand" />
+            app:layout_constraintTop_toBottomOf="@+id/imageButtonCallExpandSpam" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

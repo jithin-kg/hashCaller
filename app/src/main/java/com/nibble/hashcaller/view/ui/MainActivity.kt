@@ -42,6 +42,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -741,7 +742,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onClick(v: View) {
         Log.d(TAG, "onClick: ")
-        showDialerFragment()
+        when(v.id){
+        R.id.fabBtnShowDialpad->{
+//            showDialerFragment()
+           GlobalScope.launch {
+               val callersInfo = HashCallerDatabase.getDatabaseInstance(this@MainActivity).callersInfoFromServerDAO()
+               callersInfo.deleteAll()
+           }
+        }
+        }
 //        bottomNavigationView.visibility =View.GONE
 //        val i = Intent(baseContext, ActivityAddNewPattern::class.java)
         //        i.putExtra("PersonID", personID);

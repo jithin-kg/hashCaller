@@ -42,6 +42,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.Flow
+import java.lang.Exception
+import java.security.spec.ECField
 import java.util.*
 
 
@@ -69,6 +71,8 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
 
     private var applicationContext:Context?=null
     private  var  sendBroadcastReceiver: BroadcastReceiver = SmsStatusSentReceiver()
+    var noSimCardException: MutableLiveData<Boolean> = MutableLiveData(false)
+
 //    private  var deliveryBroadcastReceiver: BroadcastReceiver = SmsStatusDeliveredReceiver()
 
     init {
@@ -215,6 +219,7 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         spamRepository?.delete(contactAddress)
     }
 
+    @Throws(IndexOutOfBoundsException::class)
     fun sendSmsToClient(
         smsObj: SMS,
         individualSMSActivity: IndividualSMSActivity,
@@ -222,13 +227,57 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         phoneNum: String?
     ) = viewModelScope.launch {
 
-        smsQuee.add(smsObj)
+//        try {
+//            send(individualSMSActivity, phoneNum, threadID)
+//        }catch (e: Exception){
+//            when(e){
+//                is IndexOutOfBoundsException ->{
+//                    throw IndexOutOfBoundsException()
+//                }
+//            }
+//        }
+        try {
+            smsQuee.add(smsObj)
+            for (item in smsQuee){
 
-            send(individualSMSActivity, phoneNum, threadID)
+                val settings = Settings()
+                settings.useSystemSending = true;
+                settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
+                val msg = item!!.msgString
+
+                //chosing sim card
+                val simId = availableSIMCards.get(currentSIMCardIndex).subscriptionId
+                if(simId != null){
+                    settings.subscriptionId = simId
+                }
+                val transaction = Transaction(individualSMSActivity, settings)
+                val message = Message(msg, phoneNum)
+//        message.setImage(mBitmap);
+                val smsSentIntent = Intent(individualSMSActivity, SmsStatusSentReceiver::class.java)
+                val deliveredIntent = Intent(individualSMSActivity, SmsStatusDeliveredReceiver::class.java)
+                transaction.setExplicitBroadcastForSentSms(smsSentIntent)
+                transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
+
+                transaction.sendNewMessage(message, threadID)
+                smsLiveData.value!!.add(smsObj)
+                smsLiveData.value = smsLiveData.value
+                smsQuee.remove()
+                delay(5000)
+            }
+        }catch (e:Exception){
+            when(e){
+                is IndexOutOfBoundsException->{
+                    noSimCardException.value = true
+                }
+            }
+        }
+
+
 
 
         }
 
+    @Throws(IndexOutOfBoundsException::class)
     private suspend fun send(
         individualSMSActivity: IndividualSMSActivity,
         phoneNum: String?,
@@ -361,6 +410,8 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
     fun setHashMap(smslist: MutableList<SMS>) {
 
     }
+
+
 
 
     companion object{

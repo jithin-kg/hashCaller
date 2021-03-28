@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -69,6 +70,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     AdapterView.OnItemSelectedListener, android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener,
     SMSIndividualAdapter.LongPressHandler {
+
     private lateinit var viewModel:SMSIndividualViewModel
     private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
@@ -142,6 +144,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             }else->{
             //normal intent within app intent
 //            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
+
             val bundle = intent.getExtras()
 
             contactAddress = bundle!!.getString(CONTACT_ADDRES)!!
@@ -149,30 +152,37 @@ class IndividualSMSActivity : AppCompatActivity(),
             queryText = bundle!!.getString(QUERY_STRING)
             Log.d(TAG, "onCreate: chatId $chatId")
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
+
         }
+
         }
 
         contact = contactAddress
         Log.d(TAG, "onCreate: contact is $contact")
-        setupBottomSheet()
-        observerSmsSent()
-        initViewModel()
-        initAdapter()
-        initListners()
-        checkDefaultSettings()
-        setupClickListerner()
-        registerAdapterListener()
-        observeViewmodelSms()
-        setupSIMSelector()
-        observeSmsLiveData()
-        observeDefaultSMSHandlerPermission()
-        observeSpinnerSelected()
-        addOrRemoveMenuItem()
-        getContactInformation()
-        observeContactname()
-        configureToolbar()
-        observeMarkedViews()
-        observerPermission()
+        if(checkContactPermission()){
+            setupBottomSheet()
+            observerSmsSent()
+            initViewModel()
+            initAdapter()
+            initListners()
+            checkDefaultSettings()
+            setupClickListerner()
+            registerAdapterListener()
+            observeViewmodelSms()
+            setupSIMSelector()
+            observeSmsLiveData()
+            observeDefaultSMSHandlerPermission()
+            observeSpinnerSelected()
+            addOrRemoveMenuItem()
+            getContactInformation()
+            observeContactname()
+            configureToolbar()
+            observeMarkedViews()
+            observerPermission()
+            observeNoSimCardException()
+
+        }
+
 //       GlobalScope.launch(Dispatchers.IO) {
 //          val time = measureTimeMillis {
 //              val res1 = async {suspendOne()  }
@@ -183,6 +193,23 @@ class IndividualSMSActivity : AppCompatActivity(),
 //           Log.d("__suspend", "request took $time milliseconds")
 //       }
 //        Log.d("__suspend", "after of launch: ")
+    }
+
+    private fun observeNoSimCardException() {
+        this.viewModel.noSimCardException.observe(this, Observer {
+            if(it == true){
+                toast("Please make sure sim card are inserted")
+            }
+        })
+    }
+
+    private fun checkContactPermission(): Boolean {
+        val permissionContact =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
+        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+            return false
+        }
+        return true
     }
 
     private fun observeDefaultSMSHandlerPermission() {
@@ -530,6 +557,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                        startActivityForResult(roleRequestIntent, requestCode)
                         layoutSend.beInvisible()
                         btnMakeDefaultSMS.beVisible()
+
                     }else{
                         layoutSend.beVisible()
                         btnMakeDefaultSMS.beInvisible()
@@ -538,17 +566,45 @@ class IndividualSMSActivity : AppCompatActivity(),
                     }
                 }
             } else {
-                layoutSend.beInvisible()
-                btnMakeDefaultSMS.beVisible()
-//                val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-//                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
-//                startActivityForResult(intent, requestCode)
+
+                //there is no role manager under andorid Q, so check if sms write/send permission available
+//                if(isSMSSendPermissionAvailable()){
+//                    Log.d(TAG, "checkDefaultSettings: sendPermission available")
+//                    layoutSend.beVisible()
+//                    btnMakeDefaultSMS.beVisible()
+//                }else{
+//                    layoutSend.beInvisible()
+//                    btnMakeDefaultSMS.beVisible()
+//
+//
+//                }
+                var isDefault = this.getPackageName() == Telephony.Sms.getDefaultSmsPackage(this)
+                Log.d(TAG, "checkDefaultSettings: isDefault $isDefault")
+                if(isDefault){
+                    layoutSend.beVisible()
+                    btnMakeDefaultSMS.beInvisible()
+                }else{
+                    layoutSend.beInvisible()
+                    btnMakeDefaultSMS.beVisible()
+                }
+
+//
             }
 
         }catch (e:Exception){
             Log.d(TAG, "checkDefaultSettings: exception $e")
         }
+
         return isDefault
+    }
+
+    private fun isSMSSendPermissionAvailable(): Boolean {
+        val permissionContact =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+            return false
+        }
+        return true
     }
 
     private fun requesetPermission(): Boolean {
@@ -724,9 +780,14 @@ class IndividualSMSActivity : AppCompatActivity(),
         if(edtTxtMSg.text.isNotEmpty()){
             smsObj.msgType = 4
             smsObj.type = 4
-            viewModel.smsLiveData.value!!.add(smsObj)
-            viewModel.smsLiveData.value = viewModel.smsLiveData.value
-            this.viewModel.sendSmsToClient(smsObj, this, this.threadID, contact)
+
+            try {
+                this.viewModel.sendSmsToClient(smsObj, this, this.threadID, contact)
+//                viewModel.smsLiveData.value!!.add(smsObj)
+//                viewModel.smsLiveData.value = viewModel.smsLiveData.value
+            }catch (e:java.lang.Exception){
+                toast("No sim detected " )
+            }
 
         }else{
             toast("please Enter a message to send ", Toast.LENGTH_SHORT)
@@ -1126,6 +1187,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                IntentFilter("myhashcallersms")
 //            )
         registerReceiver(messagesReceiver, IntentFilter("myhashcallersms"))
+        checkDefaultSettings()
 
     }
 

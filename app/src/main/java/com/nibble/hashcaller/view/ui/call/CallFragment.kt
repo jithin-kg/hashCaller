@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nibble.hashcaller.R
@@ -24,12 +25,16 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
+import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_call_history.*
 import kotlinx.android.synthetic.main.fragment_call_history.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
@@ -69,7 +74,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
         // Inflate the layout for this fragment
         if(checkContactPermission()){
+
             observeCallLog()
+            observeCallLogMutabeLivedata()
+            collectdata()
 
         }
         initListeners()
@@ -79,11 +87,22 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         return callFragment
 
     }
+
+    private fun collectdata() {
+        lifecycleScope.launchWhenStarted {
+            CallLogFlowHelper.fetchCallLogFlow(this@CallFragment.requireActivity()).collect {
+               viewmodel. updateLiveDataWithFlow(it)
+            }
+        }
+
+    }
+
     private fun observePermissionLiveData() {
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
             if(it == true){
                 Log.d(TAG, "observePermissionLiveData: permission given")
                 observeCallLog()
+                observeCallLogMutabeLivedata()
                 this.callFragment!!.btnCallhistoryPermission.visibility = View.GONE
             }else{
                 this.callFragment!!.btnCallhistoryPermission.visibility =View.VISIBLE
@@ -101,10 +120,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.callFragment!!.btnCallhistoryPermission.setOnClickListener(this)
     }
 
+    private fun observeCallLogMutabeLivedata(){
+        viewmodel.callLogsMutableLiveData.observe(viewLifecycleOwner, Observer {
+            callLogAdapter?.setCallLogs(it)
+        })
+    }
     private fun observeCallLog() {
         viewmodel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
-                callLogAdapter?.setCallLogs(it)
+                viewmodel.updateCAllLogLivedata(logs)
+//                viewmodel.setAdditionalInfo(logs)
             }
         })
     }

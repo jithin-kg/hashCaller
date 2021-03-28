@@ -4,13 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.network.RetrofitClient
-import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
-import com.nibble.hashcaller.view.ui.sms.work.UnknownSMSsendersInfoResponse
+import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
+import com.nibble.hashcaller.work.formatPhoneNumber
+import com.nibble.hashcaller.work.replaceSpecialChars
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class CallContainerRepository(val context: Context, val dao: CallersInfoFromServerDAO) {
@@ -39,6 +43,21 @@ class CallContainerRepository(val context: Context, val dao: CallersInfoFromServ
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
         Log.d(TAG, "uploadNumbersToGetInfo: response is ${response}")
         return response
+    }
+
+    suspend fun getNameForAddress(number: String): CallersInfoFromServer? {
+        val numWithoutSpecialChars = replaceSpecialChars(number)
+        var numberForQuery =numWithoutSpecialChars
+        if(isNumericOnlyString(numWithoutSpecialChars)){
+            numberForQuery = formatPhoneNumber(numWithoutSpecialChars)
+        }
+        var result: CallersInfoFromServer? = null
+        GlobalScope.launch {
+            result= async { dao.find(numberForQuery) }.await()
+        }.join()
+
+        return result
+
     }
 
     companion object{

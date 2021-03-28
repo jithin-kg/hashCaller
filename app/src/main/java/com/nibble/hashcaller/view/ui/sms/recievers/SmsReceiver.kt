@@ -44,6 +44,7 @@ class SmsReceiver : BroadcastReceiver() {
     private var blockedOrSpamSendersDAO: IBlockedOrSpamSendersDAO? = null
     private lateinit var notificationManagerCmpt:  NotificationManagerCompat
     override fun onReceive(context: Context, intent: Intent) {
+
          mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
          blockedOrSpamSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
         page = 0

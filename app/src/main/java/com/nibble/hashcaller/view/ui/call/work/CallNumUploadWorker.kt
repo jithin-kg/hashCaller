@@ -39,44 +39,43 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     override suspend fun doWork(): Result {
         try {
             Log.d(TAG, "doWork: ")
-//            val callersLocalRepository =
-//                CallLocalRepository(
-//                    context
-//                )
-//            val allcallsincontentProvider = callersLocalRepository.getCallLog()
-//            val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
-//            val callContainerRepository =
-//                CallContainerRepository(
-//                    context,
-//                    callersInfoFromServerDAO
-//                )
-//
-//
-//            setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
-//
-//
-//            if(callersListChunkOfSize12.isNotEmpty()){
-//                for (senderInfoSublist in callersListChunkOfSize12){
-//
-//                    /**
-//                     * send the list to server
-//                     */
-//                    val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
-//
-//                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-//
-//                    for(cntct in result.body()!!.contacts){
-//
-//                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-//                            cntct.phoneNumber, 0, cntct.name,
-//                            Date(), cntct.spamCount)
-//                        callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
-//                    }
-//                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
-//                }
-//            }else{
-//                Log.d(TAG, "doWork: size less than 1")
-//            }
+            val callersLocalRepository =
+                CallLocalRepository(
+                    context
+                )
+            val allcallsincontentProvider = callersLocalRepository.getCallLog()
+            val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
+            val callContainerRepository =
+                CallContainerRepository(
+                    context,
+                    callersInfoFromServerDAO
+                )
+
+
+            setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
+
+
+            if(callersListChunkOfSize12.isNotEmpty()){
+                for (senderInfoSublist in callersListChunkOfSize12){
+
+                    /**
+                     * send the list to server
+                     */
+                    val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+
+                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+                    for(cntct in result.body()!!.contacts){
+
+                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
+                            cntct.phoneNumber, 0, cntct.name,
+                            Date(), cntct.spamCount)
+                        callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                    }
+                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
+                }
+            }else{
+                Log.d(TAG, "doWork: size less than 1")
+            }
                 
 
 
@@ -101,9 +100,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
         for (caller in allcallsInContentProvider){
 
 
-            val smssenderInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(caller.number!!)
+            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(caller.number!!)
 
-            if(smssenderInfoAvailableInLocalDb == null){
+            if(callersInfoAvailableInLocalDb == null){
                 Log.d(TAG, "doWork: no data recieved from server")
 
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
@@ -112,7 +111,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
             }else{
                 val today = Date()
-                if(isCurrentDateAndPrevDateisGreaterThanLimit(smssenderInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
+                if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
                     //We need to check if new data information about the number is available server
                     //todo this is getting called all the time, need to check on this
 
