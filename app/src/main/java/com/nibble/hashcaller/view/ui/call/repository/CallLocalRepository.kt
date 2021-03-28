@@ -43,7 +43,7 @@ class CallLocalRepository(private val context: Context) {
                     val type: String = cursor.getString(1)
                     val duration: String = cursor.getString(2)
                     val name: String? = cursor.getString(3)
-                    val id: String = cursor.getString(4)
+                    val id = cursor.getLong(4)
                     var dateInMilliseconds = cursor.getString(5)
                     val fmt =
                         SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")

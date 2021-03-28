@@ -1,16 +1,27 @@
-package com.nibble.hashcaller.view.ui.sms.individual.util
+package com.nibble.hashcaller.view.ui.call.utils
 
 import android.view.View
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 
 /**
- * mark item handler in sms
+ * call
  */
-object IndividualMarkedItemHandler {
+object IndividualMarkedItemHandlerCall {
     private var markedItems:MutableSet<Long> = mutableSetOf()
     private var markedViews:MutableSet<View> = mutableSetOf()
 
+    fun getMarkedItems(): MutableSet<Long> {
+        return markedItems
+    }
     fun addTomarkedItemsById(id:Long){
         markedItems.add(id)
+    }
+
+    fun isMarkingStarted(): Boolean {
+        if(markedItems.isNotEmpty())
+        return true
+
+        return false
     }
     fun removeFromMarkedItemsById(id: Long){
         markedItems.remove(id)
@@ -27,6 +38,11 @@ object IndividualMarkedItemHandler {
     }
     fun getMarkedViews(): List<View> {
         return markedViews.toList()
+    }
+
+    fun clearlists() {
+        markedItems.clear()
+        markedViews.clear()
     }
 
 

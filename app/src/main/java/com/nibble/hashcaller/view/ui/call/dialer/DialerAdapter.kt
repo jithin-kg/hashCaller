@@ -21,7 +21,10 @@ import java.util.*
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class DialerAdapter(private val context: Context, private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int, callLog:CallLogData)->Unit) :
+class DialerAdapter(private val context: Context,
+                    private val longPressHandler: CallItemLongPressHandler,
+                    private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int, callLog:CallLogData)->Unit
+                   ) :
     androidx.recyclerview.widget.ListAdapter<CallLogData, RecyclerView.ViewHolder>(CallItemDiffCallback()){
     private val VIEW_TYPE_NO_SPAM = 0;
     private val VIEW_TYPE_SPAM = 1;
@@ -132,7 +135,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.textViewTimeSpam.text = callLog.date
 
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).findViewById<ImageButton>(R.id.imgBtnCallExpandSpam) .setOnClickListener {
-                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1,callLog)
+                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
             }
 
             view.setOnClickListener(View.OnClickListener {v->
@@ -262,9 +265,15 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.textViewTime.text = callLog.date
 
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).findViewById<ImageButton>(R.id.imgBtnCallExpand) .setOnClickListener {
-                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1,callLog)
+                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
             }
 
+            view.setOnLongClickListener{v->
+                longPressHandler.onLongPressed(v,
+                this.adapterPosition, callLog.id, callLog.number)
+                true
+
+            }
             view.setOnClickListener(View.OnClickListener {v->
 //                onContactItemClickListener("2", this.adapterPosition, view)
                prevTime = callLog.dateInMilliseconds
@@ -380,7 +389,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         }
 
     }
-
+    interface CallItemLongPressHandler{
+        fun onLongPressed(view:View, pos:Int, id: Long, address:String)
+    }
 
 
 }

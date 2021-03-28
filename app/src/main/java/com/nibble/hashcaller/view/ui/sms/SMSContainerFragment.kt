@@ -38,6 +38,7 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.Permissio
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSHelperFlow
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
@@ -640,10 +641,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     fun showToolbarButtons() {
         Log.d(TAG, "showToolbarButtons: ")
 
-        imgBtnTbrDelete.visibility = View.VISIBLE
-        imgBtnTbrMuteSender.visibility = View.VISIBLE
-        imgBtnTbrBlock.visibility = View.VISIBLE
-        tvSelectedCount.visibility = View.VISIBLE
+        imgBtnTbrDelete.beVisible()
+        imgBtnTbrMuteSender.beVisible()
+        imgBtnTbrBlock.beVisible()
+        tvSelectedCount.beVisible()
 
     }
     private fun muteSender() {

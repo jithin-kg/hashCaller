@@ -112,6 +112,8 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
                 this.searchAdapter!!.setList(lst) //if search query is empty empty recyclerview
 
             }else{
+                //todo if the search query is a name like amma, ie 9512313
+                //only number is existing in sms content provider in this case, no name, so I need to consider that
                 viewmodel.search(text).observe(this, Observer {
                     this.searchAdapter!!.setList(it) //set search result to recyclerview
                     queryText = text

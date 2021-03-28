@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.work
 
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,8 +10,16 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addToMarkedViews
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addTomarkedItemsById
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedViews
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkedViewsEmpty
+import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
+import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class CallContainerViewModel(
@@ -79,6 +88,24 @@ class CallContainerViewModel(
 //        lst.addAll(lst)
         lstOfAllCallLogs.add(it)
         callLogsMutableLiveData.value = lstOfAllCallLogs
+    }
+
+    fun markItem(id: Long, view: View, pos: Int):kotlinx.coroutines.flow.Flow<View> = flow {
+
+        addTomarkedItemsById(id)
+        addToMarkedViews(view)
+
+        if(!isMarkedViewsEmpty()){
+            for(view in getMarkedViews()){
+//               markedViewsLiveData.value = view
+                emit(view)
+            }
+        }
+    }
+
+    fun deleteThread() {
+        val numRowsDeleted =  repository!!.deleteLogs()
+//        numRowsDeletedLiveData.value = numRowsDeleted
     }
 
     companion object{

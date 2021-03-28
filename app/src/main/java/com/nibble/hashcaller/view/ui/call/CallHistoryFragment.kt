@@ -143,7 +143,7 @@ class CallHistoryFragment : Fragment(), View.OnClickListener {
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, position, view, btn, callLog)}
+//            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, position, view, btn, callLog)}
             adapter = callLogAdapter
 
         }

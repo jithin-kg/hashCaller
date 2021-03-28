@@ -26,27 +26,37 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
+import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import kotlinx.android.synthetic.main.fragment_call.*
+import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.android.synthetic.main.fragment_call_history.*
+import kotlinx.android.synthetic.main.fragment_call_history.rcrViewCallHistoryLogs
 import kotlinx.android.synthetic.main.fragment_call_history.view.*
-import kotlinx.coroutines.GlobalScope
+import kotlinx.android.synthetic.main.fragment_call_history.view.btnCallhistoryPermission
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+
 
 /**
  * A simple [Fragment] subclass.
  * Use the [CallFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection {
+class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
+    DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener {
     private var isDflt = false
 
     private var toolbar: Toolbar? = null
     var callFragment: View? = null
-    private lateinit var searchViewCall: EditText
+//    private lateinit var searchViewCall: EditText
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     var layoutBottomSheet: ConstraintLayout? = null
     private lateinit var dialerFragment: DialerFragment
@@ -118,6 +128,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
     private fun initListeners() {
         this.callFragment!!.btnCallhistoryPermission.setOnClickListener(this)
+        this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
     }
 
     private fun observeCallLogMutabeLivedata(){
@@ -184,12 +195,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallLogItemClicked(id, position, view, btn, callLog)}
+            callLogAdapter = DialerAdapter(context,this@CallFragment) {
+                    id:String, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallItemClicked(id, position, view, btn, callLog)}
             adapter = callLogAdapter
 
         }
     }
-    private fun onCallLogItemClicked(
+    private fun onCallItemClicked(
         id: String,
         position: Int,
         view: View,
@@ -281,7 +293,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun initialize() {
         toolbar = callFragment?.findViewById(R.id.toolbarCall)
-        searchViewCall = callFragment?.findViewById(R.id.searchViewCall)!!
+//        searchViewCall = callFragment?.findViewById(R.id.searchViewCall)!!
     }
 
     companion object {
@@ -311,11 +323,19 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        }
             R.id.btnCallhistoryPermission->{
                 val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
-                Log.d(CallHistoryFragment.TAG, "onClick: res is $res")
+                Log.d(TAG, "onClick: res is $res")
                 this.permissionGivenLiveData.value = res
+            }
+            R.id.imgBtnCallTbrDelete->{
+                deletemarkedLogs()
             }
         }
 
+    }
+
+    private fun deletemarkedLogs() {
+        val dialog = ConfirmDialogFragment(this, "Delete callLogs?", 2)
+        dialog.show(childFragmentManager, "sample")
     }
 
     private fun showDialerFragment() {
@@ -330,5 +350,33 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override var isDefaultFgmnt: Boolean
         get() = isDflt
         set(value) {isDflt = value}
+
+    override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
+        lifecycleScope.launchWhenStarted {
+            viewmodel.markItem(id, view, pos).collect{
+                if(it!=null){
+                    if(isMarkingStarted()){
+                        showDeleteBtnInToolbar()
+                    }
+                    val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.numbersInnerTextColor))
+                }
+            }
+        }
+    }
+
+    private fun showDeleteBtnInToolbar() {
+        Log.d(TAG, "showDeleteBtnInToolbar: ")
+        searchViewCall.beInvisible()
+        imgBtnCallTbrDelete.beVisible()
+        imgBtnCallTbrMuteSender.beVisible()
+        imgBtnCallTbrBlock.beVisible()
+        imgBtnCallTbrMore.beVisible()
+
+    }
+
+    override fun onYesConfirmation() {
+        this.viewmodel.deleteThread()
+    }
 
 }

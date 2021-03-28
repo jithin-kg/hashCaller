@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 
 @Keep
 class CallLogData(
-    val id: String,
+    val id: Long,
     val number: String = "",
     val type: Int,
     val duration: String,

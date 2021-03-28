@@ -44,7 +44,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [DialerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
+class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
+    DialerAdapter.CallItemLongPressHandler {
     private var isDflt = false
     private var param1: String? = null
     private var param2: String? = null
@@ -236,7 +237,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context) { id:String,pos:Int, v:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, pos, v, btn, callLog)}
+            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:String,pos:Int, v:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, pos, v, btn, callLog)}
             adapter = callLogAdapter
 
         }
@@ -463,5 +464,9 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     override var isDefaultFgmnt: Boolean
         get() = isDflt
         set(value) {isDflt = value}
+
+    override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
+
+    }
 
 }
