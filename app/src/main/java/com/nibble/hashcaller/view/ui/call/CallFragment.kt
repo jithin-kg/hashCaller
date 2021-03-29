@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -21,35 +20,27 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
-import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
-import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
-import kotlinx.android.synthetic.main.fragment_call_history.*
 import kotlinx.android.synthetic.main.fragment_call_history.rcrViewCallHistoryLogs
-import kotlinx.android.synthetic.main.fragment_call_history.view.*
 import kotlinx.android.synthetic.main.fragment_call_history.view.btnCallhistoryPermission
 import kotlinx.coroutines.flow.collect
 
@@ -137,7 +128,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
     private fun initListeners() {
         this.callFragment!!.btnCallhistoryPermission.setOnClickListener(this)
-        this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
+        this.callFragment!!.imgBtnCallTbrBlock.setOnClickListener(this)
+        this.callFragment!!.imgBtnCallTbrMuteCaller.setOnClickListener(this)
     }
 
     private fun observeCallLogMutabeLivedata(){
@@ -211,66 +203,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
     }
 
-    private fun onCallItemClicked(
-        id: Long,
-        position: Int,
-        view: View,
-        btn: Int,
-        callLog: CallLogData
-    ): Int {
-        Log.d(TAG, "onCallLog item clicked: $id")
-    var viewExpanded = 0
-        if(isMarkingStarted()){
-            lifecycleScope.launchWhenStarted {
-                viewmodel.markItem(id, view, position).collect{
-                    if(it!=null){
-                        if(isMarkingStarted()){
-                            showDeleteBtnInToolbar()
-                        }
-                        val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
-                        view.imgViewCallMarked.beVisible()
-                        updateSelectedItemCount()
-//                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
-                    }
-                }
-            }
 
-
-        }else{
-            viewExpanded = 1
-            //no marking started, then expand the layout
-            val id = callLogAdapter!!.getItemId(position)
-            val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
-            when(btn){
-                DialerAdapter.BUTTON_SIM_1->{
-                    Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
-//                    makeCall(callLog)
-                }
-                DialerAdapter.BUTTON_SIM_2->{
-
-                }
-                DialerAdapter.BUTTON_SMS->{
-
-                }
-                DialerAdapter.BUTTON_INFO->{
-
-                }
-
-            }
-        }
-
-    return viewExpanded
-//        if(v.visibility == View.GONE){
-//            v.visibility = View.VISIBLE
-//        }else{
-//            v.visibility = View.GONE
-//        }
-
-//        Log.d(TAG, "onCallLogItemClicked: ")
-//        val intent = Intent(context, IndividualCotactViewActivity::class.java )
-//        intent.putExtra(CONTACT_ID, id)
-//        startActivity(intent)
-    }
 
     private fun toggleExpandableView(v: View, pos: Int) {
 
@@ -365,8 +298,27 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             R.id.imgBtnCallTbrDelete->{
                 deletemarkedLogs()
             }
+            R.id.imgBtnCallTbrMuteCaller ->{
+                muteMarkedCaller()
+            }
+            R.id.imgBtnCallTbrBlock->{
+            }
+
         }
 
+    }
+
+    private fun muteMarkedCaller() {
+        lifecycleScope.launchWhenStarted {
+            viewmodel.muteMarkedCaller().collect {
+                when(it){
+                    OPERATION_COMPLETED ->{
+                        showSearchView()
+                        clearlists()
+                    }
+                }
+            }
+        }
     }
 
     private fun deletemarkedLogs() {
@@ -390,51 +342,169 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
         val expandedView = getExpandedLayoutView()
         expandedView?.beGone()
+        markItem(id, pos, view, address)
+//
+//        lifecycleScope.launchWhenStarted {
+//            viewmodel.markItem(id, view, pos).collect{
+//                if(it!=null){
+//                    if(isMarkingStarted()){
+//                        showDeleteBtnInToolbar()
+//                    }
+//                    val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+//                        view.imgViewCallMarked.beVisible()
+//                    updateSelectedItemCount()
+////                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
+//                }
+//            }
+//        }
+    }
+
+    private fun onCallItemClicked(
+        id: Long,
+        position: Int,
+        view: View,
+        btn: Int,
+        callLog: CallLogData
+    ): Int {
+        Log.d(TAG, "onCallLog item clicked: $id")
+        var viewExpanded = 0
+        if(isMarkingStarted()){
+            markItem(id, position, view, callLog.number)
+
+
+        }else{
+            viewExpanded = 1
+            //no marking started, then expand the layout
+            val id = callLogAdapter!!.getItemId(position)
+            val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
+            when(btn){
+                DialerAdapter.BUTTON_SIM_1->{
+                    Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
+//                    makeCall(callLog)
+                }
+                DialerAdapter.BUTTON_SIM_2->{
+
+                }
+                DialerAdapter.BUTTON_SMS->{
+
+                }
+                DialerAdapter.BUTTON_INFO->{
+
+                }
+
+            }
+        }
+
+        return viewExpanded
+//        if(v.visibility == View.GONE){
+//            v.visibility = View.VISIBLE
+//        }else{
+//            v.visibility = View.GONE
+//        }
+
+//        Log.d(TAG, "onCallLogItemClicked: ")
+//        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+//        intent.putExtra(CONTACT_ID, id)
+//        startActivity(intent)
+    }
+
+    private fun markItem(
+        id: Long,
+        position: Int,
+        view: View,
+        number: String
+    ) {
 
         lifecycleScope.launchWhenStarted {
-            viewmodel.markItem(id, view, pos).collect{
-                if(it!=null){
+            viewmodel.markItem(id, view, position, number).collect{
+
+                val viewMain = view.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+
+                when(it){
+                    CALL_NEW_ITEM_MARKED ->{
+                        viewMain.imgViewCallMarked.beVisible()
+
+                    }
+                    CALL_ITEM_UN_MARKED ->{
+                        viewMain.imgViewCallMarked.beInvisible()
+//                        updateSelectedItemCount()
+
+
+                    }
+                }
+
                     if(isMarkingStarted()){
                         showDeleteBtnInToolbar()
                     }
-                    val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
-                        view.imgViewCallMarked.beVisible()
+
                     updateSelectedItemCount()
-//                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
+                if(isItemSizeEqualsOne()){
+                    showBlockButon()
                 }
+                else{
+                    hideBlockButton()
+                }
+//                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
             }
         }
+
+    }
+
+    private fun hideBlockButton() {
+        this.requireActivity().runOnUiThread {
+            this.callFragment!!.imgBtnCallTbrBlock.beInvisible()
+            this.callFragment!!.imgBtnCallTbrMuteCaller.beInvisible()
+        }
+
+    }
+
+    private fun showBlockButon() {
+       this.requireActivity().runOnUiThread {
+           imgBtnCallTbrBlock.beVisible()
+           imgBtnCallTbrMuteCaller.beVisible()
+       }
+
     }
 
     private fun showDeleteBtnInToolbar() {
         Log.d(TAG, "showDeleteBtnInToolbar: ")
         searchViewCall.beInvisible()
-        imgBtnCallTbrDelete.beVisible()
-        imgBtnCallTbrMuteSender.beVisible()
         imgBtnCallTbrBlock.beVisible()
+        imgBtnCallTbrMuteCaller.beVisible()
+        imgBtnCallTbrDelete.beVisible()
         imgBtnCallTbrMore.beVisible()
 
     }
      fun showSearchView(){
         searchViewCall.beVisible()
-        imgBtnCallTbrDelete.beInvisible()
-        imgBtnCallTbrMuteSender.beInvisible()
         imgBtnCallTbrBlock.beInvisible()
+         imgBtnCallTbrMuteCaller.beInvisible()
+        imgBtnCallTbrDelete.beInvisible()
         imgBtnCallTbrMore.beInvisible()
+        tvCallSelectedCount.beInvisible()
     }
 
     fun updateSelectedItemCount(){
         val count = getMarkedItemSize()
-        tvCallSelectedCount.text = count.toString()
+        tvCallSelectedCount.text = "${count.toString()} Selected"
         if(count>0){
             tvCallSelectedCount.beVisible()
         }else{
-            tvCallSelectedCount.beInvisible()
+            showSearchView()
         }
     }
 
     override fun onYesConfirmation() {
-        this.viewmodel.deleteThread()
+        this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
+           when(it){
+               SMS_DELETE_ON_PROGRESS ->{
+
+               }
+               SMS_DELETE_ON_COMPLETED ->{
+                   showSearchView()
+               }
+           }
+        })
     }
 
 }

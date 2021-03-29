@@ -37,6 +37,9 @@ const val INTANT_SMS_BRECIEVER_TIME = "timeofsmssent"
 const val SMS_CHAT_ID = "chatId" //intent key for single chat text sms id
 const val QUERY_STRING = "queryString" //for sending intent os searchActivity, sms
 
+const val OPERATION_PENDING = 0
+const val OPERATION_COMPLETED = 1
+const val OPERATION_FAILED = 2
 var smsDeletingStarted = false
 var LAST_SMS_SENT = false
 

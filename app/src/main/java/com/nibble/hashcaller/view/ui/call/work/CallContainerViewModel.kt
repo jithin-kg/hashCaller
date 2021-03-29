@@ -1,9 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.work
 
 import android.view.View
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
@@ -13,12 +11,21 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addToMarkedViews
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addTomarkedItemsById
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItems
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedViews
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.idContainsInList
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkedViewsEmpty
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler
-import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setMarkedContactAddress
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
@@ -90,22 +97,55 @@ class CallContainerViewModel(
         callLogsMutableLiveData.value = lstOfAllCallLogs
     }
 
-    fun markItem(id: Long, view: View, pos: Int):kotlinx.coroutines.flow.Flow<View> = flow {
+    fun markItem(id: Long, view: View, pos: Int, address: String): Flow<Int> = flow {
 
-        addTomarkedItemsById(id)
-        addToMarkedViews(view)
-
-        if(!isMarkedViewsEmpty()){
-            for(view in getMarkedViews()){
-//               markedViewsLiveData.value = view
-                emit(view)
+        if(idContainsInList(id)){ // if id already exist in list,remove from the list and unMark view
+            IndividualMarkedItemHandlerCall.removeFromMarkedItemsById(id)
+            if(getMarkedItemSize() == 1){
+                setMarkedContactAddress(address)
             }
+            emit(CALL_ITEM_UN_MARKED)
+
+        }else{
+
+            if(getMarkedItemSize() == 0){
+                setMarkedContactAddress(address)
+            }
+            addTomarkedItemsById(id)
+            addToMarkedViews(view)
+
+
+            if(!isMarkedViewsEmpty()){
+                for(view in getMarkedViews()){
+//               markedViewsLiveData.value = view
+                    emit(CALL_NEW_ITEM_MARKED)
+                }
+            }
+
+
         }
+
     }
 
-    fun deleteThread() {
+    fun deleteThread():LiveData<Int> = liveData {
+        emit(SMS_DELETE_ON_PROGRESS)
         val numRowsDeleted =  repository!!.deleteLogs()
+        emit(SMS_DELETE_ON_COMPLETED)
+
 //        numRowsDeletedLiveData.value = numRowsDeleted
+    }
+
+    fun muteMarkedCaller() :Flow<Int> = flow {
+        emit(OPERATION_PENDING)
+        var address = getMarkedContactAddress()!!
+        address = formatPhoneNumber(address)
+        GlobalScope.launch {
+            async { repository!!.muteContactAddress(address) }.await()
+        }.join()
+
+        emit(OPERATION_COMPLETED)
+
+
     }
 
     companion object{

@@ -123,7 +123,8 @@ const val WAS_MESSENGER_RECORDER_SHOWN = "was_messenger_recorder_shown"
 const val DEFAULT_TAB = "default_tab"
 const val START_NAME_WITH_SURNAME = "start_name_with_surname"
 const val FAVORITES = "favorites"
-
+const val SMS_DELETE_ON_PROGRESS = 0
+const val SMS_DELETE_ON_COMPLETED = 1
 
 // security
 const val WAS_PROTECTION_HANDLED = "was_protection_handled"
@@ -195,6 +196,13 @@ fun isPiePlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 fun isQPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 //fun isRPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
+
+const val TEL_PREFIX = "tel:"
+
+const val FORBIDDEN_PHONE_CALL_NUMBER = "6505551212"
+
+const val CALL_NEW_ITEM_MARKED = 1
+const val CALL_ITEM_UN_MARKED = 0
 
 const val USE_SIM_ID_PREFIX = "use_sim_id_"
 const val SHOW_CHARACTER_COUNTER = "show_character_counter"

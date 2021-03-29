@@ -12,6 +12,7 @@ import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -38,6 +39,16 @@ class InCommingCallManager(
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun getBLockedLists()  = GlobalScope.launch(Dispatchers.IO) {
+
+
+
+
+            repository.isCallerMuted(phoneNumber).collect {
+                if(it){
+                    silenceIncomingCall(context)
+                }
+            }
+        //todo I can change this to flow for faster operation
         Log.d(TAG, "phoneNum: $phoneNumber")
         Log.d(TAG, "phoneNum: $phoneNumber")
           val job =  async { repository.getListOfdata() }
@@ -57,7 +68,7 @@ class InCommingCallManager(
         }else{
 
         }
-//        }
+
 
 
     }
@@ -70,6 +81,11 @@ class InCommingCallManager(
      fun endIncommingCall(context: Context) {
         val c =  CallEnder(context)
         c.endIncomingCall()
+    }
+
+    fun silenceIncomingCall(context: Context){
+        val c = CallEnder(context)
+        c.silenceIncomingCall()
     }
 
     fun preparedPhoenNumber(num:String):String{

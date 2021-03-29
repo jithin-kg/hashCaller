@@ -19,7 +19,9 @@ class BlockListViewModel(application: Application) : AndroidViewModel(applicatio
 
     init {
         val blockedLIstDao = HashCallerDatabase.getDatabaseInstance(application).blocklistDAO()
-        blockListPatternRepository = BlockListPatternRepository(blockedLIstDao)
+        val mutedCallersDao = HashCallerDatabase.getDatabaseInstance(application).mutedCallersDAO()
+
+        blockListPatternRepository = BlockListPatternRepository(blockedLIstDao, mutedCallersDao)
 
         allblockedList = blockListPatternRepository.allBlockedList
     }

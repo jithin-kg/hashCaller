@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nibble.hashcaller">
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,7 +37,7 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-feature android:name="android.hardware.telephony" />
+
 
     <application
         android:name=".utils.notifications.HashCaller"
@@ -84,7 +92,7 @@
         </activity>
 
         <service
-            android:name=".view.ui.call.ScreeningService"
+            android:name=".utils.MyCallScreeningService"
             android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
@@ -151,6 +159,20 @@
             android:parentActivityName=".view.ui.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 
             <!-- android:windowSoftInputMode="adjustNothing" https://stackoverflow.com/questions/4207880/android-how-do-i-prevent-the-soft-keyboard-from-pushing-my-view-up#:~:text=I%20was%20able%20to%20avoid,that%20sits%20above%20the%20buttons.&text=didnt.&text=This%20worked%20like%20a%20charm,Its%20smoother.> -->
             <!-- prent activity is need to define the natural hierarchy of the application / navigation -->

@@ -13,9 +13,20 @@ object IndividualMarkedItemHandlerCall {
     private var markedViews:MutableSet<View> = mutableSetOf()
     private var expandedLayoutId: Long? = null // to keep track what layout is now expanded
     private var expandedLayoutView: View? = null
+    private var markedContactAddress: String? = null // to mute or block
 
+    fun setMarkedContactAddress(address:String){
+        markedContactAddress = address
+    }
+    fun getMarkedContactAddress(): String? {
+        return markedContactAddress
+    }
     fun setExpandedLayoutView(view: View?){
         expandedLayoutView = view
+    }
+    fun isItemSizeEqualsOne(): Boolean {
+        if(markedItems.size == 1) return true
+        return false
     }
     fun getExpandedLayoutView(): View? {
         return expandedLayoutView
@@ -48,6 +59,10 @@ object IndividualMarkedItemHandlerCall {
 
     fun addToMarkedViews(view:View){
         markedViews.add(view)
+    }
+    fun idContainsInList(id:Long): Boolean {
+        return markedItems.contains(id)
+
     }
     fun removeFromMarkedViews(view: View){
         markedViews.remove(view)

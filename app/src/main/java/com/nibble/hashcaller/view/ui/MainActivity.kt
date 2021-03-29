@@ -44,6 +44,9 @@ import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
+import com.nibble.hashcaller.utils.callHandlers.base.BaseActivity
+import com.nibble.hashcaller.utils.callHandlers.base.events.PermissionDenied
+import com.nibble.hashcaller.utils.callHandlers.base.events.PhoneManifestPermissionsEnabled
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
@@ -67,6 +70,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import pub.devrel.easypermissions.AppSettingsDialog
 
 /**
  * This is a extension function which set the default fragment
@@ -77,6 +81,10 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
+    // flag that restarts checking capabilities dialog, after user enables manifest permissions
+    // via app settings page
+    private var checkCapabilitiesOnResume = false
+
     private lateinit var toolbar: Toolbar
     private lateinit var  tabLayout: TabLayout
     private val viewPager: ViewPager? = null
@@ -111,6 +119,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         hideKeyboard(this)
 //        setStatusBarColor(this)
         setContentView(R.layout.activity_main)
+        listenUiEvents()
 
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(this, R.color.textColor);
@@ -149,6 +158,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
+    private fun listenUiEvents() {
+//       uiEvent.observe(this, {
+//            when (it) {
+//                is PermissionDenied -> {
+//                    checkCapabilitiesOnResume = true
+//                    // This will display a dialog directing them to enable the permission in app settings.
+//                    AppSettingsDialog.Builder(this).build().show()
+//                }
+//                is PhoneManifestPermissionsEnabled -> {
+//                    // now we can load phone dialer capabilities requests
+//                    capabilitiesRequestor.invokeCapabilitiesRequest()
+//                }
+//                else -> {
+//                    // NOOP
+//                }
+//            }
+//        })
+    }
 
 
 //    override fun onCreateContextMenu(menu: ContextMenu, v: View,

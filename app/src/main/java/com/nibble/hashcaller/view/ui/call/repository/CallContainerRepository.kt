@@ -3,20 +3,18 @@ package com.nibble.hashcaller.view.ui.call.repository
 import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.CallLog
-import android.provider.Telephony
 import android.util.Log
+import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
+import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItems
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
-import com.nibble.hashcaller.view.ui.contacts.utils.smsDeletingStarted
-import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
-import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
@@ -24,7 +22,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class CallContainerRepository(val context: Context, val dao: CallersInfoFromServerDAO) {
+class CallContainerRepository(
+    val context: Context,
+    val dao: CallersInfoFromServerDAO,
+    val mutedCallersDAO: IMutedCallersDAO?
+) {
 
     private var retrofitService:ICallService? = null
 
@@ -76,7 +78,9 @@ class CallContainerRepository(val context: Context, val dao: CallersInfoFromServ
 
 //        smsDeletingStarted = true
 //        var numRowsDeleted = 0
-        for(id in IndividualMarkedItemHandlerCall.getMarkedItems()) {
+        var list: MutableSet<Long>  = mutableSetOf()
+        list.addAll(getMarkedItems())
+        for(id in list) {
             Log.d(TAG, "deleteSmsThread: threadid $id")
             var uri = CallLog.Calls.CONTENT_URI
             val selection = "${CallLog.Calls._ID} = ?"
@@ -91,6 +95,13 @@ class CallContainerRepository(val context: Context, val dao: CallersInfoFromServ
         }
 
 
+    }
+
+    /**
+     * function to add contact address to mutedCallers
+     */
+    suspend fun muteContactAddress(address: String) {
+        mutedCallersDAO!!.insert(listOf(MutedCallers(address)))
     }
 
     companion object{

@@ -167,6 +167,7 @@
             android:background="@drawable/down_arrow_backgroudn"
             android:elevation="3dp"
             android:padding="8dp"
+            android:visibility="invisible"
             android:src="@drawable/ic_arrow_down"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

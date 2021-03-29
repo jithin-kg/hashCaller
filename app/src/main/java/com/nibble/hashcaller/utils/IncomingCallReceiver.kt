@@ -12,6 +12,9 @@ import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
+import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
+import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
@@ -33,6 +36,7 @@ import java.security.NoSuchAlgorithmException
 class IncomingCallReceiver : BroadcastReceiver(){
 
     private lateinit var  blockedLIstDao:BlockedLIstDao
+    private lateinit var mutedCallersDao: IMutedCallersDAO
     private lateinit var blockListPatternRepository: BlockListPatternRepository
 
 
@@ -109,7 +113,9 @@ class IncomingCallReceiver : BroadcastReceiver(){
                 String.format("Incoming call from %s", phoneNumber)
             )
             blockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
-            blockListPatternRepository = BlockListPatternRepository(blockedLIstDao)
+            mutedCallersDao = HashCallerDatabase.getDatabaseInstance(context).mutedCallersDAO()
+            blockListPatternRepository = BlockListPatternRepository(blockedLIstDao, mutedCallersDao)
+
             val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
             inComingCallManager.getBLockedLists()
 
@@ -160,37 +166,44 @@ class IncomingCallReceiver : BroadcastReceiver(){
         num = Secrets().managecipher(context.packageName, num!!)//encoding the number with my algorithm
       
         CoroutineScope(Dispatchers.IO).launch {
-            val searchRepository = SearchNetworkRepository(context)
-            val res = searchRepository.search(num)
-            if(!res?.body()?.cntcts.isNullOrEmpty()){
-                val result = res?.body()?.cntcts?.get(0)
-                Log.d(TAG, "searchForNumberInServer: result $result")
-                if(result!!.spammCount > 0){
-                    val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
-                    inComingCallManager.endIncommingCall(context)
+            try {
+                val searchRepository = SearchNetworkRepository(context)
+                val res = searchRepository.search(num)
+                if(!res?.body()?.cntcts.isNullOrEmpty()){
+                    val result = res?.body()?.cntcts?.get(0)
+                    Log.d(TAG, "searchForNumberInServer: result $result")
+                    if(result!!.spammCount > 0){
+                        val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository,
+                            context, phoneNumber)
+                        inComingCallManager.endIncommingCall(context)
 
-                    incrementTotalSpamCountByHashCallerInServer(searchRepository)
 
+                        incrementTotalSpamCountByHashCallerInServer(searchRepository)
+
+                    }
+                    val i = Intent(context, ActivityIncommingCallView::class.java)
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    i.putExtra("name", result.name)
+                    i.putExtra("phoneNumber", phoneNumber)
+                    i.putExtra("spamcount", result.spammCount)
+                    i.putExtra("carrier", result.carrier)
+                    i.putExtra("location", result.location)
+                    context.startActivity(i)
+                }else{
+                    //if there is no info about the caller in server db
+                    val i = Intent(context, ActivityIncommingCallView::class.java)
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    i.putExtra("name", "")
+                    i.putExtra("phoneNumber", phoneNumber)
+                    i.putExtra("spamcount", "")
+                    i.putExtra("carrier", "")
+                    i.putExtra("location", "")
+                    context.startActivity(i)
                 }
-                val i = Intent(context, ActivityIncommingCallView::class.java)
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                i.putExtra("name", result.name)
-                i.putExtra("phoneNumber", phoneNumber)
-                i.putExtra("spamcount", result.spammCount)
-                i.putExtra("carrier", result.carrier)
-                i.putExtra("location", result.location)
-                context.startActivity(i)
-            }else{
-                //if there is no info about the caller in server db
-                val i = Intent(context, ActivityIncommingCallView::class.java)
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                i.putExtra("name", "")
-                i.putExtra("phoneNumber", phoneNumber)
-                i.putExtra("spamcount", "")
-                i.putExtra("carrier", "")
-                i.putExtra("location", "")
-                context.startActivity(i)
+            }catch (e:Exception){
+                Log.d(TAG, "searchForNumberInServer: exception $e")
             }
+            
 
         }
        
