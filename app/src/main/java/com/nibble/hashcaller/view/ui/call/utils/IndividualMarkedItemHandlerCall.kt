@@ -3,10 +3,7 @@ package com.nibble.hashcaller.view.ui.call.utils
 import android.view.View
 import android.widget.ImageView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
-import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 
 /**
  * call
@@ -14,7 +11,21 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 object IndividualMarkedItemHandlerCall {
     private var markedItems:MutableSet<Long> = mutableSetOf()
     private var markedViews:MutableSet<View> = mutableSetOf()
+    private var expandedLayoutId: Long? = null // to keep track what layout is now expanded
+    private var expandedLayoutView: View? = null
 
+    fun setExpandedLayoutView(view: View?){
+        expandedLayoutView = view
+    }
+    fun getExpandedLayoutView(): View? {
+        return expandedLayoutView
+    }
+    fun setExpandedLayoutId(id: Long?){
+        expandedLayoutId = id
+    }
+    fun getExpandedLayoutId(): Long? {
+        return expandedLayoutId
+    }
     fun getMarkedItemSize(): Int {
         return markedItems.size
     }

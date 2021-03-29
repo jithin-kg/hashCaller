@@ -12,16 +12,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.containsItem
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutId
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
-import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
-import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.call_list_item_spam.view.*
-import kotlinx.android.synthetic.main.sms_list_view.view.*
 import java.util.*
 
 /**
@@ -30,7 +30,7 @@ import java.util.*
 
 class DialerAdapter(private val context: Context,
                     private val longPressHandler: CallItemLongPressHandler,
-                    private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int, callLog:CallLogData)->Unit
+                    private val onContactItemClickListener: (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogData)->Int
                    ) :
     androidx.recyclerview.widget.ListAdapter<CallLogData, RecyclerView.ViewHolder>(CallItemDiffCallback()){
     private val VIEW_TYPE_NO_SPAM = 0;
@@ -118,7 +118,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogData, context: Context,
-            onContactItemClickListener:(id:String, posoitin:Int, view:View, btn:Int, callLog:CallLogData)->Unit ) {
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogData) -> Int
+        ) {
 //            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).setTag(callLog.dateInMilliseconds )
             if(prevTime!= null)
                 if(prevTime == callLog.dateInMilliseconds){
@@ -142,7 +143,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.textViewTimeSpam.text = callLog.date
 
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).findViewById<ImageButton>(R.id.imgBtnCallExpandSpam) .setOnClickListener {
-                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
+                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1,callLog)
             }
 
             view.setOnClickListener(View.OnClickListener {v->
@@ -248,7 +249,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogData, context: Context,
-            onContactItemClickListener:(id:String, posoitin:Int, view:View, btn:Int, callLog:CallLogData)->Unit ) {
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogData) -> Int
+        ) {
+            Log.d(TAG, "bind: ")
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).setTag(callLog.dateInMilliseconds )
             if(prevTime!= null)
                 if(prevTime == callLog.dateInMilliseconds){
@@ -278,13 +281,27 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 view.imgViewCallMarked.beInvisible()
 
             }
+            var id = getExpandedLayoutId()
+            if(id!=null) {
+            if(id == callLog.id){
+                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beVisible()
+            }else{
+                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beGone()
+
+
+            }
+            }
+//            else{
+//                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beGone()
+//
+//            }
 
             //setDate
             view.textViewTime.text = callLog.date
 
-            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).findViewById<ImageButton>(R.id.imgBtnCallExpand) .setOnClickListener {
-                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
-            }
+//            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).findViewById<ImageButton>(R.id.imgBtnCallExpand) .setOnClickListener {
+//                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
+//            }
 
             view.setOnLongClickListener{v->
                 longPressHandler.onLongPressed(v,
@@ -294,48 +311,74 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
             view.setOnClickListener(View.OnClickListener {v->
 //                onContactItemClickListener("2", this.adapterPosition, view)
-               prevTime = callLog.dateInMilliseconds
-                toggleExpandableView(v, this.adapterPosition)
-
+//               prevTime = callLog.dateInMilliseconds
+//                toggleExpandableView(v, this.adapterPosition)
+               val viewExpanded =  onContactItemClickListener(callLog.id, this.adapterPosition, v, BUTTON_SIM_1, callLog)
+                if(viewExpanded== 1){
+                    //iff marking not started expand the layout
+                    toggleExpandableView(v, this.adapterPosition, callLog.id)
+                }
 
             })
         }
 
-         private fun toggleExpandableView(v: View, pos: Int) {
-             val tag:String = v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag  as String
-             if(prevView == null){
-                 //first click
-                 Log.d(TAG, "toggleExpandableView: first click")
-                 v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
+         private fun toggleExpandableView(v: View, pos: Int, id: Long) {
 
-                 prevTag = tag
-                 prevView = v
+             var expandedLyoutId = getExpandedLayoutId()
+             if(expandedLyoutId==null){
+                 //no views has not yet expanded, so expand the current layout
+                 setExpandedLayoutId(id)
+                 setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall))
+                 view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beVisible()
 
-             }else if(!tag.equals(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag)){
-                //clicked on new item
-                 Log.d(TAG, "toggleExpandableView: not euqals")
-                 prevView!!.findViewWithTag<ConstraintLayout>(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag).visibility = View.GONE
-                 prevView!!.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-                 v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-                 prevView = v
-                 prevTag = tag
+             }else if(expandedLyoutId == id){
+                 //the layout is already expaned so, hide it
+                 view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beGone()
+                 setExpandedLayoutId(null)
+                 setExpandedLayoutView(null)
+             }else{
+                 //new item expanded
+                 getExpandedLayoutView()!!.beGone()
+                 view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beVisible()
+                 setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall))
+                 setExpandedLayoutId(id)
 
-             }else if(prevView == v){
-                 Log.d(TAG, "toggleExpandableView: euqals")
-                 if (v.findViewWithTag<ConstraintLayout>(tag).visibility == View.VISIBLE){
-                     v.findViewWithTag<ConstraintLayout>(tag).visibility = View.GONE
-                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-                     prevTag = tag
-                     prevView = v
-                 }else{
-                     v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-                     prevTag = tag
-                     prevView = v
-                 }
+
              }
+//             val tag:String = v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag  as String
+//             if(prevView == null){
+//                 //first click
+//                 Log.d(TAG, "toggleExpandableView: first click")
+//                 v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
+//                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
+//
+//                 prevTag = tag
+//                 prevView = v
+//
+//             }else if(!tag.equals(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag)){
+//                //clicked on new item
+//                 Log.d(TAG, "toggleExpandableView: not euqals")
+//                 prevView!!.findViewWithTag<ConstraintLayout>(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag).visibility = View.GONE
+//                 prevView!!.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
+//                 v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
+//                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
+//                 prevView = v
+//                 prevTag = tag
+//
+//             }else if(prevView == v){
+//                 Log.d(TAG, "toggleExpandableView: euqals")
+//                 if (v.findViewWithTag<ConstraintLayout>(tag).visibility == View.VISIBLE){
+//                     v.findViewWithTag<ConstraintLayout>(tag).visibility = View.GONE
+//                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
+//                     prevTag = tag
+//                     prevView = v
+//                 }else{
+//                     v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
+//                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
+//                     prevTag = tag
+//                     prevView = v
+//                 }
+//             }
          }
 
          private fun setCallTypeImage(callLog: CallLogData) {

@@ -196,6 +196,7 @@ class SMSListAdapter(private val context: Context,
             position: Int
         ) {
 
+
                 name.text = sms.nameForDisplay
 
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){

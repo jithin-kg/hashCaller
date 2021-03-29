@@ -28,12 +28,14 @@ import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -203,49 +205,75 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                )
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
-                    id:String, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallItemClicked(id, position, view, btn, callLog)}
+                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallItemClicked(id, position, view, btn, callLog)}
             adapter = callLogAdapter
 
         }
     }
 
     private fun onCallItemClicked(
-        id: String,
+        id: Long,
         position: Int,
         view: View,
         btn: Int,
         callLog: CallLogData
-    ) {
+    ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
-        val id = callLogAdapter!!.getItemId(position)
-        val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
-
-        when(btn){
-            DialerAdapter.BUTTON_SIM_1->{
-                Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
-                makeCall(callLog)
-            }
-            DialerAdapter.BUTTON_SIM_2->{
-
-            }
-            DialerAdapter.BUTTON_SMS->{
-
-            }
-            DialerAdapter.BUTTON_INFO->{
-
+    var viewExpanded = 0
+        if(isMarkingStarted()){
+            lifecycleScope.launchWhenStarted {
+                viewmodel.markItem(id, view, position).collect{
+                    if(it!=null){
+                        if(isMarkingStarted()){
+                            showDeleteBtnInToolbar()
+                        }
+                        val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+                        view.imgViewCallMarked.beVisible()
+                        updateSelectedItemCount()
+//                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
+                    }
+                }
             }
 
+
+        }else{
+            viewExpanded = 1
+            //no marking started, then expand the layout
+            val id = callLogAdapter!!.getItemId(position)
+            val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
+            when(btn){
+                DialerAdapter.BUTTON_SIM_1->{
+                    Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
+//                    makeCall(callLog)
+                }
+                DialerAdapter.BUTTON_SIM_2->{
+
+                }
+                DialerAdapter.BUTTON_SMS->{
+
+                }
+                DialerAdapter.BUTTON_INFO->{
+
+                }
+
+            }
         }
+
+    return viewExpanded
 //        if(v.visibility == View.GONE){
 //            v.visibility = View.VISIBLE
 //        }else{
 //            v.visibility = View.GONE
 //        }
 
-        Log.d(TAG, "onCallLogItemClicked: ")
+//        Log.d(TAG, "onCallLogItemClicked: ")
 //        val intent = Intent(context, IndividualCotactViewActivity::class.java )
 //        intent.putExtra(CONTACT_ID, id)
 //        startActivity(intent)
+    }
+
+    private fun toggleExpandableView(v: View, pos: Int) {
+
     }
 
     private fun makeCall(callLog: CallLogData) {
@@ -360,6 +388,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         set(value) {isDflt = value}
 
     override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
+        val expandedView = getExpandedLayoutView()
+        expandedView?.beGone()
+
         lifecycleScope.launchWhenStarted {
             viewmodel.markItem(id, view, pos).collect{
                 if(it!=null){
