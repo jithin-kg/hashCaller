@@ -12,15 +12,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.containsItem
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.call_list_item_spam.view.*
+import kotlinx.android.synthetic.main.sms_list_view.view.*
 import java.util.*
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
+
 class DialerAdapter(private val context: Context,
                     private val longPressHandler: CallItemLongPressHandler,
                     private val onContactItemClickListener: (id:String, postition:Int, view:View, btn:Int, callLog:CallLogData)->Unit
@@ -261,6 +268,17 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             //call type
             setCallTypeImage(callLog)
+
+            /**
+             * This is important to check else double/ duplicate marking of items occur
+             */
+            if(containsItem(callLog.id)){
+                view.imgViewCallMarked.beVisible()
+            }else{
+                view.imgViewCallMarked.beInvisible()
+
+            }
+
             //setDate
             view.textViewTime.text = callLog.date
 

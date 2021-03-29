@@ -21,21 +21,28 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.android.synthetic.main.fragment_call_history.*
@@ -190,17 +197,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun initRecyclerView() {
         rcrViewCallHistoryLogs?.apply {
             layoutManager = LinearLayoutManager(activity)
-            val topSpacingDecorator =
-                TopSpacingItemDecoration(
-                    30
-                )
-            addItemDecoration(topSpacingDecorator)
+//            val topSpacingDecorator =
+//                TopSpacingItemDecoration(
+//                    30
+//                )
+//            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
                     id:String, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallItemClicked(id, position, view, btn, callLog)}
             adapter = callLogAdapter
 
         }
     }
+
     private fun onCallItemClicked(
         id: String,
         position: Int,
@@ -359,7 +367,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                         showDeleteBtnInToolbar()
                     }
                     val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
-                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.numbersInnerTextColor))
+                        view.imgViewCallMarked.beVisible()
+                    updateSelectedItemCount()
+//                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
                 }
             }
         }
@@ -373,6 +383,23 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         imgBtnCallTbrBlock.beVisible()
         imgBtnCallTbrMore.beVisible()
 
+    }
+     fun showSearchView(){
+        searchViewCall.beVisible()
+        imgBtnCallTbrDelete.beInvisible()
+        imgBtnCallTbrMuteSender.beInvisible()
+        imgBtnCallTbrBlock.beInvisible()
+        imgBtnCallTbrMore.beInvisible()
+    }
+
+    fun updateSelectedItemCount(){
+        val count = getMarkedItemSize()
+        tvCallSelectedCount.text = count.toString()
+        if(count>0){
+            tvCallSelectedCount.beVisible()
+        }else{
+            tvCallSelectedCount.beInvisible()
+        }
     }
 
     override fun onYesConfirmation() {

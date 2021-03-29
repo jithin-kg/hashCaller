@@ -38,6 +38,7 @@ import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.Permissio
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSHelperFlow
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -688,11 +689,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         set(value) {isDflt = value}
 
     fun showSearchView() {
-        searchViewSms.visibility = View.VISIBLE
-        imgBtnTbrDelete.visibility = View.INVISIBLE
-        imgBtnTbrMuteSender.visibility = View.INVISIBLE
-        imgBtnTbrBlock.visibility = View.INVISIBLE
-        tvSelectedCount.visibility = View.INVISIBLE
+        searchViewSms.beVisible()
+        imgBtnTbrDelete.beInvisible()
+        imgBtnTbrMuteSender.beInvisible()
+        imgBtnTbrBlock.beInvisible()
+        tvSelectedCount.beInvisible()
 
         unMarkItems()
 

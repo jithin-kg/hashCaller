@@ -49,6 +49,9 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
@@ -618,17 +621,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if(markedItems.size > 0){
                 unMarkItems()
                 markingStarted = false
+        }
+
+            else{
+                super.onBackPressed()
+            }
+
+        }
+        else if(callFragment.isVisible){
+            if(isMarkingStarted()){
+                clearlists()
+                callFragment.showSearchView()
+                callFragment.updateSelectedItemCount()
             }else{
                 super.onBackPressed()
             }
-//           if(!messagesFragment.isSearchViewVisible()){
-//               messagesFragment.showSearchView()
-//           }else{
-//               markingStarted = false
-//               super.onBackPressed()
-//
-//           }
-
         }
 
         else{

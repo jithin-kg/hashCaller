@@ -8,6 +8,7 @@
 <!--Ripple animation on button click is controlled by colorControlHighlight-->
 <!--    <color name="colorPrimary">#4B53BC</color>-->
     <color name="colorPrimary">#4F57BF</color>
+    <color name="colorPrimaryLowOpacity">#944F57BF</color>
     <color name="colorPrimaryLight">#2374BF</color>
 <!--    <color name="colorPrimaryDark">#6264AA</color>-->
     <color name="colorPrimaryDark">#ffff</color>

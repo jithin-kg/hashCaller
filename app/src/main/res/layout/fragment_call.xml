@@ -182,7 +182,9 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/contact_list" />
+        tools:listitem="@layout/contact_list"
+        android:layout_marginBottom="?attr/actionBarSize"
+        />
 
     <Button
         android:id="@+id/btnCallhistoryPermission"

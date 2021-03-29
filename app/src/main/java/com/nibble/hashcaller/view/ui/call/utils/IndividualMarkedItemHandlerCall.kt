@@ -1,7 +1,12 @@
 package com.nibble.hashcaller.view.ui.call.utils
 
 import android.view.View
+import android.widget.ImageView
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
+import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 
 /**
  * call
@@ -10,6 +15,9 @@ object IndividualMarkedItemHandlerCall {
     private var markedItems:MutableSet<Long> = mutableSetOf()
     private var markedViews:MutableSet<View> = mutableSetOf()
 
+    fun getMarkedItemSize(): Int {
+        return markedItems.size
+    }
     fun getMarkedItems(): MutableSet<Long> {
         return markedItems
     }
@@ -41,8 +49,26 @@ object IndividualMarkedItemHandlerCall {
     }
 
     fun clearlists() {
+        unMarkAllItems()
         markedItems.clear()
         markedViews.clear()
+
+    }
+
+    fun containsItem(id: Long): Boolean {
+        return markedItems.contains(id)
+    }
+
+    /**
+     * unmark all recylcelerview list item
+     */
+    private fun unMarkAllItems(){
+        for(view in markedViews){
+            view.findViewById<ImageView>(R.id.imgViewCallMarked).beInvisible()
+        }
+
+//        SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
+
     }
 
 
