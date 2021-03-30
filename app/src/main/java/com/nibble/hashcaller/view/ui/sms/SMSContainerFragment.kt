@@ -330,7 +330,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
     private fun observeMutabeLiveData() {
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
-            smsListVIewModel.smsLIst = it as MutableList<SMS>?
+//            smsListVIewModel.smsLIst = it as MutableList<SMS>?
             Log.d(TAG, "observeMutabeLiveData: ")
 //            var newList:MutableList<SMS> = mutableListOf()
 
@@ -350,7 +350,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     @InternalCoroutinesApi
-    @SuppressLint("WrongViewCast")
+    @SuppressLint("WrongViewCast", "LongLogTag")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        this.searchViewMessages = viewMesages.rootView.findViewById(R.id.searchViewMessages)
@@ -380,6 +380,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             lifecycleScope.launchWhenStarted {
                 var lst:MutableList<SMS> = mutableListOf()
                 smsFlowHelper.fetchFlowSMS().collect {
+                    Log.d(TAG+"flow", "fetchFlowSMS")
                     lst.add(it)
                     smsListVIewModel.updateLiveDataByFlow(lst)
 //                smsRecyclerAdapter!!.setList(lst)

@@ -198,6 +198,7 @@ class SMSListAdapter(private val context: Context,
 
 
                 name.text = sms.nameForDisplay
+            Log.d(TAG, "bind: setting name ${sms.nameForDisplay}")
 
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
                 view.pgBarSmsListItem.visibility = View.VISIBLE
@@ -352,14 +353,10 @@ class SMSListAdapter(private val context: Context,
 
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-
-            val res =  oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
-            Log.d(TAG, "areContentsTheSame: ${oldItem.unReadSMSCount} ${newItem.unReadSMSCount} & res:$res")
-
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
 //            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
-            return  oldItem.unReadSMSCount == newItem.unReadSMSCount &&
-                    oldItem.spamCount == newItem.spamCount && oldItem.msgString == newItem.msgString && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
+            return  oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom && oldItem.unReadSMSCount == newItem.unReadSMSCount &&
+                    oldItem.spamCount == newItem.spamCount && oldItem.msgString == newItem.msgString 
             //TODO compare both messages and if the addres is same and message
         }
 

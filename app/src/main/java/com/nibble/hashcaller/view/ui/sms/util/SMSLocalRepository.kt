@@ -27,7 +27,6 @@ import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.mapofAddressAndSMS
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -35,6 +34,7 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -223,6 +223,7 @@ class SMSLocalRepository(
 
                 var deleteViewAdded = false
                 val listOfMessages = mutableListOf<SMS>()
+                var setOfAddress:MutableSet<String> = mutableSetOf()
                 var count = 0
                 var map: HashMap<String?, String?> = HashMap()
                 smsListHashMap = map
@@ -311,6 +312,7 @@ class SMSLocalRepository(
                                 setSMSHashMap(objSMS)
 
                             }
+                            setOfAddress.add(objSMS.nameForDisplay)
 
 
                                 listOfMessages.add(objSMS)
@@ -329,6 +331,8 @@ class SMSLocalRepository(
                 data.addAll(listOfMessages)
                 setSMSReadStatus(data)
                 setNameIfExistInContactContentProvider(data)
+                removeDeletedMSSFRomhashMap(setOfAddress)
+
 
 
             } catch (e: java.lang.Exception) {
@@ -342,6 +346,16 @@ class SMSLocalRepository(
         return data
     }
 
+    private fun removeDeletedMSSFRomhashMap(setOfAdderss: MutableSet<String>) {
+
+        for (address in mapofAddressAndSMS.keys){
+            if(!setOfAdderss.contains(address)){
+                //if not present in setOfAdderss, then we have to remove them mapofAddressAndSMS
+                mapofAddressAndSMS.remove(address)
+            }
+        }
+    }
+
     @SuppressLint("LongLogTag")
     private fun setSMSHashMap(objSMS: SMS) {
         if(!objSMS.addressString.isNullOrEmpty()){
@@ -349,6 +363,7 @@ class SMSLocalRepository(
 
             val mr = mapofAddressAndSMS[objSMS.addressString!!]
             if(mr==null){
+                //if not pressent in map
                 mapofAddressAndSMS[objSMS.addressString!!] = objSMS
             }else{
                 val timFromMap = mr.time!!.toLong()
@@ -357,8 +372,8 @@ class SMSLocalRepository(
                     //new message is objsms.time
                     Log.d(TAG+"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
                     mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
-                }else{
-                    Log.d(TAG, "setSMSHashMap: greater")
+                }else if(mr.senderInfoFoundFrom!= objSMS.senderInfoFoundFrom){
+                    mapofAddressAndSMS[objSMS.addressString!!] = objSMS
                 }
             }
         }
@@ -1387,12 +1402,15 @@ class SMSLocalRepository(
 
                             var msg =
                                 cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                            objSMS.msgString = msg
+
                             //
 
                             setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                             // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
                             objSMS.addressString = replaceSpecialChars(num)
+                            objSMS.nameForDisplay = objSMS.addressString!!
 
                             objSMS.readState =
                                 cursor.getInt(cursor.getColumnIndex("read"))
@@ -1412,6 +1430,7 @@ class SMSLocalRepository(
                           val r = async { getDetailsFromDB(objSMS.addressString!!, objSMS)  }.await()
                                 if(r!=null){
                                     objSMS.name = r?.name
+                                    objSMS.nameForDisplay = r.name
                                     objSMS.spamCount  = r.spamReportCount
                                     objSMS.spammerType = r.spammerType
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
@@ -1489,20 +1508,31 @@ class SMSLocalRepository(
     suspend fun deleteSmsThread(): Int {
         smsDeletingStarted = true
         var numRowsDeleted = 0
-        for(id in MarkedItemsHandler.markedItems) {
-            Log.d(TAG, "deleteSmsThread: threadid $id")
-            var uri = Telephony.Sms.CONTENT_URI
-            val selection = "${Telephony.Sms.THREAD_ID} = ?"
-            val selectionArgs = arrayOf(id.toString())
-            try {
-                numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
-                Log.d(TAG, "deleteSmsThread: number  of  rows deleted $numRowsDeleted")
+        var copy:MutableList<Long> = mutableListOf()
+        copy.addAll(MarkedItemsHandler.markedItems)
+        try{
+            for(id in copy) {
+                Log.d(TAG, "deleteSmsThread: threadid $id")
+                var uri = Telephony.Sms.CONTENT_URI
+                val selection = "${Telephony.Sms.THREAD_ID} = ?"
+                val selectionArgs = arrayOf(id.toString())
+                try {
+                    delay(800L).apply {
+                    }
 
-            } catch (e: Exception) {
-                Log.d(SMScontainerRepository.TAG, "deleteSmsThread: exception $e")
+                } finally {
+                    numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
+                    Log.d(TAG, "deleteSmsThread: number  of  rows deleted $numRowsDeleted")
+
+
+                }
             }
+        }catch (e: Exception) {
+            Log.d(SMScontainerRepository.TAG, "deleteSmsThread: exception $e")
+        }finally {
+            deleteList()
         }
-        deleteList()
+
         return numRowsDeleted
     }
 

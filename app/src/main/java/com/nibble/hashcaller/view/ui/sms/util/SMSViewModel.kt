@@ -179,18 +179,19 @@ class SMSViewModel(
      * function called when there is a change in sms from content provider
      */
     fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
-        //remove duplicates
-        var lst:MutableList<SMS> = mutableListOf()
-        //remove delted sms from hashmap
-        var lstt:MutableList<SMS>?  = mutableListOf()
+//        //remove duplicates
+//        var lst:MutableList<SMS> = mutableListOf()
+//        //remove delted sms from hashmap
+//        var lstt:MutableList<SMS>?  = mutableListOf()
+//
+//
+////        smsLiveData.value = lstt
+////        val l:MutableList<SMS> = mutableListOf()
+////        l.addAll(mapofAddressAndSMS.values)
+//        smsLiveData.value = async { removeDeletedSMS(smsList) }.await()
 
-
-//        smsLiveData.value = lstt
-//        val l:MutableList<SMS> = mutableListOf()
-//        l.addAll(mapofAddressAndSMS.values)
-        smsLiveData.value = async { removeDeletedSMS(smsList) }.await()
-
-
+        smsLiveData.value = smsList
+        smsLiveData.value = smsList
 
 
 
@@ -202,14 +203,14 @@ class SMSViewModel(
      * function to make sure that deleted sms in contentprovider are delted from mapofAddressAndSMS
      */
     private suspend fun removeDeletedSMS(smsList: MutableList<SMS>?): MutableList<SMS>? {
-        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
-        if (smsList != null) {
-            for(sms in smsList){
-                //create new hashmap of updated list
-                newSMSHashmap.put(sms.addressString!!, sms)
-            }
-        }
-        mapofAddressAndSMS = newSMSHashmap
+//        var newSMSHashmap: HashMap<String, SMS> = hashMapOf()
+//        if (smsList != null) {
+//            for(sms in smsList){
+//                //create new hashmap of updated list
+//                newSMSHashmap.put(sms.addressString!!, sms)
+//            }
+//        }
+//        mapofAddressAndSMS = newSMSHashmap
 
         return sortedSMSByTime()
     }

@@ -23,7 +23,6 @@ class MyCallScreeningService: CallScreeningService() {
         val phoneNumber = getPhoneNumber(callDetails)
         var response = CallResponse.Builder()
         response = handlePhoneCall(response, phoneNumber)
-
         respondToCall(callDetails, response.build())
     }
 

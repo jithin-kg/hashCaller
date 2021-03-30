@@ -341,11 +341,14 @@ class ActivitySearchPhone : AppCompatActivity(), View.OnClickListener , SearchVi
             if(it!=null){
                 layoutSearchResult.beVisible()
                 tvResultFromServer.beVisible()
-                textVContactName.text = "it.name"
-                tvSearchResultLocation.text = "kerala"
-                Log.d(TAG, "observeSearchResults: location is ${it.location}")
-                tvSearchResultNameFirstLetter.text  = it.name[0].toString()
-                tvSearchResultNameFirstLetter.background = generateCircleView()
+                runOnUiThread {
+                    textVContactName.text = it.name
+                    tvSearchResultLocation.text = it.location
+                    Log.d(TAG, "observeSearchResults: location is ${it.location}")
+                    tvSearchResultNameFirstLetter.text  = it.name[0].toString()
+                    tvSearchResultNameFirstLetter.background = generateCircleView()
+                }
+
 
 
             }

@@ -38,7 +38,7 @@ object CallLogFlowHelper {
                 projection,
                 null,
                 null,
-                null
+                "${CallLog.Calls.DATE} DESC"
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
