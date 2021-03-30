@@ -5,8 +5,10 @@ import android.database.Cursor
 import android.provider.CallLog
 import android.util.Log
 import com.nibble.hashcaller.view.ui.call.CallFragment
+
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.view.ui.call.setRelativeTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
@@ -48,7 +50,7 @@ object CallLogFlowHelper {
                     val duration: String = cursor.getString(2)
                     val name: String? = cursor.getString(3)
                     val id = cursor.getLong(4)
-                    var dateInMilliseconds = cursor.getString(5)
+                    var dateInMilliseconds = cursor.getLong(5)
                     val fmt =
                         SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
                     val dateInLong: Long = dateInMilliseconds.toLong()
@@ -61,10 +63,11 @@ object CallLogFlowHelper {
                      *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
-                    dateInMilliseconds += name + id + Math.random().toString();
+//                    dateInMilliseconds += name + id + Math.random().toString();
 
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
+                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
                     setCallHashMap(log)
+                   setRelativeTime(dateInMilliseconds, log)
                     emit(log)
                 }while (cursor.moveToNext())
 

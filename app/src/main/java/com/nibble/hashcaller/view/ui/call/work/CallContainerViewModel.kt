@@ -129,8 +129,10 @@ class CallContainerViewModel(
 
     fun deleteThread():LiveData<Int> = liveData {
         emit(SMS_DELETE_ON_PROGRESS)
-        val numRowsDeleted =  repository!!.deleteLogs()
-        emit(SMS_DELETE_ON_COMPLETED)
+        val numRowsDeleted =  repository!!.deleteLogs().apply {
+            emit(SMS_DELETE_ON_COMPLETED)
+        }
+
 
 //        numRowsDeletedLiveData.value = numRowsDeleted
     }

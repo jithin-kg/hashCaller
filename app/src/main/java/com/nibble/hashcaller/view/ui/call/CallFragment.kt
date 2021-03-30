@@ -127,9 +127,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         })
     }
     private fun initListeners() {
+
         this.callFragment!!.btnCallhistoryPermission.setOnClickListener(this)
         this.callFragment!!.imgBtnCallTbrBlock.setOnClickListener(this)
         this.callFragment!!.imgBtnCallTbrMuteCaller.setOnClickListener(this)
+        this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
     }
 
     private fun observeCallLogMutabeLivedata(){

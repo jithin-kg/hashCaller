@@ -4,15 +4,16 @@ import androidx.annotation.Keep
 
 @Keep
 class CallLogData(
-    val id: Long,
-    val number: String = "",
-    val type: Int,
-    val duration: String,
+    var id: Long,
+    var number: String = "",
+    var type: Int,
+    var duration: String,
     var name: String? = "",
-    val date: String,
+    var date: String,
     var expanded:Boolean = false,
     var dateInMilliseconds:String = "",
-    var spamCount:Long = 0
+    var spamCount:Long = 0,
+    var relativeTime:String = ""
 
 )  {
 

@@ -9,6 +9,7 @@ import com.nibble.hashcaller.network.search.ISearchService
 import com.nibble.hashcaller.network.search.SearchResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import retrofit2.Response
 
 class SearchNetworkRepository(private val context: Context){
@@ -18,7 +19,8 @@ class SearchNetworkRepository(private val context: Context){
 
     suspend fun search(phoneNum:String): Response<SerachRes>? {
         retrofitService = RetrofitClient.createaService(ISearchService::class.java)
-        val tokenManager = TokenManager(context)
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
 
 //        val response = retrofitService?.search(SearchDTO(phoneNum), token)
@@ -31,7 +33,9 @@ class SearchNetworkRepository(private val context: Context){
 
     suspend fun incrementTotalSpamCount() {
         retrofitService = RetrofitClient.createaService(ISearchService::class.java)
-        val tokenManager = TokenManager(context)
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
 
         retrofitService!!.incrementTotalSpamCount(token)

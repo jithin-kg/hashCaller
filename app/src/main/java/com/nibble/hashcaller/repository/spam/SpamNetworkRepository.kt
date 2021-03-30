@@ -10,6 +10,7 @@ import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import retrofit2.Response
 
 class SpamNetworkRepository(
@@ -22,7 +23,9 @@ class SpamNetworkRepository(
 
     suspend fun report(callerInfo: ReportedUserDTo): Response<NetWorkResponse>? {
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager(context)
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
 
 //        val response = retrofitService?.search(SearchDTO(phoneNum), token)

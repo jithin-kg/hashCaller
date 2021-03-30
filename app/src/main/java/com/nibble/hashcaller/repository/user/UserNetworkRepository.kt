@@ -16,7 +16,7 @@ import retrofit2.Response
  * Created by Jithin KG on 13,August,2020
  */
 class UserNetworkRepository(
-    private val context: Context,
+    private val tokenManager: TokenManager,
     private val userInfoDAO: UserInfoDAO,
     private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO
 ){
@@ -24,7 +24,7 @@ class UserNetworkRepository(
     
     suspend fun signup(userInfo:UserInfoDTO): Response<NetWorkResponse>? {
         retrofitService = RetrofitClient.createaService(IuserService::class.java)
-        val tokenManager = TokenManager(context)
+
         val token = tokenManager.getToken()
         
         val response = retrofitService?.signup(userInfo, token)

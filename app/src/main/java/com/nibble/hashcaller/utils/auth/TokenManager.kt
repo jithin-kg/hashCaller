@@ -16,9 +16,9 @@ import javax.crypto.NoSuchPaddingException
  * This class healps to get encrypted token with iv from shared preferences
  * and return the  decrypted  token.
  */
-class TokenManager(private val applicationContext: Context) {
+class TokenManager(private val sharedPreferences:SharedPreferences) {
 
-    private lateinit var sharedPreferences: SharedPreferences
+//    private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
 
     companion object{
@@ -30,7 +30,7 @@ class TokenManager(private val applicationContext: Context) {
     }
      fun  getToken(): String {
         var token = ""
-        sharedPreferences = applicationContext.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+//       applicationContext.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
         val stringTokenFromSharedPref = sharedPreferences.getString(SHARED_PREFERENCE_TOKEN_KEY, "")
 
         val tokneByteOne = Base64.decode(stringTokenFromSharedPref, Base64.DEFAULT)

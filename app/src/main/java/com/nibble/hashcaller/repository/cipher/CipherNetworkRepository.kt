@@ -9,6 +9,7 @@ import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.network.user.ResponseCipher
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import retrofit2.Response
 
 class CipherNetworkRepository (private val context: Context){
@@ -17,7 +18,9 @@ class CipherNetworkRepository (private val context: Context){
     @SuppressLint("LongLogTag")
     suspend fun getCipher(): Response<ResponseCipher>? {
         retrofitService = RetrofitClient.createaService(IuserService::class.java)
-        val tokenManager = TokenManager(context)
+
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
 
         val response = retrofitService?.getCipher(token)

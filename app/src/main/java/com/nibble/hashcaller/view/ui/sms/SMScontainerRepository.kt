@@ -16,6 +16,7 @@ import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -51,7 +52,9 @@ class SMScontainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownSMSsendersInfoResponse> {
          retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager(context)
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
@@ -121,7 +124,9 @@ class SMScontainerRepository(
 
     suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager(context)
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
         return retrofitService?.report(callerInfo, token)
     }

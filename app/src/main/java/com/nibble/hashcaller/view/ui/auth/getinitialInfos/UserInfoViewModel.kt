@@ -15,8 +15,7 @@ import kotlinx.coroutines.*
 import java.lang.Exception
 
 class UserInfoViewModel(
-    private val userNetworkRepository: UserNetworkRepository,
-    private val contactsRepository: ContactRepositoryTwo
+    private val userNetworkRepository: UserNetworkRepository
 ) :ViewModel(){
     var userInfo : MutableLiveData<UserInfo> = MutableLiveData()
 
@@ -67,7 +66,7 @@ class UserInfoViewModel(
     }
 
     fun setContactsHashMap() = viewModelScope.launch {
-            contactsRepository.setContactsMetaInfoHashMap()
+//            contactsRepository.setContactsMetaInfoHashMap()
     }
 
     companion object{

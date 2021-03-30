@@ -14,6 +14,10 @@ import kotlin.math.log
 //https://zoransasko.medium.com/detecting-and-rejecting-incoming-phone-calls-on-android-9e0cff04ef20
 @RequiresApi(Build.VERSION_CODES.N)
 class MyCallScreeningService: CallScreeningService() {
+    /**
+     * important to look into CallScreeningService source code to findout how to work with this class
+     */
+
 //    rivate val notificationManager = NotificationManagerImpl()
 
     @SuppressLint("LongLogTag")
@@ -33,12 +37,13 @@ class MyCallScreeningService: CallScreeningService() {
     ): CallResponse.Builder {
         Log.d(TAG, "handlePhoneCall: phone number $phoneNumber")
 
-        if (phoneNumber == "+919495617494332") {
+        if (phoneNumber == "+91949561749432") {
             response.apply {
                 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    setSilenceCall(true)
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    setSilenceCall(true)
+//                }
+                setDisallowCall(true) // call gets blocked , dont even see call comming
 //                setRejectCall(true)
 //                setDisallowCall(true)
 //                setSkipCallLog(false)

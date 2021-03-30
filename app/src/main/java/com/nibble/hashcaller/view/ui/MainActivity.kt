@@ -924,7 +924,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     fun setContactsHashMap(){
-        this.userInfoViewModel.setContactsHashMap()
+//        this.userInfoViewModel.setContactsHashMap()
     }
 
     override fun onResume() {

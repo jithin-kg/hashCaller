@@ -71,21 +71,19 @@
             android:id="@+id/imgVCallType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="196dp"
-            app:layout_constraintEnd_toStartOf="@+id/textViewTime"
             app:layout_constraintStart_toEndOf="@+id/imgVPhone"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_baseline_call_received_24" />
 
         <TextView
             android:id="@+id/textViewTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="TextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.874"
-            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
+            app:layout_constraintStart_toEndOf="@+id/textVCallDirection"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
 
         <ImageView
@@ -101,6 +99,15 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/textVcallerName"
             app:layout_constraintTop_toBottomOf="@+id/imgVCallType" />
+
+        <TextView
+            android:id="@+id/textVCallDirection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TextView"
+            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

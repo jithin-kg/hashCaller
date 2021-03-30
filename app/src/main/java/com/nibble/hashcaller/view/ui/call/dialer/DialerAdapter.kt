@@ -106,8 +106,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     fun setCallLogs(newContactList: List<CallLogData>) {
         callLogs = newContactList
-
-        notifyDataSetChanged()
+        this.submitList(newContactList)
     }
 
     inner class ViewHolderCallSpam(private val view: View) : RecyclerView.ViewHolder(view) {
@@ -140,7 +139,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             //call type
             setCallTypeImage(callLog)
             //setDate
-            view.textViewTimeSpam.text = callLog.date
+//            view.textViewTimeSpam.text = callLog.date
+            view.textViewTimeSpam.text = callLog.relativeTime
 
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).findViewById<ImageButton>(R.id.imgBtnCallExpandSpam) .setOnClickListener {
                 onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1,callLog)
@@ -272,6 +272,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             //call type
             setCallTypeImage(callLog)
 
+
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
@@ -297,7 +298,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //            }
 
             //setDate
-            view.textViewTime.text = callLog.date
+            view.textViewTime.text = callLog.relativeTime
 
 //            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).findViewById<ImageButton>(R.id.imgBtnCallExpand) .setOnClickListener {
 //                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
@@ -382,16 +383,48 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          }
 
          private fun setCallTypeImage(callLog: CallLogData) {
+//             /** Call log type for incoming calls.  */
+//             val INCOMING_TYPE = 1
+//
+//             /** Call log type for outgoing calls.  */
+//             val OUTGOING_TYPE = 2
+//
+//             /** Call log type for missed calls.  */
+//             val MISSED_TYPE = 3
+//
+//             /** Call log type for voicemails.  */
+//             val VOICEMAIL_TYPE = 4
+//
+//             /** Call log type for calls rejected by direct user action.  */
+//             val REJECTED_TYPE = 5
+//
+//             /** Call log type for calls blocked automatically.  */
+//             val BLOCKED_TYPE = 6
+
              when (callLog.type) {
                  1 -> { // incomming call
                      view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_received_24)
+                     view.textVCallDirection.text = "Incoming call"
+
                  }
                  2 -> { // outgoing call
                      view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_made_24)
+                     view.textVCallDirection.text = "Outgoing call"
+
                  }
-                 else -> {
+                 3 -> {
                     view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_missed_24)
+                     view.textVCallDirection.text = "Missed call"
+
                  }
+                 5->{
+                    view.textVCallDirection.text = "Rejected"
+                 }
+                 6 ->{
+                     view.textVCallDirection.text = "Blocked"
+
+                 }
+
              }
          }
 

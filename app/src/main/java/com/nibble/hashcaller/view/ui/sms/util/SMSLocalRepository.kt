@@ -1498,7 +1498,9 @@ class SMSLocalRepository(
         var retrofitService:ISpamService? = null
 
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager(context)
+        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+
+        val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
         return retrofitService?.report(callerInfo, token)
     }
@@ -1520,7 +1522,7 @@ class SMSLocalRepository(
                     delay(800L).apply {
                     }
 
-                } finally {
+                } finally { // this is to slow down deleting by 800mlseconds to see user deleting happening
                     numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
                     Log.d(TAG, "deleteSmsThread: number  of  rows deleted $numRowsDeleted")
 

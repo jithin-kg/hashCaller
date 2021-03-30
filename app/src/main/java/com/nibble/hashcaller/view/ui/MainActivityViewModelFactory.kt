@@ -8,13 +8,12 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.utils.ContactRepositoryTwo
 
 class MainActivityViewModelFactory(
-    private val userNetworkRepository: UserNetworkRepository,
-    private val contactsRepository: ContactRepositoryTwo
+    private val userNetworkRepository: UserNetworkRepository
 )
     :ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return UserInfoViewModel(
-            userNetworkRepository, contactsRepository
+            userNetworkRepository
         ) as T
     }
 }

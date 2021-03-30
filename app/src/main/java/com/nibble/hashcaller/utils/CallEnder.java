@@ -88,6 +88,7 @@ public class CallEnder implements ITelephony {
             telephonyService = (ITelephony) m.invoke(tm);
             telephonyService.silenceRinger();
             telephonyService.endCall();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
