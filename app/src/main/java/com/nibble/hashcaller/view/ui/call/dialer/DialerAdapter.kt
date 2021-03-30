@@ -35,6 +35,7 @@ class DialerAdapter(private val context: Context,
     androidx.recyclerview.widget.ListAdapter<CallLogData, RecyclerView.ViewHolder>(CallItemDiffCallback()){
     private val VIEW_TYPE_NO_SPAM = 0;
     private val VIEW_TYPE_SPAM = 1;
+    private val VIEW_TYPE_LOADING = 3
     private var callLogs = emptyList<CallLogData>()
     companion object{
         private const val TAG = "__DialerAdapter";
@@ -58,7 +59,11 @@ class DialerAdapter(private val context: Context,
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list, parent, false)
 
             return ViewHolderCallNoSpam(view)
-        }else{
+        }else if(viewType == VIEW_TYPE_LOADING){
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
+            return ViewHolderCallLoading(view)
+        }
+        else{
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_spam, parent, false)
 
             return ViewHolderCallSpam(view)
@@ -75,6 +80,8 @@ class DialerAdapter(private val context: Context,
         if(this.callLogs.isNotEmpty() && position < callLogs.size)
             if(this.callLogs[position].spamCount > 0){
                 return VIEW_TYPE_SPAM
+            }else if(this.callLogs[position].id == null){
+                return VIEW_TYPE_LOADING
             }
 
         return VIEW_TYPE_NO_SPAM
@@ -94,6 +101,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             (holder as ViewHolderCallSpam).bind(callLogs[position],context, onContactItemClickListener)
 
         }
+        VIEW_TYPE_LOADING ->{
+            (holder as ViewHolderCallLoading).bind(callLogs[position],context, onContactItemClickListener)
+        }
+
 
     }
 
@@ -109,6 +120,19 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         this.submitList(newContactList)
     }
 
+    inner class ViewHolderCallLoading(private val view: View) : RecyclerView.ViewHolder(view) {
+        private val name = view.textVcallerNameSpam
+        private val circle = view.textViewCallCrclrSpam;
+
+//        private val image = view.findViewById<ImageView>(R.id.contact_image)
+
+        fun bind(
+            callLog: CallLogData, context: Context,
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogData) -> Int
+        ) {
+
+        }
+    }
     inner class ViewHolderCallSpam(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVcallerNameSpam
         private val circle = view.textViewCallCrclrSpam;
@@ -143,7 +167,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.textViewTimeSpam.text = callLog.relativeTime
 
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).findViewById<ImageButton>(R.id.imgBtnCallExpandSpam) .setOnClickListener {
-                onContactItemClickListener(callLog.id, this.adapterPosition, it, BUTTON_SIM_1,callLog)
+                onContactItemClickListener(callLog.id!!, this.adapterPosition, it, BUTTON_SIM_1,callLog)
             }
 
             view.setOnClickListener(View.OnClickListener {v->
@@ -276,7 +300,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
-            if(containsItem(callLog.id)){
+            if(containsItem(callLog.id!!)){
                 view.imgViewCallMarked.beVisible()
             }else{
                 view.imgViewCallMarked.beInvisible()
@@ -306,7 +330,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             view.setOnLongClickListener{v->
                 longPressHandler.onLongPressed(v,
-                this.adapterPosition, callLog.id, callLog.number)
+                this.adapterPosition, callLog.id!!, callLog.number)
                 true
 
             }
@@ -314,10 +338,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                onContactItemClickListener("2", this.adapterPosition, view)
 //               prevTime = callLog.dateInMilliseconds
 //                toggleExpandableView(v, this.adapterPosition)
-               val viewExpanded =  onContactItemClickListener(callLog.id, this.adapterPosition, v, BUTTON_SIM_1, callLog)
+               val viewExpanded =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog)
                 if(viewExpanded== 1){
                     //iff marking not started expand the layout
-                    toggleExpandableView(v, this.adapterPosition, callLog.id)
+                    toggleExpandableView(v, this.adapterPosition, callLog.id!!)
                 }
 
             })

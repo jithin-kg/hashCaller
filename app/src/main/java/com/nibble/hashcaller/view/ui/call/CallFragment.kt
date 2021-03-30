@@ -24,7 +24,6 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
-import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
@@ -85,9 +84,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         // Inflate the layout for this fragment
         if(checkContactPermission()){
 
-            observeCallLog()
             observeCallLogMutabeLivedata()
             collectdata()
+            observeCallLog()
 
         }
         initListeners()
@@ -99,11 +98,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun collectdata() {
-        lifecycleScope.launchWhenStarted {
-            CallLogFlowHelper.fetchCallLogFlow(this@CallFragment.requireActivity()).collect {
-               viewmodel. updateLiveDataWithFlow(it)
-            }
-        }
+        viewmodel.fetchCallLogFlow(this@CallFragment.requireActivity())
+//        lifecycleScope.launchWhenStarted {
+//            CallLogFlowHelper.fetchCallLogFlow(this@CallFragment.requireActivity()).collect {
+//               viewmodel. updateLiveDataWithFlow(it)
+//            }
+//        }
 
     }
 
@@ -111,6 +111,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
             if(it == true){
                 Log.d(TAG, "observePermissionLiveData: permission given")
+
                 observeCallLog()
                 observeCallLogMutabeLivedata()
                 this.callFragment!!.btnCallhistoryPermission.visibility = View.GONE

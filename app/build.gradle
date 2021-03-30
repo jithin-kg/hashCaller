@@ -192,7 +192,8 @@ dependencies {
     implementation 'pub.devrel:easypermissions:3.0.0'
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-
+    //leakcanary to find memory leak
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 
 
 

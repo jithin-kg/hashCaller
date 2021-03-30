@@ -379,12 +379,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         if(checkContactPermission()){
             lifecycleScope.launchWhenStarted {
                 var lst:MutableList<SMS> = mutableListOf()
-                smsFlowHelper.fetchFlowSMS().collect {
-                    Log.d(TAG+"flow", "fetchFlowSMS")
-                    lst.add(it)
-                    smsListVIewModel.updateLiveDataByFlow(lst)
-//                smsRecyclerAdapter!!.setList(lst)
-                }
+//                smsFlowHelper.fetchFlowSMS().collect {
+//                    Log.d(TAG+"flow", "fetchFlowSMS")
+//                    lst.add(it)
+//                    smsListVIewModel.updateLiveDataByFlow(lst)
+////                smsRecyclerAdapter!!.setList(lst)
+//                }
             }
         }
 

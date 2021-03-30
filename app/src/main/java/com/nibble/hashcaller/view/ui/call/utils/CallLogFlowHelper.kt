@@ -21,7 +21,13 @@ import java.text.SimpleDateFormat
 
 object CallLogFlowHelper {
 
-    fun fetchCallLogFlow(context:Context): Flow<CallLogData> = flow {
+    fun fetchCallLogFlow(context:Context):MutableList<CallLogData> {
+
+        val listOfCallLogs:MutableList<CallLogData> = mutableListOf()
+        val callLog1 = CallLogData(null)
+        val callLog2 = CallLogData(null)
+        val callLog3= CallLogData(null)
+        val callLog4 = CallLogData(null)
 
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
@@ -40,7 +46,7 @@ object CallLogFlowHelper {
                 projection,
                 null,
                 null,
-                "${CallLog.Calls.DATE} DESC"
+                "${CallLog.Calls.DATE} DESC LIMIT 10"
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
@@ -68,13 +74,20 @@ object CallLogFlowHelper {
                     val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
                     setCallHashMap(log)
                    setRelativeTime(dateInMilliseconds, log)
-                    emit(log)
+                    listOfCallLogs.add(log)
+
                 }while (cursor.moveToNext())
 
             }
         }catch (e: Exception){
             Log.d(TAG, "getCallLog: exception $e")
         }finally {
+//            emit(listOfCallLogs)
+            listOfCallLogs.add(callLog1)
+            listOfCallLogs.add(callLog2)
+            listOfCallLogs.add(callLog3)
+
+            return listOfCallLogs
             cursor?.close()
 
         }

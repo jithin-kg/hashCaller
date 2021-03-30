@@ -7,6 +7,7 @@ import android.provider.CallLog
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import kotlinx.coroutines.delay
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -82,7 +83,6 @@ class CallLogLiveData(private val context: Context):
             cursor?.close()
             isLoading.postValue(false)
         }
-
 
         return listOfCallLogs
 

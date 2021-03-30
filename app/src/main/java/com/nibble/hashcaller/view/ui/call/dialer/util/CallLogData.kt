@@ -4,12 +4,12 @@ import androidx.annotation.Keep
 
 @Keep
 class CallLogData(
-    var id: Long,
+    var id: Long? = null,
     var number: String = "",
-    var type: Int,
-    var duration: String,
+    var type: Int= 0,
+    var duration: String ="",
     var name: String? = "",
-    var date: String,
+    var date: String = "",
     var expanded:Boolean = false,
     var dateInMilliseconds:String = "",
     var spamCount:Long = 0,

@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
-    var  searchFragment: SearchFragment? = null
+//    var  searchFragment: SearchFragment? = null
 
 
     private lateinit var drawerLayout: DrawerLayout
@@ -139,10 +139,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         initViewModel()
         setupNavigationDrawer()
 
-        if(this.searchFragment !=null)
-        if(this.searchFragment?.isAdded!!){
-            bottomNavigationView.visibility = View.GONE
-        }
+//        if(this.searchFragment !=null)
+//        if(this.searchFragment?.isAdded!!){
+//            bottomNavigationView.visibility = View.GONE
+//        }
 
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this.contactFragment = ContactsFragment()
             this.callFragment = CallFragment()
             this.dialerFragment = DialerFragment()
-            this.searchFragment =  SearchFragment.newInstance()
+//            this.searchFragment =  SearchFragment.newInstance()
 //            setInstancesInApp()
 
             fabBtnShowDialpad.visibility = View.GONE
@@ -281,12 +281,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
         this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsFragment
         this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
-        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
-            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
-
-        }else{
-            this.searchFragment = SearchFragment.newInstance()
-        }
+//        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
+//            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
+//
+//        }else{
+//            this.searchFragment = SearchFragment.newInstance()
+//        }
 
     }
 
@@ -332,9 +332,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState,"dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState,"messagesFragment", this.messagesFragment)
         supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
-        if(this.searchFragment!=null)
-            if(this.searchFragment?.isAdded!!)
-                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment!!)
+//        if(this.searchFragment!=null)
+//            if(this.searchFragment?.isAdded!!)
+//                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment!!)
 //        outState.putInt("AStringKey", )
 ////        outState.putString("AStringKey2", variableData2)
 //        val p: Parcelable? = callFragment.saveAllState()
@@ -509,10 +509,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
         }
-        if(searchFragment!=null)
-        if(searchFragment!!.isAdded){
-            ft.hide(searchFragment!!)
-        }
+//        if(searchFragment!=null)
+//        if(searchFragment!!.isAdded){
+//            ft.hide(searchFragment!!)
+//        }
         // Commit changes
         ft.commit()
     }
@@ -542,10 +542,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
         }
-         if(searchFragment!=null)
-             if(searchFragment!!.isAdded){
-                 ft.hide(searchFragment!!)
-             }
+//         if(searchFragment!=null)
+//             if(searchFragment!!.isAdded){
+//                 ft.hide(searchFragment!!)
+//             }
 //        // Commit changes
         /**
          * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
@@ -669,15 +669,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             bottomNavigationView.visibility = View.VISIBLE
 
             //for hiding search fragment
-            if(this::searchFragment !=null){
-                if(this.searchFragment?.isAdded!! and this.searchFragment?.isVisible!!){
-                    Log.d(TAG, "onBackPressed: searchfragment is visible")
-                }
-            }
-            if(this.searchFragment !=null)
-                if(this.searchFragment!!.isVisible){
-
-                }
+//            if(this::searchFragment !=null){
+//                if(this.searchFragment?.isAdded!! and this.searchFragment?.isVisible!!){
+//                    Log.d(TAG, "onBackPressed: searchfragment is visible")
+//                }
+//            }
+//            if(this.searchFragment !=null)
+//                if(this.searchFragment!!.isVisible){
+//
+//                }
 
                     super.onBackPressed()
 

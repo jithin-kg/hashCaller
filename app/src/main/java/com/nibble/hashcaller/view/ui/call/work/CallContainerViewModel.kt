@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.work
 
 import android.view.View
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -8,15 +9,14 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
+import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addToMarkedViews
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addTomarkedItemsById
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItems
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedViews
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.idContainsInList
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkedViewsEmpty
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setMarkedContactAddress
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -26,6 +26,7 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
@@ -90,11 +91,11 @@ class CallContainerViewModel(
         }
     }
 
-    fun updateLiveDataWithFlow(it: CallLogData) = viewModelScope.launch{
+    fun updateLiveDataWithFlow(it: MutableList<CallLogData>) = viewModelScope.launch{
 //        var lst: MutableList<CallLogData> = mutableListOf()
 //        lst.addAll(lst)
-        lstOfAllCallLogs.add(it)
-        callLogsMutableLiveData.value = lstOfAllCallLogs
+//        lstOfAllCallLogs.add(it)
+        callLogsMutableLiveData.value = it
     }
 
     fun markItem(id: Long, view: View, pos: Int, address: String): Flow<Int> = flow {
@@ -148,6 +149,12 @@ class CallContainerViewModel(
         emit(OPERATION_COMPLETED)
 
 
+    }
+
+    fun fetchCallLogFlow(activity: FragmentActivity) = viewModelScope.launch{
+      val res =   CallLogFlowHelper.fetchCallLogFlow(activity)
+
+        updateLiveDataWithFlow(res)
     }
 
     companion object{

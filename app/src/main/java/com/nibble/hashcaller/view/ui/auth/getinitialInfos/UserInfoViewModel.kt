@@ -72,4 +72,11 @@ class UserInfoViewModel(
     companion object{
         const val TAG = "__UserInfoViewModel"
     }
+
+    /**
+     * important to call this to prevent memory leak
+     */
+    override fun onCleared() {
+        super.onCleared()
+    }
 }

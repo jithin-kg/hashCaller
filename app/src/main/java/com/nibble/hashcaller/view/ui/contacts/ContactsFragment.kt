@@ -201,12 +201,12 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
                 this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
             }else->{
 
-            if((activity as MainActivity).searchFragment!=null){
-                startSearchActivity()
-
-            }else{
-                Log.d(TAG, "onClick: searchfragment is null")
-            }
+//            if((activity as MainActivity).searchFragment!=null){
+//                startSearchActivity()
+//
+//            }else{
+//                Log.d(TAG, "onClick: searchfragment is null")
+//            }
         }
         }
 
@@ -221,8 +221,8 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         searchViewContacts.onFocusChangeListener = OnFocusChangeListener { view, hasFocus ->
 
             if (hasFocus) {
-                if((activity as MainActivity).searchFragment!=null)
-                    startSearchActivity()
+//                if((activity as MainActivity).searchFragment!=null)
+//                    startSearchActivity()
             }
         }
         searchViewContacts.setOnClickListener(this)
