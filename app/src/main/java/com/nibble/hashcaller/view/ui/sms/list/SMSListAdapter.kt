@@ -40,8 +40,10 @@ class SMSListAdapter(private val context: Context,
                      private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String)->Unit
 ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
+    private val VIEW_TYPE_LOADING = 0
     private val VIEW_TYPE_SMS = 2;
     private val VIEW_TYPE_SPAM = 3;
+
     private var smsList:MutableList<SMS> = mutableListOf()
     companion object {
         private const val TAG = "__SMSListAdapter";
@@ -59,6 +61,10 @@ class SMSListAdapter(private val context: Context,
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
             return SpamViewHolder(view)
         }
+        else if(viewType == VIEW_TYPE_LOADING){
+           val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
+           return DummyLoadingViewHolder(view)
+       }
         else{
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
             return SmsViewHolder(view)
@@ -72,10 +78,11 @@ class SMSListAdapter(private val context: Context,
             if(this.smsList[position].spamCount > 0){
                 return VIEW_TYPE_SPAM
             }
-            else{
-                return VIEW_TYPE_SMS
+            else if(this.smsList[position].isDummy){
+                return VIEW_TYPE_LOADING
             }
-        return VIEW_TYPE_SMS
+
+                return VIEW_TYPE_SMS
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -88,6 +95,11 @@ class SMSListAdapter(private val context: Context,
 
                 (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position)
 
+            }
+            VIEW_TYPE_LOADING ->{
+                val item =  getItem(position)
+
+                (holder as DummyLoadingViewHolder).bind(item,context, onContactItemClickListener, position)
             }
             VIEW_TYPE_SPAM ->{
 //                ED4133 -> letter red  FAE0DE-> light
@@ -110,7 +122,16 @@ class SMSListAdapter(private val context: Context,
     }
 
 
+    inner class DummyLoadingViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
+        fun bind(
+            sms: SMS, context: Context,
+            onDeleteItemclickLIstener: (view: View, threadId: Long, pos: Int, pno: String) -> Unit,
+            position: Int
+        ) {
+
+        }
+    }
 
     inner class SpamViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val btnEmptySms = view.btnEmptySpamSMS

@@ -27,7 +27,21 @@ import kotlinx.coroutines.launch
 
 class SMSHelperFlow(private val context: Context) {
     val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
-    fun fetchFlowSMS(): Flow<SMS> = flow {
+    suspend fun fetchFlowSMS(): MutableList<SMS>  {
+        var item1 = SMS()
+        item1.isDummy = true
+
+        var item2 = SMS()
+        item2.isDummy = true
+
+        var item3 = SMS()
+        item3.isDummy = true
+
+        var item4 = SMS()
+        item4.isDummy = true
+
+        var listOfSMS: MutableList<SMS> = mutableListOf()
+
         var selectionArgs: Array<String>? = null
         var selection: String? = null
         val projection = arrayOf(
@@ -39,21 +53,21 @@ class SMSHelperFlow(private val context: Context) {
             "read",
             "date"
         )
+        var cursor:Cursor? = null
+        try {
+             cursor =  context.contentResolver.query(
+                SMSContract.ALL_SMS_URI,
+                projection,
+                null,
+                selectionArgs,
+                "_id DESC LIMIT 10"
+            )
 
-        val cursor =  context.contentResolver.query(
-            SMSContract.ALL_SMS_URI,
-            projection,
-            null,
-            selectionArgs,
-            "_id DESC"
-        )
+            if (cursor != null && cursor.moveToFirst()) {
+                //                    val spammersList = spamListDAO?.getAll()
+                do {
 
 
-        if (cursor != null && cursor.moveToFirst()) {
-            //                    val spammersList = spamListDAO?.getAll()
-            do {
-
-                try {
                     //TODO check if phone number exists in contact, if then add the contact information too
                     val objSMS = SMS()
                     objSMS.id =
@@ -122,17 +136,23 @@ class SMSHelperFlow(private val context: Context) {
                     }
                     setSMSReadStatus(objSMS)
                     setNameIfExistInContactContentProvider(objSMS)
-
-                    emit(objSMS)
-                } catch (e: Exception) {
-                    Log.d(TAG, "getMessages: exception $e")
-                }
-
-            } while (cursor.moveToNext())
+                    listOfSMS.add(objSMS)
 
 
-
+                } while (cursor.moveToNext())
+            }
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "fetchFlowSMS:exception $e")
+        }finally {
+            cursor?.close()
         }
+        listOfSMS.add(item1)
+        listOfSMS.add(item2)
+        listOfSMS.add(item3)
+        listOfSMS.add(item4)
+
+        return listOfSMS
+
     }
 
     private fun setSpannableStringBuilder(

@@ -28,7 +28,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
@@ -51,16 +50,12 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.formatPhoneNumber
-import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
@@ -113,8 +108,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         initVieModel()
         if(checkContactPermission())
         {
+            getFirstPageOfSMS()
+
+
             observeSMSList()
-            smsFlowHelper = SMSHelperFlow(this.requireContext())
         }
 //        initListeners()
 //        val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
@@ -357,7 +354,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         initRecyclerView()
         initListeners()
-
+        getFirstPageOfSMS()
 
 //        sView = viewMesages.findViewById(R.id.searchViewSms)
 
@@ -377,15 +374,16 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             showToolbarButtons()
         }
         if(checkContactPermission()){
-            lifecycleScope.launchWhenStarted {
-                var lst:MutableList<SMS> = mutableListOf()
-//                smsFlowHelper.fetchFlowSMS().collect {
-//                    Log.d(TAG+"flow", "fetchFlowSMS")
-//                    lst.add(it)
-//                    smsListVIewModel.updateLiveDataByFlow(lst)
-////                smsRecyclerAdapter!!.setList(lst)
-//                }
-            }
+//            lifecycleScope.launchWhenStarted {
+//                var lst:MutableList<SMS> = mutableListOf()
+//
+////                smsFlowHelper.fetchFlowSMS().collect {
+////                    Log.d(TAG+"flow", "fetchFlowSMS")
+////                    lst.add(it)
+////                    smsListVIewModel.updateLiveDataByFlow(lst)
+//////                smsRecyclerAdapter!!.setList(lst)
+////                }
+//            }
         }
 
 
@@ -395,11 +393,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     }
 
-
-
-
-
-
+    private fun getFirstPageOfSMS() {
+        smsListVIewModel.getFirstPageOfSMS()
+    }
 
 
     private fun initRecyclerView() {

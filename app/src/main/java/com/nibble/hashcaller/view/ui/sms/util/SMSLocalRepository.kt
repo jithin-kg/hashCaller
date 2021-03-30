@@ -210,6 +210,139 @@ class SMSLocalRepository(
 
 
     }
+
+    /**
+     * To get first 10 sms
+     */
+
+    suspend fun fetchFirstPageOfSMS(): MutableList<SMS>  {
+        var item1 = SMS()
+        item1.isDummy = true
+
+        var item2 = SMS()
+        item2.isDummy = true
+
+        var item3 = SMS()
+        item3.isDummy = true
+
+        var item4 = SMS()
+        item4.isDummy = true
+
+        var listOfSMS: MutableList<SMS> = mutableListOf()
+
+        var selectionArgs: Array<String>? = null
+        var selection: String? = null
+        val projection = arrayOf(
+            "DISTINCT address",
+            "thread_id",
+            "_id",
+            "type",
+            "body",
+            "read",
+            "date"
+        )
+        var cursor:Cursor? = null
+        try {
+            cursor =  context.contentResolver.query(
+                SMSContract.ALL_SMS_URI,
+                projection,
+                null,
+                selectionArgs,
+                "_id  DESC LIMIT 10"
+            )
+
+            if (cursor != null && cursor.moveToFirst()) {
+                //                    val spammersList = spamListDAO?.getAll()
+                do {
+
+
+                    //TODO check if phone number exists in contact, if then add the contact information too
+                    val objSMS = SMS()
+                    objSMS.id =
+                        cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                    objSMS.threadID =
+                        cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
+                    var num =
+                        cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                    objSMS.addresStringNonFormated = num
+                    num = num.replace("+", "")
+                    //                    objSMS.address = num
+
+                    objSMS.type =
+                        cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                    var msg =
+                        cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                    objSMS.msgString = msg
+
+                    setSpannableStringBuilder(objSMS, null, msg, num) //calling
+                    // spannable string builder function to setup spannable string builder
+                    objSMS.addressString = num.replace("+", "")
+                    objSMS.addressString = replaceSpecialChars(num)
+                    objSMS.nameForDisplay = objSMS.addressString!!
+
+                    objSMS.readState =
+                        cursor.getInt(cursor.getColumnIndex("read"))
+                    val dateMilli =
+                        cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+//                    if(prevAddress != objSMS.addressString){
+//                        prevAddress = objSMS.addressString!!
+//                    }else{
+//                        //equal
+//                        continue
+//                    }
+                    objSMS.time = dateMilli
+//                    setRelativeTime(objSMS, dateMilli)
+
+                    if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                            .contains("1")
+                    ) {
+                        objSMS.folderName = "inbox"
+                        Log.d(TAG, "fetch: inbox")
+                    } else {
+                        objSMS.folderName = "sent"
+                        Log.d(TAG, "fetch: sent")
+
+                    }
+
+                    getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS).apply {
+                        if(this!=null){
+                            objSMS.name = this?.name
+                            if(!this.name.isNullOrEmpty()){
+                                objSMS.nameForDisplay = this.name
+                            }
+                            objSMS.spamCount  = this.spamReportCount
+                            objSMS.spammerType = this.spammerType
+                            objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+                        }
+                    }
+
+                    if(!objSMS.msgString.isNullOrEmpty()){
+                        setSMSHashMap(objSMS)
+
+                    }
+//                    setSMSReadStatus(objSMS)
+//                    setNameIfExistInContactContentProvider(objSMS)
+                    listOfSMS.add(objSMS)
+
+
+                } while (cursor.moveToNext())
+            }
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "fetchFlowSMS:exception $e")
+        }finally {
+            cursor?.close()
+        }
+        listOfSMS.add(item1)
+        listOfSMS.add(item2)
+        listOfSMS.add(item3)
+        listOfSMS.add(item4)
+
+        return listOfSMS
+
+    }
+
     @SuppressLint("LongLogTag")
     private suspend fun fetch(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
         var data = ArrayList<SMS>()
@@ -1776,6 +1909,8 @@ class SMSLocalRepository(
 
 
     }
+
+
 
 }
 
