@@ -40,6 +40,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -56,6 +57,7 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+import com.nibble.hashcaller.view.ui.contacts.requestScreeningRole
 import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
@@ -149,7 +151,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             requestScreeningRole()
         }
         setInfoInNavigationDrawer()
-        fabBtnShowDialpad.setOnClickListener(this)
+//        fabBtnShowDialpad.setOnClickListener(this)
         setBottomSheetListener()
 
         mangeCipherInSharedPref()
@@ -200,6 +202,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         })
     }
 
+    fun showSnackBar(message:String){
+        val sbar = Snackbar.make(cordinateLyoutMainActivity, message, Snackbar.LENGTH_SHORT)
+        sbar.setAction("Action", null)
+        sbar.anchorView = bottomNavigationView
+        sbar.show()
+
+    }
     private fun setupContactUploadWork() {
         val request =
             OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
@@ -220,7 +229,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            this.searchFragment =  SearchFragment.newInstance()
 //            setInstancesInApp()
 
-            fabBtnShowDialpad.visibility = View.GONE
+//            fabBtnShowDialpad.visibility = View.GONE
             syncSpamList()
 
 
@@ -298,22 +307,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 R.id.bottombaritem_messages -> {
                     showMessagesFragment()
                     Log.d(TAG, "setBottomSheetListener: show sms clicked")
-                    fabBtnShowDialpad.visibility = View.GONE
+//                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.bottombaritem_calls -> {
                     showCallFragment()
-                    fabBtnShowDialpad.visibility = View.VISIBLE
+//                    fabBtnShowDialpad.visibility = View.VISIBLE
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.bottombaritem_contacts -> {
                     showContactsFragment()
-                    fabBtnShowDialpad.visibility = View.GONE
+//                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.bottombaritem_spam -> {
                     showBlockConfigFragment()
-                    fabBtnShowDialpad.visibility = View.GONE
+//                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
 //
@@ -378,7 +387,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-    private fun showDialerFragment() {
+     fun showDialerFragment() {
         val ft = supportFragmentManager.beginTransaction()
 
         // Hide fragment contact
@@ -460,7 +469,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         ft.add(R.id.frame_fragmentholder, callFragment)
         hideThisFragment(ft, callFragment, callFragment)
-        fabBtnShowDialpad.visibility = View.VISIBLE
+//        fabBtnShowDialpad.visibility = View.VISIBLE
 
         ft.add(R.id.frame_fragmentholder, dialerFragment)
         hideThisFragment(ft, dialerFragment, dialerFragment)
@@ -581,7 +590,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.hide(messagesFragment)
         }
         if(callFragment.isAdded){
-            fabBtnShowDialpad.visibility = View.VISIBLE
+//            fabBtnShowDialpad.visibility = View.VISIBLE
 
             ft.show(callFragment)
         }
@@ -642,7 +651,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             val ft = supportFragmentManager.beginTransaction()
             ft.hide(dialerFragment)
             ft.show(callFragment)
-            fabBtnShowDialpad.visibility = View.VISIBLE
+//            fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
         }else if(messagesFragment.isVisible){
             if(markedItems.size > 0){
@@ -777,13 +786,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onClick(v: View) {
         Log.d(TAG, "onClick: ")
         when(v.id){
-        R.id.fabBtnShowDialpad->{
+//        R.id.fabBtnShowDialpad->{
 //            showDialerFragment()
-           GlobalScope.launch {
-               val callersInfo = HashCallerDatabase.getDatabaseInstance(this@MainActivity).callersInfoFromServerDAO()
-               callersInfo.deleteAll()
-           }
-        }
+//           GlobalScope.launch {
+//               val callersInfo = HashCallerDatabase.getDatabaseInstance(this@MainActivity).callersInfoFromServerDAO()
+//               callersInfo.deleteAll()
+//           }
+//        }
         }
 //        bottomNavigationView.visibility =View.GONE
 //        val i = Intent(baseContext, ActivityAddNewPattern::class.java)
@@ -882,20 +891,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun requestScreeningRole(){
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-           val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
-            val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-             if(!isHeld){
-                 //ask the user to set your app as the default screening app
-                 val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-                 startActivityForResult(intent, 123)
-             } else {
-                 //you are already the default screening app!
-             }
-        }
-    }
+//    @RequiresApi(Build.VERSION_CODES.Q)
+//    fun requestScreeningRole(){
+//         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//           val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
+//            val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+//             if(!isHeld){
+//                 //ask the user to set your app as the default screening app
+//                 val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+//                 startActivityForResult(intent, 123)
+//             } else {
+//                 //you are already the default screening app!
+//             }
+//        }
+//    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {

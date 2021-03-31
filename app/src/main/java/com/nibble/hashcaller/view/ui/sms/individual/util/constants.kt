@@ -33,6 +33,12 @@ const val CONTACT_ID = "contact_id"
 const val IS_PRIVATE = "is_private"
 const val MD5 = "MD5"
 
+const val IS_MUTED_ADDRESS = 0
+const val IS_NOT_MUTED_ADDRESS = 1
+const val IS_BLOCKED_ADDRESS = 2
+
+const val OPERTION_MUTE = 0
+const val OPERTION_DELETE = 1
 
 //shared preferences
 const val PREFS_KEY = "Prefs"

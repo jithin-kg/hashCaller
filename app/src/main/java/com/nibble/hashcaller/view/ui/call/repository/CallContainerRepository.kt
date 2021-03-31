@@ -110,8 +110,33 @@ class CallContainerRepository(
     /**
      * function to add contact address to mutedCallers
      */
-    suspend fun muteContactAddress(address: String) {
-        mutedCallersDAO!!.insert(listOf(MutedCallers(address)))
+    suspend fun muteContactAddress(address: String): String {
+        mutedCallersDAO!!.insert(listOf(MutedCallers(address))).apply {
+            return address
+        }
+
+    }
+
+    @SuppressLint("LongLogTag")
+    suspend fun unmuteByAddress(contactAdders: String): String {
+        Log.d(TAG, "unmuteByAddress:${contactAdders}")
+        mutedCallersDAO!!.delete(contactAdders).apply {
+            return contactAdders
+        }
+    }
+
+    /**
+     * Function to check whether a number is muted or not,
+     * if contactaddress contains in db then it is  muted
+     */
+    suspend fun isMmuted(address: String): Boolean {
+        var isMutedNum = false
+        mutedCallersDAO!!.find(address).apply {
+            if(this!=null){
+                isMutedNum = true
+            }
+            return isMutedNum
+        }
     }
 
     companion object{

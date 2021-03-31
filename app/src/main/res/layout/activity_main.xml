@@ -7,19 +7,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/colorBackground"
     tools:context="com.nibble.hashcaller.view.ui.MainActivity"
     tools:openDrawer="start">
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="16dp"
+    android:background="@color/colorBackground"
+    android:id="@+id/cordinateLyoutMainActivity"
     tools:context="com.nibble.hashcaller.view.ui.MainActivity">
 
     <FrameLayout
         android:id="@+id/frame_fragmentholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorBackground"
+        android:layout_marginBottom="?attr/actionBarSize"
         android:focusableInTouchMode="true"
        >
 
@@ -31,26 +35,29 @@
 <!--        android:visibility="invisible"-->
 
 <!--        />-->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/bottomNavigationView"
-        app:layout_anchorGravity="end"
-        android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="16dp"
-        >
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabBtnShowDialpad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="?attr/actionBarSize"
-            android:src="@drawable/ic_baseline_dialpad_24"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_anchor="@id/bottomNavigationView"-->
+<!--        app:layout_anchorGravity="end"-->
+<!--        android:layout_marginEnd="@dimen/bottom_fab_margin"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        app:layout_dodgeInsetEdges="bottom"-->
+<!--        >-->
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fabBtnShowDialpad"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"-->
+
+<!--            android:layout_marginBottom="?attr/actionBarSize"-->
+<!--            android:src="@drawable/ic_baseline_dialpad_24"-->
+<!--            android:visibility="invisible"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

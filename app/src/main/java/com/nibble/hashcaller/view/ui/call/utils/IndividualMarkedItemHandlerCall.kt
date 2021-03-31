@@ -9,6 +9,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
  * call
  */
 object IndividualMarkedItemHandlerCall {
+
     private var markedItems:MutableSet<Long> = mutableSetOf()
     private var markedViews:MutableSet<View> = mutableSetOf()
     private var expandedLayoutId: Long? = null // to keep track what layout is now expanded
@@ -89,9 +90,12 @@ object IndividualMarkedItemHandlerCall {
      * unmark all recylcelerview list item
      */
     private fun unMarkAllItems(){
-        for(view in markedViews){
+        var list : MutableList<View> = mutableListOf()
+        list.addAll(markedViews)
+        for(view in list){
             view.findViewById<ImageView>(R.id.imgViewCallMarked).beInvisible()
         }
+
 
 //        SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
 

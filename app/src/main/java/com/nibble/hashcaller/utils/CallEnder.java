@@ -51,11 +51,14 @@ public class CallEnder implements ITelephony {
         boolean callMuted =false;
         try {
             TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
+
+            AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_MUTE, 0);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 telecomManager.silenceRinger();
                 //https://stackoverflow.com/questions/41791798/how-to-mute-a-phone-ringing-on-incoming-call
-//                AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-//                audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_MUTE, 0);
+
 
                 //https://developer.android.com/reference/android/telecom/CallScreeningService#respondToCall(android.telecom.Call.Details,%20android.telecom.CallScreeningService.CallResponse)
                 //Calls to this method are ignored unless the Call.Details#getCallDirection() is Call.Details#DIRECTION_INCOMING.

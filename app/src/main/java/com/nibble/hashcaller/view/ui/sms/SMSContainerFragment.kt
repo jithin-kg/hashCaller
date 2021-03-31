@@ -24,6 +24,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -32,10 +33,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.utils.*
+import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -50,8 +54,10 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
+import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
@@ -469,8 +475,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         deleteSms()
     }
     private fun deleteSms() {
-        val dialog = ConfirmDialogFragment(this, "Delete conversation?", 2)
+        val dialog = ConfirmDialogFragment(this,
+            getSpannableString("This is permenant and cant be undone"),
+
+            getSpannableString("Delete conversation?"), TYPE_DELETE)
         dialog.show(childFragmentManager, "sample")
+
     }
 
     companion object {
@@ -580,7 +590,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private fun blockUser() {
         if(markedItems.size>1){
-            val dialog = ConfirmDialogFragment(this, "Please block one contact address at a time", 1)
+            val dialog = ConfirmDialogFragment(this,
+                getSpannableString("Please block one contact address at a time"),
+                getSpannableString("whaterver"),
+                1)
             dialog.show(childFragmentManager,"block")
         }else{
             //set threadId and contact Address
@@ -648,6 +661,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun muteSender() {
         this.smsListVIewModel.muteMarkedSenders()
         resetMarkingOptions()
+        val sbar = Snackbar.make(MessagesFragment, "hi", Snackbar.LENGTH_SHORT)
+        sbar.setAction("Action", null)
+//        sbar.anchorView = bottomNavigationView
+
+        sbar.show()
+
+//        (activity as MainActivity).showSnackBar("hi")
     }
 
     fun hideSearchView() {
@@ -706,7 +726,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     /**
      * callback of ConfirmDialogfragment for deleting sms
      */
-    override fun onYesConfirmation() {
+    override fun onYesConfirmationDelete() {
         Log.d(TAG, "deleteSms: called")
 //        for(id in markedItems){
         this.smsListVIewModel.deleteThread()
@@ -714,6 +734,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        deleteList()
 
         resetMarkingOptions()
+    }
+
+    override fun onYesConfirmationMute() {
+
     }
 
     private fun observeNumOfRowsDeleted() {

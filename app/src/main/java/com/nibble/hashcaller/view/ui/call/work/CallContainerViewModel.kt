@@ -35,6 +35,7 @@ class CallContainerViewModel(
     val repository: CallContainerRepository?,
     val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?
 ) :ViewModel(){
+    var contactAdders = ""
      var lstOfAllCallLogs: MutableList<CallLogData> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogData>> = MutableLiveData()
 
@@ -138,12 +139,13 @@ class CallContainerViewModel(
 //        numRowsDeletedLiveData.value = numRowsDeleted
     }
 
-    fun muteMarkedCaller() :Flow<Int> = flow {
+    fun muteMarkedCaller() :LiveData<Int> = liveData {
         emit(OPERATION_PENDING)
         var address = getMarkedContactAddress()!!
         address = formatPhoneNumber(address)
-        GlobalScope.launch {
-            async { repository!!.muteContactAddress(address) }.await()
+        viewModelScope.launch {
+            contactAdders = async { repository!!.muteContactAddress(address) }.await()
+
         }.join()
 
         emit(OPERATION_COMPLETED)
@@ -157,8 +159,43 @@ class CallContainerViewModel(
         updateLiveDataWithFlow(res)
     }
 
-    companion object{
-        const val TAG = "__SmsContainerViewModel"
+    /**
+     * called from snackbar
+     */
+    fun unmute() = viewModelScope.launch {
+        repository!!.unmuteByAddress(contactAdders)
+    }
+    fun unmuteByAddress() :LiveData<Int> = liveData {
+            emit(OPERATION_PENDING)
+            var address = getMarkedContactAddress()!!
+            address = formatPhoneNumber(address)
+            viewModelScope.launch {
+                contactAdders = async { repository!!.unmuteByAddress(address) }.await()
+
+            }.join()
+
+            emit(OPERATION_COMPLETED)
     }
 
+    fun checkWhetherMutedOrBlocked() = liveData<Int>{
+        var address = formatPhoneNumber(getMarkedContactAddress()!!)
+
+//        viewModelScope.launch {
+//
+//        }
+        repository!!.isMmuted(address).apply {
+            if(this){
+                emit(IS_MUTED_ADDRESS)
+            }else{
+                emit(IS_NOT_MUTED_ADDRESS)
+            }
+        }
+
+    }
+
+
+
+    companion object {
+        const val TAG = "__SmsContainerViewModel"
+    }
 }

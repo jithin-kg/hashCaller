@@ -4,14 +4,18 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -19,11 +23,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
@@ -31,7 +39,12 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_DELETE
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_MUTE
+import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
+import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
@@ -50,9 +63,10 @@ import kotlinx.coroutines.flow.collect
  * create an instance of this fragment.
  */
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
-    DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener {
+    DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener,
+    MyUndoListener.SnackBarListner {
     private var isDflt = false
-
+    private var isScreeningApp = false
     private var toolbar: Toolbar? = null
     var callFragment: View? = null
 //    private lateinit var searchViewCall: EditText
@@ -60,6 +74,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     var layoutBottomSheet: ConstraintLayout? = null
     private lateinit var dialerFragment: DialerFragment
     private lateinit var viewmodel: CallContainerViewModel
+    private  var lastOperationPerformed: Int ? = null
     /************/
     var callLogAdapter: DialerAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -133,6 +148,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.callFragment!!.imgBtnCallTbrBlock.setOnClickListener(this)
         this.callFragment!!.imgBtnCallTbrMuteCaller.setOnClickListener(this)
         this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
+        this.callFragment!!.fabBtnShowDialpad.setOnClickListener(this)
+        this.callFragment!!.imgBtnCallUnMuteCaller.setOnClickListener(this)
     }
 
     private fun observeCallLogMutabeLivedata(){
@@ -162,8 +179,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
         return true
     }
+
     override fun onResume() {
         super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isScreeningApp = ( activity as AppCompatActivity).isScreeningRoleHeld()
+        }
+
         this.permissionGivenLiveData.value  = checkContactPermission()
     }
 
@@ -305,27 +327,48 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 muteMarkedCaller()
             }
             R.id.imgBtnCallTbrBlock->{
+
+            }
+            R.id.imgBtnCallUnMuteCaller ->{
+                unmuteUser()
+            }
+            R.id.fabBtnShowDialpad ->{
+                (activity as MainActivity).showDialerFragment()
             }
 
         }
 
+    }
+
+    private fun unmuteUser() {
+        viewmodel.unmuteByAddress().observe(viewLifecycleOwner, Observer {
+            when(it){
+                OPERATION_COMPLETED -> {
+                    requireActivity().toast("Enabled notification for ${viewmodel.contactAdders} ", Toast.LENGTH_LONG)
+                    imgBtnCallUnMuteCaller.beInvisible()
+                    imgBtnCallTbrMuteCaller.beVisible()
+                    clearlists()
+                    showSearchView()
+                }
+            }
+        })
     }
 
     private fun muteMarkedCaller() {
-        lifecycleScope.launchWhenStarted {
-            viewmodel.muteMarkedCaller().collect {
-                when(it){
-                    OPERATION_COMPLETED ->{
-                        showSearchView()
-                        clearlists()
-                    }
-                }
-            }
-        }
+//        val dialog = ConfirmDialogFragment(this,  "Mut")
+        val dialog = ConfirmDialogFragment(this,
+            getSpannableString("You won't receive call notification from 801238013"),
+            getSpannableString("Mute caller  "), TYPE_MUTE)
+        dialog.show(childFragmentManager, "sample")
+
+
     }
 
     private fun deletemarkedLogs() {
-        val dialog = ConfirmDialogFragment(this, "Delete callLogs?", 2)
+
+        val dialog = ConfirmDialogFragment(this,
+            getSpannableString("This can't be undone"),
+            getSpannableString("Delete call history ? "), TYPE_DELETE)
         dialog.show(childFragmentManager, "sample")
     }
 
@@ -457,6 +500,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.requireActivity().runOnUiThread {
             this.callFragment!!.imgBtnCallTbrBlock.beInvisible()
             this.callFragment!!.imgBtnCallTbrMuteCaller.beInvisible()
+            this.callFragment!!.imgBtnCallUnMuteCaller.beInvisible()
         }
 
     }
@@ -464,7 +508,26 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun showBlockButon() {
        this.requireActivity().runOnUiThread {
            imgBtnCallTbrBlock.beVisible()
-           imgBtnCallTbrMuteCaller.beVisible()
+          if(isScreeningApp){ // checking screening app rol is available
+              //check if user already muted or blocked the contact
+              viewmodel.checkWhetherMutedOrBlocked().observe(viewLifecycleOwner, Observer {
+                  when(it){
+                      IS_MUTED_ADDRESS -> {
+                          if(isScreeningApp){
+                              imgBtnCallUnMuteCaller.beVisible()
+                              imgBtnCallTbrMuteCaller.beInvisible()
+                          }
+
+                      }
+                      IS_NOT_MUTED_ADDRESS ->{
+
+                          imgBtnCallUnMuteCaller.beInvisible()
+                          imgBtnCallTbrMuteCaller.beVisible()
+                      }
+                  }
+              })
+
+          }
        }
 
     }
@@ -473,7 +536,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         Log.d(TAG, "showDeleteBtnInToolbar: ")
         searchViewCall.beInvisible()
         imgBtnCallTbrBlock.beVisible()
-        imgBtnCallTbrMuteCaller.beVisible()
+        if(isScreeningApp){
+            imgBtnCallTbrMuteCaller.beVisible()
+
+        }
         imgBtnCallTbrDelete.beVisible()
         imgBtnCallTbrMore.beVisible()
 
@@ -485,6 +551,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         imgBtnCallTbrDelete.beInvisible()
         imgBtnCallTbrMore.beInvisible()
         tvCallSelectedCount.beInvisible()
+         imgBtnCallUnMuteCaller.beInvisible()
     }
 
     fun updateSelectedItemCount(){
@@ -497,7 +564,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
     }
 
-    override fun onYesConfirmation() {
+    override fun onYesConfirmationDelete() {
         this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
            when(it){
                SMS_DELETE_ON_PROGRESS ->{
@@ -508,6 +575,40 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                }
            }
         })
+    }
+
+    override fun onYesConfirmationMute() {
+        viewmodel.muteMarkedCaller().observe(viewLifecycleOwner, Observer {
+            when(it){
+                OPERATION_COMPLETED ->{
+
+                    val sbar = Snackbar.make(cordinateLyoutCall,
+                        "You no longer notified on from ${viewmodel.contactAdders}",
+                        Snackbar.LENGTH_SHORT)
+                    lastOperationPerformed = OPERTION_MUTE
+                    sbar.setAction("Undo", MyUndoListener(this))
+//        sbar.anchorView = bottomNavigationView
+
+                    sbar.show()
+//                   showSnackBar("You no longer notified on from 800")
+//                val sbar = Snackbar.make(cordinateLyoutMainActivity, "You no longer notified on from 800", Snackbar.LENGTH_SHORT)
+//                sbar.show()
+                    clearlists()
+                    showSearchView()
+                }
+            }
+        })
+    }
+
+    override fun onUndoClicked() {
+        when(lastOperationPerformed){
+            OPERTION_MUTE ->{
+                viewmodel.unmute()
+            }
+            OPERTION_DELETE ->{
+
+            }
+        }
     }
 
 }

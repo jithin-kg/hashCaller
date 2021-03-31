@@ -293,7 +293,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             }
     fun showDialPad(){
         bottomSheetDialog.show()
-        this.activity?.fabBtnShowDialpad?.visibility= View.GONE
+//        this.activity?.fabBtnShowDialpad?.visibility= View.GONE
 //        this.activity?.bottomNavigationView?.visibility= View.GONE
 //        this.activity?.bottomNavigationView?.removeView(bottomNavigationView)
 

@@ -4,11 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginBottom="16dp"
     tools:context=".view.ui.MainActivity"
     android:background="@color/colorBackground"
     android:backgroundTint="@color/colorBackground"
-
     android:id="@+id/MessagesFragment">
 
 
@@ -173,7 +171,7 @@
         android:background="@color/colorBackground"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:layout_marginBottom="?attr/actionBarSize"
+        android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list" />
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -214,7 +212,7 @@
         android:contentDescription="Schedule"
         android:textColor="@color/colorWhite"
         android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="?attr/actionBarSize"
+        android:layout_marginBottom="8dp"
         app:iconTint="@color/colorWhite"
         app:icon="@drawable/ic_baseline_send_24"
         android:backgroundTint="@color/colorPrimary" />

@@ -7,9 +7,12 @@ import androidx.room.Query
 
 @Dao
 interface IMutedCallersDAO {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(senders:List<MutedCallers>)
 
     @Query("SELECT * FROM muted_callers WHERE address= :address")
-     fun find(address:String):MutedCallers?
+     suspend fun find(address:String):MutedCallers?
+
+    @Query("DELETE FROM muted_callers where address=:contactAdders")
+     suspend fun delete(contactAdders: String)
 }
