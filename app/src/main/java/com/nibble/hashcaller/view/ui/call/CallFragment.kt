@@ -3,19 +3,24 @@ package com.nibble.hashcaller.view.ui.call
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -23,6 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MainActivity
@@ -34,6 +40,7 @@ import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
+import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
@@ -43,12 +50,16 @@ import com.nibble.hashcaller.view.ui.contacts.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_DELETE
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_MUTE
-import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
+import kotlinx.android.synthetic.main.bottom_sheet_block.*
+import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
@@ -64,7 +75,7 @@ import kotlinx.coroutines.flow.collect
  */
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
     DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener,
-    MyUndoListener.SnackBarListner {
+    MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener {
     private var isDflt = false
     private var isScreeningApp = false
     private var toolbar: Toolbar? = null
@@ -75,6 +86,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private lateinit var dialerFragment: DialerFragment
     private lateinit var viewmodel: CallContainerViewModel
     private  var lastOperationPerformed: Int ? = null
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
+    private  var selectedRadioButton: RadioButton? = null
+    private  var spammerType:Int = -1
+    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+
+
     /************/
     var callLogAdapter: DialerAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -104,7 +122,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             observeCallLog()
 
         }
-        initListeners()
+    setupBottomSheet()
+    initListeners()
         observePermissionLiveData()
 
 //        addFragmentDialer()
@@ -150,6 +169,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
         this.callFragment!!.fabBtnShowDialpad.setOnClickListener(this)
         this.callFragment!!.imgBtnCallUnMuteCaller.setOnClickListener(this)
+
+        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioScam.setOnClickListener(this)
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+        bottomSheetDialog.btnBlock.setOnClickListener(this)
     }
 
     private fun observeCallLogMutabeLivedata(){
@@ -327,7 +351,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 muteMarkedCaller()
             }
             R.id.imgBtnCallTbrBlock->{
-
+                showBottomSheetDialog()
             }
             R.id.imgBtnCallUnMuteCaller ->{
                 unmuteUser()
@@ -335,10 +359,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             R.id.fabBtnShowDialpad ->{
                 (activity as MainActivity).showDialerFragment()
             }
+            R.id.btnBlock->{
+                blockMarkedCaller()
+            }
 
         }
 
     }
+
+
+
 
     private fun unmuteUser() {
         viewmodel.unmuteByAddress().observe(viewLifecycleOwner, Observer {
@@ -354,10 +384,62 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         })
     }
 
+    private fun setupBottomSheet() {
+        bottomSheetDialog = BottomSheetDialog(this.requireActivity())
+        bottomSheetDialogfeedback = BottomSheetDialog(this.requireActivity())
+        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+        val viewSheetFeedback = layoutInflater.inflate(R.layout.bottom_sheet_block_feedback, null)
+
+        bottomSheetDialog.setContentView(viewSheet)
+        bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
+
+        selectedRadioButton = bottomSheetDialog.radioScam
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+
+
+//        if(this.view?.visibility == View.VISIBLE){
+//            bottomSheetDialog.hide()
+
+//        }
+
+        bottomSheetDialog.setOnDismissListener {
+            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+
+        }
+    }
+
+    override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+        this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+        return true
+
+    }
+    private fun showBottomSheetDialog() {
+        bottomSheetDialog.show()
+
+    }
+
+    private fun blockMarkedCaller() {
+
+        this.viewmodel.blockThisAddress(getMarkedContactAddress()!!, MarkedItemsHandler.markedTheadIdForBlocking,
+            this.spammerType,
+            this.SPAMMER_CATEGORY )
+
+//        Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
+        bottomSheetDialog.hide()
+        bottomSheetDialog.dismiss()
+            bottomSheetDialogfeedback.show()
+        var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
+        val  sb =  SpannableStringBuilder(txt);
+        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
+        sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
+        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+//        resetMarkingOptions()
+
+    }
     private fun muteMarkedCaller() {
 //        val dialog = ConfirmDialogFragment(this,  "Mut")
         val dialog = ConfirmDialogFragment(this,
-            getSpannableString("You won't receive call notification from 801238013"),
+            getSpannableString("You won't receive call notification from ${getMarkedContactAddress()}"),
             getSpannableString("Mute caller  "), TYPE_MUTE)
         dialog.show(childFragmentManager, "sample")
 

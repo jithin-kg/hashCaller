@@ -6,19 +6,19 @@ import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
-import java.lang.Exception
 import java.text.SimpleDateFormat
 
 class CallLocalRepository(private val context: Context) {
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri = CallLog.Calls.CONTENT_URI
+
         private const val TAG = "__CallLocalRepository"
     }
      fun getCallLog():List<CallLogData>{
         val listOfCallLogs = mutableListOf<CallLogData>()
         val projection = arrayOf(
-            CallLog.Calls.NUMBER,
+            "CallLog.Calls.NUMBER " ,
             CallLog.Calls.TYPE,
             CallLog.Calls.DURATION,
             CallLog.Calls.CACHED_NAME,
@@ -36,6 +36,8 @@ class CallLocalRepository(private val context: Context) {
                 null,
                 null
             )
+
+
             if(cursor != null && cursor.moveToFirst()){
                 do{
 

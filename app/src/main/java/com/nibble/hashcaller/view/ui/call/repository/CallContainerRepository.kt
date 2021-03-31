@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.util.*
 
 class CallContainerRepository(
     val context: Context,
@@ -136,6 +137,21 @@ class CallContainerRepository(
                 isMutedNum = true
             }
             return isMutedNum
+        }
+    }
+
+    suspend fun markCallerAsSpamer(formatPhoneNumber: String, spammerType: Int, s: String, s1: String) {
+        dao.find(formatPhoneNumber).apply {
+            if(this !=null){
+                //number exist in db
+                dao.update(this.spamReportCount+1, this.contactAddress)
+            }else{
+
+                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
+                    formatPhoneNumber(formatPhoneNumber), spammerType, "",
+                    Date(), 1)
+                dao.insert(listOf(callerInfoTobeSavedInDatabase))
+            }
         }
     }
 

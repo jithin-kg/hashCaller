@@ -70,7 +70,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     for(cntct in result.body()!!.contacts){
 
                         val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                            cntct.phoneNumber, 0, cntct.name,
+                            formatPhoneNumber(cntct.phoneNumber), 0, cntct.name,
                             Date(), cntct.spamCount)
                         callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                     }

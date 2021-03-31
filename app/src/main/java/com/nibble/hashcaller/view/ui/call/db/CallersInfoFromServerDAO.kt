@@ -28,4 +28,7 @@ interface CallersInfoFromServerDAO {
     suspend fun find(contactAddress: String) : CallersInfoFromServer?
     @Query("DELETE from callers_info_from_server ")
     suspend fun deleteAll()
+
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount WHERE contact_address =:contactAddress")
+    suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String)
 }

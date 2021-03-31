@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
@@ -23,6 +24,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -193,6 +195,27 @@ class CallContainerViewModel(
 
     }
 
+    fun blockThisAddress(contactAddress: String,
+                         threadID: Long, spammerType: Int,
+                         spammerCategory: Int) = viewModelScope.launch {
+
+        async {
+
+            repository?.markCallerAsSpamer(formatPhoneNumber(contactAddress),
+                spammerCategory, "", "" )
+        }
+
+        async {
+//            repository?.report(
+//                ReportedUserDTo(
+//                    formatPhoneNumber(contactAddress), " ",
+//                    spammerType.toString(), spammerCategory.toString()
+//                )
+//            )
+        }
+
+
+    }
 
 
     companion object {
