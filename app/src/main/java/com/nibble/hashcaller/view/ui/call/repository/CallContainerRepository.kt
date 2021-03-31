@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.network.RetrofitClient
@@ -162,7 +163,8 @@ class CallContainerRepository(
         }
     }
 
-    fun getSMSByPage(): MutableList<CallLogData> {
+    @SuppressLint("LongLogTag")
+    suspend fun getSMSByPage(): MutableList<CallLogData> {
         val listOfCallLogs = mutableListOf<CallLogData>()
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
@@ -209,6 +211,9 @@ class CallContainerRepository(
                     val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
                     setRelativeTime(dateInMilliseconds, log)
 
+                    GlobalScope.launch {
+                        async { setInfoFromServer(log) }.await()
+                    }.join()
                     listOfCallLogs.add(log)
                 }while (cursor.moveToNext())
 
@@ -277,6 +282,153 @@ class CallContainerRepository(
         val days = hour / 24
         return days
     }
+
+    fun getCallLogLiveDAtaFromDB(): LiveData<List<CallersInfoFromServer>> {
+        return dao.getAllLiveData()
+    }
+
+    @SuppressLint("LongLogTag")
+    suspend fun getFullCallLogs(): MutableList<CallLogData> {
+
+        val listOfCallLogs = mutableListOf<CallLogData>()
+        val projection = arrayOf(
+            CallLog.Calls.NUMBER,
+            CallLog.Calls.TYPE,
+            CallLog.Calls.DURATION,
+            CallLog.Calls.CACHED_NAME,
+            CallLog.Calls._ID,
+            CallLog.Calls.DATE
+
+        )
+        var cursor:Cursor? = null
+
+        try {
+            cursor = context.contentResolver.query(
+                CallLogLiveData.URI,
+                projection,
+                null,
+                null,
+                "${CallLog.Calls.DATE} DESC"
+            )
+            if(cursor != null && cursor.moveToFirst()){
+                do{
+
+                    var number = cursor.getString(0)
+                    val type: String = cursor.getString(1)
+                    val duration: String = cursor.getString(2)
+                    val name: String? = cursor.getString(3)
+                    val id = cursor.getLong(4)
+                    var dateInMilliseconds = cursor.getLong(5)
+                    val fmt =
+                        SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
+                    val dateInLong: Long = dateInMilliseconds.toLong()
+                    val dateString = fmt.format(dateInLong)
+
+                    val callType:Int = type.toInt()
+
+
+                    /**
+                     *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
+                     *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
+                     *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
+                     */
+//                    dateInMilliseconds += name + id + Math.random().toString();
+                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
+                    setRelativeTime(dateInMilliseconds, log)
+
+                    GlobalScope.launch {
+                        async { setInfoFromServer(log) }.await()
+                    }.join()
+
+                    listOfCallLogs.add(log)
+                }while (cursor.moveToNext())
+
+            }
+        }catch (e: java.lang.Exception){
+            Log.d(TAG, "getCallLog: exception $e")
+        }finally {
+            cursor?.close()
+        }
+
+        return listOfCallLogs
+    }
+
+    private suspend fun setInfoFromServer(log: CallLogData) {
+        dao.find(formatPhoneNumber(log.number)).apply {
+            if(this !=null){
+                if(log.name.isNullOrEmpty()){
+                    log.name = this.title
+                }
+                log.spamCount = this.spamReportCount
+            }
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    suspend fun fetchFirst10(): MutableList<CallLogData> {
+        val listOfCallLogs = mutableListOf<CallLogData>()
+        val projection = arrayOf(
+            CallLog.Calls.NUMBER,
+            CallLog.Calls.TYPE,
+            CallLog.Calls.DURATION,
+            CallLog.Calls.CACHED_NAME,
+            CallLog.Calls._ID,
+            CallLog.Calls.DATE
+
+        )
+        var cursor:Cursor? = null
+
+        try {
+            cursor = context.contentResolver.query(
+                CallLogLiveData.URI,
+                projection,
+                null,
+                null,
+                "${CallLog.Calls.DATE} DESC LIMIT 10"
+            )
+            if(cursor != null && cursor.moveToFirst()){
+                do{
+
+                    var number = cursor.getString(0)
+                    val type: String = cursor.getString(1)
+                    val duration: String = cursor.getString(2)
+                    val name: String? = cursor.getString(3)
+                    val id = cursor.getLong(4)
+                    var dateInMilliseconds = cursor.getLong(5)
+                    val fmt =
+                        SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
+                    val dateInLong: Long = dateInMilliseconds.toLong()
+                    val dateString = fmt.format(dateInLong)
+
+                    val callType:Int = type.toInt()
+
+
+                    /**
+                     *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
+                     *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
+                     *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
+                     */
+//                    dateInMilliseconds += name + id + Math.random().toString();
+                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
+                    setRelativeTime(dateInMilliseconds, log)
+
+                    GlobalScope.launch {
+                        async { setInfoFromServer(log) }.await()
+                    }.join()
+
+                    listOfCallLogs.add(log)
+                }while (cursor.moveToNext())
+
+            }
+        }catch (e: java.lang.Exception){
+            Log.d(TAG, "getCallLog: exception $e")
+        }finally {
+            cursor?.close()
+        }
+
+        return listOfCallLogs
+    }
+
     companion object{
         const val TAG = "__CallContainerRepository"
     }

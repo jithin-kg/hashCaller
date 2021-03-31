@@ -55,8 +55,8 @@ class CallHistoryFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         callHistoryFragment = inflater.inflate(R.layout.fragment_call_history, container, false)
 
-        viewModel = ViewModelProvider(this, CallInjectorUtil.provideDialerViewModelFactory(context)).get(
-            CallHistoryViewmodel::class.java)
+//        viewModel = ViewModelProvider(this, CallInjectorUtil.provideDialerViewModelFactory(context)).get(
+//            CallHistoryViewmodel::class.java)
         if(checkContactPermission()){
             observeCallLog()
 

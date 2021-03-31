@@ -6,8 +6,8 @@ import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
-import kotlinx.coroutines.delay
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -16,7 +16,10 @@ import java.util.concurrent.TimeUnit
 
 
 
-class CallLogLiveData(private val context: Context):
+class CallLogLiveData(
+    private val context: Context,
+    private val repository: CallContainerRepository?
+):
     ContentProviderLiveData<MutableList<CallLogData>>(context,
     URI
 )  {
@@ -26,65 +29,10 @@ class CallLogLiveData(private val context: Context):
         private const val TAG = "__CallLogLiveData"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
     }
-    private fun getCallLog(context: Context):MutableList<CallLogData>{
-        val listOfCallLogs = mutableListOf<CallLogData>()
-        val projection = arrayOf(
-            CallLog.Calls.NUMBER,
-            CallLog.Calls.TYPE,
-            CallLog.Calls.DURATION,
-            CallLog.Calls.CACHED_NAME,
-            CallLog.Calls._ID,
-            CallLog.Calls.DATE
-
-        )
-        var cursor:Cursor? = null
-
-        try {
-          cursor = context.contentResolver.query(
-                URI,
-                projection,
-                null,
-                null,
-                "${CallLog.Calls.DATE} DESC"
-            )
-            if(cursor != null && cursor.moveToFirst()){
-                do{
-
-                    val number = cursor.getString(0)
-                    val type: String = cursor.getString(1)
-                    val duration: String = cursor.getString(2)
-                    val name: String? = cursor.getString(3)
-                    val id = cursor.getLong(4)
-                    var dateInMilliseconds = cursor.getLong(5)
-                    val fmt =
-                        SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
-                    val dateInLong: Long = dateInMilliseconds.toLong()
-                    val dateString = fmt.format(dateInLong)
-
-                    val callType:Int = type.toInt()
-
-
-                    /**
-                     *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
-                     *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
-                     *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
-                     */
-//                    dateInMilliseconds += name + id + Math.random().toString();
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
-                  setRelativeTime(dateInMilliseconds, log)
-
-                    listOfCallLogs.add(log)
-                }while (cursor.moveToNext())
-
-            }
-        }catch (e:Exception){
-            Log.d(TAG, "getCallLog: exception $e")
-        }finally {
-            cursor?.close()
-            isLoading.postValue(false)
-        }
-
-        return listOfCallLogs
+    private suspend fun getCallLog(context: Context):MutableList<CallLogData>{
+         repository!!.getFullCallLogs().apply {
+             return this
+         }
 
     }
 

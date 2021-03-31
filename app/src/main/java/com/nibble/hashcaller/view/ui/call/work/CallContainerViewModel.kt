@@ -7,6 +7,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.fullDataFromCproviderFetched
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
@@ -157,8 +158,12 @@ class CallContainerViewModel(
 
     }
 
+    /**
+     * called for the first time to get 10 results, then updated with and followed by full livedata
+     */
+
     fun fetchCallLogFlow(activity: FragmentActivity) = viewModelScope.launch{
-      val res =   CallLogFlowHelper.fetchCallLogFlow(activity)
+      val res =   repository!!.fetchFirst10()
 
         updateLiveDataWithFlow(res)
     }
@@ -227,6 +232,17 @@ class CallContainerViewModel(
             list.addAll(res)
         }
         callLogsMutableLiveData.value = list
+    }
+
+    fun getCallLogFromServer() : LiveData<List<CallersInfoFromServer>>  {
+        return  repository!!.getCallLogLiveDAtaFromDB()
+    }
+
+    /**
+     * called when info about a caller comes from server, or db changes
+     */
+    fun updateWithNewInfoFromServer() = viewModelScope.launch {
+        callLogsMutableLiveData.value = repository!!.getFullCallLogs()
     }
 
 

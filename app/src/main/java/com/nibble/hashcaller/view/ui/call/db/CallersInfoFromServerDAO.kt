@@ -31,4 +31,7 @@ interface CallersInfoFromServerDAO {
 
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount WHERE contact_address =:contactAddress")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String)
+
+    @Query("SELECT * FROM callers_info_from_server")
+    fun getAllLiveData()  : LiveData<List<CallersInfoFromServer>>
 }

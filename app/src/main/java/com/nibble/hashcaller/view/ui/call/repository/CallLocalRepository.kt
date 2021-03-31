@@ -20,7 +20,7 @@ class CallLocalRepository(private val context: Context) {
         val hashSetOfNumber : HashSet<String> = HashSet()
         val listOfCallLogs = mutableListOf<CallLogData>()
         val projection = arrayOf(
-            "CallLog.Calls.NUMBER " ,
+            CallLog.Calls.NUMBER  ,
             CallLog.Calls.TYPE,
             CallLog.Calls.DURATION,
             CallLog.Calls.CACHED_NAME,

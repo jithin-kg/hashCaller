@@ -199,7 +199,6 @@
         android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list"
-        android:layout_marginBottom="?attr/actionBarSize"
         />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

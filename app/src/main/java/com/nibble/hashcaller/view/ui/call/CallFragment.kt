@@ -276,12 +276,20 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         observePermissionLiveData()
 
         observeCallLog()
+        observeCallLogInfoFromServer()
 
 
 
 
 
     }
+
+    private fun observeCallLogInfoFromServer() {
+        this.viewmodel.getCallLogFromServer().observe(viewLifecycleOwner, Observer {
+            viewmodel.updateWithNewInfoFromServer()
+        })
+    }
+
     private fun initRecyclerView() {
 
         recyclerV.apply {

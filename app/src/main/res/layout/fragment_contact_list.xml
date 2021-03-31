@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginBottom="?attr/actionBarSize"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ContactFragment"
     android:background="@color/colorBackground"
@@ -90,7 +89,7 @@
         android:background="@color/colorBackground"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:layout_marginBottom="?attr/actionBarSize"
+        android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list" />
 

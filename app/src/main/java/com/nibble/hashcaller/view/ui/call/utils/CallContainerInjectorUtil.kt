@@ -26,7 +26,7 @@ object CallContainerInjectorUtil {
 
 
         val callLogLiveData =
-            CallLogLiveData(context!!)
+            CallLogLiveData(context!!, repository)
 
         return CallContainerViewModelFactory(callLogLiveData!!, repository,callerInfoFromServerDAO)
     }
