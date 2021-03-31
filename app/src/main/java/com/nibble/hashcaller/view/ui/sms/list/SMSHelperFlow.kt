@@ -131,7 +131,7 @@ class SMSHelperFlow(private val context: Context) {
                     }
 
                     if(!objSMS.msgString.isNullOrEmpty()){
-                        setSMSHashMap(objSMS)
+//                        setSMSHashMap(objSMS)
 
                     }
                     setSMSReadStatus(objSMS)
@@ -323,24 +323,24 @@ class SMSHelperFlow(private val context: Context) {
 
     @SuppressLint("LongLogTag")
     fun setSMSHashMap(objSMS: SMS) {
-        if(!objSMS.addressString.isNullOrEmpty()){
-            Log.d(TAG, "setSMSHashMap: ")
-
-            val mr = SMSContainerFragment.mapofAddressAndSMS[objSMS.addressString!!]
-            if(mr==null){
-                SMSContainerFragment.mapofAddressAndSMS[objSMS.addressString!!] = objSMS
-            }else{
-                val timFromMap = mr.time!!.toLong()
-                val timeFromCProvider = objSMS.time!!.toLong()
-                if( timFromMap < timeFromCProvider){
-                    //new message is objsms.time
-                    Log.d(TAG +"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
-                    SMSContainerFragment.mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
-                }else{
-                    Log.d(TAG, "setSMSHashMap: greater")
-                }
-            }
-        }
+//        if(!objSMS.addressString.isNullOrEmpty()){
+//            Log.d(TAG, "setSMSHashMap: ")
+//
+////            val mr = SMSContainerFragment.mapofAddressAndSMS[objSMS.addressString!!]
+//            if(mr==null){
+//                SMSContainerFragment.mapofAddressAndSMS[objSMS.addressString!!] = objSMS
+//            }else{
+//                val timFromMap = mr.time!!.toLong()
+//                val timeFromCProvider = objSMS.time!!.toLong()
+//                if( timFromMap < timeFromCProvider){
+//                    //new message is objsms.time
+//                    Log.d(TAG +"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
+//                    SMSContainerFragment.mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+//                }else{
+//                    Log.d(TAG, "setSMSHashMap: greater")
+//                }
+//            }
+//        }
 
     }
 

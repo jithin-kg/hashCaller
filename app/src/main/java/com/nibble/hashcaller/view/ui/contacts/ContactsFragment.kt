@@ -122,6 +122,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         toolbar = contactsView?.findViewById(R.id.toolbar)
 
         searchViewContacts = contactsView?.findViewById(R.id.searchViewContacts)!!
+        contactsView.searchViewContacts.setOnClickListener(this)
 
     }
     private fun observePermissionLiveData() {
@@ -196,10 +197,16 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: searchview")
         when(v?.id){
-            R.id.btnGivecontactPermission ->{
+            R.id.btnGivecontactPermission -> {
                 Log.d(TAG, "onClick: request permission")
                 this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
-            }else->{
+
+            }
+            R.id.searchViewContacts->{
+            startSearchActivity()
+        }
+
+            else->{
 
 //            if((activity as MainActivity).searchFragment!=null){
 //                startSearchActivity()

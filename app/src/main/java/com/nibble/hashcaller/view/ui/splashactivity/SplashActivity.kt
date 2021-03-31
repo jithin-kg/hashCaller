@@ -67,7 +67,7 @@ companion object{
     private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
 
     private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
-//    private lateinit var userInfoViewModel: UserInfoViewModel
+    private lateinit var userInfoViewModel: SplashActivityViewModel
 //    private lateinit var skey:SecretKey
 }
     override fun onPause() {
@@ -82,8 +82,7 @@ companion object{
         super.onCreate(savedInstanceState)
         rcfirebaseAuth = FirebaseAuth.getInstance()
 
-//        userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(this)).get(
-//            UserInfoViewModel::class.java)
+
 
         //Start home activity
 //         close splash activity
@@ -298,51 +297,54 @@ companion object{
     }
 
     private fun isNewUserInServer(): Boolean {
+        Log.d(TAG, "isNewUserInServer: ")
         var status = false
         val userInfo = UserInfoDTO()
+        userInfoViewModel = ViewModelProvider(this, SplashActivityInjectorUtil.provideViewModelFactory(this)).get(
+            SplashActivityViewModel::class.java)
+        
+        userInfoViewModel.upload(userInfo).observe(this, Observer {
+            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
+                val resMessage = resource.data?.body()?.message
+                when (resource.status) {
 
-//        userInfoViewModel.upload(userInfo).observe(this, Observer {
-//            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
-//                val resMessage = resource.data?.body()?.message
-//                when (resource.status) {
-//
-//                    Status.SUCCESS -> {
-//
-//                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
-//                            Log.d(TAG, "checkIfNewUser: no such user")
-//                            //This is a new user
-////                            val i = Intent(this, GetInitialUserInfoActivity::class.java)
-////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                            //set userLoggedIn = false in shared preference
-//
-//                            saveToSharedPref(false)
-//
-////                            startActivity(i)
-//
-//                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
-//                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
-////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-////                            //set userLogedIn = true in shared preferecce
-//                            saveToSharedPref(true)
-//                            status = true
-////                            applicationContext.startActivity(i)
-//
-//                        }
-//                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
-//                    }
-//                    Status.LOADING -> {
-//                        Log.d(TAG, "checkIfNewUser: Loading")
-//                    }
-//                    else -> {
-//                        Log.d(TAG, "checkIfNewUser: else $resource")
-//                        Log.d(TAG, "checkIfNewUser:error ")
-//                    }
-//
-//
-//                }
-//
-//            }
-//        })
+                    Status.SUCCESS -> {
+
+                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
+                            Log.d(TAG, "checkIfNewUser: no such user")
+                            //This is a new user
+//                            val i = Intent(this, GetInitialUserInfoActivity::class.java)
+//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            //set userLoggedIn = false in shared preference
+
+                            saveToSharedPref(false)
+
+//                            startActivity(i)
+
+                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
+                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
+//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                            //set userLogedIn = true in shared preferecce
+                            saveToSharedPref(true)
+                            status = true
+//                            applicationContext.startActivity(i)
+
+                        }
+                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
+                    }
+                    Status.LOADING -> {
+                        Log.d(TAG, "checkIfNewUser: Loading")
+                    }
+                    else -> {
+                        Log.d(TAG, "checkIfNewUser: else $resource")
+                        Log.d(TAG, "checkIfNewUser:error ")
+                    }
+
+
+                }
+
+            }
+        })
         return status
     }
 
@@ -426,6 +428,8 @@ companion object{
             rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
 
         }
+        
+        
         super.onDestroy()
 
 

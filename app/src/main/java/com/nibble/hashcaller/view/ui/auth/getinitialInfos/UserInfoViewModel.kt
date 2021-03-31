@@ -19,7 +19,7 @@ class UserInfoViewModel(
 ) :ViewModel(){
     var userInfo : MutableLiveData<UserInfo> = MutableLiveData()
 
-    fun upload(userInfo: UserInfoDTO)= liveData(Dispatchers.IO){
+    fun upload(userInfo: UserInfoDTO)= liveData{
 
 
 

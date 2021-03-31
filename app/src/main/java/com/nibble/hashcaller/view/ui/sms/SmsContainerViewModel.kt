@@ -20,6 +20,7 @@ class SmsContainerViewModel(
     val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
 
 ) :ViewModel(){
+
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(0)
     fun getInformationForTheseNumbers(
         smslist: List<SMS>?,

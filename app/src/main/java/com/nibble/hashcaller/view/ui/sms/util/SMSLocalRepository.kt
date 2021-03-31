@@ -319,7 +319,7 @@ class SMSLocalRepository(
                     }
 
                     if(!objSMS.msgString.isNullOrEmpty()){
-                        setSMSHashMap(objSMS)
+//                        setSMSHashMap(objSMS)
 
                     }
 //                    setSMSReadStatus(objSMS)
@@ -442,10 +442,10 @@ class SMSLocalRepository(
                             }
                             Log.d(TAG, "fetch: message is   ${objSMS.msgString}")
                             if(!objSMS.msgString.isNullOrEmpty()){
-                                setSMSHashMap(objSMS)
+//                                setSMSHashMap(objSMS)
 
                             }
-                            setOfAddress.add(objSMS.nameForDisplay)
+//                            setOfAddress.add(objSMS.nameForDisplay)
 
 
                                 listOfMessages.add(objSMS)
@@ -464,7 +464,7 @@ class SMSLocalRepository(
                 data.addAll(listOfMessages)
                 setSMSReadStatus(data)
                 setNameIfExistInContactContentProvider(data)
-                removeDeletedMSSFRomhashMap(setOfAddress)
+//                removeDeletedMSSFRomhashMap(setOfAddress)
 
 
 
@@ -481,35 +481,35 @@ class SMSLocalRepository(
 
     private fun removeDeletedMSSFRomhashMap(setOfAdderss: MutableSet<String>) {
 
-        for (address in mapofAddressAndSMS.keys){
-            if(!setOfAdderss.contains(address)){
-                //if not present in setOfAdderss, then we have to remove them mapofAddressAndSMS
-                mapofAddressAndSMS.remove(address)
-            }
-        }
+//        for (address in mapofAddressAndSMS.keys){
+//            if(!setOfAdderss.contains(address)){
+//                //if not present in setOfAdderss, then we have to remove them mapofAddressAndSMS
+//                mapofAddressAndSMS.remove(address)
+//            }
+//        }
     }
 
     @SuppressLint("LongLogTag")
     private fun setSMSHashMap(objSMS: SMS) {
-        if(!objSMS.addressString.isNullOrEmpty()){
-            Log.d(TAG, "setSMSHashMap: ")
-
-            val mr = mapofAddressAndSMS[objSMS.addressString!!]
-            if(mr==null){
-                //if not pressent in map
-                mapofAddressAndSMS[objSMS.addressString!!] = objSMS
-            }else{
-                val timFromMap = mr.time!!.toLong()
-                val timeFromCProvider = objSMS.time!!.toLong()
-                if( timFromMap < timeFromCProvider){
-                    //new message is objsms.time
-                    Log.d(TAG+"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
-                    mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
-                }else if(mr.senderInfoFoundFrom!= objSMS.senderInfoFoundFrom){
-                    mapofAddressAndSMS[objSMS.addressString!!] = objSMS
-                }
-            }
-        }
+//        if(!objSMS.addressString.isNullOrEmpty()){
+//            Log.d(TAG, "setSMSHashMap: ")
+//
+//            val mr = mapofAddressAndSMS[objSMS.addressString!!]
+//            if(mr==null){
+//                //if not pressent in map
+//                mapofAddressAndSMS[objSMS.addressString!!] = objSMS
+//            }else{
+//                val timFromMap = mr.time!!.toLong()
+//                val timeFromCProvider = objSMS.time!!.toLong()
+//                if( timFromMap < timeFromCProvider){
+//                    //new message is objsms.time
+//                    Log.d(TAG+"setSMSHashMaptS", " lesser map: $timFromMap cp: $timeFromCProvider")
+//                    mapofAddressAndSMS.put(objSMS.addressString!!, objSMS)
+//                }else if(mr.senderInfoFoundFrom!= objSMS.senderInfoFoundFrom){
+//                    mapofAddressAndSMS[objSMS.addressString!!] = objSMS
+//                }
+//            }
+//        }
 
     }
 
@@ -1569,7 +1569,7 @@ class SMSLocalRepository(
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
 
                             }
-                            setSMSHashMap(objSMS)
+//                            setSMSHashMap(objSMS)
                             listOfMessages.add(objSMS)
                         } catch (e: Exception) {
                             Log.d(TAG, "getSMSForSpammList: $e")

@@ -112,13 +112,13 @@ class SMSViewModel(
 
     }
 
-    private fun sortedSMSByTime(): MutableList<SMS> {
-        val lstofSMS =  mapofAddressAndSMS.values
-        val sorted = lstofSMS.sortedByDescending { it.time }
-        val lt:MutableList<SMS> = mutableListOf()
-        lt.addAll(sorted)
-        return lt
-    }
+//    private fun sortedSMSByTime(): MutableList<SMS> {
+//        val lstofSMS =  mapofAddressAndSMS.values
+//        val sorted = lstofSMS.sortedByDescending { it.time }
+//        val lt:MutableList<SMS> = mutableListOf()
+//        lt.addAll(sorted)
+//        return lt
+//    }
 
 
 
