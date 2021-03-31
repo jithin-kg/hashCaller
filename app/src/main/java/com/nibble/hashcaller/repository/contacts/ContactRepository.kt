@@ -21,6 +21,8 @@ class ContactRepository(context: Context) {
     var lastNumber = "0"
 
     fun fetchContacts(): MutableList<ContactUploadDTO> {
+
+        var hashSetOfAddress : HashSet<String> = HashSet()
         val cursor = context!!.contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null, null, null,
@@ -30,12 +32,18 @@ class ContactRepository(context: Context) {
 
         if (cursor?.count ?: 0 > 0) {
             while (cursor!!.moveToNext()) {
+
                 var contact = ContactUploadDTO()
                 val name =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                 var phoneNo =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 phoneNo = formatPhoneNumber(phoneNo)
+                if(!hashSetOfAddress.contains(phoneNo)){
+                    hashSetOfAddress.add(phoneNo)
+                }else{
+                    continue
+                }
 
                 val photoUri =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))

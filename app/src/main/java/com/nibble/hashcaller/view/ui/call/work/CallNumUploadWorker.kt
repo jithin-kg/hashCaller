@@ -103,14 +103,14 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
         for (caller in allcallsInContentProvider){
 
 
-            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(caller.number!!)
+            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(formatPhoneNumber(caller.number))
 
             if(callersInfoAvailableInLocalDb == null){
-                Log.d(TAG, "doWork: no data recieved from server")
+                Log.d(TAG, "doWork: no data available in db for number ${caller.number}")
 
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                 val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                callersListTobeSendToServer.add(ContactAddressWithHashDTO(caller.number!!, hashedAddress))
+                callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))
 
             }else{
                 val today = Date()
@@ -121,7 +121,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 //                    Log.d(TAG, "doWork: outdated data")
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(caller.number!!, hashedAddress))
+                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))
                 }
 //                    if(sms.currentDate)
                 //Todo compare dates

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.work.formatPhoneNumber
 import java.text.SimpleDateFormat
 
 class CallLocalRepository(private val context: Context) {
@@ -16,6 +17,7 @@ class CallLocalRepository(private val context: Context) {
         private const val TAG = "__CallLocalRepository"
     }
      fun getCallLog():List<CallLogData>{
+        val hashSetOfNumber : HashSet<String> = HashSet()
         val listOfCallLogs = mutableListOf<CallLogData>()
         val projection = arrayOf(
             "CallLog.Calls.NUMBER " ,
@@ -42,6 +44,13 @@ class CallLocalRepository(private val context: Context) {
                 do{
 
                     val number = cursor.getString(0)
+                    val formatedNum = formatPhoneNumber(number)
+                    if(!hashSetOfNumber.contains(formatedNum)){
+                        hashSetOfNumber.add(formatedNum)
+                    }else{
+                        //if contains in hashet
+                        continue
+                    }
                     val type: String = cursor.getString(1)
                     val duration: String = cursor.getString(2)
                     val name: String? = cursor.getString(3)
@@ -53,7 +62,6 @@ class CallLocalRepository(private val context: Context) {
                     val dateString = fmt.format(dateInLong)
 
                     val callType:Int = type.toInt()
-
                     /**
                      *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
                      *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
@@ -61,7 +69,7 @@ class CallLocalRepository(private val context: Context) {
                      */
                     dateInMilliseconds += name + id + Math.random().toString();
 
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
+                    val log = CallLogData(id, formatedNum, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
                     listOfCallLogs.add(log)
                 }while (cursor.moveToNext())
 
