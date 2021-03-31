@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
+import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.fullDataFromCproviderFetched
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
@@ -46,6 +47,7 @@ class CallContainerViewModel(
     }
 
     fun updateCAllLogLivedata(list:MutableList<CallLogData>) = viewModelScope.launch {
+        fullDataFromCproviderFetched = true
         callLogsMutableLiveData.value = list
 
         getInformationForTheseNumbers()
@@ -89,7 +91,7 @@ class CallContainerViewModel(
                   }
                 }
             }
-            callLogsMutableLiveData.value = logs
+//            callLogsMutableLiveData.value = logs
 
         }
     }
@@ -215,6 +217,16 @@ class CallContainerViewModel(
         }
 
 
+    }
+
+    fun getNextPage() = viewModelScope.launch {
+        var res = repository!!.getSMSByPage()
+        var list : MutableList<CallLogData> = mutableListOf()
+        if(callLogsMutableLiveData.value!= null){
+            list.addAll(callLogsMutableLiveData.value!!)
+            list.addAll(res)
+        }
+        callLogsMutableLiveData.value = list
     }
 
 

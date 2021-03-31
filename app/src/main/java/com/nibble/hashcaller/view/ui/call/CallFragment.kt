@@ -27,6 +27,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -50,6 +51,7 @@ import com.nibble.hashcaller.view.ui.contacts.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_DELETE
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_MUTE
+import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -63,7 +65,6 @@ import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
-import kotlinx.android.synthetic.main.fragment_call_history.rcrViewCallHistoryLogs
 import kotlinx.android.synthetic.main.fragment_call_history.view.btnCallhistoryPermission
 import kotlinx.coroutines.flow.collect
 
@@ -91,8 +92,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = -1
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
-
-
+    private lateinit var recyclerV : RecyclerView
+    private lateinit var layoutMngr: LinearLayoutManager
     /************/
     var callLogAdapter: DialerAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -111,6 +112,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     ): View? {
         Log.d(TAG, "onCreateView: ")
         callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
+    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
+    registerForContextMenu( this.recyclerV) //in oncreatView
 
         initViewModel()
 
@@ -119,12 +122,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
             observeCallLogMutabeLivedata()
             collectdata()
-            observeCallLog()
 
         }
     setupBottomSheet()
     initListeners()
-        observePermissionLiveData()
 
 //        addFragmentDialer()
         return callFragment
@@ -132,7 +133,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun collectdata() {
-        viewmodel.fetchCallLogFlow(this@CallFragment.requireActivity())
+        viewmodel.fetchCallLogFlow(requireActivity())
 //        lifecycleScope.launchWhenStarted {
 //            CallLogFlowHelper.fetchCallLogFlow(this@CallFragment.requireActivity()).collect {
 //               viewmodel. updateLiveDataWithFlow(it)
@@ -204,6 +205,45 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         return true
     }
 
+    private fun addScrollListener() {
+        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+//                if(dy>0){
+                //scrollview scrolled vertically
+                //get the visible item count
+                if(layoutMngr!=null){
+                    val visibleItemCount = layoutMngr!!.childCount
+                    val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
+                    val recyclerViewSize = callLogAdapter!!.itemCount
+                    var isLoading = false
+                    if(!fullDataFromCproviderFetched){
+                        Log.d(TAG, "onScrolled: getting next page")
+                        if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
+                            //we have reached the bottom
+                            pageCall+=10
+                            viewmodel.getNextPage()
+                            if(dy > 0){
+                                if(!isSizeEqual){
+//                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
+//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+                                }
+                            }
+                        }
+                    }
+
+                }
+//                }
+            }
+        })
+    }
+
+
+
+
+
+
+
     override fun onResume() {
         super.onResume()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -231,15 +271,22 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         super.onViewCreated(view, savedInstanceState)
 //        intialize()
         initRecyclerView()
+        addScrollListener()
         initListeners()
+        observePermissionLiveData()
+
+        observeCallLog()
+
 
 
 
 
     }
     private fun initRecyclerView() {
-        rcrViewCallHistoryLogs?.apply {
+
+        recyclerV.apply {
             layoutManager = LinearLayoutManager(activity)
+            layoutMngr = layoutManager as LinearLayoutManager
 //            val topSpacingDecorator =
 //                TopSpacingItemDecoration(
 //                    30
@@ -316,6 +363,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     companion object {
             private const val TAG ="__CallFragment"
+            var pageCall = 10
+            var fullDataFromCproviderFetched = false
     
     }
 

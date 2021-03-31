@@ -136,17 +136,17 @@ class CallHistoryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initRecyclerView() {
-        rcrViewCallHistoryLogs?.apply {
-            layoutManager = LinearLayoutManager(activity)
-            val topSpacingDecorator =
-                TopSpacingItemDecoration(
-                    30
-                )
-            addItemDecoration(topSpacingDecorator)
-//            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, position, view, btn, callLog)}
-            adapter = callLogAdapter
+//        rcrViewCallHistoryLogs?.apply {
+//            layoutManager = LinearLayoutManager(activity)
+//            val topSpacingDecorator =
+//                TopSpacingItemDecoration(
+//                    30
+//                )
+//            addItemDecoration(topSpacingDecorator)
+////            callLogAdapter = DialerAdapter(context) { id:String, position:Int, view:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, position, view, btn, callLog)}
+//            adapter = callLogAdapter
 
-        }
+//        }
     }
     private fun onCallLogItemClicked(
         id: String,

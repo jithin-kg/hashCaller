@@ -156,11 +156,12 @@
 <!--    /***********/-->
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_view_container_call"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="vertical"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:shimmer_duration="800">
 
@@ -186,6 +187,8 @@
             <include layout="@layout/skeleton_shimmer_layout" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </com.facebook.shimmer.ShimmerFrameLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewCallHistoryLogs"
         android:layout_width="match_parent"

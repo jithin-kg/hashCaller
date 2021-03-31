@@ -90,7 +90,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
         observeSendersInfoFromServer()
         observePermissionLiveData()
-        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
+//        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
         registerForContextMenu( this.recyclerV) // context menu registering
 
         return  viewMesages
