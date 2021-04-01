@@ -177,46 +177,33 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.setOnClickListener(View.OnClickListener {v->
 //                onContactItemClickListener("2", this.adapterPosition, view)
                 prevTime = callLog.dateInMilliseconds
-                toggleExpandableView(v, this.adapterPosition)
+                toggleExpandableView(v, this.adapterPosition, callLog.id!!)
 
 
             })
         }
 
-        private fun toggleExpandableView(v: View, pos: Int) {
-            val tag:String = v.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).tag  as String
-            if(prevView == null){
-                //first click
-                Log.d(TAG, "toggleExpandableView: first click")
-                v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-                v.findViewById<ConstraintLayout>(R.id.layoutcallMainSpam).findViewById<View>(R.id.dividerCallSpam).visibility = View.GONE
+        private fun toggleExpandableView(v: View, pos: Int, id:Long) {
+            var expandedLyoutId = getExpandedLayoutId()
+            if(expandedLyoutId==null){
+                //no views has not yet expanded, so expand the current layout
+                setExpandedLayoutId(id)
+                setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam))
+                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).beVisible()
 
-                prevTag = tag
-                prevView = v
+            }else if(expandedLyoutId == id){
+                //the layout is already expaned so, hide it
+                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).beGone()
+                setExpandedLayoutId(null)
+                setExpandedLayoutView(null)
+            }else{
+                //new item expanded
+                getExpandedLayoutView()!!.beGone()
+                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).beVisible()
+                setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam))
+                setExpandedLayoutId(id)
 
-            }else if(!tag.equals(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).tag)){
-                //clicked on new item
-                Log.d(TAG, "toggleExpandableView: not euqals")
-                prevView!!.findViewWithTag<ConstraintLayout>(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).tag).visibility = View.GONE
-                prevView!!.findViewById<ConstraintLayout>(R.id.layoutcallMainSpam).findViewById<View>(R.id.dividerCallSpam).visibility = View.VISIBLE
-                v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-                v.findViewById<ConstraintLayout>(R.id.layoutcallMainSpam).findViewById<View>(R.id.dividerCallSpam).visibility = View.GONE
-                prevView = v
-                prevTag = tag
 
-            }else if(prevView == v){
-                Log.d(TAG, "toggleExpandableView: euqals")
-                if (v.findViewWithTag<ConstraintLayout>(tag).visibility == View.VISIBLE){
-                    v.findViewWithTag<ConstraintLayout>(tag).visibility = View.GONE
-                    v.findViewById<ConstraintLayout>(R.id.layoutcallMainSpam).findViewById<View>(R.id.dividerCallSpam).visibility = View.VISIBLE
-                    prevTag = tag
-                    prevView = v
-                }else{
-                    v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-                    v.findViewById<ConstraintLayout>(R.id.layoutcallMainSpam).findViewById<View>(R.id.dividerCallSpam).visibility = View.GONE
-                    prevTag = tag
-                    prevView = v
-                }
             }
         }
 
