@@ -19,16 +19,41 @@
         android:background="@color/colorBackground"
 
         android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/textViewCallCrclrSpam"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="16dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lyoutCallSpm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
+            <TextView
+                android:id="@+id/textViewCallCrclrSpam"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="@color/spamText"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+            <ImageView
+                android:id="@+id/imgViewCallSpamIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="@color/spamText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/textVcallerNameSpam"
@@ -44,7 +69,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.209"
-            app:layout_constraintStart_toEndOf="@+id/textViewCallCrclrSpam"
+            app:layout_constraintStart_toEndOf="@+id/lyoutCallSpm"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.19" />
 
@@ -73,6 +98,7 @@
             android:id="@+id/textViewTimeSpam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
             android:text="TextView"
             android:textColor="@color/spamText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -94,6 +120,14 @@
             app:layout_constraintStart_toStartOf="@+id/textVcallerNameSpam"
             app:layout_constraintTop_toBottomOf="@+id/imgVCallTypeSpam" />
 
+        <TextView
+            android:id="@+id/txtViewDirectionSpam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text=""
+            app:layout_constraintStart_toEndOf="@+id/imgVCallTypeSpam"
+            app:layout_constraintTop_toBottomOf="@+id/textVcallerNameSpam" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

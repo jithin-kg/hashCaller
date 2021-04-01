@@ -245,6 +245,10 @@ class CallContainerViewModel(
         callLogsMutableLiveData.value = repository!!.getFullCallLogs()
     }
 
+    fun clearCallLogDB() = viewModelScope.launch {
+        repository!!.clearCallersInfoFromServer()
+    }
+
 
     companion object {
         const val TAG = "__SmsContainerViewModel"

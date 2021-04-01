@@ -19,19 +19,6 @@
         android:paddingTop="16dp"
         android:background="@color/colorBackground"
         android:layout_height="wrap_content">
-        <ProgressBar
-            android:id="@+id/pgBarCallItem"
-            android:layout_width="68dp"
-            android:layout_height="68dp"
-            android:fromDegrees="0"
-            android:toDegrees="180"
-            android:visibility="invisible"
-            android:gravity="center_vertical|center_horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
-            app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
-            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
-            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
-            />
         <TextView
             android:id="@+id/textViewCrclr"
             android:layout_width="50dp"

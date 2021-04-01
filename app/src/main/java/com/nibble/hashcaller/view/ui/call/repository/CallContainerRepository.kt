@@ -21,6 +21,8 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
@@ -333,12 +335,14 @@ class CallContainerRepository(
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
 //                    dateInMilliseconds += name + id + Math.random().toString();
+
                     val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
                     setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
                         async { setInfoFromServer(log) }.await()
                     }.join()
+
 
                     listOfCallLogs.add(log)
                 }while (cursor.moveToNext())
@@ -358,6 +362,10 @@ class CallContainerRepository(
             if(this !=null){
                 if(log.name.isNullOrEmpty()){
                     log.name = this.title
+                    log.callerInfoFoundFrom = SENDER_INFO_FROM_DB
+                }else{
+                    //if there is name already in the log then it would be got from content provider
+                    log.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                 }
                 log.spamCount = this.spamReportCount
             }
@@ -427,6 +435,10 @@ class CallContainerRepository(
         }
 
         return listOfCallLogs
+    }
+
+    suspend fun clearCallersInfoFromServer() {
+        dao.deleteAll()
     }
 
     companion object{

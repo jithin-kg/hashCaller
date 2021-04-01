@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.dialer.util
 
 import androidx.annotation.Keep
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 
 @Keep
 class CallLogData(
@@ -13,7 +14,8 @@ class CallLogData(
     var expanded:Boolean = false,
     var dateInMilliseconds:String = "",
     var spamCount:Long = 0,
-    var relativeTime:String = ""
+    var relativeTime:String = "",
+    var callerInfoFoundFrom: Int = SENDER_INFO_SEARCHING
 
 )  {
 

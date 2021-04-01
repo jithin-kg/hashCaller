@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -20,6 +22,7 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.call_list_item_spam.view.*
 import java.util.*
@@ -161,9 +164,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             generateCircleView(context);
 
             //call type
-            setCallTypeImage(callLog)
+            setCallTypeImage(callLog, view.imgVCallTypeSpam, view.txtViewDirectionSpam)
             //setDate
 //            view.textViewTimeSpam.text = callLog.date
+//            view.txtViewDirectionSpam.text = callLog.
             view.textViewTimeSpam.text = callLog.relativeTime
 
             view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).findViewById<ImageButton>(R.id.imgBtnCallExpandSpam) .setOnClickListener {
@@ -216,52 +220,20 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
         }
 
-        private fun setCallTypeImage(callLog: CallLogData) {
-            when (callLog.type) {
-                1 -> { // incomming call
-                    view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_received_24)
-                }
-                2 -> { // outgoing call
-                    view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_made_24)
-                }
-                else -> {
-                    view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_missed_24)
-                }
-            }
-        }
+
 
         private fun setNameFirstChar(callLog: CallLogData) {
             val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
             val firstLetter = name[0]
             val firstLetterString = firstLetter.toString().toUpperCase()
-            circle.text = firstLetterString
+//            circle.text = firstLetterString
+            view.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
+
         }
 
         private fun generateCircleView(context: Context) {
-            val rand = Random()
-            when (rand.nextInt(5 - 1) + 1) {
-                1 -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                    circle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary)
-                    )
-                }
-                2 -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                    circle.setTextColor(ContextCompat.getColor(context, R.color.colorlightBlueviking)
-                    )
-                }
-                3 -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                    circle.setTextColor(ContextCompat.getColor(context, R.color.colorbrightTurquoiseLightBlue
-                    )
-                    )
-                }
-                else -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                    circle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark)
-                    )
-                }
-            }
+            circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
+
         }
 
     }
@@ -285,7 +257,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
 
                 }
+            if(callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING){
+                view.pgBarCallItem.beVisible()
+            }else{
+                view.pgBarCallItem.beInvisible()
 
+            }
             name.text = if(callLog.name == null || callLog!!.name!!.isEmpty()) callLog.number else callLog.name
             //        Log.i(TAG, String.valueOf(no));
             setNameFirstChar(callLog)
@@ -294,7 +271,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
            generateCircleView(context);
 
             //call type
-            setCallTypeImage(callLog)
+            setCallTypeImage(callLog,  view.imgVCallType,view.textVCallDirection)
 
 
             /**
@@ -370,87 +347,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
              }
-//             val tag:String = v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag  as String
-//             if(prevView == null){
-//                 //first click
-//                 Log.d(TAG, "toggleExpandableView: first click")
-//                 v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-//                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-//
-//                 prevTag = tag
-//                 prevView = v
-//
-//             }else if(!tag.equals(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag)){
-//                //clicked on new item
-//                 Log.d(TAG, "toggleExpandableView: not euqals")
-//                 prevView!!.findViewWithTag<ConstraintLayout>(prevView!!.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).tag).visibility = View.GONE
-//                 prevView!!.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-//                 v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-//                 v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-//                 prevView = v
-//                 prevTag = tag
-//
-//             }else if(prevView == v){
-//                 Log.d(TAG, "toggleExpandableView: euqals")
-//                 if (v.findViewWithTag<ConstraintLayout>(tag).visibility == View.VISIBLE){
-//                     v.findViewWithTag<ConstraintLayout>(tag).visibility = View.GONE
-//                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.VISIBLE
-//                     prevTag = tag
-//                     prevView = v
-//                 }else{
-//                     v.findViewWithTag<ConstraintLayout>(tag).visibility = View.VISIBLE
-//                     v.findViewById<ConstraintLayout>(R.id.layoutcallMain).findViewById<View>(R.id.dividerCall).visibility = View.GONE
-//                     prevTag = tag
-//                     prevView = v
-//                 }
-//             }
          }
 
-         private fun setCallTypeImage(callLog: CallLogData) {
-//             /** Call log type for incoming calls.  */
-//             val INCOMING_TYPE = 1
-//
-//             /** Call log type for outgoing calls.  */
-//             val OUTGOING_TYPE = 2
-//
-//             /** Call log type for missed calls.  */
-//             val MISSED_TYPE = 3
-//
-//             /** Call log type for voicemails.  */
-//             val VOICEMAIL_TYPE = 4
-//
-//             /** Call log type for calls rejected by direct user action.  */
-//             val REJECTED_TYPE = 5
-//
-//             /** Call log type for calls blocked automatically.  */
-//             val BLOCKED_TYPE = 6
 
-             when (callLog.type) {
-                 1 -> { // incomming call
-                     view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_received_24)
-                     view.textVCallDirection.text = "Incoming call"
-
-                 }
-                 2 -> { // outgoing call
-                     view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_made_24)
-                     view.textVCallDirection.text = "Outgoing call"
-
-                 }
-                 3 -> {
-                    view.imgVCallType.setImageResource(R.drawable.ic_baseline_call_missed_24)
-                     view.textVCallDirection.text = "Missed call"
-
-                 }
-                 5->{
-                    view.textVCallDirection.text = "Rejected"
-                 }
-                 6 ->{
-                     view.textVCallDirection.text = "Blocked"
-
-                 }
-
-             }
-         }
 
          private fun setNameFirstChar(callLog: CallLogData) {
              val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
@@ -491,8 +390,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     class CallItemDiffCallback : DiffUtil.ItemCallback<CallLogData>() {
         override fun areItemsTheSame(oldItem: CallLogData, newItem: CallLogData): Boolean {
-//            else
-//                Log.d(TAG, "areItemsTheSame: no")
             return  oldItem.id == newItem.id
 
 
@@ -502,10 +399,53 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         override fun areContentsTheSame(oldItem: CallLogData, newItem: CallLogData): Boolean {
 
 
-            return oldItem.spamCount == newItem.spamCount
+            return oldItem.spamCount == newItem.spamCount && oldItem.callerInfoFoundFrom == newItem.callerInfoFoundFrom
             //TODO compare both messages and if the addres is same and message
         }
 
+    }
+
+
+    private fun setCallTypeImage(callLog: CallLogData, imageView: ImageView, textView:TextView) {
+//             /** Call log type for incoming calls.  */
+//             val INCOMING_TYPE = 1
+//
+//             /** Call log type for outgoing calls.  */
+//             val OUTGOING_TYPE = 2
+//
+//             /** Call log type for missed calls.  */
+//             val MISSED_TYPE = 3
+//
+//             /** Call log type for voicemails.  */
+//             val VOICEMAIL_TYPE = 4
+//
+//             /** Call log type for calls rejected by direct user action.  */
+//             val REJECTED_TYPE = 5
+//
+//             /** Call log type for calls blocked automatically.  */
+//             val BLOCKED_TYPE = 6
+
+        when (callLog.type) {
+            1 -> { // incomming call
+                imageView.setImageResource(R.drawable.ic_baseline_call_received_24)
+                textView.text = "Incoming call"
+            }
+            2 -> { // outgoing call
+                imageView.setImageResource(R.drawable.ic_baseline_call_made_24)
+                textView.text = "Outgoing call"
+            }
+            3 -> {
+                imageView.setImageResource(R.drawable.ic_baseline_call_missed_24)
+                textView.text = "Missed call"
+            }
+            5->{
+                textView.text = "Rejected"
+            }
+            6 ->{
+                textView.text = "Blocked"
+            }
+
+        }
     }
     interface CallItemLongPressHandler{
         fun onLongPressed(view:View, pos:Int, id: Long, address:String)

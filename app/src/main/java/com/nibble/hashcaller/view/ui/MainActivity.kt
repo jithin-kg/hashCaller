@@ -388,6 +388,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
      fun showDialerFragment() {
+
         val ft = supportFragmentManager.beginTransaction()
 
         // Hide fragment contact

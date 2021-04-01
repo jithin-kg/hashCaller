@@ -414,7 +414,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 unmuteUser()
             }
             R.id.fabBtnShowDialpad ->{
-                (activity as MainActivity).showDialerFragment()
+                viewmodel.clearCallLogDB()
+//                (activity as MainActivity).showDialerFragment()
             }
             R.id.btnBlock->{
                 blockMarkedCaller()
