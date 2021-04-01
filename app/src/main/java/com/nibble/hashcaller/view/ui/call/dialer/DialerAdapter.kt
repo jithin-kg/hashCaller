@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +18,10 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
+import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MAKE_CALL
+import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MORE_INFO
+import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_START_INDIVIDUAL_SMS
+import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -35,7 +38,8 @@ class DialerAdapter(private val context: Context,
                     private val longPressHandler: CallItemLongPressHandler,
                     private val onContactItemClickListener: (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogData)->Int
                    ) :
-    androidx.recyclerview.widget.ListAdapter<CallLogData, RecyclerView.ViewHolder>(CallItemDiffCallback()){
+    androidx.recyclerview.widget.ListAdapter<CallLogData, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
+
     private val VIEW_TYPE_NO_SPAM = 0;
     private val VIEW_TYPE_SPAM = 1;
     private val VIEW_TYPE_LOADING = 3
@@ -62,15 +66,15 @@ class DialerAdapter(private val context: Context,
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list, parent, false)
 
             return ViewHolderCallNoSpam(view)
-        }else if(viewType == VIEW_TYPE_LOADING){
+        }else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
             return ViewHolderCallLoading(view)
         }
-        else{
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_spam, parent, false)
-
-            return ViewHolderCallSpam(view)
-        }
+//        else{
+//            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_spam, parent, false)
+//
+//            return ViewHolderCallSpam(view)
+//        }
 
     }
 
@@ -81,9 +85,7 @@ class DialerAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(this.callLogs.isNotEmpty() && position < callLogs.size)
-            if(this.callLogs[position].spamCount > 0){
-                return VIEW_TYPE_SPAM
-            }else if(this.callLogs[position].id == null){
+             if(this.callLogs[position].id == null){
                 return VIEW_TYPE_LOADING
             }
 
@@ -100,10 +102,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
              (holder as ViewHolderCallNoSpam).bind(callLogs[position],context, onContactItemClickListener)
         }
-        VIEW_TYPE_SPAM ->{
-            (holder as ViewHolderCallSpam).bind(callLogs[position],context, onContactItemClickListener)
-
-        }
+//        VIEW_TYPE_SPAM ->{
+//            (holder as ViewHolderCallSpam).bind(callLogs[position],context, onContactItemClickListener)
+//
+//        }
         VIEW_TYPE_LOADING ->{
             (holder as ViewHolderCallLoading).bind(callLogs[position],context, onContactItemClickListener)
         }
@@ -136,97 +138,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         }
     }
-    inner class ViewHolderCallSpam(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val name = view.textVcallerNameSpam
-        private val circle = view.textViewCallCrclrSpam;
 
-//        private val image = view.findViewById<ImageView>(R.id.contact_image)
-
-        fun bind(
-            callLog: CallLogData, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogData) -> Int
-        ) {
-//            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).setTag(callLog.dateInMilliseconds )
-            if(prevTime!= null)
-                if(prevTime == callLog.dateInMilliseconds){
-                    view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).visibility = View.VISIBLE
-
-                }else{
-                    view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).visibility = View.GONE
-
-                }
-
-            name.text = if(callLog.name == null || callLog!!.name!!.isEmpty()) callLog.number else callLog.name
-            //        Log.i(TAG, String.valueOf(no));
-            setNameFirstChar(callLog)
-            val pNo = callLog.number
-//            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-            generateCircleView(context);
-
-            //call type
-            setCallTypeImage(callLog, view.imgVCallTypeSpam, view.txtViewDirectionSpam)
-            //setDate
-//            view.textViewTimeSpam.text = callLog.date
-//            view.txtViewDirectionSpam.text = callLog.
-            view.textViewTimeSpam.text = callLog.relativeTime
-
-            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).findViewById<ImageButton>(R.id.imgBtnCallExpandSpam) .setOnClickListener {
-                onContactItemClickListener(callLog.id!!, this.adapterPosition, it, BUTTON_SIM_1,callLog)
-            }
-
-            view.setOnClickListener(View.OnClickListener {v->
-//                onContactItemClickListener("2", this.adapterPosition, view)
-                prevTime = callLog.dateInMilliseconds
-                toggleExpandableView(v, this.adapterPosition, callLog.id!!)
-
-
-            })
-        }
-
-        private fun toggleExpandableView(v: View, pos: Int, id:Long) {
-            var expandedLyoutId = getExpandedLayoutId()
-            if(expandedLyoutId==null){
-                //no views has not yet expanded, so expand the current layout
-                setExpandedLayoutId(id)
-                setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam))
-                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).beVisible()
-
-            }else if(expandedLyoutId == id){
-                //the layout is already expaned so, hide it
-                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).beGone()
-                setExpandedLayoutId(null)
-                setExpandedLayoutView(null)
-            }else{
-                //new item expanded
-                getExpandedLayoutView()!!.beGone()
-                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam).beVisible()
-                setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCallSpam))
-                setExpandedLayoutId(id)
-
-
-            }
-        }
-
-
-
-        private fun setNameFirstChar(callLog: CallLogData) {
-            val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
-            val firstLetter = name[0]
-            val firstLetterString = firstLetter.toString().toUpperCase()
-//            circle.text = firstLetterString
-            view.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
-
-        }
-
-        private fun generateCircleView(context: Context) {
-            circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
-
-        }
-
-    }
     inner class ViewHolderCallNoSpam(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVcallerName
          private val circle = view.textViewCrclr;
+            private val expandableView = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
 
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
@@ -235,13 +151,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogData) -> Int
         ) {
             Log.d(TAG, "bind: ")
-            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).setTag(callLog.dateInMilliseconds )
+            expandableView.setTag(callLog.dateInMilliseconds )
             if(prevTime!= null)
                 if(prevTime == callLog.dateInMilliseconds){
-                    view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.VISIBLE
+                    expandableView.beVisible()
 
                 }else{
-                    view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility = View.GONE
+                   expandableView.beGone()
 
                 }
             if(callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING){
@@ -250,12 +166,21 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 view.pgBarCallItem.beInvisible()
 
             }
+           if(callLog.spamCount > 0){
+
+               name.setColorForText(R.color.spamText)
+
+           }else{
+               name.setColorForText(R.color.textColor)
+
+           }
+
             name.text = if(callLog.name == null || callLog!!.name!!.isEmpty()) callLog.number else callLog.name
             //        Log.i(TAG, String.valueOf(no));
             setNameFirstChar(callLog)
             val pNo = callLog.number
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-           generateCircleView(context);
+           generateCircleView(context, callLog.spamCount);
 
             //call type
             setCallTypeImage(callLog,  view.imgVCallType,view.textVCallDirection)
@@ -273,9 +198,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var id = getExpandedLayoutId()
             if(id!=null) {
             if(id == callLog.id){
-                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beVisible()
+                expandableView.beVisible()
             }else{
-                view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beGone()
+                expandableView.beGone()
 
 
             }
@@ -287,49 +212,72 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             //setDate
             view.textViewTime.text = callLog.relativeTime
+            expandableView.tvExpandNumCall.text = callLog.number
 
 //            view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).findViewById<ImageButton>(R.id.imgBtnCallExpand) .setOnClickListener {
 //                onContactItemClickListener(callLog.id.toString(), this.adapterPosition, it, BUTTON_SIM_1,callLog)
 //            }
+            setClickListener(view, callLog)
 
+        }
+
+        private fun setClickListener(view: View, callLog: CallLogData) {
             view.setOnLongClickListener{v->
                 longPressHandler.onLongPressed(v,
-                this.adapterPosition, callLog.id!!, callLog.number)
+                    this.adapterPosition, callLog.id!!, callLog.number)
                 true
 
             }
+            view.imgBtnCallExpand.setOnClickListener{
+                longPressHandler.onCallButtonClicked(it, INTENT_TYPE_MAKE_CALL, callLog)
+            }
+
+            view.imgBtnSmsExpand.setOnClickListener{
+                longPressHandler.onCallButtonClicked(it, INTENT_TYPE_START_INDIVIDUAL_SMS, callLog)
+            }
+
+            view.imgBtnInfoExpand.setOnClickListener{
+                longPressHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
+            }
+
+
             view.setOnClickListener(View.OnClickListener {v->
 //                onContactItemClickListener("2", this.adapterPosition, view)
 //               prevTime = callLog.dateInMilliseconds
 //                toggleExpandableView(v, this.adapterPosition)
-               val viewExpanded =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog)
+                val viewExpanded =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog)
                 if(viewExpanded== 1){
                     //iff marking not started expand the layout
-                    toggleExpandableView(v, this.adapterPosition, callLog.id!!)
+                    toggleExpandableView(v, this.adapterPosition, callLog.id!!, expandableView)
                 }
 
             })
         }
 
-         private fun toggleExpandableView(v: View, pos: Int, id: Long) {
+        private fun toggleExpandableView(
+             v: View,
+             pos: Int,
+             id: Long,
+             expandableView: ConstraintLayout
+         ) {
 
              var expandedLyoutId = getExpandedLayoutId()
              if(expandedLyoutId==null){
                  //no views has not yet expanded, so expand the current layout
                  setExpandedLayoutId(id)
-                 setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall))
-                 view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beVisible()
+                 setExpandedLayoutView(expandableView)
+                 expandableView.beVisible()
 
              }else if(expandedLyoutId == id){
                  //the layout is already expaned so, hide it
-                 view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beGone()
+                 expandableView.beGone()
                  setExpandedLayoutId(null)
                  setExpandedLayoutView(null)
              }else{
                  //new item expanded
                  getExpandedLayoutView()!!.beGone()
-                 view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).beVisible()
-                 setExpandedLayoutView(v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall))
+                 expandableView.beVisible()
+                 setExpandedLayoutView(expandableView)
                  setExpandedLayoutId(id)
 
 
@@ -339,37 +287,50 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
          private fun setNameFirstChar(callLog: CallLogData) {
-             val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
-             val firstLetter = name[0]
-             val firstLetterString = firstLetter.toString().toUpperCase()
-             circle.text = firstLetterString
+             if(callLog.spamCount > 0){
+                 view.imgViewCallSpamIcon.beVisible()
+                 view.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
+                 circle.text = ""
+             }else{
+                 view.imgViewCallSpamIcon.beInvisible()
+                 val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
+                 val firstLetter = name[0]
+                 val firstLetterString = firstLetter.toString().toUpperCase()
+                 circle.text = firstLetterString
+             }
+
+
+
          }
 
-         private fun generateCircleView(context: Context) {
-             val rand = Random()
-             when (rand.nextInt(5 - 1) + 1) {
-                 1 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary)
-                     )
-                 }
-                 2 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorlightBlueviking)
-                     )
-                 }
-                 3 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorbrightTurquoiseLightBlue
-                     )
-                     )
-                 }
-                 else -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                     circle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark)
-                     )
+
+         private fun generateCircleView(context: Context, spamCount: Long) {
+             if(spamCount > 0){
+                 circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
+
+             }else{
+                 val rand = Random()
+
+                 when (rand.nextInt(5 - 1) + 1) {
+                     1 -> {
+                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
+
+                     }
+                     2 -> {
+                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
+
+                     }
+                     3 -> {
+                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
+
+
+                     }
+                     else -> {
+                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
+                     }
                  }
              }
+
          }
 
      }
@@ -412,10 +373,18 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //             /** Call log type for calls blocked automatically.  */
 //             val BLOCKED_TYPE = 6
 
+        if(callLog.spamCount > 0 ){
+            textView.setColorForText( R.color.spamText)
+
+        }else{
+            textView.setColorForText(R.color.textColor)
+
+        }
         when (callLog.type) {
             1 -> { // incomming call
                 imageView.setImageResource(R.drawable.ic_baseline_call_received_24)
                 textView.text = "Incoming call"
+
             }
             2 -> { // outgoing call
                 imageView.setImageResource(R.drawable.ic_baseline_call_made_24)
@@ -434,8 +403,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         }
     }
-    interface CallItemLongPressHandler{
+    interface CallItemLongPressHandler {
         fun onLongPressed(view:View, pos:Int, id: Long, address:String)
+        fun onCallButtonClicked(view: View, type:Int, log: CallLogData)
+
+
+
     }
 
 

@@ -1,12 +1,17 @@
 package com.nibble.hashcaller.view.ui.call
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.telecom.PhoneAccountHandle
+import android.telephony.SubscriptionManager
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -32,13 +37,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
@@ -46,12 +49,11 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
+import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.isScreeningRoleHeld
-import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_DELETE
-import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_MUTE
-import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
+import com.nibble.hashcaller.view.ui.contacts.makeCall
+import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -277,10 +279,20 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
         observeCallLog()
         observeCallLogInfoFromServer()
+        setupSimCardCount()
 
 
 
 
+
+    }
+    @SuppressLint("MissingPermission  Manifest.permission.READ_PHONE_STATE", "MissingPermission")
+    private fun setupSimCardCount() {
+        val subscriptionManager = requireContext(). getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+        val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
+        if(availableSIMs.size >0){
+
+        }
 
     }
 
@@ -301,6 +313,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                )
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
+
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallItemClicked(id, position, view, btn, callLog)}
             adapter = callLogAdapter
 
@@ -313,16 +326,55 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun makeCall(callLog: CallLogData) {
-        val num = callLog.number
-        if(num.isNotEmpty())  {
-            Log.d(TAG, "onClick: make call ")
-            val callIntent = Intent(Intent.ACTION_CALL)
-            callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            callIntent.data = Uri.parse("tel:$num")
-            requireActivity().startActivity(callIntent)
-        }
-    }
+//    private fun makeCall(callLog: CallLogData) {
+//
+//        val num = callLog.number
+//
+//        if(num.isNotEmpty())  {
+//
+//
+//            val intent =
+//                Intent(Intent.ACTION_CALL, Uri.parse("tel:${callLog.number}"))
+//            val simSlotIndex = 1 //Second sim slot
+//
+//
+////            try {
+////                val getSubIdMethod =
+////                    SubscriptionManager::class.java.getDeclaredMethod(
+////                        "getSubId",
+////                        Int::class.javaPrimitiveType
+////                    )
+////                getSubIdMethod.isAccessible = true
+////                val subIdForSlot = (getSubIdMethod.invoke(
+////                    SubscriptionManager::class.java,
+////                    simSlotIndex
+////                ) as LongArray)[0]
+////                val componentName = ComponentName(
+////                    "com.android.phone",
+////                    "com.android.services.telephony.TelephonyConnectionService"
+////                )
+////                val phoneAccountHandle =
+////                    PhoneAccountHandle(componentName, 0.toString())
+////                intent.putExtra("android.telecom.extra.PHONE_ACCOUNT_HANDLE", phoneAccountHandle)
+////            } catch (e: Exception) {
+////                e.printStackTrace()
+////            }
+////
+////            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+////            requireActivity()!!.startActivity(intent)
+//
+//
+//
+//            val callIntent = Intent(Intent.ACTION_CALL)
+//            callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//            callIntent.data = Uri.parse("tel:$num")
+//            requireActivity().startActivity(callIntent)
+//
+////            callIntent.putExtra("com.android.phone.extra.slot", 0); //For sim 1
+////           callIntent.putExtra("simSlot", 0)
+////
+//        }
+//    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -529,21 +581,39 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         val expandedView = getExpandedLayoutView()
         expandedView?.beGone()
         markItem(id, pos, view, address)
-//
-//        lifecycleScope.launchWhenStarted {
-//            viewmodel.markItem(id, view, pos).collect{
-//                if(it!=null){
-//                    if(isMarkingStarted()){
-//                        showDeleteBtnInToolbar()
-//                    }
-//                    val view = it.findViewById<ConstraintLayout>(R.id.layoutcallMain)
-//                        view.imgViewCallMarked.beVisible()
-//                    updateSelectedItemCount()
-////                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
-//                }
-//            }
-//        }
     }
+
+    override fun onCallButtonClicked(view: View, type: Int, log: CallLogData) {
+
+        when(type){
+            INTENT_TYPE_MAKE_CALL->{
+                requireContext().makeCall(log.number)
+            }
+            INTENT_TYPE_START_INDIVIDUAL_SMS ->{
+                val intent = Intent(context, IndividualSMSActivity::class.java )
+                val bundle = Bundle()
+                bundle.putString(CONTACT_ADDRES, log.number)
+                bundle.putString(SMS_CHAT_ID, "")
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
+            INTENT_TYPE_MORE_INFO -> {
+                val intent = Intent(context, IndividualCotactViewActivity::class.java )
+                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
+                intent.putExtra("name", log.name )
+                intent.putExtra("photo", "")
+
+                startActivity(intent)
+            }
+
+
+
+        }
+    }
+
+
 
     private fun onCallItemClicked(
         id: Long,
@@ -554,32 +624,35 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
         var viewExpanded = 0
-        if(isMarkingStarted()){
+        if(isMarkingStarted()) {
+
             markItem(id, position, view, callLog.number)
-
-
         }else{
             viewExpanded = 1
-            //no marking started, then expand the layout
-            val id = callLogAdapter!!.getItemId(position)
-            val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
-            when(btn){
-                DialerAdapter.BUTTON_SIM_1->{
-                    Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
-//                    makeCall(callLog)
-                }
-                DialerAdapter.BUTTON_SIM_2->{
-
-                }
-                DialerAdapter.BUTTON_SMS->{
-
-                }
-                DialerAdapter.BUTTON_INFO->{
-
-                }
-
-            }
         }
+//        else{
+//            viewExpanded = 1
+//            //no marking started, then expand the layout
+//            val id = callLogAdapter!!.getItemId(position)
+//            val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
+//            when(btn){
+//                DialerAdapter.BUTTON_SIM_1->{
+//                    Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
+//                    makeCall(callLog)
+//
+//                }
+//                DialerAdapter.BUTTON_SIM_2->{
+//
+//                }
+//                DialerAdapter.BUTTON_SMS->{
+//
+//                }
+//                DialerAdapter.BUTTON_INFO->{
+//
+//                }
+//
+//            }
+//        }
 
         return viewExpanded
 //        if(v.visibility == View.GONE){
@@ -604,7 +677,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         lifecycleScope.launchWhenStarted {
             viewmodel.markItem(id, view, position, number).collect{
 
-                val viewMain = view.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+                var viewMain = view.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+
 
                 when(it){
                     CALL_NEW_ITEM_MARKED ->{
@@ -614,7 +688,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     CALL_ITEM_UN_MARKED ->{
                         viewMain.imgViewCallMarked.beInvisible()
 //                        updateSelectedItemCount()
-
 
                     }
                 }
@@ -630,7 +703,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 else{
                     hideBlockButton()
                 }
-//                    view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLowOpacity))
+//                    view.setBackgroundColor(ContextCompat.getColorColor(requireContext(), R.color.colorPrimaryLowOpacity))
             }
         }
 

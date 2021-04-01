@@ -470,4 +470,11 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     }
 
+    override fun onCallButtonClicked(view: View, pos: Int, log: CallLogData) {
+        Log.d(TAG, "onCallButtonClicked: ")
+
+    }
+
+
+
 }

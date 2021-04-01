@@ -41,6 +41,18 @@
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgViewCallSpamIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:textColor="@color/spamText"
+            android:gravity="center_vertical|center_horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
+            app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
+            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgViewCallMarked"
             android:layout_width="50dp"
@@ -71,20 +83,10 @@
             app:layout_constraintVertical_bias="0.19" />
 
         <ImageView
-            android:id="@+id/imgVPhone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintEnd_toStartOf="@+id/imgVCallType"
-            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
-            app:srcCompat="@drawable/ic_baseline_call_24" />
-
-        <ImageView
             android:id="@+id/imgVCallType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/imgVPhone"
+            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
             app:srcCompat="@drawable/ic_baseline_call_received_24" />
 
@@ -143,6 +145,7 @@
             android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
             android:text="TextView"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -150,29 +153,16 @@
 
         <ImageButton
             android:id="@+id/imgBtnCallExpand"
-            android:layout_width="101dp"
-            android:layout_height="38dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintEnd_toStartOf="@+id/imageButtonCallExpand"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpand"
-            app:srcCompat="@drawable/ic_baseline_call_24"
-            android:foreground="?android:attr/selectableItemBackground"/>
-
-        <ImageButton
-            android:id="@+id/imageButtonCallExpand"
             android:layout_width="102dp"
             android:layout_height="38dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imgBtnCallExpand"
-            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
-            app:srcCompat="@drawable/ic_baseline_call_24"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:foreground="?android:attr/selectableItemBackground"
-            />
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
+            app:srcCompat="@drawable/ic_baseline_call_24" />
 
         <ImageButton
             android:id="@+id/imgBtnSmsExpand"
@@ -181,8 +171,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnInfoExpand"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageButtonCallExpand"
-            app:layout_constraintTop_toTopOf="@+id/imageButtonCallExpand"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnCallExpand"
+            app:layout_constraintTop_toTopOf="@+id/imgBtnCallExpand"
             app:srcCompat="@drawable/ic_baseline_textsms_24"
             android:foreground="?android:attr/selectableItemBackground"
             />
@@ -207,7 +197,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonCallExpand" />
+            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -221,7 +221,7 @@ class CallContainerRepository(
 
             }
         }catch (e: java.lang.Exception){
-            Log.d(TAG, "getCallLog: exception $e")
+            Log.d(TAG, "getSMSByPage: exception $e")
         }finally {
             cursor?.close()
 
@@ -349,7 +349,7 @@ class CallContainerRepository(
 
             }
         }catch (e: java.lang.Exception){
-            Log.d(TAG, "getCallLog: exception $e")
+            Log.d(TAG, "getFullCallLogs: exception $e")
         }finally {
             cursor?.close()
         }
@@ -429,7 +429,7 @@ class CallContainerRepository(
 
             }
         }catch (e: java.lang.Exception){
-            Log.d(TAG, "getCallLog: exception $e")
+            Log.d(TAG, "fetchFirst10: exception $e")
         }finally {
             cursor?.close()
         }

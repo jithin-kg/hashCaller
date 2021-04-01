@@ -694,9 +694,11 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     @SuppressLint("MissingPermission")
     private fun setupSIMSelector() {
-        val availableSIMs = SubscriptionManager.from(this).activeSubscriptionInfoList ?: return
+        val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+        val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
+//        val availableSIMs = SubscriptionManager.from(this).activeSubscriptionInfoList ?: return
 
-        if (availableSIMs.size > 1) {
+        if (availableSIMs.size > 0) {
             var index = 0
             for(subscriptionInfo in availableSIMs){
                 var label = subscriptionInfo.displayName?.toString() ?: ""
@@ -734,18 +736,6 @@ class IndividualSMSActivity : AppCompatActivity(),
 
                 }
             }
-//            participants.forEach {
-//                it.phoneNumbers.forEach {
-//                    numbers.add(it)
-//                }
-//            }
-
-//            if (numbers.isEmpty()) {
-//                return
-//            }
-//            for(it in availableSIMs){
-//                if(it.subscriptionId == )
-//            }
             viewModel.currentSIMCardIndex = 0
 //            currentSIMCardIndex = availableSIMs.indexOfFirstOrNull { it.subscriptionId == config.getUseSIMIdAtNumber(numbers.first()) } ?: 0
 

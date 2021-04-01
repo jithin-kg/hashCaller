@@ -2,7 +2,9 @@ package com.nibble.hashcaller.view.ui.contacts
 
 import android.app.role.RoleManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -26,7 +28,12 @@ fun Context.isVisible(view:View): Boolean {
     return false
 }
 
-
+fun Context.makeCall(num:String){
+    val callIntent = Intent(Intent.ACTION_CALL)
+    callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    callIntent.data = Uri.parse("tel:$num")
+    this.startActivity(callIntent)
+}
 @RequiresApi(Build.VERSION_CODES.Q)
 fun AppCompatActivity. requestScreeningRole(){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
