@@ -16,7 +16,7 @@ class SendTestActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send_test)
-        btnSendTest.setOnClickListener(this)
+//        btnSendTest.setOnClickListener(this)
 
     }
 
@@ -27,7 +27,7 @@ class SendTestActivity : AppCompatActivity(), View.OnClickListener {
         settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
 
         val transaction = Transaction(this, settings)
-        val message = Message(edtTextsmsTest.text.toString(), "919495617494")
+//        val message = Message(edtTextsmsTest.text.toString(), "919495617494")
 //        message.setImage(mBitmap);
 
         val smsSentIntent = Intent(this, SmsStatusSentReceiver::class.java)
@@ -35,6 +35,6 @@ class SendTestActivity : AppCompatActivity(), View.OnClickListener {
         transaction.setExplicitBroadcastForSentSms(smsSentIntent)
         transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
 
-        transaction.sendNewMessage(message, 133)
+//        transaction.sendNewMessage(message, 133)
     }
 }

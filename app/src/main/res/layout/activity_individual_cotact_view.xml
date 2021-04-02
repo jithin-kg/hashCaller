@@ -1,171 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<!--    https://medium.com/@tapanrgohil/motion-layout-profile-picture-animation-a3f3de4f569f-->
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_contact_motion_scene"
+    tools:context=".view.ui.contacts.IndividualContacts.ContactMotionActivity">
 
-    >
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/ic_wave"/>
+    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
+    <!--        android:id="@+id/icEdit"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:src="@drawable/ic_launcher_background"-->
+    <!--        android:tag="edit"-->
+    <!--        app:civ_border_color="@android:color/white"-->
+    <!--        app:civ_border_width="1dp"-->
+    <!--        app:civ_circle_background_color="#80FFFFFF"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintDimensionRatio="1"-->
+    <!--        app:layout_constraintEnd_toEndOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintStart_toEndOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/tvTitle"-->
+    <!--        app:layout_constraintTop_toTopOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintWidth_percent=".10"/>-->
 
-    <RelativeLayout
-        android:id="@+id/card_container"
+
+    <ImageButton
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.479"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnSMS"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
+        app:srcCompat="@android:drawable/ic_lock_lock"
+        tools:visibility="visible" />
 
-        <androidx.cardview.widget.CardView
+    <ImageButton
+        android:id="@+id/imgBtnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        android:tag="title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/tvFirstLetter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        android:tag="title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            android:id="@+id/card_login"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_launcher_background"
+        android:tag="avatar"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent=".28" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:tag="name"
+        android:text="Test"
+        android:textColor="@color/textColor"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivAvatar"
+        app:layout_goneMarginBottom="40dp" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
 
-            android:layout_marginTop="50dp"
-            android:foreground="?android:attr/selectableItemBackground"
-            card_view:cardCornerRadius="8dp"
-            card_view:cardElevation="12dp"
-            card_view:cardUseCompatPadding="true">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutInfoContainer"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp">
+                android:textColor="@color/textColor"
+                android:background="#fff"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:text="Android Profile UI Design" />
 
-                <TextView
-                    android:id="@+id/textViewCntcName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="Victoria fergusan"
-                    android:transitionName="contactNameTransition"
-                    card_view:layout_constraintBottom_toTopOf="@+id/textViewNumber"
-                    card_view:layout_constraintEnd_toEndOf="parent"
-                    card_view:layout_constraintHorizontal_bias="0.5"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabMessage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="#fff"
-                    android:backgroundTint="#46A8B9"
-                    android:src="@drawable/ic_baseline_message_white"
-                    android:text="Sign In"
-                    card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toStartOf="@+id/fabMessage3"
-                    card_view:layout_constraintHorizontal_bias="0.5"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintTop_toBottomOf="@+id/textViewNumber"
-                    card_view:layout_constraintVertical_bias="0.0" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabMessage3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="#fff"
-                    android:backgroundTint="#7EE667"
-                    android:src="@drawable/ic_baseline_call_white"
-                    android:text="Sign In"
-                    card_view:layout_constraintBottom_toBottomOf="parent"
-                    card_view:layout_constraintEnd_toEndOf="parent"
-                    card_view:layout_constraintHorizontal_bias="0.5"
-                    card_view:layout_constraintStart_toEndOf="@+id/fabMessage"
-                    card_view:layout_constraintTop_toBottomOf="@+id/textViewNumber"
-                    card_view:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/textViewNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Victoria fergusan"
-                    card_view:layout_constraintEnd_toEndOf="parent"
-                    card_view:layout_constraintHorizontal_bias="0.5"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintTop_toBottomOf="@+id/textViewCntcName" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
-
-        <ImageView
-            android:id="@+id/imgViewAvatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:transitionName="contactImageTransition"
-            android:layout_centerHorizontal="true"
-            android:elevation="13dp"
-            android:src="@drawable/contact_circular_background" />
-
-    </RelativeLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <TextView
-        android:id="@+id/txtVLocationDesc"
+        android:id="@+id/txtViewNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/card_container"
-        android:layout_marginTop="49dp"
-        android:layout_marginLeft="32dp"
-        android:text="Location" />
+        android:layout_marginTop="32dp"
+        android:textColor="@color/textColor"
+        android:text="8086176336"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
-    <TextView
-        android:id="@+id/textViewLocation"
+    <ImageButton
+        android:id="@+id/imgBtnSMS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtVLocationDesc"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="32dp"
-        android:text="TextView" />
-
-
-    <TextView
-        android:id="@+id/txtVCarrierDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewLocation"
+        android:layout_marginStart="116dp"
         android:layout_marginTop="24dp"
-        android:layout_marginLeft="32dp"
-        android:text="Carrier" />
-
-    <TextView
-        android:id="@+id/textViewCarrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txtVCarrierDesc"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="32dp"
-        android:text="TextView" />
-
-    <TextView
-        android:id="@+id/txtLineTypeDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewCarrier"
-        android:layout_marginTop="24dp"
-        android:layout_marginLeft="32dp"
-        android:text="Email" />
-
-    <TextView
-        android:id="@+id/textViewLineType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txtLineTypeDesc"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="32dp"
-        android:text="TextView" />
-
-</RelativeLayout>
+        android:background="?android:selectableItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
+        app:srcCompat="@android:drawable/ic_lock_lock"
+        tools:visibility="visible" />
+</androidx.constraintlayout.motion.widget.MotionLayout>

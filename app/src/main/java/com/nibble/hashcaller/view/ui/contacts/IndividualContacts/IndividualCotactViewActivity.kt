@@ -77,8 +77,8 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
         this.viewModel.mt.observe(this, Observer {
             if(it!=null){
                 Log.d(TAG, "observeContactMoreInfo: ")
-                textViewLocation.text = it?.location
-                textViewCarrier.text = it?.carrier
+//                textViewLocation.text = it?.location
+//                textViewCarrier.text = it?.carrier
 //            textViewLineType.text = it.
             }
 
@@ -90,16 +90,16 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
 //    }
 
     private fun initListeners() {
-        imgViewAvatar.setOnClickListener(this)
+//        imgViewAvatar.setOnClickListener(this)
     }
 
     private fun setImage(photo: String?) {
-        Glide.with(this).load(photo).into(imgViewAvatar)
+//        Glide.with(this).load(photo).into(imgViewAvatar)
     }
 
     private fun setDetailsInview(phoneNum: String?, name: String?) {
-        textViewCntcName.text = name
-        textViewNumber.text = phoneNum
+        tvName.text = name
+        txtViewNumber.text = phoneNum
 
     }
 
@@ -109,9 +109,9 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
 
         when(v?.id){
-            R.id.imgViewAvatar->{
-               popupImage()
-            }
+//            R.id.imgViewAvatar->{
+//               popupImage()
+//            }
         }
     }
 

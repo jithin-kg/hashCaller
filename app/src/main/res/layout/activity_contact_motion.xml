@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--    https://medium.com/@tapanrgohil/motion-layout-profile-picture-animation-a3f3de4f569f-->
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_contact_motion_scene"
+    tools:context=".view.ui.contacts.IndividualContacts.ContactMotionActivity">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:tag="title"
+        android:text="Settings"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_launcher_background"
+        android:tag="avatar"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintWidth_percent=".28" />
+
+
+    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
+    <!--        android:id="@+id/icEdit"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:src="@drawable/ic_launcher_background"-->
+    <!--        android:tag="edit"-->
+    <!--        app:civ_border_color="@android:color/white"-->
+    <!--        app:civ_border_width="1dp"-->
+    <!--        app:civ_circle_background_color="#80FFFFFF"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintDimensionRatio="1"-->
+    <!--        app:layout_constraintEnd_toEndOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintStart_toEndOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/tvTitle"-->
+    <!--        app:layout_constraintTop_toTopOf="@id/ivAvatar"-->
+    <!--        app:layout_constraintWidth_percent=".10"/>-->
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:tag="name"
+        android:text="Test"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/ivAvatar"
+        app:layout_goneMarginBottom="40dp" />
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvName">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:background="#fff"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:text="Android Profile UI Design" />
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.motion.widget.MotionLayout>

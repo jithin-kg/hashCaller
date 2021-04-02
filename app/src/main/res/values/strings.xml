@@ -19,4 +19,5 @@
     <string name="start">start</string>
     <string name="close">close</string>
     <string name="searching_in_progress">Searching for</string>
+    <string name="dsf">dsf</string>
 </resources>
