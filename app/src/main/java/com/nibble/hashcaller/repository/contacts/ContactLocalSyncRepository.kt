@@ -84,16 +84,16 @@ class ContactLocalSyncRepository(
 
 //                    Log.d(TAG, "phone num is $phoneNo")
 //                    Log.d(TAG, "name is  $name")
-                    var drawable = context.generateCircleView()
+//                    var drawable = context.generateCircleView()
                     //we are doing this is ensure that the first 3items and
                     //recycler view 3 items have same color for circle
                     if(count < 2){
-                       if(count==0){
-                           drawable = context.generateCircleView(ActivitySearchPhone.num1)
-                       }else if(count==1){
-                           drawable = context.generateCircleView(ActivitySearchPhone.num2)
-
-                       }
+//                       if(count==0){
+//                           drawable = context.generateCircleView(ActivitySearchPhone.num1)
+//                       }else if(count==1){
+//                           drawable = context.generateCircleView(ActivitySearchPhone.num2)
+//
+//                       }
                         count++
 
                     }
@@ -122,7 +122,7 @@ class ContactLocalSyncRepository(
                                     phoneNo,
                                     photoThumnail,
                                     photoURI,
-                                    drawable,
+                                    1,
                                     nameSpann,
                                     phoneSpann,
                                     firstLetter

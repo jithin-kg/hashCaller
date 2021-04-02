@@ -154,7 +154,7 @@ class CallContainerRepository(
         dao.find(formatPhoneNumber).apply {
             if(this !=null){
                 //number exist in db
-                dao.update(this.spamReportCount+1, this.contactAddress)
+                dao.update(this.spamReportCount+1, this.contactAddress, true)
             }else{
 
                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,

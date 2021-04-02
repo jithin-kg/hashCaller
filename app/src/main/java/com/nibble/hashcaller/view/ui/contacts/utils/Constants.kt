@@ -40,6 +40,9 @@ const val QUERY_STRING = "queryString" //for sending intent os searchActivity, s
 const val TYPE_MUTE = 1
 const val TYPE_DELETE = 2
 
+
+const val TYPE_SPAM = -1
+
 const val INTENT_TYPE_MAKE_CALL = 0
 const val INTENT_TYPE_START_INDIVIDUAL_SMS = 1
 const val INTENT_TYPE_MORE_INFO = 2

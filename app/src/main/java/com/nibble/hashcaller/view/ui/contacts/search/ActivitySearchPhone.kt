@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,12 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.crypto.KeyManager
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.generateCircleView
 import com.nibble.hashcaller.view.ui.contacts.isVisible
 import com.nibble.hashcaller.view.ui.contacts.search.utils.KeyboardUtils
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.CONTACT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -304,14 +304,14 @@ class ActivitySearchPhone : AppCompatActivity(), View.OnClickListener , SearchVi
            textVContactName1.text = it[0].nameSpann
            textVContactNum1.text = it[0].phoneSpann
            tvSearchResultNameFirstLetter1.text  = it[0].name[0].toString()
-           tvSearchResultNameFirstLetter1.background = it[0].drawable
+           tvSearchResultNameFirstLetter1.setRandomBackgroundCircle()
 
            layoutSearchResult2.beVisible()
            textVContactName2.text = it[1].nameSpann
            textVContactNum2.text = it[1].phoneSpann
 //           tvSearchResultLocatio2.text = "location"
            tvSearchResultNameFirstLetter2.text  = it[1].name[0].toString()
-           tvSearchResultNameFirstLetter2.background = it[1].drawable
+           tvSearchResultNameFirstLetter2.setRandomBackgroundCircle()
 
        }else if(it.isNotEmpty()){
            tvContactsResults.beVisible()
@@ -320,7 +320,7 @@ class ActivitySearchPhone : AppCompatActivity(), View.OnClickListener , SearchVi
            textVContactName1.text = it[0].nameSpann
            textVContactNum1.text = it[0].phoneSpann
            tvSearchResultNameFirstLetter1.text  = it[0].name[0].toString()
-           tvSearchResultNameFirstLetter1.background = it[0].drawable
+           tvSearchResultNameFirstLetter1.setRandomBackgroundCircle()
 
            layoutSearchResult2.beInvisible()
 

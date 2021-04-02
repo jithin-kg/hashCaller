@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils
+package com.nibble.hashcaller.view.ui.contacts.individualContacts.utils
 
 import android.Manifest
 import android.content.Context

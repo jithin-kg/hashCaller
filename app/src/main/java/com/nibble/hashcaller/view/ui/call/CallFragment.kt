@@ -2,15 +2,13 @@ package com.nibble.hashcaller.view.ui.call
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ComponentName
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.telecom.PhoneAccountHandle
 import android.telephony.SubscriptionManager
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -49,8 +47,8 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
@@ -64,7 +62,10 @@ import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
+import kotlinx.android.synthetic.main.call_list.*
 import kotlinx.android.synthetic.main.call_list.view.*
+import kotlinx.android.synthetic.main.contact_list.*
+import kotlinx.android.synthetic.main.contact_list.textVContactName
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.android.synthetic.main.fragment_call_history.view.btnCallhistoryPermission
@@ -604,8 +605,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
                 intent.putExtra("name", log.name )
                 intent.putExtra("photo", "")
+                intent.putExtra("color", log.color)
 
-                startActivity(intent)
+                val pairList = ArrayList<android.util.Pair<View, String>>()
+                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+                val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
+//                pairList.add(p1)
+                pairList.add(p2)
+                val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
+                options.toBundle()
+
+                startActivity(intent, options.toBundle())
             }
 
 

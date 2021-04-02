@@ -51,6 +51,7 @@
     <color name="toolbarBackground">#FFFFFF</color>
     <color name="chat_background_color">#E9E9E9</color>
     <color name="textcolor_recieved_sms">#000000</color>
+    <color name="color_round_btn">#F6F6F6</color>
 
 
 </resources>

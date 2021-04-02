@@ -8,13 +8,13 @@ import androidx.annotation.Keep
  * Created by Jithin KG on 21,July,2020
  */
 @Keep
-class Contact(
+data class Contact(
     val id: Long,
     val name: String,
     var phoneNumber: String = "",
     var photoThumnail: String?,
     var photoURI: String = "",
-    var drawable: Drawable? = null,
+    var drawable: Int = 1,
     var nameSpann: SpannableStringBuilder? = null,
     var phoneSpann: SpannableStringBuilder? = null,
     var firstletter:String = ""

@@ -15,7 +15,8 @@ class CallLogData(
     var dateInMilliseconds:String = "",
     var spamCount:Long = 0,
     var relativeTime:String = "",
-    var callerInfoFoundFrom: Int = SENDER_INFO_SEARCHING
+    var callerInfoFoundFrom: Int = SENDER_INFO_SEARCHING,
+    var color:Int = 1
 
 )  {
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
@@ -21,14 +20,15 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MORE_INFO
 import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_START_INDIVIDUAL_SMS
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
+import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.call_list_item_spam.view.*
-import java.util.*
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -180,7 +180,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             setNameFirstChar(callLog)
             val pNo = callLog.number
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-           generateCircleView(context, callLog.spamCount);
+           generateCircleView( callLog);
 
             //call type
             setCallTypeImage(callLog,  view.imgVCallType,view.textVCallDirection)
@@ -304,31 +304,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          }
 
 
-         private fun generateCircleView(context: Context, spamCount: Long) {
-             if(spamCount > 0){
-                 circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
-
+         private fun generateCircleView( callLog: CallLogData) {
+             if(callLog.spamCount > 0){
+                 callLog.color =   circle.setRandomBackgroundCircle(TYPE_SPAM)
              }else{
-                 val rand = Random()
-
-                 when (rand.nextInt(5 - 1) + 1) {
-                     1 -> {
-                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-
-                     }
-                     2 -> {
-                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-
-                     }
-                     3 -> {
-                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-
-
-                     }
-                     else -> {
-                         circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                     }
-                 }
+                 callLog.color = circle.setRandomBackgroundCircle()
              }
 
          }

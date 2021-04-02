@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.contacts.IndividualContacts
+package com.nibble.hashcaller.view.ui.contacts.individualContacts
 
 import android.annotation.SuppressLint
 import android.content.Context

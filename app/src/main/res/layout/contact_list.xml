@@ -20,6 +20,7 @@
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#ffff"
         android:textSize="24sp"
+        android:transitionName="contactImageTransition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

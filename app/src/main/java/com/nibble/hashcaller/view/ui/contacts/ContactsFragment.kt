@@ -27,9 +27,8 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
@@ -260,17 +259,20 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
         val intent = Intent(context, IndividualCotactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
         intent.putExtra("name", contactItem.name )
-        intent.putExtra("id", contactItem.id)
+//        intent.putExtra("id", contactItem.id)
         intent.putExtra("photo", contactItem.photoURI)
-
+        intent.putExtra("color", contactItem.drawable)
+        Log.d(TAG, "onContactItemClicked: ${contactItem.photoURI}")
         val pairList = ArrayList<android.util.Pair<View, String>>()
-        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
-        val p2 = android.util.Pair(textVContactName as View, "contactNameTransition")
-        pairList.add(p1)
-        pairList.add(p2)
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0], pairList[1]  )
-
-
+//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+        var pair:android.util.Pair<View, String>? = null
+        if(contactItem.photoURI.isEmpty()){
+            pair = android.util.Pair(textViewcontactCrclr as View, "firstLetterTransition")
+        }else{
+            pair = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+        }
+        pairList.add(pair)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
         startActivity(intent, options.toBundle())
     }
 

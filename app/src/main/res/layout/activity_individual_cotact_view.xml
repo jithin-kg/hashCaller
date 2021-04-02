@@ -3,10 +3,11 @@
 <androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutDescription="@xml/activity_contact_motion_scene"
-    tools:context=".view.ui.contacts.IndividualContacts.ContactMotionActivity">
+    tools:context=".view.ui.contacts.individualContacts.IndividualCotactViewActivity">
 
     <!--    <de.hdodenhof.circleimageview.CircleImageView-->
     <!--        android:id="@+id/icEdit"-->
@@ -27,53 +28,47 @@
 
 
     <ImageButton
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:background="?android:selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.479"
-        app:layout_constraintStart_toEndOf="@+id/imgBtnSMS"
-        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
-        app:srcCompat="@android:drawable/ic_lock_lock"
-        tools:visibility="visible" />
-
-    <ImageButton
         android:id="@+id/imgBtnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_baseline_arrow_back_24"
-        android:tag="title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/tvFirstLetter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginTop="32dp"
+        android:background="?android:selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_arrow_back_24"
         android:tag="title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/individual_contact_avatar"
+        android:layout_height="@dimen/individual_contact_avatar"
         android:layout_marginTop="16dp"
-        android:src="@drawable/ic_launcher_background"
+        android:src="@drawable/contact_circular_background"
         android:tag="avatar"
+        android:transitionName="contactImageTransition"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent=".28" />
+
+    <TextView
+        android:id="@+id/tvFirstLetter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:tag="firstletter"
+        android:text=""
+        android:textSize="16sp"
+        android:transitionName="firstLetterTransition"
+        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
+        app:layout_constraintStart_toStartOf="@+id/ivAvatar"
+        app:layout_constraintTop_toTopOf="@+id/ivAvatar"
         app:layout_constraintWidth_percent=".28" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -84,13 +79,78 @@
         android:gravity="center"
         android:tag="name"
         android:text="Test"
+        android:textSize="@dimen/text_size_list_item"
         android:textColor="@color/textColor"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivAvatar"
         app:layout_goneMarginBottom="40dp" />
+
+
+
+    <TextView
+        android:id="@+id/txtViewNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="8086176336"
+        android:textSize="@dimen/text_size_list_item"
+        android:textColor="@color/textColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+
+    <ImageButton
+        android:id="@+id/imgBtnCallIndividualContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:elevation="2dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnSMS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
+        app:srcCompat="@drawable/circular_button_call" />
+
+    <ImageButton
+        android:id="@+id/imgBtnSMS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:elevation="2dp"
+
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
+        app:srcCompat="@drawable/circular_button_sms"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/imgBtnBlockIndividualContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnSMS"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnCallIndividualContact"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
+        app:srcCompat="@drawable/circular_button_block"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tvBlockBtnInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="block"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBlockIndividualContact"
+        app:layout_constraintStart_toStartOf="@+id/imgBtnBlockIndividualContact"
+        app:layout_constraintEnd_toEndOf="@+id/imgBtnBlockIndividualContact"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -98,9 +158,9 @@
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="18dp"
+        android:background="@color/color_round_btn"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
-
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIndividualContact">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,40 +169,107 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvisInContact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
-                android:background="#fff"
-                android:clickable="true"
-                android:elevation="4dp"
                 android:padding="20dp"
-                android:text="Android Profile UI Design" />
+                android:background="@color/colorBackground"
+                android:textSize="@dimen/text_size_list_item"
+                android:textColor="@color/textColor"
+                android:layout_marginTop="8dp"
+                android:text="This number is not in your contact"
+                />
+
+            <TextView
+                android:id="@+id/tvSimIndividualContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sim"
+                android:background="@color/colorBackground"
+                android:layout_marginTop="@dimen/margin_individual_contact_item_list"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_list_item"
+                android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
+                android:layout_marginStart="@dimen/margin_start_individual_contact_items"
+                android:padding="20dp"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:layout_marginTop="@dimen/margin_individual_contact_item_list"
+                android:background="@color/colorBackground"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_list_item"
+                android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
+                android:layout_marginStart="@dimen/margin_start_individual_contact_items"
+                android:text="location" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:background="@color/colorBackground"
+                android:layout_marginTop="@dimen/margin_individual_contact_item_list"
+                >
+
+                <TextView
+                    android:id="@+id/tvIndividualCntSpamCountInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_start_individual_contact_items"
+                    android:padding="20dp"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:text="spam count"
+                    android:textColor="@color/textColor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvIndividualCntSpamCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
+                    android:padding="20dp"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:text="20"
+                    android:textColor="@color/textColor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.995"
+                    app:layout_constraintStart_toEndOf="@+id/tvIndividualCntSpamCountInfo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <Switch
+                    android:id="@+id/switchIndividualContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
+                    android:text="Mute this person"
+                    android:padding="20dp"
+                    android:elevation="2dp"
+                    android:layout_marginBottom="@dimen/margin_individual_contact_item_list"
+                    android:layout_marginTop="@dimen/margin_individual_contact_item_list"
+                    android:background="@color/colorBackground"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:layout_marginStart="@dimen/margin_start_individual_contact_items"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
 
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <TextView
-        android:id="@+id/txtViewNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textColor="@color/textColor"
-        android:text="8086176336"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
-
-    <ImageButton
-        android:id="@+id/imgBtnSMS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="24dp"
-        android:background="?android:selectableItemBackground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
-        app:srcCompat="@android:drawable/ic_lock_lock"
-        tools:visibility="visible" />
 </androidx.constraintlayout.motion.widget.MotionLayout>

@@ -36,11 +36,24 @@
             android:id="@+id/textViewCrclr"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:transitionName="firstLetterTransition"
             android:layout_marginStart="24dp"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgViewUserPhoto"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:transitionName="contactImageTransition"
+            android:src="@drawable/contact_circular_marked_background"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
+            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
+            app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
+            />
 
         <ImageView
             android:id="@+id/imgViewCallSpamIcon"

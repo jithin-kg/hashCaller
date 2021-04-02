@@ -37,7 +37,9 @@ data class CallersInfoFromServer (
     @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = 0,
     @ColumnInfo(name = "city") var city: String  = "",
     @ColumnInfo(name = "country") var country: String = "",
-    @ColumnInfo(name = "carrier") var carrier: String = ""
+    @ColumnInfo(name = "carrier") var carrier: String = "",
+    @ColumnInfo(name = "isBlockedByUser") var isBlockedByUser: Boolean = false,
 
-) {
+
+    ) {
 }

@@ -5,13 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import kotlinx.android.synthetic.main.search_result_layout.view.*
-import java.util.*
 
 class SearchAdapterLocal (private val context: Context, private val onContactItemClickListener: (id:Long)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -55,7 +53,7 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
         fun bind(contact: Contact, context: Context, onContactItemClickListener :(id:Long)->Unit ) {
             name.text = contact.name
             view.textViewSearchCrclr.text = contact.firstletter
-            view.textViewSearchCrclr.background = contact.drawable
+            view.textViewSearchCrclr.setRandomBackgroundCircle()
 
             Log.d("__ViewHolder", "bind:")
             view.setOnClickListener{

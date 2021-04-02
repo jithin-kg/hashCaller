@@ -1,9 +1,11 @@
 package com.nibble.hashcaller.local.db.blocklist.mutedCallers
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface IMutedCallersDAO {
@@ -15,4 +17,6 @@ interface IMutedCallersDAO {
 
     @Query("DELETE FROM muted_callers where address=:contactAdders")
      suspend fun delete(contactAdders: String)
+     @Query("SELECT * FROM muted_callers")
+      fun get(): Flow<List<MutedCallers>>
 }

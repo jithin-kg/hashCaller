@@ -1,16 +1,19 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
+import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import kotlinx.android.synthetic.main.contact_list.view.*
 import java.util.*
 
@@ -18,7 +21,7 @@ import java.util.*
  * Created by Jithin KG on 22,July,2020
  */
 class ContactAdapter(private val context: Context, private val onContactItemClickListener: (contactItem:Contact)->Unit) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    androidx.recyclerview.widget.ListAdapter<Contact, RecyclerView.ViewHolder>(ContactItemDiffCallback()) {
 
     private var contacts = emptyList<Contact>()
     companion object{
@@ -56,8 +59,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     fun setContactList(newContactList: List<Contact>) {
         contacts = newContactList
-
-        notifyDataSetChanged()
+        this.submitList(newContactList)
     }
      class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVContactName
@@ -86,7 +88,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 view.textViewcontactCrclr.visibility = View.VISIBLE
                 view.contactCard.visibility = View.INVISIBLE
                 setNameFirstChar(contact)
-                generateCircleView(context);
+                generateCircleView(contact, context);
             }
 
             val pNo = contact.phoneNumber
@@ -110,29 +112,32 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
          }
 
-         private fun generateCircleView(context: Context) {
+         private fun generateCircleView(contact: Contact, context: Context) {
              val rand = Random()
-             when (rand.nextInt(5 - 1) + 1) {
-                 1 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                 }
-                 2 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                 }
-                 3 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                 }
-                 else -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                 }
-             }
+
+             contact.drawable = circle.setRandomBackgroundCircle()
+
          }
 
      }
 
 
 
+    class ContactItemDiffCallback : DiffUtil.ItemCallback<Contact>() {
+        override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+            return  oldItem.id == newItem.id
 
+
+        }
+
+
+        override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+            //when we are using data class we dont need to compare all attributes
+            return oldItem == newItem
+            //TODO compare both messages and if the addres is same and message
+        }
+
+    }
 }
 
 

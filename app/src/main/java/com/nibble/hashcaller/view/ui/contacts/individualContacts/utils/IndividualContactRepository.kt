@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.contacts.IndividualContacts.utils
+package com.nibble.hashcaller.view.ui.contacts.individualContacts.utils
 
 import android.annotation.SuppressLint
 import android.content.ContentUris
@@ -10,8 +10,13 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
+import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
+import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
+import com.nibble.hashcaller.stubs.Contact
+import kotlinx.coroutines.flow.Flow
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -27,7 +32,10 @@ import java.io.InputStream
 //    ContentProviderLiveData<IndividualContact>(context,
 //        URI
 //    ){
-class IndividualContactRepository(private val dao: IContactIformationDAO, private val context: Context)
+class IndividualContactRepository(
+    private val dao: IContactIformationDAO,
+    private val context: Context
+)
    {
        lateinit var cursor:Cursor
 //    private val idString:String = id.toString()
@@ -204,6 +212,37 @@ class IndividualContactRepository(private val dao: IContactIformationDAO, privat
        fun getMoreInfoFOrNumber(phoneNum: String?) {
 //           this.dao.getInfoForNumber(phoneNum)
        }
+
+       /**
+        * function to get contact details for a number
+        */
+       @SuppressLint("LongLogTag")
+       fun getContactDetailForNumber(phoneNumber: String): Contact? {
+           var cursor:Cursor? = null
+           val phoneNum = phoneNumber.replace("+", "").trim()
+           val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+           val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+
+            var  contact:Contact? = null
+           try{
+               if(cursor2!=null && cursor2.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+                   val name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+                   val contactId = cursor2.getLong(cursor2.getColumnIndex("contact_id"))
+                   val normalizedNumber = cursor2.getString(cursor2.getColumnIndex("normalized_number"))
+                    contact = Contact(contactId, name, normalizedNumber, null)
+               }
+
+
+           }catch (e:Exception){
+               Log.d(TAG, "getConactInfoForNumber: exception $e")
+           }finally {
+               cursor2?.close()
+           }
+            return contact
+       }
+
+
 //   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<Contact>{
 //       var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 //
