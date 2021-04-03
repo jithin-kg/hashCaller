@@ -36,12 +36,12 @@ class SMSLiveDataFlow(private val context: Context):
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri =
             SMSContract.INBOX_SMS_URI
-        private const val TAG = "__MessagesLiveData"
+        private const val TAG = "__SMSLiveDataFlow"
     }
      private suspend fun getMessages(context: Context): MutableList<SMS> {
          pageOb.page = 0 //set page size to 0 when there is a change in sms
 
-        SMSViewModel.isLoading.postValue(true)
+//        SMSViewModel.isLoading.postValue(true)
           spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
          smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
          val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
@@ -54,7 +54,11 @@ class SMSLiveDataFlow(private val context: Context):
                 mutedSendersDAO
             )
 
-         return repository.fetchSMS(null, false)
+          repository.fetchSMS(null, false).apply {
+              Log.d(TAG, "getMessages: spamcount ${this[0].spamCount}")
+              return this
+              
+          }
 
 
 

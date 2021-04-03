@@ -126,7 +126,7 @@ class SMSSearchAdapter(private val context: Context,
     }
     inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
          var layoutExpandable: ConstraintLayout = view.layoutExpandable
-         private val name = view.textVSMSContactName
+         private val name = view.textVSMSCntctName
          private val circle = view.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 

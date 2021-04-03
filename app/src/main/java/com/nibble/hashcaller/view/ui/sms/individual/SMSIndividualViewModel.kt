@@ -24,6 +24,7 @@ import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
@@ -37,6 +38,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHan
 import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.isMarkedViewsEmpty
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -191,10 +193,12 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
     )  = viewModelScope.launch {
 
         async {
-            spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
+//            spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
+           smsLocalRepository.saveSpamReportedByUser(contactAddress, threadID, spammerType, spammerCategory)
         }
        async {
-           spamRepository?.report(ReportedUserDTo(contactAddress, " ",
+           spamRepository?.report(ReportedUserDTo(
+               formatPhoneNumber(contactAddress), " ",
                spammerType.toString(), spammerCategory.toString()
            ))
        }

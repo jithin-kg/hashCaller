@@ -89,24 +89,28 @@ class SMSViewModel(
     fun updateWithNewSenderInfo(
         dataFromDB: List<SMSSendersInfoFromServer>?,
         smsLIst: MutableList<SMS>?
-    ) {
+    ) = viewModelScope.launch {
 
 
 
-         viewModelScope.launch {
-                   val r = async {
-                        repository!!.fetchSMS(null, false)
-                    }
+//         viewModelScope.launch {
+//                   val r = async {
+//                        repository!!.fetchSMS(null, false)
+//                    }
+//
+//                     val lst = r.await()
+//
+//
+////             smsLiveData.value = sortedSMSByTime()
+//             smsLiveData.value = lst
+//
+//
+//
+//         }
+        repository!!.fetchSMS(null, false).apply {
+            smsLiveData.value = this
+        }
 
-                     val lst = r.await()
-
-
-//             smsLiveData.value = sortedSMSByTime()
-             smsLiveData.value = lst
-
-
-
-         }
 
 
 
@@ -134,9 +138,6 @@ class SMSViewModel(
     fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
 
         smsLiveData.value = smsList
-
-
-
 
 
 

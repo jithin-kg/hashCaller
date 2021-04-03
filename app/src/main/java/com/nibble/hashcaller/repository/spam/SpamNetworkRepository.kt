@@ -37,7 +37,7 @@ class SpamNetworkRepository(
     }
 
     suspend fun save(spammerInfo: SpammerInfo){
-        spamListDAO?.insert(spammerInfo)
+//        spamListDAO?.insert(spammerInfo)
     }
 
      fun getSpammerInfo(contactAddress: String): LiveData<List<SpammerInfo>>? {

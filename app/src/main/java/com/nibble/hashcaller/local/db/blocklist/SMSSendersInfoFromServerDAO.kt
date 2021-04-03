@@ -31,4 +31,7 @@ interface SMSSendersInfoFromServerDAO {
     suspend fun find(contactAddress: String) : SMSSendersInfoFromServer?
     @Query("DELETE FROM sms_senders_info_from_server")
     suspend fun deleteAll()
+
+    @Query("UPDATE   sms_senders_info_from_server SET spamReportCount=:spamCount, isBlockedByUser=:isReportedByUser  WHERE contact_address=:contactAddress")
+    suspend fun updateSpamCount(spamCount: Long, isReportedByUser: Boolean, contactAddress: String)
 }

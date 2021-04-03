@@ -122,7 +122,7 @@ class SMSSpamListAdapter(private val context: Context,
     }
      class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
          var layoutExpandable: ConstraintLayout = view.layoutExpandable
-         private val name = view.textVSMSContactName
+//         private val name = view.textVSMSContactNameSpam
          private val circle = view.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
@@ -138,7 +138,7 @@ class SMSSpamListAdapter(private val context: Context,
 
 //            highlightSearhcField(sms) // to highlight the search result
 //            if(searchQry == null){
-                name.text = sms.address
+//                name.text = sms.address
                 view.tvSMSMPeek.text = sms.msg
                 view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
                 if(sms.unReadSMSCount == 0 ){

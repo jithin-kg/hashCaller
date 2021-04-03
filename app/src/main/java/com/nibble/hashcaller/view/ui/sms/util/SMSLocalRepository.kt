@@ -30,7 +30,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
-import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -155,7 +154,9 @@ class SMSLocalRepository(
     //this function fetches sms while searching
     suspend fun getSms(searchQuery: String?): MutableList<SMS> {
 
-        return fetch(searchQuery, false)
+         fetch(searchQuery, false).apply {
+             return this
+         }
     }
 
     @SuppressLint("LongLogTag")
@@ -441,6 +442,7 @@ class SMSLocalRepository(
                                 }
                             }
                             Log.d(TAG, "fetch: message is   ${objSMS.msgString}")
+
                             if(!objSMS.msgString.isNullOrEmpty()){
 //                                setSMSHashMap(objSMS)
 
@@ -463,6 +465,7 @@ class SMSLocalRepository(
 
                 data.addAll(listOfMessages)
                 setSMSReadStatus(data)
+
                 setNameIfExistInContactContentProvider(data)
 //                removeDeletedMSSFRomhashMap(setOfAddress)
 
@@ -1562,7 +1565,7 @@ class SMSLocalRepository(
                             } else {
                                 objSMS.folderName = "sent"
                             }
-                          val r = async { getDetailsFromDB(objSMS.addressString!!, objSMS)  }.await()
+                          val r = async { getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS)  }.await()
                                 if(r!=null){
                                     objSMS.name = r?.name
                                     objSMS.nameForDisplay = r.name
@@ -1620,6 +1623,7 @@ class SMSLocalRepository(
                 spamCount = this.spamReportCount
 
             }
+
             spamCount+=1
             val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
             val list = listOf<SMSSendersInfoFromServer>(info)
@@ -1914,6 +1918,21 @@ class SMSLocalRepository(
 
     }
 
+    suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?, spammerCategory: Int) {
+        val formatedAddress = formatPhoneNumber(contactAddress)
+        smssendersInfoDAO!!.find(formatedAddress).apply {
+            if(this!=null){
+                //already infor exists
+                    val spamcount = this.spamReportCount +1
+                smssendersInfoDAO!!.updateSpamCount(spamcount, true, this.contactAddress)
+            }else{
+                smssendersInfoDAO.insert(listOf(SMSSendersInfoFromServer(
+                    formatedAddress,
+                    spammerType!!,
+                    " ",Date(), 0, true )))
+            }
+        }
+    }
 
 
 }

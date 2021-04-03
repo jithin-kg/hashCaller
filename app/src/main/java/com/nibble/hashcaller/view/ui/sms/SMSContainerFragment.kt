@@ -90,6 +90,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+    private var isPaused = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -188,23 +189,31 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //    }
 
     private fun observePermissionLiveData() {
+
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
-            if(value == true){
-//                this.viewMesages.btnSmsPermission.visibility = View.GONE
-//                this.viewMesages.tvSMSPermission.visibility = View.GONE
-
-                observeSMSList()
+            //this caused to view not updating afte returning from individual sms activity,
+            //after user blockes a number and comes that the spam counts were not getting updated
+//            if(value == true){
+////                this.viewMesages.btnSmsPermission.visibility = View.GONE
+////                this.viewMesages.tvSMSPermission.visibility = View.GONE
+//
+//                observeSMSList()
+//            }else{
+////                this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
+////                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
+//
+//                if (this.smsListVIewModel!! != null  ) {
+//                    if(this.smsListVIewModel?.SMS != null)
+//                        if(this.smsListVIewModel.SMS!!.hasObservers())
+//                            this.smsListVIewModel?.SMS?.removeObservers(this);
+//                }
+//
+//
+//            }
+            if(this.smsListVIewModel.SMS.hasObservers()){
+                Log.d(TAG, "observePermissionLiveData: already have observer")
             }else{
-//                this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
-//                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
-
-                if (this.smsListVIewModel!! != null  ) {
-                    if(this.smsListVIewModel?.SMS != null)
-                        if(this.smsListVIewModel.SMS!!.hasObservers())
-                            this.smsListVIewModel?.SMS?.removeObservers(this);
-                }
-
-
+                Log.d(TAG, "observePermissionLiveData: do not have observer")
             }
         })
     }
@@ -310,8 +319,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private fun observeSMSList() {
         
-        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
+        smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms ->
+
             sms.let {
+
+                Log.d(TAG, "observeSMSList: spamcount ${sms[0].spamCount}")
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
 //                Log.d(TAG, "observeSMSList: data changed")
 //                smsRecyclerAdapter?.submitList(it)
@@ -321,7 +333,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 Log.d(TAG, "observeSMSList: $sms")
                 smsListVIewModel.updateLiveData(sms)
 //                this.smsListVIewModel.updateLiveData(sms)
-                this.smsListVIewModel.getInformationForTheseNumbers(sms, requireActivity().packageName)
+                this.smsListVIewModel.getInformationForTheseNumbers(
+                    sms,
+                    requireActivity().packageName
+                )
 
 
             }
@@ -330,7 +345,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun observeMutabeLiveData() {
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
 //            smsListVIewModel.smsLIst = it as MutableList<SMS>?
-            Log.d(TAG, "observeMutabeLiveData: ")
+            Log.d(TAG, "observeMutabeLiveData: spamcount${it[0].spamCount} ")
 //            var newList:MutableList<SMS> = mutableListOf()
 
 //            it.forEach{sms-> newList.add(sms.deepCopy())}
@@ -345,6 +360,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "onDestroyView: ")
         rcrViewSMSList.adapter  = null
     }
 
@@ -449,7 +465,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume: ")
+        isPaused = false
         this.permissionGivenLiveData.value  = checkContactPermission()
+
     }
 
     fun show(){
@@ -690,11 +709,22 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onPause() {
         Log.d(TAG, "onPause: ")
         super.onPause()
+        isPaused = true
+        if (this.smsListVIewModel!! != null  ) {
+            if(this.smsListVIewModel?.SMS != null)
+                if(this.smsListVIewModel.SMS!!.hasObservers()){
+                    this.smsListVIewModel?.SMS?.removeObservers(this);
+                    this.smsListVIewModel.smsLiveData.removeObservers(this)
+                    smsListVIewModel.getSmsSendersInfoFromServer().removeObservers(this)
+                }
+
+        }
     }
 
     override fun onStop() {
         Log.d(TAG, "onStop: ")
         super.onStop()
+
     }
 
     override var isDefaultFgmnt: Boolean

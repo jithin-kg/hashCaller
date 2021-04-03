@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.layoutExpandable
 import kotlinx.android.synthetic.main.sms_list_view.view.pgBarSmsListItem
 import kotlinx.android.synthetic.main.sms_list_view.view.smsMarked
-import kotlinx.android.synthetic.main.sms_list_view.view.textVSMSContactName
 import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSMPeek
 import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSTime
 import kotlinx.android.synthetic.main.sms_list_view.view.tvUnreadSMSCount
@@ -57,11 +56,11 @@ class SMSListAdapter(private val context: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-       if(viewType == VIEW_TYPE_SPAM){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
-            return SpamViewHolder(view)
-        }
-        else if(viewType == VIEW_TYPE_LOADING){
+//       if(viewType == VIEW_TYPE_SPAM){
+//            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
+//            return SpamViewHolder(view)
+//        }
+         if(viewType == VIEW_TYPE_LOADING){
            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
            return DummyLoadingViewHolder(view)
        }
@@ -75,10 +74,10 @@ class SMSListAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(this.smsList.isNotEmpty() && position < smsList.size)
-            if(this.smsList[position].spamCount > 0){
-                return VIEW_TYPE_SPAM
-            }
-            else if(this.smsList[position].isDummy){
+//            if(this.smsList[position].spamCount > 0){
+//                return VIEW_TYPE_SPAM
+//            }
+             if(this.smsList[position].isDummy){
                 return VIEW_TYPE_LOADING
             }
 
@@ -135,9 +134,9 @@ class SMSListAdapter(private val context: Context,
 
     inner class SpamViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val btnEmptySms = view.btnEmptySpamSMS
-        private val name = view.textVSMSContactName
-        private val circle = view.falseTextSMScontactCrclr;
-        private val circleImg = view.imgViewSMScontactCrclr;
+        private val name = view.textVSMSContactNameSpam
+        private val circle = view.falseTextSMScontactCrclrSpam;
+        private val circleImg = view.imgViewSMScontactCrclrSpam;
         fun bind(
             sms: SMS, context: Context,
             onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String) -> Unit,
@@ -149,31 +148,31 @@ class SMSListAdapter(private val context: Context,
                 name.text = sms.address
 
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
-                view.pgBarSmsListItem.visibility = View.VISIBLE
+                view.pgBarSmsListItemSpam.visibility = View.VISIBLE
 //                Log.d(TAG, "bind: searching for ${sms.addressString}")
             }else{
-                view.pgBarSmsListItem.visibility = View.INVISIBLE
+                view.pgBarSmsListItemSpam.visibility = View.INVISIBLE
             }
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
             if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
-                view.smsMarked.visibility = View.VISIBLE
+                view.smsMarkedSpam.visibility = View.VISIBLE
             }else{
-                view.smsMarked.visibility = View.INVISIBLE
+                view.smsMarkedSpam.visibility = View.INVISIBLE
 
             }
-            view.tvSMSMPeek.text = sms.msgString
-            view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
+            view.tvSMSMPeekSpam.text = sms.msgString
+            view.tvUnreadSMSCountSpam.text = sms.unReadSMSCount.toString()
             if(sms.unReadSMSCount == 0 ){
-                view.tvUnreadSMSCount.visibility = View.GONE
+                view.tvUnreadSMSCountSpam.visibility = View.GONE
             }else{
-                view.tvUnreadSMSCount.visibility = View.VISIBLE
+                view.tvUnreadSMSCountSpam.visibility = View.VISIBLE
             }
 
 
 
-            view.tvSMSTime.text = sms.relativeTime
+            view.tvSMSTimeSpam.text = sms.relativeTime
 
             setNameFirstChar(sms)
             generateCircleView(context);
@@ -207,7 +206,7 @@ class SMSListAdapter(private val context: Context,
     }
     inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
         var layoutExpandable: ConstraintLayout = view.layoutExpandable
-        private val name = view.textVSMSContactName
+        private val name = view.textVSMSCntctName
         private val circle = view.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
@@ -269,6 +268,12 @@ class SMSListAdapter(private val context: Context,
                 onContactItemClickListener(v, sms.threadID, this.adapterPosition,
                     sms.addresStringNonFormated!!
                 )
+
+            }
+            if(sms.spamCount >0){
+                name.text = "spammer"
+            }else{
+                name.text = "no spammer"
 
             }
 
@@ -376,8 +381,8 @@ class SMSListAdapter(private val context: Context,
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
 //            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
-            return  oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom && oldItem.unReadSMSCount == newItem.unReadSMSCount &&
-                    oldItem.spamCount == newItem.spamCount && oldItem.msgString == newItem.msgString 
+            return oldItem.spamCount == newItem.spamCount &&  oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom && oldItem.unReadSMSCount == newItem.unReadSMSCount
+                     && oldItem.msgString == newItem.msgString
             //TODO compare both messages and if the addres is same and message
         }
 
