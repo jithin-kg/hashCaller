@@ -183,7 +183,7 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
 //        repository.upda
     }
 
-    fun blockThisAddress(
+        fun blockThisAddress(
         contactAddress: String,
         threadID: Long,
         spammerType: Int?,

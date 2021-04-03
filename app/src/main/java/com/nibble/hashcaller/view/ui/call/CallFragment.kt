@@ -299,6 +299,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun observeCallLogInfoFromServer() {
         this.viewmodel.getCallLogFromServer().observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observeCallLogInfoFromServer: ")
+
             viewmodel.updateWithNewInfoFromServer()
         })
     }

@@ -46,6 +46,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.system.measureTimeMillis
 
 
@@ -278,7 +279,7 @@ class SMSLocalRepository(
                     setSpannableStringBuilder(objSMS, null, msg, num) //calling
                     // spannable string builder function to setup spannable string builder
                     objSMS.addressString = num.replace("+", "")
-                    objSMS.addressString = replaceSpecialChars(num)
+                    objSMS.addressString = formatPhoneNumber(num)
                     objSMS.nameForDisplay = objSMS.addressString!!
 
                     objSMS.readState =
@@ -305,7 +306,7 @@ class SMSLocalRepository(
 
                     }
 
-                    getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS).apply {
+                    getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
                         if(this!=null){
                             objSMS.name = this?.name
                             if(!this.name.isNullOrEmpty()){
@@ -393,7 +394,7 @@ class SMSLocalRepository(
                             setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                             // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
-                            objSMS.addressString = replaceSpecialChars(num)
+                            objSMS.addressString = formatPhoneNumber(num)
                             objSMS.nameForDisplay = objSMS.addressString!!
 
                             objSMS.readState =
@@ -428,7 +429,7 @@ class SMSLocalRepository(
 //                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
 //                                }
 
-                            getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS).apply {
+                            getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
                                 if(this!=null){
                                     objSMS.name = this?.name
                                     if(!this.name.isNullOrEmpty()){
@@ -706,14 +707,14 @@ class SMSLocalRepository(
             if(sms.addressString != null){
                 var formattedNum = formatPhoneNumber(sms.addressString!!)
 
-                if(isNumericOnlyString(formattedNum)){
+//                if(isNumericOnlyString(formattedNum)){
                     val name =   getConactInfoForNumber(formattedNum)
                     if (name != null){
                         sms.name = name
                         sms.nameForDisplay = name
                         sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                     }
-                }
+//                }
 
             }
 
@@ -730,9 +731,8 @@ class SMSLocalRepository(
         sms: SMS
     ): SMSSendersInfoFromServer?  {
         var r: SMSSendersInfoFromServer? = null
-//        val frmtedNum = replaceSpecialChars(num)
         GlobalScope.launch {
-            r = async {  smssendersInfoDAO!!.find(num) }.await()
+            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
         }.join()
         return r
 
@@ -1180,7 +1180,7 @@ class SMSLocalRepository(
             var num = sms.addressString
             var res:SMSSendersInfoFromServer? = null
             num = formatPhoneNumber(num!!)
-            res = smssendersInfoDAO!!.find(num!!).apply {
+            res = smssendersInfoDAO!!.find(formatPhoneNumber(num)!!).apply {
                 if(sms.name.isNullOrEmpty()){
                     sms.name = res?.name
                     Log.d(TAG, "getInfoFromLocalDb:  empty ")
@@ -1227,7 +1227,7 @@ class SMSLocalRepository(
     }
 
     private fun getSenderInfo(num: String) = GlobalScope.async{
-        smssendersInfoDAO!!.find(num!!)
+        smssendersInfoDAO!!.find(formatPhoneNumber(num))
     }
 
     fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>> {
@@ -1240,6 +1240,7 @@ class SMSLocalRepository(
     @SuppressLint("LongLogTag")
     suspend fun fetchSmsForWorker(): MutableList<SMS> {
         var data = ArrayList<SMS>()
+        var hashSetOfAddress:HashSet<String> = hashSetOf()
         try {
             val listOfMessages = mutableListOf<SMS>()
             var selectionArgs: Array<String>? = null
@@ -1304,8 +1305,10 @@ class SMSLocalRepository(
                             objSMS.folderName = "sent"
                         }
                         setSpannableStringBuilder(objSMS, null, msg, num)
-
-                        listOfMessages.add(objSMS)
+                        if(!hashSetOfAddress.contains(objSMS.addressString)){
+                            hashSetOfAddress.add(objSMS.addressString!!)
+                            listOfMessages.add(objSMS)
+                        }
 
                     } catch (e: Exception) {
                         Log.d(TAG, "getMessages: $e")
@@ -1394,7 +1397,7 @@ class SMSLocalRepository(
                             } else {
                                 objSMS.folderName = "sent"
                             }
-                            getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
+                            getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
                                 if(this!=null){
                                     objSMS.name = this?.name
                                     objSMS.spamCount  = this.spamReportCount
@@ -1541,7 +1544,7 @@ class SMSLocalRepository(
                             setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                             // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
-                            objSMS.addressString = replaceSpecialChars(num)
+                            objSMS.addressString = formatPhoneNumber(num)
                             objSMS.nameForDisplay = objSMS.addressString!!
 
                             objSMS.readState =
@@ -1611,7 +1614,7 @@ class SMSLocalRepository(
     suspend fun save(contactAddress: String, i: Int, s: String, s1: String) {
         var name = ""
         var spamCount = 0L
-        smssendersInfoDAO!!.find(contactAddress).apply {
+        smssendersInfoDAO!!.find(formatPhoneNumber(contactAddress)).apply {
             if(this!=null){
                 name = this.name
                 spamCount = this.spamReportCount
@@ -1843,7 +1846,7 @@ class SMSLocalRepository(
 //                    setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                     // spannable string builder function to setup spannable string builder
                     objSMS.addressString = num.replace("+", "")
-                    objSMS.addressString = replaceSpecialChars(num)
+                    objSMS.addressString = formatPhoneNumber(num)
                     objSMS.nameForDisplay = objSMS.addressString!!
 
                     objSMS.readState =
@@ -1886,26 +1889,28 @@ class SMSLocalRepository(
      * function to get name for a contact address from DB in individual sms activity
      */
     suspend fun getContactInfoFRomDB(pno: String): String? {
-        val numWithoutSpecialChars = replaceSpecialChars(pno)
+//        val numWithoutSpecialChars = replaceSpecialChars(pno)
         var result : SMSSendersInfoFromServer? = null
         var name :String ? = null
-        if(isNumericOnlyString(numWithoutSpecialChars)){
-            var formatednum = formatPhoneNumber(numWithoutSpecialChars)
-              smssendersInfoDAO!!.find(formatednum).apply {
-                  result =this
+//        if(isNumericOnlyString(numWithoutSpecialChars)){
+//            var formatednum = formatPhoneNumber(numWithoutSpecialChars)
+//              smssendersInfoDAO!!.find(formatednum).apply {
+//                  result =this
+//            }
+//        }else{
+//            //number of type containing sring like jio
+//              smssendersInfoDAO!!.find(numWithoutSpecialChars).apply {
+//                  result = this
+//            }
+//
+//        }
+        smssendersInfoDAO!!.find(formatPhoneNumber(pno)).apply {
+            result =this
+            if(result!=null){
+                name = result!!.name
             }
-        }else{
-            //number of type containing sring like jio
-              smssendersInfoDAO!!.find(numWithoutSpecialChars).apply {
-                  result = this
-            }
-
+            return name
         }
-        if(result!=null){
-            name = result!!.name
-        }
-        return name
-
 
     }
 

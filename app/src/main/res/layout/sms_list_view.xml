@@ -61,7 +61,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:padding="2dp"
-        android:text=""
+        android:text="name"
         android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toTopOf="@+id/tvSMSMPeek"
         app:layout_constraintEnd_toStartOf="@+id/tvUnreadSMSCount"
@@ -78,12 +78,12 @@
 
     <TextView
         android:id="@+id/tvSMSMPeek"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:maxLines="2"
-        android:text=""
+        android:text="sadf"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -107,6 +107,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="count"
+        android:layout_marginStart="8dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvSMSTime"
         app:layout_constraintStart_toEndOf="@+id/textVSMSContactName" />
 

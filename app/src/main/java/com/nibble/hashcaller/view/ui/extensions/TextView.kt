@@ -10,6 +10,7 @@ fun TextView.setColorForText(textColor: Int) {
     this.setTextColor(ContextCompat.getColor(context,textColor))
 }
 
+
 fun TextView.setRandomBackgroundCircle(color: Int? =null): Int {
     val rand = Random()
     var num = rand.nextInt(5 - 1) + 1

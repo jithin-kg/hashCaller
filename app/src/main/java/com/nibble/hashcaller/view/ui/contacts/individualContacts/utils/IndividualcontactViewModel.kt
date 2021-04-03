@@ -6,10 +6,15 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
+import com.nibble.hashcaller.network.spam.ReportedUserDTo
+import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_BLOCKED
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_UNBLOCKED
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.launch
 import java.util.*
@@ -21,7 +26,8 @@ class IndividualcontactViewModel(
     private val repository: IndividualContactRepository,
     val livedataCntct: IndividualContactLiveData,
     private val mutedContactsDAO: IMutedCallersDAO,
-    private val callersInfoFromServer: CallersInfoFromServerDAO
+    private val callersInfoFromServer: CallersInfoFromServerDAO,
+    private val spamNetworkRepository: SpamNetworkRepository
 )
     : ViewModel()  {
 
@@ -91,8 +97,22 @@ class IndividualcontactViewModel(
         emit(isMuted)
     }
 
-    fun muteThisAddress(phoneNum: String) = viewModelScope.launch{
-        mutedContactsDAO.insert(listOf(MutedCallers(formatPhoneNumber(phoneNum))))
+    fun muteThisAddress(phoneNum: String): LiveData<Int> = liveData{
+        val formatedNum = formatPhoneNumber(phoneNum)
+        mutedContactsDAO.find(formatedNum).apply {
+            if(this == null){
+                //this number is not yet muted, so add new record
+                mutedContactsDAO.insert(listOf(MutedCallers(formatPhoneNumber(phoneNum)))).apply {
+                    emit(OPERATION_COMPLETED)
+                }
+            }else{
+                //this number is already muted, so unmute
+                mutedContactsDAO.delete(formatedNum).apply {
+
+                }
+            }
+        }
+
 
     }
 
@@ -114,18 +134,27 @@ class IndividualcontactViewModel(
         emit(isBlocked)
     }
 
-    fun blockOrUnblockByAdderss(phoneNum: String) = viewModelScope.launch {
+    fun blockOrUnblockByAdderss(phoneNum: String, spammerType: Int, spammerCategory: Int):LiveData<Int> = liveData {
         val formatedPhoneNumber = formatPhoneNumber(phoneNum)
         callersInfoFromServer.find(formatedPhoneNumber).apply {
             if(this !=null){
                 //number exist in db
                     if(this.isBlockedByUser){
                         //we need to unblock , no need of changing spam count
-                        callersInfoFromServer.unBlock(false, this.contactAddress)
+                            val spamcount = this.spamReportCount -1
+                        callersInfoFromServer.unBlock(false, this.contactAddress, spamcount).apply {
+                            emit(OPERATION_UNBLOCKED)
+                        }
 
                     }else{
-                        callersInfoFromServer.update(this.spamReportCount+1, this.contactAddress,true)
+                        callersInfoFromServer.update(this.spamReportCount+1, this.contactAddress,true).apply {
+                            emit(OPERATION_BLOCKED)
 
+                        }
+                        //report to server
+                        spamNetworkRepository.report(
+                            ReportedUserDTo(phoneNum, " ",
+                            spammerType.toString(), spammerCategory.toString()))
                     }
             }else{
 
@@ -133,8 +162,14 @@ class IndividualcontactViewModel(
                     formatPhoneNumber(formatedPhoneNumber), 0,  "",
                     Date(), 1, isBlockedByUser = true)
                 callersInfoFromServer.insert(listOf(callerInfoTobeSavedInDatabase))
+                emit(OPERATION_BLOCKED)
+
             }
         }
+    }
+
+    fun unmute(phoneNum: String) = viewModelScope.launch {
+        mutedContactsDAO!!.delete(formatPhoneNumber(phoneNum))
     }
 
 

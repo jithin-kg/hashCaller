@@ -105,7 +105,7 @@ class SMScontainerRepository(
     suspend fun save(contactAddress: String, i: Int, s: String, s1: String) {
         var name = ""
         var spamCount = 0L
-       smsSenderInfoDAO.find(contactAddress).apply {
+       smsSenderInfoDAO.find(formatPhoneNumber(contactAddress)).apply {
            if(this!=null){
                name = this.name
                spamCount = this.spamReportCount

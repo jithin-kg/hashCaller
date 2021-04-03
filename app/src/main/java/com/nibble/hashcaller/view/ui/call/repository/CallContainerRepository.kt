@@ -20,7 +20,6 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItems
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -70,14 +69,14 @@ class CallContainerRepository(
     }
 
     suspend fun getNameForAddress(number: String): CallersInfoFromServer? {
-        val numWithoutSpecialChars = replaceSpecialChars(number)
-        var numberForQuery =numWithoutSpecialChars
-        if(isNumericOnlyString(numWithoutSpecialChars)){
-            numberForQuery = formatPhoneNumber(numWithoutSpecialChars)
-        }
+        val numWithoutSpecialChars = formatPhoneNumber(number)
+//        var numberForQuery =numWithoutSpecialChars
+//        if(isNumericOnlyString(numWithoutSpecialChars)){
+//            numberForQuery = formatPhoneNumber(numWithoutSpecialChars)
+//        }
         var result: CallersInfoFromServer? = null
         GlobalScope.launch {
-            result= async { dao.find(numberForQuery) }.await()
+            result= async { dao.find(numWithoutSpecialChars) }.await()
         }.join()
 
         return result

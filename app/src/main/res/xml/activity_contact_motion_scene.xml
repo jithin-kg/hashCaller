@@ -81,12 +81,16 @@
             motion:layout_constraintTop_toBottomOf="@+id/tvisInContact"
             android:id="@+id/tvSimCardInfo"
             motion:layout_constraintBottom_toBottomOf="parent" />
+
         <Constraint
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tvSimCardInfo"
             motion:layout_constraintTop_toBottomOf="@+id/tvisInContact"
             motion:layout_constraintBottom_toBottomOf="parent" />
+<!--        <Constraint-->
+<!--            motion:layout_constraintStart_toStartOf="@+id/imgBtnCallIndividualContact"-->
+<!--            android:id="@+id/tvCallBtnInfo" />-->
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
@@ -186,6 +190,22 @@
             android:visibility="invisible"
             motion:layout_editor_absoluteX="189dp"
             motion:layout_constraintTop_toTopOf="@+id/imgBtnBlockIndividualContact"
+            android:layout_marginTop="16dp" />
+        <Constraint
+            android:id="@+id/tvCallBtnInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            motion:layout_editor_absoluteX="189dp"
+            motion:layout_constraintTop_toTopOf="@+id/imgBtnCallIndividualContact"
+            android:layout_marginTop="16dp" />
+        <Constraint
+            android:id="@+id/tvSMSBtnInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            motion:layout_editor_absoluteX="189dp"
+            motion:layout_constraintTop_toTopOf="@+id/imgBtnSMS"
             android:layout_marginTop="16dp" />
         <Constraint
             android:layout_width="wrap_content"

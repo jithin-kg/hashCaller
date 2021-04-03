@@ -38,6 +38,7 @@
             android:layout_height="50dp"
             android:transitionName="firstLetterTransition"
             android:layout_marginStart="24dp"
+            android:textColor="@color/colorWhite"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"

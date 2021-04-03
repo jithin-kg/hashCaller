@@ -13,13 +13,6 @@ import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
-import com.nibble.hashcaller.view.ui.sms.util.SMS
-import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class SplashActivityViewModel(

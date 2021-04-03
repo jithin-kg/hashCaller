@@ -163,7 +163,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if(callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING){
                 view.pgBarCallItem.beVisible()
             }else{
-                view.pgBarCallItem.beInvisible()
+//                view.pgBarCallItem.beInvisible()
 
             }
            if(callLog.spamCount > 0){

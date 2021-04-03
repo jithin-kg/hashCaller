@@ -1,12 +1,25 @@
 package com.nibble.hashcaller.work
 
+import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
+
 
 /**
  * @param1 phonenumber
  * @return formatted number without special symbols
  */
 fun formatPhoneNumber(number:String): String {
-    val fNum = number.replace(Regex("[^A-Za-z0-9]"), "")
+    var numberCopy:String = ""
+    numberCopy = number
+    var fNum = ""
+    val numWithoutSpceialChars = numberCopy.replace(Regex("[^A-Za-z0-9]"), "")
+
+    if(isNumericOnlyString(numWithoutSpceialChars)){
+        fNum = numberCopy.replace(Regex("[^A-Za-z0-9]"), "")
+    }else{
+        //not a numberic only type string, contains letters
+       fNum = number.trim()
+
+    }
     return fNum.trim()
 }
 /**

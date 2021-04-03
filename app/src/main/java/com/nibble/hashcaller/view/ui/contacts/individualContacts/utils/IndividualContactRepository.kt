@@ -243,6 +243,8 @@ class IndividualContactRepository(
        }
 
 
+
+
 //   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<Contact>{
 //       var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 //

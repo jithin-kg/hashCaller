@@ -49,7 +49,11 @@ const val INTENT_TYPE_MORE_INFO = 2
 
 const val OPERATION_PENDING = 0
 const val OPERATION_COMPLETED = 1 // to indicate whether a mark operation in call fragment
-                                    //completed or not
+             //completed or not
+
+const val OPERATION_UNBLOCKED = 3
+const val OPERATION_BLOCKED = 4
+
 const val OPERATION_FAILED = 2
 var smsDeletingStarted = false
 var LAST_SMS_SENT = false

@@ -60,6 +60,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 smssendersInfoDAO,
                 mutedSendersDAO
             ) // to get content provided sms
+
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
             val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
             val smsContainerRepository = SMScontainerRepository(
@@ -81,7 +82,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                     var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 
                     for(cntct in result.body()!!.contacts){
-                        val formatedNum = replaceSpecialChars(cntct.phoneNumber)
+                        val formatedNum = formatPhoneNumber(cntct.phoneNumber)
                         val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(
                             formatedNum, 0, cntct.name,
                             Date(), cntct.spamCount)
@@ -117,30 +118,35 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
         for (sms in allsmsincontentProvider){
             Log.d(TAG, "doWork: threadID ${sms.threadID}")
+            var queryNum = ""
 
-            val smssenderInfoAvailableInLocalDb=  smssendersInfoDAO.find(sms.addressString!!)
+                queryNum = formatPhoneNumber(sms.addressString!!)
 
-            if(smssenderInfoAvailableInLocalDb == null){
-                Log.d(TAG, "doWork: no data recieved from server")
+             smssendersInfoDAO.find(queryNum).apply {
+                 if(this == null){
+                     Log.d(TAG, "doWork: no data recieved from server")
 
-                val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
+                     val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
 
-                val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))
+                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
+                     senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, hashedAddress))
 
-            }else{
-                val today = Date()
-                if(isCurrentDateAndPrevDateisGreaterThanLimit(smssenderInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
-                    //We need to check if new data information about the number is available server
-                    //todo uncomment this and run, because this is called always and need to check on that
+                 }else{
+                     val today = Date()
+                     if(isCurrentDateAndPrevDateisGreaterThanLimit(this.informationReceivedDate, NUMBER_OF_DAYS)){
+                         //We need to check if new data information about the number is available server
+                         //todo uncomment this and run, because this is called always and need to check on that
 //                    Log.d(TAG, "doWork: outdated data")
-                    val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
-                    val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                    senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))
-                }
+                         val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
+                         val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
+                         senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))
+                     }
 //                    if(sms.currentDate)
-                //Todo compare dates
+                     //Todo compare dates
+                 }
             }
+
+
 
         }
 

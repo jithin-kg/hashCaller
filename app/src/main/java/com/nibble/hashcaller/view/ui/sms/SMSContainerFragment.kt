@@ -289,7 +289,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        }
 
         bottomSheetDialog.setOnDismissListener {
-            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+            Log.d(TAG, "bottomSheetDialogDismissed")
 
         }
     }

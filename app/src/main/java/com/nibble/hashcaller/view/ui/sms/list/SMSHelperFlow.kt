@@ -14,7 +14,6 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -230,7 +229,7 @@ class SMSHelperFlow(private val context: Context) {
         var r: SMSSendersInfoFromServer? = null
 //        val frmtedNum = replaceSpecialChars(num)
         GlobalScope.launch {
-            r = async {  smssendersInfoDAO!!.find(num) }.await()
+            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
         }.join()
         return r
 
@@ -240,14 +239,13 @@ class SMSHelperFlow(private val context: Context) {
 
             if(sms.addressString != null){
                 var formattedNum = formatPhoneNumber(sms.addressString!!)
-                if(isNumericOnlyString(formattedNum)){
                     val name =   getConactInfoForNumber(formattedNum)
                     if (name != null){
                         sms.name = name
                         sms.nameForDisplay = name
                         sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                     }
-                }
+
 
             }
 

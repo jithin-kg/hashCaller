@@ -242,7 +242,9 @@ class CallContainerViewModel(
      * called when info about a caller comes from server, or db changes
      */
     fun updateWithNewInfoFromServer() = viewModelScope.launch {
-        callLogsMutableLiveData.value = repository!!.getFullCallLogs()
+         repository!!.getFullCallLogs().apply {
+             callLogsMutableLiveData.value = this
+         }
     }
 
     fun clearCallLogDB() = viewModelScope.launch {

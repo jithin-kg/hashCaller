@@ -36,8 +36,8 @@ interface CallersInfoFromServerDAO {
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount,isBlockedByUser =:isBlockedByUser  WHERE contact_address =:contactAddress ")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String, isBlockedByUser:Boolean)
 
-    @Query("UPDATE  callers_info_from_server  SET isBlockedByUser =:isBlockedByUser WHERE contact_address =:contactAddress")
-    suspend fun unBlock(isBlockedByUser:Boolean, contactAddress: kotlin.String)
+    @Query("UPDATE  callers_info_from_server  SET isBlockedByUser =:isBlockedByUser, spamReportCount =:spamCount WHERE contact_address =:contactAddress")
+    suspend fun unBlock(isBlockedByUser:Boolean, contactAddress: kotlin.String, spamCount: Long)
 
     @Query("SELECT * FROM callers_info_from_server")
     fun getAllLiveData()  : LiveData<List<CallersInfoFromServer>>
