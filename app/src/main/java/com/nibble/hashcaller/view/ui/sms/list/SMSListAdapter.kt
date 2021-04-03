@@ -14,6 +14,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.extensions.setCount
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -56,11 +60,11 @@ class SMSListAdapter(private val context: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-//       if(viewType == VIEW_TYPE_SPAM){
-//            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
-//            return SpamViewHolder(view)
-//        }
-         if(viewType == VIEW_TYPE_LOADING){
+       if(viewType == VIEW_TYPE_SPAM){
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
+            return SpamViewHolder(view)
+        }
+        else if(viewType == VIEW_TYPE_LOADING){
            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
            return DummyLoadingViewHolder(view)
        }
@@ -74,10 +78,10 @@ class SMSListAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(this.smsList.isNotEmpty() && position < smsList.size)
-//            if(this.smsList[position].spamCount > 0){
-//                return VIEW_TYPE_SPAM
-//            }
-             if(this.smsList[position].isDummy){
+            if(this.smsList[position].spamCount > 0){
+                return VIEW_TYPE_SPAM
+            }
+            else if(this.smsList[position].isDummy){
                 return VIEW_TYPE_LOADING
             }
 
@@ -157,17 +161,20 @@ class SMSListAdapter(private val context: Context,
              * This is important to check else double/ duplicate marking of items occur
              */
             if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
-                view.smsMarkedSpam.visibility = View.VISIBLE
+                view.smsMarkedSpam.beVisible()
             }else{
                 view.smsMarkedSpam.visibility = View.INVISIBLE
 
             }
             view.tvSMSMPeekSpam.text = sms.msgString
-            view.tvUnreadSMSCountSpam.text = sms.unReadSMSCount.toString()
+            view.tvUnreadSMSCountSpam.setCount(sms.unReadSMSCount)
+            if(sms.unReadSMSCount==0){
+                view.tvUnreadSMSCountSpam.beGone()
+            }
             if(sms.unReadSMSCount == 0 ){
-                view.tvUnreadSMSCountSpam.visibility = View.GONE
+                view.cardViewSMSSpamCount.beInvisible()
             }else{
-                view.tvUnreadSMSCountSpam.visibility = View.VISIBLE
+                view.tvUnreadSMSCountSpam.beVisible()
             }
 
 
@@ -240,11 +247,11 @@ class SMSListAdapter(private val context: Context,
             view.tvSMSMPeek.text = sms.msgString
             Log.d(TAG, "bind: messageString is ${sms.msgString}")
 
-            view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
+            view.tvUnreadSMSCount.setCount(sms.unReadSMSCount)
             if(sms.unReadSMSCount == 0 ){
-                view.tvUnreadSMSCount.visibility = View.GONE
+                view.cardViewSMSUnreadCount.beInvisible()
             }else{
-                view.tvUnreadSMSCount.visibility = View.VISIBLE
+                view.cardViewSMSUnreadCount.beVisible()
             }
 
 
@@ -268,12 +275,6 @@ class SMSListAdapter(private val context: Context,
                 onContactItemClickListener(v, sms.threadID, this.adapterPosition,
                     sms.addresStringNonFormated!!
                 )
-
-            }
-            if(sms.spamCount >0){
-                name.text = "spammer"
-            }else{
-                name.text = "no spammer"
 
             }
 

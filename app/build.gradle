@@ -204,7 +204,11 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-
+    //permission livedata
+////For coroutines
+//    implementation 'com.sagar:coroutinespermission:1.0.0'
+////For LiveData
+//    implementation 'com.sagar:livedatapermission:1.0.0'
 
 //    //navifation drawer
 //    implementation 'com.google.android.material:material:1.0.0'

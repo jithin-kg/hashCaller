@@ -73,6 +73,7 @@
             motion:layout_constraintDimensionRatio="1"
             motion:layout_constraintStart_toStartOf="parent"
             android:id="@+id/tvFirstLetter"
+            android:textSize="36sp"
             motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp" />
         <Constraint

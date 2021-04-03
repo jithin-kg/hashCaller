@@ -17,6 +17,7 @@
         android:layout_width="68dp"
         android:layout_height="68dp"
         android:fromDegrees="0"
+        android:elevation="6dp"
         android:toDegrees="180"
         android:visibility="invisible"
         android:gravity="center_vertical|center_horizontal"
@@ -35,6 +36,7 @@
         android:gravity="center_vertical|center_horizontal"
         android:textColor="@color/colorWhite"
         android:textSize="24sp"
+        android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -56,12 +58,15 @@
         android:id="@+id/textVSMSCntctName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+
         android:ellipsize="end"
         android:maxLines="1"
-
         android:text="name"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintEnd_toStartOf="@+id/tvUnreadSMSCount"
+        app:layout_constraintEnd_toStartOf="@+id/tvSMSTime"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,38 +82,62 @@
         android:id="@+id/tvSMSMPeek"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="116dp"
+        android:layout_marginEnd="16dp"
         android:maxLines="2"
         android:text="sadf"
         app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/pgBarSmsListItem"
+        app:layout_constraintEnd_toStartOf="@+id/cardViewSMSUnreadCount"
+        app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintTop_toBottomOf="@+id/textVSMSCntctName" />
+
+    <!--important to give alpha to 12 % according to material design list guidelines-->
 
     <TextView
         android:id="@+id/tvSMSTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
         android:text="time"
+        app:layout_constraintBottom_toBottomOf="@+id/textVSMSCntctName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/tvUnreadSMSCount"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvUnreadSMSCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="count"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tvSMSTime"
-        app:layout_constraintStart_toEndOf="@+id/textVSMSCntctName" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewSMSUnreadCount"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="24dp"
+        app:cardBackgroundColor="@color/secure_lock_color"
+        app:cardCornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSMSMPeek"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvSMSMPeek">
 
-<!--important to give alpha to 12 % according to material design list guidelines-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvUnreadSMSCount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="99+"
+
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
 
     <ImageView
         android:id="@+id/imgViewDevider"

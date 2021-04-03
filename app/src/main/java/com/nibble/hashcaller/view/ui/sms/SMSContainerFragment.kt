@@ -56,6 +56,7 @@ import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
+import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -193,28 +194,29 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
             //this caused to view not updating afte returning from individual sms activity,
             //after user blockes a number and comes that the spam counts were not getting updated
-//            if(value == true){
-////                this.viewMesages.btnSmsPermission.visibility = View.GONE
-////                this.viewMesages.tvSMSPermission.visibility = View.GONE
-//
-//                observeSMSList()
-//            }else{
-////                this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
-////                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
-//
-//                if (this.smsListVIewModel!! != null  ) {
-//                    if(this.smsListVIewModel?.SMS != null)
-//                        if(this.smsListVIewModel.SMS!!.hasObservers())
-//                            this.smsListVIewModel?.SMS?.removeObservers(this);
-//                }
-//
-//
-//            }
-            if(this.smsListVIewModel.SMS.hasObservers()){
-                Log.d(TAG, "observePermissionLiveData: already have observer")
+            if(value == true){
+//                this.viewMesages.btnSmsPermission.visibility = View.GONE
+//                this.viewMesages.tvSMSPermission.visibility = View.GONE
+                if(this.smsListVIewModel.SMS.hasObservers()){
+                    Log.d(TAG, "observePermissionLiveData: already have observer")
+                }else{
+                    observeSMSList()
+                    Log.d(TAG, "observePermissionLiveData: do not have observer")
+                }
+
             }else{
-                Log.d(TAG, "observePermissionLiveData: do not have observer")
+//                this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
+//                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
+                if (this.smsListVIewModel!! != null  ) {
+                    if(this.smsListVIewModel?.SMS != null)
+                        if(this.smsListVIewModel.SMS!!.hasObservers())
+                            this.smsListVIewModel?.SMS?.removeObservers(this);
+                }
+
+
             }
+
+
         })
     }
 

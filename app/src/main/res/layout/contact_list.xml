@@ -16,7 +16,8 @@
         android:id="@+id/textViewcontactCrclr"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="24dp"
+        android:elevation="4dp"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="#ffff"
         android:textSize="24sp"
@@ -63,7 +64,8 @@
         android:id="@+id/contactCard"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="32dp"
+        android:elevation="4dp"
+        android:layout_marginStart="24dp"
         android:gravity="center_vertical|center_horizontal"
         app:cardCornerRadius="25dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,6 +75,7 @@
             android:id="@+id/imgViewCntct"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:elevation="4dp"
             android:transitionName="contactImageTransition"
             android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>

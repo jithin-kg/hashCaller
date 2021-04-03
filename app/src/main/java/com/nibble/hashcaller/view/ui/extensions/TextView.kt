@@ -11,6 +11,15 @@ fun TextView.setColorForText(textColor: Int) {
 }
 
 
+fun TextView.setCount(count:Int){
+    if(count > 99){
+        text = "99+"
+    }
+    else{
+        text = count.toString()
+    }
+}
+
 fun TextView.setRandomBackgroundCircle(color: Int? =null): Int {
     val rand = Random()
     var num = rand.nextInt(5 - 1) + 1
