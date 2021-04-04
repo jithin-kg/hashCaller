@@ -21,15 +21,15 @@
         />
 
     <item
-        android:id="@+id/bottombaritem_spam"
-        android:icon="@drawable/ic_baseline_block_24"
-        android:title="Block"
+        android:id="@+id/bottombaritem_search"
+        android:icon="@drawable/ic_baseline_search"
+        android:title="Search"
         app:showAsAction="ifRoom|withText"
       />
-    <item
-        android:id="@+id/bottombaritem_premium"
-        android:icon="@drawable/ic_baseline_block_24"
-        android:title="Block"
-        app:showAsAction="ifRoom|withText"
-        />
+<!--    <item-->
+<!--        android:id="@+id/bottombaritem_premium"-->
+<!--        android:icon="@drawable/ic_baseline_block_24"-->
+<!--        android:title="Block"-->
+<!--        app:showAsAction="ifRoom|withText"-->
+<!--        />-->
 </menu>

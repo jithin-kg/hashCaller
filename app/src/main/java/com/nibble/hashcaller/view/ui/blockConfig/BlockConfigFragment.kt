@@ -39,24 +39,24 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if(savedInstanceState!= null){
-            if(childFragmentManager.getFragment(savedInstanceState, "blkListFragment") !=null)
-            this.blkListFragment = childFragmentManager.getFragment(savedInstanceState, "blkListFragment") as BlkListFragment
+//            if(childFragmentManager.getFragment(savedInstanceState, "blkListFragment") !=null)
+//            this.blkListFragment = childFragmentManager.getFragment(savedInstanceState, "blkListFragment") as BlkListFragment
 
         }
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if(this.blkListFragment != null){
-            if(this.blkListFragment!!.isAdded){
-                childFragmentManager.putFragment(outState,"blkListFragment", this.blkListFragment!!)
-            }
-        }
+//        if(this.blkListFragment != null){
+//            if(this.blkListFragment!!.isAdded){
+//                childFragmentManager.putFragment(outState,"blkListFragment", this.blkListFragment!!)
+//            }
+//        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         intialize()
-        setupViewPager(viewPagerBlockConfig)
-        tabLayoutBlockConfig?.setupWithViewPager(viewPagerBlockConfig)
+//        setupViewPager(viewPagerBlockConfig)
+//        tabLayoutBlockConfig?.setupWithViewPager(viewPagerBlockConfig)
     }
 
     private fun intialize() {

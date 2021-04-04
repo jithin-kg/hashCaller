@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -36,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
+import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -55,8 +57,14 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
+import kotlinx.android.synthetic.main.fragment_message_container.MessagesFragment
+import kotlinx.android.synthetic.main.fragment_message_container.imgBtnTbrBlock
+import kotlinx.android.synthetic.main.fragment_message_container.imgBtnTbrDelete
+import kotlinx.android.synthetic.main.fragment_message_container.imgBtnTbrMuteSender
+import kotlinx.android.synthetic.main.fragment_message_container.tvSelectedCount
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
+import kotlinx.android.synthetic.main.fragment_test.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -92,7 +100,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private  var selectedRadioButton: RadioButton? = null
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isPaused = false
-
+    private lateinit var toolbar : Toolbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
@@ -119,10 +127,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         }
 //        initListeners()
 //        val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
+//        toolbar = viewmo
 
         observeSendersInfoFromServer()
         observePermissionLiveData()
         observeNumOfRowsDeleted()
+
         this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
         registerForContextMenu( this.recyclerV) // context menu registering
         setupBottomSheet()
@@ -239,12 +249,14 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         viewMesages.imgBtnTbrBlock.setOnClickListener(this)
         viewMesages.imgBtnTbrMore.setOnClickListener(this)
         viewMesages.imgBtnTbrDelete.setOnClickListener(this)
+        viewMesages.imgBtnAvatarMain.setOnClickListener(this)
         this.fabSendNewSMS.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
         bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
+
     }
 
     /**
@@ -576,6 +588,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             R.id.imgBtnTbrMore->{
                 showPopupMenu(R.menu.sms_list_more_popup,imgBtnTbrMore)
             }
+            R.id.imgBtnAvatarMain ->{
+               requireContext().startSettingsActivity(activity)
+            }
 
             else ->{
                 smsListVIewModel.getUnrealMsgCount()
@@ -593,6 +608,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         popup.show()
     }
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+        Log.d(TAG, "onMenuItemClick: ")
         when (menuItem!!.itemId){
          R.id.popupMarkAllAsRead->{
              smsListVIewModel.markSMSAsRead(null)

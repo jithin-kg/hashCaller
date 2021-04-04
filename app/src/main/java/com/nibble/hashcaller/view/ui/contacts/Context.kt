@@ -6,17 +6,13 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
+import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import java.util.*
 
 
@@ -26,6 +22,11 @@ fun Context.isVisible(view:View): Boolean {
         return true
     }
     return false
+}
+
+fun Context.startSettingsActivity(activity: FragmentActivity?) {
+    val intent = Intent(activity, SettingsActivity::class.java)
+    startActivity(intent)
 }
 
 fun Context.makeCall(num:String){

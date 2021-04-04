@@ -24,4 +24,5 @@
     <dimen name="text_size_list_item">16sp</dimen>
     <dimen name="list_item_margin_start">16dp</dimen>
     <dimen name="margin_individual_contact_item_list">8dp</dimen>
+    <dimen name="divider_with_settings">1dp</dimen>
 </resources>

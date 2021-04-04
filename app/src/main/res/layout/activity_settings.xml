@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.ui.settings.SettingsActivity">
+
+    <ImageButton
+        android:id="@+id/imgBtnBackMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="33dp"
+        android:text="Settings"
+        android:textSize="16sp"
+        android:textColor="@color/textColor"
+        app:layout_constraintBottom_toBottomOf="@+id/imgBtnBackMain"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnBackMain"
+        app:layout_constraintTop_toTopOf="@+id/imgBtnBackMain" />
+
+    <ImageView
+        android:id="@+id/imgViewAvatarMain"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBackMain"
+        app:srcCompat="@drawable/circular_avatar_main_background" />
+
+    <ImageView
+        android:id="@+id/imgViewDivierSettings"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_with_settings"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewAvatarMain"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+    <TextView
+        android:id="@+id/tvFirstLetterMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="J"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="32sp"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toTopOf="@+id/imgViewAvatarMain"
+        app:layout_constraintBottom_toBottomOf="@+id/imgViewAvatarMain"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="102dp" />
+    <TextView
+        android:id="@+id/tvFullNameMain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
+        android:text="Jithin KG"
+        android:textColor="@color/textColor"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imgViewAvatarMain"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnEditProfile"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toTopOf="@+id/imgViewAvatarMain" />
+    <ImageButton
+        android:id="@+id/imgBtnEditProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFullNameMain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvFullNameMain"
+        app:srcCompat="@drawable/ic_baseline_edit_24" />
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:textColor="@color/textColor"
+        android:layout_marginEnd="16dp"
+        android:text="+918086176336324423"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toBottomOf="@+id/tvFullNameMain" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView6"
+        app:layout_constraintStart_toStartOf="@+id/imageView6"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings2"
+        app:srcCompat="@drawable/ic_baseline_notifications_off" />
+
+    <ImageView
+        android:id="@+id/imgViewDivierSettings3"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_with_settings"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/bubbler_one"
+        android:letterSpacing="0.1"
+        android:text="Manage Muted numbers"
+        android:textColor="@color/textColor"
+        android:textScaleX="0.65"
+
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toTopOf="@+id/imageView5"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings"
+        app:srcCompat="@drawable/ic_baseline_block_24" />
+
+    <ImageView
+        android:id="@+id/imgViewDivierSettings2"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_with_settings"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView21"
+        app:layout_constraintTop_toBottomOf="@+id/imageView6"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+    <TextView
+        android:id="@+id/textView21"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/bubbler_one"
+        android:text="Manage blocking"
+        android:textSize="20dp"
+        android:textColor="@color/textColor"
+        android:textScaleX="0.65"
+        android:letterSpacing="0.1"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView6"
+        app:layout_constraintTop_toTopOf="@+id/imageView6" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="64dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView5"
+        app:layout_constraintStart_toStartOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:srcCompat="@drawable/ic_baseline_person_add_24" />
+
+    <TextView
+        android:id="@+id/textView22"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/bubbler_one"
+        android:letterSpacing="0.1"
+        android:text="Invite friends"
+        android:textColor="@color/textColor"
+        android:textScaleX="0.65"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <ImageView
+        android:id="@+id/imgViewDivierSettings4"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_with_settings"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView22"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="64dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:srcCompat="@drawable/ic_baseline_verified_user_24" />
+
+    <TextView
+        android:id="@+id/textView24"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Privacy policy"
+        android:letterSpacing="0.1"
+        android:textColor="@color/textColor"
+        android:textScaleX="0.65"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView22"
+        app:layout_constraintTop_toTopOf="@+id/imageView7" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

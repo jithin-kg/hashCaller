@@ -3,7 +3,6 @@ package com.nibble.hashcaller.view.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -21,7 +20,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -43,22 +41,15 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
-import com.nibble.hashcaller.utils.callHandlers.base.BaseActivity
-import com.nibble.hashcaller.utils.callHandlers.base.events.PermissionDenied
-import com.nibble.hashcaller.utils.callHandlers.base.events.PhoneManifestPermissionsEnabled
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
-import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
 import com.nibble.hashcaller.view.ui.contacts.requestScreeningRole
-import com.nibble.hashcaller.view.ui.contacts.search.SearchFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -72,7 +63,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.AppSettingsDialog
 
 /**
  * This is a extension function which set the default fragment
@@ -97,7 +87,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
-    private lateinit var blockConfigFragment: BlockConfigFragment
+//    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
@@ -222,7 +212,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
             this.messagesFragment = SMSContainerFragment()
-            this.blockConfigFragment = BlockConfigFragment()
+//            this.blockConfigFragment = BlockConfigFragment()
             this.contactFragment = ContactsFragment()
             this.callFragment = CallFragment()
             this.dialerFragment = DialerFragment()
@@ -287,7 +277,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState,"callFragment") as CallFragment
         this.messagesFragment = supportFragmentManager.getFragment(savedInstanceState,"messagesFragment") as SMSContainerFragment
-        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
+//        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
         this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsFragment
         this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
 //        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
@@ -320,8 +310,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.bottombaritem_spam -> {
-                    showBlockConfigFragment()
+                R.id.bottombaritem_search -> {
+//                    showBlockConfigFragment()
 //                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
@@ -340,7 +330,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState,"contactFragment", this.contactFragment)
         supportFragmentManager.putFragment(outState,"dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState,"messagesFragment", this.messagesFragment)
-        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
+//        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
 //        if(this.searchFragment!=null)
 //            if(this.searchFragment?.isAdded!!)
 //                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment!!)
@@ -379,9 +369,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CONTACT_FRAGMENT){
             contactFragment.isDefaultFgmnt = true
-        }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_BLOCK_FRAGMENT){
-            blockConfigFragment.isDefaultFgmnt = true
-        }else{
+        }
+
+//        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_BLOCK_FRAGMENT){
+//            blockConfigFragment.isDefaultFgmnt = true
+//        }
+
+        else{
             dialerFragment.isDefaultFgmnt = true
         }
     }
@@ -399,9 +393,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (callFragment.isAdded) {
             ft.hide(callFragment)
         }
-        if(blockConfigFragment.isAdded){
-            ft.hide(blockConfigFragment)
-        }
+//        if(blockConfigFragment.isAdded){
+//            ft.hide(blockConfigFragment)
+//        }
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
         }
@@ -465,8 +459,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
         ft.add(R.id.frame_fragmentholder, contactFragment)
         hideThisFragment(ft, contactFragment, contactFragment)
-        ft.add(R.id.frame_fragmentholder, blockConfigFragment)
-        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
+//        ft.add(R.id.frame_fragmentholder, blockConfigFragment)
+//        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
 
         ft.add(R.id.frame_fragmentholder, callFragment)
         hideThisFragment(ft, callFragment, callFragment)
@@ -499,12 +493,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun showBlockConfigFragment() {
         val ft = supportFragmentManager.beginTransaction()
-        if (blockConfigFragment.isAdded) { // if the fragment is already in container
-            ft.show(blockConfigFragment)
-            unMarkItems()
-            messagesFragment.showSearchView()
-
-        }
+//        if (blockConfigFragment.isAdded) { // if the fragment is already in container
+//            ft.show(blockConfigFragment)
+//            unMarkItems()
+//            messagesFragment.showSearchView()
+//
+//        }
         // Hide fragment contact
         if (contactFragment.isAdded) {
             ft.hide(contactFragment)
@@ -539,9 +533,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         }
 //        // Hide fragment B
-        if (blockConfigFragment.isAdded) {
-            ft.hide(blockConfigFragment)
-        }
+//        if (blockConfigFragment.isAdded) {
+//            ft.hide(blockConfigFragment)
+//        }
 //        // Hide fragment C
         if (callFragment.isAdded) {
             ft.hide(callFragment)
@@ -577,9 +571,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         }
         // Hide fragment B
-        if (blockConfigFragment.isAdded) {
-            ft.hide(blockConfigFragment)
-        }
+//        if (blockConfigFragment.isAdded) {
+//            ft.hide(blockConfigFragment)
+//        }
         // Hide fragment C
         if (contactFragment.isAdded) {
             ft.hide(contactFragment)
@@ -604,12 +598,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val ft = supportFragmentManager.beginTransaction()
 
         // Hide fragment B
-        if (blockConfigFragment.isAdded) {
-            ft.hide(blockConfigFragment)
-            unMarkItems()
-            messagesFragment.showSearchView()
-
-        }
+//        if (blockConfigFragment.isAdded) {
+//            ft.hide(blockConfigFragment)
+//            unMarkItems()
+//            messagesFragment.showSearchView()
+//
+//        }
         // Hide fragment C
         if (contactFragment.isAdded) {
             ft.hide(contactFragment)

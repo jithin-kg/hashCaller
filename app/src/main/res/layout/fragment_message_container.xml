@@ -16,33 +16,59 @@
         android:id="@+id/appbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:elevation="0dp"
+        app:elevation="2dp"
         android:elevation="0dp"
-       android:layout_margin="12dp"
         app:layout_scrollFlags="scroll|enterAlways"
         android:background="@color/colorBackground"
 
         >
         <!--!! important to five elecation, elevation give shadow-->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarSmS"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/toolbar_background"
-            app:elevation="4dp"
-            android:elevation="4dp"
-            android:layout_margin="4dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
-            app:layout_scrollFlags="scroll|enterAlways">
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbarSmS"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@drawable/toolbar_background"-->
+<!--            app:elevation="4dp"-->
+<!--            android:elevation="4dp"-->
+<!--            android:layout_margin="4dp"-->
+<!--            app:contentInsetStartWithNavigation="0dp"-->
+<!--            app:navigationIcon="@drawable/ic_baseline_menu_24"-->
+<!--            app:layout_scrollFlags="scroll|enterAlways">-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/smsToolbarLayoutItems"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="70dp"
+
                 android:layout_marginStart="0dp"
+                app:layout_scrollFlags="scroll|enterAlways"
+                android:background="@drawable/toolbar_background"
                 android:backgroundTint="@color/colorBackground">
 
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnAvatarMain"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/circular_avatar_main_background"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/searchViewSms"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+
+                    android:text="J"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintStart_toStartOf="@id/imgBtnAvatarMain"
+                    app:layout_constraintEnd_toEndOf="@id/imgBtnAvatarMain"
+                    app:layout_constraintTop_toTopOf="@id/imgBtnAvatarMain"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnAvatarMain"
+                    />
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnTbrMore"
                     android:layout_width="16dp"
@@ -114,6 +140,7 @@
                     android:backgroundTint="@color/colorBackground"
                     android:cursorVisible="false"
                     android:focusable="false"
+                    android:layout_marginStart="24dp"
                     android:focusedByDefault="false"
                     android:hint=" Search in sms"
                     android:iconifiedByDefault="false"
@@ -122,13 +149,13 @@
                     android:queryHint="Search numbers, names"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"
-                    app:layout_constraintStart_toEndOf="@+id/tvSelectedCount"
+                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMain"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </androidx.appcompat.widget.Toolbar>
+<!--        </androidx.appcompat.widget.Toolbar>-->
 
     </com.google.android.material.appbar.AppBarLayout>
     <com.facebook.shimmer.ShimmerFrameLayout
