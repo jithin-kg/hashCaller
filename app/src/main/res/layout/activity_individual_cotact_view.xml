@@ -128,9 +128,18 @@
         app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIndividualContact"
         app:layout_constraintStart_toStartOf="@+id/imgBtnCallIndividualContact"
         app:layout_constraintEnd_toEndOf="@+id/imgBtnCallIndividualContact"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintBottom_toTopOf="@+id/imgViewdividerIndvdlCntct"
         />
-
+    <ImageView
+        android:id="@+id/imgViewdividerIndvdlCntct"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_with_settings"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvBlockBtnInfo"
+        app:srcCompat="@drawable/horizontal_line_settings" />
     <ImageButton
         android:id="@+id/imgBtnSMS"
         android:layout_width="wrap_content"
@@ -153,7 +162,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imgBtnSMS"
         app:layout_constraintStart_toStartOf="@+id/imgBtnSMS"
         app:layout_constraintEnd_toEndOf="@+id/imgBtnSMS"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintBottom_toTopOf="@+id/imgViewdividerIndvdlCntct"
         />
 
     <ImageButton
@@ -176,7 +185,7 @@
         android:layout_marginBottom="8dp"
         android:text="Block"
 
-        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintBottom_toTopOf="@+id/imgViewdividerIndvdlCntct"
         app:layout_constraintEnd_toEndOf="@+id/imgBtnBlockIndividualContact"
         app:layout_constraintStart_toStartOf="@+id/imgBtnBlockIndividualContact"
         app:layout_constraintTop_toBottomOf="@+id/imgBtnBlockIndividualContact" />
@@ -185,11 +194,9 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="18dp"
-        android:background="@color/color_round_btn"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvBlockBtnInfo">
+        app:layout_constraintTop_toBottomOf="@+id/imgViewdividerIndvdlCntct">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -208,6 +215,14 @@
                 android:layout_marginTop="8dp"
                 android:text="This number is not in your contact"
                 />
+            <ImageView
+                android:id="@+id/imgViewIndvdlCntct2"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:layout_height="@dimen/divider_with_settings"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
+
 
             <TextView
                 android:id="@+id/tvSimIndividualContact"
@@ -222,6 +237,13 @@
                 android:layout_marginStart="@dimen/margin_start_individual_contact_items"
                 android:padding="20dp"
                 />
+            <ImageView
+                android:id="@+id/imgViewIndvdlCntct3"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:layout_height="@dimen/divider_with_settings"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -234,6 +256,13 @@
                 android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
                 android:layout_marginStart="@dimen/margin_start_individual_contact_items"
                 android:text="location" />
+            <ImageView
+                android:id="@+id/imgViewIndvdlCntct4"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:layout_height="@dimen/divider_with_settings"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -274,7 +303,13 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
+            <ImageView
+                android:id="@+id/imgViewIndvdlCntct5"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:layout_height="@dimen/divider_with_settings"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
 
                 <Switch
                     android:id="@+id/switchIndividualContact"
@@ -283,7 +318,6 @@
                     android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
                     android:text="Mute this person"
                     android:padding="20dp"
-                    android:elevation="2dp"
                     android:layout_marginBottom="@dimen/margin_individual_contact_item_list"
                     android:layout_marginTop="@dimen/margin_individual_contact_item_list"
                     android:background="@color/colorBackground"

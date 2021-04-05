@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+        <OnSwipe
+            motion:onTouchUp="autoComplete"
+            motion:dragDirection="dragUp"
+            motion:touchAnchorId="@id/scrollViewBlockManage" />
+       <KeyFrameSet>
+       </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toEndOf="@+id/imgBtnBackBlk"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            motion:layout_constraintTop_toBottomOf="@+id/imgBtnBackBlk"
+            motion:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginTop="64dp"
+            android:id="@+id/txtvLargeBlockSettings" />
+        <Constraint
+            android:id="@+id/tvSmallBlock"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toEndOf="@+id/imgBtnBackBlk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            motion:layout_constraintTop_toBottomOf="@+id/imgBtnBackBlk"
+            motion:layout_constraintHorizontal_bias="0.226" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/txtvLargeBlockSettings"
+            android:layout_height="wrap_content"
+            motion:layout_constraintHorizontal_bias="0.0"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:textSize="16sp"
+            android:layout_marginEnd="16dp"
+            android:visibility="invisible"
+            motion:layout_constraintTop_toBottomOf="@+id/imgBtnBackBlk"
+            motion:layout_constraintStart_toStartOf="@+id/imgBtnBackBlk" />
+        <Constraint
+            android:layout_height="wrap_content"
+            motion:layout_constraintStart_toEndOf="@+id/imgBtnBackBlk"
+            motion:layout_constraintTop_toTopOf="@+id/imgBtnBackBlk"
+            android:layout_width="wrap_content"
+            android:id="@+id/tvSmallBlock"
+            motion:layout_constraintBottom_toBottomOf="@+id/imgBtnBackBlk"
+            android:layout_marginStart="32dp"
+            android:visibility="visible" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            motion:layout_constraintTop_toBottomOf="@+id/tvSmallBlock"
+            android:alpha="0.12"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"
+            android:id="@+id/imgViewDivierBlock1"
+            android:visibility="invisible" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock1"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="0dp"
+            android:id="@+id/scrollViewBlockManage" />
+    </ConstraintSet>
+</MotionScene>

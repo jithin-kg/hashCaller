@@ -25,4 +25,19 @@
     <dimen name="list_item_margin_start">16dp</dimen>
     <dimen name="margin_individual_contact_item_list">8dp</dimen>
     <dimen name="divider_with_settings">1dp</dimen>
+    <dimen name="indvdl_divider_margin_start">20dp</dimen>
+    <dimen name="settings_icons_width">24dp</dimen>
+    <dimen name="settings_text_size">16sp</dimen>
+    <dimen name="margin_top_settings_items">64dp</dimen>
+    <dimen name="margin_start_setting_img">32dp</dimen>
+    <dimen name="img_btn_back_margin">16dp</dimen>
+    <dimen name="margin_top_block_settings_list">32dp</dimen>
+    <dimen name="list_item_break_margin">32dp</dimen>
+    <dimen name="text_size_list_headings">16sp</dimen>
+    <dimen name="margin_top_info_text_block_settings">8dp</dimen>
+    <dimen name="tv_margin_end_block_settings">32dp</dimen>
+    <dimen name="margin_start_imgv_block_settings">32dp</dimen>
+    <dimen name="margin_top_divider_blk">16dp</dimen>
+    <dimen name="padding_layout_block_by_pattern">4dp</dimen>
+    <dimen name="margin_txt_block_by">8dp</dimen>
 </resources>

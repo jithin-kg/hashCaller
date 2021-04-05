@@ -9,10 +9,10 @@
 <!--    <color name="colorPrimary">#4B53BC</color>-->
     <color name="colorPrimary">#4F57BF</color>
     <color name="colorPrimaryLowOpacity">#944F57BF</color>
-    <color name="colorPrimaryLight">#2374BF</color>
+    <color name="colorPrimaryLight">#8383f2</color>
 <!--    <color name="colorPrimaryDark">#6264AA</color>-->
     <color name="colorPrimaryDark">#ffff</color>
-    <color name="colorPrimaryDarkest">#4A51B6</color>
+    <color name="colorPrimaryDarkest">#082d8e</color>
 
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
