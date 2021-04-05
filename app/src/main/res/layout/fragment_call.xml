@@ -188,13 +188,14 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-
+<!--important android:overScrollMode="never" to remove shadow-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewCallHistoryLogs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBackground"
         android:clipToPadding="false"
+        android:overScrollMode="never"
         android:orientation="vertical"
         android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

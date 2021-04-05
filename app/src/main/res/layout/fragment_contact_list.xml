@@ -81,7 +81,7 @@
             <include layout="@layout/skeleton_shimmer_layout" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </com.facebook.shimmer.ShimmerFrameLayout>
-
+<!--important, android:overScrollMode="never" to remove shadows-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewContactsList"
         android:layout_width="match_parent"
@@ -90,6 +90,7 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingBottom="@dimen/recycler_view_padding_bottom"
+        android:overScrollMode="never"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list" />
 

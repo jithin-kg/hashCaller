@@ -69,11 +69,12 @@
         app:srcCompat="@drawable/horizontal_line_settings"
 
         />
-
+<!--important android:overScrollMode="never" to remove shadow on scrolling down and up-->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollViewBlockManage"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
