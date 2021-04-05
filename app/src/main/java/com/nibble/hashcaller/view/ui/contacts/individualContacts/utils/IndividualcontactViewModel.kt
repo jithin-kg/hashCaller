@@ -31,6 +31,7 @@ class IndividualcontactViewModel(
 )
     : ViewModel()  {
 
+    var contactId = 0L
     val mutedContacts = mutedContactsDAO.get().asLiveData()
     val callersinfoLivedata = callersInfoFromServer.getFlow().asLiveData()
 
@@ -84,7 +85,12 @@ class IndividualcontactViewModel(
     }
 
     fun getContactFromContentProvider(phoneNum: String?): LiveData<Contact?> = liveData {
-        emit(repository.getContactDetailForNumber(phoneNum!!))
+        val res = repository.getContactDetailForNumber(phoneNum!!)
+        if (res != null) {
+            contactId = res.id
+            emit(res)
+        }
+
 
     }
 

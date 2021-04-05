@@ -10,11 +10,13 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.CompoundButton
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -26,8 +28,9 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.Individua
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
-import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
+import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -39,7 +42,8 @@ import kotlinx.android.synthetic.main.image_layout.*
 
 
 class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
-    CompoundButton.OnCheckedChangeListener, MyUndoListener.SnackBarListner {
+    CompoundButton.OnCheckedChangeListener, MyUndoListener.SnackBarListner,
+    PopupMenu.OnMenuItemClickListener {
     private lateinit var viewModel:IndividualcontactViewModel
     private lateinit var photoURI:String
     private  var color  = 1
@@ -77,8 +81,13 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
             Log.d(TAG, "phone num is : $phoneNum")
 
 
-        viewModel =ViewModelProvider(this, IndividualContactInjectorUtil.provideUserInjectorUtil(this)).get(
-            IndividualcontactViewModel::class.java)
+        viewModel =ViewModelProvider(
+            this, IndividualContactInjectorUtil.provideUserInjectorUtil(
+                this
+            )
+        ).get(
+            IndividualcontactViewModel::class.java
+        )
         setDetailsInview(phoneNum, name)
 //        viewModel.photoUri.observe(this, Observer { photoUri->
 //            Log.d(TAG, "observer photo uri $photoUri")
@@ -121,13 +130,13 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun observeBlockedDetails() {
-        viewModel.callersinfoLivedata.observe(this, Observer { lst->
+        viewModel.callersinfoLivedata.observe(this, Observer { lst ->
             viewModel.isThisAddressBlockedByUser(phoneNum).observe(this, Observer {
-                if(it == true){
+                if (it == true) {
                     tvBlockBtnInfo.text = "Unblock"
                     imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
                     isBlocked = true
-                }else{
+                } else {
                     tvBlockBtnInfo.text = "Block"
                     imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
 
@@ -139,7 +148,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun getContactMutedInformation() {
 
-        viewModel.mutedContacts.observe(this, Observer {lst->
+        viewModel.mutedContacts.observe(this, Observer { lst ->
             viewModel.isThisAddressMuted(phoneNum, lst).observe(this, Observer {
                 switchIndividualContact.isChecked = it
             })
@@ -148,9 +157,9 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun getContactFromContentProvider(phoneNum: String?) {
         viewModel.getContactFromContentProvider(phoneNum).observe(this, Observer {
-            if(it!=null){
+            if (it != null) {
                 tvisInContact.text = "This person is in your contacts"
-            }else{
+            } else {
                 tvisInContact.text = "This person is not in your contacts"
 
             }
@@ -168,7 +177,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     @SuppressLint("LongLogTag")
     private fun observeContactMoreInfo() {
         this.viewModel.mt.observe(this, Observer {
-            if(it!=null){
+            if (it != null) {
                 Log.d(TAG, "observeContactMoreInfo:  $it")
 //                textViewLocation.text = it?.location
 //                textViewCarrier.text = it?.carrier
@@ -190,6 +199,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         imgBtnBack.setOnClickListener(this)
         imgBtnCallIndividualContact.setOnClickListener(this)
         imgBtnSMS.setOnClickListener(this)
+        imgBtnMoreIndividualCntct.setOnClickListener(this)
 
 
         bottomSheetDialog.radioS.setOnClickListener(this)
@@ -236,29 +246,34 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     override fun onClick(v: View?) {
 
         when(v?.id){
-            R.id.imgBtnBlockIndividualContact ->{
-                if(!isBlocked){
+            R.id.imgBtnBlockIndividualContact -> {
+                if (!isBlocked) {
                     showBottomSheetDialog()
 
-                }else{
+                } else {
                     blockOrUnBlock()
                 }
 
 
             }
-            R.id.imgBtnBack->{
+            R.id.imgBtnMoreIndividualCntct -> {
+                val popup = getMyPopupMenu(R.menu.individual_contact_popup_menu, imgBtnMoreIndividualCntct)
+                popup.setOnMenuItemClickListener(this)
+                popup.show()
+            }
+            R.id.imgBtnBack -> {
                 finish()
             }
-            R.id.imgBtnCallIndividualContact ->{
+            R.id.imgBtnCallIndividualContact -> {
                 makeCall(phoneNum)
             }
-            R.id.imgBtnSMS ->{
+            R.id.imgBtnSMS -> {
                 startIndividualSMS()
             }
-            R.id.switchIndividualContact ->{
+            R.id.switchIndividualContact -> {
                 muteOrUnmute()
             }
-            R.id.btnBlock ->{
+            R.id.btnBlock -> {
 
                 blockOrUnBlock()
 
@@ -275,10 +290,10 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         if(v is RadioButton){
 
             when(v.id){
-                R.id.radioScam->{
+                R.id.radioScam -> {
                     val checked = v.isChecked
-                    if(checked){
-                        selectedRadioButton= bottomSheetDialog.radioScam
+                    if (checked) {
+                        selectedRadioButton = bottomSheetDialog.radioScam
                         Log.d(IndividualSMSActivity.TAG, "radio button clicked")
                         this.spammerType = SpamLocalListManager.SPAMM_TYPE_SCAM
 
@@ -287,26 +302,26 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
                     }
                 }
-                R.id.radioS->{
+                R.id.radioS -> {
 
                     val checked = v.isChecked
-                    if(checked){
-                        selectedRadioButton= bottomSheetDialog.radioS
+                    if (checked) {
+                        selectedRadioButton = bottomSheetDialog.radioS
                         this.spammerType = SpamLocalListManager.SPAMM_TYPE_SALES
                         Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
 //                                spinnerSelected.value = false
 
                     }
                 }
-                R.id.radioBusiness->{
+                R.id.radioBusiness -> {
                     val checked = v.isChecked
-                    if(checked){
+                    if (checked) {
                         this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
                     }
                 }
-                R.id.radioPerson->{
+                R.id.radioPerson -> {
                     val checked = v.isChecked
-                    if(checked){
+                    if (checked) {
                         this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_PEERSON
 
                     }
@@ -317,30 +332,39 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun blockOrUnBlock() {
 
-        viewModel.blockOrUnblockByAdderss(phoneNum, this.spammerType, this.SPAMMER_CATEGORY).observe(this, Observer {
-            when(it){
-                OPERATION_UNBLOCKED ->{
-                    bottomSheetDialog.hide()
-                    val sbar = Snackbar.make(layoutIndividualContact,
-                        "You have unblocked $phoneNum",
-                        Snackbar.LENGTH_LONG)
+        viewModel.blockOrUnblockByAdderss(phoneNum, this.spammerType, this.SPAMMER_CATEGORY).observe(
+            this,
+            Observer {
+                when (it) {
+                    OPERATION_UNBLOCKED -> {
+                        bottomSheetDialog.hide()
+                        val sbar = Snackbar.make(
+                            layoutIndividualContact,
+                            "You have unblocked $phoneNum",
+                            Snackbar.LENGTH_LONG
+                        )
 //                    sbar.setAction("Undo", MyUndoListener(this))
 //        sbar.anchorView = bottomNavigationView
 
-                    sbar.show()
-                }
-                OPERATION_BLOCKED ->{
-                    bottomSheetDialog.hide()
-                    val  sb =  SpannableStringBuilder(phoneNum);
-                   val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
-                   sb.setSpan(bss, 0, phoneNum!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-                     bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+                        sbar.show()
+                    }
+                    OPERATION_BLOCKED -> {
+                        bottomSheetDialog.hide()
+                        val sb = SpannableStringBuilder(phoneNum);
+                        val bss = StyleSpan(Typeface.BOLD); // Span to make text bold
+                        sb.setSpan(
+                            bss,
+                            0,
+                            phoneNum!!.length,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        ); // make first 4 characters Bold
+                        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
 
-                    bottomSheetDialogfeedback.show()
-                }
+                        bottomSheetDialogfeedback.show()
+                    }
 
-            }
-        })
+                }
+            })
 //        viewModel.blockThisAddress(
 //            IndividualMarkedItemHandlerCall.getMarkedContactAddress()!!, MarkedItemsHandler.markedTheadIdForBlocking,
 //            this.spammerType,
@@ -364,17 +388,19 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun muteOrUnmute() {
         viewModel.muteThisAddress(phoneNum).observe(this, Observer {
-            when(it){
-                OPERATION_COMPLETED ->{
+            when (it) {
+                OPERATION_COMPLETED -> {
 
-                        val sbar = Snackbar.make(layoutIndividualContact,
-                            "You no longer notified on call from $phoneNum",
-                            Snackbar.LENGTH_SHORT)
-                        sbar.setAction("Undo", MyUndoListener(this))
+                    val sbar = Snackbar.make(
+                        layoutIndividualContact,
+                        "You no longer notified on call from $phoneNum",
+                        Snackbar.LENGTH_SHORT
+                    )
+                    sbar.setAction("Undo", MyUndoListener(this))
 //        sbar.anchorView = bottomNavigationView
 
-                        sbar.show()
-                    }
+                    sbar.show()
+                }
 
 
             }
@@ -382,7 +408,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun startIndividualSMS() {
-        val intent = Intent(this, IndividualSMSActivity::class.java )
+        val intent = Intent(this, IndividualSMSActivity::class.java)
         val bundle = Bundle()
         bundle.putString(CONTACT_ADDRES, phoneNum)
         bundle.putString(SMS_CHAT_ID, "")
@@ -397,8 +423,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         settingsDialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         settingsDialog.setContentView(
             layoutInflater.inflate(
-                R.layout.image_layout
-                 , null
+                R.layout.image_layout, null
             )
         )
         settingsDialog.imgVCntctPop.setImageURI(Uri.parse(photoURI))
@@ -413,12 +438,14 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         count++
         if(isChecked){
             viewModel.muteThisAddress(phoneNum).observe(this, Observer {
-                when(it){
-                    OPERATION_COMPLETED ->{
-                        if (count>1){
-                            val sbar = Snackbar.make(layoutIndividualContact,
+                when (it) {
+                    OPERATION_COMPLETED -> {
+                        if (count > 1) {
+                            val sbar = Snackbar.make(
+                                layoutIndividualContact,
                                 "You no longer notified on from $phoneNum",
-                                Snackbar.LENGTH_SHORT)
+                                Snackbar.LENGTH_SHORT
+                            )
                             sbar.setAction("Undo", MyUndoListener(this))
 //        sbar.anchorView = bottomNavigationView
 
@@ -438,5 +465,16 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     override fun onUndoClicked() {
         viewModel.unmute(phoneNum)
     }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId){
+            R.id.itemEditContact -> {
+                startContactEditActivity(viewModel.contactId)
+            }
+        }
+        return true
+    }
+
+
 
 }

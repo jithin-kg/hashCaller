@@ -5,6 +5,9 @@ import android.os.Build
 import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 
+
+
+const val SHARED_PREF_BLOCK_CONFIGURATIONS = "blockTopSpammers"
 const val APP_NAME = "app_name"
 const val APP_LICENSES = "app_licenses"
 const val APP_FAQ = "app_faq"

@@ -6,14 +6,19 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import java.util.*
+
+
 
 
 
