@@ -40,4 +40,5 @@
     <dimen name="margin_top_divider_blk">16dp</dimen>
     <dimen name="padding_layout_block_by_pattern">4dp</dimen>
     <dimen name="margin_txt_block_by">8dp</dimen>
+    <dimen name="margin_img_settings_img">16dp</dimen>
 </resources>

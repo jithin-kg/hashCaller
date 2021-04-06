@@ -1,172 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--    https://medium.com/@tapanrgohil/motion-layout-profile-picture-animation-a3f3de4f569f-->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/colorBackground"
+    android:id="@+id/layoutIndividualContact"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/layoutIndividualContact"
+    android:background="@color/colorBackground"
 
-    tools:context=".view.ui.contacts.individualContacts.IndividualCotactViewActivity">
+    tools:context=".view.ui.contacts.individualContacts.IndividualCotactViewActivity"
+    android:orientation="vertical">
 
-    <ImageButton
-        android:id="@+id/imgBtnBackBlk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/img_btn_back_margin"
-        android:layout_marginTop="@dimen/img_btn_back_margin"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_baseline_arrow_back_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvSmallBlock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Block Settings"
-        android:textSize="16sp"
-        android:textColor="@color/textColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.226"
-        app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlk"
-        app:layout_constraintTop_toBottomOf="@+id/imgBtnBackBlk"
-        tools:visibility="invisible" />
-
-    <TextView
-        android:id="@+id/txtvLargeBlockSettings"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text="Block settings"
-        android:textColor="@color/textColor"
-        android:textSize="34sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlk"
-        app:layout_constraintTop_toBottomOf="@+id/imgBtnBackBlk" />
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        -->
-<!--        android:text="take full controll of blocking"-->
-<!--        />-->
-
-    <ImageView
-        android:id="@+id/imgViewDivierBlock1"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtvLargeBlockSettings"
-        app:srcCompat="@drawable/horizontal_line_settings"
-
-        />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollViewBlockManage"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutNotifications"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock1">
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings">
 
-        <LinearLayout
-            android:id="@+id/layoutScrollitemsBlk"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="General"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                />
-            <Switch
-                android:id="@+id/blockSpammersAuto"
-                android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_list_headings"
-                android:text="Block top spammers automatically"
-                tools:ignore="HardcodedText,UseSwitchCompatOrMaterialXml"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                android:layout_marginEnd="@dimen/img_btn_back_margin"
-                />
-            <TextView
-                android:id="@+id/tvAutoBlock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_info_text_block_settings"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                android:layout_marginEnd="@dimen/tv_margin_end_block_settings"
-                android:text="Most reported numbers wont be able to reach you through call or sms"
-                />
+        <ImageView
+            android:id="@+id/imgVNotification"
+            android:layout_width="@dimen/settings_icons_width"
+            android:layout_height="@dimen/settings_icons_width"
+            android:layout_marginStart="@dimen/margin_start_setting_img"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="@dimen/margin_img_settings_img"
+            android:layout_marginBottom="@dimen/margin_img_settings_img"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_notifications_24" />
 
-            <Switch
-                android:id="@+id/blockForeignCoutries"
-                android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/tvNotifications"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/roboto"
+            android:letterSpacing="0.1"
+            android:text="Notifiations"
+            android:textColor="@color/textColor"
+            android:textScaleX="0.80"
+            android:textSize="@dimen/settings_text_size"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVNotification"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgVNotification"
+            app:layout_constraintTop_toTopOf="@+id/imgVNotification" />
 
-                android:textSize="@dimen/text_size_list_headings"
-                android:text="Block calls from foreign countries"
-                tools:ignore="HardcodedText,UseSwitchCompatOrMaterialXml"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                android:layout_marginEnd="@dimen/img_btn_back_margin"
-                />
-            <TextView
-                android:id="@+id/tcCallsFromForeign"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/tvNotificationHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Call, SMS, Spam"
+            app:layout_constraintStart_toStartOf="@+id/tvNotifications"
+            app:layout_constraintEnd_toEndOf="@+id/tvNotifications"
+            app:layout_constraintTop_toBottomOf="@+id/tvNotifications"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                android:layout_marginTop="@dimen/margin_top_info_text_block_settings"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                android:layout_marginEnd="@dimen/tv_margin_end_block_settings"
-                android:text="Calls from your coutry only be able to reach you"
-                />
-            <Switch
-                android:id="@+id/blockNotIncontacts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_list_headings"
-                android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                android:text="Block calls not in contacts"
-                tools:ignore="HardcodedText,UseSwitchCompatOrMaterialXml"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                android:layout_marginEnd="@dimen/img_btn_back_margin"
-                />
-            <TextView
-                android:id="@+id/tvNotInContacts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_info_text_block_settings"
-                android:layout_marginStart="@dimen/img_btn_back_margin"
-                android:layout_marginEnd="@dimen/tv_margin_end_block_settings"
-                android:text="Only people in your contacts will be able to call you"
-                />
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                android:id="@+id/layout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_marginTop="32dp"-->
-<!--                android:layout_height="wrap_content">-->
-                <TextView
-                    android:id="@+id/tvBlockByPattern"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Block by pattern"
-                    android:layout_marginTop="@dimen/margin_top_block_settings_list"
-
-                    />
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
