@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -19,6 +20,9 @@ interface BlockedLIstDao {
     
     @Query("SELECT * FROM block_list_pattern")
      fun getAllBLockListPattern():LiveData<List<BlockedListPattern>>
+
+    @Query("SELECT * FROM block_list_pattern")
+    fun getAllBLockListPatternByFlow():Flow<List<BlockedListPattern>>
 
     @Query("SELECT * FROM block_list_pattern")
     suspend fun getAllBLockListPatternList():List<BlockedListPattern>

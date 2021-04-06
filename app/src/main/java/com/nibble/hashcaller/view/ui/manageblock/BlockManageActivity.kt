@@ -1,17 +1,16 @@
 package com.nibble.hashcaller.view.ui.manageblock
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
-import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
-import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
+import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import kotlinx.android.synthetic.main.activity_block_manage.*
 
 
@@ -36,12 +35,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
-    private fun initListeners() {
-        blockNotIncontacts.setOnCheckedChangeListener(this)
-        blockForeignCoutries.setOnCheckedChangeListener(this)
-        blockSpammersAuto.setOnCheckedChangeListener(this)
 
-    }
 
     private fun setToggleButtons() {
         blockSpammersAuto.isChecked = isBlockTopSpammersEnabled
@@ -88,7 +82,32 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         const val TAG = "__BlockManageActivity"
     }
 
-    override fun onClick(v: View?) {
+    private fun initListeners() {
+        blockNotIncontacts.setOnCheckedChangeListener(this)
+        blockForeignCoutries.setOnCheckedChangeListener(this)
+        blockSpammersAuto.setOnCheckedChangeListener(this)
+        layoutBlockContains.setOnClickListener(this)
+        layoutBlockEndsWith.setOnClickListener(this)
+        layoutBlockBeginsWith.setOnClickListener(this)
 
+    }
+    override fun onClick(v: View?) {
+        when(v?.id) {
+            R.id.layoutBlockContains ->{
+                startBlockListActivity(NUMBER_CONTAINING)
+            }
+            R.id.layoutBlockEndsWith ->{
+                startBlockListActivity(NUMBER_ENDS_WITH)
+            }
+            R.id.layoutBlockBeginsWith ->{
+                startBlockListActivity(NUMBER_STARTS_WITH)
+            }
+        }
+    }
+
+    private fun startBlockListActivity(value: Int) {
+        val intent = Intent(this, BlockListActivity::class.java)
+        intent.putExtra(KEY_INTENT_BLOCK_LIST, value )
+        startActivity(intent)
     }
 }

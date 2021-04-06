@@ -47,7 +47,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ui.manageblock.BlockManageActivity"></activity>
+        <activity android:name=".view.ui.blockConfig.blockList.BlockListActivity"></activity>
+        <activity android:name=".view.ui.manageblock.BlockManageActivity" />
         <activity android:name=".view.ui.settings.SettingsActivity" />
         <activity android:name=".view.ui.call.individualCallLog.IndividualCallLogActivity" />
         <activity android:name=".view.ui.contacts.search.FulllSearchResultsActivity" />

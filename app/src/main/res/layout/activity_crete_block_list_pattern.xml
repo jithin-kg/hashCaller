@@ -48,11 +48,35 @@
         android:layout_marginEnd="16dp"
         android:onClick="saveData"
         android:text="Save"
+        android:hint="Block types"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.582"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextNewPattern" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginEnd="32dp"
+        app:startIconDrawable="@drawable/ic_baseline_block_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_dialer">
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompletTxtViewBlkType"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

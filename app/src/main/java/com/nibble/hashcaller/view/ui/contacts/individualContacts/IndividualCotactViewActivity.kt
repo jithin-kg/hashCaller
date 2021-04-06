@@ -257,7 +257,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
             }
             R.id.imgBtnMoreIndividualCntct -> {
-                val popup = getMyPopupMenu(R.menu.individual_contact_popup_menu, imgBtnMoreIndividualCntct)
+                val popup =  getMyPopupMenu(R.menu.individual_contact_popup_menu, imgBtnMoreIndividualCntct)
                 popup.setOnMenuItemClickListener(this)
                 popup.show()
             }

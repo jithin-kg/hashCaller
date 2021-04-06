@@ -13,8 +13,6 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
-import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
-import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
@@ -39,11 +37,14 @@ class IncomingCallReceiver : BroadcastReceiver(){
     private lateinit var mutedCallersDao: IMutedCallersDAO
     private lateinit var blockListPatternRepository: BlockListPatternRepository
 
+    private lateinit var blockedListpatternDAO: BlockedLIstDao
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
+            blockedListpatternDAO =  context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
+
 
 //            val i = Intent(context, ActivityIncommingCallView::class.java)
 //                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -116,8 +117,11 @@ class IncomingCallReceiver : BroadcastReceiver(){
             mutedCallersDao = HashCallerDatabase.getDatabaseInstance(context).mutedCallersDAO()
             blockListPatternRepository = BlockListPatternRepository(blockedLIstDao, mutedCallersDao)
 
-            val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository, context, phoneNumber)
-            inComingCallManager.getBLockedLists()
+            val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository,
+                                                context,
+                                                phoneNumber,
+                                                blockedListpatternDAO)
+            inComingCallManager.manageCall()
 
 
 
@@ -173,8 +177,11 @@ class IncomingCallReceiver : BroadcastReceiver(){
                     val result = res?.body()?.cntcts?.get(0)
                     Log.d(TAG, "searchForNumberInServer: result $result")
                     if(result!!.spammCount > 0){
-                        val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository,
-                            context, phoneNumber)
+                        val inComingCallManager: InCommingCallManager = InCommingCallManager(
+                            blockListPatternRepository,
+                            context, phoneNumber, blockedListpatternDAO,
+
+                            )
                         inComingCallManager.endIncommingCall(context)
 
 

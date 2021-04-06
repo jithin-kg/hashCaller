@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -36,6 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.MyUndoListener
+import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
@@ -52,6 +54,7 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.Permissio
 import com.nibble.hashcaller.view.ui.contacts.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
+import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -60,6 +63,7 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
+import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.call_list.*
@@ -79,7 +83,8 @@ import kotlinx.coroutines.flow.collect
  */
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
     DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener,
-    MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener {
+    MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
+    PopupMenu.OnMenuItemClickListener {
     private var isDflt = false
     private var isScreeningApp = false
     private var toolbar: Toolbar? = null
@@ -173,6 +178,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
         this.callFragment!!.fabBtnShowDialpad.setOnClickListener(this)
         this.callFragment!!.imgBtnCallUnMuteCaller.setOnClickListener(this)
+        this.callFragment!!.imgBtnCallTbrMore.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -472,6 +478,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 viewmodel.clearCallLogDB()
 //                (activity as MainActivity).showDialerFragment()
             }
+            R.id.imgBtnCallTbrMore ->{
+                val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
+                popup.setOnMenuItemClickListener(this)
+                popup.show()
+            }
             R.id.btnBlock->{
                 blockMarkedCaller()
             }
@@ -522,8 +533,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
-        this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+        when(menuItem?.itemId){
+            R.id.itemMyBlockList ->{
+                val intent = Intent(activity, BlockListActivity::class.java)
+                startActivity(intent)
+            }else ->{
+            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+            }
+        }
         return true
+
+
 
     }
     private fun showBottomSheetDialog() {

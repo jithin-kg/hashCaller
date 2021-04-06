@@ -6,6 +6,11 @@ import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 
 
+const val KEY_INTENT_BLOCK_LIST = "numberContaining"
+const val NUMBER_STARTS_WITH= 0
+const val NUMBER_CONTAINING = 1
+const val NUMBER_ENDS_WITH = 2
+
 
 const val SHARED_PREF_BLOCK_CONFIGURATIONS = "blockTopSpammers"
 const val APP_NAME = "app_name"

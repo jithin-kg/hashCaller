@@ -49,7 +49,10 @@ class MyCallScreeningService: CallScreeningService() {
 
         GlobalScope.launch {
           val isMuted =  async {  helper.isMutedNumber(phoneNumber) }.await()
-            if(isMuted){
+           val isBloced =  async {helper.isBlockedByPattern(phoneNumber)}.await()
+            if(isBloced){
+                response.setDisallowCall(true)
+            } else if(isMuted){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     response.setSilenceCall(true)
 
