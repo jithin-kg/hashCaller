@@ -49,10 +49,11 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
-import com.nibble.hashcaller.view.ui.contacts.requestScreeningRole
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
+import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
+import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView:NavigationView
+//    private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -138,7 +139,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            requestScreeningRole()
+            if(!isScreeningRoleHeld()){
+                requestScreeningRole()
+
+            }
         }
         setInfoInNavigationDrawer()
 //        fabBtnShowDialpad.setOnClickListener(this)
@@ -185,8 +189,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if(it !=null)
             if(!it.firstname.isNullOrEmpty()){
                 
-                val header =navigationView.getHeaderView(0)
-                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
+//                val header =navigationView.getHeaderView(0)
+//                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
             }
 
         })
@@ -245,14 +249,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setupNavigationDrawer() {
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
-        actionbarDrawertToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.start, R.string.close)
+//        drawerLayout = findViewById(R.id.drawer_layout)
+//        navigationView = findViewById(R.id.nav_view)
+//        actionbarDrawertToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.start, R.string.close)
 
-        drawerLayout.addDrawerListener(actionbarDrawertToggle)
-        actionbarDrawertToggle.syncState()
+//        drawerLayout.addDrawerListener(actionbarDrawertToggle)
+//        actionbarDrawertToggle.syncState()
 
-        navigationView.setNavigationItemSelectedListener(this)
+//        navigationView.setNavigationItemSelectedListener(this)
 
 
     }
@@ -923,7 +927,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     fun showDrawer(it: View) {
 //    actionbarDrawertToggle.onOptionsItemSelected(it as MenuItem)
-    drawerLayout.openDrawer(Gravity.LEFT)
+//    drawerLayout.openDrawer(Gravity.LEFT)
 
     }
 

@@ -40,35 +40,10 @@ fun Context.makeCall(num:String){
     callIntent.data = Uri.parse("tel:$num")
     this.startActivity(callIntent)
 }
-@RequiresApi(Build.VERSION_CODES.Q)
-fun AppCompatActivity. requestScreeningRole(){
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
-        val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-        if(!isHeld){
-            //ask the user to set your app as the default screening app
-            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-            startActivityForResult(intent, 123)
-        } else {
-            //you are already the default screening app!
-        }
-    }
-}
 
 
 
-/**
- * function to check if hashcaller is the call screening app
- */
-@RequiresApi(Build.VERSION_CODES.Q)
-fun AppCompatActivity. isScreeningRoleHeld(): Boolean {
-    var roleHeld = false
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
-        roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-    }
-    return roleHeld
-}
+
 
 
 fun Context.generateCircleView(num:Int?=null): Drawable? {

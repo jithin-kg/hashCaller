@@ -1,22 +1,26 @@
 <!--<?xml version="1.0" encoding="utf-8"?>-->
 
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/colorBackground"
-    tools:context="com.nibble.hashcaller.view.ui.MainActivity"
-    tools:openDrawer="start">
+<!--<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:id="@+id/drawer_layout"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:fitsSystemWindows="true"-->
+<!--    android:background="@color/colorBackground"-->
+<!--    tools:context="com.nibble.hashcaller.view.ui.MainActivity"-->
+<!--    tools:openDrawer="start">-->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorBackground"
     android:id="@+id/cordinateLyoutMainActivity"
-    tools:context="com.nibble.hashcaller.view.ui.MainActivity">
+    tools:context="com.nibble.hashcaller.view.ui.MainActivity"
+
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <FrameLayout
         android:id="@+id/frame_fragmentholder"
@@ -90,14 +94,14 @@
 <!--    https://stackoverflow.com/questions/48486796/setnavigationitemselectedlistener-not-working-->
 <!--    navigation view has to be the last child or the
 onNavigationItemSelected does not work-->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_gravity="start"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/drawer_main_menu"
+<!--    <com.google.android.material.navigation.NavigationView-->
+<!--        android:id="@+id/nav_view"-->
+<!--        android:layout_gravity="start"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        app:headerLayout="@layout/drawer_header"-->
+<!--        app:menu="@menu/drawer_main_menu"-->
 
-        />
+<!--        />-->
 
-</androidx.drawerlayout.widget.DrawerLayout>
+<!--</androidx.drawerlayout.widget.DrawerLayout>-->

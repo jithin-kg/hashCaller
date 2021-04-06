@@ -132,6 +132,7 @@
                    app:layout_constraintStart_toStartOf="@+id/tvAllowBlocking"
                    />
                <Button
+                   android:id="@+id/btnRqstScreeningPermission"
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
                    android:elevation="4dp"
@@ -148,33 +149,37 @@
                    />
 
            </androidx.constraintlayout.widget.ConstraintLayout>
-           <ImageView
-               android:id="@+id/imgViewDivierBlockUnderBtn"
-               android:layout_width="match_parent"
-               android:layout_height="1dp"
-               android:alpha="0.12"
-               android:layout_marginTop="@dimen/list_item_break_margin"
-               app:srcCompat="@drawable/horizontal_line_settings"
-               android:layout_marginBottom="@dimen/margin_start_imgv_block_settings"
 
-               />
 
            <androidx.constraintlayout.widget.ConstraintLayout
                android:id="@+id/layoutScrollitemsBlk"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
                android:orientation="vertical">
+               <ImageView
+                   android:id="@+id/imgViewDivierBlockUnderBtn"
+                   android:layout_width="match_parent"
+                   android:layout_height="1dp"
+                   android:alpha="0.12"
+                   android:layout_marginTop="@dimen/list_item_break_margin"
+                   app:srcCompat="@drawable/horizontal_line_settings"
+                   android:layout_marginBottom="@dimen/margin_start_imgv_block_settings"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintTop_toTopOf="parent"
 
+                   />
                <TextView
                    android:id="@+id/textViewGeneralBlock"
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
+                   android:layout_marginTop="@dimen/margin_start_imgv_block_settings"
                    android:text="General"
                    android:textColor="@color/colorPrimaryLight"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toTopOf="parent" />
+                   app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlockUnderBtn" />
 
                <!--            <TextView-->
                <!--                android:id="@+id/tvGeneralBlk"-->
