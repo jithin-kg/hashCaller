@@ -69,7 +69,6 @@ import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.call_list.*
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.contact_list.*
-import kotlinx.android.synthetic.main.contact_list.textVContactName
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.android.synthetic.main.fragment_call_history.view.btnCallhistoryPermission
@@ -128,10 +127,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         // Inflate the layout for this fragment
         if(checkContactPermission()){
 
+            getFirst10items()
             observeCallLogMutabeLivedata()
-            collectdata()
+            initRecyclerView()
+            addScrollListener()
+            observePermissionLiveData()
+            observeCallLog()
+            observeCallLogInfoFromServer()
+            setupSimCardCount()
 
         }
+
     setupBottomSheet()
     initListeners()
 
@@ -140,7 +146,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun collectdata() {
+    private fun getFirst10items() {
         viewmodel.fetchCallLogFlow(requireActivity())
 //        lifecycleScope.launchWhenStarted {
 //            CallLogFlowHelper.fetchCallLogFlow(this@CallFragment.requireActivity()).collect {
@@ -154,10 +160,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
             if(it == true){
                 Log.d(TAG, "observePermissionLiveData: permission given")
+                if(this.viewmodel?.callLogs != null){
+                    if(!this.viewmodel.callLogs!!.hasObservers()){
+                        observeCallLog()
+                        observeCallLogMutabeLivedata()
+                        this.callFragment!!.btnCallhistoryPermission.visibility = View.GONE
+                    }
+                }
 
-                observeCallLog()
-                observeCallLogMutabeLivedata()
-                this.callFragment!!.btnCallhistoryPermission.visibility = View.GONE
             }else{
                 this.callFragment!!.btnCallhistoryPermission.visibility =View.VISIBLE
                 Log.d(TAG, "observePermissionLiveData: permission not given")
@@ -188,6 +198,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun observeCallLogMutabeLivedata(){
         viewmodel.callLogsMutableLiveData.observe(viewLifecycleOwner, Observer {
+            shimmer_view_container_call.beInvisible()
             callLogAdapter?.setCallLogs(it)
         })
     }
@@ -279,14 +290,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         Log.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
 //        intialize()
-        initRecyclerView()
-        addScrollListener()
-        initListeners()
-        observePermissionLiveData()
 
-        observeCallLog()
-        observeCallLogInfoFromServer()
-        setupSimCardCount()
 
 
 

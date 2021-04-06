@@ -151,44 +151,7 @@
 <!--        android:layout_height="match_parent"-->
 <!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"-->
 <!--        />-->
-
-
-<!--    /***********/-->
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_view_container_call"
-        android:visibility="invisible"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:shimmer_duration="800">
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
-<!--important android:overScrollMode="never" to remove shadow-->
+    <!--important android:overScrollMode="never" to remove shadow-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewCallHistoryLogs"
         android:layout_width="match_parent"
@@ -201,6 +164,36 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list"
         />
+
+<!--    /***********/-->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_view_container_call"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:shimmer_duration="800">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+            <include layout="@layout/skeleton_shimmer_layout" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabBtnShowDialpad"

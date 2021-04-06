@@ -167,6 +167,9 @@ class CallContainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun getSMSByPage(): MutableList<CallLogData> {
         val listOfCallLogs = mutableListOf<CallLogData>()
+        val item1 = CallLogData()
+        val item2 = CallLogData()
+        val item3 = CallLogData()
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
             CallLog.Calls.TYPE,
@@ -225,7 +228,9 @@ class CallContainerRepository(
             cursor?.close()
 
         }
-
+        listOfCallLogs.add(item1)
+        listOfCallLogs.add(item2)
+        listOfCallLogs.add(item3)
         return listOfCallLogs
     }
 
@@ -374,6 +379,9 @@ class CallContainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun fetchFirst10(): MutableList<CallLogData> {
         val listOfCallLogs = mutableListOf<CallLogData>()
+        val item1 = CallLogData()
+        val item2 = CallLogData()
+        val item3 = CallLogData()
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
             CallLog.Calls.TYPE,
@@ -432,7 +440,9 @@ class CallContainerRepository(
         }finally {
             cursor?.close()
         }
-
+            listOfCallLogs.add(item1)
+            listOfCallLogs.add(item2)
+            listOfCallLogs.add(item3)
         return listOfCallLogs
     }
 

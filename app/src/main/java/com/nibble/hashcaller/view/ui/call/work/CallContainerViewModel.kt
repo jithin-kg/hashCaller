@@ -225,13 +225,37 @@ class CallContainerViewModel(
     }
 
     fun getNextPage() = viewModelScope.launch {
-        var res = repository!!.getSMSByPage()
+        val res = async {    repository!!.getSMSByPage() }.await()
+
         var list : MutableList<CallLogData> = mutableListOf()
         if(callLogsMutableLiveData.value!= null){
+
             list.addAll(callLogsMutableLiveData.value!!)
             list.addAll(res)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                list!!.removeIf { it -> it.id == null }
+            }else {
+                removeDummyItems(list)
+            }
+            callLogsMutableLiveData.value = list
+
         }
-        callLogsMutableLiveData.value = list
+    }
+
+    private fun removeDummyItems(list: MutableList<CallLogData>) {
+        //using iterator i can delet item while iterating throgh the list
+        val iterator = list.iterator()
+        while (iterator.hasNext()){
+            if(iterator.next().id == null){
+                iterator.remove()
+            }
+        }
+//        list.addAll(list)
+//        for (item in newlist){
+//            if(item.id == null){
+//
+//            }
+//        }
     }
 
     fun getCallLogFromServer() : LiveData<List<CallersInfoFromServer>>  {
