@@ -5,23 +5,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.ui.blockConfig.blockList.BlockListActivity">
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView2"
+    <ImageButton
+        android:id="@+id/imgBtnBackBlkList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior`"
+        android:layout_marginStart="@dimen/img_btn_back_margin"
+        android:layout_marginTop="@dimen/img_btn_back_margin"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:id="@+id/nestedScrollView2"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="52dp"-->
+<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior`"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcrViewPtrnList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/block_pattern_list" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcrViewPtrnList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBackBlkList"
+        tools:listitem="@layout/custom_blocked_item" />
 
-    </androidx.core.widget.NestedScrollView>
+    <!--    </androidx.core.widget.NestedScrollView>-->
+    <TextView
+        android:id="@+id/tvBlkListHeading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="My block list"
+        android:textColor="@color/textColor"
+        android:textSize="16sp"
+        android:alpha="0.87"
+        app:layout_constraintBottom_toBottomOf="@+id/imgBtnBackBlkList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlkList"
+        app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlkList" />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabBtnAddNewBlock"
         android:layout_width="wrap_content"
@@ -31,6 +61,7 @@
         android:layout_marginBottom="@dimen/bottom_fab_margin"
         app:icon="@drawable/ic_baseline_add_white"
         android:text="Create"
+        app:iconTint="@color/colorWhite"
         android:textColor="@color/colorWhite"
         android:backgroundTint="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"

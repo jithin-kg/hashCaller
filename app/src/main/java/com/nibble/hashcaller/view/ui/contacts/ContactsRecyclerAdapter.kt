@@ -45,7 +45,7 @@ class ContactsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
     ): RecyclerView.ViewHolder(itemView){
 
         //        val blog_image = itemView.blog_image
-        val blog_title = itemView.textViewBlockedPattern
+       // val blog_title = itemView.textViewBlockedPattern
 //        val blog_author = itemView.blog_author
 
         fun bind(contact: Contact){

@@ -52,6 +52,7 @@ class HashCaller : Application(){
     }
 
     private fun createNotificationChannels() {
+
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O ){
              val channel1 = NotificationChannel(
                  CHANNEL_1_ID,
@@ -62,6 +63,7 @@ class HashCaller : Application(){
                 CHANNEL_2_ID,
                 "Blocked calls",
                 NotificationManager.IMPORTANCE_HIGH)
+
             channel2.description = "Notification for blocked calls"
 
             val notificationManager = getSystemService(NotificationManager::class.java)

@@ -6,14 +6,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import kotlinx.android.synthetic.main.block_pattern_list.view.*
+import kotlinx.android.synthetic.main.block_pattern_list.view.tvBlkType
+import kotlinx.android.synthetic.main.custom_blocked_item.view.*
 import kotlin.collections.ArrayList
 
 
-class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
+class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPattern, RecyclerView.ViewHolder>(
+    PatternItemDiffCallback())
 {
 
     private val TAG: String = "__BlogRecyclerAdapter"
@@ -22,7 +31,7 @@ class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return BlockListViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.block_pattern_list, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.custom_blocked_item, parent, false)
         )
     }
 
@@ -40,10 +49,9 @@ class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         return items.size
     }
 
-    fun submitList(blogList: List<BlockedListPattern>){
-        items = blogList as ArrayList<BlockedListPattern>
-        Log.d(TAG, "submitList: " + blogList.size)
-        notifyDataSetChanged()
+    fun submitPatternsList(patternsList: List<BlockedListPattern>){
+        items = patternsList as ArrayList<BlockedListPattern>
+        this.submitList(patternsList)
     }
     fun getItemAtPosition(position: Int): BlockedListPattern {
         val item = items[position]
@@ -51,35 +59,66 @@ class BlockListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         Log.d(TAG, "position $position")
         Log.d(TAG, "size ${items.size}");
         items.removeAt(position)
-
-
-        notifyDataSetChanged()
         return item;
     }
 
-    class BlockListViewHolder constructor(
+    private class BlockListViewHolder constructor(
         itemView: View
     ): RecyclerView.ViewHolder(itemView){
 
 //        val blog_image = itemView.blog_image
-        val block_title = itemView.textViewBlockedPattern
+//        val block_title = itemView.textViewBlockedPattern
+
 //        val blog_author = itemView.blog_author
+        fun bind(pattern: BlockedListPattern){
+//            itemView.tvPtrn.text = "hi"
+            var text = ""
+            var firstletter = ""
+            when(pattern.type){
+                NUMBER_STARTS_WITH ->{
+                    text = "Number starts with"
+                    firstletter = "F"
+                }
+                NUMBER_CONTAINING ->{
+                    text = "Number containing"
+                    firstletter = "C"
 
-        fun bind(blogPost: BlockedListPattern){
+                }
+                NUMBER_ENDS_WITH -> {
+                    text = "Number ends with"
+                    firstletter = "L"
+                }
+            }
 
-//            val requestOptions = RequestOptions()
-//                .placeholder(R.drawable.ic_launcher_background)
-//                .error(R.drawable.ic_launcher_background)
-//
-//            Glide.with(itemView.context)
-//                .applyDefaultRequestOptions(requestOptions)
-//                .load(blogPost.image)
-//                .into(blog_image)
-            block_title.setText(blogPost.numberPattern)
+            Log.d(TAG, "bind: ${pattern.numberPattern}")
+            itemView.tvBlkType.text = text
+            itemView.textViewBlkPattern.text = pattern.numberPattern
+            itemView.tvFirstLetterBlk.text = firstletter
+//            block_title.text = pattern.numberPattern
 //            blog_author.setText(blogPost.username)
 
         }
 
+    }
+
+     class PatternItemDiffCallback : DiffUtil.ItemCallback<BlockedListPattern>() {
+        override fun areItemsTheSame(oldItem: BlockedListPattern, newItem: BlockedListPattern): Boolean {
+
+            return  oldItem.id == newItem.id
+
+
+        }
+
+
+        override fun areContentsTheSame(oldItem: BlockedListPattern, newItem: BlockedListPattern): Boolean {
+            //when we are using data class we dont need to compare all attributes
+            return oldItem == newItem
+
+        }
+
+    }
+    companion object{
+        const val TAG ="__BlockListAdapter"
     }
 
 }

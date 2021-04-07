@@ -33,7 +33,7 @@ class BlockListAdapter(blockedListPatterns: List<BlockedListPattern>) : Recycler
         when(holder){
             is BlockListViewHolder ->{
                 var item = blockedListPattern[position].numberPattern.toString()
-                holder.bind(item)
+//                holder.bind(item)
             }
         }
 
@@ -47,10 +47,10 @@ class BlockListAdapter(blockedListPatterns: List<BlockedListPattern>) : Recycler
     }
     inner class BlockListViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView){
 
-        val textView: TextView = itemView.textViewBlockedPattern
-        fun bind(pattern:String){
-            textView.setText(pattern)
-        }
+//        val textView: TextView = itemView.textViewBlockedPattern
+//        fun bind(pattern:String){
+//            textView.setText(pattern)
+//        }
 
     }
 

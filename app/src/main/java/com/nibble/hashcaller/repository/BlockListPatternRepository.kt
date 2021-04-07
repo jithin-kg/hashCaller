@@ -3,17 +3,14 @@ package com.nibble.hashcaller.repository
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
+import com.nibble.hashcaller.view.ui.contacts.utils.ALREADY_EXISTS_IN_DB
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.Flow
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -26,13 +23,20 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
     val allBlockedList:LiveData<List<BlockedListPattern>> = blockedLIstDao.getAllBLockListPattern()
 
     @SuppressLint("LongLogTag")
-    suspend fun insert(blockedListPattern: BlockedListPattern){
-        val insert = blockedLIstDao.insert(blockedListPattern)
-        Log.d(TAG, "insert: $insert")
+    suspend fun insert(blockedListPattern: BlockedListPattern): Int {
+        blockedLIstDao.find(blockedListPattern.numberPattern, blockedListPattern.type).apply {
+            if(this==null){
+                blockedLIstDao.insert(blockedListPattern).apply {
+                    return OPERATION_COMPLETED
+                }
+            }else{
+                return ALREADY_EXISTS_IN_DB
+            }
+        }
     }
     @SuppressLint("LongLogTag")
-    suspend fun delete(blockedListPattern: String){
-        val insert = blockedLIstDao.delete(blockedListPattern)
+    suspend fun delete(blockedListPattern: String, type: Int){
+        val insert = blockedLIstDao.delete(blockedListPattern, type)
         Log.d(TAG, "insert: $insert")
     }
     @SuppressLint("LongLogTag")

@@ -15,7 +15,7 @@ import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.ui.blockConfig.ActivityCreteBlockListPattern
 import com.nibble.hashcaller.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_block_list.*
 import kotlinx.android.synthetic.main.fragment_blk_list.*
@@ -26,11 +26,12 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var adapter: BlockListAdapter
     private lateinit var swipeHandler: SwipeToDeleteCallback
     private lateinit var blockListViewModel: BlockListViewModel
-    private var blockType  = NUMBER_CONTAINING
+    private var blockType  = NUMBER_STARTS_WITH
     private lateinit var blockListAdapter: BlockListAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        blockType = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_CONTAINING )
+        blockType = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_STARTS_WITH )
+        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         setContentView(R.layout.activity_block_list)
         observeBlocklistLivedata()
         intiListeners()
@@ -54,18 +55,17 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun observeBlocklistLivedata() {
-        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         blockListViewModel.allblockedList.observe(this,
             Observer<List<BlockedListPattern>> { blockedListPatterns ->
                 Log.d(TAG, "onViewCreated: " + blockedListPatterns?.size)
 
-                blockedListPatterns?.let{blockListAdapter.submitList(it)}
+                blockedListPatterns?.let{blockListAdapter.submitPatternsList(it)}
             });
     }
 
     private fun deletePattern(pos: Int) {
         val item = blockListAdapter.getItemAtPosition(pos);
-        blockListViewModel.delete(item.numberPattern)
+        blockListViewModel.delete(item.numberPattern, item.type)
         //TODO notify dataset changed in adapter and remove item from the list in adapter
     }
 
@@ -100,4 +100,6 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
 
         startActivity(i)
     }
+
+
 }

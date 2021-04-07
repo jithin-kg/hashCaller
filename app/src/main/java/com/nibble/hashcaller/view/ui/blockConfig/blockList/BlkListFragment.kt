@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.content.res.Resources
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
@@ -225,7 +224,7 @@ override fun onDestroyView() {
 
     private fun deletePattern(pos: Int) {
         val item = blockListAdapter.getItemAtPosition(pos);
-        blockListViewModel.delete(item.numberPattern)
+        blockListViewModel.delete(item.numberPattern, item.type)
         //TODO notify dataset changed in adapter and remove item from the list in adapter
     }
 

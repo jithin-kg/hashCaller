@@ -15,8 +15,8 @@ interface BlockedLIstDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(blockPattern: BlockedListPattern)
-    @Query("DELETE from block_list_pattern WHERE num_pattern=:blockPattern")
-    suspend fun delete(blockPattern: String)
+    @Query("DELETE from block_list_pattern WHERE num_pattern=:blockPattern AND type=:type")
+    suspend fun delete(blockPattern: String, type:Int)
     
     @Query("SELECT * FROM block_list_pattern")
      fun getAllBLockListPattern():LiveData<List<BlockedListPattern>>
@@ -26,5 +26,9 @@ interface BlockedLIstDao {
 
     @Query("SELECT * FROM block_list_pattern")
     suspend fun getAllBLockListPatternList():List<BlockedListPattern>
+
+    @Query("SELECT * FROM block_list_pattern WHERE num_pattern =:numberPattern AND type =:type ")
+    suspend fun find(numberPattern: String, type: Int):BlockedListPattern
+
 
 }

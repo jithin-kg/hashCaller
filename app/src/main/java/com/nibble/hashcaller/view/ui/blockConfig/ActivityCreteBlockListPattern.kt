@@ -21,6 +21,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
@@ -44,13 +45,14 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onCreate: ")
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_crete_block_list_pattern)
         patterntype = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_STARTS_WITH)
+        setContentView(R.layout.activity_crete_block_list_pattern)
+        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         Log.d(TAG, "onCreate: intent value is $patterntype")
-
+        intiListeners()
         setDropDownList()
 
-    intiListeners()
+
     }
 
     private fun setDropDownList() {
@@ -62,6 +64,11 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         autoCompletTxtViewBlkType.onItemClickListener = this
     }
 
+
+    override fun onBackPressed() {
+        finish()
+        super.onBackPressed()
+    }
 
     override fun onPostResume() {
 
@@ -79,29 +86,34 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
     private fun savePattern() {
         Log.d(TAG, "save button clicked")
-        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         val newPattern = formatPhoneNumber(editTextNewPattern?.text?.toString()!!)
-       var patternRegex = ""
-        when(patterntype){
-            NUMBER_STARTS_WITH ->{
-                patternRegex = "$newPattern([0-9]*)"
+        if(newPattern.isNotEmpty()){
+            var patternRegex = ""
+            when(patterntype){
+                NUMBER_STARTS_WITH ->{
+                    patternRegex = "$newPattern([0-9]*)"
+                }
+                NUMBER_ENDS_WITH ->{
+                    patternRegex = "([0-9]*$newPattern)"
+                }
+                NUMBER_CONTAINING ->{
+                    patternRegex = "([0-9]*$newPattern[0-9]*)"
+                }
             }
-            NUMBER_ENDS_WITH ->{
-                patternRegex = "([0-9]*$newPattern)"
-            }
-            NUMBER_CONTAINING ->{
-                patternRegex = "([0-9]*$newPattern[0-9]*)"
-            }
+            val blockListPattern =
+                BlockedListPattern(
+                    null,
+                    newPattern!!,
+                    patternRegex,
+                    patterntype
+                )
+            blockListViewModel.insert(blockListPattern).observe(this, Observer {
+                if(it == OPERATION_COMPLETED){
+                    finish()
+                }
+            })
         }
 
-        val blockListPattern =
-            BlockedListPattern(
-                null,
-                newPattern!!,
-                patternRegex,
-                patterntype
-            )
-        blockListViewModel.insert(blockListPattern)
 
     }
 
@@ -119,8 +131,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
             R.id.btnSave -> {
                 Log.d(TAG, "onClick: $patterntype")
                 savePattern()
-                true
-                finish()
+
             }
         }
     }
@@ -131,7 +142,9 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        Log.d(TAG, "onItemClick: position $position")
         when(position){
+
             0 ->{
                 patterntype = NUMBER_STARTS_WITH
             }

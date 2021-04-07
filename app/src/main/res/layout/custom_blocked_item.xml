@@ -3,17 +3,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutLinearCallItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:foreground="?android:attr/selectableItemBackground"
+    android:animateLayoutChanges="true"
     android:background="@color/colorBackground"
     android:clickable="true"
-    android:focusable="true">
-
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textViewcontactCrclr"
+        android:id="@+id/tvFirstLetterBlk"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
@@ -24,64 +25,52 @@
         android:textStyle="bold"
         android:transitionName="contactImageTransition"
         app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/contact_circular_background"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textVContactName"
+        android:id="@+id/tvBlkType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:alpha=".87"
         android:ellipsize="end"
         android:maxLines="1"
         android:padding="2dp"
         android:text=""
-        android:textStyle="bold"
-        android:alpha=".87"
-        android:transitionName="contactNameTransition"
-        android:textSize="14sp"
         android:textAppearance="@style/TextAppearance.AppCompat"
-
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:transitionName="contactNameTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.037" />
+        app:layout_constraintStart_toEndOf="@+id/tvFirstLetterBlk"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewBlkPattern"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="@+id/tvBlkType"
+        app:layout_constraintTop_toBottomOf="@+id/tvBlkType" />
 
     <ImageView
-        android:id="@+id/imgViewSeperator"
+        android:id="@+id/imgVBlkSeperator"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:alpha="0.12"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewcontactCrclr"
-        app:layout_constraintTop_toBottomOf="@+id/textViewcontactCrclr"
+        app:layout_constraintStart_toStartOf="@+id/tvBlkType"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBlkPattern"
         app:srcCompat="@drawable/horizontal_line" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/contactCard"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:elevation="4dp"
-        android:layout_marginStart="24dp"
-        android:gravity="center_vertical|center_horizontal"
-        app:cardCornerRadius="25dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/imgViewCntct"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:elevation="4dp"
-            android:transitionName="contactImageTransition"
-            android:scaleType="centerCrop" />
-    </androidx.cardview.widget.CardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
