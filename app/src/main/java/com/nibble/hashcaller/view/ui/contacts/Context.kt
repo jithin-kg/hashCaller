@@ -11,6 +11,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
+import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
 import java.util.*
 
@@ -43,6 +44,23 @@ fun Context.isReceiveNotificationForSpamCallEnabled(): Boolean {
     val sharedpreferences = getSharedPreferences(SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS, Context.MODE_PRIVATE)
     return sharedpreferences.getBoolean(IS_CALL_BLOCK_NOTIFICATION_ENABLED, false)
 }
+
+fun Context.isBlockNonContactsEnabled():Boolean{
+    val sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE)
+    return sharedpreferences.getBoolean("isBlockNonContactCallsEnabled", false)
+
+}
+
+fun Context.isBlkForeignCallsEnabled():Boolean{
+    val sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE)
+    return sharedpreferences.getBoolean("isBlockForeignCallsEnabled", false)
+}
+
+fun Context.isBlockTopSpammersAutomaticallyEnabled():Boolean{
+    val sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE)
+    return sharedpreferences.getBoolean("isBlockTopSpamersAutomaticallyEnabled", false)
+}
+
 
 fun Context.isReceiveNotificationForSpamSMSEnabled(): Boolean {
     val sharedpreferences = getSharedPreferences(SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS, Context.MODE_PRIVATE)

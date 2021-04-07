@@ -11,6 +11,8 @@ const val NUMBER_STARTS_WITH= 0
 const val NUMBER_CONTAINING = 1
 const val NUMBER_ENDS_WITH = 2
 
+const val BLOCK_INCOMMING_CALL = 1
+
 
 const val SHARED_PREF_BLOCK_CONFIGURATIONS = "blockTopSpammers"
 const val IS_CALL_BLOCK_NOTIFICATION_ENABLED = "isCallblkntfnEnabled"

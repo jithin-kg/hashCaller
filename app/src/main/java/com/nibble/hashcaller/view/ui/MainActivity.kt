@@ -59,6 +59,7 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.work.ContactsAddressLocalWorker
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
@@ -204,10 +205,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
     private fun setupContactUploadWork() {
+        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
+            .build()
+        WorkManager.getInstance().enqueue(request2)
+
         val request =
             OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
                 .build()
         WorkManager.getInstance().enqueue(request)
+
     }
 
     private fun manageSavedInstanceState(savedInstanceState: Bundle?) {
@@ -560,10 +566,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
          */
         val intent = intent
         intent.getByteArrayExtra("key")
-        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-            .build()
-        WorkManager.getInstance().enqueue(request)
-
+//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+//            .build()
+//        WorkManager.getInstance().enqueue(request)
+//
         ft.commit()
     }
 

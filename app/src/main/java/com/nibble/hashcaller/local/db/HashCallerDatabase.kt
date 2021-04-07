@@ -12,6 +12,8 @@ import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
+import com.nibble.hashcaller.local.db.contacts.ContactAddresses
+import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.local.db.sms.Converters
 import com.nibble.hashcaller.local.db.sms.SMSOutBox
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
@@ -41,7 +43,9 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
     MutedSenders::class,
     BlockedOrSpamSenders::class,
     SmsSearchQueries::class,
-    MutedCallers::class
+    MutedCallers::class,
+    ContactAddresses::class
+
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class HashCallerDatabase: RoomDatabase() {
@@ -57,6 +61,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun mutedCallersDAO(): IMutedCallersDAO
         abstract fun blockedOrSpamSendersDAO(): IBlockedOrSpamSendersDAO
         abstract fun smsSearchQueriesDAO(): ISmsQueriesDAO
+        abstract fun contactAddressesDAO(): IContactAddressesDao
 
 
     companion object{

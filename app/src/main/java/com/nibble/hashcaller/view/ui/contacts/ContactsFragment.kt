@@ -153,6 +153,7 @@ class ContactsFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelec
                 contacts.let {
 //                    this.contactsView.pgBarCntcList.visibility = View.GONE
                     contactsRecyclerAdapter?.setContactList(it)
+                    contactViewModel.startWorker()
                     ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
                 }
             })

@@ -12,11 +12,15 @@ import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
+import com.nibble.hashcaller.local.db.contacts.ContactAddresses
 import com.nibble.hashcaller.network.contact.ContactUploadResponseItem
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.*
 
@@ -33,7 +37,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
-
     override suspend fun doWork(): Result {
         try {
 
@@ -71,9 +74,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //            }
             //if the previous contact synced date is greater than 7 perform the work
 
-            Log.d(TAG, "doWork:")
 //                uploadContactsToServer()
-
 
         }catch (e: HttpException){
             return Result.retry()
@@ -82,10 +83,12 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         return Result.success()
     }
 
+
+
     private suspend fun setNewlySavedContactsList() {
         val contactRepository = ContactRepository(context)
         val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
-        val allcontactsInContentProvider = contactRepository.fetchContacts()
+       val  allcontactsInContentProvider =  contactRepository.fetchContacts()
 
         for(contact in allcontactsInContentProvider){
 

@@ -10,6 +10,9 @@ import android.widget.CompoundButton
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
+import com.nibble.hashcaller.view.ui.contacts.isBlkForeignCallsEnabled
+import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
+import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
 import com.nibble.hashcaller.view.ui.contacts.writeBoolToSharedPref
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -68,11 +71,10 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         blockNotIncontacts.isChecked = isBlockNonContactCallsEnabled
     }
     private fun getSharedPrefValues() {
-
         sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
-        isBlockTopSpammersEnabled = sharedpreferences.getBoolean("isBlockTopSpamersAutomaticallyEnabled", false)
-        isBlockForeignCallsEnabled = sharedpreferences.getBoolean("isBlockForeignCallsEnabled" ,false)
-        isBlockNonContactCallsEnabled  = sharedpreferences.getBoolean("isBlockNonContactCallsEnabled", false)
+        isBlockTopSpammersEnabled = isBlockTopSpammersAutomaticallyEnabled()
+        isBlockForeignCallsEnabled = isBlkForeignCallsEnabled()
+        isBlockNonContactCallsEnabled  = isBlockNonContactsEnabled()
     }
 
 

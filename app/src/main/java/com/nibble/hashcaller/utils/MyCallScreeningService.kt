@@ -2,7 +2,6 @@ package com.nibble.hashcaller.utils
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.telecom.Call
@@ -21,19 +20,16 @@ import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
-import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
+import com.nibble.hashcaller.view.ui.sms.individual.util.BLOCK_INCOMMING_CALL
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 
 //https://developer.android.com/reference/android/telecom/CallScreeningService#respondToCall(android.telecom.Call.Details,%20android.telecom.CallScreeningService.CallResponse)
 //https://zoransasko.medium.com/detecting-and-rejecting-incoming-phone-calls-on-android-9e0cff04ef20
@@ -41,6 +37,7 @@ import kotlinx.coroutines.runBlocking
 class MyCallScreeningService: CallScreeningService() {
     private lateinit var helper: CallScreeningHelper
     var blockedListpatternDAO: BlockedLIstDao =  this?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
+    var contactAdressesDAO =  this?.let { HashCallerDatabase.getDatabaseInstance(it).contactAddressesDAO() }
 
     /**
      * important to look into CallScreeningService source code to findout how to work with this class
@@ -51,72 +48,71 @@ class MyCallScreeningService: CallScreeningService() {
     @SuppressLint("LongLogTag")
     override fun onScreenCall(callDetails: Call.Details) {
 
-         helper = CallScreeningHelper(this)
+         helper = CallScreeningHelper(this, contactAdressesDAO)
         Log.d(TAG, "onScreenCall: ")
 
         val phoneNumber = getPhoneNumber(callDetails)
         var response = CallResponse.Builder()
-        response = handlePhoneCall(response, phoneNumber, callDetails)
+        GlobalScope.launch {
+            handleThisCall(phoneNumber, response, callDetails)
+        }
+        
+//        response = handlePhoneCall(response, phoneNumber, callDetails)
 
     }
 
-    @SuppressLint("LongLogTag", "LogNotTimber")
-    private fun handlePhoneCall(
-        response: CallResponse.Builder,
+    private fun handleThisCall(
         phoneNumber: String,
+        response: CallResponse.Builder,
         callDetails: Details
-    ): CallResponse.Builder {
+    ) = GlobalScope.launch {
         val formatedNum = formatPhoneNumber(phoneNumber)
-        Log.d(TAG, "handlePhoneCall: phone number $phoneNumber")
+            supervisorScope {
+                val isMutedJob =  async {  helper.isMutedNumber(formatedNum) }
+                val jobPatternBlock =  async { helper.isBlockedByPattern(formatedNum) }
+                val jobNonContactBlock = async {
+                    helper.isThisCallTobeBlocked(formatedNum,isBlockNonContactsEnabled()) }
 
-        var isBlocked = false
-        GlobalScope.launch {
-          val isMuted =  async {  helper.isMutedNumber(formatedNum) }.await()
-            var match = false
-
-           isBlocked =  async { helper.isBlockedByPattern(formatedNum)}.await()
-//            response.setDisallowCall(true)
-//            blockedListpatternDAO.getAllBLockListPatternByFlow().collect {
-//                response.setDisallowCall(true)
-//                for (item in it){
-//                    Log.d(CallScreeningHelper.TAG, "isBlockedByPattern: ${item.numberPattern}")
-//                    if(item.type == NUMBER_STARTS_WITH){
-//                        match =   phoneNumber.startsWith(item.numberPattern)
-//                    }else if(item.type == NUMBER_CONTAINING ){
-//                        match =  phoneNumber.contains(item.numberPattern)
-//                    }else{
-//                        match = phoneNumber.endsWith(item.numberPattern)
-//                    }
-//                    if(match){
-//
-//                        runBlocking {
-//                            response.setDisallowCall(true)
-//                            respondToCall(callDetails, response.build())
-//                        }
-//
-//
-//                    }
-//                }
-//
-//            }
-
-            Log.d(TAG, "handlePhoneCall: isBloked $isBlocked")
-            if(isBlocked){
-                response.setDisallowCall(true)
-                showNotificatification(isBlocked, phoneNumber)
-
-            } else
-                if(isMuted){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    response.setSilenceCall(true)
+                try {
+                   isMutedJob.await().apply {
+                       if(this){
+                           if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                               response.setSilenceCall(true)
+                           }
+                       }
+                   }
+                }catch (e:Exception){
 
                 }
-            }
-            respondToCall(callDetails, response.build())
-        }
+                val result1 =  try {
+                    jobPatternBlock.await().apply { 
+                        if(this){
+                            response.setDisallowCall(true)
+                            respondToCall(callDetails, response.build())
+                            showNotificatification(true, formatedNum)
+                        }
+                    }
+                }catch (e:Exception) {
+                    false
+                }
+                val result2 =  try {
+                    jobNonContactBlock.await().apply { 
+                        if(this){
+                            response.setDisallowCall(true)
+                            respondToCall(callDetails, response.build())
+                            showNotificatification(true, formatedNum)
 
-        return response
+
+                        }
+                    }
+                }catch (e:Exception){
+                    false
+                }
+
+            }
+
     }
+
 
     /**
      * funcftion to handle notificatoin, if call blocked and user preference is to

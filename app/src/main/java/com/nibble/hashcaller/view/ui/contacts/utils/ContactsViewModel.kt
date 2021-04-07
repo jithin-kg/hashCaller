@@ -3,11 +3,15 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
+import com.nibble.hashcaller.work.ContactsAddressLocalWorker
+import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.coroutines.launch
 
 /**
@@ -26,6 +30,7 @@ class ContactsViewModel(
     }
     init {
 //       syncContactsWithLocalDb()
+
 
     }
 
@@ -74,19 +79,15 @@ class ContactsViewModel(
        
     }
 
-//    private suspend fun getContactsFromLocalDB(): List<ContactTable>? {
+    fun startWorker() = viewModelScope.launch {
+//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+//            .build()
+//        WorkManager.getInstance().enqueue(request)
 //
-////        val job = contactLocalSyncRepository.getContactsFromLocalDB()
-////
-////       return job
-//
-//    }
+//        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
+//            .build()
+//        WorkManager.getInstance().enqueue(request)
+    }
 
 
 }
-//class ContactsViewModel(application: Application): AndroidViewModel(application) {
-//
-//    val contacts =
-//        ContactLiveData(application.applicationContext)
-//
-//}
