@@ -57,12 +57,12 @@ class HashCaller : Application(){
                  CHANNEL_1_ID,
                  "Incoming messages",
                     NotificationManager.IMPORTANCE_HIGH)
-             channel1.description = "Channel 1 description"
+             channel1.description = "Notification for incoming SMS"
             val channel2 = NotificationChannel(
                 CHANNEL_2_ID,
-                "This is channel 2",
-                NotificationManager.IMPORTANCE_LOW)
-            channel1.description = "Channel 2 description"
+                "Blocked calls",
+                NotificationManager.IMPORTANCE_HIGH)
+            channel2.description = "Notification for blocked calls"
 
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel1)

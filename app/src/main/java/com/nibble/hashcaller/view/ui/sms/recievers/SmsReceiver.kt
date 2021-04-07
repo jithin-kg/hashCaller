@@ -69,7 +69,6 @@ class SmsReceiver : BroadcastReceiver() {
 //                            Log.d(TAG, "onReceive isBlockedOrMuted: $isBlokcedOrMuted")
                                 if(!isMutedAddress){
                                     val message = currentSMS.displayMessageBody
-
                                     //Log.d(TAG, "senderNum: " + senderNo + " :\n message: " + message);
 //                        issueNotification(context, senderNo, message)
                                     showNotification(context, senderNo, message)
@@ -146,6 +145,8 @@ class SmsReceiver : BroadcastReceiver() {
 
     private fun showNotification(context: Context, senderNo: String?, message: String?) {
 
+        //todo this might be a bug if I ser defaulfragment from here, becuse sms will
+        //be dfault when sms arrive
            DefaultFragmentManager.id = R.id.bottombaritem_messages
            DefaultFragmentManager.defaultFragmentToShow =
                DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT

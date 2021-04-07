@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
+import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
 import kotlinx.android.synthetic.main.activity_block_manage.*
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -30,6 +31,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     private fun initListeners() {
         imgBtnBackMain.setOnClickListener(this)
         layoutManageBlocking.setOnClickListener(this)
+        layoutNotifications.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -39,6 +41,10 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.imgBtnBackMain -> {
                 finish()
+            }
+            R.id.layoutNotifications -> {
+                val intent = Intent(this, ManageNotificationsActivity::class.java)
+                startActivity(intent)
             }
         }
     }

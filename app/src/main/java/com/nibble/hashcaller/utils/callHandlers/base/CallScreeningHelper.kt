@@ -40,26 +40,24 @@ class CallScreeningHelper(private val context: Context) {
      */
     suspend fun isBlockedByPattern(phoneNumber: String): Boolean {
         var match = false
-        GlobalScope.launch {
-           async {
-             blockedListpatternDAO.getAllBLockListPatternByFlow().collect {
-                 for (item in it){
-                     if(item.type == NUMBER_STARTS_WITH){
-                         match =   phoneNumber.startsWith(item.numberPattern)
-                     }else if(item.type == NUMBER_CONTAINING ){
-                         match =  phoneNumber.contains(item.numberPattern)
-                     }else{
-                         match = phoneNumber.endsWith(item.numberPattern)
-                     }
-                     if(match){
 
-                         break
-                     }
-                 }
-             }
 
-           }.await()
-        }.join()
+             blockedListpatternDAO.getAllBLockListPatternList().apply {
+                for (item in this){
+                    Log.d(TAG, "isBlockedByPattern: ${item.numberPattern}")
+                    if(item.type == NUMBER_STARTS_WITH){
+                        match =   phoneNumber.startsWith(item.numberPattern)
+                    }else if(item.type == NUMBER_CONTAINING ){
+                        match =  phoneNumber.contains(item.numberPattern)
+                    }else{
+                        match = phoneNumber.endsWith(item.numberPattern)
+                    }
+                    if(match){
+                        break
+                    }
+                }
+            }
+
         return match
 
     }

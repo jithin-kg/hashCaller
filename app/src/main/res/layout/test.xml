@@ -1,66 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--    https://medium.com/@tapanrgohil/motion-layout-profile-picture-animation-a3f3de4f569f-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutIndividualContact"
+    android:id="@+id/tvBlockSmall"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
+    app:layoutDescription="@xml/test_scene"
+    tools:context=".view.ui.manageblock.BlockManageActivity">
 
-    tools:context=".view.ui.contacts.individualContacts.IndividualCotactViewActivity"
-    android:orientation="vertical">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutNotifications"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/imgBtnBacckNotificaions"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
-        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
-        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings">
+        android:layout_marginStart="@dimen/img_btn_back_margin"
+        android:layout_marginTop="@dimen/img_btn_back_margin"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imgVNotification"
-            android:layout_width="@dimen/settings_icons_width"
-            android:layout_height="@dimen/settings_icons_width"
-            android:layout_marginStart="@dimen/margin_start_setting_img"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="@dimen/margin_img_settings_img"
-            android:layout_marginBottom="@dimen/margin_img_settings_img"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_notifications_24" />
+    <TextView
+        android:id="@+id/tvSmallNotifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:textSize="16sp"
+        android:alpha=".87"
+        android:textColor="@color/textColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.226"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnBacckNotificaions"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBacckNotificaions"
+        tools:visibility="invisible" />
 
-        <TextView
-            android:id="@+id/tvNotifications"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/roboto"
-            android:letterSpacing="0.1"
-            android:text="Notifiations"
-            android:textColor="@color/textColor"
-            android:textScaleX="0.80"
-            android:textSize="@dimen/settings_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/imgVNotification"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imgVNotification"
-            app:layout_constraintTop_toTopOf="@+id/imgVNotification" />
+    <TextView
+        android:id="@+id/txtvLargeNotificationsSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="Notifications"
+        android:textStyle="normal"
+        android:alpha=".87"
+        android:textColor="@color/textColor"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnBacckNotificaions"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBacckNotificaions" />
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        -->
+    <!--        android:text="take full controll of blocking"-->
+    <!--        />-->
 
-        <TextView
-            android:id="@+id/tvNotificationHint"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Call, SMS, Spam"
-            app:layout_constraintStart_toStartOf="@+id/tvNotifications"
-            app:layout_constraintEnd_toEndOf="@+id/tvNotifications"
-            app:layout_constraintTop_toBottomOf="@+id/tvNotifications"
-            />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/imgViewDivierNotifications1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="72dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/scrollViewNotificationSettings"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtvLargeNotificationsSettings"
+        app:srcCompat="@drawable/horizontal_line_settings"
 
-</LinearLayout>
+        />
+    <!--important android:overScrollMode="never" to remove shadow on scrolling down and up-->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollViewNotificationSettings"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierNotifications1">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutScrollitemNotificationSettings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
+                    android:alpha=".80"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView23"
+                    app:srcCompat="@drawable/ic_baseline_call_white" />
+
+                <Switch
+                    android:id="@+id/switchCallBlkNotification"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Notification for blocked calls "
+                    android:alpha=".87"
+                    android:textSize="@dimen/text_size_list_headings"
+                    android:layout_marginStart="@dimen/img_btn_back_margin"
+                    android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="@+id/imageView"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <TextView
+                    android:id="@+id/textView20"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Notify me when a call is blocked"
+                    android:layout_marginTop="@dimen/margin_top_info_text_block_settings"
+                    android:layout_marginEnd="@dimen/tv_margin_end_block_settings"
+                    android:alpha=".70"
+                    app:layout_constraintEnd_toEndOf="@+id/switchCallBlkNotification"
+                    app:layout_constraintStart_toStartOf="@+id/switchCallBlkNotification"
+                    app:layout_constraintTop_toBottomOf="@+id/switchCallBlkNotification" />
+                <ImageView
+                    android:id="@+id/imgViewDivierNotification2"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_top_divider_blk"
+                    android:alpha="0.12"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textView20"
+                    app:layout_constraintTop_toBottomOf="@+id/textView20"
+                    app:srcCompat="@drawable/horizontal_line_settings"
+                    />
+
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.8"
+                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
+                    android:layout_marginTop="@dimen/list_item_break_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imgViewDivierNotification2"
+                    app:srcCompat="@drawable/ic_baseline_sms_24" />
+
+                <Switch
+                    android:id="@+id/switchSMSBlkNotifications"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/img_btn_back_margin"
+                    android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"
+                    android:alpha=".87"
+                    android:text="Notification for blocked SMS "
+                    android:textSize="@dimen/text_size_list_headings"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView5"
+                    app:layout_constraintTop_toTopOf="@+id/imageView5"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <TextView
+                    android:id="@+id/textView22"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Notify me when a SMS is blocked"
+                    android:alpha=".70"
+                    app:layout_constraintEnd_toEndOf="@+id/switchSMSBlkNotifications"
+                    app:layout_constraintStart_toStartOf="@+id/switchSMSBlkNotifications"
+                    app:layout_constraintTop_toBottomOf="@+id/switchSMSBlkNotifications" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

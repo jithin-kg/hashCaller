@@ -12,6 +12,7 @@ import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -31,7 +32,7 @@ class InCommingCallManager(
 
     private val repository = blockListPatternRepository
     val context = context
-    private val phoneNumber = preparedPhoenNumber(phoneNumber)
+    private val phoneNumber = formatPhoneNumber(phoneNumber)
 
     val serchNetworkRepo = SearchNetworkRepository(context)
     //        var searchResult = serchNetworkRepo.search(phoneNumber)
@@ -69,6 +70,7 @@ class InCommingCallManager(
                           match = phoneNumber.endsWith(item.numberPattern)
                       }
                       if(match){
+                          endIncommingCall(context)
                           break
                       }
                   }

@@ -13,6 +13,9 @@ const val NUMBER_ENDS_WITH = 2
 
 
 const val SHARED_PREF_BLOCK_CONFIGURATIONS = "blockTopSpammers"
+const val IS_CALL_BLOCK_NOTIFICATION_ENABLED = "isCallblkntfnEnabled"
+const val IS_SMS_BLOCK_NOTIFICATION_ENABLED = "isSMSblkntfnEnabled"
+const val SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS = "notifcnConfig"
 const val APP_NAME = "app_name"
 const val APP_LICENSES = "app_licenses"
 const val APP_FAQ = "app_faq"

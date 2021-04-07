@@ -295,7 +295,6 @@
                    app:layout_constraintStart_toStartOf="@+id/tcCallsFromForeign"
                    app:layout_constraintTop_toBottomOf="@+id/tcCallsFromForeign"
                    app:srcCompat="@drawable/horizontal_line_settings"
-
                    />
 
                <androidx.appcompat.widget.AppCompatImageView

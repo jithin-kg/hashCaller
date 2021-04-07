@@ -32,7 +32,9 @@ import java.security.NoSuchAlgorithmException
  * this class recieves the broadcast intent about call state
  */
 class IncomingCallReceiver : BroadcastReceiver(){
+    init {
 
+    }
     private lateinit var  blockedLIstDao:BlockedLIstDao
     private lateinit var mutedCallersDao: IMutedCallersDAO
     private lateinit var blockListPatternRepository: BlockListPatternRepository
@@ -40,11 +42,10 @@ class IncomingCallReceiver : BroadcastReceiver(){
     private lateinit var blockedListpatternDAO: BlockedLIstDao
 
     @RequiresApi(Build.VERSION_CODES.N)
-    @SuppressLint("MissingPermission") // P`ermissions checked when app opened; just fail here if missing
+    @SuppressLint("MissingPermission", "LogNotTimber") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
+        blockedListpatternDAO =  HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
-            blockedListpatternDAO =  context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
-
 
 //            val i = Intent(context, ActivityIncommingCallView::class.java)
 //                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -118,9 +119,9 @@ class IncomingCallReceiver : BroadcastReceiver(){
             blockListPatternRepository = BlockListPatternRepository(blockedLIstDao, mutedCallersDao)
 
             val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository,
-                                                context,
-                                                phoneNumber,
-                                                blockedListpatternDAO)
+                            context,
+                            phoneNumber,
+                            blockedListpatternDAO )
             inComingCallManager.manageCall()
 
 
