@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.utils
 
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,9 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
@@ -17,8 +21,11 @@ import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
+import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.CoroutineScope
@@ -41,10 +48,31 @@ class IncomingCallReceiver : BroadcastReceiver(){
     private lateinit var blockListPatternRepository: BlockListPatternRepository
 
     private lateinit var blockedListpatternDAO: BlockedLIstDao
-
+    private lateinit var notificationHelper: NotificationHelper
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission", "LogNotTimber") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
+
+        val notificationCmpt =   NotificationCompat.Builder(context, HashCaller.CHANNEL_2_ID)
+        val  resultIntent= Intent(context, MainActivity::class.java)
+                var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(context)
+
+        val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
+            // Add the intent, which inflates the back stack
+            addNextIntentWithParentStack(resultIntent)
+            // Get the PendingIntent containing the entire back stack
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        }
+
+        notificationHelper = NotificationHelper(
+            context.isReceiveNotificationForSpamCallEnabled(),
+           resultIntent,
+            notificationCmpt,
+            resultPendingIntent,
+            notificationManagerCmpt
+        )
+
         blockedListpatternDAO =  HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
 
@@ -123,7 +151,9 @@ class IncomingCallReceiver : BroadcastReceiver(){
             val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository,
                             context,
                             phoneNumber,
-                            blockedListpatternDAO, contactAdressesDAO,context.isBlockNonContactsEnabled() )
+                            blockedListpatternDAO,
+                contactAdressesDAO,context.isBlockNonContactsEnabled(),
+                        notificationHelper)
             inComingCallManager.manageCall().apply {
 
             }
@@ -193,6 +223,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
                             blockedListpatternDAO,
                             contactAdressesDAO,
                             context.isBlockNonContactsEnabled(),
+                            notificationHelper,
 
                             )
                         inComingCallManager.endIncommingCall(context)

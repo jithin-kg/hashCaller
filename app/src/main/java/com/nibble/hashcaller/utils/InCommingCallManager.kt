@@ -1,9 +1,7 @@
 package com.nibble.hashcaller.utils
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
@@ -14,7 +12,6 @@ import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
@@ -29,7 +26,8 @@ class InCommingCallManager(
     phoneNumber: String,
     private val blockedListpatternDAO: BlockedLIstDao,
     private val contactAdressesDAO: IContactAddressesDao,
-    private val blockNonContactsEnabled: Boolean
+    private val blockNonContactsEnabled: Boolean,
+    private val notificationHelper: NotificationHelper
 )  {
 
 
@@ -94,6 +92,7 @@ GlobalScope.launch {
             if (this == null) {
                 if (blockNonContactsEnabled) {
                     endIncommingCall(context)
+                    notificationHelper.showNotificatification(true, phoneNumber)
                 }
             }
 
