@@ -35,6 +35,7 @@ import kotlinx.coroutines.supervisorScope
 //https://zoransasko.medium.com/detecting-and-rejecting-incoming-phone-calls-on-android-9e0cff04ef20
 @RequiresApi(Build.VERSION_CODES.N)
 class MyCallScreeningService: CallScreeningService() {
+
     private lateinit var helper: CallScreeningHelper
     var blockedListpatternDAO: BlockedLIstDao =  this?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
     var contactAdressesDAO =  this?.let { HashCallerDatabase.getDatabaseInstance(it).contactAddressesDAO() }

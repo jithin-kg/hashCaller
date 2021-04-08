@@ -18,6 +18,7 @@ import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.CoroutineScope
@@ -117,12 +118,16 @@ class IncomingCallReceiver : BroadcastReceiver(){
             blockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
             mutedCallersDao = HashCallerDatabase.getDatabaseInstance(context).mutedCallersDAO()
             blockListPatternRepository = BlockListPatternRepository(blockedLIstDao, mutedCallersDao)
+            var contactAdressesDAO =  context?.let { HashCallerDatabase.getDatabaseInstance(it).contactAddressesDAO() }
 
             val inComingCallManager: InCommingCallManager = InCommingCallManager(blockListPatternRepository,
                             context,
                             phoneNumber,
-                            blockedListpatternDAO )
-            inComingCallManager.manageCall()
+                            blockedListpatternDAO, contactAdressesDAO,context.isBlockNonContactsEnabled() )
+            inComingCallManager.manageCall().apply {
+
+            }
+
 
 
 
@@ -177,10 +182,17 @@ class IncomingCallReceiver : BroadcastReceiver(){
                 if(!res?.body()?.cntcts.isNullOrEmpty()){
                     val result = res?.body()?.cntcts?.get(0)
                     Log.d(TAG, "searchForNumberInServer: result $result")
+
                     if(result!!.spammCount > 0){
+                        var contactAdressesDAO =  context?.let { HashCallerDatabase.getDatabaseInstance(it).contactAddressesDAO() }
+
                         val inComingCallManager: InCommingCallManager = InCommingCallManager(
                             blockListPatternRepository,
-                            context, phoneNumber, blockedListpatternDAO,
+                            context,
+                            phoneNumber,
+                            blockedListpatternDAO,
+                            contactAdressesDAO,
+                            context.isBlockNonContactsEnabled(),
 
                             )
                         inComingCallManager.endIncommingCall(context)

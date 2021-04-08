@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
@@ -26,7 +27,9 @@ class InCommingCallManager(
     blockListPatternRepository: BlockListPatternRepository,
     context: Context,
     phoneNumber: String,
-    private val blockedListpatternDAO: BlockedLIstDao
+    private val blockedListpatternDAO: BlockedLIstDao,
+    private val contactAdressesDAO: IContactAddressesDao,
+    private val blockNonContactsEnabled: Boolean
 )  {
 
 
@@ -42,49 +45,92 @@ class InCommingCallManager(
     val viewModel = SearchViewModel(serchNetworkRepo, contactLocalSyncRepository)
 
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun manageCall()  = GlobalScope.launch(Dispatchers.IO) {
+//    @RequiresApi(Build.VERSION_CODES.N)
+    fun manageCall()  {
+GlobalScope.launch {
+//            repository.isCallerMuted(phoneNumber).collect {
+//                if(it){
+//                    silenceIncomingCall(context)
+//                }
+//            }
+    //todo I can change this to flow for faster operation
+    Log.d(TAG, "phoneNum: $phoneNumber")
 
 
 
+//
 
-            repository.isCallerMuted(phoneNumber).collect {
-                if(it){
-                    silenceIncomingCall(context)
+    val deferedFindInContacts = async { contactAdressesDAO.find(phoneNumber) }
+
+//    try {
+//        deferedBlockByPattern.await()
+//    } catch (e: Exception) {
+//        Log.d(TAG, "manageCall: $e")
+//    }
+    
+
+            val deferedBlockByPattern = async {
+                var match = false
+                blockedListpatternDAO.getAllBLockListPatternByFlow().collect {
+                    for (item in it){
+                        if(item.type == NUMBER_STARTS_WITH){
+                            match =   phoneNumber.startsWith(item.numberPattern)
+                        }else if(item.type == NUMBER_CONTAINING ){
+                            match =  phoneNumber.contains(item.numberPattern)
+                        }else{
+                            match = phoneNumber.endsWith(item.numberPattern)
+                        }
+                        if(match){
+                            endIncommingCall(context)
+
+                            
+                        }
+                    }
+                }
+    }
+    try {
+        deferedFindInContacts.await().apply {
+            Log.d(TAG, "manageCall: deferedFindInContacts await")
+            if (this == null) {
+                if (blockNonContactsEnabled) {
+                    endIncommingCall(context)
                 }
             }
-        //todo I can change this to flow for faster operation
-        Log.d(TAG, "phoneNum: $phoneNumber")
-        Log.d(TAG, "phoneNum: $phoneNumber")
-        var match = false
 
+        }
+        
+    } catch (e: Exception) {
+        Log.d(TAG, "manageCall: $e")
+    }
+    
+    try {
+        deferedBlockByPattern.await()
+    }catch (e:Exception){
+        Log.d(TAG, "manageCall: exception $e")
+    }
 
-        async {
-              blockedListpatternDAO.getAllBLockListPatternByFlow().collect {
-                  for (item in it){
-                      if(item.type == NUMBER_STARTS_WITH){
-                          match =   phoneNumber.startsWith(item.numberPattern)
-                      }else if(item.type == NUMBER_CONTAINING ){
-                          match =  phoneNumber.contains(item.numberPattern)
-                      }else{
-                          match = phoneNumber.endsWith(item.numberPattern)
-                      }
-                      if(match){
-                          endIncommingCall(context)
-                          break
-                      }
-                  }
-              }
-
-          }.await()
-        if(match){
-            endIncommingCall(context)
 
         }
 
+}
 
-
-
+    private suspend fun blockByPattern(phoneNumber: String) {
+        var match = false
+        blockedListpatternDAO.getAllBLockListPatternByFlow().collect {
+            for (item in it){
+                if(item.type == NUMBER_STARTS_WITH){
+                    match =   phoneNumber.startsWith(item.numberPattern)
+                }else if(item.type == NUMBER_CONTAINING ){
+                    match =  phoneNumber.contains(item.numberPattern)
+                }else{
+                    match = phoneNumber.endsWith(item.numberPattern)
+                }
+                if(match){
+                    endIncommingCall(context)
+                    break
+                }
+            }
+        }
     }
 
     companion object{
