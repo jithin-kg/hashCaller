@@ -15,8 +15,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.DummYViewHolder
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setCount
+import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.SMS_NOT_READ
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
@@ -47,7 +50,6 @@ class SMSListAdapter(private val context: Context,
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_LOADING = 0
     private val VIEW_TYPE_SMS = 2;
-    private val VIEW_TYPE_SPAM = 3;
 
     private var smsList:MutableList<SMS> = mutableListOf()
     companion object {
@@ -57,18 +59,13 @@ class SMSListAdapter(private val context: Context,
         var prevPos:Int? = null
 
     }
-    fun getps(){
 
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-       if(viewType == VIEW_TYPE_SPAM){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_item_spam, parent, false)
-            return SpamViewHolder(view)
-        }
-        else if(viewType == VIEW_TYPE_LOADING){
+
+         if(viewType == VIEW_TYPE_LOADING){
            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
-           return DummyLoadingViewHolder(view)
+           return DummYViewHolder(view)
        }
         else{
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
@@ -80,10 +77,7 @@ class SMSListAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(this.smsList.isNotEmpty() && position < smsList.size)
-            if(this.smsList[position].spamCount > 0){
-                return VIEW_TYPE_SPAM
-            }
-            else if(this.smsList[position].isDummy){
+             if(this.smsList[position].isDummy){
                 return VIEW_TYPE_LOADING
             }
 
@@ -91,8 +85,6 @@ class SMSListAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-//    val contact = smsList[position]
-//    holder.bind(contact, context, onContactItemClickListener)
         when(holder.itemViewType) {
 
             VIEW_TYPE_SMS -> {
@@ -104,16 +96,8 @@ class SMSListAdapter(private val context: Context,
             VIEW_TYPE_LOADING ->{
                 val item =  getItem(position)
 
-                (holder as DummyLoadingViewHolder).bind(item,context, onContactItemClickListener, position)
+                (holder as DummYViewHolder).bind()
             }
-            VIEW_TYPE_SPAM ->{
-//                ED4133 -> letter red  FAE0DE-> light
-
-                val item =  getItem(position)
-
-                (holder as SpamViewHolder).bind(item,context, onContactItemClickListener, position)
-            }
-
 
         }
     }
@@ -126,93 +110,6 @@ class SMSListAdapter(private val context: Context,
 
     }
 
-
-    inner class DummyLoadingViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-
-        fun bind(
-            sms: SMS, context: Context,
-            onDeleteItemclickLIstener: (view: View, threadId: Long, pos: Int, pno: String) -> Unit,
-            position: Int
-        ) {
-
-        }
-    }
-
-    inner class SpamViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        val btnEmptySms = view.btnEmptySpamSMS
-        private val name = view.textVSMSContactNameSpam
-        private val circle = view.falseTextSMScontactCrclrSpam;
-        private val circleImg = view.imgViewSMScontactCrclrSpam;
-        fun bind(
-            sms: SMS, context: Context,
-            onDeleteItemclickLIstener: (view:View, threadId: Long, pos: Int, pno: String) -> Unit,
-            position: Int
-        ) {
-            if(!sms.name.isNullOrEmpty())
-                name.text = sms.name
-            else
-                name.text = sms.address
-
-            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
-                view.pgBarSmsListItemSpam.visibility = View.VISIBLE
-//                Log.d(TAG, "bind: searching for ${sms.addressString}")
-            }else{
-                view.pgBarSmsListItemSpam.visibility = View.INVISIBLE
-            }
-            /**
-             * This is important to check else double/ duplicate marking of items occur
-             */
-            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
-                view.smsMarkedSpam.beVisible()
-            }else{
-                view.smsMarkedSpam.visibility = View.INVISIBLE
-
-            }
-            view.tvSMSMPeekSpam.text = sms.msgString
-            view.tvUnreadSMSCountSpam.setCount(sms.unReadSMSCount)
-            if(sms.unReadSMSCount==0){
-                view.tvUnreadSMSCountSpam.beGone()
-            }
-            if(sms.unReadSMSCount == 0 ){
-                view.cardViewSMSSpamCount.beInvisible()
-            }else{
-                view.tvUnreadSMSCountSpam.beVisible()
-            }
-
-
-
-            view.tvSMSTimeSpam.text = sms.relativeTime
-
-            setNameFirstChar(sms)
-            generateCircleView(context);
-
-
-            view.setOnLongClickListener(OnLongClickListener { v ->
-                longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
-                    sms.addressString!!
-                )
-                true
-            })
-            view.setOnClickListener{v->
-                onContactItemClickListener(v, sms.threadID, this.adapterPosition,
-                    sms.addresStringNonFormated!!
-                )
-
-            }
-        }
-
-        private fun generateCircleView(context: Context) {
-            circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
-        }
-
-        private fun setNameFirstChar(sms: SMS) {
-            val name: String = sms.address.toString()
-//             val firstLetter = name[0]
-            val firstLetter = sms.addressString!![0]
-            val firstLetterString = firstLetter.toString().toUpperCase()
-            circleImg.setImageResource(R.drawable.ic_baseline_block_red)
-        }
-    }
     inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
         var layoutExpandable: ConstraintLayout = view.layoutExpandable
         private val name = view.textVSMSCntctName
@@ -228,10 +125,24 @@ class SMSListAdapter(private val context: Context,
 
                 name.text = sms.nameForDisplay
             Log.d(TAG, "bind: setting name ${sms.nameForDisplay}")
+            if(sms.spamCount > 0){
+                view.textVSMSCntctName.setColorForText(R.color.spamText)
+                circle.setRandomBackgroundCircle(TYPE_SPAM)
+                view.imgVBlkIconSms.beVisible()
+                view.textViewSMScontactCrclr.text = ""
+            }else{
+                view.textVSMSCntctName.setColorForText(R.color.textColor)
+                circle.setRandomBackgroundCircle()
+                view.imgVBlkIconSms.beInvisible()
+                if(!sms.nameForDisplay.isNullOrEmpty()){
+                    circle.text = sms.nameForDisplay[0].toString()
 
+                }
+
+
+            }
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
                 view.pgBarSmsListItem.visibility = View.VISIBLE
-//                Log.d(TAG, "bind: searching for ${sms.addressString}")
             }else{
                 view.pgBarSmsListItem.visibility = View.INVISIBLE
             }
@@ -245,7 +156,7 @@ class SMSListAdapter(private val context: Context,
                 view.smsMarked.visibility = View.INVISIBLE
 
             }
-//            view.tvSMSMPeek.text = MESSAGE_STRING
+
             view.tvSMSMPeek.text = sms.msgString
             Log.d(TAG, "bind: messageString is ${sms.msgString}")
                 if(sms.readState ==SMS_NOT_READ){
@@ -257,24 +168,11 @@ class SMSListAdapter(private val context: Context,
                     view.tvSMSMPeek.typeface = Typeface.DEFAULT
                     view.tvSMSMPeek.alpha = 0.60f
                     view.tvSMSMPeek.setColorForText(R.color.textColor)
-
                 }
-//            view.tvUnreadSMSCount.setCount(sms.unReadSMSCount)
-//            if(sms.unReadSMSCount == 0 ){
-//                view.cardViewSMSUnreadCount.beInvisible()
-//            }else{
-//                view.cardViewSMSUnreadCount.beVisible()
-//            }
-
 
 
             view.tvSMSTime.text = sms.relativeTime
 
-            if(!sms.nameForDisplay.isNullOrEmpty()){
-                circle.text = sms.nameForDisplay[0].toString()
-
-            }
-            generateCircleView(context);
 
 
             view.setOnLongClickListener(OnLongClickListener { v ->
@@ -292,80 +190,8 @@ class SMSListAdapter(private val context: Context,
 
 
         }
-//        }
 
-        private fun highlightSearhcField(sms: SMS) {
 
-//             if(searchQry!=null){
-////                 val lowercaseMsg = sms.msg!!.toLowerCase()
-//                 val lowerSearchQuery = searchQry!!.toLowerCase()
-//                 if(sms.address!!.contains(searchQry!!)){
-//                     Log.d(TAG, "address pattern matches")
-//                     val startPos = sms.address!!.indexOf(searchQry!!)
-//                     val endPos = startPos + searchQry!!.length
-//                     view.tvSMSMPeek.text = sms.msg
-//                    setSpan(sms.address!!, startPos, endPos, view.textVSMSContactName)
-//
-//                 }else if(lowercaseMsg.contains(lowerSearchQuery)){
-//
-//                     Log.d(TAG, "lowercase: $lowercaseMsg")
-//                     val startPos = lowercaseMsg.indexOf(lowerSearchQuery)
-//                     val endPos = startPos +lowerSearchQuery.length
-//                     name.text = sms.address
-////                     setSpan(sms.msg!!, startPos, endPos, view.tvSMSMPeek)
-//
-//                 }else{
-//                     name.text = sms.address
-//                     view.tvSMSMPeek.text = sms.msg
-//                 }
-//             }else{
-//                 name.text = sms.address
-//                 view.tvSMSMPeek.text = sms.msg
-//             }
-
-        }
-
-        private fun setSpan(str:String, startPos:Int, endPos:Int, v: TextView) {
-            val yellow =
-                BackgroundColorSpan(Color.YELLOW)
-            val spannableStringBuilder =
-                SpannableStringBuilder(str)
-//             Log.d(TAG, "setSpan: startPos:$startPos")
-//             Log.d(TAG, "setSpan: endPos:$endPos")
-            try{
-                spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-            }catch (e:IndexOutOfBoundsException){
-                Log.d(TAG, "setSpan: $e")
-            }
-
-            v.text = spannableStringBuilder
-        }
-
-        private fun setNameFirstChar(sms: SMS) {
-            val name: String = sms.address.toString()
-//             val firstLetter = name[0]
-            val firstLetter = sms.addressString!![0]
-            val firstLetterString = firstLetter.toString().toUpperCase()
-            circle.text = firstLetterString
-        }
-
-        private fun generateCircleView(context: Context) {
-            val rand = Random()
-            when (rand.nextInt(5 - 1) + 1) {
-                1 -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                }
-                2 -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                }
-                3 -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                }
-                else -> {
-                    circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                }
-            }
-        }
 
         //        https://stackoverflow.com/questions/26466877/how-to-create-context-menu-for-recyclerview
         override fun onCreateContextMenu(
@@ -383,8 +209,6 @@ class SMSListAdapter(private val context: Context,
     }
     class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-//            else
-//                Log.d(TAG, "areItemsTheSame: no")
             return  oldItem.addressString == newItem.addressString
 
 
@@ -392,10 +216,7 @@ class SMSListAdapter(private val context: Context,
 
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-//            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
-//            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
             return oldItem == newItem
-            //TODO compare both messages and if the addres is same and message
         }
 
     }

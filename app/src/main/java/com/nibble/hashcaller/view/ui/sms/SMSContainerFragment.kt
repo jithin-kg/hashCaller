@@ -122,18 +122,25 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         initVieModel()
         if(checkContactPermission())
         {
+            initRecyclerView()
             getFirstPageOfSMS()
             observeSMSList()
-        }
-//        initListeners()
-//        val parent: Fragment? = (parentFragment as SMSContainerFragment).parentFragment
-//        toolbar = viewmo
+            observeSendersInfoFromServer()
+            observePermissionLiveData()
+            observeNumOfRowsDeleted()
+            registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
+            setupBottomSheet()
+            initListeners()
+            observeMutabeLiveData()
+            if(markedItems.size > 0){
+                Log.d(TAG, "onViewCreated: greater than one")
+                showToolbarButtons()
+                hideSearchView()
+                showToolbarButtons()
+            }
 
-        observeSendersInfoFromServer()
-        observePermissionLiveData()
-        observeNumOfRowsDeleted()
-        registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
-        setupBottomSheet()
+        }
+
         return  binding.root
     }
 
@@ -237,7 +244,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrMore.setOnClickListener(this)
         binding.imgBtnTbrDelete.setOnClickListener(this)
         binding.imgBtnAvatarMain.setOnClickListener(this)
-        this.fabSendNewSMS.setOnClickListener(this)
+        binding.fabSendNewSMS.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -324,16 +331,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             sms.let {
 
-//                Log.d(TAG, "observeSMSList: spamcount ${sms[0].spamCount}")
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-//                Log.d(TAG, "observeSMSList: data changed")
-//                smsRecyclerAdapter?.submitList(it)
-//                SMSListAdapter.searchQry = searchQry
-//                this.smsLIst = it as MutableList<SMS>?
-//                this.smsListVIewModel.updateFlowList(sms)
                 Log.d(TAG, "observeSMSList: $sms")
                 smsListVIewModel.updateLiveData(sms)
-//                this.smsListVIewModel.updateLiveData(sms)
                 this.smsListVIewModel.getInformationForTheseNumbers(
                     sms,
                     requireActivity().packageName
@@ -369,35 +368,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     @SuppressLint("WrongViewCast", "LongLogTag")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        initRecyclerView()
-        initListeners()
-        getFirstPageOfSMS()
-
-//        sView = viewMesages.findViewById(R.id.searchViewSms)
-
-//        Log.d(TAG, "onCreateView: $sView")
-
-
-
-
-
-
-        observeMutabeLiveData()
-//        addScrollListener()
-        if(markedItems.size > 0){
-            Log.d(TAG, "onViewCreated: greater than one")
-            showToolbarButtons()
-            hideSearchView()
-            showToolbarButtons()
-        }
-        if(checkContactPermission()){
-        }
-
-
-
-
-
 
     }
 

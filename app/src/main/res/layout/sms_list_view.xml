@@ -41,6 +41,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.4" />
+    <ImageView
+        android:id="@+id/imgVBlkIconSms"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:elevation="6dp"
+        android:textColor="@color/spamText"
+        android:src="@drawable/ic_baseline_block_red"
+        android:gravity="center_vertical|center_horizontal"
+        app:layout_constraintStart_toStartOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintTop_toTopOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewSMScontactCrclr"
+
+        />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/smsMarked"
