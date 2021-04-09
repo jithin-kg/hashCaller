@@ -6,12 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.FragmentTransaction
-import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
-import com.nibble.hashcaller.view.ui.call.CallFragment
-import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
-import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
-import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -28,12 +22,12 @@ class HashCaller : Application(){
     companion object{
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
-          var callFragment: CallFragment? = null
-          var messagesFragment: SMSContainerFragment? = null
-          var blockConfigFragment: BlockConfigFragment? = null
-          var contactFragment: ContactsFragment? = null
-          var dialerFragment: DialerFragment? = null
-          var ft: FragmentTransaction? = null
+//          var callFragment: CallFragment? = null
+//          var messagesFragment: SMSContainerFragment? = null
+//          var blockConfigFragment: BlockConfigFragment? = null
+//          var contactFragment: ContactsContainerFragment? = null
+//          var dialerFragment: DialerFragment? = null
+//          var ft: FragmentTransaction? = null
 
     }
 

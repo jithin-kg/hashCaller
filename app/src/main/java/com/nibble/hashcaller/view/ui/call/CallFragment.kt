@@ -36,6 +36,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
@@ -84,10 +85,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener {
+    private  var _binding: FragmentCallBinding? = null
+    private val binding get() = _binding!!
     private var isDflt = false
+
+
     private var isScreeningApp = false
-    private var toolbar: Toolbar? = null
-    var callFragment: View? = null
+//    private var toolbar: Toolbar? = null
+//    var callFragment: View? = null
 //    private lateinit var searchViewCall: EditText
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     var layoutBottomSheet: ConstraintLayout? = null
@@ -118,31 +123,34 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         savedInstanceState: Bundle?
     ): View? {
         Log.d(TAG, "onCreateView: ")
-        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
-    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
-    registerForContextMenu( this.recyclerV) //in oncreatView
+
+    _binding = FragmentCallBinding.inflate(inflater, container, false)
+//        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
+//    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
 
         initViewModel()
+    registerForContextMenu( binding.rcrViewCallHistoryLogs) //in oncreatView
+    // Inflate the layout for this fragment
+    if(checkContactPermission()){
 
-        // Inflate the layout for this fragment
-        if(checkContactPermission()){
+        getFirst10items()
+        observeCallLogMutabeLivedata()
+        initRecyclerView()
+        addScrollListener()
+        observePermissionLiveData()
+        observeCallLog()
+        observeCallLogInfoFromServer()
+        setupSimCardCount()
 
-            getFirst10items()
-            observeCallLogMutabeLivedata()
-            initRecyclerView()
-            addScrollListener()
-            observePermissionLiveData()
-            observeCallLog()
-            observeCallLogInfoFromServer()
-            setupSimCardCount()
-
-        }
+    }
 
     setupBottomSheet()
     initListeners()
 
+
+
 //        addFragmentDialer()
-        return callFragment
+        return binding.root
 
     }
 
@@ -164,12 +172,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     if(!this.viewmodel.callLogs!!.hasObservers()){
                         observeCallLog()
                         observeCallLogMutabeLivedata()
-                        this.callFragment!!.btnCallhistoryPermission.visibility = View.GONE
+                        binding.btnCallhistoryPermission.visibility = View.GONE
                     }
                 }
 
             }else{
-                this.callFragment!!.btnCallhistoryPermission.visibility =View.VISIBLE
+                binding.btnCallhistoryPermission.visibility =View.VISIBLE
                 Log.d(TAG, "observePermissionLiveData: permission not given")
                 if (this.viewmodel!! != null  ) {
 
@@ -182,13 +190,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
     private fun initListeners() {
 
-        this.callFragment!!.btnCallhistoryPermission.setOnClickListener(this)
-        this.callFragment!!.imgBtnCallTbrBlock.setOnClickListener(this)
-        this.callFragment!!.imgBtnCallTbrMuteCaller.setOnClickListener(this)
-        this.callFragment!!.imgBtnCallTbrDelete.setOnClickListener(this)
-        this.callFragment!!.fabBtnShowDialpad.setOnClickListener(this)
-        this.callFragment!!.imgBtnCallUnMuteCaller.setOnClickListener(this)
-        this.callFragment!!.imgBtnCallTbrMore.setOnClickListener(this)
+        binding.btnCallhistoryPermission.setOnClickListener(this)
+        binding.imgBtnCallTbrBlock.setOnClickListener(this)
+        binding.imgBtnCallTbrMuteCaller.setOnClickListener(this)
+        binding.imgBtnCallTbrDelete.setOnClickListener(this)
+        binding.fabBtnShowDialpad.setOnClickListener(this)
+        binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
+        binding.imgBtnCallTbrMore.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -226,7 +234,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun addScrollListener() {
-        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        binding.rcrViewCallHistoryLogs.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 //                if(dy>0){
@@ -289,6 +297,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
+
+
 //        intialize()
 
 
@@ -315,9 +325,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         })
     }
 
+    /**
+     * important to prevent memory leak
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
     private fun initRecyclerView() {
 
-        recyclerV.apply {
+        binding.rcrViewCallHistoryLogs.apply {
             layoutManager = LinearLayoutManager(activity)
             layoutMngr = layoutManager as LinearLayoutManager
 //            val topSpacingDecorator =
@@ -430,7 +449,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
     private fun initialize() {
-        toolbar = callFragment?.findViewById(R.id.toolbarCall)
+//        toolbar = callFragment?.findViewById(R.id.toolbarCall)
 //        searchViewCall = callFragment?.findViewById(R.id.searchViewCall)!!
     }
 
@@ -747,9 +766,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun hideBlockButton() {
         this.requireActivity().runOnUiThread {
-            this.callFragment!!.imgBtnCallTbrBlock.beInvisible()
-            this.callFragment!!.imgBtnCallTbrMuteCaller.beInvisible()
-            this.callFragment!!.imgBtnCallUnMuteCaller.beInvisible()
+            binding.imgBtnCallTbrBlock.beInvisible()
+            binding.imgBtnCallTbrMuteCaller.beInvisible()
+            binding.imgBtnCallUnMuteCaller.beInvisible()
         }
 
     }

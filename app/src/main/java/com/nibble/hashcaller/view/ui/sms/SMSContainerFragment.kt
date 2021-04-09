@@ -72,7 +72,8 @@ import kotlinx.coroutines.InternalCoroutinesApi
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
 SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, ConfirmationClickListener,
     android.widget.PopupMenu.OnMenuItemClickListener {
-    // TODO: Rename and change types of parameters
+
+
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var viewMesages: View

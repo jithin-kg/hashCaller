@@ -41,6 +41,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -48,7 +49,7 @@ import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
-import com.nibble.hashcaller.view.ui.contacts.ContactsFragment
+import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -75,6 +76,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var binding: ActivityMainBinding
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
     // via app settings page
     private var checkCapabilitiesOnResume = false
@@ -90,7 +92,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
 //    private lateinit var blockConfigFragment: BlockConfigFragment
-    private lateinit var contactFragment: ContactsFragment
+    private lateinit var contactFragment: ContactsContainerFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
 //    var  searchFragment: SearchFragment? = null
@@ -112,7 +114,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         hideKeyboard(this)
 //        setStatusBarColor(this)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         listenUiEvents()
 
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
@@ -223,7 +226,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft = supportFragmentManager.beginTransaction()
             this.messagesFragment = SMSContainerFragment()
 //            this.blockConfigFragment = BlockConfigFragment()
-            this.contactFragment = ContactsFragment()
+            this.contactFragment = ContactsContainerFragment()
             this.callFragment = CallFragment()
             this.dialerFragment = DialerFragment()
 //            this.searchFragment =  SearchFragment.newInstance()
@@ -288,7 +291,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState,"callFragment") as CallFragment
         this.messagesFragment = supportFragmentManager.getFragment(savedInstanceState,"messagesFragment") as SMSContainerFragment
 //        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
-        this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsFragment
+        this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsContainerFragment
         this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
 //        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
 //            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
