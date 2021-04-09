@@ -8,7 +8,6 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.SearchView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -132,7 +131,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
             no->
             edtTextPhoneSearch.setText(no)
             tvSearchIndicator.text = "Searching for"
-            shimmer_view_container.startShimmer()
+            shimmerViewContainer.startShimmer()
         } )
     }
 

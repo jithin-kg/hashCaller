@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivitySettingsBinding
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
@@ -15,10 +16,11 @@ import kotlinx.android.synthetic.main.activity_settings.*
 
 
 class SettingsActivity : AppCompatActivity(), View.OnClickListener {
-
+    private lateinit var binding:ActivitySettingsBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initListeners()
 
@@ -29,9 +31,9 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
 
 
     private fun initListeners() {
-        imgBtnBackMain.setOnClickListener(this)
-        layoutManageBlocking.setOnClickListener(this)
-        layoutNotifications.setOnClickListener(this)
+        binding.imgBtnBackMain.setOnClickListener(this)
+        binding.layoutManageBlocking.setOnClickListener(this)
+        binding.layoutNotifications.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {

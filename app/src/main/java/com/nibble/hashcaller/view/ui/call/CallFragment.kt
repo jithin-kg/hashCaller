@@ -22,7 +22,6 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -72,7 +71,6 @@ import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
-import kotlinx.android.synthetic.main.fragment_call_history.view.btnCallhistoryPermission
 import kotlinx.coroutines.flow.collect
 
 
@@ -205,7 +203,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun observeCallLogMutabeLivedata(){
         viewmodel.callLogsMutableLiveData.observe(viewLifecycleOwner, Observer {
-            shimmer_view_container_call.beInvisible()
+            binding.shimmerViewContainerCall.beInvisible()
             callLogAdapter?.setCallLogs(it)
         })
     }
@@ -521,8 +519,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             when(it){
                 OPERATION_COMPLETED -> {
                     requireActivity().toast("Enabled notification for ${viewmodel.contactAdders} ", Toast.LENGTH_LONG)
-                    imgBtnCallUnMuteCaller.beInvisible()
-                    imgBtnCallTbrMuteCaller.beVisible()
+                    binding.imgBtnCallUnMuteCaller.beInvisible()
+                    binding.imgBtnCallTbrMuteCaller.beVisible()
                     clearlists()
                     showSearchView()
                 }
@@ -774,22 +772,22 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun showBlockButon() {
        this.requireActivity().runOnUiThread {
-           imgBtnCallTbrBlock.beVisible()
+           binding.imgBtnCallTbrBlock.beVisible()
           if(isScreeningApp){ // checking screening app rol is available
               //check if user already muted or blocked the contact
               viewmodel.checkWhetherMutedOrBlocked().observe(viewLifecycleOwner, Observer {
                   when(it){
                       IS_MUTED_ADDRESS -> {
                           if(isScreeningApp){
-                              imgBtnCallUnMuteCaller.beVisible()
-                              imgBtnCallTbrMuteCaller.beInvisible()
+                              binding.imgBtnCallUnMuteCaller.beVisible()
+                              binding.imgBtnCallTbrMuteCaller.beInvisible()
                           }
 
                       }
                       IS_NOT_MUTED_ADDRESS ->{
 
-                          imgBtnCallUnMuteCaller.beInvisible()
-                          imgBtnCallTbrMuteCaller.beVisible()
+                          binding.imgBtnCallUnMuteCaller.beInvisible()
+                          binding.imgBtnCallTbrMuteCaller.beVisible()
                       }
                   }
               })
@@ -801,31 +799,31 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun showDeleteBtnInToolbar() {
         Log.d(TAG, "showDeleteBtnInToolbar: ")
-        searchViewCall.beInvisible()
-        imgBtnCallTbrBlock.beVisible()
+        binding.searchViewCall.beInvisible()
+        binding.imgBtnCallTbrBlock.beVisible()
         if(isScreeningApp){
-            imgBtnCallTbrMuteCaller.beVisible()
+            binding.imgBtnCallTbrMuteCaller.beVisible()
 
         }
-        imgBtnCallTbrDelete.beVisible()
-        imgBtnCallTbrMore.beVisible()
+        binding.imgBtnCallTbrDelete.beVisible()
+        binding.imgBtnCallTbrMore.beVisible()
 
     }
      fun showSearchView(){
-        searchViewCall.beVisible()
-        imgBtnCallTbrBlock.beInvisible()
-         imgBtnCallTbrMuteCaller.beInvisible()
-        imgBtnCallTbrDelete.beInvisible()
-        imgBtnCallTbrMore.beInvisible()
-        tvCallSelectedCount.beInvisible()
-         imgBtnCallUnMuteCaller.beInvisible()
+        binding.searchViewCall.beVisible()
+        binding.imgBtnCallTbrBlock.beInvisible()
+        binding. imgBtnCallTbrMuteCaller.beInvisible()
+        binding.imgBtnCallTbrDelete.beInvisible()
+        binding.imgBtnCallTbrMore.beInvisible()
+        binding.tvCallSelectedCount.beInvisible()
+         binding.imgBtnCallUnMuteCaller.beInvisible()
     }
 
     fun updateSelectedItemCount(){
         val count = getMarkedItemSize()
-        tvCallSelectedCount.text = "${count.toString()} Selected"
+        binding.tvCallSelectedCount.text = "${count.toString()} Selected"
         if(count>0){
-            tvCallSelectedCount.beVisible()
+            binding.tvCallSelectedCount.beVisible()
         }else{
             showSearchView()
         }
@@ -849,7 +847,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             when(it){
                 OPERATION_COMPLETED ->{
 
-                    val sbar = Snackbar.make(cordinateLyoutCall,
+                    val sbar = Snackbar.make(binding.cordinateLyoutCall,
                         "You no longer notified on from ${viewmodel.contactAdders}",
                         Snackbar.LENGTH_SHORT)
                     lastOperationPerformed = OPERTION_MUTE

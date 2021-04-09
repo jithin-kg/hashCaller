@@ -281,7 +281,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings">
 
         <ImageView
-            android:id="@+id/imgVInvite"
+                android:id="@+id/imgVInvite"
             android:layout_width="@dimen/settings_icons_width"
             android:layout_height="@dimen/settings_icons_width"
             android:layout_marginStart="@dimen/margin_start_setting_img"
@@ -308,8 +308,5 @@
             app:layout_constraintTop_toTopOf="@+id/imgVInvite" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
 </LinearLayout>

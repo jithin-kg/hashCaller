@@ -76,6 +76,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
+
     private lateinit var binding: ActivityMainBinding
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
     // via app settings page
@@ -87,8 +88,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     var fab: FloatingActionButton? = null
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userInfoViewModel: UserInfoViewModel
-
-
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
 //    private lateinit var blockConfigFragment: BlockConfigFragment
@@ -203,7 +202,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     fun showSnackBar(message:String){
         val sbar = Snackbar.make(cordinateLyoutMainActivity, message, Snackbar.LENGTH_SHORT)
         sbar.setAction("Action", null)
-        sbar.anchorView = bottomNavigationView
+        sbar.anchorView = binding.bottomNavigationView
         sbar.show()
 
     }
@@ -303,7 +302,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setBottomSheetListener(){
-        bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+       binding. bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             var fragment: Fragment
             val selectedFragment = ""
             when (menuItem.itemId) {
@@ -443,7 +442,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        ft.hide(this.searchFragment)
 //        ft.remove(this.searchFragment).commit()
 //        ft.commit()
-        bottomNavigationView.visibility = View.VISIBLE
+       binding. bottomNavigationView.visibility = View.VISIBLE
 
     }
 
@@ -501,7 +500,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun setDefaultFragment(idValue:Int) {
 //        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
-        bottomNavigationView.selectedItemId = idValue
+       binding.bottomNavigationView.selectedItemId = idValue
     }
 
     private fun showBlockConfigFragment() {
@@ -683,7 +682,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
 
         else{
-            bottomNavigationView.visibility = View.VISIBLE
+           binding.bottomNavigationView.visibility = View.VISIBLE
 
             //for hiding search fragment
 //            if(this::searchFragment !=null){

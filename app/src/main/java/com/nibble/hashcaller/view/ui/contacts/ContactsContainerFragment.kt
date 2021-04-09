@@ -215,7 +215,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         val intent = Intent(activity, ActivitySearchPhone::class.java)
         intent.putExtra("animation", "explode")
         Log.d(TAG, "startSearchActivity: $btnSampleTransition")
-        val p1 = android.util.Pair(searchViewContacts as View,"editTextTransition")
+        val p1 = android.util.Pair(binding.searchViewContacts as View,"editTextTransition")
 
         val options = ActivityOptions.makeSceneTransitionAnimation(activity,p1 )
         startActivity(intent, options.toBundle())

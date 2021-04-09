@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/imgBtnSearchBack2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.036"
-        app:layout_constraintStart_toStartOf="@+id/shimmer_view_container"
+        app:layout_constraintStart_toStartOf="@+id/shimmerViewContainer"
         app:layout_constraintTop_toTopOf="@+id/imgBtnSearchBack2" />
 
     <TextView
@@ -47,9 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:src="@drawable/ic_baseline_green_lock"
-        app:layout_constraintBottom_toBottomOf="@+id/shimmer_view_container"
+        app:layout_constraintBottom_toBottomOf="@+id/shimmerViewContainer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/shimmer_view_container" />
+        app:layout_constraintTop_toTopOf="@+id/shimmerViewContainer" />
 
 <!--IMPORTANT to contain searchview within a layout to give padding
    bottom otherwise the searvhview will not be fully visible because
@@ -98,7 +98,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_view_container"
+        android:id="@+id/shimmerViewContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -133,7 +133,7 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.042"
-        app:layout_constraintStart_toStartOf="@+id/shimmer_view_container"
+        app:layout_constraintStart_toStartOf="@+id/shimmerViewContainer"
         app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
 
@@ -151,7 +151,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shimmer_view_container" />
+        app:layout_constraintTop_toBottomOf="@+id/shimmerViewContainer" />
 
     <TextView
         android:id="@+id/tvResultFromServer"

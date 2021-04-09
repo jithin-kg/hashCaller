@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.ThemeUtils
 import androidx.lifecycle.*
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityCreteBlockListPatternBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
@@ -34,6 +35,8 @@ import kotlinx.android.synthetic.main.activity_crete_block_list_pattern.*
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,LifecycleObserver,
     AdapterView.OnItemClickListener {
+
+    private lateinit var binding : ActivityCreteBlockListPatternBinding
     private lateinit var  blockListViewModel: BlockListViewModel
     private  var themeLiveData:MutableLiveData<Int>? = null
     private var prevtheme:Int? = null
@@ -45,8 +48,9 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onCreate: ")
 
         super.onCreate(savedInstanceState)
+        binding = ActivityCreteBlockListPatternBinding.inflate(layoutInflater)
         patterntype = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_STARTS_WITH)
-        setContentView(R.layout.activity_crete_block_list_pattern)
+        setContentView(binding.root)
         blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         Log.d(TAG, "onCreate: intent value is $patterntype")
         intiListeners()
@@ -59,9 +63,9 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         var blocktypes = resources.getStringArray(R.array.custom_block_type)
         val arrayAdapter = ArrayAdapter(this, R.layout.blokc_type_drop_down, blocktypes)
 
-        autoCompletTxtViewBlkType.setAdapter(arrayAdapter)
-        autoCompletTxtViewBlkType.setText(blocktypes[patterntype],false)
-        autoCompletTxtViewBlkType.onItemClickListener = this
+        binding.autoCompletTxtViewBlkType.setAdapter(arrayAdapter)
+        binding.autoCompletTxtViewBlkType.setText(blocktypes[patterntype],false)
+        binding.autoCompletTxtViewBlkType.onItemClickListener = this
     }
 
 
@@ -80,13 +84,13 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 //        Log.d(TAG, "resume: ")
 //    }
     private fun intiListeners() {
-        imgBtnBackBlock.setOnClickListener(this)
-        btnSave.setOnClickListener(this)
+        binding.imgBtnBackBlock.setOnClickListener(this)
+       binding.btnSave.setOnClickListener(this)
     }
 
     private fun savePattern() {
         Log.d(TAG, "save button clicked")
-        val newPattern = formatPhoneNumber(editTextNewPattern?.text?.toString()!!)
+        val newPattern = formatPhoneNumber(binding.editTextNewPattern?.text?.toString()!!)
         if(newPattern.isNotEmpty()){
             var patternRegex = ""
             when(patterntype){

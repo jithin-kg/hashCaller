@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.CompoundButton
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityBlockManageBinding
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlkForeignCallsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
@@ -21,6 +22,8 @@ import kotlinx.android.synthetic.main.activity_block_manage.*
 
 class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener {
+    private lateinit var binding:ActivityBlockManageBinding
+
     private lateinit var sharedpreferences: SharedPreferences
     private  var isBlockTopSpammersEnabled = false
     private var isBlockForeignCallsEnabled = false
@@ -28,7 +31,8 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var viewmodel : BlockSettingsViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_block_manage)
+        binding = ActivityBlockManageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         viewmodel = ViewModelProvider(this, BlockSettingsInjectorUtil.provideContactsViewModelFactory(this)).get(
             BlockSettingsViewModel::class.java)
@@ -56,19 +60,19 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
             }
 
         if(isButtonHide){
-            layoutScreeningPermission.beGone()
-            imgViewDivierBlockUnderBtn.beGone()
+            binding.layoutScreeningPermission.beGone()
+            binding.imgViewDivierBlockUnderBtn.beGone()
         }else{
-            layoutScreeningPermission.beVisible()
-            imgViewDivierBlockUnderBtn.beVisible()
+            binding.layoutScreeningPermission.beVisible()
+            binding.imgViewDivierBlockUnderBtn.beVisible()
         }
     }
 
 
     private fun setToggleButtons() {
-        blockSpammersAuto.isChecked = isBlockTopSpammersEnabled
-        blockForeignCoutries.isChecked = isBlockForeignCallsEnabled
-        blockNotIncontacts.isChecked = isBlockNonContactCallsEnabled
+        binding.blockSpammersAuto.isChecked = isBlockTopSpammersEnabled
+        binding.blockForeignCoutries.isChecked = isBlockForeignCallsEnabled
+        binding.blockNotIncontacts.isChecked = isBlockNonContactCallsEnabled
     }
     private fun getSharedPrefValues() {
         sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
@@ -110,12 +114,12 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initListeners() {
-        blockNotIncontacts.setOnCheckedChangeListener(this)
-        blockForeignCoutries.setOnCheckedChangeListener(this)
-        blockSpammersAuto.setOnCheckedChangeListener(this)
-        layoutBlockContains.setOnClickListener(this)
-        layoutBlockEndsWith.setOnClickListener(this)
-        layoutBlockBeginsWith.setOnClickListener(this)
+        binding.blockNotIncontacts.setOnCheckedChangeListener(this)
+        binding.blockForeignCoutries.setOnCheckedChangeListener(this)
+        binding.blockSpammersAuto.setOnCheckedChangeListener(this)
+        binding.layoutBlockContains.setOnClickListener(this)
+        binding.layoutBlockEndsWith.setOnClickListener(this)
+        binding.layoutBlockBeginsWith.setOnClickListener(this)
 
     }
     override fun onClick(v: View?) {

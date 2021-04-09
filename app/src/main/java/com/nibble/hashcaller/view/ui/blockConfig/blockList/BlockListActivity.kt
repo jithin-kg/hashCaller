@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityBlockListBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.ui.blockConfig.ActivityCreteBlockListPattern
@@ -19,9 +20,9 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.activity_block_list.*
 import kotlinx.android.synthetic.main.fragment_blk_list.*
-import kotlinx.android.synthetic.main.fragment_blk_list.rcrViewPtrnList
 
 class BlockListActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding : ActivityBlockListBinding
     private lateinit var blockListView: View
     private lateinit var adapter: BlockListAdapter
     private lateinit var swipeHandler: SwipeToDeleteCallback
@@ -29,10 +30,13 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
     private var blockType  = NUMBER_STARTS_WITH
     private lateinit var blockListAdapter: BlockListAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         blockType = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_STARTS_WITH )
         blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
-        setContentView(R.layout.activity_block_list)
+        binding = ActivityBlockListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         observeBlocklistLivedata()
         intiListeners()
         initSwipeHandler()
@@ -40,18 +44,18 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun intiListeners() {
-        fabBtnAddNewBlock.setOnClickListener(this)
+        binding.fabBtnAddNewBlock.setOnClickListener(this)
     }
 
     private fun initSwipeHandler() {
         swipeHandler = object : SwipeToDeleteCallback(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val adapter = rcrViewPtrnList.adapter
+                val adapter = binding.rcrViewPtrnList.adapter
                 deletePattern(viewHolder.adapterPosition)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(rcrViewPtrnList)
+        itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
     }
 
     private fun observeBlocklistLivedata() {
@@ -71,7 +75,7 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        rcrViewPtrnList.adapter  = null
+      binding.rcrViewPtrnList.adapter  = null
     }
 
     private fun initRecyclerView(){

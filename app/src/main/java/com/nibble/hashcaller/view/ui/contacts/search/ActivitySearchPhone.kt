@@ -145,7 +145,7 @@ class ActivitySearchPhone : AppCompatActivity(), View.OnClickListener , SearchVi
                 no->
             edtTextPhoneSearch.setText(no)
             tvSearchIndicator.text = "Searching for"
-            shimmer_view_container.startShimmer()
+            shimmerViewContainer.startShimmer()
         } )
     }
 
@@ -190,7 +190,7 @@ class ActivitySearchPhone : AppCompatActivity(), View.OnClickListener , SearchVi
         imgViewLock.beInvisible()
         seachViewLayout.beInvisible()
         searchViewPhoneNum2.beInvisible()
-        shimmer_view_container.beInvisible()
+        shimmerViewContainer.beInvisible()
         edtTextPhoneSearch.beInvisible()
         tvResultFromServer.beInvisible()
         btnLocalMoreSearchResults.beInvisible()
@@ -217,7 +217,7 @@ class ActivitySearchPhone : AppCompatActivity(), View.OnClickListener , SearchVi
         imgViewLock.beVisible()
         seachViewLayout.beVisible()
         searchViewPhoneNum2.beVisible()
-        shimmer_view_container.beVisible()
+        shimmerViewContainer.beVisible()
         edtTextPhoneSearch.beVisible()
         tvSearchIndicator.beVisible()
         tvContactsResults.beVisible()

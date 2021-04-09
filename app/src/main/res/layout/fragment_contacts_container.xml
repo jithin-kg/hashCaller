@@ -51,7 +51,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_view_container"
+        android:id="@+id/shimmerViewContainer"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

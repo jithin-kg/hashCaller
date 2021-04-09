@@ -115,7 +115,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 //                            smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
                                 if(!isSizeEqual){
-                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
+                                    viewMesages.shimmerViewContainer.visibility = View.VISIBLE
                                     viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
                                 }
 //                                    }
@@ -213,7 +213,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
             smsRecyclerAdapter?.setList(it)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
-            this.viewMesages.shimmer_view_container.visibility = View.GONE
+            this.viewMesages.shimmerViewContainer.visibility = View.GONE
             viewMesages.rcrViewSMSList.visibility = View.VISIBLE
             SMSListAdapter.searchQry = searchQry
         })

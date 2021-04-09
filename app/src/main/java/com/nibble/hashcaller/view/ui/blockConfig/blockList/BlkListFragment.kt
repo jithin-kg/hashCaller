@@ -46,17 +46,17 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
     private fun initRecyclerView(){
 
-        rcrViewPtrnList?.apply {
-            layoutManager = LinearLayoutManager(activity)
-            ItemTouchHelper(swipeHandler).attachToRecyclerView(rcrViewPtrnList);
-            val topSpacingDecorator =
-                TopSpacingItemDecoration(30)
-            addItemDecoration(topSpacingDecorator)
-            blockListAdapter =
-                BlockListAdapter()
-            adapter = blockListAdapter
-
-        }
+//        rcrViewPtrnList?.apply {
+//            layoutManager = LinearLayoutManager(activity)
+//            ItemTouchHelper(swipeHandler).attachToRecyclerView(rcrViewPtrnList);
+//            val topSpacingDecorator =
+//                TopSpacingItemDecoration(30)
+//            addItemDecoration(topSpacingDecorator)
+//            blockListAdapter =
+//                BlockListAdapter()
+//            adapter = blockListAdapter
+//
+//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,12 +65,12 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 
         swipeHandler = object : SwipeToDeleteCallback(this.requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val adapter = rcrViewPtrnList.adapter
+//                val adapter = rcrViewPtrnList.adapter
                 deletePattern(viewHolder.adapterPosition)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(rcrViewPtrnList)
+//        itemTouchHelper.attachToRecyclerView(rcrViewPtrnList)
 
     }
     private fun addDataSet(){
@@ -161,7 +161,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 //    }
 override fun onDestroyView() {
     super.onDestroyView()
-    rcrViewPtrnList.adapter  = null
+//    rcrViewPtrnList.adapter  = null
 }
 
     override fun onInflate(activity: Activity, attrs: AttributeSet, savedInstanceState: Bundle?) {

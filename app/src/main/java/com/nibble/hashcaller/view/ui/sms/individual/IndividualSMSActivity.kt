@@ -42,24 +42,18 @@ import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityIndividualSMSBinding
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
-import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.getMarkedViews
-import com.nibble.hashcaller.view.ui.sms.individual.util.IndividualMarkedItemHandler.isMarkedViewsEmpty
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
@@ -70,9 +64,10 @@ class IndividualSMSActivity : AppCompatActivity(),
     AdapterView.OnItemSelectedListener, android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener,
     SMSIndividualAdapter.LongPressHandler {
+    private lateinit var binding: ActivityIndividualSMSBinding
 
     private lateinit var viewModel:SMSIndividualViewModel
-    private lateinit var  recyclerView:RecyclerView
+//    private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
     private var contactAddress = ""
 
@@ -119,16 +114,17 @@ class IndividualSMSActivity : AppCompatActivity(),
     //    private var newSize = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_individual_s_m_s)
+        binding = ActivityIndividualSMSBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val itemAnimator: SimpleItemAnimator? =
-            recyclerViewSMSIndividual.itemAnimator as SimpleItemAnimator?
+            binding.recyclerViewSMSIndividual.itemAnimator as SimpleItemAnimator?
 //        itemAnimator?.setSupportsChangeAnimations(false)
-        recyclerViewSMSIndividual.itemAnimator = null
+        binding.recyclerViewSMSIndividual.itemAnimator = null
         spinnerSelected.value = false
 
 //        messageSent.value = false
-        setSupportActionBar(toolbarSMSIndividual)
+        setSupportActionBar(binding.toolbarSMSIndividual)
         this.spamTypes.add(0, "Spam type")
         this.spamTypes.add("Public service")
         this.spamTypes.add("Robocall")
@@ -220,11 +216,11 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun observeDefaultSMSHandlerPermission() {
         this.defaultSMSHandlerLiveData.observe(this, Observer {
             if(it==true){
-                btnMakeDefaultSMS.beInvisible()
-                layoutSend.beVisible()
+                binding.btnMakeDefaultSMS.beInvisible()
+                binding.layoutSend.beVisible()
             }else{
-                btnMakeDefaultSMS.beVisible()
-                layoutSend.beInvisible()
+               binding. btnMakeDefaultSMS.beVisible()
+               binding. layoutSend.beInvisible()
             }
         })
     }
@@ -272,7 +268,7 @@ class IndividualSMSActivity : AppCompatActivity(),
                 name = it
                 Log.d(TAG, "observeContactname: $it")
                 contactAddress = it
-                tvSMSAddress.text = contactAddress
+                binding.tvSMSAddress.text = contactAddress
 
             }
         })
@@ -319,7 +315,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun configureToolbar() {
-        toolbarSMSIndividual.inflateMenu(R.menu.individual_sms_menu)
+            binding.toolbarSMSIndividual.inflateMenu(R.menu.individual_sms_menu)
         Log.d(TAG, "configureToolbar: name $contactAddress")
         tvSMSAddress.text = contactAddress
 
@@ -433,18 +429,18 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
     private fun initListners() {
-        imgBtnSendSMS.setOnClickListener(this)
-        imgBtnBackSmsIndividual.setOnClickListener(this)
+        binding.imgBtnSendSMS.setOnClickListener(this)
+        binding.imgBtnBackSmsIndividual.setOnClickListener(this)
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
         bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
-        imgViewCallBtn.setOnClickListener(this)
-        imgBtnSearchSMS.setOnClickListener(this)
-        sViewIndividualSMS.setOnQueryTextListener(this)
-        imgBtnSMSUp.setOnClickListener(this)
-        imgBtnSMSDown.setOnClickListener(this)
-        btnMakeDefaultSMS.setOnClickListener(this)
+        binding.imgViewCallBtn.setOnClickListener(this)
+        binding.imgBtnSearchSMS.setOnClickListener(this)
+        binding.sViewIndividualSMS.setOnQueryTextListener(this)
+        binding.imgBtnSMSUp.setOnClickListener(this)
+        binding.imgBtnSMSDown.setOnClickListener(this)
+        binding.btnMakeDefaultSMS.setOnClickListener(this)
 
 //        bottomSheetDialog.btnBlock.setOnClickListener(this)
 //        imgViewCallBtn.setOnClickListener(this)
@@ -489,11 +485,11 @@ class IndividualSMSActivity : AppCompatActivity(),
 
             if(!recyclerViewAtEnd){
                 countNewItem = it.size - oldLIstSize
-                tvcountShow.text = countNewItem.toString()
+                binding.tvcountShow.text = countNewItem.toString()
                 if(countNewItem>0){
-                    tvcountShow.beVisible()
+                    binding.tvcountShow.beVisible()
                 }else{
-                    tvcountShow.beInvisible()
+                   binding.tvcountShow.beInvisible()
                 }
             }else{
                 clearNewMessageIndication()
@@ -560,12 +556,12 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                        val roleRequestIntent =
 //                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
 //                        startActivityForResult(roleRequestIntent, requestCode)
-                        layoutSend.beInvisible()
-                        btnMakeDefaultSMS.beVisible()
+                       binding.layoutSend.beInvisible()
+                        binding.btnMakeDefaultSMS.beVisible()
 
                     }else{
-                        layoutSend.beVisible()
-                        btnMakeDefaultSMS.beInvisible()
+                        binding.layoutSend.beVisible()
+                       binding. btnMakeDefaultSMS.beInvisible()
 
 //                        requesetPermission()
                     }
@@ -586,11 +582,11 @@ class IndividualSMSActivity : AppCompatActivity(),
                 var isDefault = this.getPackageName() == Telephony.Sms.getDefaultSmsPackage(this)
                 Log.d(TAG, "checkDefaultSettings: isDefault $isDefault")
                 if(isDefault){
-                    layoutSend.beVisible()
-                    btnMakeDefaultSMS.beInvisible()
+                    binding.layoutSend.beVisible()
+                   binding. btnMakeDefaultSMS.beInvisible()
                 }else{
-                    layoutSend.beInvisible()
-                    btnMakeDefaultSMS.beVisible()
+                    binding.layoutSend.beInvisible()
+                    binding.btnMakeDefaultSMS.beVisible()
                 }
 
 //
@@ -744,22 +740,22 @@ class IndividualSMSActivity : AppCompatActivity(),
             viewModel.currentSIMCardIndex = 0
 //            currentSIMCardIndex = availableSIMs.indexOfFirstOrNull { it.subscriptionId == config.getUseSIMIdAtNumber(numbers.first()) } ?: 0
 
-            thread_select_sim_icon.applyColorFilter(config.textColor)
-            thread_select_sim_icon.beVisible()
-            thread_select_sim_number.beVisible()
+            binding.threadSelectSimIcon.applyColorFilter(config.textColor)
+            binding.threadSelectSimIcon.beVisible()
+            binding.threadSelectSimIcon.beVisible()
 
             if (viewModel.availableSIMCards.isNotEmpty()) {
-                thread_select_sim_icon.setOnClickListener {
+                threadSelectSimIcon.setOnClickListener {
                     Log.d(TAG, "setupSIMSelector: ")
                     viewModel.currentSIMCardIndex = (viewModel.currentSIMCardIndex + 1) % viewModel.availableSIMCards.size
                     val currentSIMCard = viewModel.availableSIMCards[viewModel.currentSIMCardIndex]
-                    thread_select_sim_number.text = currentSIMCard.id.toString()
+                    binding.threadSelectSimNumber.text = currentSIMCard.id.toString()
                     toast(currentSIMCard.label)
                 }
             }
 
-            thread_select_sim_number.setTextColor(config.textColor.getContrastColor())
-            thread_select_sim_number.text = (viewModel.availableSIMCards[viewModel.currentSIMCardIndex].id).toString()
+            binding.threadSelectSimNumber.setTextColor(config.textColor.getContrastColor())
+           binding. threadSelectSimNumber.text = (viewModel.availableSIMCards[viewModel.currentSIMCardIndex].id).toString()
         }
     }
     private fun sendSms() {
@@ -770,9 +766,9 @@ class IndividualSMSActivity : AppCompatActivity(),
          * and later updated to sended in table ,meanwhile when user starts typing the messsage is added to draft
          */
         val smsObj = SMS()
-        smsObj.msgString = edtTxtMSg.text.toString()
+        smsObj.msgString = binding.edtTxtMSg.text.toString()
         Log.d(TAG, "sendSms: ${edtTxtMSg.text}")
-        if(edtTxtMSg.text.isNotEmpty()){
+        if(binding.edtTxtMSg.text.isNotEmpty()){
             smsObj.msgType = 4
             smsObj.type = 4
 
@@ -827,9 +823,9 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun clearNewMessageIndication() {
-        tvcountShow.visibility = View.GONE
-        tvcountShow.text = ""
-        smsGoDownIndication.beGone()
+        binding.tvcountShow.visibility = View.GONE
+        binding.tvcountShow.text = ""
+        binding.smsGoDownIndication.beGone()
 
     }
 
@@ -850,37 +846,37 @@ class IndividualSMSActivity : AppCompatActivity(),
 
                 if (lastVisiblePosition == -1 || positionStart >= msgCount - 1 &&
                     lastVisiblePosition == positionStart - 1) {
-                    recyclerView.scrollToPosition(positionStart)
+                   binding.recyclerViewSMSIndividual.scrollToPosition(positionStart)
                 } else {
                     if(recyclerViewAtEnd)
-                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                        binding.recyclerViewSMSIndividual.scrollToPosition(adapter.getItemCount() - 1);
                 }
             }
         })
     }
 
     private fun initAdapter() {
-        recyclerView =
-            findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
+//        recyclerView =
+//            findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
 
 
         adapter = SMSIndividualAdapter(this,this,  applicationContext ){ id:String -> onContactitemClicked(id) }
 
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+        binding.recyclerViewSMSIndividual.setHasFixedSize(true)
+        binding.recyclerViewSMSIndividual.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewSMSIndividual.adapter = adapter
 
-        recyclerView.setHasFixedSize(true)
+        binding.recyclerViewSMSIndividual.setHasFixedSize(true)
         layoutMngr = LinearLayoutManager(this)
         layoutMngr.stackFromEnd = true
-        recyclerView.layoutManager = layoutMngr
+        binding.recyclerViewSMSIndividual.layoutManager = layoutMngr
 
-        recyclerView.adapter = adapter
-        recyclerView.isNestedScrollingEnabled = false
+        binding.recyclerViewSMSIndividual.adapter = adapter
+        binding.recyclerViewSMSIndividual.isNestedScrollingEnabled = false
     }
 
     private fun setupClickListerner() {
-        smsGoDownIndication.setOnClickListener(this)
+        binding.smsGoDownIndication.setOnClickListener(this)
     }
 
     private fun onContactitemClicked(id: String) {
@@ -906,14 +902,14 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun lastItemReached() {
 
         this.recyclerViewAtEnd = true
-        smsGoDownIndication.beGone()
+        binding.smsGoDownIndication.beGone()
         clearNewMessageIndication()
 
     }
 
      override fun otherPosition() {
         this.recyclerViewAtEnd = false
-        smsGoDownIndication.beVisible()
+        binding.smsGoDownIndication.beVisible()
     }
 
     override fun shouldWeScroll() {
@@ -927,9 +923,9 @@ class IndividualSMSActivity : AppCompatActivity(),
         when(v?.id){
             
             R.id.smsGoDownIndication->{
-                recyclerView.scrollToPosition(adapter.itemCount - 1)
+                binding.recyclerViewSMSIndividual.scrollToPosition(adapter.itemCount - 1)
                 clearNewMessageIndication()
-                smsGoDownIndication.beGone()
+                binding.smsGoDownIndication.beGone()
 
             }R.id.imgBtnSendSMS->{
             Log.d(TAG, "onClick: ")
@@ -1036,19 +1032,19 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun onBackPressedIn() {
-        if(sViewIndividualSMS.visibility == View.VISIBLE){
+        if(binding.sViewIndividualSMS.visibility == View.VISIBLE){
 
-            sViewIndividualSMS.beGone()
-            imgBtnBackSmsIndividual.beGone()
-            imgBtnSMSUp.beInvisible()
-            imgBtnSMSDown.beInvisible()
-            tvSMSAddress.beVisible()
-            imgViewCallBtn.beVisible()
-            imgBtnSearchSMS.beVisible()
+            binding.sViewIndividualSMS.beGone()
+            binding.imgBtnBackSmsIndividual.beGone()
+            binding.imgBtnSMSUp.beInvisible()
+            binding.imgBtnSMSDown.beInvisible()
+            binding.tvSMSAddress.beVisible()
+            binding.imgViewCallBtn.beVisible()
+            binding.imgBtnSearchSMS.beVisible()
 
-            toolbarSMSIndividual.menu.findItem(R.id.itemBlock).isVisible = true
-            toolbarSMSIndividual.menu.findItem(R.id.itemUnBlock).isVisible = true
-            toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = true
+            binding.toolbarSMSIndividual.menu.findItem(R.id.itemBlock).isVisible = true
+            binding.toolbarSMSIndividual.menu.findItem(R.id.itemUnBlock).isVisible = true
+            binding.toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = true
 
         }else{
             finish()
@@ -1058,18 +1054,18 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun showSearchView() {
 //        sViewIndividualSMS.requestFocus()
-        sViewIndividualSMS.beVisible()
-        imgBtnBackSmsIndividual.beVisible()
-        imgBtnSMSUp.beVisible()
-        imgBtnSMSDown.beVisible()
-        tvSMSAddress.beGone()
-        imgViewCallBtn.beGone()
-        imgBtnSearchSMS.beGone()
+        binding.sViewIndividualSMS.beVisible()
+        binding.imgBtnBackSmsIndividual.beVisible()
+        binding.imgBtnSMSUp.beVisible()
+        binding.imgBtnSMSDown.beVisible()
+        binding.tvSMSAddress.beGone()
+        binding.imgViewCallBtn.beGone()
+        binding.imgBtnSearchSMS.beGone()
 
-        toolbarSMSIndividual.menu.findItem(R.id.itemBlock).isVisible = false
-        toolbarSMSIndividual.menu.findItem(R.id.itemUnBlock).isVisible = false
-        toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = false
-       requestSearchViewFocus(sViewIndividualSMS, this)
+        binding.toolbarSMSIndividual.menu.findItem(R.id.itemBlock).isVisible = false
+        binding.toolbarSMSIndividual.menu.findItem(R.id.itemUnBlock).isVisible = false
+        binding.toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = false
+       requestSearchViewFocus(binding.sViewIndividualSMS, this)
 
     }
 

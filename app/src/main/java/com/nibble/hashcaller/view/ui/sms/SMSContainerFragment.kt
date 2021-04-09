@@ -42,6 +42,7 @@ import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSHelperFlow
@@ -252,11 +253,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun resetMarkingOptions() {
         markingStarted = false
         unMarkItems()
-        this.searchViewSms.visibility = View.VISIBLE
-        this.imgBtnTbrMuteSender.visibility = View.INVISIBLE
-        this.imgBtnTbrBlock.visibility = View.INVISIBLE
-        this.imgBtnTbrDelete.visibility = View.INVISIBLE
-        this.tvSelectedCount.visibility = View.INVISIBLE
+        binding.searchViewSms.visibility = View.VISIBLE
+        binding.imgBtnTbrMuteSender.visibility = View.INVISIBLE
+        binding.imgBtnTbrBlock.visibility = View.INVISIBLE
+        binding.imgBtnTbrDelete.visibility = View.INVISIBLE
+        binding.tvSelectedCount.visibility = View.INVISIBLE
     }
 
 
@@ -350,7 +351,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 //            it.forEach{sms-> newList.add(sms.deepCopy())}
             smsRecyclerAdapter?.setList(it)
-
+                binding.shimmerViewContainer.beGone()
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
 //            binding.shimmer_view_container.visibility = View.GONE
             binding.rcrViewSMSList.visibility = View.VISIBLE
@@ -361,7 +362,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "onDestroyView: ")
-        rcrViewSMSList.adapter  = null
+        binding.rcrViewSMSList.adapter  = null
     }
 
     @InternalCoroutinesApi
@@ -406,7 +407,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun initRecyclerView() {
-        rcrViewSMSList?.apply {
+       binding. rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
             layoutMngr = layoutManager as LinearLayoutManager
             smsRecyclerAdapter = SMSListAdapter(context, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
@@ -672,10 +673,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     fun showToolbarButtons() {
         Log.d(TAG, "showToolbarButtons: ")
 
-        imgBtnTbrDelete.beVisible()
-        imgBtnTbrMuteSender.beVisible()
-        imgBtnTbrBlock.beVisible()
-        tvSelectedCount.beVisible()
+        binding.imgBtnTbrDelete.beVisible()
+        binding.imgBtnTbrMuteSender.beVisible()
+        binding.imgBtnTbrBlock.beVisible()
+        binding.tvSelectedCount.beVisible()
 
     }
     private fun muteSender() {
@@ -692,7 +693,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     fun hideSearchView() {
         Log.d(TAG, "hideSearchView: ")
-        searchViewSms.visibility = View.INVISIBLE
+        binding.searchViewSms.visibility = View.INVISIBLE
     }
 
     /**
@@ -737,17 +738,17 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         set(value) {isDflt = value}
 
     fun showSearchView() {
-        searchViewSms.beVisible()
-        imgBtnTbrDelete.beInvisible()
-        imgBtnTbrMuteSender.beInvisible()
-        imgBtnTbrBlock.beInvisible()
-        tvSelectedCount.beInvisible()
+        binding.searchViewSms.beVisible()
+        binding.imgBtnTbrDelete.beInvisible()
+        binding.imgBtnTbrMuteSender.beInvisible()
+        binding.imgBtnTbrBlock.beInvisible()
+        binding.tvSelectedCount.beInvisible()
 
         unMarkItems()
 
     }
     fun isSearchViewVisible(): Boolean {
-        if(searchViewSms.visibility== View.VISIBLE)
+        if(binding.searchViewSms.visibility== View.VISIBLE)
             return true
         return false
     }

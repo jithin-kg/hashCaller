@@ -167,7 +167,7 @@
 
 <!--    /***********/-->
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_view_container_call"
+        android:id="@+id/shimmerViewContainerCall"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
