@@ -8,14 +8,14 @@ import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData2
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class SmsContainerViewModel(
-    val SMS: SMSLiveData,
+    val SMS: SMSLiveData2,
     val repository: SMScontainerRepository?,
     val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
 

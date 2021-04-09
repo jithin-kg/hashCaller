@@ -177,16 +177,17 @@ class SMSLocalRepository(
                 )
             }else{
                 //mark the sms send by a contactaddress/sender as read
-                Log.d(TAG, "markSMSAsRead: address is $addressString")
+                Log.d(TAG+"markAsRead", "markSMSAsRead: address is $addressString")
                 val values = ContentValues()
                 values.put(Telephony.Sms.READ, 1)
                 val selectionArgs:Array<String> = arrayOf("address='$addressString'")
-                val updatedRowcount = context.contentResolver.update(
-                    Telephony.Sms.Inbox.CONTENT_URI,
-                    values, Telephony.Sms.ADDRESS + "=$addressString",
-                    null
-                )
-                Log.d(TAG+"markAsRead", "markSMSAsRead: updatedRowCount $updatedRowcount")
+//                val updatedRowcount = context.contentResolver.update(
+//                    Telephony.Sms.Inbox.CONTENT_URI,
+//                    values, Telephony.Sms.ADDRESS + "=?",
+//                    selectionArgs
+//                )
+
+//                Log.d(TAG+"markAsRead", "markSMSAsRead: updatedRowCount $updatedRowcount")
 
 //            Telephony.Sms.READ
 
@@ -194,13 +195,11 @@ class SMSLocalRepository(
                     put("read", 1)
                 }
 
-//        context.contentResolver.update(URI,cValues, "address='$addressString'",null)
+        context.contentResolver.update(URI,cValues, "address='$addressString'",null)
             }
 
-
-
         }catch (e:Exception){
-            Log.d(TAG, "update: exception $e")
+            Log.d(TAG+"markAsRead", "update: exception $e")
         }
 
 

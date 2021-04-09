@@ -2,7 +2,7 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.content.Context
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
+import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData2
 
 
 /**
@@ -19,7 +19,7 @@ object SMSContainerInjectorUtil {
 
 
         val messagesLiveData =
-            SMSLiveData(context!!)
+            SMSLiveData2(context!!)
         return SMSCotainerViewModelFactory(messagesLiveData!!, repository,spammerInfoFromServerDAO, mutedSendersDAO)
     }
 

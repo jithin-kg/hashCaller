@@ -7,11 +7,9 @@ import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.mapofAddressAndSMS
-import com.nibble.hashcaller.view.ui.sms.list.SMSLiveDataFlow
+import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -19,7 +17,7 @@ import kotlinx.coroutines.launch
  * Created by Jithin KG on 22,July,2020
  */
 class SMSViewModel(
-    val SMS: SMSLiveDataFlow,
+    val SMS: SMSLiveData,
     val repository: SMSLocalRepository?
 ): ViewModel() {
 
