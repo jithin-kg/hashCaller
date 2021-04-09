@@ -197,13 +197,8 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun observeSMSList() {
         smsListVIewModel.SMS.observe(viewLifecycleOwner, Observer { sms->
             sms.let {
-//                smsRecyclerAdapter?.setSMSList(it, searchQry)
-//                Log.d(TAG, "observeSMSList: data changed")
-//                smsRecyclerAdapter?.submitList(it)
-//                SMSListAdapter.searchQry = searchQry
-//                this.smsLIst = it as MutableList<SMS>?
+
                 Log.d(TAG, "observeSMSList: ")
-//                this.smsListVIewModel.updateLiveData(sms)
 
             }
         })

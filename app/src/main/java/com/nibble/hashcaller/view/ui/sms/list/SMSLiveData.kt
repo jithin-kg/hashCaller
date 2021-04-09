@@ -35,6 +35,7 @@ class SMSLiveData(private val context: Context):
         private const val TAG = "__MessagesLiveData"
     }
      private suspend fun getMessages(context: Context): MutableList<SMS> {
+
          pageOb.page = 0 //set page size to 0 when there is a change in sms
 
         SMSViewModel.isLoading.postValue(true)

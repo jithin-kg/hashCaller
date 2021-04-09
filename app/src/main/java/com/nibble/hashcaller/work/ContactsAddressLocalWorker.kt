@@ -46,8 +46,9 @@ class ContactsAddressLocalWorker(private val context: Context, private val param
             }
 
         }catch (e: HttpException){
-            return Result.retry()
             Log.d(TAG, "doWork: retry")
+            return Result.retry()
+
         }
         return Result.success()
     }

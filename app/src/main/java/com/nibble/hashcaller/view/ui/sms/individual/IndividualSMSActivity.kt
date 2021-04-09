@@ -180,6 +180,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             observeMarkedViews()
             observerPermission()
             observeNoSimCardException()
+            markAsRead(contactAddress)
 
         }
 
@@ -193,6 +194,10 @@ class IndividualSMSActivity : AppCompatActivity(),
 //           Log.d("__suspend", "request took $time milliseconds")
 //       }
 //        Log.d("__suspend", "after of launch: ")
+    }
+
+    private fun markAsRead(contactAddress: String) {
+        viewModel.markAsRead(contactAddress)
     }
 
     private fun observeNoSimCardException() {

@@ -86,10 +86,7 @@ class SMSViewModel(
     /**
      * called when there is a change in table sender_infor_from_server changes
      */
-    fun updateWithNewSenderInfo(
-        dataFromDB: List<SMSSendersInfoFromServer>?,
-        smsLIst: MutableList<SMS>?
-    ) = viewModelScope.launch {
+    fun updateWithNewSenderInfo() = viewModelScope.launch {
 
 
 
@@ -199,6 +196,10 @@ class SMSViewModel(
         updateLiveData(res)
     }
 
+
+    override fun onCleared() {
+        super.onCleared()
+    }
 
     companion object
     {

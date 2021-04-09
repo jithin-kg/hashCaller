@@ -223,8 +223,8 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
             Log.d(TAG, "observeMutabeLiveData: ")
             var newList:MutableList<SMS> = mutableListOf()
 
-            it.forEach{sms-> newList.add(sms.deepCopy())}
-            smsRecyclerAdapter?.setList(newList)
+//            it.forEach{sms-> newList.add(sms.deepCopy())}
+            smsRecyclerAdapter?.setList(it)
 //            smsRecyclerAdapter?.setList(newList)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE

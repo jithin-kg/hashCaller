@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.list
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -14,7 +15,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setCount
+import com.nibble.hashcaller.view.ui.sms.individual.util.SMS_NOT_READ
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -28,7 +31,6 @@ import kotlinx.android.synthetic.main.sms_list_view.view.pgBarSmsListItem
 import kotlinx.android.synthetic.main.sms_list_view.view.smsMarked
 import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSMPeek
 import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSTime
-import kotlinx.android.synthetic.main.sms_list_view.view.tvUnreadSMSCount
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
 import java.util.*
 
@@ -246,13 +248,23 @@ class SMSListAdapter(private val context: Context,
 //            view.tvSMSMPeek.text = MESSAGE_STRING
             view.tvSMSMPeek.text = sms.msgString
             Log.d(TAG, "bind: messageString is ${sms.msgString}")
+                if(sms.readState ==SMS_NOT_READ){
+                    view.tvSMSMPeek.typeface = Typeface.DEFAULT_BOLD
+                    view.tvSMSMPeek.alpha = 0.87f
+                    view.tvSMSMPeek.setColorForText(R.color.textColor)
 
-            view.tvUnreadSMSCount.setCount(sms.unReadSMSCount)
-            if(sms.unReadSMSCount == 0 ){
-                view.cardViewSMSUnreadCount.beInvisible()
-            }else{
-                view.cardViewSMSUnreadCount.beVisible()
-            }
+                }else{
+                    view.tvSMSMPeek.typeface = Typeface.DEFAULT
+                    view.tvSMSMPeek.alpha = 0.60f
+                    view.tvSMSMPeek.setColorForText(R.color.textColor)
+
+                }
+//            view.tvUnreadSMSCount.setCount(sms.unReadSMSCount)
+//            if(sms.unReadSMSCount == 0 ){
+//                view.cardViewSMSUnreadCount.beInvisible()
+//            }else{
+//                view.cardViewSMSUnreadCount.beVisible()
+//            }
 
 
 
@@ -382,8 +394,7 @@ class SMSListAdapter(private val context: Context,
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
 //            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
-            return oldItem.spamCount == newItem.spamCount &&  oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom && oldItem.unReadSMSCount == newItem.unReadSMSCount
-                     && oldItem.msgString == newItem.msgString
+            return oldItem == newItem
             //TODO compare both messages and if the addres is same and message
         }
 

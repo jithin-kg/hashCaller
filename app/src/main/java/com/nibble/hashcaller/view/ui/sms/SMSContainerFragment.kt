@@ -326,7 +326,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         smsListVIewModel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-            smsListVIewModel.updateWithNewSenderInfo(it, smsListVIewModel.smsLIst)
+            smsListVIewModel.updateWithNewSenderInfo()
 
         })
     }
@@ -337,7 +337,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             sms.let {
 
-                Log.d(TAG, "observeSMSList: spamcount ${sms[0].spamCount}")
+//                Log.d(TAG, "observeSMSList: spamcount ${sms[0].spamCount}")
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
 //                Log.d(TAG, "observeSMSList: data changed")
 //                smsRecyclerAdapter?.submitList(it)
@@ -359,7 +359,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun observeMutabeLiveData() {
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
 //            smsListVIewModel.smsLIst = it as MutableList<SMS>?
-            Log.d(TAG, "observeMutabeLiveData: spamcount${it[0].spamCount} ")
+//            Log.d(TAG, "observeMutabeLiveData: spamcount${it[0].spamCount} ")
 //            var newList:MutableList<SMS> = mutableListOf()
 
 //            it.forEach{sms-> newList.add(sms.deepCopy())}
@@ -382,7 +382,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     @SuppressLint("WrongViewCast", "LongLogTag")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        this.searchViewMessages = viewMesages.rootView.findViewById(R.id.searchViewMessages)
 
         initRecyclerView()
         initListeners()
@@ -406,16 +405,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             showToolbarButtons()
         }
         if(checkContactPermission()){
-//            lifecycleScope.launchWhenStarted {
-//                var lst:MutableList<SMS> = mutableListOf()
-//
-////                smsFlowHelper.fetchFlowSMS().collect {
-////                    Log.d(TAG+"flow", "fetchFlowSMS")
-////                    lst.add(it)
-////                    smsListVIewModel.updateLiveDataByFlow(lst)
-//////                smsRecyclerAdapter!!.setList(lst)
-////                }
-//            }
         }
 
 
@@ -463,7 +452,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
 
         }else{
-            smsListVIewModel.markSMSAsRead(address)
+//            smsListVIewModel.markSMSAsRead(address)
             val intent = Intent(context, IndividualSMSActivity::class.java )
             val bundle = Bundle()
             bundle.putString(CONTACT_ADDRES, address)
@@ -477,10 +466,22 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
 
     }
+    @SuppressLint("LongLogTag")
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
+        smsListVIewModel.updateWithNewSenderInfo()
         isPaused = false
+        if(this.smsListVIewModel.SMS.hasObservers()){
+            Log.d("__SMSContainerFragmentob", "onResume: hasobservers")
+        }else{
+            Log.d("__SMSContainerFragmentob", "onResume: no observers")
+        }
+        if(this.smsListVIewModel.SMS.hasActiveObservers()){
+            Log.d("__SMSContainerFragmentob", "onResume: has active observers ")
+        }else{
+            Log.d("__SMSContainerFragmentob", "onResume: has not active observer")
+        }
         this.permissionGivenLiveData.value  = checkContactPermission()
 
     }

@@ -36,7 +36,6 @@
         android:gravity="center_vertical|center_horizontal"
         android:textColor="@color/colorWhite"
         android:textSize="24sp"
-        android:textStyle="bold"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +63,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="name"
-        android:textStyle="bold"
         android:alpha=".87"
         android:textColor="@color/textColor"
         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -87,12 +85,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:maxLines="2"
         android:alpha=".70"
+        android:maxLines="2"
         android:text="sadf"
         app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@+id/cardViewSMSUnreadCount"
+        app:layout_constraintEnd_toStartOf="@+id/tvSMSTime"
         app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintTop_toBottomOf="@+id/textVSMSCntctName" />
 
@@ -110,38 +107,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardViewSMSUnreadCount"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="24dp"
-        app:cardBackgroundColor="@color/secure_lock_color"
-        app:cardCornerRadius="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvSMSMPeek"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvSMSMPeek">
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:id="@+id/cardViewSMSUnreadCount"-->
+<!--        android:layout_width="24dp"-->
+<!--        android:layout_height="24dp"-->
+<!--        android:layout_marginEnd="24dp"-->
+<!--        app:cardBackgroundColor="@color/secure_lock_color"-->
+<!--        app:cardCornerRadius="50dp"-->
+<!--        -->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/tvSMSMPeek"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/tvSMSMPeek">-->
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
-            <TextView
-                android:id="@+id/tvUnreadSMSCount"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:text="99+"
+<!--            <TextView-->
+<!--                android:id="@+id/tvUnreadSMSCount"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:gravity="center"-->
+<!--                android:text="99+"-->
 
-                android:textColor="@color/colorWhite"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.6"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+<!--                android:textColor="@color/colorWhite"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textStyle="bold"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintHorizontal_bias="0.6"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--    </androidx.cardview.widget.CardView>-->
 
 
     <ImageView

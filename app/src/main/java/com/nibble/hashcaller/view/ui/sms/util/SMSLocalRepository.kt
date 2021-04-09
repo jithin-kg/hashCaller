@@ -30,12 +30,9 @@ import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -46,6 +43,7 @@ import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.coroutines.coroutineContext
 import kotlin.system.measureTimeMillis
 
 
@@ -111,6 +109,7 @@ class SMSLocalRepository(
     private val mutedSendersDAO: IMutedSendersDAO?
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     companion object{
         private val URI: Uri = SMSContract.INBOX_SMS_URI
@@ -193,7 +192,6 @@ class SMSLocalRepository(
 
                 val cValues = ContentValues().apply {
                     put("read", 1)
-
                 }
 
 //        context.contentResolver.update(URI,cValues, "address='$addressString'",null)
@@ -400,6 +398,7 @@ class SMSLocalRepository(
 
                             objSMS.readState =
                                 cursor.getInt(cursor.getColumnIndex("read"))
+
                             val dateMilli =
                                 cursor.getLong(cursor.getColumnIndexOrThrow("date"))
                             if(prevAddress != objSMS.addressString){
@@ -464,7 +463,7 @@ class SMSLocalRepository(
                 }
 
                 data.addAll(listOfMessages)
-                setSMSReadStatus(data)
+//                setSMSReadStatus(data)
 
                 setNameIfExistInContactContentProvider(data)
 //                removeDeletedMSSFRomhashMap(setOfAddress)
@@ -734,10 +733,16 @@ class SMSLocalRepository(
         sms: SMS
     ): SMSSendersInfoFromServer?  {
         var r: SMSSendersInfoFromServer? = null
-        GlobalScope.launch {
+
+        coroutineScope{
             r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
-        }.join()
-        return r
+        }.apply {
+            return r
+        }
+//        GlobalScope.launch {
+//            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
+//        }.join()
+//        return r
 
     }
 
@@ -1447,13 +1452,16 @@ class SMSLocalRepository(
                 //        data = sortAndSet(listOfMessages)
                 data.addAll(listOfMessages)
                 //        setAdditionalData(data)
-                GlobalScope.launch {
-                    val r1 =  async {  setSMSReadStatus(data) }
+
+                scope.launch {
+//                    val r1 =  async {  setSMSReadStatus(data) }
                     //        setSpamDetails(data)
                     val r2 = async {  setNameIfExistInContactContentProvider(data) }
-                    r1.await()
+//                    r1.await()
                     r2.await()
                 }.join()
+
+
 
             } catch (e: java.lang.Exception) {
                 Log.d(TAG, "fetch: exception $e")
@@ -1472,7 +1480,7 @@ class SMSLocalRepository(
                                    isFullSmsNeeded :Boolean = false): MutableList<SMS> {
         var data = ArrayList<SMS>()
         Log.d(TAG, "getSMSForSpammList: ")
-        GlobalScope.launch {
+        scope.launch {
             try {
 
 
@@ -1590,11 +1598,11 @@ class SMSLocalRepository(
                 //        data = sortAndSet(listOfMessages)
                 data.addAll(listOfMessages)
                 //        setAdditionalData(data)
-                GlobalScope.launch {
-                    val r1 =  async {  setSMSReadStatus(data) }
+                scope.launch {
+//                    val r1 =  async {  setSMSReadStatus(data) }
                     //        setSpamDetails(data)
                     val r2 = async {  setNameIfExistInContactContentProvider(data) }
-                    r1.await()
+//                    r1.await()
                     r2.await()
                 }.join()
 

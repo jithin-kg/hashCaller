@@ -55,7 +55,7 @@ class SMSLiveDataFlow(private val context: Context):
             )
 
           repository.fetchSMS(null, false).apply {
-              Log.d(TAG, "getMessages: spamcount ${this[0].spamCount}")
+//              Log.d(TAG, "getMessages: spamcount ${this[0].spamCount}")
               return this
               
           }

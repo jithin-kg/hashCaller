@@ -140,12 +140,12 @@ class SMSSpamListAdapter(private val context: Context,
 //            if(searchQry == null){
 //                name.text = sms.address
                 view.tvSMSMPeek.text = sms.msg
-                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
-                if(sms.unReadSMSCount == 0 ){
-                    view.tvUnreadSMSCount.visibility = View.GONE
-                }else{
-                    view.tvUnreadSMSCount.visibility = View.VISIBLE
-                }
+//                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
+//                if(sms.unReadSMSCount == 0 ){
+//                    view.tvUnreadSMSCount.visibility = View.GONE
+//                }else{
+//                    view.tvUnreadSMSCount.visibility = View.VISIBLE
+//                }
 
 //            }
 

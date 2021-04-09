@@ -163,12 +163,13 @@ class SMSSearchAdapter(private val context: Context,
 
             }
             view.tvSMSMPeek.text = sms.msg
-                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
-                if(sms.unReadSMSCount == 0 ){
-                    view.tvUnreadSMSCount.visibility = View.GONE
-                }else{
-                    view.tvUnreadSMSCount.visibility = View.VISIBLE
-                }
+
+//                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
+//                if(sms.unReadSMSCount == 0 ){
+//                    view.tvUnreadSMSCount.visibility = View.GONE
+//                }else{
+//                    view.tvUnreadSMSCount.visibility = View.VISIBLE
+//                }
 
 //            }
 

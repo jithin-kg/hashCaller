@@ -11,6 +11,9 @@ const val NUMBER_STARTS_WITH= 0
 const val NUMBER_CONTAINING = 1
 const val NUMBER_ENDS_WITH = 2
 
+const val SMS_NOT_READ = 0
+const val SMS_READED = 1
+
 const val BLOCK_INCOMMING_CALL = 1
 
 

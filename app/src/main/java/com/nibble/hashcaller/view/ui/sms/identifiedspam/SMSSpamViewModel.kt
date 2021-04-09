@@ -42,8 +42,11 @@ class SMSSpamViewModel(
 
 
     fun search(searchQuery: String?)  = viewModelScope.launch{
-      val sms =  repository?.getSms(searchQuery)
-        SMS.value = sms
+      val sms =  async { repository?.getSms(searchQuery) }.await()
+        if(sms!= null){
+            SMS.value = sms!!
+
+        }
 
     }
 
