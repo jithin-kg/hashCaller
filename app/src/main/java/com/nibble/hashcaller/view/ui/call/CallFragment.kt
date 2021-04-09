@@ -122,7 +122,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView: ")
 
     _binding = FragmentCallBinding.inflate(inflater, container, false)
 //        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)

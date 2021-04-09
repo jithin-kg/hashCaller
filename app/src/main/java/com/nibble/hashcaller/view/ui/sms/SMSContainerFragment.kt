@@ -35,6 +35,7 @@ import com.facebook.shimmer.Shimmer
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
@@ -73,19 +74,17 @@ class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentS
 SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, ConfirmationClickListener,
     android.widget.PopupMenu.OnMenuItemClickListener {
 
-
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var viewMesages: View
+    private var _binding: FragmentMessageContainerBinding? =null
+    private val binding get() = _binding!!
     private lateinit var smsListVIewModel: SMSViewModel
     var smsRecyclerAdapter: SMSListAdapter? = null
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
     private lateinit var cntx: Context
-    private lateinit var recyclerV: RecyclerView
     private lateinit var smsFlowHelper:SMSHelperFlow
     private lateinit var sView: EditText
     private lateinit var sharedPreferences: SharedPreferences
+
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
@@ -102,6 +101,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isPaused = false
     private lateinit var toolbar : Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
@@ -116,14 +116,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        viewMesages = inflater.inflate(R.layout.fragment_message_container, container, false)
-        viewMesagesRef = viewMesages
+        _binding = FragmentMessageContainerBinding.inflate(inflater, container, false)
+        viewMesagesRef = binding.root
         initVieModel()
         if(checkContactPermission())
         {
             getFirstPageOfSMS()
-
-
             observeSMSList()
         }
 //        initListeners()
@@ -133,16 +131,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         observeSendersInfoFromServer()
         observePermissionLiveData()
         observeNumOfRowsDeleted()
-
-        this.recyclerV = this.viewMesages.findViewById<RecyclerView>(R.id.rcrViewSMSList)
-        registerForContextMenu( this.recyclerV) // context menu registering
+        registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
         setupBottomSheet()
-        return  viewMesages
+        return  binding.root
     }
 
-
     private fun addScrollListener() {
-        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        binding.rcrViewSMSList.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 //                if(dy>0){
@@ -173,8 +168,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                             if(dy > 0){
 
                                 if(!isSizeEqual){
-                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
-                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+//                                    binding.shimmer_view_container.visibility = View.VISIBLE
+                                    binding.rcrViewSMSList.rcrViewSMSList.beInvisible()
                                 }
 //                                    }
                             }
@@ -189,16 +184,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         })
     }
 
-
-//    override fun onCreateContextMenu(
-//        menu: ContextMenu,
-//        v: View,
-//        menuInfo: ContextMenu.ContextMenuInfo?
-//    ) {
-//        Log.d(TAG, "onCreateContextMenu: ")
-//        super.onCreateContextMenu(menu, v, menuInfo)
-//        requireActivity().menuInflater.inflate(R.menu.sms_container_menu, menu);
-//    }
 
     private fun observePermissionLiveData() {
 
@@ -245,12 +230,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private fun initListeners() {
 //        viewMesages.btnSmsPermission.setOnClickListener(this)
-        viewMesages.searchViewSms.setOnClickListener(this)
-        viewMesages.imgBtnTbrMuteSender.setOnClickListener(this)
-        viewMesages.imgBtnTbrBlock.setOnClickListener(this)
-        viewMesages.imgBtnTbrMore.setOnClickListener(this)
-        viewMesages.imgBtnTbrDelete.setOnClickListener(this)
-        viewMesages.imgBtnAvatarMain.setOnClickListener(this)
+        binding.searchViewSms.setOnClickListener(this)
+        binding.imgBtnTbrMuteSender.setOnClickListener(this)
+        binding.imgBtnTbrBlock.setOnClickListener(this)
+        binding.imgBtnTbrMore.setOnClickListener(this)
+        binding.imgBtnTbrDelete.setOnClickListener(this)
+        binding.imgBtnAvatarMain.setOnClickListener(this)
         this.fabSendNewSMS.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
@@ -367,8 +352,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             smsRecyclerAdapter?.setList(it)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
-            this.viewMesages.shimmer_view_container.visibility = View.GONE
-            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
+//            binding.shimmer_view_container.visibility = View.GONE
+            binding.rcrViewSMSList.visibility = View.VISIBLE
             SMSListAdapter.searchQry = searchQry
         })
     }
@@ -490,12 +475,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     fun show(){
 
 
-        this.viewMesages?.fabBtnDeleteSMSExpanded?.extend()
+        binding.fabBtnDeleteSMSExpanded?.extend()
 
     }
 
     fun hide(){
-        this.viewMesages?.fabBtnDeleteSMSExpanded?.shrink()
+        binding.fabBtnDeleteSMSExpanded?.shrink()
 
     }
 

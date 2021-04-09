@@ -52,6 +52,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFragmentSelection {
     private var _binding: FragmentContactsContainerBinding? = null
+
     private val binding get() = _binding!!
     private var isDflt = false
     private val TAG = "__ContactFragment"
@@ -94,6 +95,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         _binding = FragmentContactsContainerBinding.inflate(inflater, container, false)
 
