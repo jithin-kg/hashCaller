@@ -10,11 +10,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 object SMSListInjectorUtil {
     fun provideDialerViewModelFactory(context: Context?):SMSListViewModelFactory{
 
-        val messagesLiveData = context?.let {
-            SMSLiveData(
-                it
-            )
-        }
+
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
@@ -25,6 +21,11 @@ object SMSListInjectorUtil {
             smssendersInfoDAO,
             mutedSendersDAO
         ) }
+        val messagesLiveData = context?.let {
+            SMSLiveData(
+                it,repository
+            )
+        }
 
         return SMSListViewModelFactory(messagesLiveData, repository)
     }

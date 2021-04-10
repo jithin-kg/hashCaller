@@ -49,7 +49,17 @@ data class SMS(var isDummy:Boolean = false,
                 var folderName: String? = null,
                 var color:Int = 0,
                 var relativeTime:String = "",
-                var senderInfoFoundFrom:Int = SENDER_INFO_SEARCHING )
+                var senderInfoFoundFrom:Int = SENDER_INFO_SEARCHING,
+                var isMarked : Boolean = false,
+                var kaatam : String ? = null
+               ){
+    /**
+    //     * THIS IS FOR DEEP CLONING ELSE DIFFUTIL NOT RECOGNIZING CHANGES SOME TIMES
+    //     */
+    fun deepCopy() : SMS {
+        return Gson().fromJson(Gson().toJson(this), this.javaClass)
+    }
+}
 //class SMS() {
 //    var isDummy = false
 //    var addresStringNonFormated: String = ""

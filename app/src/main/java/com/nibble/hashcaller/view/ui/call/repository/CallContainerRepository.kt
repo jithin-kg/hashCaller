@@ -17,16 +17,13 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItems
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.work.formatPhoneNumber
-import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.text.DateFormat
@@ -93,21 +90,16 @@ class CallContainerRepository(
 //        smsDeletingStarted = true
 //        var numRowsDeleted = 0
         var list: MutableSet<Long>  = mutableSetOf()
-        list.addAll(getMarkedItems())
+        list.addAll(markedIds.toList())
         try {
             for(id in list) {
                 Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = CallLog.Calls.CONTENT_URI
                 val selection = "${CallLog.Calls._ID} = ?"
                 val selectionArgs = arrayOf(id.toString())
-                try {
-                    delay(800L)
-
-                }
-                finally {
                     context.contentResolver.delete(uri, selection, selectionArgs)
                     IndividualMarkedItemHandlerCall.clearlists()
-                }
+
             }
         }catch (e: Exception) {
             Log.d(TAG, "deleteSmsThread: exception $e")
@@ -212,8 +204,23 @@ class CallContainerRepository(
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
 //                    dateInMilliseconds += name + id + Math.random().toString();
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
-                    setRelativeTime(dateInMilliseconds, log)
+                    var isMarked = false
+                    if(markedIds.contains(id)){
+                        isMarked = true
+                    }
+                    val log = CallLogData(id, number, callType, duration, name,
+                        dateString,dateInMilliseconds = dateInMilliseconds.toString(), isMarked = isMarked)
+//                    val log = CallLogData()
+//                        log.id = id
+//                        log.number = number
+//                        log.type =callType
+//                        log.duration = duration
+//                        log.name = name
+//                        log.date = dateString
+//                        log.dateInMilliseconds = dateInMilliseconds.toString()
+
+
+                            setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
                         async { setInfoFromServer(log) }.await()
@@ -339,8 +346,23 @@ class CallContainerRepository(
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
 //                    dateInMilliseconds += name + id + Math.random().toString();
+                    var isMarked = false
+                    if(markedIds.contains(id)){
+                        isMarked = true
+                    }
+                    val log = CallLogData(id, number, callType,
+                        duration, name, dateString
+                        ,dateInMilliseconds = dateInMilliseconds.toString(), isMarked = isMarked)
 
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
+//                    val log = CallLogData()
+//                    log.id = id
+//                    log.number = number
+//                    log.type =callType
+//                    log.duration = duration
+//                    log.name = name
+//                    log.date = dateString
+//                    log.dateInMilliseconds = dateInMilliseconds.toString()
+
                     setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
@@ -424,7 +446,20 @@ class CallContainerRepository(
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
 //                    dateInMilliseconds += name + id + Math.random().toString();
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
+                    var isMarked = false
+                    if(markedIds.contains(id)){
+                        isMarked = true
+                    }
+                    val log = CallLogData(id, number, callType, duration, name,
+                        dateString,dateInMilliseconds = dateInMilliseconds.toString(), isMarked = isMarked)
+//                    val log = CallLogData()
+//                    log.id = id
+//                    log.number = number
+//                    log.type =callType
+//                    log.duration = duration
+//                    log.name = name
+//                    log.date = dateString
+//                    log.dateInMilliseconds = dateInMilliseconds.toString()
                     setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
@@ -452,6 +487,16 @@ class CallContainerRepository(
 
     companion object{
         const val TAG = "__CallContainerRepository"
+        var markedIds:MutableSet<Long> = mutableSetOf()
+        var deletedIds:MutableSet<Long> = mutableSetOf() // to keep track of item that are deleted from livedata
+
+        fun addAllMarkedItemToDeletedIds(markedIds: MutableSet<Long>) {
+            deletedIds.addAll(markedIds)
+        }
+        fun clearMarkedItems(){
+            markedIds.clear()
+            deletedIds.clear()
+        }
     }
 
 }

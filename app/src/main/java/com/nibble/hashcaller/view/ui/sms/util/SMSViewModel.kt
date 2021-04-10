@@ -53,7 +53,6 @@ class SMSViewModel(
             return filteredSms
         }
         return filteredSms
-
     }
 
 
@@ -104,6 +103,7 @@ class SMSViewModel(
 //         }
         repository!!.fetchSMS(null, false).apply {
             smsLiveData.value = this
+
         }
 
 
@@ -199,6 +199,93 @@ class SMSViewModel(
         super.onCleared()
     }
 
+    fun mark(id: Long, address: String) = viewModelScope.launch{
+
+
+//        smsLiveData.value?.find{it.addressString == address}?.kaatam = "true"
+//        smsLiveData.value = smsLiveData.value
+        var list1: MutableList<SMS> = mutableListOf()
+        list1.addAll(smsLiveData.value!!)
+        var list2: MutableList<SMS> = mutableListOf()
+        val item = list1.find { it.addressString == address }
+
+        for(item in list1){
+            var secondObj : SMS ? = null
+            if(item.addressString == address){
+                if(item.isMarked){
+                    secondObj = item.copy(isMarked = false)
+                    repository?. markedThreadIds?.remove(id)
+                }else{
+                    secondObj = item.copy(isMarked = true)
+                    repository?.markedThreadIds?.add(id)
+                }
+                list2.add(secondObj!!)
+            }else{
+                if(!item.isMarked && item.addressString !=address){
+                    repository?. markedThreadIds?.remove(id)
+                }
+
+                list2.add(item)
+            }
+        }
+        smsLiveData.value = list2
+
+
+//        val item = smsLiveData.value!!.find { it.addressString == address }
+//        val sms = SMS()
+//        sms.isMarked = true
+
+//        Log.d(TAG, "mark: $item")
+//        smsLiveData.value!!.replace(newValue = SMS()){it.addressString ==address}
+
+//        var list:MutableList<SMS> = mutableListOf()
+//        list.addAll(smsLiveData.value!!)
+//        var copyList:MutableList<SMS> = mutableListOf()
+
+//        for (item in list){
+//            var obj = SMS()
+//                obj.isMarked = true
+//                obj.readState = item.readState
+//                obj.spamCount  = item.spamCount
+//                obj.addresStringNonFormated = item.addresStringNonFormated
+//                obj.sub = item.sub
+//                obj.subject = item.subject
+//                obj.ct_t = item.ct_t
+//                obj.read_status = item.read_status
+//                obj.reply_path_present = item.reply_path_present
+//                obj.body = item.body
+//                obj.addressString = item.addressString
+//                obj.address = item.address
+//                obj.readState = item.readState
+//                obj.relativeTime = item.relativeTime
+//                obj. senderInfoFoundFrom= item.senderInfoFoundFrom
+//                obj.nameForDisplay = item.nameForDisplay
+//                obj.msgString = item.msgString
+//                obj.isMarked = true
+//
+//                if(obj.addressString == address){
+//                    Log.d(TAG, "mark: address equal")
+//                    obj.kaatam = "kaatam"
+//
+//                }
+//
+//            copyList.add(obj)
+//        }
+
+//        for(item in list){
+//            copyList.add(item.clone)
+//        }
+//        smsLiveData.value = copyList
+
+//        smsLiveData.value = smsLiveData.value
+       // emit(0)
+        
+    }
+    fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): MutableList<T> {
+        return map {
+            if (block(it)) newValue else it
+        }.toMutableList()
+    }
     companion object
     {
         //todo save color of round in this map, so that color does not change for miner change of sms

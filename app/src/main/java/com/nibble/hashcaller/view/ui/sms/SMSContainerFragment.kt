@@ -194,7 +194,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun observePermissionLiveData() {
-
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
             //this caused to view not updating afte returning from individual sms activity,
             //after user blockes a number and comes that the spam counts were not getting updated
@@ -349,8 +348,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //            var newList:MutableList<SMS> = mutableListOf()
 
 //            it.forEach{sms-> newList.add(sms.deepCopy())}
+            Log.d(TAG, "observeMutabeLiveData: ")
             smsRecyclerAdapter?.setList(it)
-                binding.shimmerViewContainer.beGone()
+            binding.shimmerViewContainer.beGone()
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
 //            binding.shimmer_view_container.visibility = View.GONE
             binding.rcrViewSMSList.visibility = View.VISIBLE
@@ -666,19 +666,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.searchViewSms.visibility = View.INVISIBLE
     }
 
-    /**
-     * mark for deletion or archival or block of sms list
-     */
-    private fun markItem(v: View, id: Long, address: String) {
 
-        v.smsMarked.visibility = View.VISIBLE
-        MarkedItemsHandler.markedItems.add(id)
-        MarkedItemsHandler.markedViews.add(v)
-        MarkedItemsHandler.markedContactAddress.add(address)
-        showHideBlockButton()
-        updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
-
-    }
 
 
 
@@ -724,6 +712,19 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
 
+    /**
+     * mark for deletion or archival or block of sms list
+     */
+    private fun markItem(v: View, id: Long, address: String) {
+        smsListVIewModel.mark(id, address)
+//        v.smsMarked.visibility = View.VISIBLE
+//        MarkedItemsHandler.markedItems.add(id)
+//        MarkedItemsHandler.markedViews.add(v)
+//        MarkedItemsHandler.markedContactAddress.add(address)
+//        showHideBlockButton()
+//        updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
+
+    }
 
     /**
      * callback of ConfirmDialogfragment for deleting sms

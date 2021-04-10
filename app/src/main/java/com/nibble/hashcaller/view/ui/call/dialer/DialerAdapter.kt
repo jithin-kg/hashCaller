@@ -173,7 +173,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
-            if(containsItem(callLog.id!!)){
+            if(callLog.isMarked){
                 view.imgViewCallMarked.beVisible()
             }else{
                 view.imgViewCallMarked.beInvisible()
@@ -300,7 +300,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         override fun areContentsTheSame(oldItem: CallLogData, newItem: CallLogData): Boolean {
 
 
-            return oldItem.spamCount == newItem.spamCount && oldItem.callerInfoFoundFrom == newItem.callerInfoFoundFrom
+            return oldItem.isMarked == newItem.isMarked && oldItem.spamCount == newItem.spamCount && oldItem.callerInfoFoundFrom == newItem.callerInfoFoundFrom
             //TODO compare both messages and if the addres is same and message
         }
 

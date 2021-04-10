@@ -23,32 +23,44 @@
         android:id="@+id/appbarCallContainer"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:elevation="0dp"
+        app:elevation="2dp"
         android:elevation="0dp"
-        android:layout_margin="12dp"
         app:layout_scrollFlags="scroll|enterAlways"
         android:background="@color/colorBackground"
         >
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarCall"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/toolbar_background"
-            app:elevation="4dp"
-            android:elevation="4dp"
-            android:layout_margin="4dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
-            app:layout_scrollFlags="scroll|enterAlways"
-            >
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbarCall"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@drawable/toolbar_background"-->
+<!--            app:elevation="4dp"-->
+<!--            android:elevation="4dp"-->
+<!--            android:layout_margin="4dp"-->
+<!--            app:contentInsetStartWithNavigation="0dp"-->
+<!--            app:navigationIcon="@drawable/ic_baseline_menu_24"-->
+<!--            app:layout_scrollFlags="scroll|enterAlways"-->
+<!--            >-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/callToolbarLayoutItems"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="70dp"
                 android:layout_marginStart="0dp"
+                app:layout_scrollFlags="scroll|enterAlways"
+                android:background="@drawable/toolbar_background"
                 android:backgroundTint="@color/colorBackground">
-
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/imgBtnAvatarMainCalls"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/circular_avatar_main_background"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnCallTbrMore"
                     android:layout_width="16dp"
@@ -113,11 +125,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text=""
+                    android:text="selected "
                     android:textColor="@color/textColor"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/searchViewCall"
                     app:layout_constraintTop_toTopOf="parent" />
 
                                 <EditText
@@ -128,8 +140,9 @@
                                     android:backgroundTint="@color/colorBackground"
                                     android:cursorVisible="false"
                                     android:focusable="false"
+                                    android:layout_marginStart="24dp"
                                     android:focusedByDefault="false"
-                                    android:hint=" Search in sms"
+                                    android:hint="Search in Calls"
                                     android:iconifiedByDefault="false"
                                     android:queryBackground="@android:color/transparent"
 
@@ -137,12 +150,12 @@
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
                                     app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toEndOf="@+id/tvCallSelectedCount"
+                                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMainCalls"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.appcompat.widget.Toolbar>
+<!--        </androidx.appcompat.widget.Toolbar>-->
     </com.google.android.material.appbar.AppBarLayout>
 
 <!--    <androidx.viewpager.widget.ViewPager-->

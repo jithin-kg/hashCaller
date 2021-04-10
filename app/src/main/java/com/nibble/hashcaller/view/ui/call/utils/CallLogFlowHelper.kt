@@ -17,17 +17,15 @@ import java.text.SimpleDateFormat
  * helper class to get call logs as a stream/flow
  */
 
-
-
 object CallLogFlowHelper {
 
     fun fetchCallLogFlow(context:Context):MutableList<CallLogData> {
 
         val listOfCallLogs:MutableList<CallLogData> = mutableListOf()
-        val callLog1 = CallLogData(null)
-        val callLog2 = CallLogData(null)
-        val callLog3= CallLogData(null)
-        val callLog4 = CallLogData(null)
+        val callLog1 = CallLogData()
+        val callLog2 = CallLogData()
+        val callLog3= CallLogData()
+        val callLog4 = CallLogData()
 
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
@@ -71,7 +69,15 @@ object CallLogFlowHelper {
                      */
 //                    dateInMilliseconds += name + id + Math.random().toString();
 
-                    val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
+                   // val log = CallLogData(id, number, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds.toString())
+                    val log = CallLogData()
+                    log.id = id
+                    log.number = number
+                    log.type =callType
+                    log.duration = duration
+                    log.name = name
+                    log.date = dateString
+                    log.dateInMilliseconds = dateInMilliseconds.toString()
                     setCallHashMap(log)
                    setRelativeTime(dateInMilliseconds, log)
                     listOfCallLogs.add(log)

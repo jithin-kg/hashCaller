@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -47,6 +48,7 @@ import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
@@ -672,10 +674,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         }
         else if(callFragment.isVisible){
-            if(isMarkingStarted()){
-                clearlists()
-                callFragment.showSearchView()
-                callFragment.updateSelectedItemCount()
+            if(CallContainerRepository.markedIds.size > 0){
+                lifecycleScope.launchWhenCreated {
+                    callFragment.clearMarkeditems()
+                }
+//                callFragment.showSearchView()
+//                callFragment.updateSelectedItemCount()
             }else{
                 super.onBackPressed()
             }

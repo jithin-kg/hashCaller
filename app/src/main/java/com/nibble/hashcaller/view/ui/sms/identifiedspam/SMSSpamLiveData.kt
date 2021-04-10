@@ -45,8 +45,8 @@ class SMSSpamLiveData(private val context: Context):
                 smssendersInfoDAO,
                 mutedSendersDAO
             )
-        val res =  repository.getSMSForViewModel(null, true)
-
+//        val res =  repository.getSMSForViewModel(null, true)
+            val res:MutableList<SMS> = mutableListOf()
         //IMPORTANT from backgroudn thread we need to call postValue to set livedata
         SMSSpamViewModel.isLoading.postValue(false)
         return res

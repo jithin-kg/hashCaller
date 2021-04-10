@@ -93,10 +93,10 @@ class SMSSpamViewModel(
 //                obj.type = sms.spammerType
 //                obj.spamCount = sms.spamReportCount
 //                mapofAddressAndValues.put(sms.contactAddress!!, obj)
-              val r = async {  repository!!.getSMSForViewModel( searchQuery = null, isFullSmsNeeded = true, requestinfromSpamlistFragment = true) }
-              val lst =   r.await()
-
-            smsLiveDataSpam.value = lst
+//              val r = async {  repository!!.getSMSForViewModel( searchQuery = null, isFullSmsNeeded = true, requestinfromSpamlistFragment = true) }
+//              val lst =   r.await()
+//
+//            smsLiveDataSpam.value = lst
 
 //            }
 //            var lst:MutableList<SMS>  = mutableListOf()
@@ -130,15 +130,15 @@ class SMSSpamViewModel(
     }
 
     fun getNextSmsPage() = viewModelScope.launch {
-       val res =  async { repository!!.getSMSForViewModel(null,true) }
+//       val res =  async { repository!!.getSMSForViewModel(null,true) }
 //
-        val newpage = res.await()
+//        val newpage = res.await()
         var prevSize = 0
         if(smsLiveDataSpam.value !=null){
             prevSize = smsLiveDataSpam.value!!.size
         }
 
-        smsLiveDataSpam.value!!.addAll(newpage)
+//        smsLiveDataSpam.value!!.addAll(newpage)
         var sizeAfterAddingPage = smsLiveDataSpam.value!!.size
         Log.d(TAG, "getNextSmsPage: prevSize $prevSize sizeAfterAddingPage $sizeAfterAddingPage  ")
         isSizeEqual = prevSize == sizeAfterAddingPage

@@ -12,7 +12,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -20,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SMSLiveData(private val context: Context):
+class SMSLiveData(private val context: Context,private val repository: SMSLocalRepository?):
     ContentProviderLiveDataFlow<MutableList<SMS>>(
         context,
         URI
@@ -42,19 +41,9 @@ class SMSLiveData(private val context: Context):
          pageOb.page = 0 //set page size to 0 when there is a change in sms
 
 //        SMSViewModel.isLoading.postValue(true)
-          spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
-         smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
-         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
-          mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
-         val repository =
-            SMSLocalRepository(
-                context,
-                spamListDAO,
-                smssendersInfoDAO,
-                mutedSendersDAO
-            )
 
-          repository.fetchSMS(null, false).apply {
+
+          repository!!.fetchSMS(null, false).apply {
 //              Log.d(TAG, "getMessages: spamcount ${this[0].spamCount}")
               return this
               

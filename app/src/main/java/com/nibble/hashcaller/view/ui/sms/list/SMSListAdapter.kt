@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.SmsListViewBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
@@ -69,7 +70,7 @@ class SMSListAdapter(private val context: Context,
        }
         else{
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
-            return SmsViewHolder(view)
+            return SmsViewHolder(SmsListViewBinding.inflate(LayoutInflater.from(parent.context ), parent, false))
         }
 
 
@@ -110,10 +111,10 @@ class SMSListAdapter(private val context: Context,
 
     }
 
-    inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
-        var layoutExpandable: ConstraintLayout = view.layoutExpandable
-        private val name = view.textVSMSCntctName
-        private val circle = view.textViewSMScontactCrclr;
+    inner class SmsViewHolder(val binding:SmsListViewBinding) : RecyclerView.ViewHolder(binding.root),View.OnCreateContextMenuListener {
+        var layoutExpandable: ConstraintLayout = binding.layoutExpandable
+        private val name = binding.textVSMSCntctName
+        private val circle = binding.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
@@ -122,66 +123,73 @@ class SMSListAdapter(private val context: Context,
             position: Int
         ) {
 
+            if(sms.isMarked==true){
+                Log.d(TAG, "bind: making visible ")
+                binding.smsMarked.beVisible()
+            }else{
+                Log.d(TAG, "bind: making invisible")
+                binding.smsMarked.beInvisible()
+            }
 
                 name.text = sms.nameForDisplay
             Log.d(TAG, "bind: setting name ${sms.nameForDisplay}")
             if(sms.spamCount > 0){
-                view.textVSMSCntctName.setColorForText(R.color.spamText)
+                binding.textVSMSCntctName.setColorForText(R.color.spamText)
                 circle.setRandomBackgroundCircle(TYPE_SPAM)
-                view.imgVBlkIconSms.beVisible()
-                view.textViewSMScontactCrclr.text = ""
+                binding.imgVBlkIconSms.beVisible()
+                binding.textViewSMScontactCrclr.text = ""
             }else{
-                view.textVSMSCntctName.setColorForText(R.color.textColor)
+                binding.textVSMSCntctName.setColorForText(R.color.textColor)
                 circle.setRandomBackgroundCircle()
-                view.imgVBlkIconSms.beInvisible()
+                binding.imgVBlkIconSms.beInvisible()
                 if(!sms.nameForDisplay.isNullOrEmpty()){
                     circle.text = sms.nameForDisplay[0].toString()
-
                 }
-
-
             }
+
             if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
-                view.pgBarSmsListItem.visibility = View.VISIBLE
+                binding.pgBarSmsListItem.visibility = View.VISIBLE
             }else{
-                view.pgBarSmsListItem.visibility = View.INVISIBLE
+                binding.pgBarSmsListItem.visibility = View.INVISIBLE
             }
 
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
-            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
-                view.smsMarked.visibility = View.VISIBLE
-            }else{
-                view.smsMarked.visibility = View.INVISIBLE
 
-            }
 
-            view.tvSMSMPeek.text = sms.msgString
+//            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
+//                view.smsMarked.visibility = View.VISIBLE
+//            }else{
+//                view.smsMarked.visibility = View.INVISIBLE
+//
+//            }
+
+            binding.tvSMSMPeek.text = sms.msgString
             Log.d(TAG, "bind: messageString is ${sms.msgString}")
                 if(sms.readState ==SMS_NOT_READ){
-                    view.tvSMSMPeek.typeface = Typeface.DEFAULT_BOLD
-                    view.tvSMSMPeek.alpha = 0.87f
-                    view.tvSMSMPeek.setColorForText(R.color.textColor)
+                    binding.tvSMSMPeek.typeface = Typeface.DEFAULT_BOLD
+                    binding.tvSMSMPeek.alpha = 0.87f
+                    binding.tvSMSMPeek.setColorForText(R.color.textColor)
 
                 }else{
-                    view.tvSMSMPeek.typeface = Typeface.DEFAULT
-                    view.tvSMSMPeek.alpha = 0.60f
-                    view.tvSMSMPeek.setColorForText(R.color.textColor)
+                    binding.tvSMSMPeek.typeface = Typeface.DEFAULT
+                    binding.tvSMSMPeek.alpha = 0.60f
+                    binding.tvSMSMPeek.setColorForText(R.color.textColor)
                 }
 
 
-            view.tvSMSTime.text = sms.relativeTime
+            binding.tvSMSTime.text = sms.relativeTime
 
 
 
-            view.setOnLongClickListener(OnLongClickListener { v ->
+            binding.parentLayout.setOnLongClickListener(OnLongClickListener { v ->
                 longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
                     sms.addressString!!
                 )
                 true
             })
-            view.setOnClickListener{v->
+            binding.parentLayout.setOnClickListener{v->
                 onContactItemClickListener(v, sms.threadID, this.adapterPosition,
                     sms.addresStringNonFormated!!
                 )
@@ -209,6 +217,7 @@ class SMSListAdapter(private val context: Context,
     }
     class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
+            Log.d(TAG, "areItemsTheSame: ")
             return  oldItem.addressString == newItem.addressString
 
 
@@ -216,7 +225,8 @@ class SMSListAdapter(private val context: Context,
 
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            return oldItem == newItem
+            Log.d(TAG, "areContentsTheSame: ${oldItem.isMarked == newItem.isMarked && oldItem == newItem}")
+            return oldItem.isMarked == newItem.isMarked && oldItem == newItem
         }
 
     }

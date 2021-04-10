@@ -205,12 +205,12 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     }
     private fun observeMutabeLiveData() {
         this.smsListVIewModel.smsLiveData.observe(viewLifecycleOwner, Observer {
-            smsListVIewModel.smsLIst = it as MutableList<SMS>?
+//            smsListVIewModel.smsLIst = it as MutableList<SMS>?
             Log.d(TAG, "observeMutabeLiveData: ")
-//            var newList:MutableList<SMS> = mutableListOf()
+            var newList:MutableList<SMS> = mutableListOf()
 
-//            it.forEach{sms-> newList.add(sms.deepCopy())}
-            smsRecyclerAdapter?.setList(it)
+            it.forEach{sms-> newList.add(sms.deepCopy())}
+            smsRecyclerAdapter?.setList(newList)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
             this.viewMesages.shimmerViewContainer.visibility = View.GONE

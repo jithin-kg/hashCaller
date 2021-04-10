@@ -9,6 +9,7 @@
     android:background="@drawable/recyclere_view_background"
     android:clickable="true"
     android:focusable="true"
+    android:id="@+id/parentLayout"
     android:foreground="?android:attr/selectableItemBackground"
     android:paddingTop="16dp">
 
@@ -46,6 +47,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:elevation="6dp"
+        android:visibility="invisible"
         android:textColor="@color/spamText"
         android:src="@drawable/ic_baseline_block_red"
         android:gravity="center_vertical|center_horizontal"
@@ -60,13 +62,14 @@
         android:id="@+id/smsMarked"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="24dp"
         android:src="@drawable/contact_circular_marked_background"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        android:visibility="visible"
+        android:elevation="2dp"
+        app:layout_constraintStart_toStartOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintTop_toTopOf="@+id/textViewSMScontactCrclr"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewSMScontactCrclr"
+        />
 
     <TextView
         android:id="@+id/textVSMSCntctName"

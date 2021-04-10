@@ -43,7 +43,6 @@ import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
-import kotlin.coroutines.coroutineContext
 import kotlin.system.measureTimeMillis
 
 
@@ -110,6 +109,7 @@ class SMSLocalRepository(
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    var markedThreadIds:MutableSet<Long> = mutableSetOf()
 
     companion object{
         private val URI: Uri = SMSContract.INBOX_SMS_URI
@@ -276,10 +276,11 @@ class SMSLocalRepository(
 
                     setSpannableStringBuilder(objSMS, null, msg, num) //calling
                     // spannable string builder function to setup spannable string builder
-                    objSMS.addressString = num.replace("+", "")
                     objSMS.addressString = formatPhoneNumber(num)
                     objSMS.nameForDisplay = objSMS.addressString!!
-
+                    if(markedThreadIds.contains(objSMS.threadID)){
+                        objSMS.isMarked = true
+                    }
                     objSMS.readState =
                         cursor.getInt(cursor.getColumnIndex("read"))
                     val dateMilli =
@@ -391,7 +392,6 @@ class SMSLocalRepository(
 
                             setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                             // spannable string builder function to setup spannable string builder
-                            objSMS.addressString = num.replace("+", "")
                             objSMS.addressString = formatPhoneNumber(num)
                             objSMS.nameForDisplay = objSMS.addressString!!
 
@@ -446,7 +446,9 @@ class SMSLocalRepository(
 
                             }
 //                            setOfAddress.add(objSMS.nameForDisplay)
-
+                                if(markedThreadIds.contains(objSMS.threadID)){
+                                    objSMS.isMarked = true
+                                }
 
                                 listOfMessages.add(objSMS)
 
@@ -1657,7 +1659,7 @@ class SMSLocalRepository(
         smsDeletingStarted = true
         var numRowsDeleted = 0
         var copy:MutableList<Long> = mutableListOf()
-        copy.addAll(MarkedItemsHandler.markedItems)
+        copy.addAll(markedThreadIds)
         try{
             for(id in copy) {
                 Log.d(TAG, "deleteSmsThread: threadid $id")
@@ -1686,9 +1688,7 @@ class SMSLocalRepository(
 
 
     private fun deleteList() {
-        MarkedItemsHandler.markedItems.clear()
-        MarkedItemsHandler.markedContactAddress.clear()
-        markingStarted = false
+        markedThreadIds.clear()
     }
 
     /***

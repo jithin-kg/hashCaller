@@ -5,33 +5,21 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.fullDataFromCproviderFetched
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
-import com.nibble.hashcaller.view.ui.call.utils.CallLogFlowHelper
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addToMarkedViews
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.addTomarkedItemsById
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.addAllMarkedItemToDeletedIds
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.deletedIds
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.markedIds
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedViews
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.idContainsInList
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkedViewsEmpty
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setMarkedContactAddress
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
-import com.nibble.hashcaller.work.replaceSpecialChars
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class CallContainerViewModel(
@@ -104,44 +92,117 @@ class CallContainerViewModel(
         callLogsMutableLiveData.value = it
     }
 
-    fun markItem(id: Long, view: View, pos: Int, address: String): Flow<Int> = flow {
+    fun isMarkingStarted(): Boolean {
+        return markedIds.size > 0
+    }
+    fun markItem(id: Long, view: View, pos: Int, address: String) : LiveData<Int> = liveData {
 
-        if(idContainsInList(id)){ // if id already exist in list,remove from the list and unMark view
-            IndividualMarkedItemHandlerCall.removeFromMarkedItemsById(id)
-            if(getMarkedItemSize() == 1){
-                setMarkedContactAddress(address)
-            }
-            emit(CALL_ITEM_UN_MARKED)
-
-        }else{
-
-            if(getMarkedItemSize() == 0){
-                setMarkedContactAddress(address)
-            }
-            addTomarkedItemsById(id)
-            addToMarkedViews(view)
+        var listOne: MutableList<CallLogData>  = mutableListOf()
+        var listTwo: MutableList<CallLogData>  = mutableListOf()
+        listOne.addAll(callLogsMutableLiveData.value!!)
 
 
-            if(!isMarkedViewsEmpty()){
-                for(view in getMarkedViews()){
-//               markedViewsLiveData.value = view
-                    emit(CALL_NEW_ITEM_MARKED)
+        for (item in listOne){
+
+            var obj: CallLogData? = null
+            if(item.id == id){
+                if(item.isMarked){
+                    obj = item.copy(isMarked = false)
+                    markedIds.remove(id)
+                    listTwo.add(obj)
+                }else{
+                    obj = item.copy(isMarked = true)
+                    markedIds.add(id)
+                    listTwo.add(obj)
+
                 }
+            }else{
+                listTwo.add(item)
             }
-
 
         }
+//        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
+        callLogsMutableLiveData.value = listTwo
+        emit(markedIds.size)
+
+//        if(idContainsInList(id)){ // if id already exist in list,remove from the list and unMark view
+//            IndividualMarkedItemHandlerCall.removeFromMarkedItemsById(id)
+//            if(getMarkedItemSize() == 1){
+//                setMarkedContactAddress(address)
+//            }
+////            emit(CALL_ITEM_UN_MARKED)
+//
+//        }else{
+//
+//            if(getMarkedItemSize() == 0){
+//                setMarkedContactAddress(address)
+//            }
+//            addTomarkedItemsById(id)
+//            addToMarkedViews(view)
+//
+//
+//            if(!isMarkedViewsEmpty()){
+//                for(view in getMarkedViews()){
+////               markedViewsLiveData.value = view
+////                    emit(CALL_NEW_ITEM_MARKED)
+//                }
+//            }
+//
+//
+//        }
 
     }
 
+    /**
+     * Deleting process seemed to be slow so I need to delete from the livedata view to show the user quickly
+     * and delete in background
+     */
     fun deleteThread():LiveData<Int> = liveData {
         emit(SMS_DELETE_ON_PROGRESS)
-        val numRowsDeleted =  repository!!.deleteLogs().apply {
-            emit(SMS_DELETE_ON_COMPLETED)
+        viewModelScope.launch {
+
+            //deleting from livedata
+           val as1=  async {
+                deleteItemsFromView()
+
+            }
+
+            //deleting from repository
+           val as2 =  async {
+                val numRowsDeleted =  repository!!.deleteLogs()
+            }
+
+            as1.await().apply {
+                emit(SMS_DELETE_ON_COMPLETED)
+            }
+
+            as2.await()
+
+
         }
 
 
+
 //        numRowsDeletedLiveData.value = numRowsDeleted
+    }
+
+    private fun deleteItemsFromView() {
+        addAllMarkedItemToDeletedIds(markedIds)
+        var listOne: MutableList<CallLogData>  = mutableListOf()
+        var listTwo: MutableList<CallLogData>  = mutableListOf()
+        listOne.addAll(callLogsMutableLiveData.value!!)
+
+
+        for (item in listOne){
+
+            if(!deletedIds.contains(item.id)){
+               listTwo.add(item)
+            }
+
+        }
+//        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
+        callLogsMutableLiveData.value = listTwo
+//        emit(markedIds.size)
     }
 
     fun muteMarkedCaller() :LiveData<Int> = liveData {
@@ -273,6 +334,29 @@ class CallContainerViewModel(
 
     fun clearCallLogDB() = viewModelScope.launch {
         repository!!.clearCallersInfoFromServer()
+    }
+
+    fun clearMarkedItems() = viewModelScope.launch{
+        CallContainerRepository.clearMarkedItems()
+
+        var listOne: MutableList<CallLogData>  = mutableListOf()
+        var listTwo: MutableList<CallLogData>  = mutableListOf()
+        listOne.addAll(callLogsMutableLiveData.value!!)
+
+
+        for (item in listOne){
+
+            var obj: CallLogData? = null
+            obj = item.copy(isMarked = false)
+            if(item.isMarked){
+                listTwo.add(obj)
+            }else{
+                listTwo.add(item)
+            }
+
+        }
+//        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
+        callLogsMutableLiveData.value = listTwo
     }
 
 

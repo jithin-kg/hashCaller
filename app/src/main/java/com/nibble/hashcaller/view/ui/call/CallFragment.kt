@@ -45,13 +45,11 @@ import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedItemSize
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isItemSizeEqualsOne
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.makeCall
+import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -71,7 +69,6 @@ import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
-import kotlinx.coroutines.flow.collect
 
 
 /**
@@ -161,6 +158,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
+
     private fun observePermissionLiveData() {
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
             if(it == true){
@@ -194,6 +192,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.fabBtnShowDialpad.setOnClickListener(this)
         binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
         binding.imgBtnCallTbrMore.setOnClickListener(this)
+        binding.imgBtnAvatarMainCalls.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -503,6 +502,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 popup.setOnMenuItemClickListener(this)
                 popup.show()
             }
+            R.id.imgBtnAvatarMainCalls ->{
+                requireContext().startSettingsActivity(activity)
+            }
             R.id.btnBlock->{
                 blockMarkedCaller()
             }
@@ -676,7 +678,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
         var viewExpanded = 0
-        if(isMarkingStarted()) {
+        if(viewmodel.isMarkingStarted()) {
 
             markItem(id, position, view, callLog.number)
         }else{
@@ -727,36 +729,47 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     ) {
 
         lifecycleScope.launchWhenStarted {
-            viewmodel.markItem(id, view, position, number).collect{
-
-                var viewMain = view.findViewById<ConstraintLayout>(R.id.layoutcallMain)
-
-
+            viewmodel.markItem(id, view, position, number).observe(viewLifecycleOwner, Observer {
                 when(it){
-                    CALL_NEW_ITEM_MARKED ->{
-                        viewMain.imgViewCallMarked.beVisible()
-
+                    0 ->{
+                        showSearchView()
                     }
-                    CALL_ITEM_UN_MARKED ->{
-                        viewMain.imgViewCallMarked.beInvisible()
-//                        updateSelectedItemCount()
-
-                    }
-                }
-
-                    if(isMarkingStarted()){
-                        showDeleteBtnInToolbar()
+                    else ->{
+                        updateSelectedItemCount(it)
                     }
 
-                    updateSelectedItemCount()
-                if(isItemSizeEqualsOne()){
-                    showBlockButon()
                 }
-                else{
-                    hideBlockButton()
-                }
-//                    view.setBackgroundColor(ContextCompat.getColorColor(requireContext(), R.color.colorPrimaryLowOpacity))
-            }
+            })
+//            viewmodel.markItem(id, view, position, number).collect{
+//
+//                var viewMain = view.findViewById<ConstraintLayout>(R.id.layoutcallMain)
+//
+//
+//                when(it){
+//                    CALL_NEW_ITEM_MARKED ->{
+//                        viewMain.imgViewCallMarked.beVisible()
+//
+//                    }
+//                    CALL_ITEM_UN_MARKED ->{
+//                        viewMain.imgViewCallMarked.beInvisible()
+////                        updateSelectedItemCount()
+//
+//                    }
+//                }
+//
+//                    if(isMarkingStarted()){
+//                        showDeleteBtnInToolbar()
+//                    }
+//
+//                    updateSelectedItemCount()
+//                if(isItemSizeEqualsOne()){
+//                    showBlockButon()
+//                }
+//                else{
+//                    hideBlockButton()
+//                }
+////                    view.setBackgroundColor(ContextCompat.getColorColor(requireContext(), R.color.colorPrimaryLowOpacity))
+//            }
         }
 
     }
@@ -797,10 +810,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun showDeleteBtnInToolbar() {
+    private fun showDeleteBtnInToolbar(count: Int) {
         Log.d(TAG, "showDeleteBtnInToolbar: ")
         binding.searchViewCall.beInvisible()
-        binding.imgBtnCallTbrBlock.beVisible()
+        if(count==1){
+            binding.imgBtnCallTbrBlock.beVisible()
+
+        }else{
+            binding.imgBtnCallTbrBlock.beInvisible()
+
+        }
         if(isScreeningApp){
             binding.imgBtnCallTbrMuteCaller.beVisible()
 
@@ -810,6 +829,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
      fun showSearchView(){
+
         binding.searchViewCall.beVisible()
         binding.imgBtnCallTbrBlock.beInvisible()
         binding. imgBtnCallTbrMuteCaller.beInvisible()
@@ -819,8 +839,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
          binding.imgBtnCallUnMuteCaller.beInvisible()
     }
 
-    fun updateSelectedItemCount(){
-        val count = getMarkedItemSize()
+    fun updateSelectedItemCount(count: Int) {
+        showDeleteBtnInToolbar(count)
         binding.tvCallSelectedCount.text = "${count.toString()} Selected"
         if(count>0){
             binding.tvCallSelectedCount.beVisible()
@@ -831,15 +851,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     override fun onYesConfirmationDelete() {
         this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
-           when(it){
-               SMS_DELETE_ON_PROGRESS ->{
+            when (it) {
+                SMS_DELETE_ON_PROGRESS -> {
 
-               }
-               SMS_DELETE_ON_COMPLETED ->{
-                   showSearchView()
-               }
-           }
+                }
+                SMS_DELETE_ON_COMPLETED -> {
+                    Log.d(TAG, "SMS_DELETE_ON_COMPLETED: ")
+                    showSearchView()
+                }
+            }
         })
+        viewmodel.clearMarkedItems()
+        showSearchView()
     }
 
     override fun onYesConfirmationMute() {
@@ -874,6 +897,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
             }
         }
+    }
+
+    /**
+     * called from mainactivity on back button pressed
+     */
+    fun clearMarkeditems() {
+       viewmodel.clearMarkedItems()
+        showSearchView()
     }
 
 }
