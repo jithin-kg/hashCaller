@@ -125,8 +125,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             initRecyclerView()
             getFirstPageOfSMS()
             observeSMSList()
-            observeSendersInfoFromServer()
-            observePermissionLiveData()
+//            observeSendersInfoFromServer()
+//            observePermissionLiveData()
             observeNumOfRowsDeleted()
             registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
             setupBottomSheet()
@@ -331,11 +331,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             sms.let {
 
                 Log.d(TAG, "observeSMSList: $sms")
+//                smsRecyclerAdapter?.setList(sms)
+
                 smsListVIewModel.updateLiveData(sms)
-                this.smsListVIewModel.getInformationForTheseNumbers(
-                    sms,
-                    requireActivity().packageName
-                )
+//                this.smsListVIewModel.getInformationForTheseNumbers(
+//                    sms,
+//                    requireActivity().packageName
+//                )
 
 
             }

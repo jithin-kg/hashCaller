@@ -12,8 +12,10 @@ import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.pageCall
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
@@ -34,7 +36,8 @@ import java.util.concurrent.TimeUnit
 class CallContainerRepository(
     val context: Context,
     val dao: CallersInfoFromServerDAO,
-    val mutedCallersDAO: IMutedCallersDAO?
+    val mutedCallersDAO: IMutedCallersDAO?,
+    private val callLogDAO: ICallLogDAO?
 ) {
 
     private var retrofitService:ICallService? = null
@@ -90,7 +93,9 @@ class CallContainerRepository(
 //        smsDeletingStarted = true
 //        var numRowsDeleted = 0
         var list: MutableSet<Long>  = mutableSetOf()
+
         list.addAll(markedIds.toList())
+
         try {
             for(id in list) {
                 Log.d(TAG, "deleteSmsThread: threadid $id")
@@ -99,10 +104,12 @@ class CallContainerRepository(
                 val selectionArgs = arrayOf(id.toString())
                     context.contentResolver.delete(uri, selection, selectionArgs)
                     IndividualMarkedItemHandlerCall.clearlists()
-
             }
         }catch (e: Exception) {
             Log.d(TAG, "deleteSmsThread: exception $e")
+        }
+        finally {
+            clearDeleteditems()
         }
 
 
@@ -223,9 +230,11 @@ class CallContainerRepository(
                             setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
-                        async { setInfoFromServer(log) }.await()
+//                        async { setInfoFromServer(log) }.await()
                     }.join()
-                    listOfCallLogs.add(log)
+                    if(!deletedIds.contains(id)) {
+                        listOfCallLogs.add(log)
+                    }
                 }while (cursor.moveToNext())
 
             }
@@ -301,9 +310,9 @@ class CallContainerRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun getFullCallLogs(): MutableList<CallLogData> {
+    suspend fun getFullCallLogs(): MutableList<CallLogTable> {
 
-        val listOfCallLogs = mutableListOf<CallLogData>()
+        val listOfCallLogs = mutableListOf<CallLogTable>()
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
             CallLog.Calls.TYPE,
@@ -311,7 +320,6 @@ class CallContainerRepository(
             CallLog.Calls.CACHED_NAME,
             CallLog.Calls._ID,
             CallLog.Calls.DATE
-
         )
         var cursor:Cursor? = null
 
@@ -327,9 +335,9 @@ class CallContainerRepository(
                 do{
 
                     var number = cursor.getString(0)
-                    val type: String = cursor.getString(1)
+                    val type: Int = cursor.getInt(1)
                     val duration: String = cursor.getString(2)
-                    val name: String? = cursor.getString(3)
+                    val name:String? = cursor.getString(3)
                     val id = cursor.getLong(4)
                     var dateInMilliseconds = cursor.getLong(5)
                     val fmt =
@@ -350,9 +358,9 @@ class CallContainerRepository(
                     if(markedIds.contains(id)){
                         isMarked = true
                     }
-                    val log = CallLogData(id, number, callType,
-                        duration, name, dateString
-                        ,dateInMilliseconds = dateInMilliseconds.toString(), isMarked = isMarked)
+
+                    val log = CallLogTable(id, name,
+                        formatPhoneNumber(number), type, duration, 0, dateInMilliseconds, 0 )
 
 //                    val log = CallLogData()
 //                    log.id = id
@@ -363,18 +371,20 @@ class CallContainerRepository(
 //                    log.date = dateString
 //                    log.dateInMilliseconds = dateInMilliseconds.toString()
 
-                    setRelativeTime(dateInMilliseconds, log)
+//                    setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
                         async { setInfoFromServer(log) }.await()
                     }.join()
 
-
-                    listOfCallLogs.add(log)
+//                    if(!deletedIds.contains(id)) {
+                        listOfCallLogs.add(log)
+//                    }
                 }while (cursor.moveToNext())
 
             }
         }catch (e: java.lang.Exception){
+
             Log.d(TAG, "getFullCallLogs: exception $e")
         }finally {
             cursor?.close()
@@ -383,7 +393,7 @@ class CallContainerRepository(
         return listOfCallLogs
     }
 
-    private suspend fun setInfoFromServer(log: CallLogData) {
+    private suspend fun setInfoFromServer(log: CallLogTable) {
         dao.find(formatPhoneNumber(log.number)).apply {
             if(this !=null){
                 if(log.name.isNullOrEmpty()){
@@ -393,7 +403,7 @@ class CallContainerRepository(
                     //if there is name already in the log then it would be got from content provider
                     log.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                 }
-                log.spamCount = this.spamReportCount
+                log.spamReportCount = this.spamReportCount
             }
         }
     }
@@ -463,10 +473,13 @@ class CallContainerRepository(
                     setRelativeTime(dateInMilliseconds, log)
 
                     GlobalScope.launch {
-                        async { setInfoFromServer(log) }.await()
+//                        async { setInfoFromServer(log) }.await()
                     }.join()
+                    if(!deletedIds.contains(id)){
+                        listOfCallLogs.add(log)
 
-                    listOfCallLogs.add(log)
+                    }
+
                 }while (cursor.moveToNext())
 
             }
@@ -485,6 +498,14 @@ class CallContainerRepository(
         dao.deleteAll()
     }
 
+    suspend fun updateCallLogDb(logs: MutableList<CallLogTable>) {
+        callLogDAO?.insert(logs)
+    }
+
+    fun getAllCallLogLivedata(): LiveData<List<CallLogTable>>? {
+        return callLogDAO?.getAllLiveData()
+    }
+
     companion object{
         const val TAG = "__CallContainerRepository"
         var markedIds:MutableSet<Long> = mutableSetOf()
@@ -495,7 +516,14 @@ class CallContainerRepository(
         }
         fun clearMarkedItems(){
             markedIds.clear()
+        }
+
+        /**
+         * This should be only called after all item  are complete deleted from repository
+         */
+        fun clearDeleteditems(){
             deletedIds.clear()
+
         }
     }
 

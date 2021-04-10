@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.fullDataFromCproviderFetched
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
@@ -30,7 +31,7 @@ class CallContainerViewModel(
     var contactAdders = ""
      var lstOfAllCallLogs: MutableList<CallLogData> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogData>> = MutableLiveData()
-
+    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
     init {
 
     }
@@ -39,7 +40,7 @@ class CallContainerViewModel(
         fullDataFromCproviderFetched = true
         callLogsMutableLiveData.value = list
 
-        getInformationForTheseNumbers()
+//        getInformationForTheseNumbers()
 
     }
 
@@ -63,7 +64,6 @@ class CallContainerViewModel(
             return phoneNumber
         }
         return phoneNumber
-
     }
 
     fun setAdditionalInfo(logs: MutableList<CallLogData>?) = viewModelScope.launch{
@@ -123,6 +123,9 @@ class CallContainerViewModel(
         }
 //        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
         callLogsMutableLiveData.value = listTwo
+        if(markedIds.size == 1){
+            contactAdders = address
+        }
         emit(markedIds.size)
 
 //        if(idContainsInList(id)){ // if id already exist in list,remove from the list and unMark view
@@ -162,21 +165,23 @@ class CallContainerViewModel(
         viewModelScope.launch {
 
             //deleting from livedata
-           val as1=  async {
-                deleteItemsFromView()
-
-            }
-
+//           val as1=  async {
+//                deleteItemsFromView()
+//
+//            }
+//            as1.await()
             //deleting from repository
-           val as2 =  async {
-                val numRowsDeleted =  repository!!.deleteLogs()
-            }
+//           val as2 =  async {
+                val numRowsDeleted =  repository!!.deleteLogs().apply {
 
-            as1.await().apply {
-                emit(SMS_DELETE_ON_COMPLETED)
-            }
+                }
+//            }
 
-            as2.await()
+//            as1.await().apply {
+//                emit(SMS_DELETE_ON_COMPLETED)
+//            }
+
+//            as2.await()
 
 
         }
@@ -186,7 +191,7 @@ class CallContainerViewModel(
 //        numRowsDeletedLiveData.value = numRowsDeleted
     }
 
-    private fun deleteItemsFromView() {
+    private suspend fun deleteItemsFromView() {
         addAllMarkedItemToDeletedIds(markedIds)
         var listOne: MutableList<CallLogData>  = mutableListOf()
         var listTwo: MutableList<CallLogData>  = mutableListOf()
@@ -263,13 +268,11 @@ class CallContainerViewModel(
 
     }
 
-    fun blockThisAddress(contactAddress: String,
-                         threadID: Long, spammerType: Int,
-                         spammerCategory: Int) = viewModelScope.launch {
-
+    fun blockThisAddress(spammerCategory: Int, spammerCategory1: Int) = viewModelScope.launch {
+//        threadID
         async {
 
-            repository?.markCallerAsSpamer(formatPhoneNumber(contactAddress),
+            repository?.markCallerAsSpamer(formatPhoneNumber(contactAdders),
                 spammerCategory, "", "" )
         }
 
@@ -327,9 +330,9 @@ class CallContainerViewModel(
      * called when info about a caller comes from server, or db changes
      */
     fun updateWithNewInfoFromServer() = viewModelScope.launch {
-         repository!!.getFullCallLogs().apply {
-             callLogsMutableLiveData.value = this
-         }
+//         repository!!.getFullCallLogs().apply {
+//             callLogsMutableLiveData.value = this
+//         }
     }
 
     fun clearCallLogDB() = viewModelScope.launch {
@@ -357,6 +360,10 @@ class CallContainerViewModel(
         }
 //        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
         callLogsMutableLiveData.value = listTwo
+    }
+
+    fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
+        repository?.updateCallLogDb(logs)
     }
 
 

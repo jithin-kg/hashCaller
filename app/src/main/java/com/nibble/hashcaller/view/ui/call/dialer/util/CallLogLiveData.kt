@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import java.lang.Exception
@@ -20,16 +21,17 @@ class CallLogLiveData(
     private val context: Context,
     private val repository: CallContainerRepository?
 ):
-    ContentProviderLiveData<MutableList<CallLogData>>(context,
-    URI
-)  {
+    ContentProviderLiveData<MutableList<CallLogTable>>(
+        context,
+        URI
+    ) {
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri = CallLog.Calls.CONTENT_URI
         private const val TAG = "__CallLogLiveData"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
     }
-    private suspend fun getCallLog(context: Context):MutableList<CallLogData>{
+    private suspend fun getCallLog(context: Context): MutableList<CallLogTable> {
          repository!!.getFullCallLogs().apply {
              return this
          }
@@ -92,5 +94,5 @@ class CallLogLiveData(
         return days
     }
 
-    override suspend fun getContentProviderValue(text: String?): MutableList<CallLogData> = getCallLog(context)
+    override suspend fun getContentProviderValue(text: String?): MutableList<CallLogTable> = getCallLog(context)
 }

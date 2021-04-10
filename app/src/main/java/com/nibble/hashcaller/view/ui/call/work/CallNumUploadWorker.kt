@@ -46,12 +46,14 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             val allcallsincontentProvider = callersLocalRepository.getCallLog()
             val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
             val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
+            val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
 
             val callContainerRepository =
                 CallContainerRepository(
                     context,
                     callersInfoFromServerDAO,
-                    mutedCallersDAO
+                    mutedCallersDAO,
+                    callLogDAO
                 )
 
 

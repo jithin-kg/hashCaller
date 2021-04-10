@@ -22,7 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentDialerBinding
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -164,7 +164,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         dialerViewModel.getPhoneNumber()?.observe(viewLifecycleOwner, nameObserver)
         dialerViewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
-                callLogAdapter?.setCallLogs(it)
+                callLogAdapter?.submitCallLogs(it)
             }
         })
     }
@@ -237,7 +237,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long,pos:Int, v:View, btn:Int, callLog:CallLogData->onCallLogItemClicked(id, pos, v, btn, callLog)}
+            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long,pos:Int, v:View, btn:Int, callLog:CallLogTable->onCallLogItemClicked(id, pos, v, btn, callLog)}
             adapter = callLogAdapter
 
         }
@@ -248,7 +248,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         pos: Int,
         v: View,
         btn: Int,
-        callLog: CallLogData
+        callLog: CallLogTable
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
 //        val intent = Intent(context, IndividualCotactViewActivity::class.java )
@@ -470,7 +470,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     }
 
-    override fun onCallButtonClicked(view: View, pos: Int, log: CallLogData) {
+    override fun onCallButtonClicked(view: View, pos: Int, log: CallLogTable) {
         Log.d(TAG, "onCallButtonClicked: ")
 
     }

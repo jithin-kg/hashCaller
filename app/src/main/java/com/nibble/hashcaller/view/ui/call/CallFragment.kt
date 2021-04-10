@@ -10,7 +10,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.telephony.SubscriptionManager
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.util.Log
@@ -38,9 +37,9 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
-import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
@@ -56,7 +55,6 @@ import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -127,13 +125,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     // Inflate the layout for this fragment
     if(checkContactPermission()){
 
-        getFirst10items()
+//        getFirst10items()
         observeCallLogMutabeLivedata()
         initRecyclerView()
-        addScrollListener()
+//        addScrollListener()
         observePermissionLiveData()
         observeCallLog()
-        observeCallLogInfoFromServer()
+        observeCallLogFromDb()
+//        observeCallLogInfoFromServer()
         setupSimCardCount()
 
     }
@@ -146,6 +145,15 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        addFragmentDialer()
         return binding.root
 
+    }
+
+    private fun observeCallLogFromDb() {
+        this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
+            callLogAdapter?.submitCallLogs(it)
+            binding.shimmerViewContainerCall.beInvisible()
+
+
+        })
     }
 
     private fun getFirst10items() {
@@ -203,14 +211,15 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun observeCallLogMutabeLivedata(){
         viewmodel.callLogsMutableLiveData.observe(viewLifecycleOwner, Observer {
             binding.shimmerViewContainerCall.beInvisible()
-            callLogAdapter?.setCallLogs(it)
+//            callLogAdapter?.setCallLogs(it)
         })
     }
     private fun observeCallLog() {
         viewmodel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
-                viewmodel.updateCAllLogLivedata(logs)
+//                viewmodel.updateCAllLogLivedata(logs)
 //                viewmodel.setAdditionalInfo(logs)
+                viewmodel.updateDatabase(logs)
             }
         })
     }
@@ -342,7 +351,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
 
-                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogData ->onCallItemClicked(id, position, view, btn, callLog)}
+                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable ->onCallItemClicked(id, position, view, btn, callLog)}
             adapter = callLogAdapter
 
         }
@@ -575,7 +584,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun blockMarkedCaller() {
 
-        this.viewmodel.blockThisAddress(getMarkedContactAddress()!!, MarkedItemsHandler.markedTheadIdForBlocking,
+        this.viewmodel.blockThisAddress(
             this.spammerType,
             this.SPAMMER_CATEGORY )
 
@@ -586,7 +595,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
         val  sb =  SpannableStringBuilder(txt);
         val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
-        sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
+       // sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
         bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
 //        resetMarkingOptions()
 
@@ -628,7 +637,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         markItem(id, pos, view, address)
     }
 
-    override fun onCallButtonClicked(view: View, type: Int, log: CallLogData) {
+    override fun onCallButtonClicked(view: View, type: Int, log: CallLogTable) {
 
         when(type){
             INTENT_TYPE_MAKE_CALL->{
@@ -649,7 +658,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
                 intent.putExtra("name", log.name )
                 intent.putExtra("photo", "")
-                intent.putExtra("color", log.color)
+//                intent.putExtra("color", log.color)
 
                 val pairList = ArrayList<android.util.Pair<View, String>>()
                 val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
@@ -674,7 +683,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         position: Int,
         view: View,
         btn: Int,
-        callLog: CallLogData
+        callLog: CallLogTable
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
         var viewExpanded = 0
@@ -729,13 +738,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     ) {
 
         lifecycleScope.launchWhenStarted {
-            viewmodel.markItem(id, view, position, number).observe(viewLifecycleOwner, Observer {
-                when(it){
+            viewmodel.markItem(id, view, position, number).observe(viewLifecycleOwner, Observer { markedItemsCount ->
+                when(markedItemsCount){
                     0 ->{
                         showSearchView()
                     }
                     else ->{
-                        updateSelectedItemCount(it)
+                        updateSelectedItemCount(markedItemsCount)
                     }
 
                 }
@@ -813,7 +822,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun showDeleteBtnInToolbar(count: Int) {
         Log.d(TAG, "showDeleteBtnInToolbar: ")
         binding.searchViewCall.beInvisible()
-        if(count==1){
+        if(count==1){ //only show block button if only one item marked
             binding.imgBtnCallTbrBlock.beVisible()
 
         }else{

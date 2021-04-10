@@ -14,8 +14,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.Base64
 import android.util.Log
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -49,9 +49,8 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.isMarkingStarted
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
+import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -59,6 +58,7 @@ import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
+
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -69,6 +69,9 @@ import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+import java.security.*
+
+
 /**
  * This is a extension function which set the default fragment
  * for dynamically hiding / showing a fragment
@@ -78,6 +81,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
+
 
     private lateinit var binding: ActivityMainBinding
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
@@ -92,7 +96,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
-//    private lateinit var blockConfigFragment: BlockConfigFragment
+    //    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsContainerFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
@@ -100,7 +104,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     private lateinit var drawerLayout: DrawerLayout
-//    private lateinit var navigationView:NavigationView
+    //    private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -192,11 +196,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         this.userInfoViewModel.userInfo.observe(this, Observer {
             Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
             if(it !=null)
-            if(!it.firstname.isNullOrEmpty()){
-                
+                if(!it.firstname.isNullOrEmpty()){
+
 //                val header =navigationView.getHeaderView(0)
 //                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
-            }
+                }
 
         })
     }
@@ -283,7 +287,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(isKeyAvailable) Log.d(TAG, "isCipherInSharedPreferences: key availabl")
         else
             Log.d(TAG, "isCipherInSharedPreferences: key not available")
-     return  isKeyAvailable
+        return  isKeyAvailable
 
     }
 
@@ -304,7 +308,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setBottomSheetListener(){
-       binding. bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+        binding. bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             var fragment: Fragment
             val selectedFragment = ""
             when (menuItem.itemId) {
@@ -395,7 +399,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-     fun showDialerFragment() {
+    fun showDialerFragment() {
 
         val ft = supportFragmentManager.beginTransaction()
 
@@ -444,7 +448,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        ft.hide(this.searchFragment)
 //        ft.remove(this.searchFragment).commit()
 //        ft.commit()
-       binding. bottomNavigationView.visibility = View.VISIBLE
+        binding. bottomNavigationView.visibility = View.VISIBLE
 
     }
 
@@ -462,7 +466,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     }
-     fun addAllFragments() {
+    fun addAllFragments() {
         setDefaultFragment(DefaultFragmentManager.id)
 
         ft = supportFragmentManager.beginTransaction()
@@ -502,7 +506,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun setDefaultFragment(idValue:Int) {
 //        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
-       binding.bottomNavigationView.selectedItemId = idValue
+        binding.bottomNavigationView.selectedItemId = idValue
     }
 
     private fun showBlockConfigFragment() {
@@ -535,7 +539,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.commit()
     }
 
-     fun showContactsFragment() {
+    fun showContactsFragment() {
 
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
@@ -666,7 +670,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if(markedItems.size > 0){
                 unMarkItems()
                 markingStarted = false
-        }
+            }
 
             else{
                 super.onBackPressed()
@@ -686,7 +690,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
 
         else{
-           binding.bottomNavigationView.visibility = View.VISIBLE
+            binding.bottomNavigationView.visibility = View.VISIBLE
 
             //for hiding search fragment
 //            if(this::searchFragment !=null){
@@ -699,7 +703,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //
 //                }
 
-                    super.onBackPressed()
+            super.onBackPressed()
 
         }
 
@@ -759,21 +763,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun getCurrentTheme(): Int {
         val currentNightMode = getResources().getConfiguration().uiMode and  Configuration.UI_MODE_NIGHT_MASK
         when (currentNightMode) {
-             Configuration.UI_MODE_NIGHT_NO->{
-                 Log.d(TAG, "checkTheme: white")
-                 return 0
+            Configuration.UI_MODE_NIGHT_NO->{
+                Log.d(TAG, "checkTheme: white")
+                return 0
 
-             }
+            }
             // Night mode is not active, we're in day time
-             Configuration.UI_MODE_NIGHT_YES ->{
-                 Log.d(TAG, "checkTheme: dark")
-                 return 1
-             }
+            Configuration.UI_MODE_NIGHT_YES ->{
+                Log.d(TAG, "checkTheme: dark")
+                return 1
+            }
             // Night mode is active, we're at night!
-             Configuration.UI_MODE_NIGHT_UNDEFINED ->{
-                 Log.d(TAG, "checkTheme: undefined")
-                 return 2
-             }else->{
+            Configuration.UI_MODE_NIGHT_UNDEFINED ->{
+                Log.d(TAG, "checkTheme: undefined")
+                return 2
+            }else->{
             return 2
 
         }
@@ -819,8 +823,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
     ) {
         if (requestCode == 100) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -841,7 +845,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val callIntent = Intent(Intent.ACTION_CALL)
 //        callIntent.data = Uri.parse("tel:$phoneNumFromViewModel")
         if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             return
         }
         startActivity(callIntent)
@@ -888,7 +892,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         fun hideKeyboard(activity: Activity) {
             try {
                 val inputManager = activity
-                        .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 val currentFocusedView = activity.currentFocus
                 if (currentFocusedView != null) {
                     inputManager.hideSoftInputFromWindow(currentFocusedView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
@@ -902,7 +906,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-//    @RequiresApi(Build.VERSION_CODES.Q)
+    //    @RequiresApi(Build.VERSION_CODES.Q)
 //    fun requestScreeningRole(){
 //         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //           val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
@@ -951,7 +955,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         super.onResume()
 
     }
-
 
 
 

@@ -190,7 +190,7 @@ class SMSViewModel(
 
 
     fun getFirstPageOfSMS() =viewModelScope.launch{
-        val res = async { repository!!.fetchFirstPageOfSMS() }.await()
+        val res = async { repository!!.fetchSMS(null, false) }.await()
         updateLiveData(res)
     }
 

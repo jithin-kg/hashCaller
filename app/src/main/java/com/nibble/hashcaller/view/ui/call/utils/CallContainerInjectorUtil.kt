@@ -15,12 +15,14 @@ object CallContainerInjectorUtil {
 
         val callerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
+        val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
 
         val repository = context?.let {
             CallContainerRepository(
                 it,
                 callerInfoFromServerDAO!!,
-                mutedCallersDAO
+                mutedCallersDAO,
+                callLogDAO
             )
         }
 
