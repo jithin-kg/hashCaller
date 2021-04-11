@@ -2,12 +2,10 @@ package com.nibble.hashcaller.view.ui.call.work
 
 import android.util.Log
 import android.view.View
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.fullDataFromCproviderFetched
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
@@ -30,12 +28,13 @@ class CallContainerViewModel(
     val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?
 ) :ViewModel(){
     var contactAdders = ""
-     var lstOfAllCallLogs: MutableList<CallLogData> = mutableListOf()
-    var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogData>> = MutableLiveData()
+     var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
+    var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
 
-    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
+//    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
+    var callLogTableData: LiveData<List<CallLogAndInfoFromServer>>? = repository!!.getAllCallLogLivedata()
 
-    var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
+    var mutableCalllogTableData : MutableLiveData<MutableList<CallLogAndInfoFromServer>?> = MutableLiveData()
 
 
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
@@ -55,8 +54,8 @@ class CallContainerViewModel(
         markedItems.value!!.remove(id)
         markedItems.value = markedItems.value
     }
-    fun updateMutableData(list: List<CallLogTable>) {
-        val mutableList: MutableList<CallLogTable> = mutableListOf()
+    fun updateMutableData(list: List<CallLogAndInfoFromServer>) {
+        val mutableList: MutableList<CallLogAndInfoFromServer> = mutableListOf()
         mutableList.addAll(list)
 
         mutableCalllogTableData.value = mutableList
@@ -64,7 +63,9 @@ class CallContainerViewModel(
     }
 
 
-
+    /**
+     * called when there is a change in call log in content provider
+     */
     fun getInformationForTheseNumbers() = viewModelScope.launch {
 
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java).build()
@@ -109,7 +110,7 @@ class CallContainerViewModel(
 //        var lst: MutableList<CallLogData> = mutableListOf()
 //        lst.addAll(lst)
 //        lstOfAllCallLogs.add(it)
-        callLogsMutableLiveData.value = it
+//        callLogsMutableLiveData.value = it
     }
 
     fun isMarkingStarted(): Boolean {
@@ -203,7 +204,7 @@ class CallContainerViewModel(
         addAllMarkedItemToDeletedIds(markedIds)
         var listOne: MutableList<CallLogData>  = mutableListOf()
         var listTwo: MutableList<CallLogData>  = mutableListOf()
-        listOne.addAll(callLogsMutableLiveData.value!!)
+//        listOne.addAll(callLogsMutableLiveData.value!!)
 
 
         for (item in listOne){
@@ -214,7 +215,7 @@ class CallContainerViewModel(
 
         }
 //        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
-        callLogsMutableLiveData.value = listTwo
+//        callLogsMutableLiveData.value = listTwo
 //        emit(markedIds.size)
     }
 
@@ -293,14 +294,14 @@ class CallContainerViewModel(
         var list : MutableList<CallLogData> = mutableListOf()
         if(callLogsMutableLiveData.value!= null){
 
-            list.addAll(callLogsMutableLiveData.value!!)
+//            list.addAll(callLogsMutableLiveData.value!!)
             list.addAll(res)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 list!!.removeIf { it -> it.id == null }
             }else {
               //  removeDummyItems(list)
             }
-            callLogsMutableLiveData.value = list
+//            callLogsMutableLiveData.value = list
 
         }
     }
@@ -328,10 +329,9 @@ class CallContainerViewModel(
     /**
      * called when info about a caller comes from server, or db changes
      */
-    fun updateWithNewInfoFromServer() = viewModelScope.launch {
-//         repository!!.getFullCallLogs().apply {
-//             callLogsMutableLiveData.value = this
-//         }
+    fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
+
+        repository?.updateWithCallLogWithServerInfo(list)
     }
 
     fun clearCallLogDB() = viewModelScope.launch {
@@ -343,7 +343,7 @@ class CallContainerViewModel(
 
         var listOne: MutableList<CallLogData>  = mutableListOf()
         var listTwo: MutableList<CallLogData>  = mutableListOf()
-        listOne.addAll(callLogsMutableLiveData.value!!)
+//        listOne.addAll(callLogsMutableLiveData.value!!)
 
 
         for (item in listOne){
@@ -358,14 +358,17 @@ class CallContainerViewModel(
 
         }
 //        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
-        callLogsMutableLiveData.value = listTwo
+//        callLogsMutableLiveData.value = listTwo
     }
 
-    fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
+    fun updateDatabase(logs: MutableList<CallLogAndInfoFromServer>) = viewModelScope.launch {
         val as1 = async { repository?.updateCallLogDb(logs) }
         val as2 = async { repository?.deleteCallLogs(logs) }
+        val as3 = async { getInformationForTheseNumbers() }
         as1.await()
         as2.await()
+        as3.await()
+
     }
 
 

@@ -12,15 +12,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.DummYViewHolder
-import com.nibble.hashcaller.view.ui.call.CallFragment
+import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
-import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MAKE_CALL
-import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MORE_INFO
-import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_START_INDIVIDUAL_SMS
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -35,14 +33,14 @@ import kotlinx.android.synthetic.main.call_list_item_spam.view.*
 
 class DialerAdapter(private val context: Context,
                     private val viewMarkingHandler: ViewMarkHandler,
-                    private val onContactItemClickListener: (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int)->Int
+                    private val onContactItemClickListener: (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogAndInfoFromServer, clickType:Int)->Int
                    ) :
-    androidx.recyclerview.widget.ListAdapter<CallLogTable, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
+    androidx.recyclerview.widget.ListAdapter<CallLogAndInfoFromServer, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
 
     private val VIEW_TYPE_NO_SPAM = 0;
     private val VIEW_TYPE_SPAM = 1;
     private val VIEW_TYPE_LOADING = 3
-    private var callLogs: MutableList<CallLogTable> = mutableListOf()
+    private var callLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
     companion object{
         private const val TAG = "__DialerAdapter";
         var prevView:View? = null
@@ -74,7 +72,7 @@ class DialerAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(this.callLogs.isNotEmpty() && position < callLogs.size)
-             if(this.callLogs[position].id == null){
+             if(this.callLogs[position].callLogTable.id == null){
                 return VIEW_TYPE_LOADING
             }
 
@@ -104,8 +102,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
        return callLogs.size
     }
 
-    fun submitCallLogs(newContactList: MutableList<CallLogTable>) {
-        callLogs = newContactList
+    fun submitCallLogs(newContactList: MutableList<CallLogAndInfoFromServer>?) {
+        callLogs = newContactList!!
         this.submitList(newContactList)
     }
 
@@ -132,13 +130,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
-            callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int) -> Int
+            callLog: CallLogAndInfoFromServer, context: Context,
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogAndInfoFromServer, clickType: Int) -> Int
         ) {
             Log.d(TAG, "bind: ")
-            expandableView.setTag(callLog.dateInMilliseconds )
+            expandableView.setTag(callLog.callLogTable.dateInMilliseconds )
 
-            if(viewMarkingHandler.isMarked(callLog.id)){
+            if(viewMarkingHandler.isMarked(callLog.callLogTable.id)){
                 view.imgViewCallMarked.beVisible()
 
             }else{
@@ -153,10 +151,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                   expandableView.beGone()
 //
 //                }
-            if(callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING){
+            if(callLog.callLogTable.callerInfoFoundFrom == SENDER_INFO_SEARCHING){
                 view.pgBarCallItem.beVisible()
             }
-           if(callLog.spamReportCount > 0){
+           if(callLog.callLogTable.spamReportCount > 0){
 
                name.setColorForText(R.color.spamText)
 
@@ -165,15 +163,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
            }
 
-            name.text = if(callLog.name == null || callLog!!.name!!.isEmpty()) callLog.number else callLog.name
+            name.text = if(callLog.callLogTable.name == null || callLog!!.callLogTable.name!!.isEmpty()) callLog.callLogTable.number else callLog.callLogTable.name
             //        Log.i(TAG, String.valueOf(no));
-            setNameFirstChar(callLog)
-            val pNo = callLog.number
+            setNameFirstChar(callLog.callLogTable)
+            val pNo = callLog.callLogTable.number
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-           generateCircleView( callLog);
 
             //call type
-            setCallTypeImage(callLog,  view.imgVCallType,view.textVCallDirection)
+            setCallTypeImage(callLog.callLogTable,  view.imgVCallType,view.textVCallDirection)
 
 
             /**
@@ -187,7 +184,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             var id = getExpandedLayoutId()
             if(id!=null) {
-            if(id == callLog.id){
+            if(id == callLog.callLogTable.id){
                 expandableView.beVisible()
             }else{
                 expandableView.beGone()
@@ -196,16 +193,16 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
             }
 //            view.textViewTime.text = callLog.relativeTime
-            expandableView.tvExpandNumCall.text = callLog.number
+            expandableView.tvExpandNumCall.text = callLog.callLogTable.number
 
 
             setClickListener(view, callLog)
 
         }
 
-        private fun setClickListener(view: View, callLog: CallLogTable) {
+        private fun setClickListener(view: View, callLog: CallLogAndInfoFromServer) {
             view.setOnLongClickListener{v->
-              var isToBeMarked =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog, TYPE_LONG_PRESS)
+              var isToBeMarked =  onContactItemClickListener(callLog.callLogTable.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog, TYPE_LONG_PRESS)
                when(isToBeMarked){
                    MARK_ITEM ->{
                        view.imgViewCallMarked.beVisible()
@@ -242,7 +239,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
             view.setOnClickListener(View.OnClickListener {v->
-                val isToBeMarked =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog, TYPE_CLICK)
+                val isToBeMarked =  onContactItemClickListener(callLog.callLogTable.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog, TYPE_CLICK)
                 when(isToBeMarked){
                     MARK_ITEM ->{
                         view.imgViewCallMarked.beVisible()
@@ -297,12 +294,16 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                  view.imgViewCallSpamIcon.beVisible()
                  view.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
                  circle.text = ""
+                 circle.setRandomBackgroundCircle(TYPE_SPAM)
              }else{
                  view.imgViewCallSpamIcon.beInvisible()
                  val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
                  val firstLetter = name[0]
                  val firstLetterString = firstLetter.toString().toUpperCase()
                  circle.text = firstLetterString
+                 circle.setRandomBackgroundCircle()
+
+
              }
 
 
@@ -310,32 +311,22 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          }
 
 
-         private fun generateCircleView( callLog: CallLogTable) {
-//             if(callLog.spamCount > 0){
-//                 callLog.color =   circle.setRandomBackgroundCircle(TYPE_SPAM)
-//             }else{
-//                 callLog.color = circle.setRandomBackgroundCircle()
-//             }
-          circle.setRandomBackgroundCircle()
-
-
-         }
 
      }
 
 
-    class CallItemDiffCallback : DiffUtil.ItemCallback<CallLogTable>() {
-        override fun areItemsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
-            return  oldItem.id == newItem.id
+    class CallItemDiffCallback : DiffUtil.ItemCallback<CallLogAndInfoFromServer>() {
+        override fun areItemsTheSame(oldItem: CallLogAndInfoFromServer, newItem: CallLogAndInfoFromServer): Boolean {
+            return  oldItem.callLogTable.id == newItem.callLogTable.id
 
 
         }
 
 
-        override fun areContentsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
+        override fun areContentsTheSame(oldItem: CallLogAndInfoFromServer, newItem: CallLogAndInfoFromServer): Boolean {
 
 
-            return  oldItem.spamReportCount == newItem.spamReportCount && oldItem.callerInfoFoundFrom == newItem.callerInfoFoundFrom
+            return  oldItem.callLogTable.spamReportCount == newItem.callLogTable.spamReportCount && oldItem.callLogTable.callerInfoFoundFrom == newItem.callLogTable.callerInfoFoundFrom
             //TODO compare both messages and if the addres is same and message
         }
 

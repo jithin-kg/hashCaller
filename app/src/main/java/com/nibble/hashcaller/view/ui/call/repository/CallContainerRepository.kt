@@ -3,7 +3,9 @@ package com.nibble.hashcaller.view.ui.call.repository
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
+import android.net.Uri
 import android.provider.CallLog
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
@@ -12,17 +14,14 @@ import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.pageCall
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
-import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
+import com.nibble.hashcaller.view.ui.call.db.*
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -321,9 +320,14 @@ class CallContainerRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun getFullCallLogs(): MutableList<CallLogTable> {
+    suspend fun getFullCallLogs(): MutableList<CallLogAndInfoFromServer> {
 
-        val listOfCallLogs = mutableListOf<CallLogTable>()
+        return getRawCallLogs()
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun getRawCallLogs(): MutableList<CallLogAndInfoFromServer> {
+        val listOfCallLogs = mutableListOf<CallLogAndInfoFromServer>()
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
             CallLog.Calls.TYPE,
@@ -368,9 +372,10 @@ class CallContainerRepository(
                     if(markedIds.contains(id)){
                         isMarked = true
                     }
-
                     val log = CallLogTable(id, name,
-                        formatPhoneNumber(number), type, duration, 0, dateInMilliseconds, 0 )
+                        formatPhoneNumber(number), type, duration, 0, dateInMilliseconds, 0)
+                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
+                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
 //                    val log = CallLogData()
 //                    log.id = id
@@ -388,7 +393,7 @@ class CallContainerRepository(
 //                    }.join()
 
 //                    if(!deletedIds.contains(id)) {
-                        listOfCallLogs.add(log)
+                    listOfCallLogs.add(logAndServerInfo)
 //                    }
                 }while (cursor.moveToNext())
 
@@ -508,29 +513,58 @@ class CallContainerRepository(
         dao.deleteAll()
     }
 
-    suspend fun updateCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) {
-
-        callLogDAO?.insert(logsFromContentProvider)
+    suspend fun updateCallLogDb(logsFromContentProvider: MutableList<CallLogAndInfoFromServer>) {
+        val list:MutableList<CallLogTable> = mutableListOf()
+        list.addAll(logsFromContentProvider.map { it.callLogTable})
+        callLogDAO?.insert(list)
 
     }
 
-    fun getAllCallLogLivedata(): LiveData<List<CallLogTable>>? {
+    fun getAllCallLogLivedata(): LiveData<List<CallLogAndInfoFromServer>>? {
         return callLogDAO?.getAllLiveData()
     }
 
     /**
      * delete call logs from call_logs table that are not in content provider
      */
-    suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogTable>) {
+    suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogAndInfoFromServer>) {
         val logsInDb =  callLogDAO?.getAll()
-        if(logsInDb!=null){
-            val logsToBeRemovedInDb = logsInDb!! - logsFromContentProvider
-            for(item in logsToBeRemovedInDb){
-                callLogDAO?.delete(item.id)
-            }
+//        if(logsInDb!=null){
+//            val logsToBeRemovedInDb = logsInDb!! - logsFromContentProvider
+//            for(item in logsToBeRemovedInDb){
+//                callLogDAO?.delete(item.callLogTable.id)
+//            }
+//        }
+    }
+
+    suspend fun updateWithCallLogWithServerInfo(list: List<CallersInfoFromServer>) {
+        var inforfoundFrom = SENDER_INFO_SEARCHING
+        for (item in list){
+//            callLogDAO?.find(item.contactAddress).apply {
+
+               var name:String? =  getNameForAddressFromContentProvider(item.contactAddress)
+                if(name!=null){
+                    inforfoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+                }else{
+                    name = item.title
+                    inforfoundFrom = SENDER_INFO_FROM_DB
+                }
+                callLogDAO?.update(item.contactAddress, item.spamReportCount,name, inforfoundFrom)
+//            }
         }
     }
 
+    private fun getNameForAddressFromContentProvider(contactAddress: String): String? {
+        var name:String? = null
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
+
+        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+        if(cursor2!=null && cursor2.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+            name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+        }
+        return name
+    }
 
 
     companion object{

@@ -35,7 +35,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
@@ -129,7 +129,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         observePermissionLiveData()
         observeCallLogFromDb()
         observeMutableCallLogFromDB()
-//        observeCallLogInfoFromServer()
+        observeCallLogInfoFromServer()
         setupSimCardCount()
         observeMarkedItems()
 
@@ -229,6 +229,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                viewmodel.updateCAllLogLivedata(logs)
 //                viewmodel.setAdditionalInfo(logs)
                 viewmodel.updateDatabase(logs)
+
             }
         })
     }
@@ -264,7 +265,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                         if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
                             //we have reached the bottom
                             pageCall+=10
-                            viewmodel.getNextPage()
+//                            viewmodel.getNextPage()
                             if(dy > 0){
                                 if(!isSizeEqual){
 //                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
@@ -335,7 +336,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         this.viewmodel.getCallLogFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeCallLogInfoFromServer: ")
 
-            viewmodel.updateWithNewInfoFromServer()
+            viewmodel.updateWithNewInfoFromServer(it)
         })
     }
 
@@ -360,7 +361,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
 
-                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
+                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogAndInfoFromServer, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
             adapter = callLogAdapter
 
         }
@@ -700,7 +701,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         position: Int,
         view: View,
         btn: Int,
-        callLog: CallLogTable,
+        callLog: CallLogAndInfoFromServer,
         clickType:Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")

@@ -22,7 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentDialerBinding
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -237,7 +237,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long,pos:Int, v:View, btn:Int, callLog:CallLogTable, clickType:Int->onCallLogItemClicked(id, pos, v, btn, callLog, clickType)}
+            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long, pos:Int, v:View, btn:Int, callLog: CallLogAndInfoFromServer, clickType:Int->onCallLogItemClicked(id, pos, v, btn, callLog, clickType)}
             adapter = callLogAdapter
 
         }
@@ -248,7 +248,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         pos: Int,
         v: View,
         btn: Int,
-        callLog: CallLogTable,
+        callLog: CallLogAndInfoFromServer,
         clickType: Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")

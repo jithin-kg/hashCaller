@@ -6,6 +6,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -41,7 +42,6 @@ abstract class ContentProviderLiveData<T>(
         }catch (e:Exception){
             Log.d(TAG, "onActive: execption $e ")
         }
-
     }
 
     override fun onInactive() {
