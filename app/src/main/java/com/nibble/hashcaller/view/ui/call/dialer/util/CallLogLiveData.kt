@@ -22,7 +22,7 @@ class CallLogLiveData(
     private val context: Context,
     private val repository: CallContainerRepository?
 ):
-    ContentProviderLiveData<MutableList<CallLogAndInfoFromServer>>(
+    ContentProviderLiveData<MutableList<CallLogTable>>(
         context,
         URI
     ) {
@@ -32,7 +32,7 @@ class CallLogLiveData(
         private const val TAG = "__CallLogLiveData"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
     }
-    private suspend fun getCallLog(context: Context): MutableList<CallLogAndInfoFromServer> {
+    private suspend fun getCallLog(context: Context): MutableList<CallLogTable> {
          repository!!.getFullCallLogs().apply {
              return this
          }
@@ -95,5 +95,5 @@ class CallLogLiveData(
         return days
     }
 
-    override suspend fun getContentProviderValue(text: String?): MutableList<CallLogAndInfoFromServer> = getCallLog(context)
+    override suspend fun getContentProviderValue(text: String?): MutableList<CallLogTable> = getCallLog(context)
 }

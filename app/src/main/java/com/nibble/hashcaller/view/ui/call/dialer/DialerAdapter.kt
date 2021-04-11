@@ -154,23 +154,26 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if(callLog.callLogTable.callerInfoFoundFrom == SENDER_INFO_SEARCHING){
                 view.pgBarCallItem.beVisible()
             }
-           if(callLog.callLogTable.spamReportCount > 0){
+            if(callLog.callersInfoFromServer!=null){
+                if(callLog.callersInfoFromServer.spamReportCount > 0){
 
-               name.setColorForText(R.color.spamText)
+                    name.setColorForText(R.color.spamText)
 
-           }else{
-               name.setColorForText(R.color.textColor)
+                }else{
+                    name.setColorForText(R.color.textColor)
 
-           }
+                }
+            }
+
 
             name.text = if(callLog.callLogTable.name == null || callLog!!.callLogTable.name!!.isEmpty()) callLog.callLogTable.number else callLog.callLogTable.name
             //        Log.i(TAG, String.valueOf(no));
-            setNameFirstChar(callLog.callLogTable)
+            setNameFirstChar(callLog)
             val pNo = callLog.callLogTable.number
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
 
             //call type
-            setCallTypeImage(callLog.callLogTable,  view.imgVCallType,view.textVCallDirection)
+            setCallTypeImage(callLog,  view.imgVCallType,view.textVCallDirection)
 
 
             /**
@@ -289,22 +292,31 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
 
-         private fun setNameFirstChar(callLog: CallLogTable) {
-             if(callLog.spamReportCount > 0){
-                 view.imgViewCallSpamIcon.beVisible()
-                 view.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
-                 circle.text = ""
-                 circle.setRandomBackgroundCircle(TYPE_SPAM)
+         private fun setNameFirstChar(callLog: CallLogAndInfoFromServer) {
+             if(callLog.callersInfoFromServer!=null){
+                 if(callLog.callersInfoFromServer.spamReportCount > 0){
+                     view.imgViewCallSpamIcon.beVisible()
+                     view.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
+                     circle.text = ""
+                     circle.setRandomBackgroundCircle(TYPE_SPAM)
+                 }else{
+                     view.imgViewCallSpamIcon.beInvisible()
+                     val name: String = if(callLog.callLogTable.name == null || callLog.callLogTable.name!!.isEmpty()) callLog.callLogTable.number else callLog .callLogTable.name!!
+                     val firstLetter = name[0]
+                     val firstLetterString = firstLetter.toString().toUpperCase()
+                     circle.text = firstLetterString
+                     circle.setRandomBackgroundCircle()
+
+                 }
              }else{
                  view.imgViewCallSpamIcon.beInvisible()
-                 val name: String = if(callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
+                 val name: String = if(callLog.callLogTable.name == null || callLog.callLogTable.name!!.isEmpty()) callLog.callLogTable.number else callLog .callLogTable.name!!
                  val firstLetter = name[0]
                  val firstLetterString = firstLetter.toString().toUpperCase()
                  circle.text = firstLetterString
                  circle.setRandomBackgroundCircle()
-
-
              }
+
 
 
 
@@ -324,16 +336,16 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
         override fun areContentsTheSame(oldItem: CallLogAndInfoFromServer, newItem: CallLogAndInfoFromServer): Boolean {
+//            if(oldItem.ca)
 
-
-            return  oldItem.callLogTable.spamReportCount == newItem.callLogTable.spamReportCount && oldItem.callLogTable.callerInfoFoundFrom == newItem.callLogTable.callerInfoFoundFrom
+            return  oldItem == newItem
             //TODO compare both messages and if the addres is same and message
         }
 
     }
 
 
-    private fun setCallTypeImage(callLog: CallLogTable, imageView: ImageView, textView:TextView) {
+    private fun setCallTypeImage(callLog: CallLogAndInfoFromServer, imageView: ImageView, textView:TextView) {
 //             /** Call log type for incoming calls.  */
 //             val INCOMING_TYPE = 1
 //
@@ -351,15 +363,20 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //
 //             /** Call log type for calls blocked automatically.  */
 //             val BLOCKED_TYPE = 6
+        if(callLog.callersInfoFromServer!=null){
+            if(callLog.callersInfoFromServer.spamReportCount > 0 ){
+                textView.setColorForText( R.color.spamText)
 
-        if(callLog.spamReportCount > 0 ){
-            textView.setColorForText( R.color.spamText)
+            }else{
+                textView.setColorForText(R.color.textColor)
 
+            }
         }else{
             textView.setColorForText(R.color.textColor)
 
         }
-        when (callLog.type) {
+
+        when (callLog.callLogTable.type) {
             1 -> { // incomming call
                 imageView.setImageResource(R.drawable.ic_baseline_call_received_24)
                 textView.text = "Incoming call"

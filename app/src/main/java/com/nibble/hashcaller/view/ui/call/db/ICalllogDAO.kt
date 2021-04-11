@@ -22,7 +22,7 @@ interface ICallLogDAO {
 
     @Transaction
     @Query("SELECT * FROM call_log")
-    suspend fun getAll(): List<CallLogAndInfoFromServer>
+    suspend fun getAll(): List<CallLogTable>
 
     @Transaction
     @Query("SELECT * FROM call_log")
@@ -36,7 +36,6 @@ interface ICallLogDAO {
     @Query("DELETE from callers_info_from_server ")
     suspend fun deleteAll()
 
-    @Query("UPDATE  call_log  SET spamReportCount =:spamCount,name =:name, callerInfoFoundFrom =:callerInfoFoundFrom  WHERE number =:contactAddress ")
-    suspend fun update(contactAddress: kotlin.String, spamCount: kotlin.Long,  name:String, callerInfoFoundFrom: Int)
-
+    @Query("UPDATE  call_log  SET name =:name, callerInfoFoundFrom =:callerInfoFoundFrom  WHERE number =:contactAddress ")
+    suspend fun update(contactAddress: kotlin.String,  name:String, callerInfoFoundFrom: Int)
 }

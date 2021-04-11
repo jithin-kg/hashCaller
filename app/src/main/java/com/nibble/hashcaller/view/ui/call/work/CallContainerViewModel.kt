@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
@@ -18,6 +19,7 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -92,7 +94,7 @@ class CallContainerViewModel(
             for(log in logs){
                 if(log.name.isNullOrEmpty()){
                     //get detail from db
-                  val  info =  async {  repository!!.getNameForAddress(log.number!!) }.await()
+                  val  info =  async {  repository!!.getCallerInfoForAddressFromDB(log.number!!) }.await()
                   if(info!=null){
                       if(log.name.isNullOrEmpty()){
                          log.name = info.title
@@ -331,7 +333,7 @@ class CallContainerViewModel(
      */
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
 
-        repository?.updateWithCallLogWithServerInfo(list)
+        repository?.updateCallLogWithServerInfo(list)
     }
 
     fun clearCallLogDB() = viewModelScope.launch {
@@ -361,14 +363,39 @@ class CallContainerViewModel(
 //        callLogsMutableLiveData.value = listTwo
     }
 
-    fun updateDatabase(logs: MutableList<CallLogAndInfoFromServer>) = viewModelScope.launch {
-        val as1 = async { repository?.updateCallLogDb(logs) }
+    fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
+        val as1 = async {
+            setName(logs).apply {
+                repository?.updateCallLogDb(logs)
+            }
+        }
+
+
         val as2 = async { repository?.deleteCallLogs(logs) }
         val as3 = async { getInformationForTheseNumbers() }
         as1.await()
         as2.await()
         as3.await()
 
+    }
+
+    private fun setName(logs: MutableList<CallLogTable>) {
+        var numbersSet: HashSet<String> = hashSetOf()
+        var numberNamehashMap: HashMap<String, String> = hashMapOf()
+        numbersSet.addAll(logs.map { it.number })
+
+        for (num in numbersSet){
+           val name:String? =  repository?.getNameForAddressFromContentProvider(num)
+            if(name!=null){
+                numberNamehashMap.put(num, name)
+            }
+        }
+        for(item in logs){
+            if(numberNamehashMap.containsKey(item.number)){
+                item.name = numberNamehashMap[item.number]
+                item.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+            }
+        }
     }
 
 

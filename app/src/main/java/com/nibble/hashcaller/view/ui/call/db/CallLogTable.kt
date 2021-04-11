@@ -21,7 +21,6 @@ import java.util.*
     @ColumnInfo(name = "number") var  number:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
     @ColumnInfo(name = "duration") var duration: String = "",
-    @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = 0,
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
     @ColumnInfo(name = "callerInfoFoundFrom") var callerInfoFoundFrom: Int = 0,
     @ColumnInfo(name = "isMarked") var isMarked: Boolean = false) {
