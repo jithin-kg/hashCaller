@@ -43,7 +43,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
-    DialerAdapter.CallItemLongPressHandler {
+    DialerAdapter.ViewMarkHandler {
     private var _binding: FragmentDialerBinding ? = null
     private val binding get() = _binding!!
     private var isDflt = false
@@ -164,7 +164,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         dialerViewModel.getPhoneNumber()?.observe(viewLifecycleOwner, nameObserver)
         dialerViewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
-                callLogAdapter?.submitCallLogs(it)
+//                callLogAdapter?.submitCallLogs(it)
             }
         })
     }
@@ -237,7 +237,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long,pos:Int, v:View, btn:Int, callLog:CallLogTable->onCallLogItemClicked(id, pos, v, btn, callLog)}
+            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long,pos:Int, v:View, btn:Int, callLog:CallLogTable, clickType:Int->onCallLogItemClicked(id, pos, v, btn, callLog, clickType)}
             adapter = callLogAdapter
 
         }
@@ -248,7 +248,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         pos: Int,
         v: View,
         btn: Int,
-        callLog: CallLogTable
+        callLog: CallLogTable,
+        clickType: Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
 //        val intent = Intent(context, IndividualCotactViewActivity::class.java )
@@ -466,15 +467,18 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         get() = isDflt
         set(value) {isDflt = value}
 
-    override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
+//    override fun onLongPressed(view: View, pos: Int, id: Long, address: String): Int {
+//        return 0
+//    }
+//
+//    override fun onCallButtonClicked(view: View, pos: Int, log: CallLogTable) {
+//        Log.d(TAG, "onCallButtonClicked: ")
+//
+//    }
 
+    override fun isMarked(id: Long): Boolean {
+        TODO("Not yet implemented")
     }
-
-    override fun onCallButtonClicked(view: View, pos: Int, log: CallLogTable) {
-        Log.d(TAG, "onCallButtonClicked: ")
-
-    }
-
 
 
 }

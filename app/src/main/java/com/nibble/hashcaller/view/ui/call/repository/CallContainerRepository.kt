@@ -83,8 +83,21 @@ class CallContainerRepository(
 
     }
 
+    /**
+     * function to delete call logs in db by id, ie marked items
+     */
+    suspend fun deleteCallLogsFromDBByid(id: Long) {
+        var list:MutableList<Long> = mutableListOf()
+                callLogDAO?.delete(id)
+
+
+    }
+
+    /**
+     * delete call logs in content provider
+     */
     @SuppressLint("LongLogTag")
-    suspend fun deleteLogs() {
+     fun deleteLog(id: Long) {
 
 //        val queryString = "NUMBER=$number"
 //        context.contentResolver.delete(CallLog.Calls.CONTENT_URI, queryString, null);
@@ -92,19 +105,17 @@ class CallContainerRepository(
 
 //        smsDeletingStarted = true
 //        var numRowsDeleted = 0
-        var list: MutableSet<Long>  = mutableSetOf()
 
-        list.addAll(markedIds.toList())
 
         try {
-            for(id in list) {
+
                 Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = CallLog.Calls.CONTENT_URI
                 val selection = "${CallLog.Calls._ID} = ?"
+//                callLogDAO?.delete(id)
                 val selectionArgs = arrayOf(id.toString())
                     context.contentResolver.delete(uri, selection, selectionArgs)
-                    IndividualMarkedItemHandlerCall.clearlists()
-            }
+
         }catch (e: Exception) {
             Log.d(TAG, "deleteSmsThread: exception $e")
         }
@@ -333,7 +344,6 @@ class CallContainerRepository(
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
-
                     var number = cursor.getString(0)
                     val type: Int = cursor.getInt(1)
                     val duration: String = cursor.getString(2)
@@ -373,9 +383,9 @@ class CallContainerRepository(
 
 //                    setRelativeTime(dateInMilliseconds, log)
 
-                    GlobalScope.launch {
-                        async { setInfoFromServer(log) }.await()
-                    }.join()
+//                    GlobalScope.launch {
+//                        async { setInfoFromServer(log) }.await()
+//                    }.join()
 
 //                    if(!deletedIds.contains(id)) {
                         listOfCallLogs.add(log)
@@ -498,13 +508,30 @@ class CallContainerRepository(
         dao.deleteAll()
     }
 
-    suspend fun updateCallLogDb(logs: MutableList<CallLogTable>) {
-        callLogDAO?.insert(logs)
+    suspend fun updateCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) {
+
+        callLogDAO?.insert(logsFromContentProvider)
+
     }
 
     fun getAllCallLogLivedata(): LiveData<List<CallLogTable>>? {
         return callLogDAO?.getAllLiveData()
     }
+
+    /**
+     * delete call logs from call_logs table that are not in content provider
+     */
+    suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogTable>) {
+        val logsInDb =  callLogDAO?.getAll()
+        if(logsInDb!=null){
+            val logsToBeRemovedInDb = logsInDb!! - logsFromContentProvider
+            for(item in logsToBeRemovedInDb){
+                callLogDAO?.delete(item.id)
+            }
+        }
+    }
+
+
 
     companion object{
         const val TAG = "__CallContainerRepository"

@@ -110,7 +110,7 @@ class CallHistoryFragment : Fragment(), View.OnClickListener {
     private fun observeCallLog() {
         viewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
-                callLogAdapter?.submitCallLogs(it)
+//                callLogAdapter?.submitCallLogs(it)
             }
         })
     }

@@ -83,6 +83,19 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrMore"
                     app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrMore" />
+                <ProgressBar
+                    android:id="@+id/pgBarDeleting"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="invisible"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_delete_blue_24"
+                    app:layout_constraintEnd_toEndOf="@+id/imgBtnCallTbrDelete"
+                    app:layout_constraintStart_toStartOf="@+id/imgBtnCallTbrDelete"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
+
+                    />
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnCallTbrMuteCaller"
@@ -185,6 +198,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:shimmer_duration="800">
 

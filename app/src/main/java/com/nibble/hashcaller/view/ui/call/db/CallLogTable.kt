@@ -14,7 +14,7 @@ import java.util.*
 //TODO save the
 
 @Entity(tableName = "call_log",indices = [Index(value =["id"], unique = true)])
-data class CallLogTable (
+ data class CallLogTable (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id") var id: Long = 0,
     @ColumnInfo(name = "name") var name:String? = null,
@@ -23,7 +23,6 @@ data class CallLogTable (
     @ColumnInfo(name = "duration") var duration: String = "",
     @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = 0,
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
-    @ColumnInfo(name = "callerInfoFoundFrom") var callerInfoFoundFrom: Int = 0
-
-    ) {
+    @ColumnInfo(name = "callerInfoFoundFrom") var callerInfoFoundFrom: Int = 0,
+    @ColumnInfo(name = "isMarked") var isMarked: Boolean = false) {
 }

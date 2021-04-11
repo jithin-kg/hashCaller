@@ -15,8 +15,8 @@ interface ICallLogDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(callersList: List<CallLogTable>)
 
-    @Query("DELETE from call_log WHERE number=:address")
-    suspend fun delete(address: String)
+    @Query("DELETE from call_log WHERE id=:id")
+    suspend fun delete(id: Long)
 
     @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
     fun getAllLiveData(): LiveData<List<CallLogTable>>
@@ -34,6 +34,5 @@ interface ICallLogDAO {
 
     @Query("UPDATE  call_log  SET spamReportCount =:spamCount,number =:isBlockedByUser  WHERE number =:contactAddress ")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String, isBlockedByUser:Boolean)
-
 
 }

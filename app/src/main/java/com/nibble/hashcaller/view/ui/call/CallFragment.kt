@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.call
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -27,7 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -42,12 +40,9 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
@@ -75,7 +70,7 @@ import kotlinx.android.synthetic.main.fragment_call.view.*
  * create an instance of this fragment.
  */
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
-    DialerAdapter.CallItemLongPressHandler, ConfirmationClickListener,
+    DialerAdapter.ViewMarkHandler, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener {
     private  var _binding: FragmentCallBinding? = null
@@ -126,14 +121,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     if(checkContactPermission()){
 
 //        getFirst10items()
+        observeCallLog()
+
         observeCallLogMutabeLivedata()
         initRecyclerView()
 //        addScrollListener()
         observePermissionLiveData()
-        observeCallLog()
         observeCallLogFromDb()
+        observeMutableCallLogFromDB()
 //        observeCallLogInfoFromServer()
         setupSimCardCount()
+        observeMarkedItems()
 
     }
 
@@ -147,24 +145,35 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun observeCallLogFromDb() {
-        this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
-            callLogAdapter?.submitCallLogs(it)
-            binding.shimmerViewContainerCall.beInvisible()
+    private fun observeMarkedItems() {
+        viewmodel.markedItems.observe(viewLifecycleOwner, Observer {
+            when(it.size){
+                0 ->{
+                    showSearchView()
+                }
+                else ->{
+                    showDeleteBtnInToolbar(it.size)
+                }
 
-
+            }
         })
     }
 
-    private fun getFirst10items() {
-        viewmodel.fetchCallLogFlow(requireActivity())
-//        lifecycleScope.launchWhenStarted {
-//            CallLogFlowHelper.fetchCallLogFlow(this@CallFragment.requireActivity()).collect {
-//               viewmodel. updateLiveDataWithFlow(it)
-//            }
-//        }
-
+    private fun observeMutableCallLogFromDB() {
+        viewmodel.mutableCalllogTableData.observe(viewLifecycleOwner, Observer {
+            if(it!=null){
+                callLogAdapter?.submitCallLogs(it)
+            }
+        })
     }
+
+    private fun observeCallLogFromDb() {
+        this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
+            viewmodel.updateMutableData(it)
+            binding.shimmerViewContainerCall.beInvisible()
+        })
+    }
+
 
 
     private fun observePermissionLiveData() {
@@ -351,7 +360,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
 
-                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable ->onCallItemClicked(id, position, view, btn, callLog)}
+                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
             adapter = callLogAdapter
 
         }
@@ -462,6 +471,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             private const val TAG ="__CallFragment"
             var pageCall = 10
             var fullDataFromCproviderFetched = false
+
     
     }
 
@@ -631,50 +641,57 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         get() = isDflt
         set(value) {isDflt = value}
 
-    override fun onLongPressed(view: View, pos: Int, id: Long, address: String) {
-        val expandedView = getExpandedLayoutView()
-        expandedView?.beGone()
-        markItem(id, pos, view, address)
-    }
+//    override fun onLongPressed(view: View, pos: Int, id: Long, address: String): Int {
+//        val expandedView = getExpandedLayoutView()
+//        expandedView?.beGone()
+//        markItem(id, pos)
+//
+//        if(viewmodel.markedItems.value!!.contains(id)){
+//            return UNMARK_ITEM
+//        }else{
+//            return MARK_ITEM
+//        }
+//
+//    }
 
-    override fun onCallButtonClicked(view: View, type: Int, log: CallLogTable) {
-
-        when(type){
-            INTENT_TYPE_MAKE_CALL->{
-                requireContext().makeCall(log.number)
-            }
-            INTENT_TYPE_START_INDIVIDUAL_SMS ->{
-                val intent = Intent(context, IndividualSMSActivity::class.java )
-                val bundle = Bundle()
-                bundle.putString(CONTACT_ADDRES, log.number)
-                bundle.putString(SMS_CHAT_ID, "")
-
-                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                intent.putExtras(bundle)
-                startActivity(intent)
-            }
-            INTENT_TYPE_MORE_INFO -> {
-                val intent = Intent(context, IndividualCotactViewActivity::class.java )
-                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
-                intent.putExtra("name", log.name )
-                intent.putExtra("photo", "")
-//                intent.putExtra("color", log.color)
-
-                val pairList = ArrayList<android.util.Pair<View, String>>()
-                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-                val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
-//                pairList.add(p1)
-                pairList.add(p2)
-                val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
-                options.toBundle()
-
-                startActivity(intent, options.toBundle())
-            }
-
-
-
-        }
-    }
+//    override fun onCallButtonClicked(view: View, type: Int, log: CallLogTable) {
+//
+//        when(type){
+//            INTENT_TYPE_MAKE_CALL->{
+//                requireContext().makeCall(log.number)
+//            }
+//            INTENT_TYPE_START_INDIVIDUAL_SMS ->{
+//                val intent = Intent(context, IndividualSMSActivity::class.java )
+//                val bundle = Bundle()
+//                bundle.putString(CONTACT_ADDRES, log.number)
+//                bundle.putString(SMS_CHAT_ID, "")
+//
+//                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//                intent.putExtras(bundle)
+//                startActivity(intent)
+//            }
+//            INTENT_TYPE_MORE_INFO -> {
+//                val intent = Intent(context, IndividualCotactViewActivity::class.java )
+//                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
+//                intent.putExtra("name", log.name )
+//                intent.putExtra("photo", "")
+////                intent.putExtra("color", log.color)
+//
+//                val pairList = ArrayList<android.util.Pair<View, String>>()
+//                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+//                val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
+////                pairList.add(p1)
+//                pairList.add(p2)
+//                val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
+//                options.toBundle()
+//
+//                startActivity(intent, options.toBundle())
+//            }
+//
+//
+//
+//        }
+//    }
 
 
 
@@ -683,102 +700,41 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         position: Int,
         view: View,
         btn: Int,
-        callLog: CallLogTable
+        callLog: CallLogTable,
+        clickType:Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
-        var viewExpanded = 0
-        if(viewmodel.isMarkingStarted()) {
 
-            markItem(id, position, view, callLog.number)
-        }else{
-            viewExpanded = 1
-        }
-//        else{
-//            viewExpanded = 1
-//            //no marking started, then expand the layout
-//            val id = callLogAdapter!!.getItemId(position)
-//            val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
-//            when(btn){
-//                DialerAdapter.BUTTON_SIM_1->{
-//                    Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
-//                    makeCall(callLog)
-//
-//                }
-//                DialerAdapter.BUTTON_SIM_2->{
-//
-//                }
-//                DialerAdapter.BUTTON_SMS->{
-//
-//                }
-//                DialerAdapter.BUTTON_INFO->{
-//
-//                }
-//
-//            }
-//        }
-
-        return viewExpanded
-//        if(v.visibility == View.GONE){
-//            v.visibility = View.VISIBLE
-//        }else{
-//            v.visibility = View.GONE
-//        }
-
-//        Log.d(TAG, "onCallLogItemClicked: ")
-//        val intent = Intent(context, IndividualCotactViewActivity::class.java )
-//        intent.putExtra(CONTACT_ID, id)
-//        startActivity(intent)
+          return  markItem(id, clickType)
     }
 
-    private fun markItem(
-        id: Long,
-        position: Int,
-        view: View,
-        number: String
-    ) {
+    private fun markItem(id: Long, clickType: Int): Int {
+        if(viewmodel.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
+            //if is empty and click type is long then start marking
+           viewmodel.addTomarkeditems(id)
+            return MARK_ITEM
+        }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
+            //already some items are marked
+            if(viewmodel.markedItems.value!!.contains(id)){
+                viewmodel.removeMarkeditemById(id)
+                return UNMARK_ITEM
+            }else{
 
-        lifecycleScope.launchWhenStarted {
-            viewmodel.markItem(id, view, position, number).observe(viewLifecycleOwner, Observer { markedItemsCount ->
-                when(markedItemsCount){
-                    0 ->{
-                        showSearchView()
-                    }
-                    else ->{
-                        updateSelectedItemCount(markedItemsCount)
-                    }
-
-                }
-            })
-//            viewmodel.markItem(id, view, position, number).collect{
-//
-//                var viewMain = view.findViewById<ConstraintLayout>(R.id.layoutcallMain)
-//
-//
-//                when(it){
-//                    CALL_NEW_ITEM_MARKED ->{
-//                        viewMain.imgViewCallMarked.beVisible()
-//
-//                    }
-//                    CALL_ITEM_UN_MARKED ->{
-//                        viewMain.imgViewCallMarked.beInvisible()
-////                        updateSelectedItemCount()
-//
-//                    }
-//                }
-//
-//                    if(isMarkingStarted()){
-//                        showDeleteBtnInToolbar()
-//                    }
-//
-//                    updateSelectedItemCount()
-//                if(isItemSizeEqualsOne()){
-//                    showBlockButon()
-//                }
-//                else{
-//                    hideBlockButton()
-//                }
-////                    view.setBackgroundColor(ContextCompat.getColorColor(requireContext(), R.color.colorPrimaryLowOpacity))
-//            }
+                viewmodel.addTomarkeditems(id)
+                return MARK_ITEM
+            }
+        }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
+            //already markig started , mark on unamrk new item
+            if(viewmodel.markedItems.value!!.contains(id)){
+                viewmodel.removeMarkeditemById(id)
+                return UNMARK_ITEM
+            }else{
+                viewmodel.addTomarkeditems(id)
+                return MARK_ITEM
+            }
+        }else {
+            // normal click
+            return UNMARK_ITEM
         }
 
     }
@@ -846,6 +802,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnCallTbrMore.beInvisible()
         binding.tvCallSelectedCount.beInvisible()
          binding.imgBtnCallUnMuteCaller.beInvisible()
+         binding.pgBarDeleting.beInvisible()
     }
 
     fun updateSelectedItemCount(count: Int) {
@@ -859,18 +816,20 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     override fun onYesConfirmationDelete() {
+        binding.imgBtnCallTbrDelete.beInvisible()
         this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
             when (it) {
                 SMS_DELETE_ON_PROGRESS -> {
-
+                    binding.imgBtnCallTbrDelete.beInvisible()
+                    binding.pgBarDeleting.beVisible()
                 }
                 SMS_DELETE_ON_COMPLETED -> {
                     Log.d(TAG, "SMS_DELETE_ON_COMPLETED: ")
-                    showSearchView()
+//                    showSearchView()
                 }
             }
         })
-        viewmodel.clearMarkedItems()
+//        viewmodel.clearMarkedItems()
         showSearchView()
     }
 
@@ -912,8 +871,22 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      * called from mainactivity on back button pressed
      */
     fun clearMarkeditems() {
-       viewmodel.clearMarkedItems()
-        showSearchView()
+//       viewmodel.clearMarkedItems()
+//        showSearchView()
     }
+
+    /**
+     * caller from adapter totoggle marked view
+     */
+    override fun isMarked(id: Long): Boolean {
+        var isMrked = false
+        if(viewmodel.markedItems.value !=null){
+            if(viewmodel.markedItems.value!!.contains(id)){
+                isMrked = true
+            }
+        }
+    return isMrked
+    }
+
 
 }

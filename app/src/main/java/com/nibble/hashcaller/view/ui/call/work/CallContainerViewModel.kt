@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.work
 
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
@@ -31,18 +32,37 @@ class CallContainerViewModel(
     var contactAdders = ""
      var lstOfAllCallLogs: MutableList<CallLogData> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogData>> = MutableLiveData()
+
     var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
+
+    var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
+
+
+    var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
+
+
     init {
-
     }
 
-    fun updateCAllLogLivedata(list:MutableList<CallLogData>) = viewModelScope.launch {
-        fullDataFromCproviderFetched = true
-        callLogsMutableLiveData.value = list
-
-//        getInformationForTheseNumbers()
-
+    fun clearMarkeditems(){
+        markedItems.value?.clear()
     }
+    fun addTomarkeditems(id:Long){
+        markedItems.value!!.add(id)
+        markedItems.value = markedItems.value
+    }
+    fun removeMarkeditemById(id:Long){
+        markedItems.value!!.remove(id)
+        markedItems.value = markedItems.value
+    }
+    fun updateMutableData(list: List<CallLogTable>) {
+        val mutableList: MutableList<CallLogTable> = mutableListOf()
+        mutableList.addAll(list)
+
+        mutableCalllogTableData.value = mutableList
+//        return mutableCalllogTableData
+    }
+
 
 
     fun getInformationForTheseNumbers() = viewModelScope.launch {
@@ -96,64 +116,57 @@ class CallContainerViewModel(
         return markedIds.size > 0
     }
     fun markItem(id: Long, view: View, pos: Int, address: String) : LiveData<Int> = liveData {
+        markedItems.value!!.add(id)
 
-        var listOne: MutableList<CallLogData>  = mutableListOf()
-        var listTwo: MutableList<CallLogData>  = mutableListOf()
-        listOne.addAll(callLogsMutableLiveData.value!!)
-
-
-        for (item in listOne){
-
-            var obj: CallLogData? = null
-            if(item.id == id){
-                if(item.isMarked){
-                    obj = item.copy(isMarked = false)
-                    markedIds.remove(id)
-                    listTwo.add(obj)
-                }else{
-                    obj = item.copy(isMarked = true)
-                    markedIds.add(id)
-                    listTwo.add(obj)
-
-                }
-            }else{
-                listTwo.add(item)
-            }
-
-        }
-//        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
-        callLogsMutableLiveData.value = listTwo
-        if(markedIds.size == 1){
-            contactAdders = address
-        }
-        emit(markedIds.size)
-
-//        if(idContainsInList(id)){ // if id already exist in list,remove from the list and unMark view
-//            IndividualMarkedItemHandlerCall.removeFromMarkedItemsById(id)
-//            if(getMarkedItemSize() == 1){
-//                setMarkedContactAddress(address)
-//            }
-////            emit(CALL_ITEM_UN_MARKED)
+//        var mutableList : MutableList<CallLogTable> = mutableListOf()
+//        mutableCalllogTableData.value?.let { mutableList.addAll(it) }
+//        var listTwo : MutableList<CallLogTable> = mutableListOf()
+////        for (item in mutableList){
+////            var obj : CallLogTable ?
+////            if(item.id == id){
+////                 obj = item.copy(isMarked = true)
+////            }else{
+////                obj = item.copy()
+////            }
+////
+////            listTwo.add(obj)
+////        }
 //
-//        }else{
-//
-//            if(getMarkedItemSize() == 0){
-//                setMarkedContactAddress(address)
-//            }
-//            addTomarkedItemsById(id)
-//            addToMarkedViews(view)
+//        mutableCalllogTableData.value = listTwo
+
+
 //
 //
-//            if(!isMarkedViewsEmpty()){
-//                for(view in getMarkedViews()){
-////               markedViewsLiveData.value = view
-////                    emit(CALL_NEW_ITEM_MARKED)
+//        var listOne: MutableList<CallLogData>  = mutableListOf()
+//        var listTwo: MutableList<CallLogData>  = mutableListOf()
+//        listOne.addAll(callLogsMutableLiveData.value!!)
+//
+//
+//        for (item in listOne){
+//
+//            var obj: CallLogData? = null
+//            if(item.id == id){
+//                if(item.isMarked){
+//                    obj = item.copy(isMarked = false)
+//                    markedIds.remove(id)
+//                    listTwo.add(obj)
+//                }else{
+//                    obj = item.copy(isMarked = true)
+//                    markedIds.add(id)
+//                    listTwo.add(obj)
+//
 //                }
+//            }else{
+//                listTwo.add(item)
 //            }
-//
 //
 //        }
-
+////        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
+//        callLogsMutableLiveData.value = listTwo
+//        if(markedIds.size == 1){
+//            contactAdders = address
+//        }
+//        emit(markedIds.size)
     }
 
     /**
@@ -162,33 +175,28 @@ class CallContainerViewModel(
      */
     fun deleteThread():LiveData<Int> = liveData {
         emit(SMS_DELETE_ON_PROGRESS)
-        viewModelScope.launch {
 
-            //deleting from livedata
-//           val as1=  async {
-//                deleteItemsFromView()
-//
+//        viewModelScope.launch {
+//            val as1 = async {
+                for(item in markedItems.value!!){
+                    repository?.deleteLog(item)
+//                    async { repository?.deleteCallLogsFromDBByid(item) }.await()
+                    kotlinx.coroutines.delay(500L)
+                    Log.d(TAG, "deleteThread: iterating $item")
+                }
+                 clearMarkeditems()
+
+
+//            }
+//            val as2 = async {
+////                repository?.deleteCallLogsFromDBByid(markedItems.value)
 //            }
 //            as1.await()
-            //deleting from repository
-//           val as2 =  async {
-                val numRowsDeleted =  repository!!.deleteLogs().apply {
-
-                }
-//            }
-
-//            as1.await().apply {
-//                emit(SMS_DELETE_ON_COMPLETED)
-//            }
-
 //            as2.await()
 
+//        }.join()
+        emit(SMS_DELETE_ON_COMPLETED)
 
-        }
-
-
-
-//        numRowsDeletedLiveData.value = numRowsDeleted
     }
 
     private suspend fun deleteItemsFromView() {
@@ -224,15 +232,6 @@ class CallContainerViewModel(
 
     }
 
-    /**
-     * called for the first time to get 10 results, then updated with and followed by full livedata
-     */
-
-    fun fetchCallLogFlow(activity: FragmentActivity) = viewModelScope.launch{
-      val res =   repository!!.fetchFirst10()
-
-        updateLiveDataWithFlow(res)
-    }
 
     /**
      * called from snackbar
@@ -299,7 +298,7 @@ class CallContainerViewModel(
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 list!!.removeIf { it -> it.id == null }
             }else {
-                removeDummyItems(list)
+              //  removeDummyItems(list)
             }
             callLogsMutableLiveData.value = list
 
@@ -363,7 +362,10 @@ class CallContainerViewModel(
     }
 
     fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
-        repository?.updateCallLogDb(logs)
+        val as1 = async { repository?.updateCallLogDb(logs) }
+        val as2 = async { repository?.deleteCallLogs(logs) }
+        as1.await()
+        as2.await()
     }
 
 

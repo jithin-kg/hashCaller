@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.DummYViewHolder
+import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
@@ -22,9 +23,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_MORE_INFO
 import com.nibble.hashcaller.view.ui.contacts.utils.INTENT_TYPE_START_INDIVIDUAL_SMS
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.call_list_item_spam.view.*
@@ -34,15 +34,15 @@ import kotlinx.android.synthetic.main.call_list_item_spam.view.*
  */
 
 class DialerAdapter(private val context: Context,
-                    private val longPressHandler: CallItemLongPressHandler,
-                    private val onContactItemClickListener: (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable)->Int
+                    private val viewMarkingHandler: ViewMarkHandler,
+                    private val onContactItemClickListener: (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int)->Int
                    ) :
     androidx.recyclerview.widget.ListAdapter<CallLogTable, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
 
     private val VIEW_TYPE_NO_SPAM = 0;
     private val VIEW_TYPE_SPAM = 1;
     private val VIEW_TYPE_LOADING = 3
-    private var callLogs = emptyList<CallLogTable>()
+    private var callLogs: MutableList<CallLogTable> = mutableListOf()
     companion object{
         private const val TAG = "__DialerAdapter";
         var prevView:View? = null
@@ -104,7 +104,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
        return callLogs.size
     }
 
-    fun submitCallLogs(newContactList: List<CallLogTable>) {
+    fun submitCallLogs(newContactList: MutableList<CallLogTable>) {
         callLogs = newContactList
         this.submitList(newContactList)
     }
@@ -133,10 +133,18 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable) -> Int
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int) -> Int
         ) {
             Log.d(TAG, "bind: ")
             expandableView.setTag(callLog.dateInMilliseconds )
+
+            if(viewMarkingHandler.isMarked(callLog.id)){
+                view.imgViewCallMarked.beVisible()
+
+            }else{
+                view.imgViewCallMarked.beInvisible()
+
+            }
             if(prevTime!= null)
 //                if(prevTime == callLog.dateInMilliseconds){
 //                    expandableView.beVisible()
@@ -175,8 +183,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                view.imgViewCallMarked.beVisible()
 //            }else{
 //                view.imgViewCallMarked.beInvisible()
-//
 //            }
+
             var id = getExpandedLayoutId()
             if(id!=null) {
             if(id == callLog.id){
@@ -197,30 +205,57 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         private fun setClickListener(view: View, callLog: CallLogTable) {
             view.setOnLongClickListener{v->
-                longPressHandler.onLongPressed(v,
-                    this.adapterPosition, callLog.id!!, callLog.number)
+              var isToBeMarked =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog, TYPE_LONG_PRESS)
+               when(isToBeMarked){
+                   MARK_ITEM ->{
+                       view.imgViewCallMarked.beVisible()
+                   }else ->{
+                   view.imgViewCallMarked.beInvisible()
+                   }
+               }
+
+//               val isToBeMarked =  longPressHandler.onLongPressed(v,
+//                    this.adapterPosition, callLog.id!!, callLog.number)
+//                when(isToBeMarked){
+//                    MARK_ITEM ->{
+//                        view.imgViewCallMarked.beVisible()
+//
+//                    }else ->{
+//                    view.imgViewCallMarked.beInvisible()
+//
+//                }
+//                }
                 true
 
             }
             view.imgBtnCallExpand.setOnClickListener{
-                longPressHandler.onCallButtonClicked(it, INTENT_TYPE_MAKE_CALL, callLog)
+//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MAKE_CALL, callLog)
             }
 
             view.imgBtnSmsExpand.setOnClickListener{
-                longPressHandler.onCallButtonClicked(it, INTENT_TYPE_START_INDIVIDUAL_SMS, callLog)
+//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_START_INDIVIDUAL_SMS, callLog)
             }
 
             view.imgBtnInfoExpand.setOnClickListener{
-                longPressHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
+//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
             }
 
 
             view.setOnClickListener(View.OnClickListener {v->
-                val viewExpanded =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog)
-                if(viewExpanded== 1){
-                    //iff marking not started expand the layout
-                    toggleExpandableView(v, this.adapterPosition, callLog.id!!, expandableView)
+                val isToBeMarked =  onContactItemClickListener(callLog.id!!, this.adapterPosition, v, BUTTON_SIM_1, callLog, TYPE_CLICK)
+                when(isToBeMarked){
+                    MARK_ITEM ->{
+                        view.imgViewCallMarked.beVisible()
+                    }else ->{
+                    view.imgViewCallMarked.beInvisible()
                 }
+                }
+
+
+            //                if(viewExpanded== 1){
+//                    //iff marking not started expand the layout
+//                    toggleExpandableView(v, this.adapterPosition, callLog.id!!, expandableView)
+//                }
 
             })
         }
@@ -356,9 +391,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         }
     }
-    interface CallItemLongPressHandler {
-        fun onLongPressed(view:View, pos:Int, id: Long, address:String)
-        fun onCallButtonClicked(view: View, type:Int, log: CallLogTable)
+    interface ViewMarkHandler {
+        fun isMarked(id:Long): Boolean
 
 
 
