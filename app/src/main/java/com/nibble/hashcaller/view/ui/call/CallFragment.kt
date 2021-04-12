@@ -159,6 +159,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         viewmodel.mutableCalllogTableData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 Log.d(TAG, "observeMutableCallLogFromDB: ")
+                binding.shimmerViewContainerCall.beInvisible()
                 callLogAdapter?.submitCallLogs(it)
             }
 
@@ -169,7 +170,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun observeCallLogFromDb() {
         this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
             viewmodel.updateMutableData(it)
-            binding.shimmerViewContainerCall.beInvisible()
         })
     }
 
@@ -218,7 +218,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun observeCallLogMutabeLivedata(){
         viewmodel.callLogsMutableLiveData.observe(viewLifecycleOwner, Observer {
-            binding.shimmerViewContainerCall.beInvisible()
 //            callLogAdapter?.setCallLogs(it)
         })
     }
@@ -228,7 +227,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                viewmodel.updateCAllLogLivedata(logs)
 //                viewmodel.setAdditionalInfo(logs)
                 viewmodel.updateDatabase(logs)
-
             }
         })
     }
@@ -344,6 +342,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      */
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "onDestroyView: ")
         _binding = null
     }
 
@@ -592,6 +591,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override fun onPause() {
         Log.d(TAG, "onPause: ")
         super.onPause()
+        clearMarkeditems()
     }
 
     private fun blockMarkedCaller() {
@@ -779,6 +779,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun showDeleteBtnInToolbar(count: Int) {
         Log.d(TAG, "showDeleteBtnInToolbar: ")
+        updateSelectedItemCount(count)
+
         binding.searchViewCall.beInvisible()
         if(count==1){ //only show block button if only one item marked
             binding.imgBtnCallTbrBlock.beVisible()
@@ -817,17 +819,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     fun updateSelectedItemCount(count: Int) {
-        showDeleteBtnInToolbar(count)
         binding.tvCallSelectedCount.text = "${count.toString()} Selected"
-        if(count>0){
-            binding.tvCallSelectedCount.beVisible()
-        }else{
-            showSearchView()
-        }
+        binding.tvCallSelectedCount.beVisible()
     }
 
     override fun onYesConfirmationDelete() {
-        binding.imgBtnCallTbrDelete.beInvisible()
+        this.activity?.runOnUiThread{
+            binding.imgBtnCallTbrDelete.beInvisible()
+        }
         this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
             when (it) {
                 SMS_DELETE_ON_PROGRESS -> {
@@ -836,12 +835,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 }
                 SMS_DELETE_ON_COMPLETED -> {
                     Log.d(TAG, "SMS_DELETE_ON_COMPLETED: ")
-//                    showSearchView()
+                    showSearchView()
                 }
             }
         })
 //        viewmodel.clearMarkedItems()
-        showSearchView()
     }
 
     override fun onYesConfirmationMute() {

@@ -87,10 +87,9 @@ class CallContainerRepository(
      * function to delete call logs in db by id, ie marked items
      */
     suspend fun deleteCallLogsFromDBByid(id: Long) {
-        var list:MutableList<Long> = mutableListOf()
-                callLogDAO?.delete(id)
-
-
+//            callLogDAO?.delete(id)
+            callLogDAO?.markAsDeleted(id, true)
+        delay(400L)
     }
 
     /**
@@ -542,7 +541,7 @@ class CallContainerRepository(
                 val idsToBeRemoved = idsFromCallLogTable - idsFromContentPovider
                 for(id in idsToBeRemoved){
                     callLogDAO?.delete(id)
-                    delay(400L)
+
                 }
             }
 

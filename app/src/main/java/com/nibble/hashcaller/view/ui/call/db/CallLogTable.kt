@@ -23,5 +23,5 @@ import java.util.*
     @ColumnInfo(name = "duration") var duration: String = "",
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
     @ColumnInfo(name = "callerInfoFoundFrom") var callerInfoFoundFrom: Int = 0,
-    @ColumnInfo(name = "isMarked") var isMarked: Boolean = false) {
+    @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false) {
 }

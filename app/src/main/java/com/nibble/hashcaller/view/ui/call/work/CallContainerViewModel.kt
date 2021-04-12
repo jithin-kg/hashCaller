@@ -63,6 +63,7 @@ class CallContainerViewModel(
         val mutableList: MutableList<CallLogAndInfoFromServer> = mutableListOf()
         mutableList.addAll(list)
 
+
         mutableCalllogTableData.value = mutableList
 //        return mutableCalllogTableData
     }
@@ -182,16 +183,21 @@ class CallContainerViewModel(
     fun deleteThread():LiveData<Int> = liveData {
         emit(SMS_DELETE_ON_PROGRESS)
 
-//        viewModelScope.launch {
+        viewModelScope.launch {
 //            val as1 = async {
-                for(item in markedItems.value!!){
-                    repository?.deleteLog(item)
-//                    async { repository?.deleteCallLogsFromDBByid(item) }.await()
-                    kotlinx.coroutines.delay(500L)
-                    Log.d(TAG, "deleteThread: iterating $item")
-                }
-                 clearMarkeditems()
+            for(item in markedItems.value!!){
+                async { repository?.deleteCallLogsFromDBByid(item) }.await()
+            }
+            emit(SMS_DELETE_ON_COMPLETED)
+            for (item in markedItems.value!!) {
+                repository?.deleteLog(item)
+//                async { repository?.deleteCallLogsFromDBByid(item) }
+//                    kotlinx.coroutines.delay(500L)
+                Log.d(TAG, "deleteThread: iterating $item")
+            }
+            clearMarkeditems()
 
+        }.join()
 
 //            }
 //            val as2 = async {
@@ -201,7 +207,7 @@ class CallContainerViewModel(
 //            as2.await()
 
 //        }.join()
-        emit(SMS_DELETE_ON_COMPLETED)
+//        emit(SMS_DELETE_ON_COMPLETED)
 
     }
 
@@ -359,17 +365,18 @@ class CallContainerViewModel(
     }
 
     fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
+
+
+
+        val as2 = async { repository?.deleteCallLogs(logs) }
+        val as3 = async { getInformationForTheseNumbers() }
         val as1 = async {
             setName(logs).apply {
                 repository?.updateCallLogDb(logs)
             }
         }
-
-
-        val as2 = async { repository?.deleteCallLogs(logs) }
-        val as3 = async { getInformationForTheseNumbers() }
-        as1.await()
         as2.await()
+        as1.await()
         as3.await()
 
     }
