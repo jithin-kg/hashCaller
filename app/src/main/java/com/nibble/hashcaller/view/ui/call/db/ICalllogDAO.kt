@@ -21,6 +21,10 @@ interface ICallLogDAO {
     fun getAllLiveData(): LiveData<List<CallLogAndInfoFromServer>>
 
     @Transaction
+    @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
+    suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>
+
+    @Transaction
     @Query("SELECT * FROM call_log")
     suspend fun getAll(): List<CallLogTable>
 

@@ -67,6 +67,7 @@ import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 import java.security.*
@@ -543,19 +544,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
-        if (contactFragment.isAdded) { // if the fragment is already in container
-            ft.show(contactFragment)
-            unMarkItems()
-            messagesFragment.showSearchView()
 
-
-        }
 //        // Hide fragment B
 //        if (blockConfigFragment.isAdded) {
 //            ft.hide(blockConfigFragment)
 //        }
 //        // Hide fragment C
         if (callFragment.isAdded) {
+            callFragment.clearMarkeditems()
             ft.hide(callFragment)
         }
         if(dialerFragment.isAdded){
@@ -563,6 +559,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
+        }
+
+        if (contactFragment.isAdded) { // if the fragment is already in container
+            ft.show(contactFragment)
+            unMarkItems()
+            messagesFragment.showSearchView()
+
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -627,6 +630,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.hide(contactFragment)
         }
         if (callFragment.isAdded) {
+            callFragment.clearMarkeditems()
             ft.hide(callFragment)
         }
 //        if (callFragment.isAdded) {

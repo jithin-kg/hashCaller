@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -99,13 +100,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
 
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        Log.d(TAG, "onActivityCreated: ")
-//        super.onActivityCreated(savedInstanceState)
-//        if(savedInstanceState!= null){
-//
-//        }
-//    }
+    
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -161,9 +157,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun observeMutableCallLogFromDB() {
         viewmodel.mutableCalllogTableData.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
+            it?.let {
+                Log.d(TAG, "observeMutableCallLogFromDB: ")
                 callLogAdapter?.submitCallLogs(it)
             }
+
+
         })
     }
 
@@ -562,11 +561,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         selectedRadioButton = bottomSheetDialog.radioScam
         bottomSheetDialog.imgExpand.setOnClickListener(this)
 
-
-//        if(this.view?.visibility == View.VISIBLE){
-//            bottomSheetDialog.hide()
-
-//        }
+        
 
         bottomSheetDialog.setOnDismissListener {
             Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
@@ -591,6 +586,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun showBottomSheetDialog() {
         bottomSheetDialog.show()
 
+    }
+
+
+    override fun onPause() {
+        Log.d(TAG, "onPause: ")
+        super.onPause()
     }
 
     private fun blockMarkedCaller() {
@@ -706,31 +707,31 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
 
-          return  markItem(id, clickType)
+          return  markItem(id, clickType, position)
     }
 
-    private fun markItem(id: Long, clickType: Int): Int {
+    private fun markItem(id: Long, clickType: Int, position: Int): Int {
         if(viewmodel.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
             //if is empty and click type is long then start marking
-           viewmodel.addTomarkeditems(id)
+           viewmodel.addTomarkeditems(id, position)
             return MARK_ITEM
         }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
             //already some items are marked
             if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id)
+                viewmodel.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
 
-                viewmodel.addTomarkeditems(id)
+                viewmodel.addTomarkeditems(id, position)
                 return MARK_ITEM
             }
         }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
             //already markig started , mark on unamrk new item
             if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id)
+                viewmodel.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
-                viewmodel.addTomarkeditems(id)
+                viewmodel.addTomarkeditems(id, position)
                 return MARK_ITEM
             }
         }else {
@@ -794,7 +795,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnCallTbrMore.beVisible()
 
     }
-     fun showSearchView(){
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        if(hidden){ // if fragment is hidden
+            clearMarkeditems()
+        }
+    }
+
+    fun showSearchView(){
 
         binding.searchViewCall.beVisible()
         binding.imgBtnCallTbrBlock.beInvisible()
@@ -802,8 +812,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnCallTbrDelete.beInvisible()
         binding.imgBtnCallTbrMore.beInvisible()
         binding.tvCallSelectedCount.beInvisible()
-         binding.imgBtnCallUnMuteCaller.beInvisible()
-         binding.pgBarDeleting.beInvisible()
+        binding.imgBtnCallUnMuteCaller.beInvisible()
+        binding.pgBarDeleting.beInvisible()
     }
 
     fun updateSelectedItemCount(count: Int) {
@@ -872,7 +882,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      * called from mainactivity on back button pressed
      */
     fun clearMarkeditems() {
-//       viewmodel.clearMarkedItems()
+       viewmodel.clearMarkedItems()
+        lifecycleScope.launchWhenStarted {
+            for(position in viewmodel.markedItemsPositions){
+                callLogAdapter?.notifyItemChanged(position)
+            }
+            viewmodel.clearMarkedItemPositions()
+        }
 //        showSearchView()
     }
 

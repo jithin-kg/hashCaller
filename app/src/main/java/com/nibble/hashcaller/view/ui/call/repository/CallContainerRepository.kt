@@ -522,6 +522,9 @@ class CallContainerRepository(
     fun getAllCallLogLivedata(): LiveData<List<CallLogAndInfoFromServer>>? {
         return callLogDAO?.getAllLiveData()
     }
+    suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
+        return callLogDAO?.getAllCallLog()
+    }
 
     /**
      * delete call logs from call_logs table that are not in content provider

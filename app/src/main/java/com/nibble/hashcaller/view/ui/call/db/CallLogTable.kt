@@ -13,7 +13,7 @@ import java.util.*
 
 //TODO save the
 
-@Entity(tableName = "call_log",indices = [Index(value =["id"], unique = true)])
+@Entity(tableName = "call_log",indices = [Index(value =["id", "number"], unique = true)])
  data class CallLogTable (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id") var id: Long = 0,

@@ -40,6 +40,7 @@ class CallContainerViewModel(
 
 
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
+    var markedItemsPositions: HashSet<Int> = hashSetOf()
 
 
     init {
@@ -48,12 +49,14 @@ class CallContainerViewModel(
     fun clearMarkeditems(){
         markedItems.value?.clear()
     }
-    fun addTomarkeditems(id:Long){
+    fun addTomarkeditems(id: Long, position: Int){
         markedItems.value!!.add(id)
+        markedItemsPositions.add(position)
         markedItems.value = markedItems.value
     }
-    fun removeMarkeditemById(id:Long){
+    fun removeMarkeditemById(id: Long, position: Int){
         markedItems.value!!.remove(id)
+        markedItemsPositions.remove(position)
         markedItems.value = markedItems.value
     }
     fun updateMutableData(list: List<CallLogAndInfoFromServer>) {
@@ -341,26 +344,18 @@ class CallContainerViewModel(
     }
 
     fun clearMarkedItems() = viewModelScope.launch{
-        CallContainerRepository.clearMarkedItems()
+        markedItems.value?.clear()
+        markedItems.value = markedItems.value
+//        var list = mutableListOf<CallLogAndInfoFromServer>()
+//        var list2 = mutableListOf<CallLogAndInfoFromServer>()
+//        mutableCalllogTableData.value?.let { list.addAll(it) }
+//
+//        repository?.getAllCallLog().apply {
+//            mutableCalllogTableData.value = this
+//        }
 
-        var listOne: MutableList<CallLogData>  = mutableListOf()
-        var listTwo: MutableList<CallLogData>  = mutableListOf()
-//        listOne.addAll(callLogsMutableLiveData.value!!)
 
 
-        for (item in listOne){
-
-            var obj: CallLogData? = null
-            obj = item.copy(isMarked = false)
-            if(item.isMarked){
-                listTwo.add(obj)
-            }else{
-                listTwo.add(item)
-            }
-
-        }
-//        callLogsMutableLiveData.value!!.find {it.id == id }!!.isMarked = true
-//        callLogsMutableLiveData.value = listTwo
     }
 
     fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
@@ -396,6 +391,10 @@ class CallContainerViewModel(
                 item.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
             }
         }
+    }
+
+    fun clearMarkedItemPositions() = viewModelScope.launch{
+        markedItemsPositions.clear()
     }
 
 

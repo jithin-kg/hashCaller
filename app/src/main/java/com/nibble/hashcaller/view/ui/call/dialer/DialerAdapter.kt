@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.DummYViewHolder
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
@@ -25,7 +24,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import kotlinx.android.synthetic.main.call_list.view.*
-import kotlinx.android.synthetic.main.call_list_item_spam.view.*
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -62,7 +60,7 @@ class DialerAdapter(private val context: Context,
         if(viewType == VIEW_TYPE_NO_SPAM){
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list, parent, false)
 
-            return ViewHolderCallNoSpam(view)
+            return ViewHolderCallLog(view)
         }else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
             return DummYViewHolder(view)
@@ -85,7 +83,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          VIEW_TYPE_NO_SPAM -> {
 
 
-             (holder as ViewHolderCallNoSpam).bind(callLogs[position],context, onContactItemClickListener)
+             (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener)
         }
 
         VIEW_TYPE_LOADING ->{
@@ -107,22 +105,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         this.submitList(newContactList)
     }
 
-    inner class ViewHolderCallLoading(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val name = view.textVcallerNameSpam
-        private val circle = view.textViewCallCrclrSpam;
-
-//        private val image = view.findViewById<ImageView>(R.id.contact_image)
-
-        fun bind(
-            callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable) -> Int
-        ) {
-
-        }
-    }
 
 
-    inner class ViewHolderCallNoSpam(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolderCallLog(private val view: View) : RecyclerView.ViewHolder(view) {
         private val name = view.textVcallerName
          private val circle = view.textViewCrclr;
             private val expandableView = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
@@ -137,6 +122,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             expandableView.setTag(callLog.callLogTable.dateInMilliseconds )
 
             if(viewMarkingHandler.isMarked(callLog.callLogTable.id)){
+                Log.d(TAG, "bind: ismarked")
                 view.imgViewCallMarked.beVisible()
 
             }else{
@@ -167,7 +153,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
             name.text = if(callLog.callLogTable.name == null || callLog!!.callLogTable.name!!.isEmpty()) callLog.callLogTable.number else callLog.callLogTable.name
-            //        Log.i(TAG, String.valueOf(no));
             setNameFirstChar(callLog)
             val pNo = callLog.callLogTable.number
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
@@ -179,12 +164,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
-//            if(callLog.isMarked){
-//                view.imgViewCallMarked.beVisible()
-//            }else{
-//                view.imgViewCallMarked.beInvisible()
-//            }
-
             var id = getExpandedLayoutId()
             if(id!=null) {
             if(id == callLog.callLogTable.id){
@@ -195,12 +174,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             }
             }
-//            view.textViewTime.text = callLog.relativeTime
             expandableView.tvExpandNumCall.text = callLog.callLogTable.number
-
-
             setClickListener(view, callLog)
-
         }
 
         private fun setClickListener(view: View, callLog: CallLogAndInfoFromServer) {
@@ -214,17 +189,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                    }
                }
 
-//               val isToBeMarked =  longPressHandler.onLongPressed(v,
-//                    this.adapterPosition, callLog.id!!, callLog.number)
-//                when(isToBeMarked){
-//                    MARK_ITEM ->{
-//                        view.imgViewCallMarked.beVisible()
-//
-//                    }else ->{
-//                    view.imgViewCallMarked.beInvisible()
-//
-//                }
-//                }
                 true
 
             }
@@ -338,8 +302,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         override fun areContentsTheSame(oldItem: CallLogAndInfoFromServer, newItem: CallLogAndInfoFromServer): Boolean {
 //            if(oldItem.ca)
 
-            return  oldItem == newItem
-            //TODO compare both messages and if the addres is same and message
+            return oldItem.callLogTable == newItem.callLogTable && oldItem.callersInfoFromServer == newItem.callersInfoFromServer
         }
 
     }
