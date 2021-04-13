@@ -65,6 +65,7 @@ class DialerAdapter(private val context: Context,
 //            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list, parent, false)
             val logBinding =  CallListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
+
             return ViewHolderCallLog(logBinding)
         }else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
@@ -370,8 +371,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     }
     interface ViewMarkHandler {
         fun isMarked(id:Long): Boolean
-
-
 
     }
 

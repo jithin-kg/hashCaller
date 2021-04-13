@@ -7,6 +7,8 @@ import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
+import com.nibble.hashcaller.view.ui.sms.db.SMSThreadANDServerInfo
+import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -22,13 +24,16 @@ class SMSViewModel(
 ): ViewModel() {
 
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(-1)
-
+    var smsThreadsLivedata: LiveData<MutableList<SMSThreadANDServerInfo>>? = repository?.getSMSThreadsLivedata()
     var mapofAddressAndPos: HashMap<String, Long> = hashMapOf() // for findin duplicate sms in list
 //    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
     var smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
      var smsLIst:MutableList<SMS>? = mutableListOf()
+
+    var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
+    var markedItemsPositions: HashSet<Int> = hashSetOf()
 
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -43,6 +48,21 @@ class SMSViewModel(
 //        return smsSenersInfoFromDB
     }
 
+    fun getmarkedItemSize(): Int {
+
+        var size = markedItems.value?.size
+        return size ?: 0
+    }
+    fun addTomarkeditems(id: Long, position: Int){
+        markedItems.value!!.add(id)
+        markedItemsPositions.add(position)
+        markedItems.value = markedItems.value
+    }
+    fun removeMarkeditemById(id: Long, position: Int){
+        markedItems.value!!.remove(id)
+        markedItemsPositions.remove(position)
+        markedItems.value = markedItems.value
+    }
     var unreadMSCount:MutableLiveData<Int>? = null
      var filteredSms: MutableLiveData<String>? = null
 
@@ -102,7 +122,7 @@ class SMSViewModel(
 //
 //         }
         repository!!.fetchSMS(null, false).apply {
-            smsLiveData.value = this
+//            smsLiveData.value = this
 
         }
 
@@ -130,9 +150,11 @@ class SMSViewModel(
     /**
      * function called when there is a change in sms from content provider
      */
-    fun updateLiveData(smsList: MutableList<SMS>?) = viewModelScope.launch  {
+    fun updateLiveData(smsList: List<SMSThreadANDServerInfo>) = viewModelScope.launch  {
 
-        smsLiveData.value = smsList
+        var mutableList: MutableList<SMSThreadANDServerInfo> = mutableListOf()
+        mutableList.addAll(smsList)
+
 
 
 
@@ -166,20 +188,25 @@ class SMSViewModel(
         repository!!.muteSenders()
     }
 
-    fun deleteThread() = viewModelScope.launch {
-        val numRowsDeleted =  repository!!.deleteSmsThread()
-        pageOb.page = 0
-        numRowsDeletedLiveData.value = numRowsDeleted
+    fun markThreadAsDeleted() = viewModelScope.launch {
+        var set: HashSet<Long> = hashSetOf()
+        markedItems.value?.let {
+            set.addAll(it)
+        }
+        for(threadId in set){
+            async { repository?.markAsDelete(threadId) }.await()
+        }
+        clearMarkeditems()
+    }
+    fun clearMarkeditems(){
+        markedItems.value?.clear()
     }
 
     /**
      * called when there is a change in sms data
      * to get information abount a sender
      */
-    fun getInformationForTheseNumbers(
-        smslist: List<SMS>?,
-        packageName: String
-    ) = viewModelScope.launch {
+    fun getInformationForTheseNumbers() = viewModelScope.launch {
 
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
@@ -191,7 +218,7 @@ class SMSViewModel(
 
     fun getFirstPageOfSMS() =viewModelScope.launch{
         val res = async { repository!!.fetchSMS(null, false) }.await()
-        updateLiveData(res)
+//        updateLiveData(res)
     }
 
 
@@ -200,85 +227,6 @@ class SMSViewModel(
     }
 
     fun mark(id: Long, address: String) = viewModelScope.launch{
-
-
-//        smsLiveData.value?.find{it.addressString == address}?.kaatam = "true"
-//        smsLiveData.value = smsLiveData.value
-        var list1: MutableList<SMS> = mutableListOf()
-        list1.addAll(smsLiveData.value!!)
-        var list2: MutableList<SMS> = mutableListOf()
-        val item = list1.find { it.addressString == address }
-
-        for(item in list1){
-            var secondObj : SMS ? = null
-            if(item.addressString == address){
-                if(item.isMarked){
-                    secondObj = item.copy(isMarked = false)
-                    repository?. markedThreadIds?.remove(id)
-                }else{
-                    secondObj = item.copy(isMarked = true)
-                    repository?.markedThreadIds?.add(id)
-                }
-                list2.add(secondObj!!)
-            }else{
-                if(!item.isMarked && item.addressString !=address){
-                    repository?. markedThreadIds?.remove(id)
-                }
-
-                list2.add(item)
-            }
-        }
-        smsLiveData.value = list2
-
-
-//        val item = smsLiveData.value!!.find { it.addressString == address }
-//        val sms = SMS()
-//        sms.isMarked = true
-
-//        Log.d(TAG, "mark: $item")
-//        smsLiveData.value!!.replace(newValue = SMS()){it.addressString ==address}
-
-//        var list:MutableList<SMS> = mutableListOf()
-//        list.addAll(smsLiveData.value!!)
-//        var copyList:MutableList<SMS> = mutableListOf()
-
-//        for (item in list){
-//            var obj = SMS()
-//                obj.isMarked = true
-//                obj.readState = item.readState
-//                obj.spamCount  = item.spamCount
-//                obj.addresStringNonFormated = item.addresStringNonFormated
-//                obj.sub = item.sub
-//                obj.subject = item.subject
-//                obj.ct_t = item.ct_t
-//                obj.read_status = item.read_status
-//                obj.reply_path_present = item.reply_path_present
-//                obj.body = item.body
-//                obj.addressString = item.addressString
-//                obj.address = item.address
-//                obj.readState = item.readState
-//                obj.relativeTime = item.relativeTime
-//                obj. senderInfoFoundFrom= item.senderInfoFoundFrom
-//                obj.nameForDisplay = item.nameForDisplay
-//                obj.msgString = item.msgString
-//                obj.isMarked = true
-//
-//                if(obj.addressString == address){
-//                    Log.d(TAG, "mark: address equal")
-//                    obj.kaatam = "kaatam"
-//
-//                }
-//
-//            copyList.add(obj)
-//        }
-
-//        for(item in list){
-//            copyList.add(item.clone)
-//        }
-//        smsLiveData.value = copyList
-
-//        smsLiveData.value = smsLiveData.value
-       // emit(0)
         
     }
     fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): MutableList<T> {
@@ -286,6 +234,46 @@ class SMSViewModel(
             if (block(it)) newValue else it
         }.toMutableList()
     }
+
+    fun updateDatabase(sms: MutableList<SmsThreadTable>) = viewModelScope.launch {
+
+//        val as1 = async {
+//            sms?.let { repository?.updateThreadsDb(it) }
+//        }
+
+        sms?.let{
+         val as1 =    async {  repository?.updateThreadsDb(it) }
+         val as2 = async { getInformationForTheseNumbers()}
+         val as3 = async { repository?.deleteFromDb(it) }
+            as1.await()
+            as2.await()
+            as3.await()
+        }
+
+
+
+//        as1.await()
+    }
+
+    private fun setName(threads: MutableList<SmsThreadTable>) {
+        var numbersSet: HashSet<String> = hashSetOf()
+        var numberNamehashMap: HashMap<String, String> = hashMapOf()
+        numbersSet.addAll(threads.map { it.contactAddress})
+
+        for (num in numbersSet){
+            val name:String? =  repository?.getNameForAddressFromContentProvider(num)
+            if(name!=null){
+                numberNamehashMap.put(num, name)
+            }
+        }
+        for(item in threads){
+            if(numberNamehashMap.containsKey(item.contactAddress)){
+                item.name = numberNamehashMap[item.contactAddress]
+                item.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+            }
+        }
+    }
+
     companion object
     {
         //todo save color of round in this map, so that color does not change for miner change of sms

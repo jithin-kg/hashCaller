@@ -16,15 +16,23 @@ object SMSIndividualInjectorUtil {
         val smsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsDAO() }
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+        val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository = context?.let { SMSLocalRepository(
             it,
             spamListDAO,
             smssendersInfoDAO,
-            mutedSendersDAO
+            mutedSendersDAO,
+            smsThreadsDAO
         ) }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }
-        val smsLocalRepository = SMSLocalRepository(context!!, spamListDAO, smssendersInfoDAO, mutedSendersDAO)
+        val smsLocalRepository = SMSLocalRepository(
+            context!!,
+            spamListDAO,
+            smssendersInfoDAO,
+            mutedSendersDAO,
+            smsThreadsDAO
+        )
 
         val messagesLiveData = context?.let {
             SMSIndividualLiveData(

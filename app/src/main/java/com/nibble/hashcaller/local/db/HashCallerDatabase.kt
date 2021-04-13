@@ -29,6 +29,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
+import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
+import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -47,7 +49,8 @@ import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
     SmsSearchQueries::class,
     MutedCallers::class,
     ContactAddresses::class,
-    CallLogTable::class
+    CallLogTable::class,
+    SmsThreadTable::class
 
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
@@ -66,6 +69,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun smsSearchQueriesDAO(): ISmsQueriesDAO
         abstract fun contactAddressesDAO(): IContactAddressesDao
         abstract fun callLogDAO(): ICallLogDAO
+        abstract fun smsThreadsDAO() : ISMSThreadsDAO
 
 
     companion object{

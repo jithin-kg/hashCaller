@@ -28,6 +28,9 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
+import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
+import com.nibble.hashcaller.view.ui.sms.db.SMSThreadANDServerInfo
+import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -105,7 +108,8 @@ class SMSLocalRepository(
     private val context: Context,
     private val spamListDAO: SpamListDAO?,
     val smssendersInfoDAO: SMSSendersInfoFromServerDAO?,
-    private val mutedSendersDAO: IMutedSendersDAO?
+    private val mutedSendersDAO: IMutedSendersDAO?,
+    private val smsThreadsDAO: ISMSThreadsDAO?
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -146,7 +150,7 @@ class SMSLocalRepository(
     }
 
     //gets sms for SMSLiveData to show all sms
-    suspend fun fetchSMS(searchText:String?, isrequestingFromSmsSpamList:Boolean = false): MutableList<SMS> {
+    suspend fun fetchSMS(searchText:String?, isrequestingFromSmsSpamList:Boolean = false): ArrayList<SmsThreadTable> {
          fetchWithFullData(null, isrequestingFromSmsSpamList).apply {
             return this
         }
@@ -344,8 +348,8 @@ class SMSLocalRepository(
         }
 
     @SuppressLint("LongLogTag")
-    private suspend fun fetchWithFullData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
-        var data = ArrayList<SMS>()
+    private suspend fun fetchWithFullData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): ArrayList<SmsThreadTable> {
+        var data = ArrayList<SmsThreadTable>()
         Log.d(TAG, "fetch: called")
         var prevAddress = ""
         var prevTime = 0L
@@ -353,9 +357,8 @@ class SMSLocalRepository(
         val cursor = createCursor(searchQuery)
         try {
 
-
             var deleteViewAdded = false
-            val listOfMessages = mutableListOf<SMS>()
+            val listOfMessages = mutableListOf<SmsThreadTable>()
             var setOfAddress:MutableSet<String> = mutableSetOf()
             var count = 0
             var map: HashMap<String?, String?> = HashMap()
@@ -372,15 +375,15 @@ class SMSLocalRepository(
 
                     try {
                         //TODO check if phone number exists in contact, if then add the contact information too
-                        val objSMS = SMS()
-                        objSMS.id =
-                            cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-                        objSMS.threadID =
+                        val objSMS = SmsThreadTable()
+//                        objSMS.id =
+//                            cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+                        objSMS.threadId =
                             cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
 //                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         var num =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                        objSMS.addresStringNonFormated = num
+                        objSMS.contactAddress = num
                         num = num.replace("+", "")
                         //                    objSMS.address = num
 
@@ -389,26 +392,26 @@ class SMSLocalRepository(
 
                         var msg =
                             cursor.getString(cursor.getColumnIndexOrThrow("body"))
-                        objSMS.msgString = msg
+                        objSMS.body = msg
 
-                        setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
+//                        setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
                         // spannable string builder function to setup spannable string builder
-                        objSMS.addressString = formatPhoneNumber(num)
-                        objSMS.nameForDisplay = objSMS.addressString!!
+//                        objSMS.addressString = formatPhoneNumber(num)
+//                        objSMS.nameForDisplay = objSMS.addressString!!
 
                         objSMS.readState =
                             cursor.getInt(cursor.getColumnIndex("read"))
 
                         val dateMilli =
                             cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-                        if(prevAddress != objSMS.addressString){
-                            prevAddress = objSMS.addressString!!
-                        }else{
-                            //equal
-                            continue
-                        }
-                        objSMS.time = dateMilli
-                        setRelativeTime(objSMS, dateMilli)
+//                        if(prevAddress != objSMS.addressString){
+//                            prevAddress = objSMS.addressString!!
+//                        }else{
+//                            //equal
+//                            continue
+//                        }
+                        objSMS.dateInMilliseconds = dateMilli
+//                        setRelativeTime(objSMS, dateMilli)
 
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
@@ -429,27 +432,27 @@ class SMSLocalRepository(
 //                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
 //                                }
 //
-                            getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
-                                if(this!=null){
-                                    objSMS.name = this?.name
-                                    if(!this.name.isNullOrEmpty()){
-                                        objSMS.nameForDisplay = this.name
-                                    }
-                                    objSMS.spamCount  = this.spamReportCount
-                                    objSMS.spammerType = this.spammerType
-                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-                                }
-                            }
-                        Log.d(TAG, "fetch: message is   ${objSMS.msgString}")
+//                            getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
+//                                if(this!=null){
+//                                    objSMS.name = this?.name
+//                                    if(!this.name.isNullOrEmpty()){
+//                                        objSMS.nameForDisplay = this.name
+//                                    }
+//                                    objSMS.spamCount  = this.spamReportCount
+//                                    objSMS.spammerType = this.spammerType
+//                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
+//                                }
+//                            }
 
-                        if(!objSMS.msgString.isNullOrEmpty()){
-//                                setSMSHashMap(objSMS)
 
-                        }
-                            setOfAddress.add(objSMS.nameForDisplay)
-                                if(markedThreadIds.contains(objSMS.threadID)){
-                                    objSMS.isMarked = true
-                                }
+//                        if(!objSMS.msgString.isNullOrEmpty()){
+////                                setSMSHashMap(objSMS)
+//
+//                        }
+                            setOfAddress.add(objSMS.contactAddress)
+//                                if(markedThreadIds.contains(objSMS.threadID)){
+//                                    objSMS.isMarked = true
+//                                }
 
                         listOfMessages.add(objSMS)
 
@@ -467,7 +470,7 @@ class SMSLocalRepository(
             data.addAll(listOfMessages)
 
 
-                setNameIfExistInContactContentProvider(data)
+//                setNameIfExistInContactContentProvider(data)
 //                removeDeletedMSSFRomhashMap(setOfAddress)
 
 
@@ -2082,6 +2085,53 @@ class SMSLocalRepository(
         }
     }
 
+    suspend fun updateThreadsDb(sms: MutableList<SmsThreadTable>) {
+        smsThreadsDAO?.insert(sms)
+    }
+
+    fun getSMSThreadsLivedata(): LiveData<MutableList<SMSThreadANDServerInfo>>? {
+        return smsThreadsDAO?.getAllLiveData()
+    }
+
+    fun getNameForAddressFromContentProvider(contactAddress: String): String? {
+        var name:String? = null
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
+
+        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+        if(cursor2!=null && cursor2.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+            name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+        }
+        return name
+    }
+
+    suspend fun markAsDelete(threadId: Long) {
+        smsThreadsDAO?.markAsDeleted(threadId, isDeleted = true)
+        delay(400L)
+
+    }
+
+    /**
+     * function to delete threads id from db that are not in content provider
+     * @param smsFromContentProvider all sms chatthreads in content provider
+     */
+    suspend fun deleteFromDb(smsFromContentProvider: MutableList<SmsThreadTable>) {
+        var idsFromContentPovider : MutableList<Long> = mutableListOf()
+        idsFromContentPovider.addAll(smsFromContentProvider.map { it.threadId})
+
+        var idsFromChatThreadsTable : MutableList<Long> = mutableListOf()
+        smsThreadsDAO?.getAll().apply {
+            this?.map { it.threadId}?.let { idsFromChatThreadsTable.addAll(it) }
+
+            val threadidsTobeRemoved = idsFromChatThreadsTable - idsFromContentPovider
+
+            for(thredId in threadidsTobeRemoved){
+                smsThreadsDAO?.delete(thredId)
+            }
+        }
+
+
+    }
 
 }
 

@@ -24,6 +24,7 @@ class SMSSpamLiveData(private val context: Context):
     private lateinit var smssendersInfoDAO:SMSSendersInfoFromServerDAO
     private lateinit var mutedSendersDAO: IMutedSendersDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
+    val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
@@ -37,13 +38,15 @@ class SMSSpamLiveData(private val context: Context):
           spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
          smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
          mutedSendersDAO = HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO()
+         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository =
             SMSLocalRepository(
                 context,
                 spamListDAO,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                smsThreadsDAO
             )
 //        val res =  repository.getSMSForViewModel(null, true)
             val res:MutableList<SMS> = mutableListOf()
@@ -139,7 +142,8 @@ class SMSSpamLiveData(private val context: Context):
                 context,
                 spamListDAO,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                smsThreadsDAO
             )
         repository.markSMSAsRead(address)
     }

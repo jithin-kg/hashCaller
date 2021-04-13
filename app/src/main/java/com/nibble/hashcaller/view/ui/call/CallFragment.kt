@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.call
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +18,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -43,6 +45,7 @@ import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
@@ -706,8 +709,39 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         clickType:Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
+        when(clickType){
+            TYPE_LONG_PRESS ->{
+                return  markItem(id, clickType, position)
 
-          return  markItem(id, clickType, position)
+            }else ->{
+                if(viewmodel.getmarkedItemSize() == 0){
+                   startIndividualContactActivity(callLog, view)
+                }else{
+                    return markItem(id, clickType, position)
+                }
+            }
+        }
+        return UNMARK_ITEM
+
+    }
+
+    private fun startIndividualContactActivity(log: CallLogAndInfoFromServer, view: View) {
+        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.callLogTable.number)
+                intent.putExtra("name", log.callLogTable.name )
+                intent.putExtra("photo", "")
+//                intent.putExtra("color", log.color)
+                val pairList = ArrayList<android.util.Pair<View, String>>()
+                val imgViewUserPhoto = view.findViewById<androidx.appcompat.widget.AppCompatImageView>(R.id.imgViewUserPhoto)
+                val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
+
+//                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+                val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
+//                pairList.add(p1)
+                pairList.add(p2)
+                val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
+                options.toBundle()
+                startActivity(intent, options.toBundle())
     }
 
     private fun markItem(id: Long, clickType: Int, position: Int): Int {
@@ -891,7 +925,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     /**
-     * caller from adapter totoggle marked view
+     * called from adapter to toggle marked view
      */
     override fun isMarked(id: Long): Boolean {
         var isMrked = false

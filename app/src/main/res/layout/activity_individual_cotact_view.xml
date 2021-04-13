@@ -46,15 +46,13 @@
         android:layout_width="@dimen/individual_contact_avatar"
         android:layout_height="@dimen/individual_contact_avatar"
         android:layout_marginTop="16dp"
-        android:elevation="4dp"
         android:src="@drawable/contact_circular_background"
         android:tag="avatar"
         android:transitionName="contactImageTransition"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent=".28" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvFirstLetter"

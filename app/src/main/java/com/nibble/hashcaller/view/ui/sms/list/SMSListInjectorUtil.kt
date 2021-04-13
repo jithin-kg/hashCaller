@@ -14,12 +14,14 @@ object SMSListInjectorUtil {
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+        val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository = context?.let { SMSLocalRepository(
             it,
             spamListDAO,
             smssendersInfoDAO,
-            mutedSendersDAO
+            mutedSendersDAO,
+            smsThreadsDAO
         ) }
         val messagesLiveData = context?.let {
             SMSLiveData(

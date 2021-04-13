@@ -23,6 +23,7 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
     private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
     private val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
     private val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+    val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
     private val sMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
     @SuppressLint("LongLogTag")
@@ -32,7 +33,8 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 context,
                 spamListDAO,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                smsThreadsDAO
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMS(null)
             var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()

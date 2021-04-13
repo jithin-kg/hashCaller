@@ -13,7 +13,7 @@ interface ICallLogDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(callersList: List<CallLogTable>)
 
-    @Transaction
+
     @Query("DELETE from call_log WHERE id=:id")
     suspend fun delete(id: Long)
 
@@ -39,7 +39,6 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET name =:name, callerInfoFoundFrom =:callerInfoFoundFrom  WHERE number =:contactAddress")
     suspend fun update(contactAddress: kotlin.String,  name:String, callerInfoFoundFrom: Int)
 
-    @Transaction
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE id =:id")
     suspend fun markAsDeleted(id: Long, isDeleted:Boolean)
 }

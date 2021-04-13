@@ -1,42 +1,27 @@
 package com.nibble.hashcaller.view.ui.sms.list
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.BackgroundColorSpan
-import android.util.Log
 import android.view.*
 import android.view.View.OnLongClickListener
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.SmsListViewBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
+import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
-import com.nibble.hashcaller.view.ui.extensions.setCount
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
-import com.nibble.hashcaller.view.ui.sms.individual.util.SMS_NOT_READ
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
+import com.nibble.hashcaller.view.ui.sms.db.SMSThreadANDServerInfo
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
-import com.nibble.hashcaller.view.ui.sms.util.SMS
-import kotlinx.android.synthetic.main.sms_list_item_spam.view.*
-import kotlinx.android.synthetic.main.sms_list_view.view.*
-import kotlinx.android.synthetic.main.sms_list_view.view.layoutExpandable
-import kotlinx.android.synthetic.main.sms_list_view.view.pgBarSmsListItem
-import kotlinx.android.synthetic.main.sms_list_view.view.smsMarked
-import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSMPeek
-import kotlinx.android.synthetic.main.sms_list_view.view.tvSMSTime
-import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
-import java.util.*
+import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.android.synthetic.main.call_list.view.*
 
 
 /**
@@ -44,15 +29,15 @@ import java.util.*
  */
 
 
-class SMSListAdapter(private val context: Context,
+class SMSListAdapter(private val context: Context,  private val viewMarkingHandler: ViewMarkHandler,
                      private val longPresHandler:LongPressHandler,
-                     private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String)->Unit
+                     private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String, clickType:Int)->Int
 ) :
-    androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
+    androidx.recyclerview.widget.ListAdapter<SMSThreadANDServerInfo, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_LOADING = 0
     private val VIEW_TYPE_SMS = 2;
 
-    private var smsList:MutableList<SMS> = mutableListOf()
+    private var smsList:MutableList<SMSThreadANDServerInfo> = mutableListOf()
     companion object {
         private const val TAG = "__SMSListAdapter";
         public var searchQry:String? = null
@@ -77,10 +62,10 @@ class SMSListAdapter(private val context: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(this.smsList.isNotEmpty() && position < smsList.size)
-             if(this.smsList[position].isDummy){
-                return VIEW_TYPE_LOADING
-            }
+//        if(this.smsList.isNotEmpty() && position < smsList.size)
+//             if(this.smsList[position]){
+//                return VIEW_TYPE_LOADING
+//            }
 
                 return VIEW_TYPE_SMS
     }
@@ -103,7 +88,7 @@ class SMSListAdapter(private val context: Context,
         }
     }
 
-    fun setList(it: MutableList<SMS>?) {
+    fun setList(it: MutableList<SMSThreadANDServerInfo>) {
         this.smsList = it!!
 //        val copy:MutableList<SMS> = mutableListOf()
 //        this.smsList.forEach{copy.add(it)}
@@ -118,40 +103,60 @@ class SMSListAdapter(private val context: Context,
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
-            sms: SMS, context: Context,
-            onContactItemClickListener: (view:View, threadId: Long, position:Int, pno:String) -> Unit,
+            sms: SMSThreadANDServerInfo, context: Context,
+            onContactItemClickListener: (view: View, threadId: Long, pos: Int, pno: String, clickType: Int) -> Int,
             position: Int
         ) {
 
-            if(sms.isMarked==true){
-                Log.d(TAG, "bind: making visible ")
-                binding.smsMarked.beVisible()
-            }else{
-                Log.d(TAG, "bind: making invisible")
-                binding.smsMarked.beInvisible()
-            }
-
-                name.text = sms.nameForDisplay
-            Log.d(TAG, "bind: setting name ${sms.nameForDisplay}")
-            if(sms.spamCount > 0){
-                binding.textVSMSCntctName.setColorForText(R.color.spamText)
-                circle.setRandomBackgroundCircle(TYPE_SPAM)
-                binding.imgVBlkIconSms.beVisible()
-                binding.textViewSMScontactCrclr.text = ""
-            }else{
-                binding.textVSMSCntctName.setColorForText(R.color.textColor)
-                circle.setRandomBackgroundCircle()
-                binding.imgVBlkIconSms.beInvisible()
-                if(!sms.nameForDisplay.isNullOrEmpty()){
-                    circle.text = sms.nameForDisplay[0].toString()
+//            if(sms.smsThreadTable.isMarked==true){
+//                Log.d(TAG, "bind: making visible ")
+//                binding.smsMarked.beVisible()
+//            }else{
+//                Log.d(TAG, "bind: making invisible")
+//                binding.smsMarked.beInvisible()
+//            }
+            var isSpam = false
+            var senderInforFrom = SENDER_INFO_SEARCHING
+            var nameStr = ""
+            var firstLetter = ""
+                if(sms.smsThreadTable.name!=null){
+                    nameStr = sms.smsThreadTable.name!!
+                    senderInforFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+                }else if(sms.smsenderInfoFromServer!=null && sms.smsenderInfoFromServer?.name.isNotEmpty() ){
+                    nameStr = sms.smsenderInfoFromServer.name
+                    senderInforFrom = SENDER_INFO_FROM_DB
+                    //todo make info found from hash caller visible here
                 }
+                if(sms.smsenderInfoFromServer!=null ){
+                    isSpam = sms.smsenderInfoFromServer.spamReportCount > 0
+                }
+
+            if(nameStr.isEmpty()){
+                //name is not found in server on content provider so, set name as number
+                nameStr = formatPhoneNumber(sms.smsThreadTable.contactAddress)
+                senderInforFrom = SENDER_INFO_NOT_FOUND
             }
 
-            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
-                binding.pgBarSmsListItem.visibility = View.VISIBLE
+            if(isSpam){
+                binding.textViewSMScontactCrclr.setRandomBackgroundCircle(TYPE_SPAM)
+                binding.imgVBlkIconSms.beVisible()
+                binding.textVSMSCntctName.setColorForText(R.color.spamText)
             }else{
-                binding.pgBarSmsListItem.visibility = View.INVISIBLE
+                binding.textViewSMScontactCrclr.setRandomBackgroundCircle()
+                binding.imgVBlkIconSms.beInvisible()
+                firstLetter = nameStr[0].toString()
+                binding.textVSMSCntctName.setColorForText(R.color.textColor)
             }
+            binding.textViewSMScontactCrclr.text = firstLetter
+            binding.textVSMSCntctName.text = nameStr
+            binding.tvSMSMPeek.text = sms.smsThreadTable.body
+
+            if(senderInforFrom== SENDER_INFO_SEARCHING){
+                binding.pgBarSmsListItem.beVisible()
+            }else{
+                binding.pgBarSmsListItem.beInvisible()
+            }
+
 
             /**
              * This is important to check else double/ duplicate marking of items occur
@@ -165,9 +170,8 @@ class SMSListAdapter(private val context: Context,
 //
 //            }
 
-            binding.tvSMSMPeek.text = sms.msgString
-            Log.d(TAG, "bind: messageString is ${sms.msgString}")
-                if(sms.readState ==SMS_NOT_READ){
+            binding.tvSMSMPeek.text = sms.smsThreadTable.body
+                if(sms.smsThreadTable.readState ==SMS_NOT_READ){
                     binding.tvSMSMPeek.typeface = Typeface.DEFAULT_BOLD
                     binding.tvSMSMPeek.alpha = 0.87f
                     binding.tvSMSMPeek.setColorForText(R.color.textColor)
@@ -179,20 +183,34 @@ class SMSListAdapter(private val context: Context,
                 }
 
 
-            binding.tvSMSTime.text = sms.relativeTime
+            binding.tvSMSTime.text = sms.smsThreadTable.dateInMilliseconds.toString()
 
 
 
             binding.parentLayout.setOnLongClickListener(OnLongClickListener { v ->
-                longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
-                    sms.addressString!!
+                var isToBeMarked =   onContactItemClickListener(v, sms. smsThreadTable.threadId, this.adapterPosition,
+                    sms.smsThreadTable.contactAddress!!, TYPE_LONG_PRESS
                 )
+                when(isToBeMarked){
+                    MARK_ITEM ->{
+                        binding.smsMarked.beVisible()
+                    }else ->{
+                    binding.smsMarked.beInvisible()
+                }
+                }
                 true
             })
             binding.parentLayout.setOnClickListener{v->
-                onContactItemClickListener(v, sms.threadID, this.adapterPosition,
-                    sms.addresStringNonFormated!!
+                var isToBeMarked =   onContactItemClickListener(v, sms. smsThreadTable.threadId, this.adapterPosition,
+                    sms.smsThreadTable.contactAddress!!,TYPE_CLICK
                 )
+                when(isToBeMarked){
+                    MARK_ITEM ->{
+                        binding.smsMarked.beVisible()
+                    }else ->{
+                    binding.smsMarked.beInvisible()
+                }
+                }
 
             }
 
@@ -215,18 +233,16 @@ class SMSListAdapter(private val context: Context,
 
 
     }
-    class SMSItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
-        override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            Log.d(TAG, "areItemsTheSame: ")
-            return  oldItem.addressString == newItem.addressString
+    class SMSItemDiffCallback : DiffUtil.ItemCallback<SMSThreadANDServerInfo>() {
+        override fun areItemsTheSame(oldItem: SMSThreadANDServerInfo, newItem: SMSThreadANDServerInfo): Boolean {
+            return  oldItem.smsThreadTable.contactAddress == newItem.smsThreadTable.contactAddress
 
 
         }
 
 
-        override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            Log.d(TAG, "areContentsTheSame: ${oldItem.isMarked == newItem.isMarked && oldItem == newItem}")
-            return oldItem.isMarked == newItem.isMarked && oldItem == newItem
+        override fun areContentsTheSame(oldItem: SMSThreadANDServerInfo, newItem: SMSThreadANDServerInfo): Boolean {
+            return oldItem == newItem
         }
 
     }
@@ -235,7 +251,10 @@ class SMSListAdapter(private val context: Context,
         fun onLongPressed(view:View, pos:Int, id: Long, address:String)
     }
 
+    interface ViewMarkHandler {
+        fun isMarked(id:Long): Boolean
 
+    }
 
 
 }

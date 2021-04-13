@@ -8,6 +8,7 @@ import com.google.gson.Gson
 const val SENDER_INFO_SEARCHING = 0
 const val SENDER_INFO_FROM_DB= 1
 const val SENDER_INFO_FROM_CONTENT_PROVIDER = 2
+const val SENDER_INFO_NOT_FOUND = 3
 @Keep
 data class SMS(var isDummy:Boolean = false,
                var addresStringNonFormated: String = "",

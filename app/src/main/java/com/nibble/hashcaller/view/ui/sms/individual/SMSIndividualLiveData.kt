@@ -30,12 +30,14 @@ class SMSIndividualLiveData(
 
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+        val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository = SMSLocalRepository(
             context,
             spamListDAO,
             smssendersInfoDAO,
-            mutedSendersDAO
+            mutedSendersDAO,
+            smsThreadsDAO
         )
         return repository.fetchIndividualSMS(contact)
 

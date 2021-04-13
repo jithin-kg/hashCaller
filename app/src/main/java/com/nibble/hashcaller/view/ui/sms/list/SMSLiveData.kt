@@ -4,11 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
+import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
+import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -20,16 +21,16 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SMSLiveData(private val context: Context,private val repository: SMSLocalRepository?):
-    ContentProviderLiveDataFlow<MutableList<SMS>>(
+    ContentProviderLiveDataFlow<MutableList<SmsThreadTable>>(
         context,
         URI
     ) {
 
-    private lateinit var spamListDAO:SpamListDAO
-    private lateinit var smssendersInfoDAO : SMSSendersInfoFromServerDAO
-    private lateinit var mutedSendersDAO:IMutedSendersDAO
+//    private lateinit var spamListDAO:SpamListDAO
+//    private lateinit var smssendersInfoDAO : SMSSendersInfoFromServerDAO
+//    private lateinit var mutedSendersDAO:IMutedSendersDAO
+//    private lateinit var smsThreadsDAO:ISMSThreadsDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
-    private var livedataList:MutableLiveData<List<SMS>> = MutableLiveData()
 
     companion object {
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
@@ -37,7 +38,7 @@ class SMSLiveData(private val context: Context,private val repository: SMSLocalR
             SMSContract.INBOX_SMS_URI
         private const val TAG = "__SMSLiveDataFlow"
     }
-     private suspend fun getMessages(context: Context): MutableList<SMS> {
+     private suspend fun getMessages(context: Context): ArrayList<SmsThreadTable> {
          pageOb.page = 0 //set page size to 0 when there is a change in sms
 
 //        SMSViewModel.isLoading.postValue(true)
@@ -82,14 +83,16 @@ class SMSLiveData(private val context: Context,private val repository: SMSLocalR
         return data
     }
     fun update(address:String){
-        val repository =
-            SMSLocalRepository(
-                context,
-                spamListDAO,
-                smssendersInfoDAO,
-                mutedSendersDAO
-            )
-        repository.markSMSAsRead(address)
+//        val repository =
+//            SMSLocalRepository(
+//                context,
+//                spamListDAO,
+//                smssendersInfoDAO,
+//                mutedSendersDAO,
+//                smsThreadsDAO
+//            )
+
+        repository?.markSMSAsRead(address)
     }
 
     override suspend fun getContentProviderValue(searchText:String?) = getMessages(context)

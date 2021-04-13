@@ -210,7 +210,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
             var newList:MutableList<SMS> = mutableListOf()
 
             it.forEach{sms-> newList.add(sms.deepCopy())}
-            smsRecyclerAdapter?.setList(newList)
+//            smsRecyclerAdapter?.setList(newList)
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
             this.viewMesages.shimmerViewContainer.visibility = View.GONE
@@ -279,8 +279,8 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         rcrViewSMSList?.apply {
             layoutManager = LinearLayoutManager(activity)
             layoutMngr = layoutManager as LinearLayoutManager
-            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
-                                                                               pno:String->onContactItemClicked(view,threadId, pos, pno)  }
+//            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
+//                                                                               pno:String->onContactItemClicked(view,threadId, pos, pno)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter
 
@@ -294,7 +294,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     }
 
 
-    private fun onContactItemClicked(view: View, threadId: Long, pos: Int, address: String) {
+    private fun onContactItemClicked(view: View, threadId: Long, pos: Int, address: String): Int {
         Log.d(TAG, "onContactItemClicked address is : $address")
         if(markingStarted){
             //if the view is already marked, then uncheck it
@@ -318,7 +318,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         }
 
 //            this.smsListVIewModel.changelist(this.smsLIst!!, this.requireActivity())
-
+    return 0
     }
     override fun onResume() {
         super.onResume()

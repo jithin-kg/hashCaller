@@ -10,6 +10,7 @@ import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
+import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -19,7 +20,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SMSLiveData2(private val context: Context):
-    ContentProviderLiveData<MutableList<SMS>>(context,
+    ContentProviderLiveData<MutableList<SmsThreadTable>>(context,
         URI
     )  {
 
@@ -34,7 +35,7 @@ class SMSLiveData2(private val context: Context):
             SMSContract.INBOX_SMS_URI
         private const val TAG = "__MessagesLiveData"
     }
-     private suspend fun getMessages(context: Context): MutableList<SMS> {
+     private suspend fun getMessages(context: Context): ArrayList<SmsThreadTable> {
 
          pageOb.page = 0 //set page size to 0 when there is a change in sms
 
@@ -43,18 +44,21 @@ class SMSLiveData2(private val context: Context):
          smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
          val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
           mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
+         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
          val repository =
             SMSLocalRepository(
                 context,
                 spamListDAO,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                smsThreadsDAO
             )
-        val res =  repository.fetchSMS(null)
+         repository.fetchSMS(null).apply {
+            return this
+        }
 
         //IMPORTANT from backgroudn thread we need to call postValue to set livedata
-        return res
 
 
     }
@@ -79,12 +83,15 @@ class SMSLiveData2(private val context: Context):
         return data
     }
     fun update(address:String){
+        val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
+
         val repository =
             SMSLocalRepository(
                 context,
                 spamListDAO,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                smsThreadsDAO
             )
         repository.markSMSAsRead(address)
     }

@@ -16,7 +16,6 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
-import com.nibble.hashcaller.work.replaceSpecialChars
 import retrofit2.HttpException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -46,6 +45,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val smsTracker:NewSmsTrackerHelper = NewSmsTrackerHelper( repository, sMSSendersInfoFromServerDAO)
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
     private lateinit var senderListChuckOfSize12: List<List<ContactAddressWithHashDTO>>
+    private val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
 
 
@@ -58,7 +58,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 context,
                 spamListDAO,
                 smssendersInfoDAO,
-                mutedSendersDAO
+                mutedSendersDAO,
+                smsThreadsDAO
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()

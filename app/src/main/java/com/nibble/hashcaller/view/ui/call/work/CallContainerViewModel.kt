@@ -404,6 +404,12 @@ class CallContainerViewModel(
         markedItemsPositions.clear()
     }
 
+    fun getmarkedItemSize(): Int {
+
+        var size = markedItems.value?.size
+        return size ?: 0
+    }
+
 
     companion object {
         const val TAG = "__SmsContainerViewModel"
