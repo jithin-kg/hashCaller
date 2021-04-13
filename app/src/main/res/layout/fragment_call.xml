@@ -94,7 +94,6 @@
                     app:layout_constraintStart_toStartOf="@+id/imgBtnCallTbrDelete"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete"
                     app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
-
                     />
 
                 <androidx.appcompat.widget.AppCompatImageButton

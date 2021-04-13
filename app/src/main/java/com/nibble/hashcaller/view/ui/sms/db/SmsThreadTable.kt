@@ -17,8 +17,9 @@ import java.util.*
  data class SmsThreadTable (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "threadId") var threadId: Long = 0,
-    @ColumnInfo(name = "name") var name:String? = null,
-
+    @ColumnInfo(name = "name") var name:String ="",
+    @ColumnInfo(name = "nameFromServer") var nameFromServer:String = "",
+    @ColumnInfo(name = "spamCountFromServer") var spamCountFromServer:Long = 0,
     @ColumnInfo(name = "contactAddress") var  contactAddress:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
     @ColumnInfo(name = "read") var readState: Int = 0,

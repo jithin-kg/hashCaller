@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.list
 
 import android.content.Context
 import android.graphics.Typeface
+import android.util.Log
 import android.view.*
 import android.view.View.OnLongClickListener
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -10,18 +11,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.SmsListViewBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
-import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
-import com.nibble.hashcaller.view.ui.sms.db.SMSThreadANDServerInfo
+import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
+import com.nibble.hashcaller.view.utils.getRelativeTime
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.android.synthetic.main.call_list.view.*
 
 
 /**
@@ -33,11 +33,11 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                      private val longPresHandler:LongPressHandler,
                      private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String, clickType:Int)->Int
 ) :
-    androidx.recyclerview.widget.ListAdapter<SMSThreadANDServerInfo, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
+    androidx.recyclerview.widget.ListAdapter<SmsThreadTable, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
     private val VIEW_TYPE_LOADING = 0
     private val VIEW_TYPE_SMS = 2;
 
-    private var smsList:MutableList<SMSThreadANDServerInfo> = mutableListOf()
+    private var smsList:MutableList<SmsThreadTable> = mutableListOf()
     companion object {
         private const val TAG = "__SMSListAdapter";
         public var searchQry:String? = null
@@ -88,7 +88,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
         }
     }
 
-    fun setList(it: MutableList<SMSThreadANDServerInfo>) {
+    fun setList(it: MutableList<SmsThreadTable>) {
         this.smsList = it!!
 //        val copy:MutableList<SMS> = mutableListOf()
 //        this.smsList.forEach{copy.add(it)}
@@ -103,7 +103,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
-            sms: SMSThreadANDServerInfo, context: Context,
+            sms: SmsThreadTable, context: Context,
             onContactItemClickListener: (view: View, threadId: Long, pos: Int, pno: String, clickType: Int) -> Int,
             position: Int
         ) {
@@ -119,24 +119,30 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             var senderInforFrom = SENDER_INFO_SEARCHING
             var nameStr = ""
             var firstLetter = ""
-                if(sms.smsThreadTable.name!=null){
-                    nameStr = sms.smsThreadTable.name!!
+
+                if(sms.name.isNotEmpty()){
+                    nameStr = sms.name!!
                     senderInforFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                }else if(sms.smsenderInfoFromServer!=null && sms.smsenderInfoFromServer?.name.isNotEmpty() ){
-                    nameStr = sms.smsenderInfoFromServer.name
+                }else if(sms.nameFromServer.isNotEmpty() ){
+                    nameStr = sms.nameFromServer!!
                     senderInforFrom = SENDER_INFO_FROM_DB
                     //todo make info found from hash caller visible here
                 }
-                if(sms.smsenderInfoFromServer!=null ){
-                    isSpam = sms.smsenderInfoFromServer.spamReportCount > 0
-                }
-
+                    isSpam = sms.spamCountFromServer!! > 0
             if(nameStr.isEmpty()){
                 //name is not found in server on content provider so, set name as number
-                nameStr = formatPhoneNumber(sms.smsThreadTable.contactAddress)
+                nameStr = formatPhoneNumber(sms.contactAddress)
                 senderInforFrom = SENDER_INFO_NOT_FOUND
             }
 
+            if(senderInforFrom == SENDER_INFO_FROM_DB){
+                binding.tvIdentifiedByhash.beVisible()
+                binding.imgvIdentifiedByHash.beVisible()
+
+            }else{
+                binding.tvIdentifiedByhash.beInvisible()
+                binding.imgvIdentifiedByHash.beInvisible()
+            }
             if(isSpam){
                 binding.textViewSMScontactCrclr.setRandomBackgroundCircle(TYPE_SPAM)
                 binding.imgVBlkIconSms.beVisible()
@@ -149,7 +155,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             }
             binding.textViewSMScontactCrclr.text = firstLetter
             binding.textVSMSCntctName.text = nameStr
-            binding.tvSMSMPeek.text = sms.smsThreadTable.body
+            binding.tvSMSMPeek.text = sms.body
 
             if(senderInforFrom== SENDER_INFO_SEARCHING){
                 binding.pgBarSmsListItem.beVisible()
@@ -161,8 +167,12 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
+            if(viewMarkingHandler.isMarked(sms.threadId)){
+                binding.smsMarked.beVisible()
+            }else{
+                binding.smsMarked.beInvisible()
 
-
+            }
 //            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
 //                view.smsMarked.visibility = View.VISIBLE
 //            }else{
@@ -170,8 +180,8 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
 //
 //            }
 
-            binding.tvSMSMPeek.text = sms.smsThreadTable.body
-                if(sms.smsThreadTable.readState ==SMS_NOT_READ){
+            binding.tvSMSMPeek.text = sms.body
+                if(sms.readState ==SMS_NOT_READ){
                     binding.tvSMSMPeek.typeface = Typeface.DEFAULT_BOLD
                     binding.tvSMSMPeek.alpha = 0.87f
                     binding.tvSMSMPeek.setColorForText(R.color.textColor)
@@ -183,13 +193,13 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 }
 
 
-            binding.tvSMSTime.text = sms.smsThreadTable.dateInMilliseconds.toString()
+            binding.tvSMSTime.text = getRelativeTime(sms.dateInMilliseconds)
 
 
 
             binding.parentLayout.setOnLongClickListener(OnLongClickListener { v ->
-                var isToBeMarked =   onContactItemClickListener(v, sms. smsThreadTable.threadId, this.adapterPosition,
-                    sms.smsThreadTable.contactAddress!!, TYPE_LONG_PRESS
+                var isToBeMarked =   onContactItemClickListener(v, sms.threadId, this.adapterPosition,
+                    sms.contactAddress!!, TYPE_LONG_PRESS
                 )
                 when(isToBeMarked){
                     MARK_ITEM ->{
@@ -201,8 +211,8 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 true
             })
             binding.parentLayout.setOnClickListener{v->
-                var isToBeMarked =   onContactItemClickListener(v, sms. smsThreadTable.threadId, this.adapterPosition,
-                    sms.smsThreadTable.contactAddress!!,TYPE_CLICK
+                var isToBeMarked =   onContactItemClickListener(v, sms.threadId, this.adapterPosition,
+                    sms.contactAddress!!,TYPE_CLICK
                 )
                 when(isToBeMarked){
                     MARK_ITEM ->{
@@ -233,15 +243,15 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
 
 
     }
-    class SMSItemDiffCallback : DiffUtil.ItemCallback<SMSThreadANDServerInfo>() {
-        override fun areItemsTheSame(oldItem: SMSThreadANDServerInfo, newItem: SMSThreadANDServerInfo): Boolean {
-            return  oldItem.smsThreadTable.contactAddress == newItem.smsThreadTable.contactAddress
+    class SMSItemDiffCallback : DiffUtil.ItemCallback<SmsThreadTable>() {
+        override fun areItemsTheSame(oldItem: SmsThreadTable, newItem: SmsThreadTable): Boolean {
+            return  oldItem.contactAddress == newItem.contactAddress
 
 
         }
 
 
-        override fun areContentsTheSame(oldItem: SMSThreadANDServerInfo, newItem: SMSThreadANDServerInfo): Boolean {
+        override fun areContentsTheSame(oldItem: SmsThreadTable, newItem: SmsThreadTable): Boolean {
             return oldItem == newItem
         }
 

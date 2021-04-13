@@ -10,16 +10,15 @@ import androidx.room.*
 @Dao
 interface ISMSThreadsDAO {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(smsThreads: List<SmsThreadTable>)
 
 
     @Query("DELETE from chat_threads WHERE threadId=:threadId")
     suspend fun delete(threadId: Long)
 
-    @Transaction
     @Query("SELECT * FROM chat_threads WHERE isDeleted=:isDeleted ORDER BY dateInMilliseconds DESC ")
-    fun getAllLiveData(isDeleted:Boolean= false): LiveData<MutableList<SMSThreadANDServerInfo>>
+    fun getAllLiveData(isDeleted:Boolean= false): LiveData<MutableList<SmsThreadTable>>
 
     @Query("SELECT * FROM chat_threads ORDER BY dateInMilliseconds DESC ")
     suspend fun getAllCallLog(): MutableList<SmsThreadTable>
@@ -33,7 +32,7 @@ interface ISMSThreadsDAO {
     @Query("SELECT * FROM chat_threads WHERE contactAddress=:contactAddress")
     suspend fun find(contactAddress: String) : SmsThreadTable?
 
-    @Query("DELETE from callers_info_from_server ")
+    @Query("DELETE from chat_threads ")
     suspend fun deleteAll()
 
     @Query("UPDATE  chat_threads  SET name =:name, infoFoundFrom =:callerInfoFoundFrom  WHERE contactAddress =:contactAddress")
@@ -41,4 +40,13 @@ interface ISMSThreadsDAO {
 
     @Query("UPDATE  chat_threads  SET isDeleted=:isDeleted WHERE threadId =:threadId")
     suspend fun markAsDeleted(threadId: Long, isDeleted:Boolean)
+
+    @Query("UPDATE  chat_threads  SET read =:isRead WHERE contactAddress =:contactAddress")
+    suspend fun markAsRead(contactAddress: String, isRead:Int)
+
+    @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamReportCount, nameFromServer =:name WHERE contactAddress =:contactAddress")
+    suspend fun updateWithServerInfo(contactAddress: String, spamReportCount: Long, name: String)
+
+    @Query("UPDATE  chat_threads  SET body =:body, dateInMilliseconds =:dateInMilliseconds WHERE contactAddress =:contactAddress")
+    suspend fun updateBodyAndContents(contactAddress: String, body: String, dateInMilliseconds: Long)
 }

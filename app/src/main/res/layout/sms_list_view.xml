@@ -83,11 +83,35 @@
         android:alpha=".87"
         android:textColor="@color/textColor"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintEnd_toStartOf="@+id/tvSMSTime"
+        app:layout_constraintEnd_toStartOf="@+id/tvIdentifiedByhash"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/imgvIdentifiedByHash"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:alpha="0.7"
+        android:src="@drawable/bg_identified_by_hash_caller"
+        app:layout_constraintStart_toStartOf="@+id/tvIdentifiedByhash"
+        app:layout_constraintEnd_toEndOf="@+id/tvIdentifiedByhash"
+        app:layout_constraintTop_toTopOf="@+id/tvIdentifiedByhash"
+        app:layout_constraintBottom_toBottomOf="@+id/tvIdentifiedByhash"
 
+        />
+    <TextView
+        android:id="@+id/tvIdentifiedByhash"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:text="H"
+        android:alpha="0.7"
+        android:gravity="center_horizontal|center_vertical"
+        android:padding="3dp"
+        app:layout_constraintEnd_toStartOf="@+id/tvSMSTime"
+        app:layout_constraintTop_toTopOf="@+id/textVSMSCntctName"
+        app:layout_constraintBottom_toBottomOf="@+id/textVSMSCntctName"
+        android:layout_marginEnd="8dp"
+        />
     <TextView
         android:id="@+id/tvSMSSender"
         android:layout_width="wrap_content"
@@ -188,13 +212,15 @@
             android:id="@+id/tvHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="H"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

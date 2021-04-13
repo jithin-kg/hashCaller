@@ -416,7 +416,9 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
     }
 
     fun markAsRead(contactAddress: String) = viewModelScope.launch {
-        repository!!.markSMSAsRead(contactAddress)
+        repository?.marAsReadInDB(contactAddress)
+        repository?.markSMSAsRead(contactAddress)
+
 
 
     }

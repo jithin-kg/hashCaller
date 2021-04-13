@@ -512,7 +512,7 @@ class CallContainerRepository(
         dao.deleteAll()
     }
 
-    suspend fun updateCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) {
+    suspend fun insertIntoCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) {
 
         callLogDAO?.insert(logsFromContentProvider)
 

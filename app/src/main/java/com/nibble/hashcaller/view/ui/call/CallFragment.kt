@@ -863,11 +863,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
         this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
             when (it) {
-                SMS_DELETE_ON_PROGRESS -> {
+                DELETE_ON_PROGRESS -> {
                     binding.imgBtnCallTbrDelete.beInvisible()
+
                     binding.pgBarDeleting.beVisible()
                 }
-                SMS_DELETE_ON_COMPLETED -> {
+                DELETE_ON_COMPLETED -> {
                     Log.d(TAG, "SMS_DELETE_ON_COMPLETED: ")
                     showSearchView()
                 }

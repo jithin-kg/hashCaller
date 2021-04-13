@@ -151,8 +151,8 @@ const val WAS_MESSENGER_RECORDER_SHOWN = "was_messenger_recorder_shown"
 const val DEFAULT_TAB = "default_tab"
 const val START_NAME_WITH_SURNAME = "start_name_with_surname"
 const val FAVORITES = "favorites"
-const val SMS_DELETE_ON_PROGRESS = 0
-const val SMS_DELETE_ON_COMPLETED = 1
+const val DELETE_ON_PROGRESS = 0
+const val DELETE_ON_COMPLETED = 1
 
 // security
 const val WAS_PROTECTION_HANDLED = "was_protection_handled"

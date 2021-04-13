@@ -36,6 +36,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
+import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
@@ -120,7 +121,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //            getFirstPageOfSMS()
             observeSMSList()
             observeSMSThreadsLivedata()
-//            observeSendersInfoFromServer()
+            observeSendersInfoFromServer()
 //            observePermissionLiveData()
 //            observeNumOfRowsDeleted()
             registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
@@ -345,7 +346,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         viewmodel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-            viewmodel.updateWithNewSenderInfo()
+            viewmodel.updateWithNewSenderInfo(it)
 
         })
     }
@@ -438,7 +439,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
-        viewmodel.updateWithNewSenderInfo()
+//        viewmodel.updateWithNewSenderInfo()
         isPaused = false
         if(this.viewmodel.SMS.hasObservers()){
             Log.d("__SMSContainerFragmentob", "onResume: hasobservers")
@@ -548,7 +549,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 Log.d(TAG, "onClick: ")
                 addToBlockList(MarkedItemsHandler.markedContactAddressForBlocking!!)
             }
-            R.id.fabSendNewSMS ->{
+            R.id.fabSendNewSMS -> {
+                Log.d(TAG, "onClick: fabSendNewSMS")
                 this.viewmodel.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
 //                val i = Intent(context, ContactSelectorActivity::class.java )
 //                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
@@ -699,6 +701,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrMuteSender.beInvisible()
         binding.imgBtnTbrBlock.beInvisible()
         binding.tvSelectedCount.beInvisible()
+        binding.pgBarSMSDeleting.beInvisible()
+
 
         unMarkItems()
 
@@ -770,7 +774,22 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onYesConfirmationDelete() {
         Log.d(TAG, "deleteSms: called")
 //        for(id in markedItems){
-        this.viewmodel.markThreadAsDeleted()
+        this.viewmodel.deleteMarkedSMSThreads().observe(viewLifecycleOwner, Observer {
+            when (it) {
+                DELETE_ON_PROGRESS -> {
+                    binding.imgBtnTbrDelete.beInvisible()
+                    binding.imgBtnTbrBlock.beInvisible()
+                    binding.imgBtnTbrMore.beInvisible()
+                    binding.imgBtnTbrMuteSender.beInvisible()
+                    binding.pgBarSMSDeleting.beVisible()
+//                    binding.pgBarDeleting.beVisible()
+                }
+                DELETE_ON_COMPLETED -> {
+                    showSearchView()
+                    viewmodel.clearMarkedPositions()
+                }
+            }
+        })
 //        }
 //        deleteList()
 

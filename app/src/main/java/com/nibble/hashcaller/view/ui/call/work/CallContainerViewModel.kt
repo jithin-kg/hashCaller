@@ -181,14 +181,14 @@ class CallContainerViewModel(
      * and delete in background
      */
     fun deleteThread():LiveData<Int> = liveData {
-        emit(SMS_DELETE_ON_PROGRESS)
+        emit(DELETE_ON_PROGRESS)
 
         viewModelScope.launch {
 //            val as1 = async {
             for(item in markedItems.value!!){
                 async { repository?.deleteCallLogsFromDBByid(item) }.await()
             }
-            emit(SMS_DELETE_ON_COMPLETED)
+            emit(DELETE_ON_COMPLETED)
             for (item in markedItems.value!!) {
                 repository?.deleteLog(item)
 //                async { repository?.deleteCallLogsFromDBByid(item) }
@@ -367,14 +367,12 @@ class CallContainerViewModel(
     fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
 
 
-
+        val as1 = async {
+            setName(logs).apply { repository?.insertIntoCallLogDb(logs) }
+        }
         val as2 = async { repository?.deleteCallLogs(logs) }
         val as3 = async { getInformationForTheseNumbers() }
-        val as1 = async {
-            setName(logs).apply {
-                repository?.updateCallLogDb(logs)
-            }
-        }
+
         as2.await()
         as1.await()
         as3.await()

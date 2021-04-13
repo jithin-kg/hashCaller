@@ -102,7 +102,19 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"
                     app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete" />
+                <ProgressBar
+                    android:id="@+id/pgBarSMSDeleting"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="invisible"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_delete_blue_24"
+                    app:layout_constraintEnd_toEndOf="@+id/imgBtnTbrDelete"
+                    app:layout_constraintStart_toStartOf="@+id/imgBtnTbrDelete"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"
 
+                    />
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnTbrDelete"
                     android:layout_width="wrap_content"

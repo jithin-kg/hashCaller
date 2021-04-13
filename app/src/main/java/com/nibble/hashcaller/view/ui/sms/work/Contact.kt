@@ -4,8 +4,8 @@ import androidx.annotation.Keep
 
 @Keep
 data class Contact(
-    val phoneNumber: String,
-    val newHash: String,
-    val name: String,
-    val spamCount: Long
+    val phoneNumber: String = "",
+    val newHash: String = "",
+    val name: String = "",
+    val spamCount: Long = 0
 )

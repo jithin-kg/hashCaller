@@ -6,9 +6,9 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.db.SMSThreadANDServerInfo
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
+import com.nibble.hashcaller.view.ui.sms.individual.util.DELETE_ON_PROGRESS
+import com.nibble.hashcaller.view.ui.sms.individual.util.DELETE_ON_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -24,7 +24,7 @@ class SMSViewModel(
 ): ViewModel() {
 
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(-1)
-    var smsThreadsLivedata: LiveData<MutableList<SMSThreadANDServerInfo>>? = repository?.getSMSThreadsLivedata()
+    var smsThreadsLivedata: LiveData<MutableList<SmsThreadTable>>? = repository?.getSMSThreadsLivedata()
     var mapofAddressAndPos: HashMap<String, Long> = hashMapOf() // for findin duplicate sms in list
 //    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
@@ -103,32 +103,10 @@ class SMSViewModel(
     /**
      * called when there is a change in table sender_infor_from_server changes
      */
-    fun updateWithNewSenderInfo() = viewModelScope.launch {
-
-
-
-//         viewModelScope.launch {
-//                   val r = async {
-//                        repository!!.fetchSMS(null, false)
-//                    }
-//
-//                     val lst = r.await()
-//
-//
-////             smsLiveData.value = sortedSMSByTime()
-//             smsLiveData.value = lst
-//
-//
-//
-//         }
-        repository!!.fetchSMS(null, false).apply {
-//            smsLiveData.value = this
-
+    fun updateWithNewSenderInfo(list: List<SMSSendersInfoFromServer>) = viewModelScope.launch {
+        for(item in list){
+            async { repository?.updateThreadsDBWithServerInfo(item) }.await()
         }
-
-
-
-
     }
 
 //    private fun sortedSMSByTime(): MutableList<SMS> {
@@ -150,15 +128,16 @@ class SMSViewModel(
     /**
      * function called when there is a change in sms from content provider
      */
-    fun updateLiveData(smsList: List<SMSThreadANDServerInfo>) = viewModelScope.launch  {
 
-        var mutableList: MutableList<SMSThreadANDServerInfo> = mutableListOf()
-        mutableList.addAll(smsList)
-
-
-
-
-    }
+//    fun updateLiveData(smsList: List<SMSThreadANDServerInfo>) = viewModelScope.launch  {
+//
+//        var mutableList: MutableList<SMSThreadANDServerInfo> = mutableListOf()
+//        mutableList.addAll(smsList)
+//
+//
+//
+//
+//    }
 
 
 
@@ -188,15 +167,25 @@ class SMSViewModel(
         repository!!.muteSenders()
     }
 
-    fun markThreadAsDeleted() = viewModelScope.launch {
+    fun deleteMarkedSMSThreads(): LiveData<Int> = liveData {
+        emit(DELETE_ON_PROGRESS)
+        viewModelScope.launch {
         var set: HashSet<Long> = hashSetOf()
+
         markedItems.value?.let {
             set.addAll(it)
         }
-        for(threadId in set){
-            async { repository?.markAsDelete(threadId) }.await()
+        for (threadId in set) {
+           val as1 =  async { repository?.markAsDelete(threadId) }
+           val as2 =  async { repository?.deleteSmsThread(threadId) }
+            kotlinx.coroutines.delay(300L)
         }
         clearMarkeditems()
+
+    }.join()
+        clearMarkeditems()
+        emit(DELETE_ON_COMPLETED)
+
     }
     fun clearMarkeditems(){
         markedItems.value?.clear()
@@ -242,12 +231,14 @@ class SMSViewModel(
 //        }
 
         sms?.let{
-         val as1 =    async {  repository?.updateThreadsDb(it) }
-         val as2 = async { getInformationForTheseNumbers()}
-         val as3 = async { repository?.deleteFromDb(it) }
+         val as1 =    async {  repository?.insertIntoThreadsDb(it) }
+         val as2 = async{repository?.updateThreadContent(it)}
+         val as3 = async { getInformationForTheseNumbers()}
+         val as4 = async { repository?.deleteFromDb(it) }
             as1.await()
             as2.await()
             as3.await()
+            as4.await()
         }
 
 
@@ -268,10 +259,14 @@ class SMSViewModel(
         }
         for(item in threads){
             if(numberNamehashMap.containsKey(item.contactAddress)){
-                item.name = numberNamehashMap[item.contactAddress]
+                item.name = numberNamehashMap[item.contactAddress] ?: ""
                 item.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
             }
         }
+    }
+
+    fun clearMarkedPositions() {
+        markedItemsPositions.clear()
     }
 
     companion object

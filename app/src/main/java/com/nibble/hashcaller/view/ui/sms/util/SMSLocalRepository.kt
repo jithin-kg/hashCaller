@@ -29,7 +29,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
-import com.nibble.hashcaller.view.ui.sms.db.SMSThreadANDServerInfo
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -164,6 +163,12 @@ class SMSLocalRepository(
          }
     }
 
+    /**
+     * function to mark the sms as read in smsthreads table
+     */
+    suspend fun marAsReadInDB(contactAddress: String) {
+        smsThreadsDAO?.markAsRead(contactAddress, 1)
+    }
     @SuppressLint("LongLogTag")
     fun markSMSAsRead(addressString: String?){
         try {
@@ -412,7 +417,9 @@ class SMSLocalRepository(
 //                        }
                         objSMS.dateInMilliseconds = dateMilli
 //                        setRelativeTime(objSMS, dateMilli)
-
+                        objSMS.spamCountFromServer = 0
+                        objSMS.name = ""
+                        objSMS.nameFromServer = ""
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
                         ) {
@@ -1799,13 +1806,13 @@ class SMSLocalRepository(
 
 
     @SuppressLint("LongLogTag")
-    suspend fun deleteSmsThread(): Int {
+    suspend fun deleteSmsThread(id:Long): Int {
         smsDeletingStarted = true
         var numRowsDeleted = 0
-        var copy:MutableList<Long> = mutableListOf()
-        copy.addAll(markedThreadIds)
+//        var copy:MutableList<Long> = mutableListOf()
+//        copy.addAll(markedThreadIds)
         try{
-            for(id in copy) {
+//            for(id in copy) {
                 Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = Telephony.Sms.CONTENT_URI
                 val selection = "${Telephony.Sms.THREAD_ID} = ?"
@@ -1820,7 +1827,7 @@ class SMSLocalRepository(
 
 
                 }
-            }
+//            }
         }catch (e: Exception) {
             Log.d(SMScontainerRepository.TAG, "deleteSmsThread: exception $e")
         }finally {
@@ -1850,6 +1857,7 @@ class SMSLocalRepository(
 
     suspend fun deleteAllSMmsendersINo() {
         smssendersInfoDAO!!.deleteAll()
+        smsThreadsDAO?.deleteAll()
     }
 
     fun searchSmsForIndividualSMS(text: String, contactAddress: String?): List<SMS> {
@@ -2085,11 +2093,11 @@ class SMSLocalRepository(
         }
     }
 
-    suspend fun updateThreadsDb(sms: MutableList<SmsThreadTable>) {
-        smsThreadsDAO?.insert(sms)
+    suspend fun insertIntoThreadsDb(smsChatsFromCprovider: MutableList<SmsThreadTable>) {
+        smsThreadsDAO?.insert(smsChatsFromCprovider)
     }
 
-    fun getSMSThreadsLivedata(): LiveData<MutableList<SMSThreadANDServerInfo>>? {
+    fun getSMSThreadsLivedata(): LiveData<MutableList<SmsThreadTable>>? {
         return smsThreadsDAO?.getAllLiveData()
     }
 
@@ -2107,7 +2115,7 @@ class SMSLocalRepository(
 
     suspend fun markAsDelete(threadId: Long) {
         smsThreadsDAO?.markAsDeleted(threadId, isDeleted = true)
-        delay(400L)
+//        delay(400L)
 
     }
 
@@ -2132,6 +2140,26 @@ class SMSLocalRepository(
 
 
     }
+
+    suspend fun updateThreadsDBWithServerInfo(item: SMSSendersInfoFromServer) {
+        smsThreadsDAO?.updateWithServerInfo(item.contactAddress, item.spamReportCount, item.name)
+    }
+
+    /**
+     * function to upate thread's content such as body , read, type, date
+     */
+    suspend fun updateThreadContent(smsFromCprovider: MutableList<SmsThreadTable>) {
+        for(item in smsFromCprovider){
+            smsThreadsDAO?.find(contactAddress = item.contactAddress).apply {
+                if(this!=null){
+                    smsThreadsDAO?.updateBodyAndContents(item.contactAddress,
+                        item.body,  item.dateInMilliseconds )
+                }
+            }
+        }
+    }
+
+
 
 }
 
