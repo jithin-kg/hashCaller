@@ -13,52 +13,53 @@
     android:foreground="?android:attr/selectableItemBackground"
     android:focusable="true">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutcallMain"
         android:layout_width="match_parent"
-        android:paddingTop="16dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorBackground"
-        android:layout_height="wrap_content">
+        android:paddingTop="16dp">
+
         <ProgressBar
             android:id="@+id/pgBarCallItem"
             android:layout_width="68dp"
             android:layout_height="68dp"
-            android:fromDegrees="0"
-            android:toDegrees="180"
             android:elevation="6dp"
-            android:visibility="invisible"
+            android:fromDegrees="0"
             android:gravity="center_vertical|center_horizontal"
+            android:toDegrees="180"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
             app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
             app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
-            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
-            />
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
+
         <TextView
             android:id="@+id/textViewCrclr"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:elevation="4dp"
-            android:textStyle="bold"
-            android:transitionName="firstLetterTransition"
             android:layout_marginStart="24dp"
-            android:textColor="@color/colorWhite"
+            android:elevation="4dp"
             android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/colorWhite"
             android:textSize="24sp"
+            android:transitionName="firstLetterTransition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgViewUserPhoto"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:elevation="6dp"
-            android:transitionName="contactImageTransition"
             android:src="@drawable/contact_circular_marked_background"
+            android:transitionName="contactImageTransition"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
-            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
-            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
             app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
-            />
+            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
 
         <ImageView
             android:id="@+id/imgViewCallSpamIcon"
@@ -79,50 +80,46 @@
             android:src="@drawable/contact_circular_marked_background"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
-            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
-            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
             app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
-             />
+            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
 
         <TextView
             android:id="@+id/textVcallerName"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
+            android:alpha=".87"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/textColor"
-            android:alpha=".87"
-            android:padding="4dp"
-            android:textStyle="bold"
 
+            android:padding="4dp"
             android:text="ContactName"
             android:textAppearance="@style/TextAppearance.AppCompat"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.209"
-            app:layout_constraintStart_toEndOf="@+id/textViewCrclr"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.19" />
+            android:textColor="@color/textColor"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/imgVCallType"
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
 
         <ImageView
             android:id="@+id/imgVCallType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewTime"
+            app:layout_constraintStart_toEndOf="@+id/textViewCrclr"
+            app:layout_constraintTop_toTopOf="@+id/textViewTime"
             app:srcCompat="@drawable/ic_baseline_call_received_24" />
 
         <TextView
             android:id="@+id/textViewTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="TextView"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
             android:alpha=".60"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.874"
-            app:layout_constraintStart_toEndOf="@+id/textVCallDirection"
+            android:text="TextView"
+            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
 
         <ImageView
@@ -130,29 +127,60 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:alpha="0.12"
-            app:srcCompat="@drawable/horizontal_line"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/textVcallerName"
-            app:layout_constraintTop_toBottomOf="@+id/imgVCallType" />
+            app:layout_constraintTop_toBottomOf="@+id/imgVCallType"
+            app:srcCompat="@drawable/horizontal_line" />
 
         <TextView
-            android:id="@+id/textVCallDirection"
+            android:id="@+id/tvIndentifiedBy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="H"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
+            app:layout_constraintStart_toEndOf="@+id/textViewTime"
+            app:layout_constraintTop_toTopOf="@+id/textViewTime" />
+
+        <ImageButton
+            android:id="@+id/imgBtnCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewTime"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textVcallerName"
+            app:srcCompat="@drawable/ic_baseline_call_white" />
+
+        <TextView
+            android:id="@+id/tvSim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="TextView"
-            android:alpha=".60"
-            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
+            app:layout_constraintBottom_toBottomOf="@+id/textVcallerName"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
+            app:layout_constraintHorizontal_bias="0.886"
+            app:layout_constraintStart_toEndOf="@+id/textVcallerName"
+            app:layout_constraintTop_toTopOf="@+id/textVcallerName"
+            app:layout_constraintVertical_bias="0.666" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/textVCallDirection"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:alpha=".60"-->
+        <!--            android:text="TextView"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/imgVCallType"-->
+        <!--            app:layout_constraintStart_toEndOf="@+id/imgVCallType"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/imgVCallType" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutExpandableCall"

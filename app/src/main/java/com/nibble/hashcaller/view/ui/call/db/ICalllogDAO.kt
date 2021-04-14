@@ -33,7 +33,7 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log WHERE number=:contactAddress")
     suspend fun find(contactAddress: String) : CallLogAndInfoFromServer?
 
-    @Query("DELETE from callers_info_from_server ")
+    @Query("DELETE from call_log ")
     suspend fun deleteAll()
 
     @Query("UPDATE  call_log  SET name =:name, callerInfoFoundFrom =:callerInfoFoundFrom  WHERE number =:contactAddress")

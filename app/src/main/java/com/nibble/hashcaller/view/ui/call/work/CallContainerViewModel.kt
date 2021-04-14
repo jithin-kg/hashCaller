@@ -347,6 +347,7 @@ class CallContainerViewModel(
 
     fun clearCallLogDB() = viewModelScope.launch {
         repository!!.clearCallersInfoFromServer()
+
     }
 
     fun clearMarkedItems() = viewModelScope.launch{

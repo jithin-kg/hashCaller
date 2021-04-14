@@ -2,6 +2,10 @@ package com.nibble.hashcaller.work
 
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
+fun removeAllNonNumbericChars(str:String): String {
+
+    return str.replace(Regex("[^0-9]"), "")
+}
 
 /**
  * @param1 phonenumber

@@ -18,11 +18,15 @@ import com.nibble.hashcaller.view.ui.call.db.*
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
+import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
+import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.nibble.hashcaller.work.removeAllNonNumbericChars
+import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -327,16 +331,23 @@ class CallContainerRepository(
     @SuppressLint("LongLogTag")
     private fun getRawCallLogs(): MutableList<CallLogTable> {
         val listOfCallLogs = mutableListOf<CallLogTable>()
+        var simIds = mutableListOf<String>()
+        simIds.addAll(context.getSimIndexForSubscriptionId())
+
         val projection = arrayOf(
             CallLog.Calls.NUMBER,
             CallLog.Calls.TYPE,
             CallLog.Calls.DURATION,
             CallLog.Calls.CACHED_NAME,
             CallLog.Calls._ID,
-            CallLog.Calls.DATE
+            CallLog.Calls.DATE,
+            "subscription_id"
         )
         var cursor:Cursor? = null
-
+        val numberToSimIDMap = HashMap<String, Int>()
+        context.getAvailableSIMCardLabels().forEach {
+            numberToSimIDMap[it.phoneNumber] = it.id
+        }
         try {
             cursor = context.contentResolver.query(
                 CallLogLiveData.URI,
@@ -347,12 +358,24 @@ class CallContainerRepository(
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
+                    var i = 0
+                    while(i<cursor.columnCount){
+                        Log.d(TAG+"colum", " ${cursor.getColumnName(i)} :  ${cursor.getString(i)}")
+                        
+                        i++
+                    }
+                    Log.d(TAG, "getRawCallLogs: -------------------------------------------------")
                     var number = cursor.getString(0)
                     val type: Int = cursor.getInt(1)
                     val duration: String = cursor.getString(2)
                     val name:String? = cursor.getString(3)
                     val id = cursor.getLong(4)
                     var dateInMilliseconds = cursor.getLong(5)
+                    var subId = cursor.getString(6)
+                    Log.d(TAG+"sub", "getRawCallLogs: $subId")
+                    var simID =  simIds.indexOf(removeAllNonNumbericChars(subId))
+                    Log.d(TAG+"simId", "getRawCallLogs: $simID")
+
                     val fmt =
                         SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
                     val dateInLong: Long = dateInMilliseconds.toLong()
@@ -372,7 +395,7 @@ class CallContainerRepository(
                         isMarked = true
                     }
                     val log = CallLogTable(id, name,
-                        formatPhoneNumber(number), type, duration, dateInMilliseconds = dateInMilliseconds)
+                        formatPhoneNumber(number), type, duration, dateInMilliseconds = dateInMilliseconds, simId = simID)
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
@@ -510,6 +533,7 @@ class CallContainerRepository(
 
     suspend fun clearCallersInfoFromServer() {
         dao.deleteAll()
+        callLogDAO?.deleteAll()
     }
 
     suspend fun insertIntoCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) {

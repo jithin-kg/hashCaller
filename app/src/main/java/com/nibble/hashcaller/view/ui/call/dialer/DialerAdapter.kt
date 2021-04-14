@@ -133,7 +133,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }else{
                 logBinding.imgViewCallMarked.beInvisible()
             }
-
+            val sim = callLog.callLogTable.simId
+            //todo simid can be -1 then, do not show this, invisisble
+        logBinding.tvSim.text = (sim + 1).toString()
             if(prevTime!= null)
 //                if(prevTime == callLog.dateInMilliseconds){
 //                    expandableView.beVisible()
@@ -163,7 +165,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
 
             //call type
-            setCallTypeImage(callLog,  logBinding.imgVCallType,logBinding.textVCallDirection)
+            setCallTypeImage(callLog,  logBinding.imgVCallType)
 
 
             /**
@@ -269,14 +271,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                      logBinding.imgViewCallSpamIcon.beVisible()
                      logBinding.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
                      circle.text = ""
-                     circle.setRandomBackgroundCircle(TYPE_SPAM)
+                  callLog.callLogTable.color = circle.setRandomBackgroundCircle(TYPE_SPAM)
                  }else{
                      logBinding.imgViewCallSpamIcon.beInvisible()
                      val name: String = if(callLog.callLogTable.name == null || callLog.callLogTable.name!!.isEmpty()) callLog.callLogTable.number else callLog .callLogTable.name!!
                      val firstLetter = name[0]
                      val firstLetterString = firstLetter.toString().toUpperCase()
                      circle.text = firstLetterString
-                     circle.setRandomBackgroundCircle()
+                     callLog.callLogTable.color =  circle.setRandomBackgroundCircle()
 
                  }
              }else{
@@ -285,7 +287,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                  val firstLetter = name[0]
                  val firstLetterString = firstLetter.toString().toUpperCase()
                  circle.text = firstLetterString
-                 circle.setRandomBackgroundCircle()
+                 callLog.callLogTable.color = circle.setRandomBackgroundCircle()
              }
 
 
@@ -315,7 +317,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     }
 
 
-    private fun setCallTypeImage(callLog: CallLogAndInfoFromServer, imageView: ImageView, textView:TextView) {
+    private fun setCallTypeImage(callLog: CallLogAndInfoFromServer, imageView: ImageView) {
 //             /** Call log type for incoming calls.  */
 //             val INCOMING_TYPE = 1
 //
@@ -335,36 +337,40 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //             val BLOCKED_TYPE = 6
         if(callLog.callersInfoFromServer!=null){
             if(callLog.callersInfoFromServer.spamReportCount > 0 ){
-                textView.setColorForText( R.color.spamText)
+//                textView.setColorForText( R.color.spamText)
 
             }else{
-                textView.setColorForText(R.color.textColor)
+//                textView.setColorForText(R.color.textColor)
 
             }
         }else{
-            textView.setColorForText(R.color.textColor)
+//            textView.setColorForText(R.color.textColor)
 
         }
 
         when (callLog.callLogTable.type) {
             1 -> { // incomming call
                 imageView.setImageResource(R.drawable.ic_baseline_call_received_24)
-                textView.text = "Incoming call"
+//                textView.text = "Incoming call"
 
             }
             2 -> { // outgoing call
                 imageView.setImageResource(R.drawable.ic_baseline_call_made_24)
-                textView.text = "Outgoing call"
+//                textView.text = "Outgoing call"
             }
             3 -> {
                 imageView.setImageResource(R.drawable.ic_baseline_call_missed_24)
-                textView.text = "Missed call"
+//                textView.text = "Missed call"
             }
             5->{
-                textView.text = "Rejected"
+//                textView.text = "Rejected"
+                imageView.setImageResource(R.drawable.ic_baseline_call_missed_24)
+
             }
             6 ->{
-                textView.text = "Blocked"
+//                textView.text = "Blocked"
+                imageView.setImageResource(R.drawable.ic_baseline_block_no_color)
+
             }
 
         }

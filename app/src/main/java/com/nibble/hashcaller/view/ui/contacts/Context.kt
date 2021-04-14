@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.telecom.TelecomManager
+import android.telephony.SubscriptionManager
 import android.view.View
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -20,12 +22,48 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICAT
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
+import com.nibble.hashcaller.view.utils.SIMAccount
 import java.util.*
 
 
 
+val Context.telecomManager: TelecomManager get() = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
 
+@SuppressLint("MissingPermission")
+fun Context.getSimIndexForSubscriptionId(): MutableList<String> {
+    val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+    val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
+    var simIds = mutableListOf<String>()
+    if(availableSIMs.size > 0){
+        for(subScriptionInfo in availableSIMs){
+            simIds.add(subScriptionInfo.iccId)
+        }
+    }
+    return simIds
+
+
+}
+@SuppressLint("MissingPermission")
+fun Context.getAvailableSIMCardLabels(): ArrayList<SIMAccount> {
+    val SIMAccounts = ArrayList<SIMAccount>()
+    try {
+        telecomManager.callCapablePhoneAccounts.forEachIndexed { index, account ->
+            val phoneAccount = telecomManager.getPhoneAccount(account)
+            var label = phoneAccount.label.toString()
+            var address = phoneAccount.address.toString()
+            if (address.startsWith("tel:") && address.substringAfter("tel:").isNotEmpty()) {
+                address = Uri.decode(address.substringAfter("tel:"))
+                label += " ($address)"
+            }
+
+            val SIM = SIMAccount(index + 1, phoneAccount.accountHandle, label, address.substringAfter("tel:"))
+            SIMAccounts.add(SIM)
+        }
+    } catch (ignored: Exception) {
+    }
+    return SIMAccounts
+}
 
 fun Context.isVisible(view:View): Boolean {
     if(view.visibility== View.VISIBLE){

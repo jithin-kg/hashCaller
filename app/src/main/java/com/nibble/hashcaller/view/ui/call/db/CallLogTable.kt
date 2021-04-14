@@ -23,5 +23,7 @@ import java.util.*
     @ColumnInfo(name = "duration") var duration: String = "",
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
     @ColumnInfo(name = "callerInfoFoundFrom") var callerInfoFoundFrom: Int = 0,
+    @ColumnInfo(name = "color") var color: Int = 0,
+    @ColumnInfo(name ="simID") var simId:Int = 1,
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false) {
 }
