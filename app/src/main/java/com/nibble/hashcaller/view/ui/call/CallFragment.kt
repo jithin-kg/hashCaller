@@ -38,7 +38,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
-import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
@@ -121,7 +121,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 //        getFirst10items()
         observeCallLog()
-
         observeCallLogMutabeLivedata()
         initRecyclerView()
 //        addScrollListener()
@@ -362,7 +361,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment) {
 
-                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogAndInfoFromServer, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
+                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
             adapter = callLogAdapter
 
         }
@@ -705,7 +704,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         position: Int,
         view: View,
         btn: Int,
-        callLog: CallLogAndInfoFromServer,
+        callLog: CallLogTable,
         clickType:Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
@@ -725,19 +724,19 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun startIndividualContactActivity(log: CallLogAndInfoFromServer, view: View) {
-        var name = log.callLogTable.name
+    private fun startIndividualContactActivity(log: CallLogTable, view: View) {
+        var name = log.name
         if(name.isNullOrEmpty()){
-            name = log.callersInfoFromServer?.title
+            name = log?.nameFromServer
         }
         if(name.isNullOrEmpty()){
-            name = log.callLogTable.number
+            name = log.number
         }
         val intent = Intent(context, IndividualCotactViewActivity::class.java )
-                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.callLogTable.number)
+                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
                 intent.putExtra("name", name )
                 intent.putExtra("photo", "")
-                intent.putExtra("color", log.callLogTable.color)
+                intent.putExtra("color", log.color)
 
                 val pairList = ArrayList<android.util.Pair<View, String>>()
                 val imgViewUserPhoto = view.findViewById<androidx.appcompat.widget.AppCompatImageView>(R.id.imgViewUserPhoto)

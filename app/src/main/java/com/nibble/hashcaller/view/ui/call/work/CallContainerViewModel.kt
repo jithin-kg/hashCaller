@@ -34,9 +34,9 @@ class CallContainerViewModel(
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
 
 //    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
-    var callLogTableData: LiveData<List<CallLogAndInfoFromServer>>? = repository!!.getAllCallLogLivedata()
+    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
 
-    var mutableCalllogTableData : MutableLiveData<MutableList<CallLogAndInfoFromServer>?> = MutableLiveData()
+    var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
 
 
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
@@ -59,8 +59,8 @@ class CallContainerViewModel(
         markedItemsPositions.remove(position)
         markedItems.value = markedItems.value
     }
-    fun updateMutableData(list: List<CallLogAndInfoFromServer>) {
-        val mutableList: MutableList<CallLogAndInfoFromServer> = mutableListOf()
+    fun updateMutableData(list: List<CallLogTable>) {
+        val mutableList: MutableList<CallLogTable> = mutableListOf()
         mutableList.addAll(list)
 
 
@@ -341,8 +341,15 @@ class CallContainerViewModel(
      * called when info about a caller comes from server, or db changes
      */
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
+          for(item in list){
+             val res =  async { repository?.find(item.contactAddress)  }.await()
+              if(res!=null){
+                  if(res.nameFromServer!= item.title || res.spamCount < item.spamReportCount){
+                      repository?.updateCallLogWithServerInfo(item)
+                  }
+              }
+          }
 
-        repository?.updateCallLogWithServerInfo(list)
     }
 
     fun clearCallLogDB() = viewModelScope.launch {
@@ -366,14 +373,11 @@ class CallContainerViewModel(
     }
 
     fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
-
-
         val as1 = async {
             setName(logs).apply { repository?.insertIntoCallLogDb(logs) }
         }
         val as2 = async { repository?.deleteCallLogs(logs) }
         val as3 = async { getInformationForTheseNumbers() }
-
         as2.await()
         as1.await()
         as3.await()

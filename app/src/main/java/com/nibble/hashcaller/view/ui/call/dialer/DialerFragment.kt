@@ -237,8 +237,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long, pos:Int, v:View, btn:Int, callLog: CallLogAndInfoFromServer, clickType:Int->onCallLogItemClicked(id, pos, v, btn, callLog, clickType)}
-            adapter = callLogAdapter
+//            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long, pos:Int, v:View, btn:Int, callLog: CallLogAndInfoFromServer, clickType:Int->onCallLogItemClicked(id, pos, v, btn, callLog, clickType)}
+//            adapter = callLogAdapter
 
         }
     }

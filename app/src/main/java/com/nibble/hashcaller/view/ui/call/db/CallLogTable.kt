@@ -18,6 +18,8 @@ import java.util.*
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id") var id: Long = 0,
     @ColumnInfo(name = "name") var name:String? = null,
+    @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,
+    @ColumnInfo(name = "spamCount") var spamCount: Long = 0,
     @ColumnInfo(name = "number") var  number:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
     @ColumnInfo(name = "duration") var duration: String = "",

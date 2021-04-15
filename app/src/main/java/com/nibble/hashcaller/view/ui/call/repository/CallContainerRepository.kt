@@ -23,10 +23,8 @@ import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.removeAllNonNumbericChars
-import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -354,7 +352,7 @@ class CallContainerRepository(
                 projection,
                 null,
                 null,
-                "${CallLog.Calls.DATE} DESC"
+                "${CallLog.Calls._ID} DESC Limit 200"
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
@@ -394,8 +392,8 @@ class CallContainerRepository(
                     if(markedIds.contains(id)){
                         isMarked = true
                     }
-                    val log = CallLogTable(id, name,
-                        formatPhoneNumber(number), type, duration, dateInMilliseconds = dateInMilliseconds, simId = simID)
+                    val log = CallLogTable(id = id, name = name,
+                        number = formatPhoneNumber(number), type = type, duration = duration, dateInMilliseconds = dateInMilliseconds, simId = simID)
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
@@ -542,7 +540,7 @@ class CallContainerRepository(
 
     }
 
-    fun getAllCallLogLivedata(): LiveData<List<CallLogAndInfoFromServer>>? {
+    fun getAllCallLogLivedata(): LiveData<List<CallLogTable>>? {
         return callLogDAO?.getAllLiveData()
     }
     suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
@@ -559,7 +557,7 @@ class CallContainerRepository(
 
         var idsFromCallLogTable : MutableList<Long> = mutableListOf()
 
-        callLogDAO?.getAll().apply {
+        callLogDAO?.getAllForDeleting().apply {
             if(this!=null){
                 idsFromCallLogTable.addAll(this.map {it.id})
                 val idsToBeRemoved = idsFromCallLogTable - idsFromContentPovider
@@ -573,21 +571,8 @@ class CallContainerRepository(
 
     }
 
-    suspend fun updateCallLogWithServerInfo(list: List<CallersInfoFromServer>) {
-        var inforfoundFrom = SENDER_INFO_SEARCHING
-        for (item in list){
-//            callLogDAO?.find(item.contactAddress).apply {
-
-               var name:String? =  getNameForAddressFromContentProvider(item.contactAddress)
-                if(name!=null){
-                    inforfoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                }else{
-                    name = item.title
-                    inforfoundFrom = SENDER_INFO_FROM_DB
-                }
-                callLogDAO?.update(item.contactAddress, name, inforfoundFrom)
-//            }
-        }
+    suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) {
+        callLogDAO?.update(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount)
     }
 
 
@@ -603,7 +588,14 @@ class CallContainerRepository(
         return name
     }
 
-
+    /**
+     * searach in calllog db
+     */
+    suspend fun find(contactAddress: String): CallLogTable? {
+        callLogDAO?.find(contactAddress).apply {
+            return this
+        }
+    }
 
 
     companion object{
