@@ -34,7 +34,7 @@ class CallContainerViewModel(
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
 
 //    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
-    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
+    var callLogTableData: LiveData<MutableList<CallLogTable>>? = repository!!.getAllCallLogLivedata()
 
     var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
 
@@ -411,6 +411,14 @@ class CallContainerViewModel(
 
         var size = markedItems.value?.size
         return size ?: 0
+    }
+
+    fun getFirst10Logs() :LiveData<MutableList<CallLogTable>> = liveData {
+        repository?.getFirst10Logs()?.let {
+            it.add(CallLogTable(null))
+            emit(it)
+
+        }
     }
 
 

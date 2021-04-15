@@ -408,7 +408,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         }
     }
     interface ViewMarkHandler {
-        fun isMarked(id:Long): Boolean
+        fun isMarked(id:Long?): Boolean
 
     }
 

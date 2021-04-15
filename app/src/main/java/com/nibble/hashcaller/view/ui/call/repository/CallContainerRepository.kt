@@ -540,7 +540,7 @@ class CallContainerRepository(
 
     }
 
-    fun getAllCallLogLivedata(): LiveData<List<CallLogTable>>? {
+    fun getAllCallLogLivedata(): LiveData<MutableList<CallLogTable>>? {
         return callLogDAO?.getAllLiveData()
     }
     suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
@@ -553,13 +553,13 @@ class CallContainerRepository(
     suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogTable>) {
 
         var idsFromContentPovider : MutableList<Long> = mutableListOf()
-        idsFromContentPovider.addAll(logsFromContentProvider.map { it.id})
+        idsFromContentPovider.addAll(logsFromContentProvider.map { it.id!!})
 
         var idsFromCallLogTable : MutableList<Long> = mutableListOf()
 
         callLogDAO?.getAllForDeleting().apply {
             if(this!=null){
-                idsFromCallLogTable.addAll(this.map {it.id})
+                idsFromCallLogTable.addAll(this.map {it.id!!})
                 val idsToBeRemoved = idsFromCallLogTable - idsFromContentPovider
                 for(id in idsToBeRemoved){
                     callLogDAO?.delete(id)
@@ -595,6 +595,10 @@ class CallContainerRepository(
         callLogDAO?.find(contactAddress).apply {
             return this
         }
+    }
+
+    suspend fun getFirst10Logs(): MutableList<CallLogTable>? {
+        return callLogDAO?.getFirst10Logs()
     }
 
 

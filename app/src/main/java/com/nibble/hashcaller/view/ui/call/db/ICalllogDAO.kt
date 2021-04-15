@@ -18,7 +18,7 @@ interface ICallLogDAO {
     suspend fun delete(id: Long)
 
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted ORDER BY dateInMilliseconds DESC LIMIT 200")
-    fun getAllLiveData(isDeleted:Boolean= false): LiveData<List<CallLogTable>>
+    fun getAllLiveData(isDeleted:Boolean= false): LiveData<MutableList<CallLogTable>>
 
     @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
     suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>
@@ -40,4 +40,7 @@ interface ICallLogDAO {
 
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE id =:id")
     suspend fun markAsDeleted(id: Long, isDeleted:Boolean)
+
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted ORDER BY dateInMilliseconds DESC LIMIT 2")
+    suspend fun getFirst10Logs(isDeleted: Boolean = false) : MutableList<CallLogTable>
 }

@@ -118,18 +118,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     registerForContextMenu( binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
     if(checkContactPermission()){
-
-//        getFirst10items()
-        observeCallLog()
-        observeCallLogMutabeLivedata()
         initRecyclerView()
+        getFirst10items()
+        observeCallLog()
 //        addScrollListener()
-        observePermissionLiveData()
-        observeCallLogFromDb()
-        observeMutableCallLogFromDB()
-        observeCallLogInfoFromServer()
         setupSimCardCount()
         observeMarkedItems()
+        observePermissionLiveData()
+        observeCallLogFromDb()
+        observeCallLogInfoFromServer()
+
 
     }
 
@@ -141,6 +139,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        addFragmentDialer()
         return binding.root
 
+    }
+
+    private fun getFirst10items() {
+        viewmodel.getFirst10Logs().observe(viewLifecycleOwner, Observer {
+            callLogAdapter?.submitCallLogs(it)
+         if(it.size>1){
+             binding.shimmerViewContainerCall.stopShimmer()
+             binding.shimmerViewContainerCall.beGone()
+         }
+        })
     }
 
     private fun observeMarkedItems() {
@@ -157,21 +165,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         })
     }
 
-    private fun observeMutableCallLogFromDB() {
-        viewmodel.mutableCalllogTableData.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                Log.d(TAG, "observeMutableCallLogFromDB: ")
-                binding.shimmerViewContainerCall.beInvisible()
-                callLogAdapter?.submitCallLogs(it)
-            }
-
-
-        })
-    }
 
     private fun observeCallLogFromDb() {
-        this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
-            viewmodel.updateMutableData(it)
+        this.viewmodel.
+        callLogTableData!!.observe(viewLifecycleOwner, Observer {
+//            viewmodel.updateMutableData(it)
+
+            callLogAdapter?.submitCallLogs(it)
         })
     }
 
@@ -184,7 +184,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 if(this.viewmodel?.callLogs != null){
                     if(!this.viewmodel.callLogs!!.hasObservers()){
                         observeCallLog()
-                        observeCallLogMutabeLivedata()
                         binding.btnCallhistoryPermission.visibility = View.GONE
                     }
                 }
@@ -218,17 +217,15 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         bottomSheetDialog.btnBlock.setOnClickListener(this)
     }
 
-    private fun observeCallLogMutabeLivedata(){
-        viewmodel.callLogsMutableLiveData.observe(viewLifecycleOwner, Observer {
-//            callLogAdapter?.setCallLogs(it)
-        })
-    }
+
     private fun observeCallLog() {
         viewmodel.callLogs.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
 //                viewmodel.updateCAllLogLivedata(logs)
 //                viewmodel.setAdditionalInfo(logs)
                 viewmodel.updateDatabase(logs)
+                binding.shimmerViewContainerCall.stopShimmer()
+                binding.shimmerViewContainerCall.beGone()
             }
         })
     }
@@ -267,8 +264,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                            viewmodel.getNextPage()
                             if(dy > 0){
                                 if(!isSizeEqual){
-//                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
-//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
                                 }
                             }
                         }
@@ -935,7 +930,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     /**
      * called from adapter to toggle marked view
      */
-    override fun isMarked(id: Long): Boolean {
+    override fun isMarked(id: Long?): Boolean {
         var isMrked = false
         if(viewmodel.markedItems.value !=null){
             if(viewmodel.markedItems.value!!.contains(id)){

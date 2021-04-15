@@ -476,8 +476,10 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 //
 //    }
 
-    override fun isMarked(id: Long): Boolean {
-        TODO("Not yet implemented")
+
+
+    override fun isMarked(id: Long?): Boolean {
+        return false
     }
 
 
