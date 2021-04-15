@@ -5,6 +5,7 @@
         android:id="@+id/bottombaritem_messages"
         android:icon="@drawable/ic_baseline_message_24"
         android:title="Messages"
+
         app:showAsAction="ifRoom|withText" />
 
     <item

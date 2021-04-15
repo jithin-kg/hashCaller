@@ -53,6 +53,7 @@
     <color name="textcolor_recieved_sms">#000000</color>
     <color name="color_round_btn">#F6F6F6</color>
     <color name="divider_color">#000000</color>
+    <color name="bottom_nav_color">#ffff</color>
 
 
 </resources>

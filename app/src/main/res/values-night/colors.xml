@@ -9,7 +9,7 @@
     <color name="color_round_btn">#303030</color>
 
     <!--    <color name="colorBackgroundDark">#000000</color>-->
-    <color name="colorBackground">#000000</color>
+    <color name="colorBackground">#131313</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="statusBar">#000000</color>
     <color name="spamText">#ED4133</color>
@@ -37,6 +37,8 @@
     <color name="toolbarBackground">#2E2D2D</color>
     <color name="textcolor_recieved_sms">#ffff</color>
     <color name="divider_color">#7E7B7B</color>
+    <color name="bottom_nav_color">#12110F</color>
+
 
 
 </resources>

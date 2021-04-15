@@ -91,7 +91,7 @@
             android:alpha=".87"
             android:ellipsize="end"
             android:maxLines="1"
-
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:padding="4dp"
             android:text="ContactName"
             android:textAppearance="@style/TextAppearance.AppCompat"

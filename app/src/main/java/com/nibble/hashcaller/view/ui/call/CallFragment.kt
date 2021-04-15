@@ -41,6 +41,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
@@ -115,7 +116,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
 
         initViewModel()
-    registerForContextMenu( binding.rcrViewCallHistoryLogs) //in oncreatView
+    registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
     if(checkContactPermission()){
         initRecyclerView()
@@ -124,8 +125,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        addScrollListener()
         setupSimCardCount()
         observeMarkedItems()
-        observePermissionLiveData()
         observeCallLogFromDb()
+        observePermissionLiveData()
         observeCallLogInfoFromServer()
 
 
@@ -143,11 +144,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun getFirst10items() {
         viewmodel.getFirst10Logs().observe(viewLifecycleOwner, Observer {
-            callLogAdapter?.submitCallLogs(it)
-         if(it.size>1){
-             binding.shimmerViewContainerCall.stopShimmer()
-             binding.shimmerViewContainerCall.beGone()
-         }
+            callLogAdapter?.itemCount.let { count ->
+                if(count!=null && count < it.size ){
+                    callLogAdapter?.submitCallLogs(it)
+
+                }
+            }
+            Log.d(TAG, "getFirst10items: ")
+            if (it.size > 1) {
+                binding.shimmerViewContainerCall.stopShimmer()
+                binding.shimmerViewContainerCall.beGone()
+            }
         })
     }
 
@@ -167,13 +174,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
     private fun observeCallLogFromDb() {
-        this.viewmodel.
-        callLogTableData!!.observe(viewLifecycleOwner, Observer {
-//            viewmodel.updateMutableData(it)
-
+        this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observeCallLogFromDb: size ${it.size}")
             callLogAdapter?.submitCallLogs(it)
         })
+
     }
+
 
 
 
@@ -210,6 +217,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
         binding.imgBtnCallTbrMore.setOnClickListener(this)
         binding.imgBtnAvatarMainCalls.setOnClickListener(this)
+        binding.searchViewCall.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
@@ -340,6 +348,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "onDestroyView: ")
+//        viewmodel.callLogTableData?.removeObserver(this)
+        callLogAdapter?.submitList(null)
         _binding = null
     }
 
@@ -520,15 +530,24 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             R.id.imgBtnAvatarMainCalls ->{
                 requireContext().startSettingsActivity(activity)
             }
+            R.id.searchViewCall ->{
+                startSeaActivity()
+            }
             R.id.btnBlock->{
                 blockMarkedCaller()
             }
+
+
 
         }
 
     }
 
+    private fun startSeaActivity() {
 
+        val intent = Intent(activity, CallLogSearchActivity::class.java)
+        startActivity(intent)
+    }
 
 
     private fun unmuteUser() {
