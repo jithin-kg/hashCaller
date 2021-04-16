@@ -41,7 +41,7 @@ class CallSearchAdapter(private val context: Context,
     private val VIEW_TYPE_LOG = 0;
 //    private val VIEW_TYPE_SPAM = 1;
     private val VIEW_TYPE_LOADING = 1
-    private var callLogs: MutableList<CallLogTable> = mutableListOf()
+    private var callLogs: List<CallLogTable> = mutableListOf()
     companion object{
         private const val TAG = "__DialerAdapter";
         var prevView:View? = null
@@ -75,7 +75,7 @@ class CallSearchAdapter(private val context: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(this.callLogs.isNotEmpty() && position < callLogs.size)
+        if( callLogs.size > 0  && callLogs.isNotEmpty() )
              if(this.callLogs[position].id == null){
                 return VIEW_TYPE_LOADING
             }
@@ -105,8 +105,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
        return callLogs.size
     }
 
-    fun submitCallLogs(newContactList: MutableList<CallLogTable>) {
-        callLogs = newContactList!!
+    fun submitCallLogs(newContactList: List<CallLogTable>) {
+        callLogs = newContactList
         this.submitList(newContactList)
     }
 
@@ -175,9 +175,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             name.text = nameStr
             logBinding.imgViewCallSpamIcon.beInvisible()
+            var firstLetter = ""
+            if(nameStr.length>0){
+                 firstLetter = nameStr[0].toString()
 
-            val firstLetter = nameStr[0]
-            val firstLetterString = firstLetter.toString().toUpperCase()
+            }
+            val firstLetterString = firstLetter.toUpperCase()
             circle.text = firstLetterString
             callLog.color = circle.setRandomBackgroundCircle()
 
@@ -194,7 +197,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     expandableView.beVisible()
                 } else {
                     expandableView.beGone()
-
 
                 }
             }
@@ -343,7 +345,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         override fun areContentsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
 //            if(oldItem.ca)
 
-            return oldItem == newItem
+            return oldItem.number == newItem.number && oldItem.name == newItem.name
         }
 
     }

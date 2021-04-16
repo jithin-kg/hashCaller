@@ -37,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.view.ui.call.CallFragment
+import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
 import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
@@ -388,7 +389,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private fun initRecyclerView() {
        binding. rcrViewSMSList?.apply {
-            layoutManager = LinearLayoutManager(activity)
+            layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as LinearLayoutManager
             smsRecyclerAdapter = SMSListAdapter(context, this@SMSContainerFragment, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
                                                                                 pno:String, clickType:Int->onContactItemClicked(view,threadId, pos, pno, clickType)  }

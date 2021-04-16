@@ -12,23 +12,29 @@
         android:id="@+id/tvCallSearchSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search in call history"
-        android:gravity="center"
-        android:textSize="24sp"
-        android:textColor="@color/textColor"
+        android:layout_marginTop="120dp"
         android:alpha="0.87"
+        android:gravity="center"
+        android:text="Search in recent calls"
+        android:textColor="@color/textColor"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="invisible" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:elevation="2dp"
+        android:background="@drawable/search_background"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvCallSearchSmall">
+
+        app:layout_constraintTop_toBottomOf="@+id/tvCallSearchSmall">
 
         <ImageButton
             android:id="@+id/imgBtnBackCallhistory"
@@ -36,6 +42,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/searchVCallSearch"
@@ -48,7 +55,7 @@
             android:layout_height="50dp"
             android:background="#00000000"
             android:backgroundTint="@color/colorBackground"
-            android:hint="  Search in call history"
+            android:hint="  Search "
             android:queryBackground="@android:color/transparent"
             android:queryHint="Search numbers, names"
             app:layout_constraintEnd_toEndOf="parent"
@@ -61,26 +68,41 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/tvQueryItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textSize="14sp"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.048"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearch" />
 
     <ImageView
         android:id="@+id/imgVDividerCallsrch"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="48dp"
         android:alpha="0.12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutSearch"
+        app:layout_constraintTop_toBottomOf="@+id/tvQueryItem"
         app:srcCompat="@drawable/horizontal_line_settings" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reclrVResultFull"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:splitMotionEvents="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgVDividerCallsrch" />
+
+
 
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

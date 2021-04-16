@@ -1,0 +1,27 @@
+package com.nibble.hashcaller.view.ui.call.dialer.util
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
+
+/**
+ * This class is used to handle Inconsistency  in recyclerview
+ */
+
+class CustomLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
+    @SuppressLint("LongLogTag")
+    override fun onLayoutChildren(recycler: Recycler?, state: RecyclerView.State?) {
+        try {
+            super.onLayoutChildren(recycler, state)
+        } catch (e: IndexOutOfBoundsException) {
+            Log.d(TAG, "Inconsistency detected")
+        }
+    }
+
+    companion object{
+        const val TAG = "__CustomLinearLayoutManager"
+    }
+}

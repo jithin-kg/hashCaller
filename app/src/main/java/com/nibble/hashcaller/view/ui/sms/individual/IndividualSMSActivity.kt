@@ -45,6 +45,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualSMSBinding
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
+import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -872,7 +873,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         binding.recyclerViewSMSIndividual.adapter = adapter
 
         binding.recyclerViewSMSIndividual.setHasFixedSize(true)
-        layoutMngr = LinearLayoutManager(this)
+        layoutMngr = CustomLinearLayoutManager(this)
         layoutMngr.stackFromEnd = true
         binding.recyclerViewSMSIndividual.layoutManager = layoutMngr
 

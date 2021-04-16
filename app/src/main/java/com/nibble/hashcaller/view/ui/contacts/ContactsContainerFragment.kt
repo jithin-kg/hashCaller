@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
@@ -133,7 +134,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private fun initRecyclerView() {
 
        binding.rcrViewContactsList?.apply {
-            layoutManager = LinearLayoutManager(activity)
+            layoutManager = CustomLinearLayoutManager(context)
             val topSpacingDecorator =
                 TopSpacingItemDecoration(
                     30

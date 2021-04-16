@@ -46,5 +46,5 @@ interface ICallLogDAO {
     suspend fun getFirst10Logs(isDeleted: Boolean = false) : MutableList<CallLogTable>
 
     @Query("SELECT * FROM call_log WHERE number LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
-    suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
+    suspend fun searchCalllog(contactAddress: String): List<CallLogTable>
 }

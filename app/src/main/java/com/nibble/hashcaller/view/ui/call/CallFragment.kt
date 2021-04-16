@@ -41,6 +41,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
+import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
@@ -356,7 +357,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun initRecyclerView() {
 
         binding.rcrViewCallHistoryLogs.apply {
-            layoutManager = LinearLayoutManager(activity)
+            layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as LinearLayoutManager
 //            val topSpacingDecorator =
 //                TopSpacingItemDecoration(

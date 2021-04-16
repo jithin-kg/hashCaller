@@ -16,7 +16,7 @@ class CallLogSearchRepository(
     private val callerInfoFromServerDAO: CallersInfoFromServerDAO,
     private val callLogDAO: ICallLogDAO
 ) {
-    suspend fun search(text: String): MutableList<CallLogTable> {
+    suspend fun search(text: String): List<CallLogTable> {
         callLogDAO?.searchCalllog("%$text%").apply {
 
            return this
