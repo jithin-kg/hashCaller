@@ -1,86 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
+    app:layoutDescription="@xml/activity_call_log_search_scene2"
     tools:context=".view.ui.call.search.CallLogSearchActivity">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarCallSearch"
-        style="@style/toolbarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/toolbar_background"
-        android:elevation="4dp"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
+    <TextView
+        android:id="@+id/tvCallSearchSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search in call history"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textColor="@color/textColor"
+        android:alpha="0.87"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
+        tools:visibility="invisible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvCallSearchSmall">
+
+        <ImageButton
+            android:id="@+id/imgBtnBackCallhistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/searchVCallSearch"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+            tools:layout_editor_absoluteX="16dp" />
 
         <EditText
             android:id="@+id/searchVCallSearch"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:background="#00000000"
             android:backgroundTint="@color/colorBackground"
             android:hint="  Search in call history"
             android:queryBackground="@android:color/transparent"
-            android:queryHint="Search numbers, names" >
+            android:queryHint="Search numbers, names"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnBackCallhistory"
+            app:layout_constraintTop_toTopOf="parent">
             <!--important to give request focus to show softInput on activity loads           -->
             <requestFocus />
         </EditText>
-    </com.google.android.material.appbar.MaterialToolbar>
 
-    <TextView
-        android:id="@+id/tvNoSearchHistoryCall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No recent searches"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:shimmer_duration="800">
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <include layout="@layout/skeleton_shimmer_layout" />
-            <include layout="@layout/skeleton_shimmer_layout" />
-            <include layout="@layout/skeleton_shimmer_layout" />
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/reclCallSearchHistory"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <ImageView
+        android:id="@+id/imgVDividerCallsrch"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:alpha="0.12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarCallSearch" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearch"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reclrVResultFull"
         android:layout_width="match_parent"
@@ -88,5 +80,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarCallSearch" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@+id/imgVDividerCallsrch" />
+
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

@@ -349,7 +349,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         super.onDestroyView()
         Log.d(TAG, "onDestroyView: ")
 //        viewmodel.callLogTableData?.removeObserver(this)
-        callLogAdapter?.submitList(null)
         _binding = null
     }
 
@@ -368,6 +367,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
             adapter = callLogAdapter
+            itemAnimator = null
 
         }
     }

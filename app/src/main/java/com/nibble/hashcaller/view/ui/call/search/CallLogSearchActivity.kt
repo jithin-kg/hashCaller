@@ -86,13 +86,14 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
         }else{
             //todo if the search query is a name like amma, ie 9512313
             //only number is existing in sms content provider in this case, no name, so I need to consider that
-            binding.shimmer.beVisible()
-            binding.shimmer.startShimmer()
+//            binding.shimmer.beVisible()
+//            binding.shimmer.startShimmer()
             viewmodel.search(text).observe(this, Observer {
-                binding.shimmer.beInvisible()
+//                binding.shimmer.beInvisible()
                 Log.d(TAG, "onTextChanged: size ${it.size}")
+
                 this.searchAdapter!!.submitCallLogs(it) //set search result to recyclerview
-                binding.shimmer.stopShimmer()
+//                binding.shimmer.stopShimmer()
                 queryText = text
             })
         }
