@@ -8,7 +8,7 @@
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="true" />
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -124,7 +124,9 @@
         </activity>
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:theme="@style/Theme.AppCompat.Dialog"
+            android:launchMode="singleInstance"
+            />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->

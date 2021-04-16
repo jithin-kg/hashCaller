@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
  */
 class CallLogSearchViewModel(private val repository: CallLogSearchRepository) : ViewModel() {
     
-    var callLogs:MutableLiveData<List<CallLogTable>> = MutableLiveData()
+    var callLogs:MutableLiveData<MutableList<CallLogTable>> = MutableLiveData()
 
 
     fun search(text: String) = viewModelScope.launch {

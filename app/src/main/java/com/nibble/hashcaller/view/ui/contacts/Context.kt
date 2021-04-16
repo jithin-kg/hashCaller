@@ -23,6 +23,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATI
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
 import com.nibble.hashcaller.view.utils.SIMAccount
+import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
 
@@ -114,9 +115,10 @@ fun Context.isReceiveNotificationForSpamSMSEnabled(): Boolean {
 }
 
 fun Context.makeCall(num:String){
+    val formatedNum = "+" +formatPhoneNumber(num)
     val callIntent = Intent(Intent.ACTION_CALL)
     callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    callIntent.data = Uri.parse("tel:$num")
+    callIntent.data = Uri.parse("tel:$formatedNum")
     this.startActivity(callIntent)
 }
 

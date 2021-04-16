@@ -205,6 +205,18 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
         private fun setClickListener(view: View, callLog: CallLogTable) {
+
+            view.imgBtnCall.setOnClickListener{
+
+                onContactItemClickListener(
+                    callLog.id!!,
+                    this.adapterPosition,
+                    it,
+                    BUTTON_SIM_1,
+                    callLog,
+                    TYPE_MAKE_CALL
+                )
+            }
             view.setOnLongClickListener { v ->
                 var isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
@@ -237,6 +249,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             view.imgBtnInfoExpand.setOnClickListener {
 //                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
             }
+
 
 
             view.setOnClickListener(View.OnClickListener { v ->

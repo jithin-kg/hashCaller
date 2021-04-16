@@ -1,75 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_search_scene"
     tools:context=".view.ui.sms.search.SearchSMSActivity">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarSmS"
+    <!--editText ->searchVSms, reclt -> reclrSmsSearchResult -->
 
-        style="@style/toolbarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/toolbar_background"
-        android:elevation="4dp"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
-
-        <EditText
-            android:id="@+id/searchVSms"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#00000000"
-            android:backgroundTint="@color/colorBackground"
-            android:hint="  Search in sms"
-            android:queryBackground="@android:color/transparent"
-            android:queryHint="Search numbers, names" >
-<!--important to give request focus to show softInput on activity loads           -->
-            <requestFocus />
-        </EditText>
-    </com.google.android.material.appbar.MaterialToolbar>
 
     <TextView
-        android:id="@+id/tvNoSearchHistory"
+        android:id="@+id/tvCallSearchSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No recent searches"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="120dp"
+        android:alpha="0.87"
+        android:gravity="center"
+        android:text="Search in SMS"
+        android:textColor="@color/textColor"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/reclrSmsSearchHistory"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSearch"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/search_background"
+        android:elevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCallSearchSmall">
+
+        <ImageButton
+            android:id="@+id/imgBtnBackCallhistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/searchVSms"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/searchVSms"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+            tools:layout_editor_absoluteX="16dp" />
+
+        <EditText
+            android:id="@+id/searchVSms"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="#00000000"
+            android:backgroundTint="@color/colorBackground"
+            android:hint="  Search "
+            android:queryBackground="@android:color/transparent"
+            android:queryHint="Search numbers, names"
+            android:layout_marginStart="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnBackCallhistory"
+            app:layout_constraintTop_toTopOf="parent">
+            <!--important to give request focus to show softInput on activity loads           -->
+            <requestFocus />
+        </EditText>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvQueryItem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textSize="14sp"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.048"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearch"
+        />
+
+    <ImageView
+        android:id="@+id/imgVDividerCallsrch"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarSmS" />
+        app:layout_constraintTop_toBottomOf="@+id/tvQueryItem"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reclrSmsSearchResult"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarSmS" />
+        app:layout_constraintTop_toBottomOf="@+id/imgVDividerCallsrch" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

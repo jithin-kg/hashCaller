@@ -10,11 +10,12 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.database.ContentObserver
+import android.media.audiofx.BassBoost
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Base64
+import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -50,7 +51,6 @@ import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
-import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -58,7 +58,6 @@ import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
-
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -67,9 +66,7 @@ import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 import java.security.*
 
 
@@ -123,7 +120,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         listenUiEvents()
-
+        requestAlertWindowPermission()
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(this, R.color.textColor);
 
@@ -164,6 +161,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
+    private fun requestAlertWindowPermission() {
+        // Show alert dialog to the user saying a separate permission is needed
+        // Show alert dialog to the user saying a separate permission is needed
+        val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
+        startActivity(myIntent)
+    }
+
     private fun listenUiEvents() {
 //       uiEvent.observe(this, {
 //            when (it) {
@@ -196,8 +200,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         this.userInfoViewModel.userInfo.observe(this, Observer {
             Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
-            if(it !=null)
-                if(!it.firstname.isNullOrEmpty()){
+            if (it != null)
+                if (!it.firstname.isNullOrEmpty()) {
 
 //                val header =navigationView.getHeaderView(0)
 //                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
@@ -206,7 +210,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         })
     }
 
-    fun showSnackBar(message:String){
+    fun showSnackBar(message: String){
         val sbar = Snackbar.make(cordinateLyoutMainActivity, message, Snackbar.LENGTH_SHORT)
         sbar.setAction("Action", null)
         sbar.anchorView = binding.bottomNavigationView
@@ -255,8 +259,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initViewModel() {
-        userInfoViewModel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(this)).get(
-            UserInfoViewModel::class.java)
+        userInfoViewModel = ViewModelProvider(
+            this, MainActivityInjectorUtil.provideUserInjectorUtil(
+                this
+            )
+        ).get(
+            UserInfoViewModel::class.java
+        )
     }
 
     private fun setInfoInNavigationDrawer() {
@@ -294,11 +303,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
-        this.callFragment = supportFragmentManager.getFragment(savedInstanceState,"callFragment") as CallFragment
-        this.messagesFragment = supportFragmentManager.getFragment(savedInstanceState,"messagesFragment") as SMSContainerFragment
+        this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
+        this.messagesFragment = supportFragmentManager.getFragment(
+            savedInstanceState,
+            "messagesFragment"
+        ) as SMSContainerFragment
 //        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
-        this.contactFragment = supportFragmentManager.getFragment(savedInstanceState,"contactFragment") as ContactsContainerFragment
-        this.dialerFragment = supportFragmentManager.getFragment(savedInstanceState,"dialerFragment") as DialerFragment
+        this.contactFragment = supportFragmentManager.getFragment(
+            savedInstanceState,
+            "contactFragment"
+        ) as ContactsContainerFragment
+        this.dialerFragment = supportFragmentManager.getFragment(
+            savedInstanceState,
+            "dialerFragment"
+        ) as DialerFragment
 //        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
 //            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
 //
@@ -345,10 +363,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d(TAG, "onSaveInstanceState: ")
-        supportFragmentManager.putFragment(outState,"callFragment", this.callFragment)
-        supportFragmentManager.putFragment(outState,"contactFragment", this.contactFragment)
-        supportFragmentManager.putFragment(outState,"dialerFragment", this.dialerFragment)
-        supportFragmentManager.putFragment(outState,"messagesFragment", this.messagesFragment)
+        supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
+        supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
+        supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
+        supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
 //        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
 //        if(this.searchFragment!=null)
 //            if(this.searchFragment?.isAdded!!)
@@ -472,7 +490,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         ft = supportFragmentManager.beginTransaction()
         ft.add(R.id.frame_fragmentholder, messagesFragment)
-        hideThisFragment(ft, messagesFragment,  messagesFragment)
+        hideThisFragment(ft, messagesFragment, messagesFragment)
 
 
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
@@ -505,7 +523,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
-    private fun setDefaultFragment(idValue:Int) {
+    private fun setDefaultFragment(idValue: Int) {
 //        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
         binding.bottomNavigationView.selectedItemId = idValue
     }
@@ -760,25 +778,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         GlobalScope.launch {
             val editor = sharedPreferences.edit()
 
-            editor.putBoolean("isDarkTheme", isDarkTheme )
+            editor.putBoolean("isDarkTheme", isDarkTheme)
             editor.commit()
         }
     }
     private fun getCurrentTheme(): Int {
         val currentNightMode = getResources().getConfiguration().uiMode and  Configuration.UI_MODE_NIGHT_MASK
         when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_NO->{
+            Configuration.UI_MODE_NIGHT_NO -> {
                 Log.d(TAG, "checkTheme: white")
                 return 0
 
             }
             // Night mode is not active, we're in day time
-            Configuration.UI_MODE_NIGHT_YES ->{
+            Configuration.UI_MODE_NIGHT_YES -> {
                 Log.d(TAG, "checkTheme: dark")
                 return 1
             }
             // Night mode is active, we're at night!
-            Configuration.UI_MODE_NIGHT_UNDEFINED ->{
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {
                 Log.d(TAG, "checkTheme: undefined")
                 return 2
             }else->{
@@ -848,8 +866,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun call() {
         val callIntent = Intent(Intent.ACTION_CALL)
 //        callIntent.data = Uri.parse("tel:$phoneNumFromViewModel")
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED) {
             return
         }
         startActivity(callIntent)
@@ -899,7 +919,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 val currentFocusedView = activity.currentFocus
                 if (currentFocusedView != null) {
-                    inputManager.hideSoftInputFromWindow(currentFocusedView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+                    inputManager.hideSoftInputFromWindow(
+                        currentFocusedView.windowToken,
+                        InputMethodManager.HIDE_NOT_ALWAYS
+                    )
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

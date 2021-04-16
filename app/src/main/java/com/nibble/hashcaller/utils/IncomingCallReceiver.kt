@@ -232,24 +232,24 @@ class IncomingCallReceiver : BroadcastReceiver(){
                         incrementTotalSpamCountByHashCallerInServer(searchRepository)
 
                     }
-                    val i = Intent(context, ActivityIncommingCallView::class.java)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    i.putExtra("name", result.name)
-                    i.putExtra("phoneNumber", phoneNumber)
-                    i.putExtra("spamcount", result.spammCount)
-                    i.putExtra("carrier", result.carrier)
-                    i.putExtra("location", result.location)
-                    context.startActivity(i)
+//                    val i = Intent(context, ActivityIncommingCallView::class.java)
+//                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    i.putExtra("name", result.name)
+//                    i.putExtra("phoneNumber", phoneNumber)
+//                    i.putExtra("spamcount", result.spammCount)
+//                    i.putExtra("carrier", result.carrier)
+//                    i.putExtra("location", result.location)
+//                    context.startActivity(i)
                 }else{
                     //if there is no info about the caller in server db
-                    val i = Intent(context, ActivityIncommingCallView::class.java)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    i.putExtra("name", "")
-                    i.putExtra("phoneNumber", phoneNumber)
-                    i.putExtra("spamcount", "")
-                    i.putExtra("carrier", "")
-                    i.putExtra("location", "")
-                    context.startActivity(i)
+//                    val i = Intent(context, ActivityIncommingCallView::class.java)
+//                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    i.putExtra("name", "")
+//                    i.putExtra("phoneNumber", phoneNumber)
+//                    i.putExtra("spamcount", "")
+//                    i.putExtra("carrier", "")
+//                    i.putExtra("location", "")
+//                    context.startActivity(i)
                 }
             }catch (e:Exception){
                 Log.d(TAG, "searchForNumberInServer: exception $e")
@@ -287,11 +287,11 @@ class IncomingCallReceiver : BroadcastReceiver(){
         context: Context,
         cntcts: List<Cntct>
     ) {
-        val i = Intent(context, ActivityIncommingCallView::class.java)
-        var obj = cntcts[0]
-        i.putExtra("SerachRes" ,obj)
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(i)
+//        val i = Intent(context, ActivityIncommingCallView::class.java)
+//        var obj = cntcts[0]
+//        i.putExtra("SerachRes" ,obj)
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//        context.startActivity(i)
     }
 
     private fun genratehash(

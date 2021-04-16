@@ -18,7 +18,6 @@
     <dimen name="text_size">72sp</dimen>
     <dimen name="selected_text_size">80sp</dimen>
     <dimen name="bottom_fab_margin">32dp</dimen>
-    <dimen name="recycler_view_padding_bottom">112dp</dimen>
     <dimen name="margin_start_individual_contact_items">0dp</dimen>
     <dimen name="individual_contact_avatar">150dp</dimen>
     <dimen name="text_size_list_item">16sp</dimen>
@@ -41,4 +40,5 @@
     <dimen name="padding_layout_block_by_pattern">4dp</dimen>
     <dimen name="margin_txt_block_by">8dp</dimen>
     <dimen name="margin_img_settings_img">16dp</dimen>
+    <dimen name="recycler_view_padding_bottom">112dp</dimen>
 </resources>

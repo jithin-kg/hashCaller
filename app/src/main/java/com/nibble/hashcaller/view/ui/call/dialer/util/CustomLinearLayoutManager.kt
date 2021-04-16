@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 
 /**
  * This class is used to handle Inconsistency  in recyclerview
+ * https://stackoverflow.com/questions/31759171/recyclerview-and-java-lang-indexoutofboundsexception-inconsistency-detected-in
  */
 
 class CustomLinearLayoutManager(context: Context) : LinearLayoutManager(context) {

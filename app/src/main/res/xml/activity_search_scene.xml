@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MotionScene 
+<MotionScene
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,10 +11,10 @@
         motion:duration="1000">
         <OnSwipe
             app:dragDirection="dragUp"
-            app:touchAnchorId="@+id/reclrVResultFull"
+            app:touchAnchorId="@+id/reclrSmsSearchResult"
             app:touchAnchorSide="top" />
-       <KeyFrameSet>
-       </KeyFrameSet>
+        <KeyFrameSet>
+        </KeyFrameSet>
     </Transition>
     <ConstraintSet android:id="@+id/start">
 

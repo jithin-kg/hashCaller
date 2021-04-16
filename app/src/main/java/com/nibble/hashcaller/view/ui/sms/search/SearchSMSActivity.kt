@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivitySearchBinding
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
@@ -24,14 +25,17 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
     private lateinit var editTextListener: TextChangeListener
     private lateinit var viewmodel:SMSSearchViewModel
     private  var searchAdapter: SMSSearchAdapter? = null
-    private lateinit var recyclerV: RecyclerView
+//    private lateinit var recyclerV: RecyclerView
     private var queryText = ""
     private var contactAddress:String? = ""
     private var isIntentFromIndividualSMS = false
+    private lateinit var binding: ActivitySearchBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         contactAddress = intent.getStringExtra(CONTACT_ADDRES) // this intent extra is received when
                                                             //intented from individualsmsactivity
         Log.d(TAG, "onCreate: contactaddresvia intent $contactAddress")
@@ -53,14 +57,13 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
     private fun initRecyclerView() {
 
-        this.recyclerV = findViewById<RecyclerView>(R.id.reclrSmsSearchResult)
 
         this@SearchSMSActivity.searchAdapter = SMSSearchAdapter(this, this@SearchSMSActivity)
         { view: View, threadId:Long, pos:Int,
           pno:String, id:Long?->onContactItemClicked(view,threadId, pos, pno,id )  }
 
-        recyclerV.layoutManager = LinearLayoutManager(this@SearchSMSActivity)
-        recyclerV.adapter = this@SearchSMSActivity.searchAdapter
+        binding.reclrSmsSearchResult.layoutManager = LinearLayoutManager(this@SearchSMSActivity)
+        binding.reclrSmsSearchResult.adapter = this@SearchSMSActivity.searchAdapter
     }
 
     private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String, id:Long?) {
@@ -94,7 +97,7 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
     private fun initListeners() {
         editTextListener = TextChangeListener(this)
-        editTextListener.addListener(searchVSms)
+        editTextListener.addListener( binding.searchVSms)
 
     }
 

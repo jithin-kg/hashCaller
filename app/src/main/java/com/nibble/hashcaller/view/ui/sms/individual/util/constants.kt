@@ -16,6 +16,7 @@ const val MARK_ITEM = 1
 
 const val TYPE_CLICK = 0
 const val TYPE_LONG_PRESS = 1
+const val TYPE_MAKE_CALL= 2
 
 const val SMS_NOT_READ = 0
 const val SMS_READED = 1

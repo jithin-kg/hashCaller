@@ -19,6 +19,7 @@ import com.nibble.hashcaller.utils.callHandlers.base.CallScreeningHelper
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.notifications.HashCaller
+import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
@@ -51,7 +52,7 @@ class MyCallScreeningService: CallScreeningService() {
 
          helper = CallScreeningHelper(this, contactAdressesDAO)
         Log.d(TAG, "onScreenCall: ")
-
+        startCallViewActivity()
         val phoneNumber = getPhoneNumber(callDetails)
         var response = CallResponse.Builder()
         GlobalScope.launch {
@@ -60,6 +61,24 @@ class MyCallScreeningService: CallScreeningService() {
         
 //        response = handlePhoneCall(response, phoneNumber, callDetails)
 
+    }
+
+    /**
+     * important to request this permission to show the alert on top of other apps / dialer
+     */
+    private fun startCallViewActivity() {
+//        https://stackoverflow.com/questions/63509860/how-to-start-activity-from-callscreeningservice-in-java
+
+        val i = Intent(this, ActivityIncommingCallView::class.java)
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+
+        i.putExtra("name", "sample")
+        i.putExtra("phoneNumber", "808123")
+        i.putExtra("spamcount",0)
+        i.putExtra("carrier","sample")
+        i.putExtra("location", "sample")
+        startActivity(i)
     }
 
     private fun handleThisCall(
