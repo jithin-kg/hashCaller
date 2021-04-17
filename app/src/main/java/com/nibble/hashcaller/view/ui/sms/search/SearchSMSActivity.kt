@@ -51,10 +51,18 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
         initListeners()
         initViewModel()
         observeInternetLivedata()
+        observeSearchResult()
 
         if(!isIntentFromIndividualSMS)
          getSearchHistory()
     }
+
+    private fun observeSearchResult() {
+        viewmodel.searchResultLivedata.observe(this, Observer {
+            this.searchAdapter!!.setList(it!!)
+        })
+    }
+
     private fun observeInternetLivedata() {
         val cl = this?.let { ConnectionLiveData(it) }
         cl?.observe(this, Observer {
@@ -114,11 +122,15 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
     }
 
     override fun onTextChanged(text: String) {
+        if(text.isNullOrEmpty()){
+            val lst : List<SMS> = emptyList()
+            this.searchAdapter!!.setList(lst) //if search query is empty empty recyclerview
+
+        }
         if(isIntentFromIndividualSMS){
             //searching for individual sms
 //            viewmodel.searchForIndividualSMS(text, contactAddress).observe(this, Observer {
 //                Log.d(TAG, "onSearchIndividualSMS: $it")
-//                this.searchAdapter!!.setList(it)
 //            })
         }else{
             //get sms of all chats
@@ -129,10 +141,16 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
             }else{
                 //todo if the search query is a name like amma, ie 9512313
                 //only number is existing in sms content provider in this case, no name, so I need to consider that
-                viewmodel.search(text).observe(this, Observer {
-                    this.searchAdapter!!.setList(it) //set search result to recyclerview
-                    queryText = text
-                })
+                viewmodel.search(text)
+                queryText = text
+
+//                    .observe(this, Observer {
+//                    it.let {
+//                        this.searchAdapter!!.setList(it!!) //set search result to recyclerview
+//                        queryText = text
+//                    }
+//
+//                })
             }
         }
 

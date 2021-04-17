@@ -11,7 +11,7 @@ import androidx.room.Query
  */
 @Dao
 interface IContactIformationDAO {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(contacts: List<ContactTable>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

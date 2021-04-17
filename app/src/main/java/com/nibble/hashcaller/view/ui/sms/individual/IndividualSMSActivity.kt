@@ -698,8 +698,8 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun setupSIMSelector() {
         val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
         val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
-        val res1 = subscriptionManager.getSubscriptionIds(0)
-        val res2 = subscriptionManager.getSubscriptionIds(1)
+//        val res1 = subscriptionManager.getSubscriptionIds(0)
+//        val res2 = subscriptionManager.getSubscriptionIds(1)
         //89918620400015105496, 8991462161032218326F
 //        availableSIMs[0].iccId
 //        val availableSIMs = SubscriptionManager.from(this).activeSubscriptionInfoList ?: return

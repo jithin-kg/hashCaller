@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 
 /**
  * Created by Jithin KG on 01,August,2020
+ * table to save contact address and its name and meta information about a number
  */
 @Entity(tableName = "contacts_information", indices = [Index(value = ["number"], unique = true)])
 data class ContactTable(

@@ -52,4 +52,7 @@ interface ISMSThreadsDAO {
 
     @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamCountFromServer, name =:name, nameFromServer=:nameFromServer WHERE contactAddress =:contactAddress")
     suspend fun updateInfos(contactAddress: String, spamCountFromServer: Long, name: String, nameFromServer: String?)
+
+    @Query("SELECT * FROM chat_threads WHERE name like :searchQuery")
+    suspend fun findNameLike(searchQuery: String?): List<SmsThreadTable>?
 }

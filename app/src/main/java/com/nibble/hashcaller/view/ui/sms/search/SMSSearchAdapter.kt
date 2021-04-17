@@ -15,10 +15,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
-import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.view.ui.sms.util.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
 import java.text.SimpleDateFormat
@@ -96,8 +96,8 @@ class SMSSearchAdapter(private val context: Context,
     }
 }
 
-    fun setList(it: List<SMS>?) {
-        this.smsList = it!!
+    fun setList(it: List<SMS>) {
+        this.smsList = it
 //        val copy:MutableList<SMS> = mutableListOf()
 //        this.smsList.forEach{copy.add(it)}
         this.submitList(it)
@@ -143,26 +143,51 @@ class SMSSearchAdapter(private val context: Context,
 
 //            highlightSearhcField(sms) // to highlight the search result
 //            if(searchQry == null){
-                if(!sms.name.isNullOrEmpty())
-                    name.text = sms.name
-                else
-                    name.text = sms.address
+            var isSpam = false
+            var senderInforFrom = SENDER_INFO_SEARCHING
+            var nameStr = ""
+            var firstLetter = ""
 
-            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING &&  networkHandler.isInternetAvailable()){
-              view.pgBarSmsListItem.visibility = View.VISIBLE
+            if(!sms.name.isNullOrEmpty()){
+                nameStr = sms.name!!
+                senderInforFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+            }else if(sms.nameFromServer!=null){
+                if(sms.nameFromServer!!.isNotEmpty()){
+                    nameStr = sms.nameFromServer!!
+                    senderInforFrom = SENDER_INFO_FROM_DB
+                }else{
+                    senderInforFrom = SENDER_INFO_NOT_FOUND
+                }
+
+            }else {
+                nameStr = sms.addressString!!
+                senderInforFrom = SENDER_INFO_NOT_FOUND
+            }
+
+                    name.text = nameStr
+
+
+            if(senderInforFrom== SENDER_INFO_SEARCHING &&  networkHandler.isInternetAvailable()){
+              view.pgBarSmsListItem.beVisible()
+                view.imgvIdentifiedByHash.beInvisible()
+                view.tvIdentifiedByhash.beInvisible()
                 Log.d(TAG, "bind: searching for ${sms.addressString}")
-            }else{
-                view.pgBarSmsListItem.visibility = View.INVISIBLE
+            }else if(senderInforFrom == SENDER_INFO_FROM_DB){
+                view.imgvIdentifiedByHash.beVisible()
+                view.tvIdentifiedByhash.beVisible()
+
+            }
+
+            else{
+                view.pgBarSmsListItem.beInvisible()
+                view.imgvIdentifiedByHash.beInvisible()
+                view.tvIdentifiedByhash.beInvisible()
+
             }
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
-            if(MarkedItemsHandler.markedItems.contains(sms.threadID)){
-                view.smsMarked.visibility = View.VISIBLE
-            }else{
-                view.smsMarked.visibility = View.INVISIBLE
 
-            }
             view.tvSMSMPeek.text = sms.msg
 
 //                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
