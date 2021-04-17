@@ -51,5 +51,5 @@ interface ISMSThreadsDAO {
     suspend fun updateBodyAndContents(contactAddress: String, body: String, dateInMilliseconds: Long)
 
     @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamCountFromServer, name =:name, nameFromServer=:nameFromServer WHERE contactAddress =:contactAddress")
-    suspend fun updateInfos(contactAddress: String, spamCountFromServer: Long, name: String, nameFromServer: String)
+    suspend fun updateInfos(contactAddress: String, spamCountFromServer: Long, name: String, nameFromServer: String?)
 }

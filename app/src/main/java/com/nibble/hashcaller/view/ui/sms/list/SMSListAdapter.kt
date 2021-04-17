@@ -123,23 +123,36 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 if(sms.name.isNotEmpty()){
                     nameStr = sms.name!!
                     senderInforFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                }else if(sms.nameFromServer.isNotEmpty() ){
-                    nameStr = sms.nameFromServer!!
-                    senderInforFrom = SENDER_INFO_FROM_DB
+                }else if(sms.nameFromServer !=null ){
+                    senderInforFrom = SENDER_INFO_NOT_FOUND
+                    if(!sms.nameFromServer!!.isEmpty()){
+                        nameStr = sms.nameFromServer!!
+                        senderInforFrom = SENDER_INFO_FROM_DB
+
+                    }
                     //todo make info found from hash caller visible here
+                }else if(sms.nameFromServer==null){
+                    senderInforFrom = SENDER_INFO_SEARCHING
+
                 }
                     isSpam = sms.spamCountFromServer!! > 0
             if(nameStr.isEmpty()){
                 //name is not found in server on content provider so, set name as number
                 nameStr = formatPhoneNumber(sms.contactAddress)
-                senderInforFrom = SENDER_INFO_NOT_FOUND
             }
 
             if(senderInforFrom == SENDER_INFO_FROM_DB){
                 binding.tvIdentifiedByhash.beVisible()
                 binding.imgvIdentifiedByHash.beVisible()
+                binding.pgBarSmsListItem.beInvisible()
 
-            }else{
+
+            }else if(senderInforFrom == SENDER_INFO_SEARCHING){
+                binding.pgBarSmsListItem.beVisible()
+                binding.tvIdentifiedByhash.beInvisible()
+            }
+            else{
+                binding.pgBarSmsListItem.beInvisible()
                 binding.tvIdentifiedByhash.beInvisible()
                 binding.imgvIdentifiedByHash.beInvisible()
             }

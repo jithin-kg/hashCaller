@@ -18,7 +18,7 @@ import java.util.*
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "threadId") var threadId: Long = 0,
     @ColumnInfo(name = "name") var name:String ="",
-    @ColumnInfo(name = "nameFromServer") var nameFromServer:String = "",
+    @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,
     @ColumnInfo(name = "spamCountFromServer") var spamCountFromServer:Long = 0,
     @ColumnInfo(name = "contactAddress") var  contactAddress:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,

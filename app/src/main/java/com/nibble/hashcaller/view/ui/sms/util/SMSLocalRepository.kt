@@ -419,7 +419,6 @@ class SMSLocalRepository(
 //                        setRelativeTime(objSMS, dateMilli)
                         objSMS.spamCountFromServer = 0
                         objSMS.name = ""
-                        objSMS.nameFromServer = ""
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
                         ) {
