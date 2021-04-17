@@ -46,6 +46,8 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.utils.internet.InternetUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
@@ -68,6 +70,7 @@ import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.security.*
+import kotlin.math.log
 
 
 /**
@@ -158,6 +161,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         mangeCipherInSharedPref()
         observeUserInfoLiveData()
         setupContactUploadWork()
+        val cl = ConnectionLiveData(this)
+        cl.observe(this, Observer {
+            Log.d(TAG, "onCreate: internet available $it")
+
+        })
+
 
     }
 
