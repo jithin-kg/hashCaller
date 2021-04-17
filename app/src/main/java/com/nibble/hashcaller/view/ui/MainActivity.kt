@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
+import android.provider.Settings.canDrawOverlays
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -47,7 +48,6 @@ import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
-import com.nibble.hashcaller.utils.internet.InternetUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
@@ -82,7 +82,6 @@ import kotlin.math.log
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
-
 
     private lateinit var binding: ActivityMainBinding
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
@@ -161,11 +160,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         mangeCipherInSharedPref()
         observeUserInfoLiveData()
         setupContactUploadWork()
-        val cl = ConnectionLiveData(this)
-        cl.observe(this, Observer {
-            Log.d(TAG, "onCreate: internet available $it")
 
-        })
 
 
     }
@@ -173,9 +168,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun requestAlertWindowPermission() {
         // Show alert dialog to the user saying a separate permission is needed
         // Show alert dialog to the user saying a separate permission is needed
-        val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
-        startActivity(myIntent)
+        if(!canDrawOverlays(this)){
+            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
+            startActivity(myIntent)
+        }
+
     }
+
 
     private fun listenUiEvents() {
 //       uiEvent.observe(this, {

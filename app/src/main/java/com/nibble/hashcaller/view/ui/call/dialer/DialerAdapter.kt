@@ -17,11 +17,11 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
-import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.utils.getRelativeTime
@@ -32,7 +32,7 @@ import kotlinx.android.synthetic.main.call_list.view.*
  */
 
 class DialerAdapter(private val context: Context,
-                    private val viewMarkingHandler: ViewMarkHandler,
+                    private val viewMarkingHandler: ViewMarkHandler, private val  networkHandler: SMSListAdapter.NetworkHandler,
                     private val onContactItemClickListener:
                     (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int)->Int
                    ) :
@@ -88,7 +88,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
          VIEW_TYPE_LOG -> {
 
 
-             (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener)
+             (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener, networkHandler)
         }
 
         VIEW_TYPE_LOADING ->{
@@ -121,7 +121,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int) -> Int
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int) -> Int,
+            networkHandler: SMSListAdapter.NetworkHandler
         ) {
             Log.d(TAG, "bind: ")
             expandableView.setTag(callLog.dateInMilliseconds)
@@ -144,8 +145,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                   expandableView.beGone()
 //
 //                }
-                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING) {
+                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING && networkHandler.isInternetAvailable()) {
                     logBinding.pgBarCallItem.beVisible()
+                }else{
+                    logBinding.pgBarCallItem.beInvisible()
+
                 }
 
                 var nameStr:String = ""
@@ -422,7 +426,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     }
     interface ViewMarkHandler {
         fun isMarked(id:Long?): Boolean
-
+    }
+    interface NetworkHandler {
+        fun isInternetAvailable(): Boolean
     }
 
 

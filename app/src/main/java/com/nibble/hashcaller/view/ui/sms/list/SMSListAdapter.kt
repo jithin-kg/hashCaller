@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.sms.list
 
 import android.content.Context
 import android.graphics.Typeface
-import android.util.Log
 import android.view.*
 import android.view.View.OnLongClickListener
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +29,7 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 
 
 class SMSListAdapter(private val context: Context,  private val viewMarkingHandler: ViewMarkHandler,
-                     private val longPresHandler:LongPressHandler,
+                     private val longPresHandler:LongPressHandler, private val  networkHandler: NetworkHandler,
                      private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String, clickType:Int)->Int
 ) :
     androidx.recyclerview.widget.ListAdapter<SmsThreadTable, RecyclerView.ViewHolder>(SMSItemDiffCallback()) {
@@ -76,7 +75,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             VIEW_TYPE_SMS -> {
                 val item =  getItem(position)
 
-                (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position)
+                (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position, networkHandler)
 
             }
             VIEW_TYPE_LOADING ->{
@@ -105,7 +104,8 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
         fun bind(
             sms: SmsThreadTable, context: Context,
             onContactItemClickListener: (view: View, threadId: Long, pos: Int, pno: String, clickType: Int) -> Int,
-            position: Int
+            position: Int,
+            networkHandler: NetworkHandler
         ) {
 
 //            if(sms.smsThreadTable.isMarked==true){
@@ -157,7 +157,8 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             binding.textVSMSCntctName.text = nameStr
             binding.tvSMSMPeek.text = sms.body
 
-            if(senderInforFrom== SENDER_INFO_SEARCHING){
+            if(senderInforFrom== SENDER_INFO_SEARCHING && this@SMSListAdapter.networkHandler.isInternetAvailable()){
+
                 binding.pgBarSmsListItem.beVisible()
             }else{
                 binding.pgBarSmsListItem.beInvisible()
@@ -266,6 +267,9 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
 
     }
 
+    interface NetworkHandler{
+        fun isInternetAvailable(): Boolean
+    }
 
 }
 

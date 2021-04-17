@@ -235,15 +235,48 @@ class SMSViewModel(
          val as2 = async{repository?.updateThreadContent(it)}
          val as3 = async { getInformationForTheseNumbers()}
          val as4 = async { repository?.deleteFromDb(it) }
+         val as5 = async { updateNameAndSpamCount(it) }
+
             as1.await()
             as2.await()
             as3.await()
             as4.await()
+            as5.await()
         }
 
 
 
 //        as1.await()
+    }
+
+    private fun updateNameAndSpamCount(threadsFromCprovider: MutableList<SmsThreadTable>) = viewModelScope.launch {
+        for (item in threadsFromCprovider){
+            var isInfoTobBeUpdated = false
+            val nameFromCprovider:String? = repository?.getNameForAddressFromContentProvider(item.contactAddress)
+            if(nameFromCprovider!=null){
+                if(item.name != nameFromCprovider){
+                    isInfoTobBeUpdated = true
+                    item.name = nameFromCprovider
+                }
+            }
+
+            val infoFromServer:SMSSendersInfoFromServer? =  async { repository?.getSenderInfoFromServerForAddres(item.contactAddress) }.await()
+            val threadInfoInDb = async { repository?.getThreadInfo(item.contactAddress) }.await()
+            if(infoFromServer!=null && threadInfoInDb !=null){
+                if(threadInfoInDb.nameFromServer != infoFromServer.name){
+                    item.nameFromServer = infoFromServer.name
+                    isInfoTobBeUpdated = true
+                }
+                if(threadInfoInDb.spamCountFromServer < infoFromServer.spamReportCount){
+                    item.spamCountFromServer = infoFromServer.spamReportCount
+                    isInfoTobBeUpdated = true
+                }
+
+            }
+            if(isInfoTobBeUpdated){
+                async { repository?.updateThreadSpamCount(item) }.await()
+            }
+        }
     }
 
     private fun setName(threads: MutableList<SmsThreadTable>) {

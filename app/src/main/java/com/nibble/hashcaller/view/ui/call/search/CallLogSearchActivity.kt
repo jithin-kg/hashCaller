@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityCallLogSearchBinding
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
@@ -22,17 +23,20 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.ui.sms.individual.util.UNMARK_ITEM
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 
 class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHandler,
-    ITextChangeListener, View.OnClickListener, DialerAdapter.ViewMarkHandler {
+    ITextChangeListener, View.OnClickListener, DialerAdapter.ViewMarkHandler,
+    SMSListAdapter.NetworkHandler {
     private lateinit var binding: ActivityCallLogSearchBinding
     private lateinit var searchAdapter : DialerAdapter
     private lateinit var editTextListener: TextChangeListener
     private var queryText = ""
     private var foundResultFor = ""
     private lateinit var viewmodel: CallLogSearchViewModel
+    private var isInternetAvailable = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +47,17 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
         initListeners()
         initViewModel()
         observeCallLogsLivedata()
+        observeInternetLivedata()
+
 
 
     }
-
+    private fun observeInternetLivedata() {
+        val cl = this?.let { ConnectionLiveData(it) }
+        cl?.observe(this, Observer {
+            isInternetAvailable = it
+        })
+    }
     private fun observeCallLogsLivedata() {
         viewmodel.callLogs.observe(this, Observer {
             if(it.size> 0){
@@ -74,7 +85,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
     private fun initRecyclerView() {
 
 
-        searchAdapter = DialerAdapter(this,this) {
+        searchAdapter = DialerAdapter(this,this,this ) {
 
                 id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)};
 
@@ -161,5 +172,10 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
 companion object{
     const val TAG ="__CallLogSearchActivity"
 }
+
+    override fun isInternetAvailable(): Boolean {
+        return isInternetAvailable
+
+    }
 
 }

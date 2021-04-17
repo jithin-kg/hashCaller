@@ -36,6 +36,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
@@ -56,6 +57,7 @@ import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -78,10 +80,12 @@ import kotlinx.android.synthetic.main.fragment_call.view.*
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
     DialerAdapter.ViewMarkHandler, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
-    PopupMenu.OnMenuItemClickListener {
+    PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
     private  var _binding: FragmentCallBinding? = null
     private val binding get() = _binding!!
     private var isDflt = false
+
+    private var isInternetAvailable = false
 
 
     private var isScreeningApp = false
@@ -130,6 +134,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         observePermissionLiveData()
         observeCallLogInfoFromServer()
 
+        observeInternetLivedata()
 
     }
 
@@ -141,6 +146,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        addFragmentDialer()
         return binding.root
 
+    }
+    private fun observeInternetLivedata() {
+        val cl = context?.let { ConnectionLiveData(it) }
+        cl?.observe(viewLifecycleOwner, Observer {
+            isInternetAvailable = it
+        })
     }
 
     private fun getFirst10items() {
@@ -364,7 +375,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                    30
 //                )
 //            addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context,this@CallFragment) {
+            callLogAdapter = DialerAdapter(context,this@CallFragment, this@CallFragment) {
 
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
             adapter = callLogAdapter
@@ -958,6 +969,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             }
         }
     return isMrked
+    }
+
+    override fun isInternetAvailable(): Boolean {
+        return isInternetAvailable
     }
 
 

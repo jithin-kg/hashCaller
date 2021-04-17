@@ -340,6 +340,7 @@ class CallContainerRepository(
             CallLog.Calls._ID,
             CallLog.Calls.DATE,
             "subscription_id"
+
         )
         var cursor:Cursor? = null
         val numberToSimIDMap = HashMap<String, Int>()
@@ -347,6 +348,7 @@ class CallContainerRepository(
             numberToSimIDMap[it.phoneNumber] = it.id
         }
         try {
+
             cursor = context.contentResolver.query(
                 CallLogLiveData.URI,
                 projection,

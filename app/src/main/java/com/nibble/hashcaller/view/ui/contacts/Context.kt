@@ -32,7 +32,7 @@ val Context.telecomManager: TelecomManager get() = getSystemService(Context.TELE
 
 
 @SuppressLint("MissingPermission")
-fun Context.getSimIndexForSubscriptionId(): MutableList<String> {
+fun Context.getSimIndexForSubscriptionId(): List<String> {
     val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
     val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
     var simIds = mutableListOf<String>()

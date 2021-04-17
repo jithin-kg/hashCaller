@@ -36,7 +36,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
-import com.nibble.hashcaller.view.ui.call.CallFragment
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
@@ -68,7 +69,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
 SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, ConfirmationClickListener,
-    android.widget.PopupMenu.OnMenuItemClickListener, SMSListAdapter.ViewMarkHandler {
+    android.widget.PopupMenu.OnMenuItemClickListener, SMSListAdapter.ViewMarkHandler, SMSListAdapter.NetworkHandler {
 
     private var _binding: FragmentMessageContainerBinding? =null
     private val binding get() = _binding!!
@@ -80,7 +81,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private lateinit var smsFlowHelper:SMSHelperFlow
     private lateinit var sView: EditText
     private lateinit var sharedPreferences: SharedPreferences
-
+    private var isInternetAvailable = false
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
@@ -136,10 +137,17 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                hideSearchView()
 //                showToolbarButtons()
 //            }
-
+        observeInternetLivedata()
         }
 
         return  binding.root
+    }
+
+    private fun observeInternetLivedata() {
+        val cl = context?.let { ConnectionLiveData(it) }
+        cl?.observe(viewLifecycleOwner, Observer {
+            isInternetAvailable = it
+        })
     }
 
 
@@ -157,14 +165,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             sms.let {
 
-                Log.d(TAG, "observeSMSList: $sms")
-//                smsRecyclerAdapter?.setList(sms)
-
-//                smsListVIewModel.updateLiveData(sms)
-//                this.smsListVIewModel.getInformationForTheseNumbers(
-//                    sms,
-//                    requireActivity().packageName
-//                )
                 viewmodel.updateDatabase(it)
 
             }
@@ -391,7 +391,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
        binding. rcrViewSMSList?.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as LinearLayoutManager
-            smsRecyclerAdapter = SMSListAdapter(context, this@SMSContainerFragment, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
+            smsRecyclerAdapter = SMSListAdapter(context, this@SMSContainerFragment, this@SMSContainerFragment, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
                                                                                 pno:String, clickType:Int->onContactItemClicked(view,threadId, pos, pno, clickType)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter
@@ -862,5 +862,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
         }
         return isMrked
+    }
+
+    override fun isInternetAvailable(): Boolean {
+
+        return isInternetAvailable
     }
 }

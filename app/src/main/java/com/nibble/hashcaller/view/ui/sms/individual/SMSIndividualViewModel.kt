@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.telephony.SmsManager
@@ -17,14 +16,10 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
-import com.nibble.hashcaller.R
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.local.db.sms.SmsOutboxListDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
@@ -43,9 +38,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.Flow
 import java.lang.Exception
-import java.security.spec.ECField
 import java.util.*
 
 
@@ -84,7 +77,7 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
 
     @SuppressLint("LongLogTag")
     fun getContactInfoForNumber(pno:String) = viewModelScope.launch {
-        var name = repository?.getConactInfoForNumber(pno)
+        var name = repository?.getNameForNumber(pno)
         Log.d(TAG, "getContactInfoForNumber: name from repository is $name")
         if(name.isNullOrEmpty()){
           val infoFromDb =   async { repository!!.getContactInfoFRomDB(pno) }.await()

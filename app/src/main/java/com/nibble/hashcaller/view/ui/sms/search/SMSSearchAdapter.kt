@@ -9,13 +9,13 @@ import android.text.style.BackgroundColorSpan
 import android.util.Log
 import android.view.*
 import android.view.View.OnLongClickListener
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -34,7 +34,7 @@ import java.util.*
 
 
 class SMSSearchAdapter(private val context: Context,
-                       private val longPresHandler:LongPressHandler,
+                       private val longPresHandler:LongPressHandler, private val  networkHandler: SMSListAdapter.NetworkHandler,
                        private val onContactItemClickListener: (view:View, threadId:Long, pos:Int, pno:String, id:Long?)->Unit
  ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSSearchItemDiffCallback()) {
@@ -83,7 +83,7 @@ class SMSSearchAdapter(private val context: Context,
         VIEW_TYPE_SMS -> {
            val item =  getItem(position)
 
-            (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position)
+            (holder as SmsViewHolder).bind(item,context, onContactItemClickListener, position, networkHandler)
 
         }
         VIEW_TYPE_DELETE ->{
@@ -132,8 +132,9 @@ class SMSSearchAdapter(private val context: Context,
 
         fun bind(
             sms: SMS, context: Context,
-            onContactItemClickListener: (view:View, threadId: Long, position:Int, pno:String, id:Long?) -> Unit,
-            position: Int
+            onContactItemClickListener: (view: View, threadId: Long, position: Int, pno: String, id: Long?) -> Unit,
+            position: Int,
+            networkHandler: SMSListAdapter.NetworkHandler
         ) {
             Log.d(TAG, "bind: ")
 //            layoutExpandable?.visibility   = if(sms.expanded) View.VISIBLE else View.GONE
@@ -147,7 +148,7 @@ class SMSSearchAdapter(private val context: Context,
                 else
                     name.text = sms.address
 
-            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING){
+            if(sms.senderInfoFoundFrom == SENDER_INFO_SEARCHING &&  networkHandler.isInternetAvailable()){
               view.pgBarSmsListItem.visibility = View.VISIBLE
                 Log.d(TAG, "bind: searching for ${sms.addressString}")
             }else{
@@ -366,7 +367,9 @@ class SMSSearchAdapter(private val context: Context,
         fun onLongPressed(view:View, pos:Int, id: Long, address:String)
     }
 
-
+    interface NetworkHandler {
+        fun isInternetAvailable(): Boolean
+    }
 
 
 }

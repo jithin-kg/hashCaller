@@ -12,16 +12,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySearchBinding
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 import kotlinx.android.synthetic.main.activity_search.*
 
-class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler {
+class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler,
+    SMSListAdapter.NetworkHandler {
     private lateinit var editTextListener: TextChangeListener
     private lateinit var viewmodel:SMSSearchViewModel
     private  var searchAdapter: SMSSearchAdapter? = null
@@ -29,6 +32,8 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
     private var queryText = ""
     private var contactAddress:String? = ""
     private var isIntentFromIndividualSMS = false
+    private var isInternetAvailable = false
+
     private lateinit var binding: ActivitySearchBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,10 +50,17 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
         initRecyclerView()
         initListeners()
         initViewModel()
+        observeInternetLivedata()
+
         if(!isIntentFromIndividualSMS)
          getSearchHistory()
     }
-
+    private fun observeInternetLivedata() {
+        val cl = this?.let { ConnectionLiveData(it) }
+        cl?.observe(this, Observer {
+            isInternetAvailable = it
+        })
+    }
     private fun getSearchHistory() {
         this.viewmodel.getAllSearchHistory().observe(this, Observer {
             Log.d(TAG, "getSearchHistory: size ${it.size}")
@@ -58,7 +70,7 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
     private fun initRecyclerView() {
 
 
-        this@SearchSMSActivity.searchAdapter = SMSSearchAdapter(this, this@SearchSMSActivity)
+        this@SearchSMSActivity.searchAdapter = SMSSearchAdapter(this, this@SearchSMSActivity, this)
         { view: View, threadId:Long, pos:Int,
           pno:String, id:Long?->onContactItemClicked(view,threadId, pos, pno,id )  }
 
@@ -131,6 +143,10 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
     }
     companion object{
         const val TAG = "__SearchActivity"
+    }
+
+    override fun isInternetAvailable(): Boolean {
+        return isInternetAvailable
     }
 
 

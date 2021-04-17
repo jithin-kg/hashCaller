@@ -150,7 +150,7 @@ class SMSLocalRepository(
 
     //gets sms for SMSLiveData to show all sms
     suspend fun fetchSMS(searchText:String?, isrequestingFromSmsSpamList:Boolean = false): ArrayList<SmsThreadTable> {
-         fetchWithFullData(null, isrequestingFromSmsSpamList).apply {
+         fetchSMSForLivedata(null, isrequestingFromSmsSpamList).apply {
             return this
         }
     }
@@ -353,7 +353,7 @@ class SMSLocalRepository(
         }
 
     @SuppressLint("LongLogTag")
-    private suspend fun fetchWithFullData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): ArrayList<SmsThreadTable> {
+    private suspend fun fetchSMSForLivedata(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): ArrayList<SmsThreadTable> {
         var data = ArrayList<SmsThreadTable>()
         Log.d(TAG, "fetch: called")
         var prevAddress = ""
@@ -862,7 +862,7 @@ class SMSLocalRepository(
                 var formattedNum = formatPhoneNumber(sms.addressString!!)
 
 //                if(isNumericOnlyString(formattedNum)){
-                    val name =   getConactInfoForNumber(formattedNum)
+                    val name =   getNameForNumber(formattedNum)
                     if (name != null){
                         sms.name = name
                         sms.nameForDisplay = name
@@ -875,6 +875,9 @@ class SMSLocalRepository(
         }
 
     }
+
+
+
 
     /**
      * function to get information from local db sms_senders_info_from_db
@@ -1235,59 +1238,15 @@ class SMSLocalRepository(
      * function to get contact info for numbers
      * @param pno phone number
      */
-    fun getConactInfoForNumber( pno: String): String? {
+    fun getNameForNumber(pno: String): String? {
         var cursor:Cursor? = null
-//        Log.d(TAG, "getConactInfoForNumber: pno $pno")
-//        val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
         var name:String? = null
         val phoneNum = pno.replace("+", "").trim()
-//        Log.d(TAG, "getConactInfoForNumber: phoneNum $phoneNum")
-//        try {
-//
-//             cursor = context.contentResolver.query(
-//                 ContactsContract.Data.CONTENT_URI,
-//                null,
-//                ContactsContract.CommonDataKinds.Phone.NUMBER +" LIKE ? ",
-//                arrayOf("%$phoneNum%"),
-//                null
-//            )
-////            cursor = context.contentResolver.query(
-////                ContactLiveData.URI,
-////                projection,
-////                ContactsContract.CommonDataKinds.Phone.NUMBER +" LIKE ? ",
-////                arrayOf("+919495617494"),
-////                null
-////            )
-//
-//            if(cursor!=null && cursor.moveToFirst()){
-//                Log.d(TAG, "getConactInfoForNumber: contact exist")
-//                do{
-//                     name = cursor.getString(0)
-//
-//                }while (cursor.moveToNext())
-//            }else{
-//                Log.d(TAG, "getConactInfoForNumber: no such number")
-//            }
-//        }catch (e:Exception){
-//            Log.d(TAG, "getConactInfoForNumber: exception $e")
-//        }finally {
-//            cursor?.close()
-//        }
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(pno));
-//        cursor = context.contentResolver.query(
-//                 ContactsContract.Data.CONTENT_URI,
-//                null,
-//                ContactsContract.CommonDataKinds.Phone.NUMBER +" LIKE ? ",
-//                arrayOf("%$phoneNum%"),
-//                null
-//            )
         val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
         try{
             if(cursor2!=null && cursor2.moveToFirst()){
-//                    Log.d(TAG, "getConactInfoForNumber: data exist")
                 name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
-            }else{
-//                    Log.d(TAG, "getConactInfoForNumber: no date")
             }
 
         }catch (e:Exception){
@@ -1316,7 +1275,7 @@ class SMSLocalRepository(
             if(m.matches()){
                 //if the address is not name ("jio-4g, ideacareetc")
                 //ie the address is number 34834,555,802383213
-                val name = getConactInfoForNumber(sms.addressString!!)
+                val name = getNameForNumber(sms.addressString!!)
                 Log.d(TAG, "getInfoFromContacts: name is $name")
 
                 sms.name = name
@@ -2159,6 +2118,27 @@ class SMSLocalRepository(
         }
     }
 
+    suspend fun getSenderInfoFromServerForAddres(contactAddress: String): SMSSendersInfoFromServer? {
+        val num = formatPhoneNumber(contactAddress)
+         smssendersInfoDAO?.find(num).apply {
+            return this
+        }
+    }
+
+    /**
+     *  function to get smsthreads details from db
+     */
+    suspend fun getThreadInfo(contactAddress: String): SmsThreadTable? {
+        val fnum = formatPhoneNumber(contactAddress)
+        return smsThreadsDAO?.find(fnum)
+    }
+
+    /**
+     * function to upate name, nameFrom server, spamcount
+     */
+    suspend fun updateThreadSpamCount(item: SmsThreadTable) {
+        smsThreadsDAO?.updateInfos(item.contactAddress, item.spamCountFromServer, item.name, item.nameFromServer)
+    }
 
 
 }
