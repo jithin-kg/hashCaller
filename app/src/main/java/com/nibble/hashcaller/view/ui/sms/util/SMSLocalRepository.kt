@@ -2097,9 +2097,9 @@ class SMSLocalRepository(
      */
     suspend fun updateThreadContent(smsFromCprovider: MutableList<SmsThreadTable>) {
         for(item in smsFromCprovider){
-            smsThreadsDAO?.find(contactAddress = item.contactAddress).apply {
+            smsThreadsDAO?.find(contactAddress = item.numFormated).apply {
                 if(this!=null){
-                    smsThreadsDAO?.updateBodyAndContents(item.contactAddress,
+                    smsThreadsDAO?.updateBodyAndContents(item.numFormated,
                         item.body,  item.dateInMilliseconds )
                 }
             }

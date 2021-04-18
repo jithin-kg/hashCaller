@@ -326,7 +326,7 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text = if (sms.msg == null) " null" else sms.msg
+            msg.text = sms.msgString
 
 //            val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
 
@@ -345,7 +345,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
 
     inner class SentSMSViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val msg = view.tvSentMsg
-
 
         fun bind(
             sms: SMS,

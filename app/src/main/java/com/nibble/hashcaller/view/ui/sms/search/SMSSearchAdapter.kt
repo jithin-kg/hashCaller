@@ -20,6 +20,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.*
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.android.synthetic.main.sms_spam_delete_item.view.*
 import java.text.SimpleDateFormat
@@ -203,7 +204,6 @@ class SMSSearchAdapter(private val context: Context,
                 setTimeInView(sms.time)
 
 
-                setNameFirstChar(sms)
 
 //            val pNo = sms.address.toString()
 //            Log.d(TAG, "phone num $pNo ")
@@ -273,15 +273,23 @@ class SMSSearchAdapter(private val context: Context,
         }
 
         private fun setSpanForNameSearch(sms: SMS) {
+            var firstChar = ""
             if(sms.spanEndPosNameCp!=0 && sms.name!=null ){
                 name.text = getSpannedString(sms.name!!, sms.spanStartPosNameCp, sms.spanEndPosNameCp)
+                firstChar = sms.name!![0].toString().toUpperCase()
             }else if(sms.addressString!=null && sms.spanEndPos !=0){
                 name.text = getSpannedString(sms.addressString!!, sms.spanStartPos, sms.spanEndPos)
+                firstChar = formatPhoneNumber(sms.addressString!!).replace("+","")[0].toString().toUpperCase()
             }
-
             else{
                 name.text = sms.addressString
+                firstChar = formatPhoneNumber(sms.addressString!!).replace("+","")[0].toString().toUpperCase()
 
+            }
+            if(firstChar.isNullOrEmpty()){
+                setNameFirstChar("+")
+            }else{
+                setNameFirstChar(firstChar)
             }
         }
 //        }
@@ -338,11 +346,7 @@ class SMSSearchAdapter(private val context: Context,
 
          }
 
-         private fun setNameFirstChar(sms: SMS) {
-             val name: String = sms.address.toString()
-//             val firstLetter = name[0]
-             val firstLetter = sms.addressString!![0]
-             val firstLetterString = firstLetter.toString().toUpperCase()
+         private fun setNameFirstChar(firstLetterString:String) {
              circle.text = firstLetterString
          }
 

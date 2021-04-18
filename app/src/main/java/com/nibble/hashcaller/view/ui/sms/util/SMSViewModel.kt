@@ -266,8 +266,8 @@ class SMSViewModel(
                 }
             }
 
-            val infoFromServer:SMSSendersInfoFromServer? =  async { repository?.getSenderInfoFromServerForAddres(item.contactAddress) }.await()
-            val threadInfoInDb = async { repository?.getThreadInfo(item.contactAddress) }.await()
+            val infoFromServer:SMSSendersInfoFromServer? =  async { repository?.getSenderInfoFromServerForAddres(item.numFormated) }.await()
+            val threadInfoInDb = async { repository?.getThreadInfo(item.numFormated) }.await()
             if(infoFromServer!=null && threadInfoInDb !=null){
                 if(threadInfoInDb.nameFromServer != infoFromServer.name){
                     item.nameFromServer = infoFromServer.name
