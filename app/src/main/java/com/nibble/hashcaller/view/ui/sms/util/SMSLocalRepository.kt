@@ -11,7 +11,6 @@ import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
@@ -119,6 +118,7 @@ class SMSLocalRepository(
         private val URI: Uri = SMSContract.INBOX_SMS_URI
 
         private const val TAG = "__SMSLocalRepository"
+//        var queryText:String? =null
 
     }
 
@@ -680,9 +680,9 @@ class SMSLocalRepository(
 
             if(lowerCaseName.contains(searchQuery)){
                 startPos = lowerCaseName.indexOf(searchQuery)
-                objSMS.spanStartPos = startPos
+                objSMS.spanStartPosNameCp = startPos
                 endPos = startPos + searchQuery.length
-                objSMS.spanEndPos = endPos
+                objSMS.spanEndPosNameCp = endPos
 //                val yellow =
 //                    ForegroundColorSpan(Color.BLUE)
 //                spannableStringBuilder.setSpan(
@@ -734,7 +734,6 @@ class SMSLocalRepository(
                 val yellow = BackgroundColorSpan(Color.YELLOW)
                 objSMS.spanStartPos = startPos
                 objSMS.spanEndPos = endPos
-
 
             }
         }
@@ -878,7 +877,7 @@ class SMSLocalRepository(
                 var formattedNum = formatPhoneNumber(sms.addressString!!)
 
 //                if(isNumericOnlyString(formattedNum)){
-                    val name =   getNameForNumber(formattedNum)
+                    val name =   getNameForNumberFromCprovider(formattedNum)
                     if (name != null){
                         sms.name = name
                         sms.nameForDisplay = name
@@ -1102,7 +1101,7 @@ class SMSLocalRepository(
                     val sms = SMS()
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                     sms.timeString = setHourAndMinute(sms, sms.time!!)
-                    sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
+                    sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body")).trim()
                     val mgsStr = sms.msgString
                     sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
                     sms.threadID = cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
@@ -1112,34 +1111,7 @@ class SMSLocalRepository(
                     sms.type = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
 
-                    if(IndividualSMSActivity.chatId.isNotEmpty()){
-                        if(sms.id.toString() == IndividualSMSActivity.chatId){
-                            IndividualSMSActivity.chatScrollToPosition = counter
-                            val startPos = sms.msgString!!.indexOf(IndividualSMSActivity.queryText!!)
-                            val endPos = startPos + IndividualSMSActivity.queryText!!.length
 
-                            val yellow = BackgroundColorSpan(Color.YELLOW)
-                            val spannableStringBuilder =
-                                SpannableStringBuilder(mgsStr)
-
-                            spannableStringBuilder.setSpan(
-                                yellow,
-                                startPos,
-                                endPos,
-                                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                            )
-                            sms.msg = spannableStringBuilder
-                        }else{
-                            val spannableStringBuilder =
-                                SpannableStringBuilder(mgsStr)
-                            sms.msg = spannableStringBuilder
-                        }
-                    }else{
-                        val spannableStringBuilder =
-                            SpannableStringBuilder(mgsStr)
-                        sms.msg = spannableStringBuilder
-
-                    }
                     smslist.add(sms)
                     counter++
 
@@ -1254,7 +1226,7 @@ class SMSLocalRepository(
      * function to get contact info for numbers
      * @param pno phone number
      */
-    fun getNameForNumber(pno: String): String? {
+    fun getNameForNumberFromCprovider(pno: String): String? {
         var cursor:Cursor? = null
         var name:String? = null
         val phoneNum = pno.replace("+", "").trim()
@@ -1291,7 +1263,7 @@ class SMSLocalRepository(
             if(m.matches()){
                 //if the address is not name ("jio-4g, ideacareetc")
                 //ie the address is number 34834,555,802383213
-                val name = getNameForNumber(sms.addressString!!)
+                val name = getNameForNumberFromCprovider(sms.addressString!!)
                 Log.d(TAG, "getInfoFromContacts: name is $name")
 
                 sms.name = name
@@ -1896,8 +1868,8 @@ class SMSLocalRepository(
 
                     if(IndividualSMSActivity.chatId.isNotEmpty()){
                         if(sms.id.toString() == IndividualSMSActivity.chatId){
-                            val startPos = sms.msgString!!.indexOf(IndividualSMSActivity.queryText!!)
-                            val endPos = startPos + IndividualSMSActivity.queryText!!.length
+//                            val startPos = sms.msgString!!.indexOf(queryText!!)
+//                            val endPos = startPos + queryText!!.length
 
                             val yellow = BackgroundColorSpan(Color.YELLOW)
                             val spannableStringBuilder =
@@ -1905,8 +1877,8 @@ class SMSLocalRepository(
 
                             spannableStringBuilder.setSpan(
                                 yellow,
-                                startPos,
-                                endPos,
+                                0,
+                                0,
                                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                             )
                             sms.msg = spannableStringBuilder
@@ -2191,6 +2163,7 @@ class SMSLocalRepository(
 //                            cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                         objSMS.threadID =
                             cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                        objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
 //                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         objSMS.addressString =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
@@ -2252,7 +2225,8 @@ class SMSLocalRepository(
                                 }
                             }
 
-                        objSMS.name = getNameForNumber(objSMS.addressString!!)
+                        objSMS.name = getNameForNumberFromCprovider(objSMS.addressString!!)
+
                         setSpannableStringBuilder(objSMS, searchQuery, objSMS.body, objSMS.addressString!!)
 
 
@@ -2337,6 +2311,8 @@ class SMSLocalRepository(
 //                            cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                         objSMS.threadID =
                             cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
+                        objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+
 //                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         objSMS.addressString =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
@@ -2397,7 +2373,7 @@ class SMSLocalRepository(
                                 objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                             }
                         }
-                        objSMS.name = getNameForNumber(objSMS.addressString!!)
+                        objSMS.name = getNameForNumberFromCprovider(objSMS.addressString!!)
                         setSpannableStringBuilder(objSMS, numForSearching, objSMS.body, objSMS.addressString!!)
                         setSpannableStrinForName(objSMS, searchQuery)
 

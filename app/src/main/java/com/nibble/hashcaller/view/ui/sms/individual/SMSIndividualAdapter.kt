@@ -5,10 +5,10 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.provider.Telephony
-import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +37,8 @@ import java.util.*
  */
 class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
                             private val  longPresHandler:LongPressHandler, private val context: Context,
+                            private val queryText:String?,
+                            private val chatId:String,
                             private val onContactItemClickListener: (id:String)->Unit
 ) :
     androidx.recyclerview.widget.ListAdapter<SMS, RecyclerView.ViewHolder>(SMSIndividualDiffCallback()) {
@@ -86,7 +88,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
 //        return super.getItemViewType(position)
         
         if(smsList.isNotEmpty()){
-            Log.d(TAG, "getItemViewType: ${smsList[position].type }")
             if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT){
                 //sent message 2
                 return VIEW_TYPE_MESSAGE_SENT
@@ -94,11 +95,9 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
             }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_INBOX ){
                 return VIEW_TYPE_MESSAGE_RECEIVED
             }else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX){
-//            Log.d(TAG, "getItemViewType: outbox msg ${Telephony.TextBasedSmsColumns.MESSAGE_TYPE_OUTBOX}")
                 return VIEW_TYPE_MESSAGE_OUTBOX
             }
             else if(smsList[position].type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_ALL){
-                Log.d(TAG, "getItemViewType: 0 ")
                 return VIEW_TYPE_MESSAGE_RECEIVED
 
             }
@@ -119,14 +118,12 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
 //    val contact = smsList[position]
 //    holder.bind(contact, context, onContactItemClickListener)
 
-//        Log.d(TAG, "onBindViewHolder: ")
         when(holder.itemViewType) {
 
             VIEW_TYPE_MESSAGE_SENT -> {
                 (holder as SentSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
             VIEW_TYPE_MESSAGE_RECEIVED->{
-                Log.d(TAG, "onBindViewHolder:VIEW_TYPE_MESSAGE_RECEIVED ")
                 (holder as ReceivedSMSViewHolder).bind(getItem(position),context, onContactItemClickListener, position, holder)
             }
             VIEW_TYPE_DATE->{
@@ -141,7 +138,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
     fun setList(it: List<SMS>?) {
         smsList.clear()
         smsList.addAll(it as MutableList<SMS>)
-//        Log.d(TAG, "setList: ${smsList.size}")
         this.submitList(it)
 //        if(smsList.isNotEmpty() && smsList.size < it!!.size){
 //            positionTracker.shouldWeScroll()
@@ -173,7 +169,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
                     if(date!=null)
                         prevDate = date!!
                      view.tvSMSDate.text = sms.currentDate
-//                    Log.d(TAG, "bind: setting date ${sms.currentDate}")
 
 //                }
 //            }
@@ -196,14 +191,13 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
             position: Int,
             holderReceivedMessage: RecyclerView.ViewHolder
         ) {
-//            Log.d(TAG, "bind: called")
 
             if(position  == smsList.size - 1){
                 positionTracker.lastItemReached()
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text = if (sms.msg == null) "null" else sms.msg
+            setSpanStr(sms, msg)
             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(sms.time!!))
 
 //            setTimeInView(sms.time)
@@ -242,12 +236,10 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
                 BackgroundColorSpan(Color.YELLOW)
             val spannableStringBuilder =
                 SpannableStringBuilder(str)
-//            Log.d(TAG, "setSpan: startPos:$startPos")
 //            Log.d(TAG, "setSpan: endPos:$endPos")
             try{
                 spannableStringBuilder.setSpan(yellow,startPos, endPos, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
             }catch (e:IndexOutOfBoundsException){
-//                Log.d(TAG, "setSpan: $e")
             }
 
             v.text = spannableStringBuilder
@@ -256,8 +248,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
         private fun setTimeInView(time: Long?) {
             val date =  SimpleDateFormat("dd/MM/yyyy").format(Date(time!!))
             val time =   SimpleDateFormat("hh:mm:ss").format(time * 1000)
-//             Log.d(TAG, "date: $date")
-//             Log.d(TAG, "time: $time")
 //             val now: ZonedDateTime  = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));(
             /**
              * now(),ofPattern(), format() requires min api 26
@@ -277,8 +267,6 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
              }else{
                  view.tvSMSRecivedTime.text = date
             }
-//             Log.d(TAG, "today: $todayDate")
-//             Log.d(TAG, "setTimeInView: $d2")
 
 
         }
@@ -286,6 +274,36 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
 
 
 
+    }
+
+    private fun setSpanStr(sms: SMS, textView: TextView) {
+       var isContaing = false
+        var startPos = 0
+        var endPos = 0
+        if (queryText!=null){
+             startPos =  sms.msgString!!.indexOf(queryText, ignoreCase = true)
+             endPos = startPos + queryText!!.length
+             isContaing = (startPos < sms.msgString!!.length && startPos >= 0) && (endPos < sms.msgString!!.length && endPos>=0)
+        }
+
+        if(sms.id.toString() == chatId && isContaing ){
+            Log.d(TAG, "setSpanStr: spanEndPosMsgPeek not zero")
+            val spannableStringBuilder =
+                SpannableStringBuilder(sms.msgString)
+            val color =
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+            spannableStringBuilder.setSpan(
+                         color,
+                            startPos,
+                             endPos,
+                         Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                            )
+
+            textView.text = spannableStringBuilder
+        }else{
+            textView.text =  sms.msgString
+
+        }
     }
 
     /**
@@ -337,13 +355,14 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
             holderReceivedMessage: RecyclerView.ViewHolder
         ) {
 //            Log.d(TAG, "bind: called")
-
+            Log.d(TAG, "bind: querytext is $queryText")
             if(position  == smsList.size - 1){
                 positionTracker.lastItemReached()
             }else if(position < smsList.size - 1){
                 positionTracker.otherPosition()
             }
-            msg.text =  sms.msg
+            setSpanStr(sms, msg)
+//            msg.text =  sms.msg
 
 //            msg.setText(Html.fromHtml(convertToHtml(txtMsgFrom.getText().toString()) + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"))
             view.tvTimeSMSSent.text = sms.timeString

@@ -273,8 +273,8 @@ class SMSSearchAdapter(private val context: Context,
         }
 
         private fun setSpanForNameSearch(sms: SMS) {
-            if(sms.spanEndPos!=0 && sms.name!=null ){
-                name.text = getSpannedString(sms.name!!, sms.spanStartPos, sms.spanEndPos)
+            if(sms.spanEndPosNameCp!=0 && sms.name!=null ){
+                name.text = getSpannedString(sms.name!!, sms.spanStartPosNameCp, sms.spanEndPosNameCp)
             }else if(sms.addressString!=null && sms.spanEndPos !=0){
                 name.text = getSpannedString(sms.addressString!!, sms.spanStartPos, sms.spanEndPos)
             }

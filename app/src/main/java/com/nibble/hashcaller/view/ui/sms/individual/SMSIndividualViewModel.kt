@@ -77,7 +77,7 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
 
     @SuppressLint("LongLogTag")
     fun getContactInfoForNumber(pno:String) = viewModelScope.launch {
-        var name = repository?.getNameForNumber(pno)
+        var name = repository?.getNameForNumberFromCprovider(pno)
         Log.d(TAG, "getContactInfoForNumber: name from repository is $name")
         if(name.isNullOrEmpty()){
           val infoFromDb =   async { repository!!.getContactInfoFRomDB(pno) }.await()
@@ -318,7 +318,9 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         SCROLL_TO_POSITION = null
         scrollToPositions.clear()
 
-        val smsList = smsLocalRepository.fetchIndividualSMS(IndividualSMSActivity.contact)
+        val smsList = smsLocalRepository.fetchIndividualSMS(
+            IndividualSMSActivity.contact
+        )
         var mutableSMSLIst:MutableList<SMS> = mutableListOf()
         mutableSMSLIst.addAll(smsList)
         if(mutableSMSLIst !=null){

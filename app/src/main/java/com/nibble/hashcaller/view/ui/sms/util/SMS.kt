@@ -54,8 +54,10 @@ data class SMS(var isDummy:Boolean = false,
                 var senderInfoFoundFrom:Int = SENDER_INFO_SEARCHING,
                 var isMarked : Boolean = false,
                 var kaatam : String ? = null,
-                var spanStartPos:Int = 0,
+                var spanStartPos:Int = 0, // for address
                 var spanEndPos:Int = 0,
+               var spanStartPosNameCp:Int = 0, // name from content provider start position
+               var spanEndPosNameCp:Int = 0,
                var spanStartPosMsgPeek:Int = 0,
                 var spanEndPosMsgPeek:Int = 0,
                ){

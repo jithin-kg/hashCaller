@@ -16,7 +16,7 @@ import kotlin.collections.ArrayList
 class SMSIndividualLiveData(
     private val context: Context,
     private var contact: String?,
-    private val spamListDAO: SpamListDAO?
+    private val spamListDAO: SpamListDAO?,
 ):
     ContentProviderLiveData<List<SMS>>(context,
         URI

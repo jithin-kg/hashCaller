@@ -90,6 +90,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     var spamTypes:MutableList<String> = ArrayList<String>()
     private var participants = ArrayList<SimpleContact>()
     private var address = ""
+    private var queryText:String? = ""
 
 //    private var sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
 //    private var deliveryBroadcastReceiver: BroadcastReceiver = DeliverReceiver()
@@ -127,7 +128,10 @@ class IndividualSMSActivity : AppCompatActivity(),
 
             contactAddress = bundle!!.getString(CONTACT_ADDRES)!!
             chatId = bundle!!.getString(SMS_CHAT_ID)!!
-            queryText = bundle!!.getString(QUERY_STRING)
+             queryText = bundle!!.getString(QUERY_STRING)
+
+
+            Log.d(TAG, "onCreate:queryText $queryText ")
             Log.d(TAG, "onCreate: chatId $chatId")
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
         }
@@ -846,7 +850,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 //            findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
 
 
-        adapter = SMSIndividualAdapter(this,this,  applicationContext ){ id:String -> onContactitemClicked(id) }
+        adapter = SMSIndividualAdapter(this,this,  this, queryText , chatId){ id:String -> onContactitemClicked(id) }
 
         binding.recyclerViewSMSIndividual.setHasFixedSize(true)
         binding.recyclerViewSMSIndividual.layoutManager = LinearLayoutManager(this)
@@ -874,7 +878,6 @@ class IndividualSMSActivity : AppCompatActivity(),
         var chatId = ""
         var chatScrollToPosition = 0 //incase intent from SearchActivity we need
                                     // to scroll to thatexact sms
-        var queryText:String? =null
         var contact:String? = null
         const val TAG = "__IndividualSMSActivity"
         lateinit var dotedPg:HorizontalDottedProgress
