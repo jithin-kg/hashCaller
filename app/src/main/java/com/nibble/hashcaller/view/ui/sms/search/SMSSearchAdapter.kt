@@ -252,47 +252,31 @@ class SMSSearchAdapter(private val context: Context,
 
         private fun setSpanForBody(sms: SMS) {
             if(sms.spanEndPosMsgPeek!=0){
-
-                val yellow =
-                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
-                val span =  SpannableStringBuilder(sms.body)
-                span.setSpan(
-                    yellow,
-                    sms.spanStartPosMsgPeek,
-                    sms.spanEndPosMsgPeek,
-                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                )
-
-                view.tvSMSMPeek.text = span
+                view.tvSMSMPeek.text = getSpannedString(sms.body, sms.spanStartPosMsgPeek, sms.spanEndPosMsgPeek)
             }else{
                 view.tvSMSMPeek.text = sms.msg
 
             }
         }
 
+        private fun getSpannedString(str: String, startPos: Int, endPos: Int): SpannableStringBuilder {
+            val yellow =
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+            val span =  SpannableStringBuilder(str)
+            span.setSpan(
+                yellow,
+                startPos,
+                endPos,
+                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            return span
+        }
+
         private fun setSpanForNameSearch(sms: SMS) {
             if(sms.spanEndPos!=0 && sms.name!=null ){
-                val yellow =
-                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
-                val span =  SpannableStringBuilder(sms.name)
-                span.setSpan(
-                    yellow,
-                    sms.spanStartPos,
-                    sms.spanEndPos,
-                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                )
-                name.text = span
+                name.text = getSpannedString(sms.name!!, sms.spanStartPos, sms.spanEndPos)
             }else if(sms.addressString!=null && sms.spanEndPos !=0){
-                val yellow =
-                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
-                val span =  SpannableStringBuilder(sms.addressString)
-                span.setSpan(
-                    yellow,
-                    sms.spanStartPos,
-                    sms.spanEndPos,
-                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                )
-                name.text = span
+                name.text = getSpannedString(sms.addressString!!, sms.spanStartPos, sms.spanEndPos)
             }
 
             else{

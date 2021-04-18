@@ -66,12 +66,9 @@ class IndividualSMSActivity : AppCompatActivity(),
     PopupMenu.OnMenuItemClickListener, SearchView.OnQueryTextListener,
     SMSIndividualAdapter.LongPressHandler {
     private lateinit var binding: ActivityIndividualSMSBinding
-
     private lateinit var viewModel:SMSIndividualViewModel
-//    private lateinit var  recyclerView:RecyclerView
     private var oldList = mutableListOf<SMS>()
     private var contactAddress = ""
-
     private var oldLIstSize = 0
     private var countNewItem = 0
     private var recyclerViewAtEnd = true
@@ -81,32 +78,17 @@ class IndividualSMSActivity : AppCompatActivity(),
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private var threadID = -1L // sms thread id not java thread
-
     private  var menuSMS:Menu? = null
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isTheNumberBlocked:MutableLiveData<Boolean> = MutableLiveData(false)
-
-
     private  var spinnerSelected: MutableLiveData<Boolean> = MutableLiveData(false);
     private  var selectedRadioButton:RadioButton? = null
     private var isSmsChannelBusy = false // to know whether there is an sms is currently sending
     private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData(false)
     private var defaultSMSHandlerLiveData: MutableLiveData<Boolean> = MutableLiveData()
-
-
     private  var spammerType:Int = -1
     var spamTypes:MutableList<String> = ArrayList<String>()
-//    var  smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
-    private var allTypeOfSmsList:MutableList<SMS> = mutableListOf()
-    private var smsQueueLiveData:MutableLiveData<Queue<SMS>> = MutableLiveData()
-    private var smsQueue:Queue<SMS> = LinkedList<SMS>()
     private var participants = ArrayList<SimpleContact>()
-
-
-
-
-    //    private var messageSent: MutableLiveData<Boolean> = MutableLiveData()
-//    private var time:String? = null
     private var address = ""
 
 //    private var sendBroadcastReceiver: BroadcastReceiver = SentReceiver()
@@ -141,7 +123,6 @@ class IndividualSMSActivity : AppCompatActivity(),
             }else->{
             //normal intent within app intent
 //            contactAddress = "+"+ intent.getStringExtra(CONTACT_ADDRES)
-
             val bundle = intent.getExtras()
 
             contactAddress = bundle!!.getString(CONTACT_ADDRES)!!
@@ -149,7 +130,6 @@ class IndividualSMSActivity : AppCompatActivity(),
             queryText = bundle!!.getString(QUERY_STRING)
             Log.d(TAG, "onCreate: chatId $chatId")
             Log.d(TAG, "onCreate: contactAdderss $contactAddress")
-
         }
 
         }

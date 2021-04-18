@@ -69,13 +69,13 @@
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            motion:layout_constraintTop_toBottomOf="@id/tvQueryItem"
+            motion:layout_constraintTop_toBottomOf="@+id/tvCallSearchSmall"
             android:alpha="0.12"
             motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"
             android:id="@+id/imgVDividerCallsrch"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp" />
 
     </ConstraintSet>
 </MotionScene>

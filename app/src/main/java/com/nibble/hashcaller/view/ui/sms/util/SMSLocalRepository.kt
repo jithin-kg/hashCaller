@@ -727,18 +727,6 @@ class SMSLocalRepository(
                 endPos = startPos + lowerSearchQuery.length
                 objSMS.spanStartPosMsgPeek = startPos
                 objSMS.spanEndPosMsgPeek = endPos
-//                val yellow =
-//                    BackgroundColorSpan(Color.YELLOW)
-//                spannableStringBuilder =
-//                    SpannableStringBuilder(msg)
-//                spannableStringBuilder.setSpan(
-//                    yellow,
-//                    startPos,
-//                    endPos,
-//                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-//                )
-//
-//                objSMS.msg = spannableStringBuilder
             }
             if (lowercaseNum.contains(searchQuery) && searchQuery.isNotEmpty()) {
                 val startPos = lowercaseNum.indexOf(searchQuery)
@@ -749,61 +737,13 @@ class SMSLocalRepository(
 
 
             }
-
-//           if(objSMS.address.isNullOrEmpty()){
-//               if(!objSMS.name.isNullOrEmpty()){
-//                  if(objSMS.name!!.contains(searchQuery) && searchQuery.isNotEmpty()){
-//                      val startPos = objSMS.name!!.indexOf(searchQuery)
-//                      val endPos = startPos + searchQuery.length
-//
-//                      spannableStringBuilder = SpannableStringBuilder(objSMS.name)
-//                      val yellow = BackgroundColorSpan(Color.YELLOW)
-//                      spannableStringBuilder.setSpan(
-//                          yellow,
-//                          startPos,
-//                          endPos,
-//                          Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-//                      )
-//
-//                      objSMS.address = spannableStringBuilder
-//                      objSMS.msg = SpannableStringBuilder(msg)
-//                  }
-//               }
-//           }
-//            if(objSMS.address.isNullOrEmpty()){
-//                if(!objSMS.nameFromServer.isNullOrEmpty()){
-//                 if(objSMS.nameFromServer!!.contains(searchQuery) && searchQuery.isNotEmpty())  {
-//                     val startPos = objSMS.nameFromServer!!.indexOf(searchQuery)
-//                     val endPos = startPos + searchQuery.length
-//
-//                     spannableStringBuilder = SpannableStringBuilder(objSMS.nameFromServer)
-//                     val yellow = BackgroundColorSpan(Color.YELLOW)
-//                     spannableStringBuilder.setSpan(
-//                         yellow,
-//                         startPos,
-//                         endPos,
-//                         Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-//                     )
-//
-//                     objSMS.address = spannableStringBuilder
-//
-//                     objSMS.msg = SpannableStringBuilder(msg)
-//                 }
-//                }
-//            }
-
-//            else {
-//                spannableStringBuilder =
-//                    SpannableStringBuilder(msg)
-//                objSMS.msg = spannableStringBuilder
-//                objSMS.address = SpannableStringBuilder(num)
-//            }
-        } else {
-            spannableStringBuilder =
-                SpannableStringBuilder(msg)
-            objSMS.msg = spannableStringBuilder
-            objSMS.address = SpannableStringBuilder(num)
         }
+//        else {
+//            spannableStringBuilder =
+//                SpannableStringBuilder(msg)
+//            objSMS.msg = spannableStringBuilder
+//            objSMS.address = SpannableStringBuilder(num)
+//        }
 
     }
 
