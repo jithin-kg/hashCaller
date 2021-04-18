@@ -36,7 +36,7 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 mutedSendersDAO,
                 smsThreadsDAO
             ) // to get content provided sms
-            val allsmsincontentProvider = smsrepoLocal.fetchSMS(null)
+            val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
             var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 
 

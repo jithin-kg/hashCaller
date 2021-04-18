@@ -21,6 +21,7 @@ import java.util.*
     @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,
     @ColumnInfo(name = "spamCountFromServer") var spamCountFromServer:Long = 0,
     @ColumnInfo(name = "contactAddress") var  contactAddress:String = "",
+    @ColumnInfo(name = "numFormated") var  numFormated:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
     @ColumnInfo(name = "read") var readState: Int = 0,
     @ColumnInfo(name = "body") var body: String = "",

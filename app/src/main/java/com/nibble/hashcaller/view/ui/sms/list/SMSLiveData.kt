@@ -44,7 +44,7 @@ class SMSLiveData(private val context: Context,private val repository: SMSLocalR
 //        SMSViewModel.isLoading.postValue(true)
 
 
-          repository!!.fetchSMS(null, false).apply {
+          repository!!.fetchSMSForLivedata(null, false).apply {
 //              Log.d(TAG, "getMessages: spamcount ${this[0].spamCount}")
               return this
               

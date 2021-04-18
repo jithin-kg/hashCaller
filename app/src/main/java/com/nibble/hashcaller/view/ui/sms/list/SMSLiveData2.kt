@@ -54,7 +54,7 @@ class SMSLiveData2(private val context: Context):
                 mutedSendersDAO,
                 smsThreadsDAO
             )
-         repository.fetchSMS(null).apply {
+         repository.fetchSMSForLivedata(null, false).apply {
             return this
         }
 

@@ -155,6 +155,7 @@ class SMSLocalRepository(
         }
     }
 
+
     //this function fetches sms while searching
     suspend fun getSms(searchQuery: String?): MutableList<SMS> {
 
@@ -354,7 +355,7 @@ class SMSLocalRepository(
         }
 
     @SuppressLint("LongLogTag")
-    private suspend fun fetchSMSForLivedata(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): ArrayList<SmsThreadTable> {
+     suspend fun fetchSMSForLivedata(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): ArrayList<SmsThreadTable> = withContext(Dispatchers.IO) {
         var data = ArrayList<SmsThreadTable>()
         Log.d(TAG, "fetch: called")
         var prevAddress = ""
@@ -389,8 +390,9 @@ class SMSLocalRepository(
 //                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         var num =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                        objSMS.numFormated = formatPhoneNumber(num)
                         objSMS.contactAddress = num
-                        num = num.replace("+", "")
+
                         //                    objSMS.address = num
 
                         objSMS.type =
@@ -490,7 +492,7 @@ class SMSLocalRepository(
 //        }
 //        r1.await()
 
-        return data
+        return@withContext data
     }
     @SuppressLint("LongLogTag")
     private suspend fun fetchWithRawData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
