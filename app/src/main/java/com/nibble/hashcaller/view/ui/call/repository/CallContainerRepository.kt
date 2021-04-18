@@ -25,10 +25,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.removeAllNonNumbericChars
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Response
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -320,14 +317,10 @@ class CallContainerRepository(
         return dao.getAllLiveData()
     }
 
-    @SuppressLint("LongLogTag")
-    suspend fun getFullCallLogs(): MutableList<CallLogTable> {
 
-        return getRawCallLogs()
-    }
 
     @SuppressLint("LongLogTag")
-    private fun getRawCallLogs(): MutableList<CallLogTable> {
+    suspend fun getRawCallLogs(): MutableList<CallLogTable>  = withContext(Dispatchers.IO){
         val listOfCallLogs = mutableListOf<CallLogTable>()
         var simIds = mutableListOf<String>()
         simIds.addAll(context.getSimIndexForSubscriptionId())
@@ -389,6 +382,12 @@ class CallContainerRepository(
                      *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
+                    /**
+                     *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
+                     *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
+                     *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
+                     */
+
 //                    dateInMilliseconds += name + id + Math.random().toString();
                     var isMarked = false
                     if(markedIds.contains(id)){
@@ -427,7 +426,7 @@ class CallContainerRepository(
             cursor?.close()
         }
 
-        return listOfCallLogs
+        return@withContext listOfCallLogs
     }
 
     private suspend fun setInfoFromServer(log: CallLogTable) {
@@ -536,13 +535,13 @@ class CallContainerRepository(
         callLogDAO?.deleteAll()
     }
 
-    suspend fun insertIntoCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) {
+    suspend fun insertIntoCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) = withContext(Dispatchers.IO) {
 
         callLogDAO?.insert(logsFromContentProvider)
 
     }
 
-    fun getAllCallLogLivedata(): LiveData<MutableList<CallLogTable>>? {
+    fun getAllCallLogLivedata(): LiveData<MutableList<CallLogTable>>?  {
         return callLogDAO?.getAllLiveData()
     }
 //    suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
@@ -552,7 +551,7 @@ class CallContainerRepository(
     /**
      * delete call logs from call_logs table that are not in content provider
      */
-    suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogTable>) {
+    suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogTable>) = withContext(Dispatchers.IO) {
 
         var idsFromContentPovider : MutableList<Long> = mutableListOf()
         idsFromContentPovider.addAll(logsFromContentProvider.map { it.id!!})
@@ -599,8 +598,8 @@ class CallContainerRepository(
         }
     }
 
-    suspend fun getFirst10Logs(): MutableList<CallLogTable>? {
-        return callLogDAO?.getFirst10Logs()
+    suspend fun getFirst10Logs(): MutableList<CallLogTable>? = withContext(Dispatchers.IO) {
+        return@withContext callLogDAO?.getFirst10Logs()
     }
 
 

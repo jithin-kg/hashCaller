@@ -3,11 +3,9 @@ package com.nibble.hashcaller.view.ui.sms.search
 import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.sms.search.SmsSearchQueries
-import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -19,8 +17,8 @@ class SMSSearchViewModel(
 //    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
-var searchResultLivedata:MutableLiveData<MutableList<SMS>> = MutableLiveData()
-
+    var searchResultLivedata:MutableLiveData<SearchResultAndQueryTerm> = MutableLiveData()
+    var resultGotForQuery = ""
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -38,35 +36,54 @@ var searchResultLivedata:MutableLiveData<MutableList<SMS>> = MutableLiveData()
 
      fun search(searchQuery: String?) = viewModelScope.launch {
     //getsms previously called
-           val  res =   async { repository!!.searchForSMS(searchQuery) }.await()
-             if(res.size>0){
+
+         searchQuery.let {
+             if (searchQuery != null) {
+                 val  def1=   async { repository!!.searchForSMS(searchQuery) }
 //                 emit(res)
-                 searchResultLivedata.value = res
-             }else {
-                 //if there is no result then, the search query can be a name
-                 //eg if samuel exists in contacts and user searched for `am`, then get all the contact address
-                     //containing name `am`
-                 searchQuery.let {
+                 val def2 = async { getSMSWithNameContainingSearchQuery(searchQuery) }
+                 var list:MutableList<SMS> = mutableListOf()
+                 list.addAll(def1.await().union(def2.await()))
+                 searchResultLivedata.value = SearchResultAndQueryTerm(list, searchQuery)
 
-                    val res = async {  repository?.getInfoFromThreadDbForQuery(searchQuery) }.await()
-                     //if we got name sam, jamy, samson, american, we have to search for sms of these
-                     //names currespondin numbers
-                     if(res!=null){
-                         var listOfResults : MutableList<SMS> = mutableListOf()
-                        for(item in res ){
-                            val searchResult = async { repository?.getSMSForAddress(item.contactAddress) }.await()
-                            searchResult.let {
-                                if(it!=null){
-                                   listOfResults.addAll(it)
-                                }
-                            }
-                        }
-                         searchResultLivedata.value = listOfResults
-                     }
 
-                 }
              }
 
+         }
+
+
+
+
+
+
+
+    }
+
+    private suspend fun getSMSWithNameContainingSearchQuery(searchQuery: String?) : MutableList<SMS>{
+        var listOfResults : MutableList<SMS> = mutableListOf()
+        viewModelScope.launch {
+            //if there is no result then, the search query can be a name
+            //eg if samuel exists in contacts and user searched for `am`, then get all the contact address
+            //containing name `am`
+
+
+            val res = async {  repository?.getInfoFromThreadDbForQuery(searchQuery) }.await()
+            //if we got name sam, jamy, samson, american, we have to search for sms of these
+            //names currespondin numbers
+            if(res!=null){
+                for(item in res ){
+                    val searchResult = async { repository?.getSMSForAddress(item.contactAddress) }.await()
+                    searchResult.let {
+                        if(it!=null){
+
+                            listOfResults.addAll(it)
+                        }
+                    }
+                }
+            }
+        }.join()
+
+        return listOfResults
 
 
     }

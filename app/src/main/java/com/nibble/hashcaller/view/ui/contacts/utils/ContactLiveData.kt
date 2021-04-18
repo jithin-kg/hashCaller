@@ -7,6 +7,8 @@ import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.stubs.Contact
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.List
@@ -30,7 +32,7 @@ class ContactLiveData(private val context: Context):
         private const val TAG = "__ContactLiveData"
     }
 
-    private fun getContacts(context: Context):List<Contact>{
+    private suspend fun  getContacts(context: Context):List<Contact> = withContext(Dispatchers.IO){
 
         var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -82,7 +84,7 @@ class ContactLiveData(private val context: Context):
 
                     var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
                     if(name!=null){
-                        if(this.prevName != name && this.lastNumber != phoneNo){
+                        if(prevName != name && lastNumber != phoneNo){
                             listOfContacts.add(Contact(
                                 id,
                                 name,
@@ -91,8 +93,8 @@ class ContactLiveData(private val context: Context):
                                 photoURI
 
                             ))
-                            this.lastNumber = phoneNo
-                            this.prevName = name
+                            lastNumber = phoneNo
+                            prevName = name
                         }
 
 
@@ -111,7 +113,7 @@ class ContactLiveData(private val context: Context):
         }
         isLoading.postValue(false)
        val sortedList = sortAndSet(listOfContacts)
-        return listOfContacts
+        return@withContext listOfContacts
 
     }
 

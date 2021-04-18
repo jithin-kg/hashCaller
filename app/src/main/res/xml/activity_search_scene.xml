@@ -40,6 +40,7 @@
             android:id="@+id/layoutSearch"
             motion:layout_constraintStart_toStartOf="parent" />
 
+
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">

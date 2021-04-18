@@ -17,6 +17,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -59,7 +61,12 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
     private fun observeSearchResult() {
         viewmodel.searchResultLivedata.observe(this, Observer {
-            this.searchAdapter!!.setList(it!!)
+            if(it.searchTerm == binding.searchVSms.text.toString()){
+                    binding.progressBar.beInvisible()
+
+                this.searchAdapter!!.setList(it.searchResult)
+
+            }
         })
     }
 
@@ -123,6 +130,7 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
     override fun onTextChanged(text: String) {
         if(text.isNullOrEmpty()){
+            binding.progressBar.beInvisible()
             val lst : List<SMS> = emptyList()
             this.searchAdapter!!.setList(lst) //if search query is empty empty recyclerview
 
@@ -141,7 +149,12 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
             }else{
                 //todo if the search query is a name like amma, ie 9512313
                 //only number is existing in sms content provider in this case, no name, so I need to consider that
+                val lst : List<SMS> = emptyList()
+                this.searchAdapter!!.setList(lst)
+                binding.progressBar.beVisible()
                 viewmodel.search(text)
+
+
                 queryText = text
 
 //                    .observe(this, Observer {

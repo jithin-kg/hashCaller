@@ -10,6 +10,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -32,9 +34,9 @@ class CallLogLiveData(
         private const val TAG = "__CallLogLiveData"
         var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
     }
-    private suspend fun getCallLog(context: Context): MutableList<CallLogTable> {
-         repository!!.getFullCallLogs().apply {
-             return this
+    private suspend fun getCallLog(context: Context): MutableList<CallLogTable>  = withContext(Dispatchers.IO){
+         repository!!.getRawCallLogs().apply {
+             return@withContext this
          }
 
     }

@@ -251,8 +251,14 @@ class SMSViewModel(
 
     private fun updateNameAndSpamCount(threadsFromCprovider: MutableList<SmsThreadTable>) = viewModelScope.launch {
         for (item in threadsFromCprovider){
+          updateDb(item)
+        }
+    }
+
+    private fun updateDb(item: SmsThreadTable) {
+        viewModelScope.launch {
             var isInfoTobBeUpdated = false
-            val nameFromCprovider:String? = repository?.getNameForAddressFromContentProvider(item.contactAddress)
+            val nameFromCprovider:String? = async { repository?.getNameForAddressFromContentProvider(item.contactAddress) }.await()
             if(nameFromCprovider!=null){
                 if(item.name != nameFromCprovider){
                     isInfoTobBeUpdated = true
@@ -277,6 +283,7 @@ class SMSViewModel(
                 async { repository?.updateThreadSpamCount(item) }.await()
             }
         }
+
     }
 
     private fun setName(threads: MutableList<SmsThreadTable>) {
@@ -285,10 +292,10 @@ class SMSViewModel(
         numbersSet.addAll(threads.map { it.contactAddress})
 
         for (num in numbersSet){
-            val name:String? =  repository?.getNameForAddressFromContentProvider(num)
-            if(name!=null){
-                numberNamehashMap.put(num, name)
-            }
+//            val name:String? =  repository?.getNameForAddressFromContentProvider(num)
+//            if(name!=null){
+//                numberNamehashMap.put(num, name)
+//            }
         }
         for(item in threads){
             if(numberNamehashMap.containsKey(item.contactAddress)){

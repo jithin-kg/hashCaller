@@ -2106,7 +2106,7 @@ class SMSLocalRepository(
         return smsThreadsDAO?.getAllLiveData()
     }
 
-    fun getNameForAddressFromContentProvider(contactAddress: String): String? {
+   suspend fun getNameForAddressFromContentProvider(contactAddress: String): String? = withContext(Dispatchers.IO) {
         var name:String? = null
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
 
@@ -2115,7 +2115,7 @@ class SMSLocalRepository(
 //                    Log.d(TAG, "getConactInfoForNumber: data exist")
             name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
         }
-        return name
+        return@withContext name
     }
 
     suspend fun markAsDelete(threadId: Long) {
@@ -2164,10 +2164,10 @@ class SMSLocalRepository(
         }
     }
 
-    suspend fun getSenderInfoFromServerForAddres(contactAddress: String): SMSSendersInfoFromServer? {
+    suspend fun getSenderInfoFromServerForAddres(contactAddress: String): SMSSendersInfoFromServer? = withContext(Dispatchers.IO) {
         val num = formatPhoneNumber(contactAddress)
          smssendersInfoDAO?.find(num).apply {
-            return this
+             return@withContext this
         }
     }
 
@@ -2182,14 +2182,14 @@ class SMSLocalRepository(
     /**
      * function to upate name, nameFrom server, spamcount
      */
-    suspend fun updateThreadSpamCount(item: SmsThreadTable) {
-        smsThreadsDAO?.updateInfos(item.contactAddress, item.spamCountFromServer, item.name, item.nameFromServer)
+    suspend fun updateThreadSpamCount(item: SmsThreadTable) = withContext(Dispatchers.IO) {
+        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCountFromServer, item.name, item.nameFromServer)
     }
 
     /**
      * called from smssearch activity
      */
-    suspend fun searchForSMS(searchQuery: String?): MutableList<SMS>{
+    suspend fun searchForSMS(searchQuery: String?): MutableList<SMS> = withContext(Dispatchers.IO){
         var data = ArrayList<SMS>()
         Log.d(TAG, "fetch: called")
         var prevAddress = ""
@@ -2322,7 +2322,7 @@ class SMSLocalRepository(
 //        }
 //        r1.await()
 
-        return data
+        return@withContext data
     }
 
     suspend fun getInfoFromThreadDbForQuery(searchQuery: String?): List<SmsThreadTable>? {
