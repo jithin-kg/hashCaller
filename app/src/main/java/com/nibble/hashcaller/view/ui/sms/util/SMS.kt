@@ -53,7 +53,11 @@ data class SMS(var isDummy:Boolean = false,
                 var relativeTime:String = "",
                 var senderInfoFoundFrom:Int = SENDER_INFO_SEARCHING,
                 var isMarked : Boolean = false,
-                var kaatam : String ? = null
+                var kaatam : String ? = null,
+                var spanStartPos:Int = 0,
+                var spanEndPos:Int = 0,
+               var spanStartPosMsgPeek:Int = 0,
+                var spanEndPosMsgPeek:Int = 0,
                ){
     /**
     //     * THIS IS FOR DEEP CLONING ELSE DIFFUTIL NOT RECOGNIZING CHANGES SOME TIMES

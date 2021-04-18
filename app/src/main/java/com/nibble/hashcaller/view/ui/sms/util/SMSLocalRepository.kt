@@ -11,6 +11,7 @@ import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
@@ -668,6 +669,34 @@ class SMSLocalRepository(
 //        }
 
     }
+    private fun setSpannableStrinForName(objSMS: SMS, searchQuery: String) {
+        val lowerSearchQuery = searchQuery.toLowerCase()
+        var startPos = 0
+        var endPos = 0
+        if(objSMS.name!=null){
+            var lowerCaseName =objSMS.name!!.toLowerCase()
+
+            var spannableStringBuilder: SpannableStringBuilder = SpannableStringBuilder(lowerCaseName)
+
+            if(lowerCaseName.contains(searchQuery)){
+                startPos = lowerCaseName.indexOf(searchQuery)
+                objSMS.spanStartPos = startPos
+                endPos = startPos + searchQuery.length
+                objSMS.spanEndPos = endPos
+//                val yellow =
+//                    ForegroundColorSpan(Color.BLUE)
+//                spannableStringBuilder.setSpan(
+//                    yellow,
+//                    startPos,
+//                    endPos,
+//                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+//                )
+
+            }
+//            objSMS.address = spannableStringBuilder!!
+        }
+    }
+
 
     private fun setSpannableStringBuilder(
         objSMS: SMS,
@@ -675,12 +704,15 @@ class SMSLocalRepository(
         mssg: String,
         num: String
     ) {
+        val lowercaseNum = num.toLowerCase()
         var msg = mssg
         var spannableStringBuilder: SpannableStringBuilder?
 
         if (searchQuery != null) {
             val lowercaseMsg = msg.toLowerCase()
             val lowerSearchQuery = searchQuery.toLowerCase()
+            objSMS.address = SpannableStringBuilder(num)
+            objSMS.msg = SpannableStringBuilder(msg)
 
             if (lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()) {
                 //search query pressent in sms body
@@ -691,76 +723,74 @@ class SMSLocalRepository(
                     msg = "... " + msg.substring(startPos)
                     startPos = 4
                 }
+                objSMS.body = msg
                 endPos = startPos + lowerSearchQuery.length
-                val yellow =
-                    BackgroundColorSpan(Color.YELLOW)
-                spannableStringBuilder =
-                    SpannableStringBuilder(msg)
-                spannableStringBuilder.setSpan(
-                    yellow,
-                    startPos,
-                    endPos,
-                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                )
-
-                objSMS.msg = spannableStringBuilder
-                objSMS.address = SpannableStringBuilder(num)
-            } else if (num.contains(searchQuery) && searchQuery.isNotEmpty()) {
-                val startPos = num.indexOf(searchQuery)
+                objSMS.spanStartPosMsgPeek = startPos
+                objSMS.spanEndPosMsgPeek = endPos
+//                val yellow =
+//                    BackgroundColorSpan(Color.YELLOW)
+//                spannableStringBuilder =
+//                    SpannableStringBuilder(msg)
+//                spannableStringBuilder.setSpan(
+//                    yellow,
+//                    startPos,
+//                    endPos,
+//                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+//                )
+//
+//                objSMS.msg = spannableStringBuilder
+            }
+            if (lowercaseNum.contains(searchQuery) && searchQuery.isNotEmpty()) {
+                val startPos = lowercaseNum.indexOf(searchQuery)
                 val endPos = startPos + searchQuery.length
                 val yellow = BackgroundColorSpan(Color.YELLOW)
-                spannableStringBuilder = SpannableStringBuilder(num)
-                spannableStringBuilder.setSpan(
-                    yellow,
-                    startPos,
-                    endPos,
-                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                )
-                objSMS.address = spannableStringBuilder
-                objSMS.msg = SpannableStringBuilder(msg)
+                objSMS.spanStartPos = startPos
+                objSMS.spanEndPos = endPos
+
+
             }
 
-           if(objSMS.address.isNullOrEmpty()){
-               if(!objSMS.name.isNullOrEmpty()){
-                  if(objSMS.name!!.contains(searchQuery) && searchQuery.isNotEmpty()){
-                      val startPos = objSMS.name!!.indexOf(searchQuery)
-                      val endPos = startPos + searchQuery.length
-
-                      spannableStringBuilder = SpannableStringBuilder(objSMS.name)
-                      val yellow = BackgroundColorSpan(Color.YELLOW)
-                      spannableStringBuilder.setSpan(
-                          yellow,
-                          startPos,
-                          endPos,
-                          Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                      )
-
-                      objSMS.address = spannableStringBuilder
-                      objSMS.msg = SpannableStringBuilder(msg)
-                  }
-               }
-           }
-            if(objSMS.address.isNullOrEmpty()){
-                if(!objSMS.nameFromServer.isNullOrEmpty()){
-                 if(objSMS.nameFromServer!!.contains(searchQuery) && searchQuery.isNotEmpty())  {
-                     val startPos = objSMS.nameFromServer!!.indexOf(searchQuery)
-                     val endPos = startPos + searchQuery.length
-
-                     spannableStringBuilder = SpannableStringBuilder(objSMS.nameFromServer)
-                     val yellow = BackgroundColorSpan(Color.YELLOW)
-                     spannableStringBuilder.setSpan(
-                         yellow,
-                         startPos,
-                         endPos,
-                         Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-                     )
-
-                     objSMS.address = spannableStringBuilder
-
-                     objSMS.msg = SpannableStringBuilder(msg)
-                 }
-                }
-            }
+//           if(objSMS.address.isNullOrEmpty()){
+//               if(!objSMS.name.isNullOrEmpty()){
+//                  if(objSMS.name!!.contains(searchQuery) && searchQuery.isNotEmpty()){
+//                      val startPos = objSMS.name!!.indexOf(searchQuery)
+//                      val endPos = startPos + searchQuery.length
+//
+//                      spannableStringBuilder = SpannableStringBuilder(objSMS.name)
+//                      val yellow = BackgroundColorSpan(Color.YELLOW)
+//                      spannableStringBuilder.setSpan(
+//                          yellow,
+//                          startPos,
+//                          endPos,
+//                          Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+//                      )
+//
+//                      objSMS.address = spannableStringBuilder
+//                      objSMS.msg = SpannableStringBuilder(msg)
+//                  }
+//               }
+//           }
+//            if(objSMS.address.isNullOrEmpty()){
+//                if(!objSMS.nameFromServer.isNullOrEmpty()){
+//                 if(objSMS.nameFromServer!!.contains(searchQuery) && searchQuery.isNotEmpty())  {
+//                     val startPos = objSMS.nameFromServer!!.indexOf(searchQuery)
+//                     val endPos = startPos + searchQuery.length
+//
+//                     spannableStringBuilder = SpannableStringBuilder(objSMS.nameFromServer)
+//                     val yellow = BackgroundColorSpan(Color.YELLOW)
+//                     spannableStringBuilder.setSpan(
+//                         yellow,
+//                         startPos,
+//                         endPos,
+//                         Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+//                     )
+//
+//                     objSMS.address = spannableStringBuilder
+//
+//                     objSMS.msg = SpannableStringBuilder(msg)
+//                 }
+//                }
+//            }
 
 //            else {
 //                spannableStringBuilder =
@@ -2281,6 +2311,7 @@ class SMSLocalRepository(
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
                             }
+
                         objSMS.name = getNameForNumber(objSMS.addressString!!)
                         setSpannableStringBuilder(objSMS, searchQuery, objSMS.body, objSMS.addressString!!)
 
@@ -2333,14 +2364,14 @@ class SMSLocalRepository(
      * function called when user searched for name, so exact number is given and in the result
      * spannable string will be the name containing searchquery
      */
-    suspend fun getSMSForAddress(searchQuery: String): ArrayList<SMS> {
+    suspend fun getSMSForAddress(numForSearching: String, searchQuery: String): ArrayList<SMS> {
         //todo if found result set spannable string to address and if body also contains set it also
         var data = ArrayList<SMS>()
         Log.d(TAG, "fetch: called")
         var prevAddress = ""
         var prevTime = 0L
 //       val r1= GlobalScope.async {
-        val cursor = createCursor(searchQuery)
+        val cursor = createCursor(numForSearching)
         try {
 
             var deleteViewAdded = false
@@ -2427,8 +2458,8 @@ class SMSLocalRepository(
                             }
                         }
                         objSMS.name = getNameForNumber(objSMS.addressString!!)
-                        setSpannableStringBuilder(objSMS, searchQuery, objSMS.body, objSMS.addressString!!)
-
+                        setSpannableStringBuilder(objSMS, numForSearching, objSMS.body, objSMS.addressString!!)
+                        setSpannableStrinForName(objSMS, searchQuery)
 
 //                        if(!objSMS.msgString.isNullOrEmpty()){
 ////                                setSMSHashMap(objSMS)
@@ -2469,6 +2500,7 @@ class SMSLocalRepository(
 
         return data
     }
+
 
 
 }

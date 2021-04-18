@@ -59,6 +59,12 @@ class SMSSearchViewModel(
 
     }
 
+    /**
+     * function to get contact number like %searchquery name % and get the
+     * number of that name and query for sms
+     * eg @param searchQuery am -> get all contact address with name containing %am%
+     * query all sms for that address and show with search result
+     */
     private suspend fun getSMSWithNameContainingSearchQuery(searchQuery: String?) : MutableList<SMS>{
         var listOfResults : MutableList<SMS> = mutableListOf()
         viewModelScope.launch {
@@ -72,7 +78,7 @@ class SMSSearchViewModel(
             //names currespondin numbers
             if(res!=null){
                 for(item in res ){
-                    val searchResult = async { repository?.getSMSForAddress(item.contactAddress) }.await()
+                    val searchResult = async { repository?.getSMSForAddress(item.contactAddress, searchQuery!! ) }.await()
                     searchResult.let {
                         if(it!=null){
 

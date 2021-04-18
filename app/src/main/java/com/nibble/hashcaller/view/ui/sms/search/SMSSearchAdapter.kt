@@ -6,6 +6,7 @@ import android.os.Build
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.*
 import android.view.View.OnLongClickListener
@@ -163,8 +164,7 @@ class SMSSearchAdapter(private val context: Context,
                 nameStr = sms.addressString!!
                 senderInforFrom = SENDER_INFO_NOT_FOUND
             }
-
-                    name.text = nameStr
+                 setSpanForNameSearch(sms)
 
 
             if(senderInforFrom== SENDER_INFO_SEARCHING &&  networkHandler.isInternetAvailable()){
@@ -188,7 +188,7 @@ class SMSSearchAdapter(private val context: Context,
              * This is important to check else double/ duplicate marking of items occur
              */
 
-            view.tvSMSMPeek.text = sms.msg
+            setSpanForBody(sms)
 
 //                view.tvUnreadSMSCount.text = sms.unReadSMSCount.toString()
 //                if(sms.unReadSMSCount == 0 ){
@@ -249,6 +249,57 @@ class SMSSearchAdapter(private val context: Context,
 //                    sms.expanded = true
                 }
             }
+
+        private fun setSpanForBody(sms: SMS) {
+            if(sms.spanEndPosMsgPeek!=0){
+
+                val yellow =
+                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+                val span =  SpannableStringBuilder(sms.body)
+                span.setSpan(
+                    yellow,
+                    sms.spanStartPosMsgPeek,
+                    sms.spanEndPosMsgPeek,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+
+                view.tvSMSMPeek.text = span
+            }else{
+                view.tvSMSMPeek.text = sms.msg
+
+            }
+        }
+
+        private fun setSpanForNameSearch(sms: SMS) {
+            if(sms.spanEndPos!=0 && sms.name!=null ){
+                val yellow =
+                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+                val span =  SpannableStringBuilder(sms.name)
+                span.setSpan(
+                    yellow,
+                    sms.spanStartPos,
+                    sms.spanEndPos,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+                name.text = span
+            }else if(sms.addressString!=null && sms.spanEndPos !=0){
+                val yellow =
+                    ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+                val span =  SpannableStringBuilder(sms.addressString)
+                span.setSpan(
+                    yellow,
+                    sms.spanStartPos,
+                    sms.spanEndPos,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+                name.text = span
+            }
+
+            else{
+                name.text = sms.addressString
+
+            }
+        }
 //        }
 
          private fun highlightSearhcField(sms: SMS) {
