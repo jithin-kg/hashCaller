@@ -7,12 +7,12 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualConta
 
 object IndividualContactInjectorUtil {
     var phoneNumber:String = ""
-    fun provideUserInjectorUtil(context:Context) : IndividualContactFactory {
+    fun provideUserInjectorUtil(context: Context, phoneNum: String?) : IndividualContactFactory {
 
         val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
         val mutedContactsDAO = HashCallerDatabase.getDatabaseInstance(context).mutedCallersDAO()
         val callersInfoFromServer = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
-        val repository = IndividualContactRepository(contactsListDAO, context)
+        val repository = IndividualContactRepository(contactsListDAO, context, callersInfoFromServer, phoneNum)
 
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }

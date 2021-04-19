@@ -13,16 +13,15 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
-import android.widget.CompoundButton
-import android.widget.RadioButton
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
@@ -35,15 +34,12 @@ import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
-import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
-import kotlinx.android.synthetic.main.bottom_sheet_block.*
-import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
-import kotlinx.android.synthetic.main.image_layout.*
 
 
 class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener, MyUndoListener.SnackBarListner,
     PopupMenu.OnMenuItemClickListener {
+    private lateinit var binding:ActivityIndividualCotactViewBinding
     private lateinit var viewModel:IndividualcontactViewModel
     private lateinit var photoURI:String
     private  var color  = 1
@@ -55,8 +51,11 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = -1
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
-
-
+    private lateinit var imgExpand:ImageView
+    private lateinit var radioScam:RadioButton
+    private lateinit var radioS:RadioButton
+    private lateinit var btnBlock:Button
+    private lateinit var tvSpamfeedbackMsg : TextView
 
     @SuppressLint("LongLogTag")
 //    private  var contactId: Long? = null
@@ -64,8 +63,9 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        binding = ActivityIndividualCotactViewBinding.inflate(layoutInflater)
 
-        setContentView(R.layout.activity_individual_cotact_view)
+        setContentView(binding.root)
          phoneNum = intent.getStringExtra(CONTACT_ID)
         val name = intent.getStringExtra("name")
 //        val id = intent.getLongExtra("id",0L)
@@ -83,7 +83,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         viewModel =ViewModelProvider(
             this, IndividualContactInjectorUtil.provideUserInjectorUtil(
-                this
+                this,phoneNum
             )
         ).get(
             IndividualcontactViewModel::class.java
@@ -100,9 +100,43 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         getContactFromContentProvider(phoneNum)
         observeContactMoreInfo()
         observeBlockedDetails()
+        getinfoFromServer()
+        setClearImage(photoURI)
 
 
 
+    }
+
+    private fun getinfoFromServer() {
+//        viewModel.getInfoFromServer(phoneNum).observe(this, Observer {
+//            binding.tvSimValue.text = it.carrier
+//        })
+        viewModel.infoFromServer?.observe(this, Observer {
+            it.let {
+                if(it!=null){
+                    binding.tvSimCardValue.text = it.carrier
+                    binding.tvLocationValues.text = it.location
+                    binding.tvSpamCountValue.text = it.spamCount.toString()
+                   // binding.tvSimValue.text = it.carrier
+                    //binding.tvLocationValue.text = "large location value foferdsjshdfkljhsdflksjdfh skjdfh"
+                    //binding.tvIndividualCntSpamCount.text = it.spamCount.toString()
+                }
+            }
+        })
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun setClearImage(photoURI: String?) {
+        if(!photoURI.isNullOrEmpty()){
+            viewModel.getClearImage(phoneNum).observe(this, Observer {
+                if (it.isNotEmpty()) {
+                    Log.d(TAG, "setClearImage: image available $it")
+                    loadImage(this, binding.ivAvatar, it)
+                } else {
+                    Log.d(TAG, "setClearImage: image not available")
+                }
+            })
+        }
     }
 
     private fun setupBottomSheet() {
@@ -113,9 +147,14 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         bottomSheetDialog.setContentView(viewSheet)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
+        tvSpamfeedbackMsg = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
 
-        selectedRadioButton = bottomSheetDialog.radioScam
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
+        radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
+        radioS = bottomSheetDialog.findViewById<RadioButton>(R.id.radioS) as RadioButton
+        btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock) as Button
+        selectedRadioButton = radioScam
+        imgExpand.setOnClickListener(this)
 
 
 //        if(this.view?.visibility == View.VISIBLE){
@@ -133,12 +172,12 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         viewModel.callersinfoLivedata.observe(this, Observer { lst ->
             viewModel.isThisAddressBlockedByUser(phoneNum).observe(this, Observer {
                 if (it == true) {
-                    tvBlockBtnInfo.text = "Unblock"
-                    imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
+                    binding.tvBlockBtnInfo.text = "Unblock"
+                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
                     isBlocked = true
                 } else {
-                    tvBlockBtnInfo.text = "Block"
-                    imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
+                    binding.tvBlockBtnInfo.text = "Block"
+                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
 
                     isBlocked = false
                 }
@@ -150,7 +189,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         viewModel.mutedContacts.observe(this, Observer { lst ->
             viewModel.isThisAddressMuted(phoneNum, lst).observe(this, Observer {
-                switchIndividualContact.isChecked = it
+                binding.switchIndividualContact.isChecked = it
             })
         })
     }
@@ -158,9 +197,9 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun getContactFromContentProvider(phoneNum: String?) {
         viewModel.getContactFromContentProvider(phoneNum).observe(this, Observer {
             if (it != null) {
-                tvisInContact.text = "This person is in your contacts"
+                binding.tvisInContact.text = "This person is in your contacts"
             } else {
-                tvisInContact.text = "This person is not in your contacts"
+                binding.tvisInContact.text = "This person is not in your contacts"
 
             }
         })
@@ -194,47 +233,47 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun initListeners() {
 //        imgViewAvatar.setOnClickListener(this)
 //        switchIndividualContact.setOnCheckedChangeListener(this)
-        switchIndividualContact.setOnClickListener(this)
-        imgBtnBlockIndividualContact.setOnClickListener(this)
-        imgBtnBack.setOnClickListener(this)
-        imgBtnCallIndividualContact.setOnClickListener(this)
-        imgBtnSMS.setOnClickListener(this)
-        imgBtnMoreIndividualCntct.setOnClickListener(this)
+        binding.switchIndividualContact.setOnClickListener(this)
+        binding.imgBtnBlockIndividualContact.setOnClickListener(this)
+        binding.imgBtnBack.setOnClickListener(this)
+        binding.imgBtnCallIndividualContact.setOnClickListener(this)
+        binding.imgBtnSMS.setOnClickListener(this)
+        binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
 
-
-        bottomSheetDialog.radioS.setOnClickListener(this)
-        bottomSheetDialog.radioScam.setOnClickListener(this)
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
-        bottomSheetDialog.btnBlock.setOnClickListener(this)
-        bottomSheetDialog.btnBlock.setOnClickListener(this)
+        radioS.setOnClickListener(this)
+        radioScam.setOnClickListener(this)
+        imgExpand.setOnClickListener(this)
+       btnBlock.setOnClickListener(this)
     }
 
-    private fun setImage(photo: String?) {
-        ivAvatar.beVisible()
-        tvFirstLetter.beInvisible()
+    private fun setImage(photoUri: String?) {
+        binding.ivAvatar.beVisible()
+        binding.tvFirstLetter.beInvisible()
 
-        if(!photo.isNullOrEmpty()){
-            Glide.with(this).load(photo).into(ivAvatar)
-            tvFirstLetter.beInvisible()
+        if(!photoUri.isNullOrEmpty()){
+            loadImage(this,binding.ivAvatar, photoUri)
+            binding.tvFirstLetter.beInvisible()
         }else{
-            ivAvatar.beInvisible()
-            tvFirstLetter.beVisible()
+            binding.ivAvatar.beInvisible()
+            binding.tvFirstLetter.beVisible()
         }
     }
 
     private fun setDetailsInview(phoneNum: String?, name: String?) {
         if(photoURI.isEmpty()){
-            tvName.text = name
-            txtViewNumber.text = phoneNum
             if(!name.isNullOrEmpty()){
-                tvFirstLetter.text = name[0].toString()
-                tvFirstLetter.setRandomBackgroundCircle(color)
-                ivAvatar.beInvisible()
+                binding.tvFirstLetter.text = name[0].toString()
+                binding.tvFirstLetter.setRandomBackgroundCircle(color)
+                binding.ivAvatar.beInvisible()
             }
         }else{
             setImage(photoURI)
 
         }
+        binding.tvName.text = name
+        binding.txtViewNumber.text = phoneNum
+
+
 
 
 
@@ -257,7 +296,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
             }
             R.id.imgBtnMoreIndividualCntct -> {
-                val popup =  getMyPopupMenu(R.menu.individual_contact_popup_menu, imgBtnMoreIndividualCntct)
+                val popup =  getMyPopupMenu(R.menu.individual_contact_popup_menu,binding.imgBtnMoreIndividualCntct)
                 popup.setOnMenuItemClickListener(this)
                 popup.show()
             }
@@ -293,7 +332,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                 R.id.radioScam -> {
                     val checked = v.isChecked
                     if (checked) {
-                        selectedRadioButton = bottomSheetDialog.radioScam
+                        selectedRadioButton = radioScam
                         Log.d(IndividualSMSActivity.TAG, "radio button clicked")
                         this.spammerType = SpamLocalListManager.SPAMM_TYPE_SCAM
 
@@ -306,7 +345,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
                     val checked = v.isChecked
                     if (checked) {
-                        selectedRadioButton = bottomSheetDialog.radioS
+                        selectedRadioButton = radioS
                         this.spammerType = SpamLocalListManager.SPAMM_TYPE_SALES
                         Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
 //                                spinnerSelected.value = false
@@ -337,9 +376,10 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
             Observer {
                 when (it) {
                     OPERATION_UNBLOCKED -> {
+
                         bottomSheetDialog.hide()
                         val sbar = Snackbar.make(
-                            layoutIndividualContact,
+                            binding.layoutIndividualContact,
                             "You have unblocked $phoneNum",
                             Snackbar.LENGTH_LONG
                         )
@@ -358,7 +398,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                             phoneNum!!.length,
                             Spannable.SPAN_INCLUSIVE_INCLUSIVE
                         ); // make first 4 characters Bold
-                        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+                       tvSpamfeedbackMsg.text = sb
 
                         bottomSheetDialogfeedback.show()
                     }
@@ -392,7 +432,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                 OPERATION_COMPLETED -> {
 
                     val sbar = Snackbar.make(
-                        layoutIndividualContact,
+                        binding.layoutIndividualContact,
                         "You no longer notified on call from $phoneNum",
                         Snackbar.LENGTH_SHORT
                     )
@@ -419,6 +459,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun popupImage() {
+        var imgVCntctPop:ImageView?
         val settingsDialog = Dialog(this)
         settingsDialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         settingsDialog.setContentView(
@@ -426,7 +467,8 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                 R.layout.image_layout, null
             )
         )
-        settingsDialog.imgVCntctPop.setImageURI(Uri.parse(photoURI))
+        imgVCntctPop = settingsDialog.findViewById<ImageView>(R.id. imgVCntctPop)
+        imgVCntctPop?.setImageURI(Uri.parse(photoURI))
         settingsDialog.show()
     }
 
@@ -442,7 +484,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                     OPERATION_COMPLETED -> {
                         if (count > 1) {
                             val sbar = Snackbar.make(
-                                layoutIndividualContact,
+                               binding.layoutIndividualContact,
                                 "You no longer notified on from $phoneNum",
                                 Snackbar.LENGTH_SHORT
                             )

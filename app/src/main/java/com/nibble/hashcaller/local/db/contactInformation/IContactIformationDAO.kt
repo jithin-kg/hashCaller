@@ -33,6 +33,9 @@ interface IContactIformationDAO {
     @Query("SELECT * FROM contacts_information WHERE number LIKE '%'|| :phonNumber || '%' LIMIT 3")
      suspend fun  search(phonNumber: String):ContactTable
 
+    @Query("SELECT * FROM contacts_information WHERE number =:phonNumber  LIMIT 1")
+     fun  findOne(phonNumber: String):LiveData<ContactTable?>
+
 
 //    suspend fun getInfoForNumber(phoneNum: String?) :ContactTable
 

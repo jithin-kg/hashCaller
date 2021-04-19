@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.contacts.utils
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -16,6 +17,7 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAd
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedViews
 import com.nibble.hashcaller.view.utils.ContactGlobal
+import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -149,12 +151,16 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
  */
 fun loadImage(context: Context, imgView: ImageView, photoUri: String? ) {
 
-    if(photoUri!=null){
-        Glide.with(context).load(Uri.parse(photoUri))
-            .into(imgView)
+    try {
+        if(photoUri!=null){
+            Glide.with(context).load(Uri.parse(photoUri))
+                .into(imgView)
+        }
+    }catch (e:Exception){
+        Log.d(TAG, "loadImage: exception $e")
     }
-
 }
+private const val TAG = "__Constants"
 /**
  * @param informationReceivedDate : date at which the data is inserted in db
  * @param limit : number of day in which a lookup for the current number should perform

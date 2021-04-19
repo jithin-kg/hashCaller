@@ -16,7 +16,9 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_BLOCKED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_UNBLOCKED
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 
 /**
@@ -45,7 +47,7 @@ class IndividualcontactViewModel(
         mt = MutableLiveData<ContactTable>(contactsFromLocalDb?.value)
 //         mt = contactLocalSyncRepository.getContacts("")!!
     }
-
+    var infoFromServer:LiveData<ContactTable?>? = repository.getInfoFromServerForContact()
     companion object{
         private const val TAG = "__IndividualcontactViewModel"
     }
@@ -176,6 +178,39 @@ class IndividualcontactViewModel(
 
     fun unmute(phoneNum: String) = viewModelScope.launch {
         mutedContactsDAO!!.delete(formatPhoneNumber(phoneNum))
+    }
+
+    @SuppressLint("LongLogTag")
+    fun getClearImage(phoneNum: String):LiveData<String> = liveData {
+        kotlinx.coroutines.delay(1500L)
+        var imageUri = ""
+        viewModelScope.launch {
+            val defCproviderTask = async { repository.getClearImageFromCprovider(phoneNum) }
+            val defDbTask = async { repository.getClearImageFromDb(phoneNum) }
+
+            try {
+                var imgFromCprovider: String? = defCproviderTask.await()
+                var imgFromDb: String? = defDbTask.await()
+                if (imgFromCprovider != null) {
+                    imageUri = imgFromCprovider
+                } else if (imgFromDb != null) {
+                    imageUri = imgFromDb
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "getClearImage: exception $e")
+            }
+        }.join()
+        emit(imageUri)
+
+
+
+    }
+
+    fun getInfoFromServer(phoneNum: String) = viewModelScope.launch{
+//        var infoFromServer:ContactTable? = null
+//            infoFromServer = repository?.getInfoFromServerForContact(phoneNum)
+//          infoFromServer?.let { emit(it) }
+
     }
 
 

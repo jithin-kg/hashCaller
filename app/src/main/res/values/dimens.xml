@@ -41,4 +41,9 @@
     <dimen name="margin_txt_block_by">8dp</dimen>
     <dimen name="margin_img_settings_img">16dp</dimen>
     <dimen name="recycler_view_padding_bottom">112dp</dimen>
+    <dimen name="margin_end_individual_contact_value">32dp</dimen>
+    <dimen name="margin_start_info_individual_contact">16dp</dimen>
+    <dimen name="margin_start_icon_individual_contact">32dp</dimen>
+    <dimen name="margin_end_info_contact_item">8dp</dimen>
+    <dimen name="margin_end_cntc_value">16dp</dimen>
 </resources>

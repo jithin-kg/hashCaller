@@ -776,7 +776,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     }else{
                         pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
                     }
-
                 pairList.add(pair)
                 val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
                 options.toBundle()

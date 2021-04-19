@@ -39,7 +39,16 @@
         android:tag="title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
+    <ImageButton
+        android:id="@+id/imgBtnMoreIndividualCntct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_more_vert" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
@@ -202,17 +211,40 @@
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvisInContact"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutCntct"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="20dp"
-                android:background="@color/colorBackground"
-                android:textSize="@dimen/text_size_list_item"
-                android:textColor="@color/textColor"
                 android:layout_marginTop="8dp"
-                android:text="This number is not in your contact"
-                />
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVCntcInfo"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:alpha="0.74"
+                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
+                    android:src="@drawable/ic_baseline_person_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvisInContact"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvisInContact" />
+                <TextView
+                    android:id="@+id/tvisInContact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+
+                    android:background="@color/colorBackground"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:textColor="@color/textColor"
+                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:text=""
+                    app:layout_constraintStart_toEndOf="@+id/imgVCntcInfo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
                 android:id="@+id/imgViewIndvdlCntct2"
                 android:layout_width="match_parent"
@@ -220,86 +252,109 @@
                 android:layout_height="@dimen/divider_with_settings"
                 android:alpha="0.12"
                 app:srcCompat="@drawable/horizontal_line_settings" />
-
-
-            <TextView
-                android:id="@+id/tvSimIndividualContact"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sim"
-                android:background="@color/colorBackground"
-                android:layout_marginTop="@dimen/margin_individual_contact_item_list"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_list_item"
-                android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
-                android:layout_marginStart="@dimen/margin_start_individual_contact_items"
-                android:padding="20dp"
-                />
-            <ImageView
-                android:id="@+id/imgViewIndvdlCntct3"
-                android:layout_width="match_parent"
-                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
-                android:layout_height="@dimen/divider_with_settings"
-                android:alpha="0.12"
-                app:srcCompat="@drawable/horizontal_line_settings" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="20dp"
-                android:layout_marginTop="@dimen/margin_individual_contact_item_list"
-                android:background="@color/colorBackground"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_list_item"
-                android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
-                android:layout_marginStart="@dimen/margin_start_individual_contact_items"
-                android:text="location" />
-            <ImageView
-                android:id="@+id/imgViewIndvdlCntct4"
-                android:layout_width="match_parent"
-                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
-                android:layout_height="@dimen/divider_with_settings"
-                android:alpha="0.12"
-                app:srcCompat="@drawable/horizontal_line_settings" />
-
+<!--            -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutSim"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:background="@color/colorBackground"
-                android:layout_marginTop="@dimen/margin_individual_contact_item_list"
-                >
-
-                <TextView
-                    android:id="@+id/tvIndividualCntSpamCountInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_start_individual_contact_items"
-                    android:padding="20dp"
-                    android:textSize="@dimen/text_size_list_item"
-                    android:text="spam count"
-                    android:textColor="@color/textColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVSimCard"
+                    android:alpha="0.74"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
+                    android:src="@drawable/ic_baseline_sim_card"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSimcard"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
+                    app:layout_constraintTop_toTopOf="@+id/tvSimcard" />
                 <TextView
-                    android:id="@+id/tvIndividualCntSpamCount"
+                    android:id="@+id/tvSimcard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:background="@color/colorBackground"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:textColor="@color/textColor"
+                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:text="Operator"
+                    android:alpha="0.70"
+                    app:layout_constraintStart_toEndOf="@+id/imgVSimCard"
+
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/tvSimCardValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:gravity="end"
+                    android:textColor="@color/textColor"
+                    android:alpha="0.84"
+                    app:layout_goneMarginEnd="16dp"
+                    app:layout_constraintStart_toEndOf="@+id/tvSimcard"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvSimcard"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSimcard"
+                    android:layout_marginEnd="@dimen/margin_end_cntc_value"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                android:id="@+id/imgVDividerSim"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:layout_height="@dimen/divider_with_settings"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
+
+
+
+             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutSpamCount"
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVSpamCount"
+                    android:alpha="0.74"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
+                    android:src="@drawable/ic_baseline_location_on_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSpamCountInfo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvSpamCountInfo" />
+                <TextView
+                    android:id="@+id/tvSpamCountInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:alpha="0.70"
+                    android:background="@color/colorBackground"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:textColor="@color/textColor"
+                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:text="Location"
+                    app:layout_constraintStart_toEndOf="@+id/imgVSpamCount"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocationValues"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/tvLocationValues"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
-                    android:padding="20dp"
-                    android:textSize="@dimen/text_size_list_item"
-                    android:text="20"
+                    android:text=""
                     android:textColor="@color/textColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:alpha="0.84"
+                    app:layout_goneMarginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.995"
-                    app:layout_constraintStart_toEndOf="@+id/tvIndividualCntSpamCountInfo"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="@+id/tvSpamCountInfo"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSpamCountInfo"
+                    android:layout_marginEnd="@dimen/margin_end_cntc_value"
+                    />
             </androidx.constraintlayout.widget.ConstraintLayout>
             <ImageView
                 android:id="@+id/imgViewIndvdlCntct5"
@@ -308,12 +363,63 @@
                 android:layout_height="@dimen/divider_with_settings"
                 android:alpha="0.12"
                 app:srcCompat="@drawable/horizontal_line_settings" />
-
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutLocation"
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVLocation"
+                    android:alpha="0.74"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
+                    android:src="@drawable/ic_baseline_bug_report_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvLocationInfo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvLocationInfo" />
+                <TextView
+                    android:id="@+id/tvLocationInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:alpha="0.70"
+                    android:background="@color/colorBackground"
+                    android:textSize="@dimen/text_size_list_item"
+                    android:textColor="@color/textColor"
+                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:text="Spam report count"
+                    app:layout_constraintStart_toEndOf="@+id/imgVLocation"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSpamCountValue"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/tvSpamCountValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/textColor"
+                    android:alpha="0.84"
+                    app:layout_goneMarginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvLocationInfo"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvLocationInfo"
+                    android:layout_marginEnd="@dimen/margin_end_cntc_value"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/imgViewIndvdlCntct6"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:layout_height="@dimen/divider_with_settings"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
                 <Switch
                     android:id="@+id/switchIndividualContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_start_individual_contact_items"
+                    android:layout_marginEnd="16dp"
                     android:text="Mute this person"
                     android:padding="20dp"
                     android:layout_marginBottom="@dimen/margin_individual_contact_item_list"
@@ -333,15 +439,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <ImageButton
-        android:id="@+id/imgBtnMoreIndividualCntct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:background="?android:selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_more_vert" />
+
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

@@ -11,12 +11,11 @@ import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.LiveData
-import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
-import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.stubs.Contact
-import kotlinx.coroutines.flow.Flow
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.work.formatPhoneNumber
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -34,7 +33,9 @@ import java.io.InputStream
 //    ){
 class IndividualContactRepository(
     private val dao: IContactIformationDAO,
-    private val context: Context
+    private val context: Context,
+    private val callersInfoFromServer: CallersInfoFromServerDAO,
+    private val phoneNum: String?
 )
    {
        lateinit var cursor:Cursor
@@ -242,7 +243,31 @@ class IndividualContactRepository(
             return contact
        }
 
+       /**
+        * function to get non thumbnail image ie clear image from cprovider
+        */
+       suspend fun getClearImageFromCprovider(phoneNum: String): String? {
+           var photoUri:String? = null
+           val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNum));
+           val cursor = context.contentResolver.query(uri, null,  null, null, null )
+           if(cursor!=null && cursor.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+               photoUri = cursor.getString(cursor.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_URI))
+           }
+          return photoUri
+       }
 
+       /**
+        * function to get the image from db which received from server
+        */
+       suspend fun getClearImageFromDb(phoneNum: String): String? {
+           var photoUri:String? = null
+            return photoUri
+       }
+
+        fun getInfoFromServerForContact(): LiveData<ContactTable?>? {
+           return phoneNum?.let { formatPhoneNumber(it) }?.let { dao?.findOne(it) }
+       }
 
 
 //   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<Contact>{

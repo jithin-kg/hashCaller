@@ -116,20 +116,28 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
         if(name.isNullOrEmpty()){
             name = log.number
         }
+
         val intent = Intent(this, IndividualCotactViewActivity::class.java )
         intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
         intent.putExtra("name", name )
-        intent.putExtra("photo", "")
+        intent.putExtra("photo", log.thumbnailFromCp)
         intent.putExtra("color", log.color)
 
         val pairList = ArrayList<android.util.Pair<View, String>>()
-        val imgViewUserPhoto = view.findViewById<androidx.appcompat.widget.AppCompatImageView>(R.id.imgViewUserPhoto)
+        val imgViewUserPhoto = view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgVThumbnail)
         val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
 
 //                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-        val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
 //                pairList.add(p1)
-        pairList.add(p2)
+        var pair:android.util.Pair<View, String>? = null
+        if(log.thumbnailFromCp.isNotEmpty()){
+            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+        }else if(log.imageFromDb.isNotEmpty()){
+            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+        }else{
+            pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
+        }
+        pairList.add(pair)
         val options = ActivityOptions.makeSceneTransitionAnimation(this,pairList[0] )
         options.toBundle()
         startActivity(intent, options.toBundle())
