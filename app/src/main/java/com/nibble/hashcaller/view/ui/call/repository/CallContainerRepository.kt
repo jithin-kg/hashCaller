@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -394,7 +395,9 @@ class CallContainerRepository(
                         isMarked = true
                     }
                     val log = CallLogTable(id = id, name = name,
-                        number = formatPhoneNumber(number), type = type, duration = duration, dateInMilliseconds = dateInMilliseconds, simId = simID)
+                        number = formatPhoneNumber(number), type = type, duration = duration,
+                        dateInMilliseconds = dateInMilliseconds,
+                        simId = simID)
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
@@ -434,10 +437,10 @@ class CallContainerRepository(
             if(this !=null){
                 if(log.name.isNullOrEmpty()){
                     log.name = this.title
-                    log.callerInfoFoundFrom = SENDER_INFO_FROM_DB
+//                    log.callerInfoFoundFrom = SENDER_INFO_FROM_DB
                 }else{
                     //if there is name already in the log then it would be got from content provider
-                    log.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+//                    log.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                 }
 //                log.spamReportCount = this.spamReportCount
             }
@@ -573,33 +576,49 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) {
-        callLogDAO?.update(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount)
+        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount)
     }
 
 
-     fun getNameForAddressFromContentProvider(contactAddress: String): String? {
-        var name:String? = null
+    suspend fun getNameForAddressFromContentProvider(contactAddress: String): NameAndThumbnail? {
+         var name:String?
+         var thumbnail:String?
+         var nameAndThumbnail: NameAndThumbnail? = null
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
 
         val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
         if(cursor2!=null && cursor2.moveToFirst()){
 //                    Log.d(TAG, "getConactInfoForNumber: data exist")
             name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+            thumbnail = cursor2.getString(cursor2.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+            nameAndThumbnail = NameAndThumbnail(name?:"", thumbnail?:"")
         }
-        return name
+        return nameAndThumbnail
     }
 
     /**
      * searach in calllog db
      */
-    suspend fun find(contactAddress: String): CallLogTable? {
-        callLogDAO?.find(contactAddress).apply {
+    suspend fun findFromCallLogTable(contactAddress: String): CallLogTable? {
+        callLogDAO?.find(formatPhoneNumber(contactAddress)).apply {
+            return this
+        }
+    }
+    /**
+     * searach in calllog db
+     */
+    suspend fun findOneFromCallLogTable(contactAddress: String): CallLogTable? {
+        callLogDAO?.findOne(formatPhoneNumber(contactAddress)).apply {
             return this
         }
     }
 
     suspend fun getFirst10Logs(): MutableList<CallLogTable>? = withContext(Dispatchers.IO) {
         return@withContext callLogDAO?.getFirst10Logs()
+    }
+
+   suspend fun updateWithCproviderInfo(number: String, nameAndThumbnailFromCp: NameAndThumbnail)  = withContext(Dispatchers.IO){
+        callLogDAO?.updateWitCproviderInfo(formatPhoneNumber(number), nameAndThumbnailFromCp.name, nameAndThumbnailFromCp.thumbnailUri )
     }
 
 

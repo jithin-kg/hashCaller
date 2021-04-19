@@ -136,7 +136,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
             logBinding.tvSim.text = (sim + 1).toString()
-            if (prevTime != null)
+//            if (prevTime != null)
 //                if(prevTime == callLog.dateInMilliseconds){
 //                    expandableView.beVisible()
 //
@@ -144,9 +144,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                   expandableView.beGone()
 //
 //                }
-                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING) {
-                    logBinding.pgBarCallItem.beVisible()
-                }
+//                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING) {
+//                    logBinding.pgBarCallItem.beVisible()
+//                }
 
                 var nameStr:String = ""
                 var infoFoundFrom = SENDER_INFO_SEARCHING

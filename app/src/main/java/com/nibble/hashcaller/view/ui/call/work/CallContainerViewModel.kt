@@ -18,6 +18,7 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Com
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
+import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -342,7 +343,7 @@ class CallContainerViewModel(
      */
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
           for(item in list){
-             val res =  async { repository?.find(item.contactAddress)  }.await()
+             val res =  async { repository?.findFromCallLogTable(item.contactAddress)  }.await()
               if(res!=null){
                   if(res.nameFromServer!= item.title || res.spamCount < item.spamReportCount){
                       repository?.updateCallLogWithServerInfo(item)
@@ -374,34 +375,54 @@ class CallContainerViewModel(
 
     fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
         val as1 = async {
-            setName(logs).apply { repository?.insertIntoCallLogDb(logs) }
+           repository?.insertIntoCallLogDb(logs)
         }
         val as2 = async { repository?.deleteCallLogs(logs) }
         val as3 = async { getInformationForTheseNumbers() }
+        val as5 = async { updateNameAndSpamCount(logs) }
         as2.await()
         as1.await()
         as3.await()
 
     }
 
-    private fun setName(logs: MutableList<CallLogTable>) {
+    private suspend fun updateNameAndSpamCount(logs: MutableList<CallLogTable>) {
         var numbersSet: HashSet<String> = hashSetOf()
-        var numberNamehashMap: HashMap<String, String> = hashMapOf()
+        var numberCallLogTableHashMap: HashMap<String, CallLogTable> = hashMapOf()
         numbersSet.addAll(logs.map { it.number })
 
         for (num in numbersSet){
-           val name:String? =  repository?.getNameForAddressFromContentProvider(num)
-            if(name!=null){
-                numberNamehashMap.put(num, name)
+            val nameAndThumbnailFromCp: NameAndThumbnail? =  repository?.getNameForAddressFromContentProvider(num)
+            if(nameAndThumbnailFromCp!=null){
+            val callLogTableInfo=   repository?.findOneFromCallLogTable(num)
+             val serverInfo:CallersInfoFromServer? =  repository?.getCallerInfoForAddressFromDB(num)
+
+            if(callLogTableInfo!=null  ){
+                if(serverInfo!=null){
+                    if(callLogTableInfo.nameFromServer != serverInfo.title || callLogTableInfo.spamCount < serverInfo.spamReportCount){
+                        repository?.updateCallLogWithServerInfo(serverInfo)
+                    }
+                }
+                if(nameAndThumbnailFromCp!=null){
+                    if(callLogTableInfo.name!= nameAndThumbnailFromCp.name || callLogTableInfo.thumbnailFromCp!= nameAndThumbnailFromCp.thumbnailUri){
+                        repository?.updateWithCproviderInfo(callLogTableInfo.number, nameAndThumbnailFromCp)
+                    }
+                }
+            }
+
+
+//                numberNamehashMap.put(num, nameAndThumbnailFromCp.name)
             }
         }
-        for(item in logs){
-            if(numberNamehashMap.containsKey(item.number)){
-                item.name = numberNamehashMap[item.number]
-                item.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-            }
-        }
+//        for(item in logs){
+//            if(numberNamehashMap.containsKey(item.number)){
+//                item.name = numberNamehashMap[item.number]
+//                item.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+//            }
+//        }
     }
+
+
 
     fun clearMarkedItemPositions() = viewModelScope.launch{
         markedItemsPositions.clear()

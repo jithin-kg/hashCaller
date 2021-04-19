@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.call.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 
 /**
  * table which holds user reported and other other spammers number
@@ -32,12 +31,17 @@ interface ICallLogDAO {
 
     @Query("SELECT * FROM call_log WHERE number=:contactAddress")
     suspend fun find(contactAddress: String) : CallLogTable?
+    @Query("SELECT * FROM call_log WHERE number=:contactAddress LIMIT 1")
+    suspend fun findOne(contactAddress: String) : CallLogTable?
 
     @Query("DELETE from call_log ")
     suspend fun deleteAll()
 
     @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount  WHERE number =:contactAddress")
-    suspend fun update(contactAddress: kotlin.String, nameFromServer:String, spamCount: kotlin.Long)
+    suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String, spamCount: kotlin.Long)
+
+    @Query("UPDATE  call_log  SET name =:name, thumbnailFromCp=:thumbnailFromCp WHERE number =:contactAddress")
+    suspend fun updateWitCproviderInfo(contactAddress: String, name:String, thumbnailFromCp: String)
 
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE id =:id")
     suspend fun markAsDeleted(id: Long, isDeleted:Boolean)

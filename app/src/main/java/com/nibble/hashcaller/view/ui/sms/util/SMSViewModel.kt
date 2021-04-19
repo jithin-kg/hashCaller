@@ -258,11 +258,12 @@ class SMSViewModel(
     private fun updateDb(item: SmsThreadTable) {
         viewModelScope.launch {
             var isInfoTobBeUpdated = false
-            val nameFromCprovider:String? = async { repository?.getNameForAddressFromContentProvider(item.contactAddress) }.await()
-            if(nameFromCprovider!=null){
-                if(item.name != nameFromCprovider){
+            val nameAndThumbnailFromCp = async { repository?.getNameForAddressFromContentProvider(item.contactAddress) }.await()
+            if(nameAndThumbnailFromCp!=null){
+                if(item.name != nameAndThumbnailFromCp.name || item.thumbnailFromCp !=nameAndThumbnailFromCp.thumbnailUri){
                     isInfoTobBeUpdated = true
-                    item.name = nameFromCprovider
+                    item.name = nameAndThumbnailFromCp.name
+                    item.thumbnailFromCp = nameAndThumbnailFromCp.thumbnailUri
                 }
             }
 

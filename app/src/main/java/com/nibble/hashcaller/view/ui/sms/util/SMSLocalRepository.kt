@@ -29,6 +29,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
+import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -2048,16 +2049,20 @@ class SMSLocalRepository(
         return smsThreadsDAO?.getAllLiveData()
     }
 
-   suspend fun getNameForAddressFromContentProvider(contactAddress: String): String? = withContext(Dispatchers.IO) {
-        var name:String? = null
+   suspend fun getNameForAddressFromContentProvider(contactAddress: String): NameAndThumbnail? = withContext(Dispatchers.IO) {
+        var name:String?
+       var thumbnail:String?
+       var nameAndThumbnail: NameAndThumbnail? = null
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
 
         val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
         if(cursor2!=null && cursor2.moveToFirst()){
 //                    Log.d(TAG, "getConactInfoForNumber: data exist")
             name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+            thumbnail = cursor2.getString(cursor2.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+            nameAndThumbnail = NameAndThumbnail(name?:"", thumbnail?:"")
         }
-        return@withContext name
+        return@withContext nameAndThumbnail
     }
 
     suspend fun markAsDelete(threadId: Long) {
@@ -2125,7 +2130,7 @@ class SMSLocalRepository(
      * function to upate name, nameFrom server, spamcount
      */
     suspend fun updateThreadSpamCount(item: SmsThreadTable) = withContext(Dispatchers.IO) {
-        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCountFromServer, item.name, item.nameFromServer)
+        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCountFromServer, item.name, item.nameFromServer, item.thumbnailFromCp)
     }
 
     /**

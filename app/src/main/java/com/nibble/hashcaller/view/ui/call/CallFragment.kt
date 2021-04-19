@@ -369,7 +369,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
         binding.rcrViewCallHistoryLogs.apply {
             layoutManager = CustomLinearLayoutManager(context)
-            layoutMngr = layoutManager as LinearLayoutManager
+            layoutMngr = layoutManager as CustomLinearLayoutManager
 //            val topSpacingDecorator =
 //                TopSpacingItemDecoration(
 //                    30
@@ -761,17 +761,23 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         val intent = Intent(context, IndividualCotactViewActivity::class.java )
                 intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
                 intent.putExtra("name", name )
-                intent.putExtra("photo", "")
+                intent.putExtra("photo", log.thumbnailFromCp)
                 intent.putExtra("color", log.color)
 
                 val pairList = ArrayList<android.util.Pair<View, String>>()
-                val imgViewUserPhoto = view.findViewById<androidx.appcompat.widget.AppCompatImageView>(R.id.imgViewUserPhoto)
+                val imgViewUserPhoto = view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgVThumbnail)
                 val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
+                  var pair:android.util.Pair<View, String>? = null
+                    if(log.thumbnailFromCp.isNotEmpty()){
+                        pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+                    }else if(log.imageFromDb.isNotEmpty()){
+                        pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
 
-//                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-                val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
-//                pairList.add(p1)
-                pairList.add(p2)
+                    }else{
+                        pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
+                    }
+
+                pairList.add(pair)
                 val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
                 options.toBundle()
                 startActivity(intent, options.toBundle())

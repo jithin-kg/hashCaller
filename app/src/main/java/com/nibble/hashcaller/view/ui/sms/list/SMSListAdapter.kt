@@ -11,6 +11,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.SmsListViewBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
+import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
@@ -160,9 +161,20 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 binding.textViewSMScontactCrclr.setRandomBackgroundCircle(TYPE_SPAM)
                 binding.imgVBlkIconSms.beVisible()
                 binding.textVSMSCntctName.setColorForText(R.color.spamText)
-            }else{
+                binding.imgVThumbnail.beInvisible()
+                binding.card.beInvisible()
+            }else if(sms.thumbnailFromCp.isEmpty()){
                 binding.textViewSMScontactCrclr.setRandomBackgroundCircle()
                 binding.imgVBlkIconSms.beInvisible()
+                firstLetter = nameStr[0].toString()
+                binding.textVSMSCntctName.setColorForText(R.color.textColor)
+                binding.imgVThumbnail.beInvisible()
+                binding.card.beInvisible()
+            }else{
+                loadImage(context,binding.imgVThumbnail, sms.thumbnailFromCp )
+                binding.imgVThumbnail.beVisible()
+                binding.imgVBlkIconSms.beInvisible()
+                binding.card.beVisible()
                 firstLetter = nameStr[0].toString()
                 binding.textVSMSCntctName.setColorForText(R.color.textColor)
             }

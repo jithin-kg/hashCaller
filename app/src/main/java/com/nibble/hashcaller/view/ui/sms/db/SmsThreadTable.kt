@@ -28,5 +28,7 @@ import java.util.*
     @ColumnInfo(name = "folderName") var folderName: String = "",
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
     @ColumnInfo(name = "infoFoundFrom") var senderInfoFoundFrom: Int = 0,
+    @ColumnInfo(name = "thumbnailFromCp") var thumbnailFromCp: String = "",
+    @ColumnInfo(name = "imageUrlFromDb") var imageFromDb: String = "", // imageUrlFromDb is the image from server
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false) {
 }

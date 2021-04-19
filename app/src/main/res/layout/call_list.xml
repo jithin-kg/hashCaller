@@ -47,6 +47,26 @@
             android:transitionName="firstLetterTransition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:elevation="4dp"
+            app:cardCornerRadius="25dp"
+            android:gravity="center_vertical|center_horizontal"
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
+            app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
+            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgVThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:elevation="4dp"
+                android:transitionName="contactImageTransition"
+                android:scaleType="centerCrop" />
+        </androidx.cardview.widget.CardView>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgViewUserPhoto"
@@ -126,7 +146,6 @@
             android:id="@+id/dividerCall"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:alpha="0.12"

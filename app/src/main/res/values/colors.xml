@@ -42,7 +42,7 @@
 
     <color name="textColor">#000000</color>
     <color name="textColorSecondary">#2E2D2D</color>
-    <color name="lineColor"> #22000000</color>
+    <color name="lineColor">#101126</color>
     <color name="edtxt_phone_auth_bg">#D8D9DA</color>
     <color name="appBarBackgroundColor">#fff</color>
     <color name="secure_lock_color">#6EE93C</color>

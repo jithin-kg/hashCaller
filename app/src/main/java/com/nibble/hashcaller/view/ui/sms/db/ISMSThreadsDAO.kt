@@ -50,8 +50,14 @@ interface ISMSThreadsDAO {
     @Query("UPDATE  chat_threads  SET body =:body, dateInMilliseconds =:dateInMilliseconds WHERE numFormated =:contactAddress")
     suspend fun updateBodyAndContents(contactAddress: String, body: String, dateInMilliseconds: Long)
 
-    @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamCountFromServer, name =:name, nameFromServer=:nameFromServer WHERE numFormated =:contactAddress")
-    suspend fun updateInfos(contactAddress: String, spamCountFromServer: Long, name: String, nameFromServer: String?)
+    @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamCountFromServer, name =:name, nameFromServer=:nameFromServer,thumbnailFromCp =:thumbnailFromCp  WHERE numFormated =:contactAddress")
+    suspend fun updateInfos(
+        contactAddress: String,
+        spamCountFromServer: Long,
+        name: String,
+        nameFromServer: String?,
+        thumbnailFromCp: String
+    )
 
     @Query("SELECT * FROM chat_threads WHERE name like :searchQuery")
     suspend fun findNameLike(searchQuery: String?): List<SmsThreadTable>?

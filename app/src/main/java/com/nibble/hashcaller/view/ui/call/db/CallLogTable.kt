@@ -21,11 +21,13 @@ import java.util.*
     @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,
     @ColumnInfo(name = "spamCount") var spamCount: Long = 0,
     @ColumnInfo(name = "number") var  number:String = "",
+    @ColumnInfo(name = "numberFormated") var  numberFormated:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
     @ColumnInfo(name = "duration") var duration: String = "",
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
-    @ColumnInfo(name = "callerInfoFoundFrom") var callerInfoFoundFrom: Int = 0,
     @ColumnInfo(name = "color") var color: Int = 0,
     @ColumnInfo(name ="simID") var simId:Int = 1,
+    @ColumnInfo(name = "thumbnailFromCp") var thumbnailFromCp: String = "",
+    @ColumnInfo(name = "imageUrlFromDb") var imageFromDb: String = "",
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false) {
 }

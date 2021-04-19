@@ -17,12 +17,15 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
+import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
+import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.utils.getRelativeTime
 import kotlinx.android.synthetic.main.call_list.view.*
@@ -137,7 +140,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
             logBinding.tvSim.text = (sim + 1).toString()
-            if (prevTime != null)
+
+
+//            if (prevTime != null)
 //                if(prevTime == callLog.dateInMilliseconds){
 //                    expandableView.beVisible()
 //
@@ -145,26 +150,62 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                   expandableView.beGone()
 //
 //                }
-                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING && networkHandler.isInternetAvailable()) {
-                    logBinding.pgBarCallItem.beVisible()
-                }else{
-                    logBinding.pgBarCallItem.beInvisible()
-
-                }
+//                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING && networkHandler.isInternetAvailable()) {
+//                    logBinding.pgBarCallItem.beVisible()
+//                }else{
+//                    logBinding.pgBarCallItem.beInvisible()
+//
+//                }
 
                 var nameStr:String = ""
                 var infoFoundFrom = SENDER_INFO_SEARCHING
-                if(callLog.name.isNullOrEmpty()){
-                    infoFoundFrom = SENDER_INFO_FROM_DB
-                    if(!callLog.nameFromServer.isNullOrEmpty()){
-                        nameStr = callLog.nameFromServer!!
-                    }
-                }else{
+                if(!callLog.name.isNullOrEmpty()){
+                    infoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                     nameStr = callLog.name!!
-                }
-                if(nameStr.isNullOrEmpty()){
+                }else if(!callLog.nameFromServer.isNullOrEmpty()){
+                    infoFoundFrom = SENDER_INFO_FROM_DB
+                    nameStr = callLog.nameFromServer!!
+                }else if(callLog.nameFromServer== null){
+                    infoFoundFrom = SENDER_INFO_SEARCHING
+                    nameStr = callLog.number
+                }else{
+                    infoFoundFrom = SENDER_INFO_NOT_FOUND
                     nameStr = callLog.number
                 }
+
+            when (infoFoundFrom) {
+                SENDER_INFO_FROM_CONTENT_PROVIDER -> {
+                    if(callLog.thumbnailFromCp.isNotEmpty()){
+                        showImageInCircle(logBinding, callLog.thumbnailFromCp)
+                    }else{
+                        logBinding.imgVThumbnail.beInvisible()
+                        circle.beVisible()
+                        logBinding.pgBarCallItem.beInvisible()
+                    }
+
+                }
+                SENDER_INFO_FROM_DB -> {
+                    if(callLog.imageFromDb.isNotEmpty()){
+                        showImageInCircle(logBinding, callLog.imageFromDb)
+                    }else{
+                        logBinding.imgVThumbnail.beInvisible()
+                        circle.beVisible()
+                        logBinding.pgBarCallItem.beInvisible()
+
+                    }
+                }
+                SENDER_INFO_SEARCHING ->{
+                    logBinding.imgVThumbnail.beInvisible()
+                    circle.beVisible()
+                    logBinding.pgBarCallItem.beVisible()
+                }
+                else ->{
+                    logBinding.imgVThumbnail.beInvisible()
+                    circle.beVisible()
+                    logBinding.pgBarCallItem.beInvisible()
+                }
+
+            }
 
                 if (callLog.spamCount > 0) {
 
@@ -349,6 +390,15 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         }
 
     }
+
+    private fun showImageInCircle(logBinding: CallListBinding, uri:String) {
+        logBinding.imgVThumbnail.beVisible()
+        loadImage(context, logBinding.imgVThumbnail, uri)
+        logBinding.imgVThumbnail.beVisible()
+        logBinding.textViewCrclr.beInvisible()
+        logBinding.pgBarCallItem.beInvisible()
+    }
+
     class CallItemDiffCallback : DiffUtil.ItemCallback<CallLogTable>() {
         override fun areItemsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
             return  oldItem.id == newItem.id
