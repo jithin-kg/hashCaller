@@ -24,7 +24,7 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
 
     @SuppressLint("LongLogTag")
     suspend fun insert(blockedListPattern: BlockedListPattern): Int {
-        blockedLIstDao.find(blockedListPattern.numberPattern, blockedListPattern.type).apply {
+        blockedLIstDao.find(formatPhoneNumber(blockedListPattern.numberPattern), blockedListPattern.type).apply {
             if(this==null){
                 blockedLIstDao.insert(blockedListPattern).apply {
                     return OPERATION_COMPLETED

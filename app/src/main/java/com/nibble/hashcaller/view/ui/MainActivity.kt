@@ -708,7 +708,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         }
         else if(callFragment.isVisible){
-            if(CallContainerRepository.markedIds.size > 0){
+            if(callFragment.getMarkedItemsSize() > 0){
                 lifecycleScope.launchWhenCreated {
                     callFragment.clearMarkeditems()
                 }

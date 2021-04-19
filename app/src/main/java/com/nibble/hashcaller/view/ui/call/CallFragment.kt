@@ -133,7 +133,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         observeCallLogFromDb()
         observePermissionLiveData()
         observeCallLogInfoFromServer()
-
         observeInternetLivedata()
 
     }
@@ -147,6 +146,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         return binding.root
 
     }
+
+
+
     private fun observeInternetLivedata() {
         val cl = context?.let { ConnectionLiveData(it) }
         cl?.observe(viewLifecycleOwner, Observer {
@@ -566,7 +568,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         viewmodel.unmuteByAddress().observe(viewLifecycleOwner, Observer {
             when(it){
                 OPERATION_COMPLETED -> {
-                    requireActivity().toast("Enabled notification for ${viewmodel.contactAdders} ", Toast.LENGTH_LONG)
+                    requireActivity().toast("Enabled notification for ${viewmodel.contactAddress} ", Toast.LENGTH_LONG)
                     binding.imgBtnCallUnMuteCaller.beInvisible()
                     binding.imgBtnCallTbrMuteCaller.beVisible()
                     clearlists()
@@ -626,17 +628,25 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
         this.viewmodel.blockThisAddress(
             this.spammerType,
-            this.SPAMMER_CATEGORY )
+            this.SPAMMER_CATEGORY ).observe(viewLifecycleOwner, Observer {
+                when(it){
+                    ON_COMPLETED -> {
+                        viewmodel.clearMarkedItems()
+                        bottomSheetDialog.hide()
+                        bottomSheetDialog.dismiss()
+                        bottomSheetDialogfeedback.show()
+                        var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
+                        val  sb =  SpannableStringBuilder(txt);
+                        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
+                        // sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
+                        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+                        showSearchView()
+                    }
+                }
+        })
 
 //        Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
-        bottomSheetDialog.hide()
-        bottomSheetDialog.dismiss()
-            bottomSheetDialogfeedback.show()
-        var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
-        val  sb =  SpannableStringBuilder(txt);
-        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
-       // sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+
 //        resetMarkingOptions()
 
     }
@@ -736,13 +746,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         Log.d(TAG, "onCallLog item clicked: $id")
         when(clickType){
             TYPE_LONG_PRESS ->{
-                return  markItem(id, clickType, position)
+                return  markItem(id, clickType, position,callLog.number)
 
             }else ->{
-                if(viewmodel.getmarkedItemSize() == 0){
+                if(getMarkedItemsSize() == 0){
                    startIndividualContactActivity(callLog, view)
                 }else{
-                    return markItem(id, clickType, position)
+                    return markItem(id, clickType, position, callLog.number)
                 }
             }
         }
@@ -750,6 +760,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
+    fun getMarkedItemsSize(): Int {
+       return  viewmodel.getmarkedItemSize()
+    }
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
         var name = log.name
         if(name.isNullOrEmpty()){
@@ -782,10 +795,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 startActivity(intent, options.toBundle())
     }
 
-    private fun markItem(id: Long, clickType: Int, position: Int): Int {
+    private fun markItem(id: Long, clickType: Int, position: Int, number: String): Int {
         if(viewmodel.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
             //if is empty and click type is long then start marking
-           viewmodel.addTomarkeditems(id, position)
+           viewmodel.addTomarkeditems(id, position, number)
             return MARK_ITEM
         }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
             //already some items are marked
@@ -794,7 +807,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 return UNMARK_ITEM
             }else{
 
-                viewmodel.addTomarkeditems(id, position)
+                viewmodel.addTomarkeditems(id, position, number)
                 return MARK_ITEM
             }
         }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
@@ -803,7 +816,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 viewmodel.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
-                viewmodel.addTomarkeditems(id, position)
+                viewmodel.addTomarkeditems(id, position, number)
                 return MARK_ITEM
             }
         }else {
@@ -901,12 +914,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
         this.viewmodel.deleteThread().observe(viewLifecycleOwner, Observer {
             when (it) {
-                DELETE_ON_PROGRESS -> {
+                ON_PROGRESS -> {
                     binding.imgBtnCallTbrDelete.beInvisible()
 
                     binding.pgBarDeleting.beVisible()
                 }
-                DELETE_ON_COMPLETED -> {
+                ON_COMPLETED -> {
                     Log.d(TAG, "SMS_DELETE_ON_COMPLETED: ")
                     showSearchView()
                 }
@@ -921,7 +934,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 OPERATION_COMPLETED ->{
 
                     val sbar = Snackbar.make(binding.cordinateLyoutCall,
-                        "You no longer notified on from ${viewmodel.contactAdders}",
+                        "You no longer notified on from ${viewmodel.contactAddress}",
                         Snackbar.LENGTH_SHORT)
                     lastOperationPerformed = OPERTION_MUTE
                     sbar.setAction("Undo", MyUndoListener(this))
@@ -955,6 +968,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     fun clearMarkeditems() {
        viewmodel.clearMarkedItems()
         lifecycleScope.launchWhenStarted {
+
             for(position in viewmodel.markedItemsPositions){
                 callLogAdapter?.notifyItemChanged(position)
             }

@@ -5,6 +5,8 @@ import android.view.View
 import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -20,7 +22,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -28,12 +29,12 @@ import kotlinx.coroutines.launch
 class CallContainerViewModel(
     val callLogs: CallLogLiveData,
     val repository: CallContainerRepository?,
-    val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?
+    val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?,
+    private val blockListPatternRepository: BlockListPatternRepository
 ) :ViewModel(){
-    var contactAdders = ""
+    var contactAddress = ""
      var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
-
 //    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
     var callLogTableData: LiveData<MutableList<CallLogTable>>? = repository!!.getAllCallLogLivedata()
 
@@ -50,10 +51,11 @@ class CallContainerViewModel(
     fun clearMarkeditems(){
         markedItems.value?.clear()
     }
-    fun addTomarkeditems(id: Long, position: Int){
+    fun addTomarkeditems(id: Long, position: Int, number: String){
         markedItems.value!!.add(id)
         markedItemsPositions.add(position)
         markedItems.value = markedItems.value
+        contactAddress = number
     }
     fun removeMarkeditemById(id: Long, position: Int){
         markedItems.value!!.remove(id)
@@ -182,14 +184,14 @@ class CallContainerViewModel(
      * and delete in background
      */
     fun deleteThread():LiveData<Int> = liveData {
-        emit(DELETE_ON_PROGRESS)
+        emit(ON_PROGRESS)
 
         viewModelScope.launch {
 //            val as1 = async {
             for(item in markedItems.value!!){
                 async { repository?.deleteCallLogsFromDBByid(item) }.await()
             }
-            emit(DELETE_ON_COMPLETED)
+            emit(ON_COMPLETED)
             for (item in markedItems.value!!) {
                 repository?.deleteLog(item)
 //                async { repository?.deleteCallLogsFromDBByid(item) }
@@ -236,7 +238,7 @@ class CallContainerViewModel(
         var address = getMarkedContactAddress()!!
         address = formatPhoneNumber(address)
         viewModelScope.launch {
-            contactAdders = async { repository!!.muteContactAddress(address) }.await()
+            contactAddress = async { repository!!.muteContactAddress(address) }.await()
 
         }.join()
 
@@ -250,14 +252,14 @@ class CallContainerViewModel(
      * called from snackbar
      */
     fun unmute() = viewModelScope.launch {
-        repository!!.unmuteByAddress(contactAdders)
+        repository!!.unmuteByAddress(contactAddress)
     }
     fun unmuteByAddress() :LiveData<Int> = liveData {
             emit(OPERATION_PENDING)
             var address = getMarkedContactAddress()!!
             address = formatPhoneNumber(address)
             viewModelScope.launch {
-                contactAdders = async { repository!!.unmuteByAddress(address) }.await()
+                contactAddress = async { repository!!.unmuteByAddress(address) }.await()
 
             }.join()
 
@@ -280,23 +282,33 @@ class CallContainerViewModel(
 
     }
 
-    fun blockThisAddress(spammerCategory: Int, spammerCategory1: Int) = viewModelScope.launch {
+    fun blockThisAddress(spammerCategory: Int, spammerCategory1: Int) : LiveData<Int> = liveData {
 //        threadID
-        async {
+        viewModelScope.launch {
+            async {
 
-            repository?.markCallerAsSpamer(formatPhoneNumber(contactAdders),
-                spammerCategory, "", "" )
-        }
+                repository?.marAsReportedByUser(contactAddress)
 
-        async {
+                blockListPatternRepository.insert(
+                    BlockedListPattern(
+                        null,
+                        formatPhoneNumber(contactAddress),
+                        "",
+                        EXACT_NUMBER
+                    )
+                )
+            }
+            async {
 //            repository?.report(
 //                ReportedUserDTo(
 //                    formatPhoneNumber(contactAddress), " ",
 //                    spammerType.toString(), spammerCategory.toString()
 //                )
 //            )
-        }
+            }
 
+        }.join()
+        emit(ON_COMPLETED)
 
     }
 
@@ -441,6 +453,8 @@ class CallContainerViewModel(
 
         }
     }
+
+
 
 
     companion object {

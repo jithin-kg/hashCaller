@@ -17,8 +17,8 @@ interface ICallLogDAO {
     @Query("DELETE from call_log WHERE id=:id")
     suspend fun delete(id: Long)
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted ORDER BY dateInMilliseconds DESC LIMIT 200")
-    fun getAllLiveData(isDeleted:Boolean= false): LiveData<MutableList<CallLogTable>>
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser ORDER BY dateInMilliseconds DESC LIMIT 200")
+    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser: Boolean = false): LiveData<MutableList<CallLogTable>>
 
     @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
     suspend fun getAllCallLog(): MutableList<CallLogTable>
@@ -46,9 +46,12 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE id =:id")
     suspend fun markAsDeleted(id: Long, isDeleted:Boolean)
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted ORDER BY dateInMilliseconds DESC LIMIT 2")
-    suspend fun getFirst10Logs(isDeleted: Boolean = false) : MutableList<CallLogTable>
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser ORDER BY dateInMilliseconds DESC LIMIT 2")
+    suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false) : MutableList<CallLogTable>
 
     @Query("SELECT * FROM call_log WHERE number LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
     suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
+
+    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount WHERE number =:contactAddress")
+    suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true)
 }

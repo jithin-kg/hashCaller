@@ -7,8 +7,8 @@ import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
-import com.nibble.hashcaller.view.ui.sms.individual.util.DELETE_ON_PROGRESS
-import com.nibble.hashcaller.view.ui.sms.individual.util.DELETE_ON_COMPLETED
+import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
+import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
 import com.nibble.hashcaller.work.replaceSpecialChars
@@ -168,7 +168,7 @@ class SMSViewModel(
     }
 
     fun deleteMarkedSMSThreads(): LiveData<Int> = liveData {
-        emit(DELETE_ON_PROGRESS)
+        emit(ON_PROGRESS)
         viewModelScope.launch {
         var set: HashSet<Long> = hashSetOf()
 
@@ -184,7 +184,7 @@ class SMSViewModel(
 
     }.join()
         clearMarkeditems()
-        emit(DELETE_ON_COMPLETED)
+        emit(ON_COMPLETED)
 
     }
     fun clearMarkeditems(){

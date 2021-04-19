@@ -29,6 +29,7 @@
             android:fromDegrees="0"
             android:gravity="center_vertical|center_horizontal"
             android:toDegrees="180"
+
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
             app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"

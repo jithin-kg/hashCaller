@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.call.utils
 
 import android.content.Context
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 
@@ -13,9 +14,13 @@ object CallContainerInjectorUtil {
     fun provideViewModelFactory(context: Context?): CallContainerViewModelFactory {
 
 
+
         val callerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
         val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
+        val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
+        val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
+        val blockListPatternRepository = BlockListPatternRepository(blockListDao!!, mutedCallersDAO!!)
 
         val repository = context?.let {
             CallContainerRepository(
@@ -30,7 +35,7 @@ object CallContainerInjectorUtil {
         val callLogLiveData =
             CallLogLiveData(context!!, repository)
 
-        return CallContainerViewModelFactory(callLogLiveData!!, repository,callerInfoFromServerDAO)
+        return CallContainerViewModelFactory(callLogLiveData!!, repository,callerInfoFromServerDAO, blockListPatternRepository)
     }
 
 }

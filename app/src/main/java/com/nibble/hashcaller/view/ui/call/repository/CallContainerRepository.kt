@@ -22,8 +22,6 @@ import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.removeAllNonNumbericChars
 import kotlinx.coroutines.*
@@ -35,7 +33,7 @@ import java.util.concurrent.TimeUnit
 
 class CallContainerRepository(
     val context: Context,
-    val dao: CallersInfoFromServerDAO,
+    val callerInfoFromServerDAO: CallersInfoFromServerDAO,
     val mutedCallersDAO: IMutedCallersDAO?,
     private val callLogDAO: ICallLogDAO?
 ) {
@@ -51,7 +49,7 @@ class CallContainerRepository(
      * this is the table schema
      */
     suspend fun geSmsSendersStoredInLocalDB(): List<CallersInfoFromServer> {
-        val list =  dao.getAll()
+        val list =  callerInfoFromServerDAO.getAll()
         return list
     }
 
@@ -76,7 +74,7 @@ class CallContainerRepository(
 //        }
         var result: CallersInfoFromServer? = null
         GlobalScope.launch {
-            result= async { dao.find(numWithoutSpecialChars) }.await()
+            result= async { callerInfoFromServerDAO.find(numWithoutSpecialChars) }.await()
         }.join()
 
         return result
@@ -158,16 +156,16 @@ class CallContainerRepository(
     }
 
     suspend fun markCallerAsSpamer(formatPhoneNumber: String, spammerType: Int, s: String, s1: String) {
-        dao.find(formatPhoneNumber).apply {
+        callerInfoFromServerDAO.find(formatPhoneNumber).apply {
             if(this !=null){
                 //number exist in db
-                dao.update(this.spamReportCount+1, this.contactAddress, true)
+                callerInfoFromServerDAO.update(this.spamReportCount+1, this.contactAddress, true)
             }else{
 
                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
                     formatPhoneNumber(formatPhoneNumber), spammerType, "",
                     Date(), 1)
-                dao.insert(listOf(callerInfoTobeSavedInDatabase))
+                callerInfoFromServerDAO.insert(listOf(callerInfoTobeSavedInDatabase))
             }
         }
     }
@@ -315,7 +313,7 @@ class CallContainerRepository(
     }
 
     fun getCallLogLiveDAtaFromDB(): LiveData<List<CallersInfoFromServer>> {
-        return dao.getAllLiveData()
+        return callerInfoFromServerDAO.getAllLiveData()
     }
 
 
@@ -433,7 +431,7 @@ class CallContainerRepository(
     }
 
     private suspend fun setInfoFromServer(log: CallLogTable) {
-        dao.find(formatPhoneNumber(log.number)).apply {
+        callerInfoFromServerDAO.find(formatPhoneNumber(log.number)).apply {
             if(this !=null){
                 if(log.name.isNullOrEmpty()){
                     log.name = this.title
@@ -534,7 +532,7 @@ class CallContainerRepository(
     }
 
     suspend fun clearCallersInfoFromServer() {
-        dao.deleteAll()
+        callerInfoFromServerDAO.deleteAll()
         callLogDAO?.deleteAll()
     }
 
@@ -619,6 +617,16 @@ class CallContainerRepository(
 
    suspend fun updateWithCproviderInfo(number: String, nameAndThumbnailFromCp: NameAndThumbnail)  = withContext(Dispatchers.IO){
         callLogDAO?.updateWitCproviderInfo(formatPhoneNumber(number), nameAndThumbnailFromCp.name, nameAndThumbnailFromCp.thumbnailUri )
+    }
+
+    suspend fun marAsReportedByUser(contactAddress: String) {
+        val formatedAdders = formatPhoneNumber(contactAddress)
+       val log =  callLogDAO?.findOne(formatedAdders)
+        if(log!=null){
+            var spamCount = log.spamCount
+            spamCount += 1
+            callLogDAO?.markAsReportedByUser(contactAddress, spamCount)
+        }
     }
 
 

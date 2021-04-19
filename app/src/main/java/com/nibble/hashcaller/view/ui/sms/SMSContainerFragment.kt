@@ -37,7 +37,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
@@ -777,7 +776,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        for(id in markedItems){
         this.viewmodel.deleteMarkedSMSThreads().observe(viewLifecycleOwner, Observer {
             when (it) {
-                DELETE_ON_PROGRESS -> {
+                ON_PROGRESS -> {
                     binding.imgBtnTbrDelete.beInvisible()
                     binding.imgBtnTbrBlock.beInvisible()
                     binding.imgBtnTbrMore.beInvisible()
@@ -785,7 +784,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                     binding.pgBarSMSDeleting.beVisible()
 //                    binding.pgBarDeleting.beVisible()
                 }
-                DELETE_ON_COMPLETED -> {
+                ON_COMPLETED -> {
                     showSearchView()
                     viewmodel.clearMarkedPositions()
                 }

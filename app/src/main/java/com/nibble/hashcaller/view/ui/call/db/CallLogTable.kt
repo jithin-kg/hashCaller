@@ -27,6 +27,7 @@ import java.util.*
     @ColumnInfo(name = "dateInMilliseconds") var dateInMilliseconds: Long  = 0L,
     @ColumnInfo(name = "color") var color: Int = 0,
     @ColumnInfo(name ="simID") var simId:Int = 1,
+    @ColumnInfo(name ="isReportedByUser") var isReportedByUser:Boolean = false,
     @ColumnInfo(name = "thumbnailFromCp") var thumbnailFromCp: String = "",
     @ColumnInfo(name = "imageUrlFromDb") var imageFromDb: String = "",
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false) {
