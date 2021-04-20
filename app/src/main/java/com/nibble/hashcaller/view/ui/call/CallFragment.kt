@@ -70,6 +70,7 @@ import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
+import kotlinx.coroutines.delay
 
 
 /**
@@ -120,20 +121,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
 //    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
 
-        initViewModel()
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
     if(checkContactPermission()){
         initRecyclerView()
-        getFirst10items()
-        observeCallLog()
-//        addScrollListener()
-        setupSimCardCount()
-        observeMarkedItems()
-        observeCallLogFromDb()
-        observePermissionLiveData()
-        observeCallLogInfoFromServer()
-        observeInternetLivedata()
+
+        getDataDelayed()
 
     }
 
@@ -147,6 +140,23 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
+    private fun getDataDelayed() {
+        lifecycleScope.launchWhenStarted {
+            delay(2000L)
+            initViewModel()
+
+            getFirst10items()
+            observeCallLog()
+//        addScrollListener()
+            setupSimCardCount()
+            observeMarkedItems()
+            observeCallLogFromDb()
+            observePermissionLiveData()
+            observeCallLogInfoFromServer()
+            observeInternetLivedata()
+        }
+
+    }
 
 
     private fun observeInternetLivedata() {

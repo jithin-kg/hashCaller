@@ -17,8 +17,8 @@ interface ISMSThreadsDAO {
     @Query("DELETE from chat_threads WHERE threadId=:threadId")
     suspend fun delete(threadId: Long)
 
-    @Query("SELECT * FROM chat_threads WHERE isDeleted=:isDeleted ORDER BY dateInMilliseconds DESC ")
-    fun getAllLiveData(isDeleted:Boolean= false): LiveData<MutableList<SmsThreadTable>>
+    @Query("SELECT * FROM chat_threads WHERE isDeleted=:isDeleted  AND isReportedByUser=:isReportedByUser ORDER BY dateInMilliseconds DESC ")
+    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser:Boolean = false): LiveData<MutableList<SmsThreadTable>>
 
     @Query("SELECT * FROM chat_threads ORDER BY dateInMilliseconds DESC ")
     suspend fun getAllCallLog(): MutableList<SmsThreadTable>
@@ -44,13 +44,13 @@ interface ISMSThreadsDAO {
     @Query("UPDATE  chat_threads  SET read =:isRead WHERE numFormated =:contactAddress")
     suspend fun markAsRead(contactAddress: String, isRead:Int)
 
-    @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamReportCount, nameFromServer =:name WHERE numFormated =:contactAddress")
+    @Query("UPDATE  chat_threads  SET spamCount =:spamReportCount, nameFromServer =:name WHERE numFormated =:contactAddress")
     suspend fun updateWithServerInfo(contactAddress: String, spamReportCount: Long, name: String)
 
     @Query("UPDATE  chat_threads  SET body =:body, dateInMilliseconds =:dateInMilliseconds WHERE numFormated =:contactAddress")
     suspend fun updateBodyAndContents(contactAddress: String, body: String, dateInMilliseconds: Long)
 
-    @Query("UPDATE  chat_threads  SET spamCountFromServer =:spamCountFromServer, name =:name, nameFromServer=:nameFromServer,thumbnailFromCp =:thumbnailFromCp  WHERE numFormated =:contactAddress")
+    @Query("UPDATE  chat_threads  SET spamCount =:spamCountFromServer, name =:name, nameFromServer=:nameFromServer,thumbnailFromCp =:thumbnailFromCp  WHERE numFormated =:contactAddress")
     suspend fun updateInfos(
         contactAddress: String,
         spamCountFromServer: Long,
@@ -61,4 +61,10 @@ interface ISMSThreadsDAO {
 
     @Query("SELECT * FROM chat_threads WHERE name like :searchQuery")
     suspend fun findNameLike(searchQuery: String?): List<SmsThreadTable>?
+
+    @Query("UPDATE  chat_threads  SET spamCount =spamCount+1, isReportedByUser =:reportedByUser WHERE numFormated =:contactAddress")
+    suspend fun updateSpamCount(contactAddress: String, reportedByUser: Boolean)
+
+    @Query("SELECT * FROM chat_threads WHERE threadId  =:id LIMIT 1")
+    suspend fun findOneById(id: Long) : SmsThreadTable?
 }

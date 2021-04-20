@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
@@ -33,6 +32,7 @@ class SMSViewModel(
      var smsLIst:MutableList<SMS>? = mutableListOf()
 
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
+    var markedNumbers: MutableSet<String> = mutableSetOf()
     var markedItemsPositions: HashSet<Int> = hashSetOf()
 
 
@@ -53,10 +53,12 @@ class SMSViewModel(
         var size = markedItems.value?.size
         return size ?: 0
     }
-    fun addTomarkeditems(id: Long, position: Int){
+    fun addTomarkeditems(id: Long, position: Int, address: String){
         markedItems.value!!.add(id)
         markedItemsPositions.add(position)
         markedItems.value = markedItems.value
+
+        markedNumbers.add(address)
     }
     fun removeMarkeditemById(id: Long, position: Int){
         markedItems.value!!.remove(id)
@@ -142,23 +144,37 @@ class SMSViewModel(
 
 
 
-    fun blockThisAddress(contactAddress: String,
-                         threadID: Long, spammerType: Int,
-                         spammerCategory: Int) = viewModelScope.launch {
+    fun blockThisAddress(spammerType: Int,
+                         spammerCategory: Int): LiveData<Int> = liveData  {
+        viewModelScope.launch {
+            val defLocal = async {
+                var items = markedItems.value?.toList()
+                if (!items.isNullOrEmpty()) {
+                    for (id in items) {
+                        val thread = repository?.findOneThreadById(id)
+                        if (thread != null) {
+                            val address = thread.numFormated
+                            repository?.markAsSpam(address, 1, "", "")
+                        }
+                    }
+                }
 
-        async {
+            }
+            defLocal.await()
+            async {
+//            repository?.report(
+//                ReportedUserDTo(
+//                    replaceSpecialChars(contactAddress), " ",
+//                    spammerType.toString(), spammerCategory.toString()
+//                )
+//            )
+            }
 
-            repository?.save(replaceSpecialChars(contactAddress), 1, "", "" )
-        }
 
-        async {
-            repository?.report(
-                ReportedUserDTo(
-                    replaceSpecialChars(contactAddress), " ",
-                    spammerType.toString(), spammerCategory.toString()
-                )
-            )
-        }
+        }.join()
+
+        emit(ON_COMPLETED)
+
 
 
     }
@@ -274,8 +290,8 @@ class SMSViewModel(
                     item.nameFromServer = infoFromServer.name
                     isInfoTobBeUpdated = true
                 }
-                if(threadInfoInDb.spamCountFromServer < infoFromServer.spamReportCount){
-                    item.spamCountFromServer = infoFromServer.spamReportCount
+                if(threadInfoInDb.spamCount < infoFromServer.spamReportCount){
+                    item.spamCount = infoFromServer.spamReportCount
                     isInfoTobBeUpdated = true
                 }
 

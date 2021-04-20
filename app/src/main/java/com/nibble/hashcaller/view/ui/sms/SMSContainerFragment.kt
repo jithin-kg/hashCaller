@@ -12,7 +12,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.util.DisplayMetrics
@@ -29,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
@@ -64,6 +64,7 @@ import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 import kotlinx.android.synthetic.main.fragment_test.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
 
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
@@ -115,31 +116,30 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         // Inflate the layout for this fragment
         _binding = FragmentMessageContainerBinding.inflate(inflater, container, false)
         viewMesagesRef = binding.root
-        initVieModel()
+        registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
+
         if(checkContactPermission())
         {
             initRecyclerView()
 //            getFirstPageOfSMS()
-            observeSMSList()
-            observeSMSThreadsLivedata()
-            observeSendersInfoFromServer()
-//            observePermissionLiveData()
-//            observeNumOfRowsDeleted()
-            registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
-            setupBottomSheet()
-            initListeners()
-            observeMarkedItems()
-//            observeMutabeLiveData()
-//            if(markedItems.size > 0){
-//                Log.d(TAG, "onViewCreated: greater than one")
-//                showToolbarButtons()
-//                hideSearchView()
-//                showToolbarButtons()
-//            }
-        observeInternetLivedata()
+           getDataDelayed()
         }
 
         return  binding.root
+    }
+
+    private fun getDataDelayed() {
+        lifecycleScope.launchWhenStarted {
+            delay(2000L)
+            initVieModel()
+            observeSMSList()
+            observeSMSThreadsLivedata()
+            observeSendersInfoFromServer()
+            setupBottomSheet()
+            initListeners()
+            observeMarkedItems()
+            observeInternetLivedata()
+        }
     }
 
     private fun observeInternetLivedata() {
@@ -299,19 +299,26 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      * @param contact contact address
      *
      */
-    private fun addToBlockList(contact: String) {
-        this.viewmodel.blockThisAddress(contact, MarkedItemsHandler.markedTheadIdForBlocking, this.spammerType, this.SPAMMER_CATEGORY )
+    private fun addToBlockList() {
+        this.viewmodel.blockThisAddress( this.spammerType, this.SPAMMER_CATEGORY ).observe(viewLifecycleOwner, Observer {
+            when(it){
+                ON_COMPLETED ->{
+                    Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
+                    bottomSheetDialog.hide()
+                    bottomSheetDialog.dismiss()
+                    bottomSheetDialogfeedback.show()
+                    var txt = "$ can no longer send SMS or call you."
+                    val  sb =  SpannableStringBuilder(txt);
+                    val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
+//        sb.setSpan(bss, 0, .length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
+//        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+                    resetMarkingOptions()
+                    viewmodel.clearMarkeditems()
+                }
+            }
+        })
 
-        Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
-        bottomSheetDialog.hide()
-        bottomSheetDialog.dismiss()
-        bottomSheetDialogfeedback.show()
-        var txt = "$contact can no longer send SMS or call you."
-        val  sb =  SpannableStringBuilder(txt);
-        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
-        sb.setSpan(bss, 0, contact.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
-        resetMarkingOptions()
+
     }
     private fun setupBottomSheet() {
         bottomSheetDialog = BottomSheetDialog(this.requireActivity())
@@ -408,14 +415,14 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun onContactItemClicked(view: View, threadId: Long, position: Int, address: String, clickType:Int): Int {
         when(clickType){
             TYPE_LONG_PRESS ->{
-                return  markItem(threadId, clickType, position)
+                return  markItem(threadId, clickType, position, address)
 
             }else ->{
             if(viewmodel.getmarkedItemSize() == 0){
                 startIndividualSMSActivity(address, view)
 
             }else{
-                return markItem(threadId, clickType, position)
+                return markItem(threadId, clickType, position, address)
             }
         }
         }
@@ -441,16 +448,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         Log.d(TAG, "onResume: ")
 //        viewmodel.updateWithNewSenderInfo()
         isPaused = false
-        if(this.viewmodel.SMS.hasObservers()){
-            Log.d("__SMSContainerFragmentob", "onResume: hasobservers")
-        }else{
-            Log.d("__SMSContainerFragmentob", "onResume: no observers")
-        }
-        if(this.viewmodel.SMS.hasActiveObservers()){
-            Log.d("__SMSContainerFragmentob", "onResume: has active observers ")
-        }else{
-            Log.d("__SMSContainerFragmentob", "onResume: has not active observer")
-        }
+
         this.permissionGivenLiveData.value  = checkContactPermission()
 
     }
@@ -547,7 +545,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
             R.id.btnBlock->{
                 Log.d(TAG, "onClick: ")
-                addToBlockList(MarkedItemsHandler.markedContactAddressForBlocking!!)
+                addToBlockList()
             }
             R.id.fabSendNewSMS -> {
                 Log.d(TAG, "onClick: fabSendNewSMS")
@@ -727,6 +725,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 0 ->{
                     showSearchView()
                 }
+
                 else ->{
                     showToolbarButtons(it.size)
                 }
@@ -738,10 +737,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     /**
      * mark for deletion or archival or block of sms list
      */
-    private fun markItem(id: Long, clickType: Int, position: Int): Int {
+    private fun markItem(id: Long, clickType: Int, position: Int, address: String): Int {
         if(viewmodel.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
             //if is empty and click type is long then start marking
-            viewmodel.addTomarkeditems(id, position)
+            viewmodel.addTomarkeditems(id, position, address)
             return MARK_ITEM
         }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
             //already some items are marked
@@ -749,7 +748,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 viewmodel.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
-                viewmodel.addTomarkeditems(id, position)
+                viewmodel.addTomarkeditems(id, position, address)
                 return MARK_ITEM
             }
         }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
@@ -758,7 +757,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 viewmodel.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
-                viewmodel.addTomarkeditems(id, position)
+                viewmodel.addTomarkeditems(id, position, address)
                 return MARK_ITEM
             }
         }else {

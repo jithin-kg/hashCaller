@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
@@ -40,6 +41,7 @@ import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_contact_list.*
 import kotlinx.android.synthetic.main.fragment_contact_list.view.*
 import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.coroutines.delay
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -100,15 +102,16 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         // Inflate the layout for this fragment
         _binding = FragmentContactsContainerBinding.inflate(inflater, container, false)
 
-      initListeners()
+        initListeners()
         initRecyclerView()
 
         ViewCompat.setTransitionName(binding.searchViewContacts, binding.searchViewContacts.transitionName)
         val contextThemeWrapper: Context =
             ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
-        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
+
         if(checkContactPermission()){
-            observerContactList()
+            getData()
+
         }
 
         binding.searchViewContacts.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
@@ -119,8 +122,21 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             }
         }
         binding.searchViewContacts.setOnClickListener(this)
-        observePermissionLiveData()
+
     return binding.root
+    }
+
+    private fun getData() {
+        lifecycleScope.launchWhenStarted {
+            delay(2000L)
+            initViewmodel()
+            observerContactList()
+            observePermissionLiveData()
+        }
+    }
+
+    private fun initViewmodel() {
+        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(ContactsViewModel::class.java)
     }
 
     private fun checkContactPermission(): Boolean {

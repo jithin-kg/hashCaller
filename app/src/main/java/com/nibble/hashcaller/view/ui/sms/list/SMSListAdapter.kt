@@ -136,7 +136,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                     senderInforFrom = SENDER_INFO_SEARCHING
 
                 }
-                    isSpam = sms.spamCountFromServer!! > 0
+                    isSpam = sms.spamCount!! > 0
             if(nameStr.isEmpty()){
                 //name is not found in server on content provider so, set name as number
                 nameStr = formatPhoneNumber(sms.contactAddress)

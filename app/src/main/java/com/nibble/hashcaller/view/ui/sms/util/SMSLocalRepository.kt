@@ -422,7 +422,7 @@ class SMSLocalRepository(
 //                        }
                         objSMS.dateInMilliseconds = dateMilli
 //                        setRelativeTime(objSMS, dateMilli)
-                        objSMS.spamCountFromServer = 0
+                        objSMS.spamCount = 0
                         objSMS.name = ""
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
@@ -1722,23 +1722,31 @@ class SMSLocalRepository(
     /**
      * Adding a new sms sender info who is a spammer
      */
-    suspend fun save(contactAddress: String, i: Int, s: String, s1: String) {
+    suspend fun markAsSpam(contactAddress: String, i: Int, s: String, s1: String) {
+       val formatedAddress = formatPhoneNumber(contactAddress)
         var name = ""
         var spamCount = 0L
-        smssendersInfoDAO!!.find(formatPhoneNumber(contactAddress)).apply {
-            if(this!=null){
-                name = this.name
-                spamCount = this.spamReportCount
 
-            }
+//        smsThreadsDAO?.find(formatedAddress).apply {
+//            if(this!=null) {
 
-            spamCount+=1
-            val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
-            val list = listOf<SMSSendersInfoFromServer>(info)
+                smsThreadsDAO?.updateSpamCount(formatedAddress,  true)
+//            }
+//        }
+//        smssendersInfoDAO!!.find(formatPhoneNumber(contactAddress)).apply {
+//            if(this!=null){
+//                name = this.name
+//                spamCount = this.spamReportCount
+//
+//            }
+//
+//            spamCount+=1
+//            val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
+//            val list = listOf<SMSSendersInfoFromServer>(info)
+//
+//            smssendersInfoDAO!!.insert(list)
+//            pageOb.page = 0
 
-            smssendersInfoDAO!!.insert(list)
-            pageOb.page = 0
-        }
 
     }
     suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
@@ -2130,7 +2138,7 @@ class SMSLocalRepository(
      * function to upate name, nameFrom server, spamcount
      */
     suspend fun updateThreadSpamCount(item: SmsThreadTable) = withContext(Dispatchers.IO) {
-        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCountFromServer, item.name, item.nameFromServer, item.thumbnailFromCp)
+        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCount, item.name, item.nameFromServer, item.thumbnailFromCp)
     }
 
     /**
@@ -2422,6 +2430,9 @@ class SMSLocalRepository(
         return data
     }
 
+    suspend fun findOneThreadById(id: Long): SmsThreadTable? {
+        return smsThreadsDAO?.findOneById(id)
+    }
 
 
 }
