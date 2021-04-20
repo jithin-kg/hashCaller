@@ -74,7 +74,7 @@ class CallContainerRepository(
 //            numberForQuery = formatPhoneNumber(numWithoutSpecialChars)
 //        }
         var result: CallersInfoFromServer? = null
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             result= async { callerInfoFromServerDAO.find(numWithoutSpecialChars) }.await()
         }.join()
 
@@ -236,7 +236,7 @@ class CallContainerRepository(
 
                             setRelativeTime(dateInMilliseconds, log)
 
-                    GlobalScope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
 //                        async { setInfoFromServer(log) }.await()
                     }.join()
                     if(!deletedIds.contains(id)) {
@@ -516,7 +516,7 @@ class CallContainerRepository(
 //                    log.dateInMilliseconds = dateInMilliseconds.toString()
                     setRelativeTime(dateInMilliseconds, log)
 
-                    GlobalScope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
 //                        async { setInfoFromServer(log) }.await()
                     }.join()
                     if(!deletedIds.contains(id)){

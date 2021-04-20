@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
@@ -21,7 +22,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SMSLiveData(private val context: Context,private val repository: SMSLocalRepository?):
-    ContentProviderLiveDataFlow<MutableList<SmsThreadTable>>(
+    ContentProviderLiveData<MutableList<SmsThreadTable>>(
         context,
         URI
     ) {

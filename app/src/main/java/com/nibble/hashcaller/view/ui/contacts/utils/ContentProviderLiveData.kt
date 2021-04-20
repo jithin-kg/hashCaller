@@ -7,6 +7,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -24,7 +26,7 @@ abstract class ContentProviderLiveData<T>(
     @SuppressLint("LongLogTag")
     override fun onActive() {
         try {
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 postValue(getContentProviderValue(null)) // we are posting the initial value of the
             }
 

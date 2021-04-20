@@ -1186,7 +1186,6 @@ class SMSLocalRepository(
     }
 
     private fun saveSMSIdToDatabase(id: Int) {
-//        GlobalScope.
 //        smsDAO.insert(SMSDraft(id))
 
     }
@@ -1300,7 +1299,7 @@ class SMSLocalRepository(
 
 
 //            try {
-//                GlobalScope.launch(Dispatchers.Main) {
+//                CorutinScope.launch(Dispatchers.Main) {
 //                   val res = withContext(Dispatchers.IO)  {
 ////                        res = getSenderInfo(num).await()
 //                        smssendersInfoDAO!!.find(num!!)
@@ -1334,7 +1333,7 @@ class SMSLocalRepository(
         }
     }
 
-    private fun getSenderInfo(num: String) = GlobalScope.async{
+    private fun getSenderInfo(num: String) = CoroutineScope(Dispatchers.IO).async{
         smssendersInfoDAO!!.find(formatPhoneNumber(num))
     }
 
