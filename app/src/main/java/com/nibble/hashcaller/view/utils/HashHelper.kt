@@ -4,7 +4,7 @@ import android.util.Log
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import java.security.MessageDigest
 import kotlin.experimental.and
-const val TAG = "HashHelper"
+private const val TAG = "__HashHelper"
 fun hashPhoneNum(phoneNumber: String): String {
     val md: MessageDigest = MessageDigest.getInstance("SHA-256")
     md.update(phoneNumber.toByteArray());

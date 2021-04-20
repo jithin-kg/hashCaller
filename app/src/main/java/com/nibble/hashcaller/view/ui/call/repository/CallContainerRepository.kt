@@ -30,6 +30,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashSet
 
 class CallContainerRepository(
     val context: Context,
@@ -321,6 +322,7 @@ class CallContainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun getRawCallLogs(): MutableList<CallLogTable>  = withContext(Dispatchers.IO){
         val listOfCallLogs = mutableListOf<CallLogTable>()
+        val setOfAddres:HashSet<String> = hashSetOf()
         var simIds = mutableListOf<String>()
         simIds.addAll(context.getSimIndexForSubscriptionId())
 
@@ -346,18 +348,24 @@ class CallContainerRepository(
                 projection,
                 null,
                 null,
-                "${CallLog.Calls._ID} DESC Limit 200"
+                "${CallLog.Calls._ID} DESC"
             )
             if(cursor != null && cursor.moveToFirst()){
                 do{
                     var i = 0
-                    while(i<cursor.columnCount){
-                        Log.d(TAG+"colum", " ${cursor.getColumnName(i)} :  ${cursor.getString(i)}")
-                        
-                        i++
-                    }
+//                    while(i<cursor.columnCount){
+//                        Log.d(TAG+"colum", " ${cursor.getColumnName(i)} :  ${cursor.getString(i)}")
+//
+//                        i++
+//                    }
                     Log.d(TAG, "getRawCallLogs: -------------------------------------------------")
                     var number = cursor.getString(0)
+                    val formatedNum = formatPhoneNumber(number)
+                    if(!setOfAddres.contains(formatedNum)){
+                        setOfAddres.add(formatedNum)
+                    }else{
+                        continue
+                    }
                     val type: Int = cursor.getInt(1)
                     val duration: String = cursor.getString(2)
                     val name:String? = cursor.getString(3)
@@ -422,7 +430,7 @@ class CallContainerRepository(
             }
         }catch (e: java.lang.Exception){
 
-            Log.d(TAG, "getFullCallLogs: exception $e")
+            Log.d(TAG, "getRawCallLogs: exception $e")
         }finally {
             cursor?.close()
         }

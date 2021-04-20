@@ -84,6 +84,7 @@ class DialerAdapter(private val context: Context,
             }
         return VIEW_TYPE_LOG
     }
+
 override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     val contact = callLogs[position]
     when(holder.itemViewType) {
@@ -121,6 +122,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         private val expandableView = logBinding.layoutExpandableCall
 
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
+
 
         fun bind(
             callLog: CallLogTable, context: Context,

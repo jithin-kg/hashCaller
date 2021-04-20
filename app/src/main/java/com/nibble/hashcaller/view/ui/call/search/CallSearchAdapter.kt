@@ -26,6 +26,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.utils.getRelativeTime
 import kotlinx.android.synthetic.main.call_list.view.*
+import kotlin.time.ExperimentalTime
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -81,6 +82,7 @@ class CallSearchAdapter(private val context: Context,
             }
         return VIEW_TYPE_LOG
     }
+@ExperimentalTime
 override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     val contact = callLogs[position]
     when(holder.itemViewType) {
@@ -119,6 +121,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
+        @ExperimentalTime
         fun bind(
             callLog: CallLogTable, context: Context,
             onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int) -> Int

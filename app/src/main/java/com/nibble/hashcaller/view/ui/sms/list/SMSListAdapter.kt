@@ -22,6 +22,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.utils.getRelativeTime
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlin.time.ExperimentalTime
 
 
 /**
@@ -70,6 +71,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 return VIEW_TYPE_SMS
     }
 
+    @ExperimentalTime
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder.itemViewType) {
 
@@ -102,6 +104,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
         private val circle = binding.textViewSMScontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
+        @ExperimentalTime
         fun bind(
             sms: SmsThreadTable, context: Context,
             onContactItemClickListener: (view: View, threadId: Long, pos: Int, pno: String, clickType: Int) -> Int,

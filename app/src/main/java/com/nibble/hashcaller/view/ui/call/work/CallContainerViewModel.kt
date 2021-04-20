@@ -313,13 +313,13 @@ class CallContainerViewModel(
     }
 
     fun getNextPage() = viewModelScope.launch {
-        val res = async {    repository!!.getSMSByPage() }.await()
+//        val res = async {    repository!!.getSMSByPage() }.await()
 
         var list : MutableList<CallLogData> = mutableListOf()
         if(callLogsMutableLiveData.value!= null){
 
 //            list.addAll(callLogsMutableLiveData.value!!)
-            list.addAll(res)
+//            list.addAll(res)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 list!!.removeIf { it -> it.id == null }
             }else {

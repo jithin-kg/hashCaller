@@ -729,7 +729,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 else ->{
                     showToolbarButtons(it.size)
                 }
-
             }
         })
     }

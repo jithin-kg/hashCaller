@@ -141,11 +141,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun getDataDelayed() {
+        initViewModel()
+        getFirst10items()
+
         lifecycleScope.launchWhenStarted {
             delay(2000L)
-            initViewModel()
 
-            getFirst10items()
             observeCallLog()
 //        addScrollListener()
             setupSimCardCount()
@@ -165,6 +166,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             isInternetAvailable = it
         })
     }
+
+
 
     private fun getFirst10items() {
         viewmodel.getFirst10Logs().observe(viewLifecycleOwner, Observer {
