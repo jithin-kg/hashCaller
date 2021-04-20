@@ -43,7 +43,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
-    DialerAdapter.ViewMarkHandler {
+    DialerAdapter.ViewHandlerHelper {
     private var _binding: FragmentDialerBinding ? = null
     private val binding get() = _binding!!
     private var isDflt = false
@@ -479,6 +479,10 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
 
     override fun isMarked(id: Long?): Boolean {
+        return false
+    }
+
+    override fun isViewExpanded(id: Long): Boolean {
         return false
     }
 

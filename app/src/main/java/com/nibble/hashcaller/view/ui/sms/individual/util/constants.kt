@@ -14,6 +14,8 @@ const val EXACT_NUMBER = 3
 
 const val UNMARK_ITEM = 0
 const val MARK_ITEM = 1
+const val EXPAND_LAYOUT = 2 // EXPAND EXPANDABLE LAYOUT
+const val COMPRESS_LAYOUT = 3
 
 const val TYPE_CLICK = 0
 const val TYPE_LONG_PRESS = 1

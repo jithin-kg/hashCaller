@@ -79,7 +79,7 @@ import kotlinx.coroutines.delay
  * create an instance of this fragment.
  */
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
-    DialerAdapter.ViewMarkHandler, ConfirmationClickListener,
+    DialerAdapter.ViewHandlerHelper, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
     private  var _binding: FragmentCallBinding? = null
@@ -392,7 +392,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            addItemDecoration(topSpacingDecorator)
             callLogAdapter = DialerAdapter(context,this@CallFragment, this@CallFragment) {
 
-                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)}
+                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
             adapter = callLogAdapter
             itemAnimator = null
 
@@ -754,16 +754,43 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         view: View,
         btn: Int,
         callLog: CallLogTable,
-        clickType:Int
+        clickType: Int,
+        visibility: Int
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
         when(clickType){
             TYPE_LONG_PRESS ->{
+                val prevExpandedLyoutId = viewmodel.getPreviousExpandedLayout()
+                if(prevExpandedLyoutId!=null){
+                    //already a lyout is expanded
+                    val oldPos = viewmodel.getPrevExpandedPosition()
+                    viewmodel.setExpandedLayout(null, null)
+                    if(oldPos!=null){
+                        callLogAdapter?.notifyItemChanged(oldPos)
+                    }
+                }
                 return  markItem(id, clickType, position,callLog.number)
 
             }else ->{
                 if(getMarkedItemsSize() == 0){
-                   startIndividualContactActivity(callLog, view)
+//                   startIndividualContactActivity(callLog, view)
+                    val prevExpandedLyoutId = viewmodel.getPreviousExpandedLayout()
+                    if(prevExpandedLyoutId==null){
+                        viewmodel.setExpandedLayout(id, position)
+                        return EXPAND_LAYOUT
+                    }else if(prevExpandedLyoutId != id){
+                        val oldPos = viewmodel.getPrevExpandedPosition()
+                        viewmodel.setExpandedLayout(id, position)
+                        if(oldPos!=null){
+                            callLogAdapter?.notifyItemChanged(oldPos)
+                        }
+                        return EXPAND_LAYOUT
+                    }else{
+
+                        viewmodel.setExpandedLayout(null, null)
+                        return COMPRESS_LAYOUT
+
+                    }
                 }else{
                     return markItem(id, clickType, position, callLog.number)
                 }
@@ -1001,6 +1028,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             }
         }
     return isMrked
+    }
+
+    override fun isViewExpanded(id: Long): Boolean {
+        return viewmodel.isThisViewExpanded(id)
     }
 
     override fun isInternetAvailable(): Boolean {

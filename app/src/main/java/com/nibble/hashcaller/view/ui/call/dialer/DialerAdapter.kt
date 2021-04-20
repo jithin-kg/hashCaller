@@ -35,9 +35,9 @@ import kotlinx.android.synthetic.main.call_list.view.*
  */
 
 class DialerAdapter(private val context: Context,
-                    private val viewMarkingHandler: ViewMarkHandler, private val  networkHandler: SMSListAdapter.NetworkHandler,
+                    private val viewMarkingHandlerHelper: ViewHandlerHelper, private val  networkHandler: SMSListAdapter.NetworkHandler,
                     private val onContactItemClickListener:
-                    (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int)->Int
+                    (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int)->Int
                    ) :
     androidx.recyclerview.widget.ListAdapter<CallLogTable, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
 
@@ -126,18 +126,24 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         fun bind(
             callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int) -> Int,
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int) -> Int,
             networkHandler: SMSListAdapter.NetworkHandler
         ) {
             Log.d(TAG, "bind: ")
             expandableView.setTag(callLog.dateInMilliseconds)
 
-            if (viewMarkingHandler.isMarked(callLog.id)) {
+            if (viewMarkingHandlerHelper.isMarked(callLog.id)) {
                 Log.d(TAG, "bind: ismarked")
                 logBinding.imgViewCallMarked.beVisible()
 
             } else {
                 logBinding.imgViewCallMarked.beInvisible()
+            }
+            if(viewMarkingHandlerHelper.isViewExpanded(callLog.id!!)){
+             logBinding.layoutExpandableCall.beVisible()
+            }else{
+                logBinding.layoutExpandableCall.beGone()
+
             }
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
@@ -226,7 +232,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val firstLetter = nameStr[0]
             val firstLetterString = firstLetter.toString().toUpperCase()
             circle.text = firstLetterString
-            callLog.color = circle.setRandomBackgroundCircle()
+            if(callLog.color!=0){
+                circle.setRandomBackgroundCircle(callLog.color)
+            }else{
+                callLog.color = circle.setRandomBackgroundCircle()
+
+            }
 
             //call type
             setCallTypeImage(callLog, logBinding.imgVCallType)
@@ -252,8 +263,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
         private fun setClickListener(view: View, callLog: CallLogTable) {
-
             view.imgBtnCall.setOnClickListener{
+                val visibility =  it.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
 
                 onContactItemClickListener(
                     callLog.id!!,
@@ -261,17 +272,21 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     it,
                     BUTTON_SIM_1,
                     callLog,
-                    TYPE_MAKE_CALL
+                    TYPE_MAKE_CALL,
+                    visibility
                 )
             }
             view.setOnLongClickListener { v ->
+                val visibility =  v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
+
                 var isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,
                     v,
                     BUTTON_SIM_1,
                     callLog,
-                    TYPE_LONG_PRESS
+                    TYPE_LONG_PRESS,
+                    visibility
                 )
                 when (isToBeMarked) {
                     MARK_ITEM -> {
@@ -279,6 +294,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     }
                     else -> {
                         view.imgViewCallMarked.beInvisible()
+
                     }
                 }
 
@@ -300,20 +316,31 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
             view.setOnClickListener(View.OnClickListener { v ->
+                val visibility =  v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
+
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,
                     v,
                     BUTTON_SIM_1,
                     callLog,
-                    TYPE_CLICK
+                    TYPE_CLICK,
+                    visibility
                 )
                 when (isToBeMarked) {
                     MARK_ITEM -> {
                         view.imgViewCallMarked.beVisible()
                     }
+                    EXPAND_LAYOUT ->{
+                        logBinding.layoutExpandableCall.beVisible()
+                    }
+                    COMPRESS_LAYOUT ->{
+                        logBinding.layoutExpandableCall.beGone()
+
+                    }
                     else -> {
                         view.imgViewCallMarked.beInvisible()
+
                     }
                 }
 
@@ -476,8 +503,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         }
     }
-    interface ViewMarkHandler {
+    interface ViewHandlerHelper {
         fun isMarked(id:Long?): Boolean
+        fun isViewExpanded(id:Long): Boolean
+
+
     }
     interface NetworkHandler {
         fun isInternetAvailable(): Boolean

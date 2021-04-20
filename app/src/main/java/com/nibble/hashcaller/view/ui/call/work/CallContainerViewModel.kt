@@ -39,7 +39,8 @@ class CallContainerViewModel(
     var callLogTableData: LiveData<MutableList<CallLogTable>>? = repository!!.getAllCallLogLivedata()
 
     var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
-
+    var expandedLayoutId: Long? = null
+    var expandedLayoutPositin:Int? = null
 
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
     var markedItemsPositions: HashSet<Int> = hashSetOf()
@@ -454,7 +455,22 @@ class CallContainerViewModel(
         }
     }
 
+    fun isThisViewExpanded(id: Long): Boolean {
+        return id == expandedLayoutId
+    }
 
+    fun setExpandedLayout(id: Long?, position: Int?) {
+        expandedLayoutId = id
+        expandedLayoutPositin = position
+    }
+
+    fun getPreviousExpandedLayout(): Long? {
+        return expandedLayoutId
+    }
+
+    fun getPrevExpandedPosition(): Int? {
+        return expandedLayoutPositin
+    }
 
 
     companion object {

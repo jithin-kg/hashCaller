@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.Observer
@@ -28,7 +27,7 @@ import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 
 class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHandler,
-    ITextChangeListener, View.OnClickListener, DialerAdapter.ViewMarkHandler,
+    ITextChangeListener, View.OnClickListener, DialerAdapter.ViewHandlerHelper,
     SMSListAdapter.NetworkHandler {
     private lateinit var binding: ActivityCallLogSearchBinding
     private lateinit var searchAdapter : DialerAdapter
@@ -87,7 +86,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
 
         searchAdapter = DialerAdapter(this,this,this ) {
 
-                id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType)};
+                id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)};
 
             binding.reclrVResultFull.layoutManager = LinearLayoutManager(this)
 
@@ -95,7 +94,15 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
         binding.reclrVResultFull.adapter = this.searchAdapter
     }
 
-    private fun onCallItemClicked(id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int): Int {
+    private fun onCallItemClicked(
+        id: Long,
+        position: Int,
+        view: View,
+        btn: Int,
+        callLog: CallLogTable,
+        clickType: Int,
+        visibility: Int
+    ): Int {
         when(clickType) {
             TYPE_MAKE_CALL ->{
                 makeCall(callLog.number)
@@ -145,6 +152,10 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
 
     override fun isMarked(id: Long?): Boolean {
         return false
+    }
+
+    override fun isViewExpanded(id: Long): Boolean {
+        return true
     }
 
     override fun onTextChanged(text: String) {
