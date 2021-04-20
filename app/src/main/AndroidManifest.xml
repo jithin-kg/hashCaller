@@ -8,6 +8,7 @@
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="true" />
+
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -47,7 +48,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ui.call.search.CallLogSearchActivity"></activity>
+        <activity android:name=".view.ui.call.history.CallhistoryActivity"></activity>
+        <activity android:name=".view.ui.call.search.CallLogSearchActivity" />
         <activity android:name=".view.ui.notifications.ManageNotificationsActivity" />
         <activity android:name=".view.ui.blockConfig.blockList.BlockListActivity" />
         <activity android:name=".view.ui.manageblock.BlockManageActivity" />
@@ -124,9 +126,8 @@
         </activity>
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-            android:theme="@style/Theme.AppCompat.Dialog"
             android:launchMode="singleInstance"
-            />
+            android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->

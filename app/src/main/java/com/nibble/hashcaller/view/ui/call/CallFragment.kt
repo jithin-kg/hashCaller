@@ -43,6 +43,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
@@ -771,7 +772,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 }
                 return  markItem(id, clickType, position,callLog.number)
 
-            }TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT ->{
+            }
+            TYPE_CLICK_VIEW_CALL_HISTORY ->{
+                startCallHistoryActivity(callLog)
+                return COMPRESS_LAYOUT
+            }
+
+            TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT ->{
                 if(getMarkedItemsSize() == 0){
                     startIndividualContactActivity(callLog, view)
                     return UNMARK_ITEM
@@ -807,6 +814,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
         return UNMARK_ITEM
 
+    }
+
+    private fun startCallHistoryActivity(callLog: CallLogTable) {
+        var intent = Intent(activity, IndividualCallLogActivity::class.java)
+        intent.putExtra(CONTACT_ADDRES, callLog.number)
+        startActivity(intent)
     }
 
     fun getMarkedItemsSize(): Int {

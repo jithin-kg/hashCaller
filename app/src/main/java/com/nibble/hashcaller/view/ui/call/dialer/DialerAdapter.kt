@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
@@ -304,26 +303,27 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             }
 
-            logBinding.imgBtnCallExpand.setOnClickListener {
+            logBinding.imgBtnExpandHistory.setOnClickListener {
                 val visibility = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
 
-                var isToBeMarked = onContactItemClickListener(
+                val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,
                     it,
                     BUTTON_SIM_1,
                     callLog,
-                    TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,
+                    TYPE_CLICK_VIEW_CALL_HISTORY,
                     visibility
                 )
                 Log.d(TAG, "setClickListener: imagBtnInfoExpand")
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
+                true
             }
             logBinding.textViewCrclr.setOnClickListener{
 
                 val visibility =  logBinding.layoutExpandableCall.visibility
 
-                var isToBeMarked = onContactItemClickListener(
+                val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,
                     it,
@@ -333,29 +333,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     visibility
                 )
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
-//                when (isToBeMarked) {
-//                    MARK_ITEM -> {
-//                        view.imgViewCallMarked.beVisible()
-//                    }
-//                    EXPAND_LAYOUT ->{
-//                        logBinding.layoutExpandableCall.beVisible()
-//                    }
-//                    COMPRESS_LAYOUT ->{
-//                        logBinding.layoutExpandableCall.beGone()
-//
-//                    }
-//                    else -> {
-//                        view.imgViewCallMarked.beInvisible()
-//
-//                    }
-//                }
 
             }
             logBinding.imgVThumbnail.setOnClickListener{
 
                 val visibility =  logBinding.layoutExpandableCall.visibility
 
-                var isToBeMarked = onContactItemClickListener(
+                val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,
                     it,
@@ -367,16 +351,20 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
 
             }
-            view.imgBtnCallExpand.setOnClickListener {
-//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MAKE_CALL, callLog)
-            }
+//            view.imgBtnExpandHistory.setOnClickListener {
+////                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MAKE_CALL, callLog)
+//                true
+//            }
 
             view.imgBtnSmsExpand.setOnClickListener {
 //                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_START_INDIVIDUAL_SMS, callLog)
+                true
             }
 
             view.imgBtnInfoExpand.setOnClickListener {
 //                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
+                onContactItemClickListener(callLog.id!!, adapterPosition,view, BUTTON_SIM_1, callLog, TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT, View.VISIBLE )
+                true
             }
 
 

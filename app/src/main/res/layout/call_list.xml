@@ -206,7 +206,7 @@
         android:id="@+id/layoutExpandableCall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+
         android:background="@color/colorBackground"
         >
 
@@ -223,39 +223,41 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/imgBtnExpandHistory"
+            android:layout_width="102dp"
+            android:layout_height="38dp"
+            android:layout_marginTop="16dp"
+            android:alpha="0.74"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
+            app:srcCompat="@drawable/ic_baseline_history_24" />
+
 <!--        <Button-->
 <!--            android:id="@+id/imgBtnCallExpand"-->
 <!--            android:layout_width="102dp"-->
 <!--            android:layout_height="38dp"-->
 <!--            android:layout_marginTop="16dp"-->
-<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--            android:foreground="?android:attr/selectableItemBackground"-->
+<!--            android:text="click me"-->
 <!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"-->
 <!--            app:layout_constraintHorizontal_bias="0.5"-->
 <!--            app:layout_constraintStart_toStartOf="parent"-->
 <!--            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"-->
-<!--            app:srcCompat="@drawable/ic_baseline_call_24" />-->
-
-        <Button
-            android:id="@+id/imgBtnCallExpand"
-            android:layout_width="102dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="16dp"
-            android:text="click me"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
-            />
+<!--            />-->
         <ImageButton
             android:id="@+id/imgBtnSmsExpand"
             android:layout_width="101dp"
             android:layout_height="38dp"
+            android:alpha="0.74"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnInfoExpand"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imgBtnCallExpand"
-            app:layout_constraintTop_toTopOf="@+id/imgBtnCallExpand"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnExpandHistory"
+            app:layout_constraintTop_toTopOf="@+id/imgBtnExpandHistory"
             app:srcCompat="@drawable/ic_baseline_textsms_24"
             android:foreground="?android:attr/selectableItemBackground"
             />
@@ -264,6 +266,7 @@
             android:id="@+id/imgBtnInfoExpand"
             android:layout_width="102dp"
             android:layout_height="38dp"
+            android:alpha="0.74"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -278,7 +281,7 @@
             android:layout_height="1dp"
             android:alpha="0.12"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand"
+            app:layout_constraintTop_toBottomOf="@+id/imgBtnExpandHistory"
             app:srcCompat="@drawable/horizontal_line" />
 <!--        <View-->
 <!--            android:layout_width="match_parent"-->

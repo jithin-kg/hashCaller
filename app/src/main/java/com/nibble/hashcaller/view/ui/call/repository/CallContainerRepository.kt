@@ -105,7 +105,6 @@ class CallContainerRepository(
 //        var numRowsDeleted = 0
 
         try {
-
                 Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = CallLog.Calls.CONTENT_URI
                 val selection = "${CallLog.Calls._ID} = ?"
