@@ -771,7 +771,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 }
                 return  markItem(id, clickType, position,callLog.number)
 
-            }else ->{
+            }TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT ->{
+                if(getMarkedItemsSize() == 0){
+                    startIndividualContactActivity(callLog, view)
+                    return UNMARK_ITEM
+                }else{
+                    return  markItem(id, TYPE_CLICK, position,callLog.number) // mark item
+                }
+            }
+
+            else ->{
                 if(getMarkedItemsSize() == 0){
 //                   startIndividualContactActivity(callLog, view)
                     val prevExpandedLyoutId = viewmodel.getPreviousExpandedLayout()

@@ -46,4 +46,5 @@
     <dimen name="margin_start_icon_individual_contact">32dp</dimen>
     <dimen name="margin_end_info_contact_item">8dp</dimen>
     <dimen name="margin_end_cntc_value">16dp</dimen>
+    <dimen name="circular_avatar_item_width">52dp</dimen>
 </resources>

@@ -38,8 +38,8 @@
 
         <TextView
             android:id="@+id/textViewCrclr"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/circular_avatar_item_width"
+            android:layout_height="@dimen/circular_avatar_item_width"
             android:layout_marginStart="24dp"
             android:elevation="4dp"
             android:gravity="center_vertical|center_horizontal"
@@ -50,8 +50,8 @@
             app:layout_constraintTop_toTopOf="parent" />
         <androidx.cardview.widget.CardView
             android:id="@+id/card"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/circular_avatar_item_width"
+            android:layout_height="@dimen/circular_avatar_item_width"
             android:elevation="4dp"
             app:cardCornerRadius="25dp"
             android:gravity="center_vertical|center_horizontal"
@@ -63,7 +63,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgVThumbnail"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="@dimen/circular_avatar_item_width"
                 android:elevation="4dp"
                 android:transitionName="contactImageTransition"
                 android:scaleType="centerCrop" />
@@ -71,8 +71,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgViewUserPhoto"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/circular_avatar_item_width"
+            android:layout_height="@dimen/circular_avatar_item_width"
             android:elevation="6dp"
             android:src="@drawable/contact_circular_marked_background"
             android:transitionName="contactImageTransition"
@@ -95,8 +95,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgViewCallMarked"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/circular_avatar_item_width"
+            android:layout_height="@dimen/circular_avatar_item_width"
             android:elevation="6dp"
             android:src="@drawable/contact_circular_marked_background"
             android:visibility="invisible"
@@ -208,7 +208,6 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:background="@color/colorBackground"
-
         >
 
         <TextView
@@ -224,19 +223,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+<!--        <Button-->
+<!--            android:id="@+id/imgBtnCallExpand"-->
+<!--            android:layout_width="102dp"-->
+<!--            android:layout_height="38dp"-->
+<!--            android:layout_marginTop="16dp"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:foreground="?android:attr/selectableItemBackground"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"-->
+<!--            app:srcCompat="@drawable/ic_baseline_call_24" />-->
+
+        <Button
             android:id="@+id/imgBtnCallExpand"
             android:layout_width="102dp"
             android:layout_height="38dp"
             android:layout_marginTop="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:text="click me"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
-            app:srcCompat="@drawable/ic_baseline_call_24" />
-
+            />
         <ImageButton
             android:id="@+id/imgBtnSmsExpand"
             android:layout_width="101dp"
@@ -263,14 +273,19 @@
             android:foreground="?android:attr/selectableItemBackground"
             />
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/lineColor"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
+            android:alpha="0.12"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand" />
+            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand"
+            app:srcCompat="@drawable/horizontal_line" />
+<!--        <View-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:background="@color/lineColor"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

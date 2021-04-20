@@ -17,9 +17,11 @@ const val MARK_ITEM = 1
 const val EXPAND_LAYOUT = 2 // EXPAND EXPANDABLE LAYOUT
 const val COMPRESS_LAYOUT = 3
 
+
 const val TYPE_CLICK = 0
 const val TYPE_LONG_PRESS = 1
 const val TYPE_MAKE_CALL= 2
+const val TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT = 3
 
 const val SMS_NOT_READ = 0
 const val SMS_READED = 1
