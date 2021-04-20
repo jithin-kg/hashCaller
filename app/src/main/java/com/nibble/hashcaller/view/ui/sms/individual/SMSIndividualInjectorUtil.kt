@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.content.Context
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -10,7 +11,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
  * Created by Jithin KG on 29,July,2020
  */
 object SMSIndividualInjectorUtil {
-    fun provideViewModelFactory(context: Context?):SMSIndividualViewModelFactory{
+    fun provideViewModelFactory(context: Context?, lifecycleScope: LifecycleCoroutineScope):SMSIndividualViewModelFactory{
 
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
         val smsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsDAO() }
@@ -37,7 +38,7 @@ object SMSIndividualInjectorUtil {
         val messagesLiveData = context?.let {
             SMSIndividualLiveData(
                 it, IndividualSMSActivity.contact,
-                spamListDAO
+                spamListDAO,lifecycleScope
             )
         }
         return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO, spamNetworkRepository, smsLocalRepository)

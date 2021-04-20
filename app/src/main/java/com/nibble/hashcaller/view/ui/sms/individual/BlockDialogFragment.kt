@@ -2,13 +2,13 @@ package com.nibble.hashcaller.view.ui.sms.individual
 
 import android.os.Bundle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
@@ -30,7 +30,10 @@ class BlockDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
     ): View? {
          sheet = inflater.inflate(R.layout.fragment_item_list_dialog_list_dialog, container, false)
 
-        ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context)).get(
+        ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(
+            context,
+            lifecycleScope
+        )).get(
             ContactsViewModel::class.java)
 
         return sheet

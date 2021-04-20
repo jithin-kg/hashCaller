@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.stubs.Contact
 import kotlinx.coroutines.Dispatchers
@@ -21,9 +22,12 @@ import kotlin.collections.mutableListOf
  * To get the list of contacts live data from content provider
  *
  */
-class ContactLiveData(private val context: Context):
-    ContentProviderLiveData<List<Contact>>(context,
-        URI) {
+class ContactLiveData(private val context: Context, private val lifecycleScope: LifecycleCoroutineScope):
+    ContentProviderLiveData<List<Contact>>(
+        context,
+        URI,
+        lifecycleScope
+    ) {
     private var lastNumber = ""
     private var prevName = ""
     companion object{

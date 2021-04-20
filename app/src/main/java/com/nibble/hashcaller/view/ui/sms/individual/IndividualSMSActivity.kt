@@ -820,7 +820,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(this)).get(
+        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(this, lifecycleScope)).get(
             SMSIndividualViewModel::class.java)
     }
 

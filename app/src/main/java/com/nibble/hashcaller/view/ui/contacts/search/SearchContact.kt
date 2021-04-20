@@ -3,16 +3,16 @@ package com.nibble.hashcaller.view.ui.contacts.search
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 
 /**
  * Created by Jithin KG on 31,July,2020
  */
-class SearchContact(private val context: Context) :
+class SearchContact(private val context: Context, private val scope: LifecycleCoroutineScope) :
 
-    ContentProviderLiveData<List<Contact>>(context,
-    URI) {
+    ContentProviderLiveData<List<Contact>>(context, URI, scope) {
 
         companion object{
             val URI: Uri = ContactsContract.Contacts.CONTENT_URI

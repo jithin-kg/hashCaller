@@ -6,12 +6,16 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 
-class IndividualContactLiveData (private val context: Context):
-ContentProviderLiveData<Contact>(context, URI) {
+class IndividualContactLiveData(
+    private val context: Context,
+    private val lifecycleScope: LifecycleCoroutineScope
+):
+ContentProviderLiveData<Contact>(context, URI, lifecycleScope) {
 
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI

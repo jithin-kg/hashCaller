@@ -3,13 +3,10 @@ package com.nibble.hashcaller.view.ui.sms.list
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
-import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
-import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
@@ -21,10 +18,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SMSLiveData(private val context: Context,private val repository: SMSLocalRepository?):
+class SMSLiveData(
+    private val context: Context,
+    private val repository: SMSLocalRepository?,
+    private val lifecycleScope: LifecycleCoroutineScope
+):
     ContentProviderLiveData<MutableList<SmsThreadTable>>(
         context,
-        URI
+        URI,
+        lifecycleScope
     ) {
 
 //    private lateinit var spamListDAO:SpamListDAO

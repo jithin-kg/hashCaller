@@ -344,7 +344,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         }
     }
     private fun initVieModel() {
-        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context)).get(
+        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
             SMSViewModel::class.java)
     }
 

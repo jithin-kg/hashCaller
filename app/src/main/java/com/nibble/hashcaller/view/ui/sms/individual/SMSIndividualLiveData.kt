@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.individual
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -17,9 +18,12 @@ class SMSIndividualLiveData(
     private val context: Context,
     private var contact: String?,
     private val spamListDAO: SpamListDAO?,
+    private val lifecycleScope: LifecycleCoroutineScope,
 ):
-    ContentProviderLiveData<List<SMS>>(context,
-        URI
+    ContentProviderLiveData<List<SMS>>(
+        context,
+        URI,
+        lifecycleScope
     )  {
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI

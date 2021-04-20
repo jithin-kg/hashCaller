@@ -783,7 +783,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(currentTheme == 1){
             isDarkTheme = true
         }
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val editor = sharedPreferences.edit()
 
             editor.putBoolean("isDarkTheme", isDarkTheme)

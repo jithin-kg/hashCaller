@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.list
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
@@ -19,9 +20,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SMSLiveData2(private val context: Context):
-    ContentProviderLiveData<MutableList<SmsThreadTable>>(context,
-        URI
+class SMSLiveData2(private val context: Context, private val scope: LifecycleCoroutineScope):
+    ContentProviderLiveData<MutableList<SmsThreadTable>>(
+        context,
+        URI,
+        scope
     )  {
 
     private lateinit var spamListDAO:SpamListDAO

@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.utils
 
 import android.content.Context
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
@@ -11,7 +12,7 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
  * Created by Jithin KG on 29,July,2020
  */
 object CallContainerInjectorUtil {
-    fun provideViewModelFactory(context: Context?): CallContainerViewModelFactory {
+    fun provideViewModelFactory(context: Context?, lifecycleScope: LifecycleCoroutineScope): CallContainerViewModelFactory {
 
 
 
@@ -33,7 +34,7 @@ object CallContainerInjectorUtil {
 
 
         val callLogLiveData =
-            CallLogLiveData(context!!, repository)
+            CallLogLiveData(context!!, repository, lifecycleScope)
 
         return CallContainerViewModelFactory(callLogLiveData!!, repository,callerInfoFromServerDAO, blockListPatternRepository)
     }

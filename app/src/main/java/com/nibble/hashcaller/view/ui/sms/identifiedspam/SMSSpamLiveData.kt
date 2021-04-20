@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.identifiedspam
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
@@ -16,9 +17,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SMSSpamLiveData(private val context: Context):
-    ContentProviderLiveData<MutableList<SMS>>(context,
-        URI
+class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCoroutineScope):
+    ContentProviderLiveData<MutableList<SMS>>(
+        context,
+        URI,
+        lifecycleScope
     )  {
     private lateinit var spamListDAO:SpamListDAO
     private lateinit var smssendersInfoDAO:SMSSendersInfoFromServerDAO

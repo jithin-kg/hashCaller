@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
@@ -179,7 +180,10 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
     }
 
     private fun initVieModel() {
-        smsListVIewModel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(context)).get(
+        smsListVIewModel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(
+            context,
+            lifecycleScope
+        )).get(
             SMSSpamViewModel::class.java)
     }
 

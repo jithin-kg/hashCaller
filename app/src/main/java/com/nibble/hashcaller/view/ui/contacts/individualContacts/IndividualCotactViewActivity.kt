@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
@@ -83,7 +84,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         viewModel =ViewModelProvider(
             this, IndividualContactInjectorUtil.provideUserInjectorUtil(
-                this,phoneNum
+                this,phoneNum, lifecycleScope
             )
         ).get(
             IndividualcontactViewModel::class.java

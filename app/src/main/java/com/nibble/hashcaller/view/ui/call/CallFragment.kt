@@ -327,7 +327,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context)).get(
+        viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context, lifecycleScope)).get(
             CallContainerViewModel::class.java)
     }
 

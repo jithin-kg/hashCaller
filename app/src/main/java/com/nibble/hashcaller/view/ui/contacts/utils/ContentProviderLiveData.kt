@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import kotlinx.coroutines.CoroutineScope
@@ -19,14 +20,15 @@ import java.lang.Exception
  */
 abstract class ContentProviderLiveData<T>(
     private val context: Context,
-    private val uri: Uri // The Uri on which content observer will observe
+    private val uri: Uri, // The Uri on which content observer will observe, lifecycleScope: androidx.lifecycle.LifecycleCoroutineScope){}, lifecycleScope: androidx.lifecycle.LifecycleCoroutineScope){}
+    private val scope: LifecycleCoroutineScope
 ): MutableLiveData<T>(){
     private lateinit var observer: ContentObserver
 
     @SuppressLint("LongLogTag")
     override fun onActive() {
         try {
-            CoroutineScope(Dispatchers.IO).launch {
+            scope.launchWhenStarted {
                 postValue(getContentProviderValue(null)) // we are posting the initial value of the
             }
 
@@ -34,7 +36,7 @@ abstract class ContentProviderLiveData<T>(
             observer = object : ContentObserver(null){
                 override fun onChange(selfChange: Boolean) {
                     //calling post value to set the latest value onto the ui controller
-                    GlobalScope.launch {
+                    scope.launch {
                         postValue(getContentProviderValue(null))
                     }
 

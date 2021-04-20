@@ -3,13 +3,10 @@ package com.nibble.hashcaller.view.ui.call.individualCallLog
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.nibble.hashcaller.R
+import androidx.lifecycle.lifecycleScope
 import com.nibble.hashcaller.databinding.ActivityIndividualCallLogBinding
-import com.nibble.hashcaller.view.ui.call.search.CallLogSearchViewModel
-import com.nibble.hashcaller.view.ui.call.search.CalllogSearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 
 class IndividualCallLogActivity : AppCompatActivity() {
@@ -35,7 +32,7 @@ class IndividualCallLogActivity : AppCompatActivity() {
     }
 
     private fun initViewmodel() {
-        viewmodel = ViewModelProvider(this, IndividualCallLogInjectorUtil.provideDialerViewModelFactory(this)).get(
+        viewmodel = ViewModelProvider(this, IndividualCallLogInjectorUtil.provideDialerViewModelFactory(this, lifecycleScope)).get(
             IndividualCallViewModel::class.java)
 
     }

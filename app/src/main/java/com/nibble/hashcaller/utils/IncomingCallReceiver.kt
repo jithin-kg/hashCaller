@@ -52,7 +52,6 @@ class IncomingCallReceiver : BroadcastReceiver(){
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission", "LogNotTimber") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
-
         val notificationCmpt =   NotificationCompat.Builder(context, HashCaller.CHANNEL_2_ID)
         val  resultIntent= Intent(context, MainActivity::class.java)
                 var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(context)

@@ -5,14 +5,14 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.CallLog
-import android.telecom.Call
 import android.util.Log
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 
-class IndividualCallLivedata(private val context: Context): ContentProviderLiveData<MutableList<IndividualCallLogObj>>(
+class IndividualCallLivedata(private val context: Context,private val lifecycleScope: LifecycleCoroutineScope): ContentProviderLiveData<MutableList<IndividualCallLogObj>>(
     context,
-    URI
+    URI,
+    lifecycleScope
 )  {
 
     @SuppressLint("LongLogTag")

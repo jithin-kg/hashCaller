@@ -1,18 +1,15 @@
 package com.nibble.hashcaller.view.ui.call.dialer.util
 
 import android.content.Context
-import android.database.Cursor
 import android.net.Uri
 import android.provider.CallLog
-import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
-import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,11 +19,13 @@ import java.util.concurrent.TimeUnit
 
 class CallLogLiveData(
     private val context: Context,
-    private val repository: CallContainerRepository?
+    private val repository: CallContainerRepository?,
+    private val lifecycleScope: LifecycleCoroutineScope
 ):
     ContentProviderLiveData<MutableList<CallLogTable>>(
         context,
-        URI
+        URI,
+        lifecycleScope
     ) {
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI

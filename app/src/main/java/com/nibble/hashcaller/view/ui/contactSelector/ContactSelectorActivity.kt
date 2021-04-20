@@ -11,14 +11,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import com.nibble.hashcaller.work.DESTINATION_ACTIVITY
 import com.nibble.hashcaller.work.INDIVIDUAL_SMS_ACTIVITY
@@ -46,7 +45,7 @@ class ContactSelectorActivity : AppCompatActivity() {
     }
 
     private fun initViewmodel() {
-        contactViewModel = ViewModelProvider(this, ContactSelectorInjectorUtil.provideContactsViewModelFactory(this)).get(ContactsViewModel::class.java)
+        contactViewModel = ViewModelProvider(this, ContactSelectorInjectorUtil.provideContactsViewModelFactory(this, lifecycleScope)).get(ContactsViewModel::class.java)
     }
 
     private fun initRecyclerView() {
