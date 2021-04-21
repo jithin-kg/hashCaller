@@ -9,9 +9,13 @@ import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 
-class IndividualCallLivedata(private val context: Context,private val lifecycleScope: LifecycleCoroutineScope): ContentProviderLiveData<MutableList<IndividualCallLogObj>>(
+class IndividualCallLivedata(
+    private val context: Context,
+    private val lifecycleScope: LifecycleCoroutineScope,
+    private val uri: Uri
+): ContentProviderLiveData<MutableList<IndividualCallLogObj>>(
     context,
-    URI,
+    uri,
     lifecycleScope
 )  {
 
@@ -59,12 +63,13 @@ class IndividualCallLivedata(private val context: Context,private val lifecycleS
         try {
 
             cursor = context.contentResolver.query(
-                URI,
+                uri,
                 projection,
                 null,
                 null,
-                CallLog.Calls.DATE + " DESC"
+                CallLog.Calls.DATE + " ASC"
             )
+
             if(cursor != null && cursor.moveToFirst()) {
                 do {
 
@@ -105,10 +110,7 @@ class IndividualCallLivedata(private val context: Context,private val lifecycleS
 
 
     companion object{
-        val URI =  Uri.withAppendedPath(
-            CallLog.Calls.CONTENT_FILTER_URI,
-            Uri.encode("+919495617494")
-        );
+
 
         const val TAG = "__IndividualCallLivedata"
     }

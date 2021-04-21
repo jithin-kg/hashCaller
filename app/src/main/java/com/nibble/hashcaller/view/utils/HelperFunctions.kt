@@ -1,12 +1,17 @@
 package com.nibble.hashcaller.view.utils
 
 import android.util.Log
+import com.nibble.hashcaller.view.ui.extensions.round
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.util.*
-import kotlin.time.ExperimentalTime
+
+import kotlin.math.round
+
 
 private const val TAG = "__HelperFunctions"
+
 
 fun getDate(milliSeconds: Long, dateFormat: String?): String? {
     // Create a DateFormatter object for displaying date in specified format.
@@ -17,6 +22,7 @@ fun getDate(milliSeconds: Long, dateFormat: String?): String? {
     calendar.timeInMillis = milliSeconds
     return formatter.format(calendar.time)
 }
+
 
  fun getRelativeTime(
      dateMilli: Long
@@ -42,6 +48,61 @@ fun getDate(milliSeconds: Long, dateFormat: String?): String? {
         relativeTime = date
     }
     return relativeTime
+}
+
+/**
+ * function to get call duration
+ */
+fun getRelativeDuration(durationInSeconds: Long): String {
+    var duration = ""
+
+      val seconds = durationInSeconds % 60
+      var hour = durationInSeconds / (60 * 60)
+      val min = (durationInSeconds / 60) % 60
+//      hour /= 60
+    if(hour > 0 && min>0 && seconds > 0){
+        duration = "$hour h $min m $seconds s"
+    }else if(hour >0 && min >0){
+        duration = "$hour h $min m"
+    }else if(hour >0){
+        duration = "$hour h"
+    }else if(min > 0 && seconds >0){
+        duration = "$min m $seconds s"
+    }else if(min >0){
+        duration = "$min m"
+    }else if(seconds >0){
+        duration = "$seconds"
+    }
+
+
+//    Log.d(TAG, "getRelativeDuration: hours $hours")
+//    Log.d(TAG, "getRelativeDuration: hours $hours")
+//    val minutes = TimeUnit.SECONDS.toMinutes(durationInSeconds)
+//    if(hours>0){
+//        duration = "$hours h"
+//    }else if(minutes >0){
+//        duration = "$minutes m"
+//    }else if(durationInSeconds >0){
+//        duration = "$durationInSeconds s"
+//    }
+//
+//    val min =( durationInSeconds.toDouble() / 60).toDouble()
+//    val hour = (min.toDouble()/60).toDouble()
+//    val decimals =1
+//    if(hour >=1){
+//        duration = "${hour.round(decimals)} hr"
+//    }else if(min >=1){
+//        duration = "${min.round(decimals)} mn"
+//    }else if(durationInSeconds>=1){
+//        duration = "${durationInSeconds.toDouble().round(decimals)} sec"
+//    }
+    return duration
+
+
+
+
+
+
 }
 
 /**
@@ -73,7 +134,6 @@ private fun getDaysDifference(dateMilli: Long): Long {
         val difference: Long = Math.abs(date1.getTime() - date2.getTime())
         val differenceDates = difference / (24 * 60 * 60 * 1000)
     differenceInDays = differenceDates as Long
-    Log.d(TAG, "getDaysDifference: diff is $differenceInDays")
          return differenceInDays
 
 

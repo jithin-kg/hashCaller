@@ -86,10 +86,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private  var _binding: FragmentCallBinding? = null
     private val binding get() = _binding!!
     private var isDflt = false
-
     private var isInternetAvailable = false
-
-
     private var isScreeningApp = false
 //    private var toolbar: Toolbar? = null
 //    var callFragment: View? = null
@@ -126,9 +123,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     // Inflate the layout for this fragment
     if(checkContactPermission()){
         initRecyclerView()
-
         getDataDelayed()
-
     }
 
     setupBottomSheet()
@@ -817,6 +812,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun startCallHistoryActivity(callLog: CallLogTable) {
+        viewmodel.setExpandedLayout(null, null)
         var intent = Intent(activity, IndividualCallLogActivity::class.java)
         intent.putExtra(CONTACT_ADDRES, callLog.number)
         startActivity(intent)

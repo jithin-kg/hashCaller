@@ -21,10 +21,10 @@ package com.nibble.hashcaller.view.ui.call.individualCallLog
  */
 
 data class IndividualCallLogObj(
-    val _id:Int? = null,
+    val id:Int? = null,
     val number: String? = null,
     val name : String? = null,
-    val type: Int = 0,
+    val type: Int = 0,          //direction
     val duration: Long = 0L,
     val countryIso:String? = null,
     val geocodedLocation:String? = null,
