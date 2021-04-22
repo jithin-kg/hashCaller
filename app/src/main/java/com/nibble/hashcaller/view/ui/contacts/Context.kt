@@ -1,22 +1,20 @@
 package com.nibble.hashcaller.view.ui.contacts
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
+import android.util.Log
 import android.view.View
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.utils.notifications.HashCaller
-import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.network.search.model.SerachRes
+import com.nibble.hashcaller.utils.callReceiver.SearchHelper
+import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
@@ -24,10 +22,35 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFI
 import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
 import com.nibble.hashcaller.view.utils.SIMAccount
 import com.nibble.hashcaller.work.formatPhoneNumber
+import retrofit2.Response
 import java.util.*
 
 
+fun Context.startActivityIncommingCallView(res: Response<SerachRes>?, phoneNumber: String) {
+    if(!res?.body()?.cntcts.isNullOrEmpty()){
+        val result = res?.body()?.cntcts?.get(0)
+        Log.d(SearchHelper.TAG, "searchForNumberInServer: result $result")
 
+        val i = Intent(this, ActivityIncommingCallView::class.java)
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        i.putExtra("name", result?.name)
+        i.putExtra("phoneNumber", phoneNumber)
+        i.putExtra("spamcount", result?.spammCount)
+        i.putExtra("carrier", result?.carrier)
+        i.putExtra("location", result?.location)
+        startActivity(i)
+    }else{
+        //if there is no info about the caller in server db
+        val i = Intent(this, ActivityIncommingCallView::class.java)
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        i.putExtra("name", "")
+        i.putExtra("phoneNumber", phoneNumber)
+        i.putExtra("spamcount", "")
+        i.putExtra("carrier", "")
+        i.putExtra("location", "")
+        startActivity(i)
+    }
+}
 val Context.telecomManager: TelecomManager get() = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
 

@@ -2,6 +2,8 @@ package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.SharedPreferences
 import androidx.lifecycle.*
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
@@ -212,8 +214,10 @@ class SMSViewModel(
      * to get information abount a sender
      */
     fun getInformationForTheseNumbers() = viewModelScope.launch {
-
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java)
+                                 .setConstraints(constraints)
+                                .build()
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
     }

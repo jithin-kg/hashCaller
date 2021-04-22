@@ -54,6 +54,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                     val contactsNetworkRepository = ContactsNetworkRepository(context)
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+                    if(result?.code() in (500..599)){
+                        return Result.retry()
+                    }
+
                     Log.d(TAG, "result:$result")
                     Log.d(TAG, "body:${result?.body()}")
                     val cntcts = result?.body()?.cntcts

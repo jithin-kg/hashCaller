@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.utils;
+package com.nibble.hashcaller.utils.callReceiver;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

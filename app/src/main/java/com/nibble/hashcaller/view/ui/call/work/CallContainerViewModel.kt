@@ -3,8 +3,7 @@ package com.nibble.hashcaller.view.ui.call.work
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import androidx.work.*
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
@@ -18,10 +17,12 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Com
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.deletedIds
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.markedIds
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -77,8 +78,11 @@ class CallContainerViewModel(
      * called when there is a change in call log in content provider
      */
     fun getInformationForTheseNumbers() = viewModelScope.launch {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java).build()
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
+                                     .setConstraints(constraints)
+                                    .build()
         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
 //
@@ -300,6 +304,16 @@ class CallContainerViewModel(
                 )
             }
             async {
+                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                val data = Data.Builder()
+                data.putString(CONTACT_ADDRES, contactAddress)
+
+                val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
+                    .setConstraints(constraints)
+                    .setInputData(data.build())
+                    .build()
+                WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+
 //            repository?.report(
 //                ReportedUserDTo(
 //                    formatPhoneNumber(contactAddress), " ",

@@ -80,6 +80,9 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                     val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
 
+                    if(result.code() in (500..599)){
+                        return Result.retry()
+                    }
                     var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 
                     for(cntct in result.body()!!.contacts){

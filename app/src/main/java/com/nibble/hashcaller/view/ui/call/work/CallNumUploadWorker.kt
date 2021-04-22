@@ -9,6 +9,7 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
@@ -38,6 +39,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
+            val networklivedta = ConnectionLiveData(context)
+
             Log.d(TAG, "doWork: ")
             val callersLocalRepository =
                 CallLocalRepository(
@@ -62,15 +65,18 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
             if(callersListChunkOfSize12.isNotEmpty()){
                 for (senderInfoSublist in callersListChunkOfSize12){
-
                     /**
                      * send the list to server
                      */
                     val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
 
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-                    for(cntct in result.body()!!.contacts){
 
+                    if(result.code() in (500..599)){
+                        return Result.retry()
+                    }
+
+                    for(cntct in result.body()!!.contacts){
                         val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
                             formatPhoneNumber(cntct.phoneNumber), 0, cntct.name,
                             Date(), cntct.spamCount)

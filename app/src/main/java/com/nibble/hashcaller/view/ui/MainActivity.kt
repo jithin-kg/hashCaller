@@ -35,6 +35,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -226,12 +228,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
     private fun setupContactUploadWork() {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
         val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
             .build()
         WorkManager.getInstance().enqueue(request2)
 
         val request =
             OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                .setConstraints(constraints)
                 .build()
         WorkManager.getInstance().enqueue(request)
 

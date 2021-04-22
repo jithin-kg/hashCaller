@@ -25,12 +25,9 @@ import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.sms.individual.util.BLOCK_INCOMMING_CALL
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 //https://developer.android.com/reference/android/telecom/CallScreeningService#respondToCall(android.telecom.Call.Details,%20android.telecom.CallScreeningService.CallResponse)
 //https://zoransasko.medium.com/detecting-and-rejecting-incoming-phone-calls-on-android-9e0cff04ef20
@@ -52,10 +49,9 @@ class MyCallScreeningService: CallScreeningService() {
 
          helper = CallScreeningHelper(this, contactAdressesDAO)
         Log.d(TAG, "onScreenCall: ")
-        startCallViewActivity()
         val phoneNumber = getPhoneNumber(callDetails)
         var response = CallResponse.Builder()
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             handleThisCall(phoneNumber, response, callDetails)
         }
         

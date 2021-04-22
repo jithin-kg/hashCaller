@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.IndividualCallLogItemBinding
+import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.utils.getRelativeDuration
 import com.nibble.hashcaller.view.utils.getRelativeTime
 
@@ -108,6 +109,8 @@ class IndividualCallLogAdapter(
             1 -> { // incomming call
                 binding.imgVDirection.setImageResource(R.drawable.ic_baseline_call_received_24)
                 binding.tvDirection.text = "Incoming call"
+                binding.tvDirection.setColorForText(R.color.textColor)
+
 //                textView.text = "Incoming call"
 
             }
@@ -115,22 +118,28 @@ class IndividualCallLogAdapter(
                 binding.imgVDirection.setImageResource(R.drawable.ic_baseline_call_made_24)
                 binding.tvDirection.text = "Outgoing call"
 //                textView.text = "Outgoing call"
+                binding.tvDirection.setColorForText(R.color.textColor)
+
+
             }
             3 -> {
                 binding.imgVDirection.setImageResource(R.drawable.ic_baseline_call_missed_24)
                 binding.tvDirection.text = "Missed call"
+                binding.tvDirection.setColorForText(R.color.spamText)
 //                textView.text = "Missed call"
             }
             5->{
 //                textView.text = "Rejected"
                 binding.imgVDirection.setImageResource(R.drawable.ic_baseline_call_missed_24)
                 binding.tvDirection.text = "Rejected"
+                binding.tvDirection.setColorForText(R.color.textColor)
 
             }
             6 ->{
 //                textView.text = "Blocked"
                 binding.imgVDirection.setImageResource(R.drawable.ic_baseline_block_no_color)
                 binding.tvDirection.text = "Blocked"
+                binding.tvDirection.setColorForText(R.color.textColor)
 
             }
         }

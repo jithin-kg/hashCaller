@@ -71,7 +71,7 @@ fun getRelativeDuration(durationInSeconds: Long): String {
     }else if(min >0){
         duration = "$min m"
     }else if(seconds >0){
-        duration = "$seconds"
+        duration = "$seconds s"
     }
 
 

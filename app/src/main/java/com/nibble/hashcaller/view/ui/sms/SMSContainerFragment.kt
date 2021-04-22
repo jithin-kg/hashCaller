@@ -73,7 +73,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     private var _binding: FragmentMessageContainerBinding? =null
     private val binding get() = _binding!!
-    private lateinit var viewmodel: SMSViewModel
+    private  var viewmodel: SMSViewModel? = null
     var smsRecyclerAdapter: SMSListAdapter? = null
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
@@ -151,7 +151,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun observeSMSThreadsLivedata() {
-        viewmodel.smsThreadsLivedata?.observe(viewLifecycleOwner, Observer {
+        viewmodel?.smsThreadsLivedata?.observe(viewLifecycleOwner, Observer {
             it.let {
 //                viewmodel.updateLiveData(it)
                 smsRecyclerAdapter?.setList(it)
@@ -159,12 +159,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         })
     }
     private fun observeSMSList() {
-
-        viewmodel.SMS.observe(viewLifecycleOwner, Observer { sms ->
+        viewmodel?.SMS?.observe(viewLifecycleOwner, Observer { sms ->
 
             sms.let {
 
-                viewmodel.updateDatabase(it)
+                viewmodel?.updateDatabase(it)
 
             }
         })
@@ -227,7 +226,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             if(value == true){
 //                this.viewMesages.btnSmsPermission.visibility = View.GONE
 //                this.viewMesages.tvSMSPermission.visibility = View.GONE
-                if(this.viewmodel.SMS.hasObservers()){
+                if(this.viewmodel!=null)
+                if(this.viewmodel!!.SMS?.hasObservers()){
                     Log.d(TAG, "observePermissionLiveData: already have observer")
                 }else{
                     observeSMSList()
@@ -239,7 +239,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
                 if (this.viewmodel!! != null  ) {
                     if(this.viewmodel?.SMS != null)
-                        if(this.viewmodel.SMS!!.hasObservers())
+                        if(this.viewmodel!!.SMS!!.hasObservers())
                             this.viewmodel?.SMS?.removeObservers(this);
                 }
 
@@ -300,7 +300,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      *
      */
     private fun addToBlockList() {
-        this.viewmodel.blockThisAddress( this.spammerType, this.SPAMMER_CATEGORY ).observe(viewLifecycleOwner, Observer {
+        this.viewmodel?.blockThisAddress( this.spammerType, this.SPAMMER_CATEGORY )?.observe(viewLifecycleOwner, Observer {
             when(it){
                 ON_COMPLETED ->{
                     Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
@@ -313,7 +313,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        sb.setSpan(bss, 0, .length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
 //        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
                     resetMarkingOptions()
-                    viewmodel.clearMarkeditems()
+                    viewmodel?.clearMarkeditems()
                 }
             }
         })
@@ -350,16 +350,16 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun observeSendersInfoFromServer() {
-        viewmodel.getSmsSendersInfoFromServer().observe(viewLifecycleOwner, Observer {
+        viewmodel?.getSmsSendersInfoFromServer()?.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
 
-            viewmodel.updateWithNewSenderInfo(it)
+            viewmodel?.updateWithNewSenderInfo(it)
 
         })
     }
 
     private fun observeMutabeLiveData() {
-        this.viewmodel.smsLiveData.observe(viewLifecycleOwner, Observer {
+        this.viewmodel?.smsLiveData?.observe(viewLifecycleOwner, Observer {
 //            smsListVIewModel.smsLIst = it as MutableList<SMS>?
 //            Log.d(TAG, "observeMutabeLiveData: spamcount${it[0].spamCount} ")
 //            var newList:MutableList<SMS> = mutableListOf()
@@ -389,7 +389,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun getFirstPageOfSMS() {
-        viewmodel.getFirstPageOfSMS()
+        viewmodel?.getFirstPageOfSMS()
     }
 
 
@@ -418,7 +418,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 return  markItem(threadId, clickType, position, address)
 
             }else ->{
-            if(viewmodel.getmarkedItemSize() == 0){
+            if(viewmodel?.getmarkedItemSize() == 0){
                 startIndividualSMSActivity(address, view)
 
             }else{
@@ -483,6 +483,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     companion object {
 
         private const val TAG = "__SMSContainerFragment"
+        //todo remove this, this is a memory leak
         private  var viewMesagesRef: View?=null
 
 
@@ -549,7 +550,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
             R.id.fabSendNewSMS -> {
                 Log.d(TAG, "onClick: fabSendNewSMS")
-                this.viewmodel.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
+                this.viewmodel?.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
 //                val i = Intent(context, ContactSelectorActivity::class.java )
 //                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
 //                startActivity(i)
@@ -562,7 +563,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
 
             else ->{
-                viewmodel.getUnrealMsgCount()
+                viewmodel?.getUnrealMsgCount()
 
             }
         }
@@ -580,7 +581,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         Log.d(TAG, "onMenuItemClick: ")
         when (menuItem!!.itemId){
          R.id.popupMarkAllAsRead->{
-             viewmodel.markSMSAsRead(null)
+             viewmodel?.markSMSAsRead(null)
              return true
          }else ->{
             this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
@@ -648,7 +649,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun muteSender() {
-        this.viewmodel.muteMarkedSenders()
+        this.viewmodel?.muteMarkedSenders()
         resetMarkingOptions()
         val sbar = Snackbar.make(MessagesFragment, "hi", Snackbar.LENGTH_SHORT)
         sbar.setAction("Action", null)
@@ -672,14 +673,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         Log.d(TAG, "onPause: ")
         super.onPause()
         isPaused = true
-        if (this.viewmodel!! != null  ) {
+        if (this.viewmodel != null  ) {
             if(this.viewmodel?.SMS != null)
-                if(this.viewmodel.SMS!!.hasObservers()){
+                if(this.viewmodel!!.SMS!!.hasObservers()){
                     this.viewmodel?.SMS?.removeObservers(this);
-                    this.viewmodel.smsLiveData.removeObservers(this)
-                    viewmodel.getSmsSendersInfoFromServer().removeObservers(this)
+                    this.viewmodel!!.smsLiveData.removeObservers(this)
+                    viewmodel?.getSmsSendersInfoFromServer()?.removeObservers(this)
                 }
-
         }
     }
 
@@ -720,7 +720,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun observeMarkedItems() {
-        viewmodel.markedItems.observe(viewLifecycleOwner, Observer {
+        viewmodel?.markedItems?.observe(viewLifecycleOwner, Observer {
             when(it.size){
                 0 ->{
                     showSearchView()
@@ -737,26 +737,26 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      * mark for deletion or archival or block of sms list
      */
     private fun markItem(id: Long, clickType: Int, position: Int, address: String): Int {
-        if(viewmodel.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
+        if(viewmodel?.markedItems?.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
             //if is empty and click type is long then start marking
-            viewmodel.addTomarkeditems(id, position, address)
+            viewmodel?.addTomarkeditems(id, position, address)
             return MARK_ITEM
-        }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
+        }else if(clickType == TYPE_LONG_PRESS && viewmodel?.markedItems?.value!!.isNotEmpty()){
             //already some items are marked
-            if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id, position)
+            if(viewmodel?.markedItems?.value!!.contains(id)){
+                viewmodel?.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
-                viewmodel.addTomarkeditems(id, position, address)
+                viewmodel?.addTomarkeditems(id, position, address)
                 return MARK_ITEM
             }
-        }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
+        }else if(clickType == TYPE_CLICK && viewmodel?.markedItems?.value!!.isNotEmpty()){
             //already markig started , mark on unamrk new item
-            if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id, position)
+            if(viewmodel?.markedItems?.value!!.contains(id)){
+                viewmodel?.removeMarkeditemById(id, position)
                 return UNMARK_ITEM
             }else{
-                viewmodel.addTomarkeditems(id, position, address)
+                viewmodel?.addTomarkeditems(id, position, address)
                 return MARK_ITEM
             }
         }else {
@@ -772,7 +772,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onYesConfirmationDelete() {
         Log.d(TAG, "deleteSms: called")
 //        for(id in markedItems){
-        this.viewmodel.deleteMarkedSMSThreads().observe(viewLifecycleOwner, Observer {
+        this.viewmodel?.deleteMarkedSMSThreads()?.observe(viewLifecycleOwner, Observer {
             when (it) {
                 ON_PROGRESS -> {
                     binding.imgBtnTbrDelete.beInvisible()
@@ -784,7 +784,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 }
                 ON_COMPLETED -> {
                     showSearchView()
-                    viewmodel.clearMarkedPositions()
+                    viewmodel?.clearMarkedPositions()
                 }
             }
         })
@@ -799,7 +799,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun observeNumOfRowsDeleted() {
-        this.viewmodel.numRowsDeletedLiveData.observe(viewLifecycleOwner, Observer {
+        this.viewmodel?.numRowsDeletedLiveData?.observe(viewLifecycleOwner, Observer {
             if(it == 0 ){
                 Log.d(TAG, "observeNumOfRowsDeleted: $it")
                 checkDefaultSMSHandlerPermission()
@@ -853,8 +853,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      */
     override fun isMarked(id: Long): Boolean {
         var isMrked = false
-        if(viewmodel.markedItems.value !=null){
-            if(viewmodel.markedItems.value!!.contains(id)){
+        if(viewmodel?.markedItems?.value !=null){
+            if(viewmodel?.markedItems?.value!!.contains(id)){
                 isMrked = true
             }
         }

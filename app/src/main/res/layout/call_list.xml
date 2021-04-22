@@ -115,7 +115,6 @@
             style="@style/TextAppearance.MaterialComponents.Body1"
             android:padding="4dp"
             android:text="ContactName"
-            android:textAppearance="@style/TextAppearance.AppCompat"
             android:textColor="@color/textColor"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
             app:layout_constraintHorizontal_bias="0.0"

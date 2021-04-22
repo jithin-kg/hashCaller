@@ -500,6 +500,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             private const val TAG ="__CallFragment"
             var pageCall = 10
             var fullDataFromCproviderFetched = false
+         const val INDIVIDUAL_CONTACT_ACTIVITY = 0
+         const val INDIVIDUAL_CALL_LOG_ACTIVITY = 1
 
     
     }
@@ -769,7 +771,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
             }
             TYPE_CLICK_VIEW_CALL_HISTORY ->{
-                startCallHistoryActivity(callLog)
+                startCallHistoryActivity(callLog, view)
                 return COMPRESS_LAYOUT
             }
 
@@ -811,10 +813,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun startCallHistoryActivity(callLog: CallLogTable) {
+    private fun startCallHistoryActivity(callLog: CallLogTable, view: View) {
         viewmodel.setExpandedLayout(null, null)
-        var intent = Intent(activity, IndividualCallLogActivity::class.java)
-        intent.putExtra(CONTACT_ADDRES, callLog.number)
+
+        val intent = getContactIntent(callLog, INDIVIDUAL_CALL_LOG_ACTIVITY )
+
         startActivity(intent)
     }
 
@@ -822,6 +825,34 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
        return  viewmodel.getmarkedItemSize()
     }
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
+
+            val intent = getContactIntent(log, INDIVIDUAL_CONTACT_ACTIVITY)
+                val options = getOptions(view, log)
+                startActivity(intent, options.toBundle())
+    }
+
+    private fun getOptions(view: View, log: CallLogTable): ActivityOptions {
+        val pairList = ArrayList<android.util.Pair<View, String>>()
+        val imgViewUserPhoto = view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgVThumbnail)
+        val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
+        var pair:android.util.Pair<View, String>? = null
+        if(log.thumbnailFromCp.isNotEmpty()){
+            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+        }else if(log.imageFromDb.isNotEmpty()){
+            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+
+        }else{
+            pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
+        }
+        pairList.add(pair)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
+        return options
+    }
+
+    private fun getContactIntent(
+        log: CallLogTable,
+        destinationActivity: Int
+    ): Intent {
         var name = log.name
         if(name.isNullOrEmpty()){
             name = log?.nameFromServer
@@ -829,28 +860,20 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         if(name.isNullOrEmpty()){
             name = log.number
         }
-        val intent = Intent(context, IndividualCotactViewActivity::class.java )
-                intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
-                intent.putExtra("name", name )
-                intent.putExtra("photo", log.thumbnailFromCp)
-                intent.putExtra("color", log.color)
-
-                val pairList = ArrayList<android.util.Pair<View, String>>()
-                val imgViewUserPhoto = view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgVThumbnail)
-                val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
-                  var pair:android.util.Pair<View, String>? = null
-                    if(log.thumbnailFromCp.isNotEmpty()){
-                        pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-                    }else if(log.imageFromDb.isNotEmpty()){
-                        pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-
-                    }else{
-                        pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
-                    }
-                pairList.add(pair)
-                val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
-                options.toBundle()
-                startActivity(intent, options.toBundle())
+        var intent:Intent? = null
+        when(destinationActivity){
+            INDIVIDUAL_CALL_LOG_ACTIVITY ->{
+                 intent = Intent(context, IndividualCallLogActivity::class.java )
+                intent.putExtra(CONTACT_ADDRES, log.number)
+            }else ->{
+             intent = Intent(context, IndividualCotactViewActivity::class.java )
+        }
+        }
+        intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
+        intent.putExtra("name", name )
+        intent.putExtra("photo", log.thumbnailFromCp)
+        intent.putExtra("color", log.color)
+        return intent
     }
 
     private fun markItem(id: Long, clickType: Int, position: Int, number: String): Int {

@@ -2,20 +2,36 @@ package com.nibble.hashcaller.utils
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.notifications.HashCaller
+import com.nibble.hashcaller.view.ui.MainActivity
 
 class NotificationHelper(
     private val isReceiveNotificationForSpamCallBlk: Boolean,
-    private val resultIntent: Intent,
-    private val notificationCmpt: NotificationCompat.Builder,
-    private val resultPendingIntent: PendingIntent?,
-    private val notificationManagerCmpt: NotificationManagerCompat,
+    context: Context
+//    private val resultIntent: Intent,
+//    private val notificationCmpt: NotificationCompat.Builder,
+//    private val resultPendingIntent: PendingIntent?,
+//    private val notificationManagerCmpt: NotificationManagerCompat,
 
     ) {
 
+    val notificationCmpt =   NotificationCompat.Builder(context, HashCaller.CHANNEL_2_ID)
+    val  resultIntent= Intent(context, MainActivity::class.java)
+    var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(context)
+
+    val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
+        // Add the intent, which inflates the back stack
+        addNextIntentWithParentStack(resultIntent)
+        // Get the PendingIntent containing the entire back stack
+        getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+    }
     /**
      * funcftion to handle notificatoin, if call blocked and user preference is to
      * to show notify for blocked calls , then show notification
