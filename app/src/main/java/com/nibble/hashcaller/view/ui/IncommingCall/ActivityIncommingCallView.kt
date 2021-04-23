@@ -102,6 +102,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
     @SuppressLint("LongLogTag")
     private fun reportuser() {
+
         viewModel.report(phoneNumber, packageName).observe(this, Observer {
             Log.d(TAG, "reportuser: observing")
         })

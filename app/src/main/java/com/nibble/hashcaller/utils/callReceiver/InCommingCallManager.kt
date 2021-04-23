@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.utils.callReceiver
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -121,6 +122,18 @@ class InCommingCallManager(
      fun endIncommingCall(context: Context) {
         val c = CallEnder(context)
         c.endIncomingCall()
+    }
+
+    /**
+     * increment the total number of calls blocked by hash caller in server
+     * for analytics
+     */
+    @SuppressLint("LongLogTag")
+    private suspend fun incrementTotalSpamCountByHashCallerInServer(
+        searchRepository: SearchNetworkRepository
+    ) {
+        Log.d(TAG +"increment", "incrementTotalSpamCountByHashCallerInServer: ")
+        searchRepository.incrementTotalSpamCount()
     }
 
     fun silenceIncomingCall(context: Context){
