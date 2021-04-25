@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private val viewPager: ViewPager? = null
     var fab: FloatingActionButton? = null
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var userInfoViewModel: UserInfoViewModel
+//    private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
     //    private lateinit var blockConfigFragment: BlockConfigFragment
@@ -155,7 +155,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
             }
         }
-        setInfoInNavigationDrawer()
 //        fabBtnShowDialpad.setOnClickListener(this)
         setBottomSheetListener()
 
@@ -166,6 +165,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     }
+
+
 
     private fun requestAlertWindowPermission() {
         // Show alert dialog to the user saying a separate permission is needed
@@ -207,17 +208,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     @SuppressLint("SetTextI18n")
     private fun observeUserInfoLiveData() {
-
-        this.userInfoViewModel.userInfo.observe(this, Observer {
-            Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
-            if (it != null)
-                if (!it.firstname.isNullOrEmpty()) {
-
-//                val header =navigationView.getHeaderView(0)
-//                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
-                }
-
-        })
+//
+//        this.userInfoViewModel.userInfo.observe(this, Observer {
+//            Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
+//            when (it) {
+//                null -> {
+//                    userInfoViewModel.getUserInfoFromServer().observe(this, Observer {
+////                        userInfoViewModel.insertUserInfo(it)
+//                    })
+//                }
+//
+//            }
+////            if (it != null)
+////                if (!it.firstname.isNullOrEmpty()) {
+//////                val header =navigationView.getHeaderView(0)
+//////                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
+////                }
+//
+//        })
     }
 
     fun showSnackBar(message: String){
@@ -272,18 +280,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initViewModel() {
-        userInfoViewModel = ViewModelProvider(
-            this, MainActivityInjectorUtil.provideUserInjectorUtil(
-                this
-            )
-        ).get(
-            UserInfoViewModel::class.java
-        )
+//        userInfoViewModel = ViewModelProvider(
+//            this, MainActivityInjectorUtil.provideUserInjectorUtil(
+//                this
+//            )
+//        ).get(
+//            UserInfoViewModel::class.java
+//        )
     }
 
-    private fun setInfoInNavigationDrawer() {
-        this.userInfoViewModel.getUserInfo()
-    }
+
 
     private fun setupNavigationDrawer() {
 //        drawerLayout = findViewById(R.id.drawer_layout)

@@ -10,15 +10,12 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
-import com.nibble.hashcaller.network.contact.NetWorkResponse
-import com.nibble.hashcaller.network.user.EUserResponse
-import com.nibble.hashcaller.network.user.Resource
-import com.nibble.hashcaller.network.user.Status
-import com.nibble.hashcaller.network.user.UserUploadHelper
+import com.nibble.hashcaller.network.user.GetUserInfoResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
@@ -26,15 +23,11 @@ import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import com.nibble.hashcaller.view.ui.contacts.utils.setStatusBarColor
-import retrofit2.Response
 import java.io.IOException
 import java.security.*
-import java.security.cert.CertificateException
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
@@ -81,6 +74,7 @@ companion object{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         rcfirebaseAuth = FirebaseAuth.getInstance()
+        initViewModel()
 
 
 
@@ -93,6 +87,11 @@ companion object{
             startActivityForResult(i, PERMISSION_REQUEST_CODE)
         }
 
+    }
+
+    private fun initViewModel() {
+        userInfoViewModel = ViewModelProvider(this, SplashActivityInjectorUtil.provideViewModelFactory(this)).get(
+            SplashActivityViewModel::class.java)
     }
 
     private fun firebaseAuthListener() {
@@ -167,6 +166,7 @@ companion object{
         } catch (e: BadPaddingException) {
             e.printStackTrace()
         }
+
         /**
          * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
          */
@@ -193,56 +193,101 @@ companion object{
                     var idToken = task.result?.token
                     // Send token to your backend via HTTPS
 
-                    saveToken(idToken)
+                    saveToken(idToken) //save token to sharedpref
+
                     //check if we have a loggedInstatus in sharedPreference
-                    val loggedIn = sharedPreferences.getBoolean("IS_LOGGEDIN", false)
+//                    val loggedIn = sharedPreferences.getBoolean("IS_LOGGEDIN", false)
 
-                     if(!loggedIn){
+//                     if(!loggedIn){
                          //go to the activity after saving the token
-                         val isNewUserInFirebase = isNewUserInFirebase()
-                         if(isNewUserInFirebase){
-                             Log.d(TAG, "onSignedInInitialize:checkIfNewUser Returned true")
-                             startGetUserInfoAcitvity()
+                    if(!isUserInfoExistInDb()){
+                        //check in firebase
 
-
-                         }else{
-                             Log.d(TAG, "onSignedInInitialize: else part going in ")
-                             if(isNewUserInServer()){
+//                        val isNewUserInFirebase = isNewUserInFirebase()
+//
+//                        if(isNewUserInFirebase){
+//                            Log.d(TAG, "onSignedInInitialize:checkIfNewUser Returned true")
+//                            startGetUserInfoAcitvity()
+//
+//
+//                        }
+//                        else{
+//                            if(!isUserInfoExistInDb()){
 
 //                                 val i = Intent(this, GetInitialUserInfoActivity::class.java)
 //                                 startActivity(i)
-                                 startGetUserInfoAcitvity()
+                                //check user exist in server
+                        getUserInfoFromServer()
+//                                if(getUserInfoFromServer() == null){
+//                                    startGetUserInfoAcitvity()
+//                                }else {
+//                                    val i = Intent(this, MainActivity::class.java)
+//                                    startActivity(i)
+//                                    finish()
+//                                }
 
 
-                             }else{
-                                 //already existing user in server
-                                 saveToSharedPref(true)
-                                 //if ther is no user info in local db navigate to getInitial info activity
+//                            }else{
+//                                //already existing user in server
+//                                saveToSharedPref(true)
+//                                //if ther is no user info in local db navigate to getInitial info activity
+//                                startMainActivity()
+//
+//                            }
+//                        }
 
-                                 val i = Intent(this, MainActivity::class.java)
-                                 startActivity(i)
-                                 finish()
-                             }
-                         }
+                    }else{
+                        //user info exist in db
+                        startMainActivity()
+                    }
 
-                     }else{
-                         //user logged in
-                         Log.d(TAG, "onSignedInInitialize: userLogged in  ")
+//                     }
 
-                         val i = Intent(this, MainActivity::class.java)
-                         startActivity(i)
-                         finish()
-                     }
+//                     else{
+//                         //user logged in
+//                         Log.d(TAG, "onSignedInInitialize: userLogged in  ")
+//
+//                         val i = Intent(this, MainActivity::class.java)
+//                         startActivity(i)
+//                         finish()
+//                     }
 
 //                    generateEncryptedKey()
-                } else {
-                    // Handle error -> task.getException();
                 }
+//                else {
+//                    // Handle error -> task.getException();
+//                }
             }
 
 
     }
 
+    private fun startMainActivity() {
+        val i = Intent(this, MainActivity::class.java)
+        startActivity(i)
+        finish()
+    }
+
+    private fun getUserInfoFromServer() {
+         userInfoViewModel.getUserInfoFromServer().observe(this, Observer {
+                if(it!=null){
+                    if(it.result!=null){
+                        if(!it.result.firstName.isNullOrEmpty()){
+                            userInfoViewModel.saveUserInfo(it.result).observe(this, Observer {
+                                when(it){
+                                    OPERATION_COMPLETED ->{
+                                       startMainActivity()
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+            })
+
+
+
+    }
 
 
     private fun onSingnedOutcleanUp() {}
@@ -296,57 +341,64 @@ companion object{
 
     }
 
-    private fun isNewUserInServer(): Boolean {
+    private fun isUserInfoExistInDb(): Boolean {
         Log.d(TAG, "isNewUserInServer: ")
-        var status = false
-        val userInfo = UserInfoDTO()
-        userInfoViewModel = ViewModelProvider(this, SplashActivityInjectorUtil.provideViewModelFactory(this)).get(
-            SplashActivityViewModel::class.java)
-        
-        userInfoViewModel.upload(userInfo).observe(this, Observer {
-            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
-                val resMessage = resource.data?.body()?.message
-                when (resource.status) {
-
-                    Status.SUCCESS -> {
-
-                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
-                            Log.d(TAG, "checkIfNewUser: no such user")
-                            //This is a new user
-//                            val i = Intent(this, GetInitialUserInfoActivity::class.java)
-//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            //set userLoggedIn = false in shared preference
-
-                            saveToSharedPref(false)
-
-//                            startActivity(i)
-
-                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
-                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
-//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                            //set userLogedIn = true in shared preferecce
-                            saveToSharedPref(true)
-                            status = true
-//                            applicationContext.startActivity(i)
-
-                        }
-                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
-                    }
-                    Status.LOADING -> {
-                        Log.d(TAG, "checkIfNewUser: Loading")
-                    }
-                    else -> {
-                        Log.d(TAG, "checkIfNewUser: else $resource")
-                        Log.d(TAG, "checkIfNewUser:error ")
-                    }
-
-
-                }
-
-            }
-        })
-        return status
+        return sharedPreferences.getBoolean("isUserInfoAvailable", false)
     }
+
+//        var isUserInfoExists = false
+//        val userInfo = UserInfoDTO()
+//        lifecycleScope.launchWhenStarted {
+//           val user =  userInfoViewModel.getUserInfo()
+//            if(user !=null){
+//                isUserInfoExists = true
+//            }
+//        }
+//
+//        return isUserInfoExists
+//        userInfoViewModel.upload(userInfo).observe(this, Observer {
+//            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
+//                val resMessage = resource.data?.body()?.message
+//                when (resource.status) {
+//
+//                    Status.SUCCESS -> {
+//                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
+//                            Log.d(TAG, "checkIfNewUser: no such user")
+//                            //This is a new user
+////                            val i = Intent(this, GetInitialUserInfoActivity::class.java)
+////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                            //set userLoggedIn = false in shared preference
+//
+//                            saveToSharedPref(false)
+//
+////                            startActivity(i)
+//
+//                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
+//                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
+////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+////                            //set userLogedIn = true in shared preferecce
+//                            saveToSharedPref(true)
+//                            status = true
+////                            applicationContext.startActivity(i)
+//
+//                        }
+//                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
+//                    }
+//                    Status.LOADING -> {
+//                        Log.d(TAG, "checkIfNewUser: Loading")
+//                    }
+//                    else -> {
+//                        Log.d(TAG, "checkIfNewUser: else $resource")
+//                        Log.d(TAG, "checkIfNewUser:error ")
+//                    }
+//
+//
+//                }
+//
+//            }
+//        })
+//        return status
+//    }
 
     private fun saveToSharedPref(b: Boolean) {
         sharedPreferences = getSharedPreferences(

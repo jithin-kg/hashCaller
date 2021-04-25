@@ -37,7 +37,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.MyUndoListener
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
@@ -63,6 +65,7 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
@@ -95,6 +98,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     var layoutBottomSheet: ConstraintLayout? = null
     private lateinit var dialerFragment: DialerFragment
     private lateinit var viewmodel: CallContainerViewModel
+    private lateinit var sharedUserInfoViewmodel: UserInfoViewModel
     private  var lastOperationPerformed: Int ? = null
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
@@ -129,11 +133,21 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     setupBottomSheet()
     initListeners()
 
+    observeUserInfo()
 
 
 //        addFragmentDialer()
         return binding.root
 
+    }
+
+    private fun observeUserInfo() {
+        sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
+            if(it!=null){
+                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+                binding.tvCircularAvatar.text = fLetter
+            }
+        })
     }
 
     private fun getDataDelayed() {
@@ -324,6 +338,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun initViewModel() {
         viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context, lifecycleScope)).get(
             CallContainerViewModel::class.java)
+        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
+            UserInfoViewModel::class.java
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

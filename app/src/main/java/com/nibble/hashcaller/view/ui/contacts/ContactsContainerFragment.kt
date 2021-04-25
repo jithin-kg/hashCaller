@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
@@ -35,6 +37,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.delay
@@ -55,6 +58,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private val binding get() = _binding!!
     private var isDflt = false
     private val TAG = "__ContactFragment"
+    private lateinit var sharedUserInfoViewmodel: UserInfoViewModel
 
 
     private var toolbar: Toolbar? = null
@@ -108,7 +112,9 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         if(checkContactPermission()){
             getData()
 
+
         }
+        observeUserInfo()
 
         binding.searchViewContacts.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
 
@@ -120,6 +126,14 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         binding.searchViewContacts.setOnClickListener(this)
 
     return binding.root
+    }
+    private fun observeUserInfo() {
+        sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
+            if(it!=null){
+                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+//                binding.tvCntctPermissionInfo.text = fLetter
+            }
+        })
     }
 
     private fun getData() {
@@ -133,6 +147,10 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     private fun initViewmodel() {
         contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context, lifecycleScope)).get(ContactsViewModel::class.java)
+        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
+            UserInfoViewModel::class.java
+        )
+
     }
 
     private fun checkContactPermission(): Boolean {

@@ -20,12 +20,18 @@ interface IuserService {
     suspend fun signup(
         @Body userInfo :UserInfoDTO,
         @Header ("Authorization") token:String
-    ):Response<NetWorkResponse>
+    ):Response<SingupResponse>
 
     //retrieves cipher from hashcaller server
     @POST("user/getCipher")
     suspend fun getCipher(
         @Header("Authorization")
         token: String): Response<ResponseCipher>
+
+    @POST("user/getUserInfoForUid")
+    suspend fun getUserInfo(
+        @Header("Authorization")
+        token: String
+    ) : Response<SingupResponse>
 
 }
