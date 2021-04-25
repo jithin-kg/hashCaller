@@ -22,6 +22,7 @@ import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
 import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.removeAllNonNumbericChars
@@ -636,6 +637,11 @@ class CallContainerRepository(
             spamCount += 1
             callLogDAO?.markAsReportedByUser(contactAddress, spamCount)
         }
+    }
+
+    suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) {
+        callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount, TYPE_SPAM)
+
     }
 
 

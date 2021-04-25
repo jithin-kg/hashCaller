@@ -27,6 +27,10 @@
         android:title="Search"
         app:showAsAction="ifRoom|withText"
       />
+    <item
+        android:id="@+id/spam"
+        android:icon="@drawable/ic_baseline_spam"
+        android:title="Spam" />
 <!--    <item-->
 <!--        android:id="@+id/bottombaritem_premium"-->
 <!--        android:icon="@drawable/ic_baseline_block_24"-->

@@ -6,16 +6,19 @@
             android:id="@+id/drawerHome"
             android:title="Home"
             android:icon="@drawable/ic_baseline_settings_24"
-           />
-        <item
-            android:id="@+id/sample"
-            android:title="sdf"
-            android:icon="@drawable/ic_baseline_settings_24"
+           android:state_activated="false"
             />
         <item
-            android:id="@+id/sample2"
-            android:title="saf"
-            android:icon="@drawable/ic_baseline_settings_24"
+            android:id="@+id/spamSms"
+            android:title="Spam SMSs"
+            android:icon="@drawable/ic_baseline_sms_24"
+            android:state_activated="false"
+            />
+        <item
+            android:id="@+id/spamCalls"
+            android:title="Spam Calls"
+            android:icon="@drawable/ic_baseline_call_24"
+            android:state_activated="false"
             />
 
     </group>
@@ -24,17 +27,20 @@
             android:id="@+id/profile"
             android:title="Home"
             android:icon="@drawable/ic_baseline_settings_24"
+            android:state_activated="false"
             />
         <menu>
             <item
                 android:id="@+id/sample22"
                 android:title="saf"
                 android:icon="@drawable/ic_baseline_settings_24"
+                android:state_activated="false"
                 />
             <item
                 android:id="@+id/sample222"
                 android:title="saf"
                 android:icon="@drawable/ic_baseline_settings_24"
+                android:state_activated="false"
                 />
         </menu>
 

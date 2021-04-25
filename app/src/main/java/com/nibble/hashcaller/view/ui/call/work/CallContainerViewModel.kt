@@ -20,6 +20,7 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.SpamReportWorker
@@ -371,8 +372,10 @@ class CallContainerViewModel(
           for(item in list){
              val res =  async { repository?.findFromCallLogTable(item.contactAddress)  }.await()
               if(res!=null){
-                  if(res.nameFromServer!= item.title || res.spamCount < item.spamReportCount){
+                  if(res.nameFromServer!= item.title ){
                       repository?.updateCallLogWithServerInfo(item)
+                  }else if( res.spamCount < item.spamReportCount && item.spamReportCount > SPAM_THREASHOLD){
+                      repository?.updateCallLogWithSpamerDetails(item)
                   }
               }
           }

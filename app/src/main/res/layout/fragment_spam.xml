@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_marginBottom="?attr/actionBarSize"
+tools:context=".view.ui.spam.SpamFragment"
+android:id="@+id/MessagesFragment">
+
+<FrameLayout
+    android:id="@+id/frameFragmentMessages"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="?attr/actionBarSize"
+    android:focusableInTouchMode="true">
+</FrameLayout>
+
+
+<com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/appbar"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    app:layout_scrollFlags="scroll|enterAlways"
+    android:backgroundTint="@color/colorBackground"
+    android:background="@color/appBarBackgroundColor"
+    >
+    <!--!! important to five elecation, elevation give shadow-->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarSmS"
+
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="4dp"
+        android:background="@drawable/toolbar_background"
+        app:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetEnd="0dp"
+        app:contentInsetRight="0dp"
+        style="@style/toolbarStyle"
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIcon="@drawable/ic_baseline_menu_24"
+        app:layout_scrollFlags="scroll|enterAlways">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/smsToolbarLayoutItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="0dp"
+            android:backgroundTint="@color/colorBackground">
+
+            <ImageButton
+                android:id="@+id/imgBtnTbrBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_block_24"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnTbrMuteSender" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnTbrMuteSender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_notifications_off"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnTbrDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_delete_blue_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMuteSender"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/tvSelectedCount"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvSelectedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text=""
+                android:textColor="@color/textColor"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/searchViewSms"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/colorBackground"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusedByDefault="false"
+                android:hint=" Search in sms"
+                android:background="?android:attr/selectableItemBackground"
+                android:iconifiedByDefault="false"
+                android:queryBackground="@android:color/transparent"
+
+                android:queryHint="Search numbers, names"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutMessages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabGravity="fill"
+        android:backgroundTint="@color/colorBackground"
+        app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
+        app:tabInlineLabel="true"
+        app:tabIndicatorColor="@color/colorPrimaryDarkest"
+        app:tabIndicatorHeight="4dp"
+        app:tabPaddingBottom="16dp"
+        app:tabMaxWidth="0dp"
+        app:tabMode="fixed" />
+</com.google.android.material.appbar.AppBarLayout>
+<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    android:id="@+id/fabBtnDeleteSMS"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:textColor="@color/colorWhite"
+    android:layout_margin="32dp"
+    app:iconTint="@color/colorWhite"
+    android:visibility="invisible"
+    app:icon="@drawable/ic_delete_white_24"
+    android:backgroundTint="@color/colorPrimary" />
+<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    android:id="@+id/fabBtnDeleteSMSExpanded"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:text="Schedule"
+    android:contentDescription="Schedule"
+    android:textColor="@color/colorWhite"
+    android:layout_marginEnd="@dimen/bottom_fab_margin"
+    android:layout_marginBottom="@dimen/bottom_fab_margin"
+    app:iconTint="@color/colorWhite"
+    android:visibility="invisible"
+    app:icon="@drawable/ic_delete_white_24"
+    android:backgroundTint="@color/colorPrimary" />
+<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    android:id="@+id/fabSendNewSMS"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:contentDescription="Schedule"
+    android:textColor="@color/colorWhite"
+    android:layout_marginEnd="@dimen/bottom_fab_margin"
+    android:layout_marginBottom="@dimen/bottom_fab_margin"
+    app:iconTint="@color/colorWhite"
+    app:icon="@drawable/ic_baseline_send_24"
+    android:backgroundTint="@color/colorPrimary" />
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/constraintLayout3"-->
+<!--        android:layout_width="250dp"-->
+<!--        android:layout_height="250dp"-->
+<!--        android:layout_gravity="bottom|end">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:src="@drawable/ic_delete_blue_24"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/textView14"-->
+<!--            app:layout_constraintHorizontal_bias="0.011"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintVertical_bias="0.008"-->
+<!--            tools:layout_conversion_absoluteHeight="0dp"-->
+<!--            tools:layout_conversion_absoluteWidth="0dp" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textView14"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:text="Schedule"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/imageView5"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintVertical_bias="0.008"-->
+<!--            tools:layout_conversion_absoluteHeight="19dp"-->
+<!--            tools:layout_conversion_absoluteWidth="58dp" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+<androidx.viewpager.widget.ViewPager
+    android:id="@+id/viewPagerMessages"
+    android:backgroundTint="@color/colorBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+    />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

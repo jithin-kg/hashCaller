@@ -2,6 +2,8 @@ package com.nibble.hashcaller.view.ui.call.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 
 /**
  * table which holds user reported and other other spammers number
@@ -40,6 +42,9 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount  WHERE number =:contactAddress")
     suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String, spamCount: kotlin.Long)
 
+    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount, color=:typeSpam  WHERE number =:contactAddress")
+    abstract fun updateSpammerWitServerInfo(contactAddress: String, nameFromServer: String, spamCount: Long, typeSpam: Int)
+
     @Query("UPDATE  call_log  SET name =:name, thumbnailFromCp=:thumbnailFromCp WHERE number =:contactAddress")
     suspend fun updateWitCproviderInfo(contactAddress: String, name:String, thumbnailFromCp: String)
 
@@ -52,6 +57,11 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log WHERE number LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
     suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
 
-    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount WHERE number =:contactAddress")
-    suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true)
+    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount, color =:color WHERE number =:contactAddress")
+    suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true, color:Int = TYPE_SPAM)
+
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser AND spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")
+    fun getSpamCallLogLivedata(isDeleted: Boolean = false, isReportedByUser: Boolean = true, spamLimit: Long = SPAM_THREASHOLD):LiveData<MutableList<CallLogTable>>
+
+
 }

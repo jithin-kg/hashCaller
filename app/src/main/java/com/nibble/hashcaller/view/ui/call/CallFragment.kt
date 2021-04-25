@@ -37,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -145,7 +146,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
             if(it!=null){
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-                binding.tvCircularAvatar.text = fLetter
+//                binding.tvCircularAvatar.text = fLetter
             }
         })
     }
@@ -570,7 +571,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 popup.show()
             }
             R.id.imgBtnAvatarMainCalls ->{
-                requireContext().startSettingsActivity(activity)
+                (activity as MainActivity).showDrawer()
+//                requireContext().startSettingsActivity(activity)
             }
             R.id.searchViewCall ->{
                 startSeaActivity()

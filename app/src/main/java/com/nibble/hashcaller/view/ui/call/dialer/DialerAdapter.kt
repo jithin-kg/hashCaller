@@ -17,6 +17,8 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
@@ -214,30 +216,32 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }
 
             }
-
-                if (callLog.spamCount > 0) {
-
-                    name.setColorForText(R.color.spamText)
-
-                } else {
-                    name.setColorForText(R.color.textColor)
-
-                }
-
-
-
-            name.text = nameStr
-            logBinding.imgViewCallSpamIcon.beInvisible()
-
             val firstLetter = nameStr[0]
             val firstLetterString = firstLetter.toString().toUpperCase()
-            circle.text = firstLetterString
-            if(callLog.color!=0){
-                circle.setRandomBackgroundCircle(callLog.color)
-            }else{
-                callLog.color = circle.setRandomBackgroundCircle()
 
-            }
+                if (callLog.spamCount > SPAM_THREASHOLD || callLog.isReportedByUser) {
+
+                    name.setColorForText(R.color.spamText)
+//                    logBinding.imgViewCallSpamIcon.beVisible()
+                    circle.setRandomBackgroundCircle(TYPE_SPAM)
+                    circle.text = ""
+
+                } else {
+                    logBinding.imgViewCallSpamIcon.beInvisible()
+                    circle.setRandomBackgroundCircle(callLog.color)
+                    name.setColorForText(R.color.textColor)
+                    circle.text = firstLetterString
+
+                }
+            name.text = nameStr
+
+
+//            if(callLog.color!=0){
+//                circle.setRandomBackgroundCircle(callLog.color)
+//            }else{
+//                callLog.color = circle.setRandomBackgroundCircle()
+//
+//            }
 
             //call type
             setCallTypeImage(callLog, logBinding.imgVCallType)

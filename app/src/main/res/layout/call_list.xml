@@ -87,11 +87,14 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:elevation="6dp"
+            android:visibility="invisible"
             android:textColor="@color/spamText"
             app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
             app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
             app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
-            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
+            android:src="@drawable/ic_baseline_block_red"
+            />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgViewCallMarked"

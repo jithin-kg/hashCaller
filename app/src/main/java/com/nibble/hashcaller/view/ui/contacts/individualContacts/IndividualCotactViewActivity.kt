@@ -32,6 +32,7 @@ import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
@@ -263,7 +264,14 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun setDetailsInview(phoneNum: String?, name: String?) {
         if(photoURI.isEmpty()){
             if(!name.isNullOrEmpty()){
-                binding.tvFirstLetter.text = name[0].toString()
+
+                if(color== TYPE_SPAM){
+                    binding.tvFirstLetter.text = ""
+
+                }else{
+                    binding.tvFirstLetter.text = name[0].toString()
+
+                }
                 binding.tvFirstLetter.setRandomBackgroundCircle(color)
                 binding.ivAvatar.beInvisible()
             }

@@ -37,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
@@ -576,7 +577,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 showPopupMenu(R.menu.sms_list_more_popup,imgBtnTbrMore)
             }
             R.id.imgBtnAvatarMain ->{
-               requireContext().startSettingsActivity(activity)
+                (activity as MainActivity).showDrawer()
+
+//               requireContext().startSettingsActivity(activity)
             }
 
             else ->{

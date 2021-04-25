@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.database.ContentObserver
-import android.media.audiofx.BassBoost
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +17,7 @@ import android.os.Handler
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
 import android.util.Log
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -31,8 +31,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import androidx.work.Constraints
@@ -49,11 +47,9 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.crypto.KeyManager
-import com.nibble.hashcaller.utils.internet.ConnectionLiveData
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
-import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
+import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
@@ -69,10 +65,8 @@ import com.nibble.hashcaller.work.ContactsAddressLocalWorker
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.security.*
-import kotlin.math.log
 
 
 /**
@@ -105,7 +99,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    var  searchFragment: SearchFragment? = null
 
 
-    private lateinit var drawerLayout: DrawerLayout
+//    private lateinit var drawerLayout: DrawerLayout
     //    private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -292,14 +286,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     private fun setupNavigationDrawer() {
-//        drawerLayout = findViewById(R.id.drawer_layout)
-//        navigationView = findViewById(R.id.nav_view)
-//        actionbarDrawertToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.start, R.string.close)
+        actionbarDrawertToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.start, R.string.close)
+//
+        binding.drawerLayout.addDrawerListener(actionbarDrawertToggle)
+        actionbarDrawertToggle.syncState()
 
-//        drawerLayout.addDrawerListener(actionbarDrawertToggle)
-//        actionbarDrawertToggle.syncState()
-
-//        navigationView.setNavigationItemSelectedListener(this)
+        binding.navView.setNavigationItemSelectedListener(this)
 
 
     }
@@ -842,6 +834,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onClick(v: View) {
         Log.d(TAG, "onClick: ")
         when(v.id){
+
 //        R.id.fabBtnShowDialpad->{
 //            showDialerFragment()
 //           GlobalScope.launch {
@@ -983,13 +976,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.d(TAG, "onNavigationItemSelected: ")
-        return true
+        when(item.itemId){
+            R.id.spamSms -> {
+                Log.d(TAG, "onNavigationItemSelected: spam sms")
+
+            }
+            R.id.spamCalls ->{
+                val intent = Intent(this, SpamCallsActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return false
     }
 
-    fun showDrawer(it: View) {
+    fun showDrawer() {
 //    actionbarDrawertToggle.onOptionsItemSelected(it as MenuItem)
-//    drawerLayout.openDrawer(Gravity.LEFT)
+        lifecycleScope.launchWhenStarted {
+            binding.drawerLayout.openDrawer(Gravity.LEFT)
+
+        }
 
     }
 

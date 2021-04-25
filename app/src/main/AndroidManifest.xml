@@ -48,7 +48,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ui.call.history.CallhistoryActivity"></activity>
+        <activity android:name=".view.ui.call.spam.SpamCallsActivity"></activity>
+        <activity android:name=".view.ui.call.history.CallhistoryActivity" />
         <activity android:name=".view.ui.call.search.CallLogSearchActivity" />
         <activity android:name=".view.ui.notifications.ManageNotificationsActivity" />
         <activity android:name=".view.ui.blockConfig.blockList.BlockListActivity" />
