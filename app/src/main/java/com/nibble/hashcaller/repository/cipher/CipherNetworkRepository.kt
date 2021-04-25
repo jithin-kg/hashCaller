@@ -24,6 +24,7 @@ class CipherNetworkRepository (private val context: Context){
         val token = tokenManager.getToken()
 
         val response = retrofitService?.getCipher(token)
+        Log.d(TAG, "getCipher: ")
         Log.d(TAG, "signup: ${response?.body()?.cipher}")
         return response
     }

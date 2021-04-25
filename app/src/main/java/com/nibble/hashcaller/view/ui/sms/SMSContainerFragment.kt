@@ -37,6 +37,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
@@ -55,6 +57,7 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
@@ -98,6 +101,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isPaused = false
     private lateinit var toolbar : Toolbar
+    private lateinit var sharedUserInfoViewmodel: UserInfoViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,7 +144,16 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             initListeners()
             observeMarkedItems()
             observeInternetLivedata()
+            observeUserInfo()
         }
+    }
+    private fun observeUserInfo() {
+        sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
+            if(it!=null){
+                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+                binding.tvCirculrAvtr.text = fLetter
+            }
+        })
     }
 
     private fun observeInternetLivedata() {
@@ -346,6 +360,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun initVieModel() {
         viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
             SMSViewModel::class.java)
+        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
+            UserInfoViewModel::class.java
+        )
     }
 
 

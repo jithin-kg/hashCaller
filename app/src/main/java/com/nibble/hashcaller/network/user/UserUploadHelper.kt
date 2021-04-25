@@ -28,48 +28,48 @@ class UserUploadHelper(
 
     private fun uploadData(userInfo: UserInfoDTO) {
 
-        userInfoViewModel.upload(userInfo).observe(owner, Observer {
-            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
-                val resMessage = resource.data?.body()?.message
-                when (resource.status) {
-
-                    Status.SUCCESS -> {
-
-                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
-                            Log.d(TAG, "checkIfNewUser: no such user")
-                            //This is a new user
-                            val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
-                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            //set userLoggedIn = false in shared preference
-
-                            saveToSharedPref(false)
-
-                            applicationContext.startActivity(i)
-
-                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
-                            Log.d(TAG, "upload: user already exist")
-//                            val i  = Intent(applicationContext, MainActivity::class.java)
+//        userInfoViewModel.upload(userInfo).observe(owner, Observer {
+//            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
+//                val resMessage = resource.data?.body()?.message
+//                when (resource.status) {
+//
+//                    Status.SUCCESS -> {
+//
+//                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
+//                            Log.d(TAG, "checkIfNewUser: no such user")
+//                            //This is a new user
+//                            val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
 //                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                            //set userLogedIn = true in shared preferecce
-//                            saveToSharedPref(true)
+//                            //set userLoggedIn = false in shared preference
+//
+//                            saveToSharedPref(false)
+//
 //                            applicationContext.startActivity(i)
-
-                        }
-                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
-                    }
-                    Status.LOADING -> {
-                        Log.d(TAG, "checkIfNewUser: Loading")
-                    }
-                    else -> {
-                        Log.d(TAG, "checkIfNewUser: else $resource")
-                        Log.d(TAG, "checkIfNewUser:error ")
-                    }
-
-
-                }
-
-            }
-        })
+//
+//                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
+//                            Log.d(TAG, "upload: user already exist")
+////                            val i  = Intent(applicationContext, MainActivity::class.java)
+////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+////                            //set userLogedIn = true in shared preferecce
+////                            saveToSharedPref(true)
+////                            applicationContext.startActivity(i)
+//
+//                        }
+//                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
+//                    }
+//                    Status.LOADING -> {
+//                        Log.d(TAG, "checkIfNewUser: Loading")
+//                    }
+//                    else -> {
+//                        Log.d(TAG, "checkIfNewUser: else $resource")
+//                        Log.d(TAG, "checkIfNewUser:error ")
+//                    }
+//
+//
+//                }
+//
+//            }
+//        })
     }
 
     private fun saveToSharedPref(b: Boolean) {

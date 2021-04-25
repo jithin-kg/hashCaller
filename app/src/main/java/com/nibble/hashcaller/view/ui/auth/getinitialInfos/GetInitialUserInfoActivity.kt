@@ -12,16 +12,11 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.network.contact.NetWorkResponse
-import com.nibble.hashcaller.network.user.EUserResponse
-import com.nibble.hashcaller.network.user.Resource
-import com.nibble.hashcaller.network.user.Status
-import com.nibble.hashcaller.network.user.UserUploadHelper
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import kotlinx.android.synthetic.main.activity_get_initial_user_info.*
-import retrofit2.Response
 
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
@@ -87,49 +82,65 @@ private fun sendUserInfo() {
     @SuppressLint("LongLogTag")
     private fun upload(userInfo: UserInfoDTO) {
         userInfoViewModel.upload(userInfo).observe(this, Observer {
-            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
-                val resMessage = resource.data?.body()?.message
-                when (resource.status) {
-
-                    Status.SUCCESS -> {
-
-                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
-                            Log.d(TAG, "checkIfNewUser: no such user")
-                            //This is a new user
-                            val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
-                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            //set userLoggedIn = false in shared preference
-
-                            saveToSharedPref(false)
-
-                            applicationContext.startActivity(i)
-
-                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
-                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
-//                            val i  = Intent(applicationContext, MainActivity::class.java)
-//                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                            //set userLogedIn = true in shared preferecce
-                            saveToSharedPref(true)
-                            val i  = Intent(this, MainActivity::class.java)
+            userInfoViewModel.saveUserInfoInLocalDb(it).observe(this, Observer {
+                when(it){
+                    OPERATION_COMPLETED -> {
+                        saveToSharedPref(true)
+                        val i  = Intent(this, MainActivity::class.java)
                             startActivity(i)
                             finish()
-
-                        }
-                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
                     }
-                    Status.LOADING -> {
-                        Log.d(TAG, "checkIfNewUser: Loading")
-                    }
-                    else -> {
-                        Log.d(TAG, "checkIfNewUser: else $resource")
-                        Log.d(TAG, "checkIfNewUser:error ")
-                    }
-
-
                 }
+            })
 
-            }
         })
+
+//        userInfoViewModel.upload(userInfo).observe(this, Observer {
+//
+//            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
+////                val resMessage = resource.data?.body()?.message
+////                when (resource.status) {
+////
+////                    Status.SUCCESS -> {
+////                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
+////                            Log.d(TAG, "checkIfNewUser: no such user")
+////                            //This is a new user
+////                            val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
+////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+////                            //set userLoggedIn = false in shared preference
+////
+////                            saveToSharedPref(false)
+////
+////                            applicationContext.startActivity(i)
+////
+////                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
+////                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
+//////                            val i  = Intent(applicationContext, MainActivity::class.java)
+//////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//////                            //set userLogedIn = true in shared preferecce
+//////                            saveToSharedPref(true)
+////
+////                            userInfoViewModel.saveUserInfoInLocalDb(resMessage)
+////                            val i  = Intent(this, MainActivity::class.java)
+////                            startActivity(i)
+////                            finish()
+////
+////                        }
+////                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
+////                    }
+////                    Status.LOADING -> {
+////                        Log.d(TAG, "checkIfNewUser: Loading")
+////                    }
+////                    else -> {
+////                        Log.d(TAG, "checkIfNewUser: else $resource")
+////                        Log.d(TAG, "checkIfNewUser:error ")
+////                    }
+////
+////
+////                }
+////
+////            }
+//        })
     }
 
     private fun saveToSharedPref(b: Boolean) {
@@ -137,7 +148,7 @@ private fun sendUserInfo() {
             SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
         val editor = sharedPreferences.edit()
-        editor.putBoolean("IS_LOGGEDIN", b)
+        editor.putBoolean("isUserInfoAvailable", b)
         editor.commit()
     }
 

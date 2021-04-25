@@ -58,8 +58,7 @@
             app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
             app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
             app:layout_constraintTop_toTopOf="@+id/imgViewAvatarMain"
-            tools:layout_editor_absoluteX="29dp"
-            tools:layout_editor_absoluteY="102dp" />
+            />
 
         <TextView
             android:id="@+id/tvFullNameMain"

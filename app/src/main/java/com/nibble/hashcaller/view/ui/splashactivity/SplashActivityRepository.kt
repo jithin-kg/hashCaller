@@ -1,17 +1,15 @@
 package com.nibble.hashcaller.view.ui.splashactivity
 
-import ContactRepository
-import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.RetrofitClient
-import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.user.IuserService
-import com.nibble.hashcaller.repository.user.UserInfoDTO
+import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import retrofit2.Response
+import java.lang.Exception
 
 /**
  * Created by Jithin KG on 13,August,2020
@@ -21,32 +19,45 @@ class SplashActivityRepository(
     private val userInfoDAO: UserInfoDAO,
     private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO
 ){
-    private var retrofitService:IuserService? = null
+    private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
     
-    suspend fun signup(userInfo: UserInfoDTO): Response<NetWorkResponse>? {
-        retrofitService = RetrofitClient.createaService(IuserService::class.java)
+//    suspend fun signup(userInfo: UserInfoDTO): Response<NetWorkResponse>? {
+//        retrofitService = RetrofitClient.createaService(IuserService::class.java)
+//
+//        val token = tokenManager.getToken()
+//
+//        val response = retrofitService?.signup(userInfo, token)
+////        Log.d(TAG, "signup: ${response?.body()?.message}")
+//        return response
+//    }
 
-        val token = tokenManager.getToken()
-        
-        val response = retrofitService?.signup(userInfo, token)
-        Log.d(TAG, "signup: ${response?.body()?.message}")
-        return response
+    suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo) {
+        this.userInfoDAO.insert(userInfo)
     }
 
-    suspend  fun saveUserInfoInLocalDb(userInfo: UserInfoDTO) {
-        this.userInfoDAO.insert(UserInfo(null, userInfo.firstName,
-        userInfo.lastName, userInfo.phoneNumber, userInfo.phoneNumber))
-    }
 
-    suspend fun getUserInfo(): UserInfo {
-        return this.userInfoDAO.get()
-    }
 
     suspend fun setContactsInHashMap() {
 
     }
 
-    companion object{
+    suspend fun getuserInfo(): UserInfo? {
+        return userInfoDAO?.getUser()
+    }
+
+    suspend fun getUserInfoFromServer(): Response<SingupResponse>? {
+        try {
+            val token = tokenManager.getToken()
+            val res =  retrofitService?.getUserInfo(token)
+            return res
+        }catch (e:Exception){
+            Log.d(TAG, "getUserInfoFromServer: $e")
+        }
+        return null
+
+    }
+
+    companion object {
         private const val TAG = "__UserNetworkRepository"
     }
 }

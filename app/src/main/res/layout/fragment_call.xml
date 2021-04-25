@@ -61,6 +61,18 @@
                     app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tvCircularAvatar"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:text="H"
+                    android:gravity="center"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintTop_toTopOf="@+id/imgBtnAvatarMainCalls"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnAvatarMainCalls"
+                    app:layout_constraintStart_toStartOf="@+id/imgBtnAvatarMainCalls"
+                    app:layout_constraintEnd_toEndOf="@+id/imgBtnAvatarMainCalls"
+                    />
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnCallTbrMore"
                     android:layout_width="16dp"
