@@ -23,7 +23,6 @@ class IndividualCallLogActivity : AppCompatActivity(), IndividualCallLogAdapter.
     private lateinit var layoutMngr:LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityIndividualCallLogBinding.inflate(layoutInflater)
         setContentView(binding.root)
         num  = intent.getStringExtra(CONTACT_ADDRES)

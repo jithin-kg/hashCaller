@@ -148,7 +148,12 @@ fun Context.makeCall(num:String){
 
 
 
-
+fun Context.getRandomColor(): Int {
+    var random = 0
+    val rand = Random()
+    random = rand.nextInt(5 - 1) + 1
+    return random
+}
 
 fun Context.generateCircleView(num:Int?=null): Drawable? {
     var random = 0

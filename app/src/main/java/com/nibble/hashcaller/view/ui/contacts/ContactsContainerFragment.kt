@@ -114,7 +114,6 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
 
         }
-        observeUserInfo()
 
         binding.searchViewContacts.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
 
@@ -142,6 +141,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             initViewmodel()
             observerContactList()
             observePermissionLiveData()
+            observeUserInfo()
+
         }
     }
 

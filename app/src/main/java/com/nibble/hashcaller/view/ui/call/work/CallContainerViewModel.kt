@@ -92,7 +92,6 @@ class CallContainerViewModel(
     /**********from callhistory frgment************/
     private var phoneNumber: MutableLiveData<String>? = null
 
-
     fun getPhoneNumber(): MutableLiveData<String>? {
         if (phoneNumber == null) {
             phoneNumber = MutableLiveData<String>()

@@ -19,6 +19,7 @@ import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
+import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
@@ -399,10 +400,11 @@ class CallContainerRepository(
                     if(markedIds.contains(id)){
                         isMarked = true
                     }
+                    val color = context.getRandomColor()
                     val log = CallLogTable(id = id, name = name,
                         number = formatPhoneNumber(number), type = type, duration = duration,
                         dateInMilliseconds = dateInMilliseconds,
-                        simId = simID)
+                        simId = simID, color =color )
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
