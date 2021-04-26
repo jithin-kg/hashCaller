@@ -26,13 +26,13 @@ import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
+import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
@@ -171,8 +171,9 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun observeBlockedDetails() {
-        viewModel.callersinfoLivedata.observe(this, Observer { lst ->
-            viewModel.isThisAddressBlockedByUser(phoneNum).observe(this, Observer {
+
+//        viewModel.callersinfoLivedata.observe(this, Observer { lst ->
+            viewModel.isThisAddressBlockedByUser(phoneNum,  isBlockTopSpammersAutomaticallyEnabled()).observe(this, Observer {
                 if (it == true) {
                     binding.tvBlockBtnInfo.text = "Unblock"
                     binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
@@ -184,7 +185,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                     isBlocked = false
                 }
             })
-        })
+//        })
     }
 
     private fun getContactMutedInformation() {

@@ -17,7 +17,8 @@ object IndividualContactInjectorUtil {
         val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
         val mutedContactsDAO = HashCallerDatabase.getDatabaseInstance(context).mutedCallersDAO()
         val callersInfoFromServer = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
-        val repository = IndividualContactRepository(contactsListDAO, context, callersInfoFromServer, phoneNum)
+        val callLogDAO = HashCallerDatabase.getDatabaseInstance(context).callLogDAO()
+        val repository = IndividualContactRepository(contactsListDAO, context, callersInfoFromServer, phoneNum, callLogDAO)
 
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }

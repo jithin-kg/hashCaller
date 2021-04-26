@@ -52,11 +52,24 @@
         <activity android:name=".view.ui.call.history.CallhistoryActivity" />
         <activity android:name=".view.ui.call.search.CallLogSearchActivity" />
         <activity android:name=".view.ui.notifications.ManageNotificationsActivity" />
-        <activity android:name=".view.ui.blockConfig.blockList.BlockListActivity" />
-        <activity android:name=".view.ui.manageblock.BlockManageActivity" />
-        <activity android:name=".view.ui.settings.SettingsActivity" />
-        <activity android:name=".view.ui.call.individualCallLog.IndividualCallLogActivity" />
-        <activity android:name=".view.ui.contacts.search.FulllSearchResultsActivity" />
+        <activity android:name=".view.ui.blockConfig.blockList.BlockListActivity"
+            android:theme="@style/AppTheme"
+
+            />
+        <activity android:name=".view.ui.manageblock.BlockManageActivity"
+            android:theme="@style/AppTheme"
+
+            />
+        <activity android:name=".view.ui.settings.SettingsActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity android:name=".view.ui.call.individualCallLog.IndividualCallLogActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity android:name=".view.ui.contacts.search.FulllSearchResultsActivity"
+            android:theme="@style/AppTheme"
+
+            />
         <activity
             android:name=".view.ui.sms.search.SearchSMSActivity"
             android:theme="@style/AppTheme"
@@ -109,6 +122,7 @@
 
         <activity
             android:name=".view.ui.auth.ActivityVerifyOTP"
+
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.schedule.ScheduleActivity"
@@ -120,7 +134,7 @@
         <activity
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.MyDarkTheme">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <category android:name="android.app.role.SMS" />
             </intent-filter>

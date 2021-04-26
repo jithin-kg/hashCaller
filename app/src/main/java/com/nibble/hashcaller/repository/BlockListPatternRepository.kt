@@ -70,6 +70,10 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
 
     }
 
+    suspend fun clearAll() {
+        blockedLIstDao.deleteAll()
+    }
+
 
     companion object{
         val TAG = "BlockListPatternRepository"

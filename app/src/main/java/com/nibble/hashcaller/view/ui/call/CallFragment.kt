@@ -54,7 +54,6 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -134,7 +133,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     setupBottomSheet()
     initListeners()
 
-    observeUserInfo()
+//    observeUserInfo()
 
 
 //        addFragmentDialer()
@@ -786,7 +785,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                         callLogAdapter?.notifyItemChanged(oldPos)
                     }
                 }
-                return  markItem(id, clickType, position,callLog.number)
+                return  markItem(id, clickType, position,callLog.numberFormated)
 
             }
             TYPE_CLICK_VIEW_CALL_HISTORY ->{
@@ -799,7 +798,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     startIndividualContactActivity(callLog, view)
                     return UNMARK_ITEM
                 }else{
-                    return  markItem(id, TYPE_CLICK, position,callLog.number) // mark item
+                    return  markItem(id, TYPE_CLICK, position,callLog.numberFormated) // mark item
                 }
             }
 
@@ -824,7 +823,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
                     }
                 }else{
-                    return markItem(id, clickType, position, callLog.number)
+                    return markItem(id, clickType, position, callLog.numberFormated)
                 }
             }
         }
@@ -877,18 +876,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             name = log?.nameFromServer
         }
         if(name.isNullOrEmpty()){
-            name = log.number
+            name = log.numberFormated
         }
         var intent:Intent? = null
         when(destinationActivity){
             INDIVIDUAL_CALL_LOG_ACTIVITY ->{
                  intent = Intent(context, IndividualCallLogActivity::class.java )
-                intent.putExtra(CONTACT_ADDRES, log.number)
+                intent.putExtra(CONTACT_ADDRES, log.numberFormated)
             }else ->{
              intent = Intent(context, IndividualCotactViewActivity::class.java )
         }
         }
-        intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
+        intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.numberFormated)
         intent.putExtra("name", name )
         intent.putExtra("photo", log.thumbnailFromCp)
         intent.putExtra("color", log.color)
@@ -903,7 +902,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
             //already some items are marked
             if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id, position)
+                viewmodel.removeMarkeditemById(id, position, number)
                 return UNMARK_ITEM
             }else{
 
@@ -913,7 +912,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
             //already markig started , mark on unamrk new item
             if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id, position)
+                viewmodel.removeMarkeditemById(id, position, number)
                 return UNMARK_ITEM
             }else{
                 viewmodel.addTomarkeditems(id, position, number)

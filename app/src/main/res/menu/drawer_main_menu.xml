@@ -31,8 +31,8 @@
             />
         <menu>
             <item
-                android:id="@+id/sample22"
-                android:title="saf"
+                android:id="@+id/settingsMenuItem"
+                android:title="Settings"
                 android:icon="@drawable/ic_baseline_settings_24"
                 android:state_activated="false"
                 />

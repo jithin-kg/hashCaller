@@ -2,17 +2,20 @@ package com.nibble.hashcaller.view.ui.call.spam
 
 import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySpamCallsBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
@@ -22,6 +25,8 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotac
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
+import kotlinx.android.synthetic.main.activity_block_list.*
+
 
 class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, SMSListAdapter.NetworkHandler {
     private lateinit var binding: ActivitySpamCallsBinding
@@ -29,7 +34,7 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
     var callLogAdapter: DialerAdapter? = null
     private var isInternetAvailable = false
     private lateinit var viewmodel: SpamCallViewModel
-
+    private lateinit var swipeHandler: SwipeToDeleteCallback
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,20 +42,34 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
         binding = ActivitySpamCallsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         observeInternetLivedata()
+        initSwipeHandler()
         initRecyclerView()
         initViewmodel()
         observeSpamCallLogs()
     }
 
+    private fun initSwipeHandler() {
+        swipeHandler = object : SwipeToDeleteCallback(this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter = binding.recyvlerV.adapter
+                viewmodel.delete(callLogAdapter?.getLogAt(viewHolder.adapterPosition))
+
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(binding.recyvlerV)
+    }
+
     private fun observeSpamCallLogs() {
-        viewmodel.livedata.observe(this, Observer {
+        viewmodel.spamCalllivedata.observe(this, Observer {
             callLogAdapter?.submitCallLogs(it)
         })
     }
 
     private fun initViewmodel() {
         viewmodel = ViewModelProvider(this, SpamCallInjectorUtil.provideViewmodelFactory(this)).get(
-            SpamCallViewModel::class.java)
+            SpamCallViewModel::class.java
+        )
     }
 
     private fun observeInternetLivedata() {
@@ -63,15 +82,21 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
 
         binding.recyvlerV.apply {
             layoutManager = CustomLinearLayoutManager(context)
-            layoutMngr = layoutManager as CustomLinearLayoutManager
-//            val topSpacingDecorator =
-//                TopSpacingItemDecoration(
-//                    30
-//                )
-//            addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context,this@SpamCallsActivity, this@SpamCallsActivity) {
+            ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyvlerV);
 
-                    id:Long, position:Int, view: View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
+            layoutMngr = layoutManager as CustomLinearLayoutManager
+
+            callLogAdapter = DialerAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity) {
+
+                    id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ->onCallItemClicked(
+                id,
+                position,
+                view,
+                btn,
+                callLog,
+                clickType,
+                visibility
+            )}
             adapter = callLogAdapter
             itemAnimator = null
 
@@ -88,33 +113,24 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
         visibility: Int
     ): Int {
         when(clickType){
-            TYPE_LONG_PRESS ->{
-                val prevExpandedLyoutId = viewmodel.markeditemsHelper .getPreviousExpandedLayout()
-                if(prevExpandedLyoutId!=null){
-                    //already a lyout is expanded
-                    val oldPos = viewmodel.markeditemsHelper. getPrevExpandedPosition()
-                    viewmodel.markeditemsHelper.setExpandedLayout(null, null)
-                    if(oldPos!=null){
-                        callLogAdapter?.notifyItemChanged(oldPos)
-                    }
-                }
-                return  markItem(id, clickType, position,callLog.number)
-
+            TYPE_LONG_PRESS -> {
+                toast("Slide left or right to delete")
             }
 
-            TYPE_CLICK_VIEW_CALL_HISTORY ->{
+            TYPE_CLICK_VIEW_CALL_HISTORY -> {
                 startCallHistoryActivity(callLog, view)
 
                 return COMPRESS_LAYOUT
             }
 
-            TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT ->{
-                if(getMarkedItemsSize() == 0){
+            TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT -> {
+                if (getMarkedItemsSize() == 0) {
                     startIndividualContactActivity(callLog, view)
                     return UNMARK_ITEM
-                }else{
-                    return  markItem(id, TYPE_CLICK, position,callLog.number) // mark item
                 }
+//                else {
+//                    return markItem(id, TYPE_CLICK, position, callLog.number) // mark item
+//                }
             }
 
             else ->{
@@ -137,9 +153,10 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
                         return COMPRESS_LAYOUT
 
                     }
-                }else{
-                    return markItem(id, clickType, position, callLog.number)
                 }
+//                else{
+//                    return markItem(id, clickType, position, callLog.number)
+//                }
             }
         }
         return UNMARK_ITEM
@@ -159,15 +176,15 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
         val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
         var pair:android.util.Pair<View, String>? = null
         if(log.thumbnailFromCp.isNotEmpty()){
-            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+            pair = android.util.Pair(imgViewUserPhoto as View, "contactImageTransition")
         }else if(log.imageFromDb.isNotEmpty()){
-            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
+            pair = android.util.Pair(imgViewUserPhoto as View, "contactImageTransition")
 
         }else{
             pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
         }
         pairList.add(pair)
-        val options = ActivityOptions.makeSceneTransitionAnimation(this,pairList[0] )
+        val options = ActivityOptions.makeSceneTransitionAnimation(this, pairList[0])
         return options
     }
 
@@ -226,15 +243,15 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
         }
         var intent: Intent? = null
         when(destinationActivity){
-            CallFragment.INDIVIDUAL_CALL_LOG_ACTIVITY ->{
-                intent = Intent(this, IndividualCallLogActivity::class.java )
+            CallFragment.INDIVIDUAL_CALL_LOG_ACTIVITY -> {
+                intent = Intent(this, IndividualCallLogActivity::class.java)
                 intent.putExtra(CONTACT_ADDRES, log.number)
             }else ->{
-            intent = Intent(this, IndividualCotactViewActivity::class.java )
+            intent = Intent(this, IndividualCotactViewActivity::class.java)
         }
         }
         intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
-        intent.putExtra("name", name )
+        intent.putExtra("name", name)
         intent.putExtra("photo", log.thumbnailFromCp)
         intent.putExtra("color", log.color)
         return intent
@@ -250,4 +267,6 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
     override fun isInternetAvailable(): Boolean {
         return isInternetAvailable
     }
+
+
 }

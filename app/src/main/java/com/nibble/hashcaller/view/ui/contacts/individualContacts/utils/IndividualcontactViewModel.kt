@@ -15,6 +15,7 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_BLOCKED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_UNBLOCKED
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -131,15 +132,26 @@ class IndividualcontactViewModel(
     /**
      *  function to check whether a given number is blocked by the user
      */
-    fun isThisAddressBlockedByUser(phoneNum: String): LiveData<Boolean> = liveData  {
+    fun isThisAddressBlockedByUser(phoneNum: String, isBlockTopSpammersEnabled: Boolean): LiveData<Boolean> = liveData  {
         var isBlocked = false
-        val res = callersInfoFromServer.find(formatPhoneNumber(phoneNum))
-        if(res !=null){
-            if(res.isBlockedByUser){
+        val res = repository.getCallLogInfoForNum(phoneNum)
+        if(res!=null){
+            if(res.isReportedByUser){
+                isBlocked = true
+            }
+
+            if(res.spamCount > SPAM_THREASHOLD  && isBlockTopSpammersEnabled){
                 isBlocked = true
             }
         }
         emit(isBlocked)
+//        val res = callersInfoFromServer.find(formatPhoneNumber(phoneNum))
+//        if(res !=null){
+//            if(res.isBlockedByUser){
+//                isBlocked = true
+//            }
+//        }
+//        emit(isBlocked)
     }
 
     fun blockOrUnblockByAdderss(phoneNum: String, spammerType: Int, spammerCategory: Int):LiveData<Int> = liveData {

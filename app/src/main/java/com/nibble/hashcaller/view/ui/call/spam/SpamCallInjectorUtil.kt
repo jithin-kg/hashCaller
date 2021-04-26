@@ -11,7 +11,7 @@ object SpamCallInjectorUtil {
         val callLogDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
 
         val repository = context?.let {
-            SpamCallRepository( callLogDao) }
+            SpamCallRepository( callLogDao, context) }
 
         return SpamCallViewmodelFactory( repository)
     }

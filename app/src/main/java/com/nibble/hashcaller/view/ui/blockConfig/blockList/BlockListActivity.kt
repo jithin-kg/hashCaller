@@ -15,6 +15,7 @@ import com.nibble.hashcaller.databinding.ActivityBlockListBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.ui.blockConfig.ActivityCreteBlockListPattern
+import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
@@ -69,7 +70,10 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun deletePattern(pos: Int) {
         val item = blockListAdapter.getItemAtPosition(pos);
-        blockListViewModel.delete(item.numberPattern, item.type)
+        blockListViewModel.delete(item.numberPattern, item.type).observe(this, Observer {
+            blockListAdapter.notifyItemChanged(pos)
+        })
+
         //TODO notify dataset changed in adapter and remove item from the list in adapter
     }
 
@@ -80,9 +84,9 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun initRecyclerView(){
 
-        rcrViewPtrnList?.apply {
-            layoutManager = LinearLayoutManager(this@BlockListActivity)
-            ItemTouchHelper(swipeHandler).attachToRecyclerView(rcrViewPtrnList);
+       binding.rcrViewPtrnList?.apply {
+            layoutManager = CustomLinearLayoutManager(this@BlockListActivity)
+            ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.rcrViewPtrnList);
             val topSpacingDecorator =
                 TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)

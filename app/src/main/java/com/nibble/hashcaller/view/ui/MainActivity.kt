@@ -62,6 +62,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
+import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
@@ -1005,6 +1006,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 Log.d(TAG, "onNavigationItemSelected: spam sms")
 
             }
+            R.id.settingsMenuItem ->{
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
+
             R.id.spamCalls ->{
                 val intent = Intent(this, SpamCallsActivity::class.java)
                 startActivity(intent)

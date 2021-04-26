@@ -177,10 +177,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     nameStr = callLog.nameFromServer!!
                 }else if(callLog.nameFromServer== null){
                     infoFoundFrom = SENDER_INFO_SEARCHING
-                    nameStr = callLog.number
+                    nameStr = callLog.numberFormated
                 }else{
                     infoFoundFrom = SENDER_INFO_NOT_FOUND
-                    nameStr = callLog.number
+                    nameStr = callLog.numberFormated
                 }
 
             when (infoFoundFrom) {
@@ -261,7 +261,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }
             }
             logBinding.textViewTime.text = getRelativeTime(callLog.dateInMilliseconds)
-            expandableView.tvExpandNumCall.text = callLog.number
+            expandableView.tvExpandNumCall.text = callLog.numberFormated
             setClickListener(logBinding.root, callLog)
         }
 
@@ -582,6 +582,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         }
     }
+
+    fun getLogAt(adapterPosition: Int): CallLogTable {
+        return callLogs[adapterPosition]
+    }
+
     interface ViewHandlerHelper {
         fun isMarked(id:Long?): Boolean
         fun isViewExpanded(id:Long): Boolean

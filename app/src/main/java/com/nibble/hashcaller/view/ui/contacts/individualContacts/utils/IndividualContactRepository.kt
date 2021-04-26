@@ -14,7 +14,9 @@ import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
@@ -35,7 +37,8 @@ class IndividualContactRepository(
     private val dao: IContactIformationDAO,
     private val context: Context,
     private val callersInfoFromServer: CallersInfoFromServerDAO,
-    private val phoneNum: String?
+    private val phoneNum: String?,
+    private val callLogDAO: ICallLogDAO
 )
    {
        lateinit var cursor:Cursor
@@ -267,6 +270,11 @@ class IndividualContactRepository(
 
         fun getInfoFromServerForContact(): LiveData<ContactTable?>? {
            return phoneNum?.let { formatPhoneNumber(it) }?.let { dao?.findOne(it) }
+       }
+
+       suspend fun getCallLogInfoForNum(phoneNum: String): CallLogTable? {
+        val formatedNum = formatPhoneNumber(phoneNum)
+          return  callLogDAO.find(formatedNum)
        }
 
 

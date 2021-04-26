@@ -36,8 +36,9 @@ class BlockListViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
     }
-    fun delete(blockedListPattern: String, type: Int) = viewModelScope.launch(Dispatchers.IO){
+    fun delete(blockedListPattern: String, type: Int) :LiveData<Int> = liveData{
         blockListPatternRepository.delete(blockedListPattern, type)
+        emit(OPERATION_COMPLETED)
 
     }
 //    fun getVal(){

@@ -97,7 +97,7 @@ class CallContainerRepository(
      * delete call logs in content provider
      */
     @SuppressLint("LongLogTag")
-     fun deleteLog(id: Long) {
+     fun deleteLog(id: String) {
 
 //        val queryString = "NUMBER=$number"
 //        context.contentResolver.delete(CallLog.Calls.CONTENT_URI, queryString, null);
@@ -109,7 +109,7 @@ class CallContainerRepository(
         try {
                 Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = CallLog.Calls.CONTENT_URI
-                val selection = "${CallLog.Calls._ID} = ?"
+                val selection = "${CallLog.Calls.NUMBER} = ?"
 //                callLogDAO?.delete(id)
                 val selectionArgs = arrayOf(id.toString())
                     context.contentResolver.delete(uri, selection, selectionArgs)
@@ -225,7 +225,8 @@ class CallContainerRepository(
                         isMarked = true
                     }
                     val log = CallLogData(id, number, callType, duration, name,
-                        dateString,dateInMilliseconds = dateInMilliseconds.toString(), isMarked = isMarked)
+                        dateString,dateInMilliseconds = dateInMilliseconds.toString(), isMarked = isMarked
+                    )
 //                    val log = CallLogData()
 //                        log.id = id
 //                        log.number = number
@@ -328,12 +329,12 @@ class CallContainerRepository(
         simIds.addAll(context.getSimIndexForSubscriptionId())
 
         val projection = arrayOf(
-            CallLog.Calls.NUMBER,
-            CallLog.Calls.TYPE,
-            CallLog.Calls.DURATION,
-            CallLog.Calls.CACHED_NAME,
-            CallLog.Calls._ID,
-            CallLog.Calls.DATE,
+            CallLog.Calls.NUMBER,  //0
+            CallLog.Calls.TYPE,    //1
+            CallLog.Calls.DURATION,  //2
+            CallLog.Calls.CACHED_NAME, //3
+            CallLog.Calls._ID,         //4
+            CallLog.Calls.DATE,        //5
             "subscription_id"
 
         )
@@ -403,9 +404,9 @@ class CallContainerRepository(
                     }
                     val color = context.getRandomColor()
                     val log = CallLogTable(id = id, name = name,
-                        number = formatPhoneNumber(number), type = type, duration = duration,
+                        number = number, type = type, duration = duration,
                         dateInMilliseconds = dateInMilliseconds,
-                        simId = simID, color =color )
+                        simId = simID, color =color, numberFormated = formatPhoneNumber(number) )
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 

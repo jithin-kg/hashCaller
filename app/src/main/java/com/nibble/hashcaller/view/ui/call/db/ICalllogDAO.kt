@@ -31,21 +31,21 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log")
      fun getFlow(): kotlinx.coroutines.flow.Flow<List<CallLogTable>>
 
-    @Query("SELECT * FROM call_log WHERE number=:contactAddress")
+    @Query("SELECT * FROM call_log WHERE numberFormated=:contactAddress")
     suspend fun find(contactAddress: String) : CallLogTable?
-    @Query("SELECT * FROM call_log WHERE number=:contactAddress LIMIT 1")
+    @Query("SELECT * FROM call_log WHERE numberFormated=:contactAddress LIMIT 1")
     suspend fun findOne(contactAddress: String) : CallLogTable?
 
     @Query("DELETE from call_log ")
     suspend fun deleteAll()
 
-    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount  WHERE number =:contactAddress")
+    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount  WHERE numberFormated =:contactAddress")
     suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String, spamCount: kotlin.Long)
 
-    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount, color=:typeSpam  WHERE number =:contactAddress")
+    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount, color=:typeSpam  WHERE numberFormated =:contactAddress")
     abstract fun updateSpammerWitServerInfo(contactAddress: String, nameFromServer: String, spamCount: Long, typeSpam: Int)
 
-    @Query("UPDATE  call_log  SET name =:name, thumbnailFromCp=:thumbnailFromCp WHERE number =:contactAddress")
+    @Query("UPDATE  call_log  SET name =:name, thumbnailFromCp=:thumbnailFromCp WHERE numberFormated =:contactAddress")
     suspend fun updateWitCproviderInfo(contactAddress: String, name:String, thumbnailFromCp: String)
 
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE id =:id")
@@ -54,10 +54,10 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser ORDER BY dateInMilliseconds DESC LIMIT 10")
     suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false) : MutableList<CallLogTable>
 
-    @Query("SELECT * FROM call_log WHERE number LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
+    @Query("SELECT * FROM call_log WHERE numberFormated LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
     suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
 
-    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount, color =:color WHERE number =:contactAddress")
+    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount, color =:color WHERE numberFormated =:contactAddress")
     suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true, color:Int = TYPE_SPAM)
 
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser AND spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")

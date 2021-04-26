@@ -45,6 +45,7 @@ class CallContainerViewModel(
     var expandedLayoutPositin:Int? = null
 
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
+    var markedAddres:MutableSet<String> = mutableSetOf()
     var markedItemsPositions: HashSet<Int> = hashSetOf()
 
 
@@ -53,15 +54,18 @@ class CallContainerViewModel(
 
     fun clearMarkeditems(){
         markedItems.value?.clear()
+        markedAddres.clear()
     }
     fun addTomarkeditems(id: Long, position: Int, number: String){
         markedItems.value!!.add(id)
         markedItemsPositions.add(position)
         markedItems.value = markedItems.value
+        markedAddres.add(number)
         contactAddress = number
     }
-    fun removeMarkeditemById(id: Long, position: Int){
+    fun removeMarkeditemById(id: Long, position: Int, number: String){
         markedItems.value!!.remove(id)
+        markedAddres.remove(number)
         markedItemsPositions.remove(position)
         markedItems.value = markedItems.value
     }
@@ -197,7 +201,7 @@ class CallContainerViewModel(
                 async { repository?.deleteCallLogsFromDBByid(item) }.await()
             }
             emit(ON_COMPLETED)
-            for (item in markedItems.value!!) {
+            for (item in markedAddres) {
                 repository?.deleteLog(item)
 //                async { repository?.deleteCallLogsFromDBByid(item) }
 //                    kotlinx.coroutines.delay(500L)
@@ -384,6 +388,7 @@ class CallContainerViewModel(
 
     fun clearCallLogDB() = viewModelScope.launch {
         repository!!.clearCallersInfoFromServer()
+        blockListPatternRepository.clearAll()
 
     }
 
@@ -465,7 +470,7 @@ class CallContainerViewModel(
 
     fun getFirst10Logs() :LiveData<MutableList<CallLogTable>> = liveData {
         repository?.getFirst10Logs()?.let {
-            it.add(CallLogTable(null))
+            it.add(CallLogTable(id = null))
             emit(it)
 
         }
