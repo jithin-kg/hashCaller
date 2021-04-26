@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.user.GetUserInfoResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
@@ -38,10 +39,10 @@ import javax.crypto.spec.SecretKeySpec
 //make seperate helper class for this checking
 
 class SplashActivity : AppCompatActivity() {
-    private val RC_SIGN_IN = 1
 
     private val TAG = "__SplashActivity"
 
+    private val RC_SIGN_IN = 1
 
     private lateinit var rcfirebaseAuth: FirebaseAuth
     private lateinit var rcAuthStateListener: AuthStateListener
@@ -73,6 +74,7 @@ companion object{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         rcfirebaseAuth = FirebaseAuth.getInstance()
         initViewModel()
 
@@ -276,6 +278,10 @@ companion object{
                             userInfoViewModel.saveUserInfo(it.result).observe(this, Observer {
                                 when(it){
                                     OPERATION_COMPLETED ->{
+
+                                        val editor = sharedPreferences.edit()
+                                        editor.putBoolean("isUserInfoAvailable", true)
+                                        editor.commit()
                                        startMainActivity()
                                     }
                                 }
@@ -480,8 +486,8 @@ companion object{
             rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
 
         }
-        
-        
+
+
         super.onDestroy()
 
 

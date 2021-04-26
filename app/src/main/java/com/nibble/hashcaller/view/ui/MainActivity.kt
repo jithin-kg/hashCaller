@@ -27,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
@@ -43,14 +42,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseUserMetadata
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
+import com.nibble.hashcaller.utils.auth.Decryptor
+import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
+import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -104,15 +110,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
-//    var layoutBottomSheet: ConstraintLayout
+    ///////////////////////////splash ////////////////////////////
 
-    //    MainActivityHelper firebaseHelper;
+    private val RC_SIGN_IN = 1
+
+    private lateinit var rcfirebaseAuth: FirebaseAuth
+    private lateinit var rcAuthStateListener: FirebaseAuth.AuthStateListener
+    //    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+//    private val userCollectionRef: CollectionReference = db.collection("Users")
+    var user: FirebaseUser? = null
+    private lateinit var encryptor: EnCryptor
+    private lateinit var decryptor: Decryptor
+    private val SAMPLE_ALIAS = "SOMETHINGNEW"
+//    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var key : ByteArray
+    private var metadata: FirebaseUserMetadata?= null;
+
+    ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        initViewModel()
+
+
+
+        //Start home activity
+//         close splash activity
+
+        initMainActivityComponents(savedInstanceState)
+
+
+
+    }
+
+    private fun initMainActivityComponents(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         hideKeyboard(this)
 //        setStatusBarColor(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -122,25 +157,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(this, R.color.textColor);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            val decor = window.decorView
-//            if (true) {
-//                decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-//            } else {
-//                // We want to change tint color to white again.
-//                // You can also record the flags in advance so that you can turn UI back completely if
-//                // you have set other flags before, such as translucent or full screen.
-//                decor.systemUiVisibility = 0
-//            }
-//        }
-
         initViewModel()
         setupNavigationDrawer()
 
-//        if(this.searchFragment !=null)
-//        if(this.searchFragment?.isAdded!!){
-//            bottomNavigationView.visibility = View.GONE
-//        }
 
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -149,17 +168,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
             }
         }
-//        fabBtnShowDialpad.setOnClickListener(this)
         setBottomSheetListener()
 
         mangeCipherInSharedPref()
         observeUserInfoLiveData()
         setupContactUploadWork()
-
-
-
     }
-
 
 
     private fun requestAlertWindowPermission() {
@@ -923,8 +937,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
     }
 
+    override fun onPause() {
+        super.onPause()
+
+    }
     companion object {
         private const val TAG = "__MainActivity"
+
+        private const val KEY_ALIAS = "MYKeyAlias"
+        private const val KEY_STORE = "AndroidKeyStore"
+        private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
+
+        private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
         fun hideKeyboard(activity: Activity) {
             try {
                 val inputManager = activity

@@ -47,7 +47,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/splashScreenTheme">
         <activity android:name=".view.ui.call.spam.SpamCallsActivity"></activity>
         <activity android:name=".view.ui.call.history.CallhistoryActivity" />
         <activity android:name=".view.ui.call.search.CallLogSearchActivity" />
@@ -148,8 +148,7 @@
             android:name=".view.ui.auth.ActivityPhoneAuth"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".view.ui.splashactivity.SplashActivity"
-            android:theme="@style/AppTheme">
+            android:name=".view.ui.splashactivity.SplashActivity">
             <meta-data
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
                 android:value="@string/safety_net_api_key" />
@@ -166,7 +165,6 @@
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
             android:parentActivityName=".view.ui.MainActivity"
-            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -210,7 +208,7 @@
         <activity
             android:name=".view.ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:theme="@style/AppTheme"
+            android:theme="@style/splashScreenTheme"
             android:windowSoftInputMode="adjustPan" /> <!-- Service that delivers messages from the phone "quick response" -->
         <service
             android:name=".view.ui.sms.services.HeadlessSmsSendService"
