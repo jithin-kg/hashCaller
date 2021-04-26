@@ -28,7 +28,7 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.search.ActivitySearchPhone
+import com.nibble.hashcaller.view.ui.contacts.search.ActivitySerchContacts
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
@@ -244,7 +244,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     }
     private fun startSearchActivity() {
-        val intent = Intent(activity, ActivitySearchPhone::class.java)
+
+        val intent = Intent(activity, ActivitySerchContacts::class.java)
         intent.putExtra("animation", "explode")
         Log.d(TAG, "startSearchActivity: $btnSampleTransition")
         val p1 = android.util.Pair(binding.searchViewContacts as View,"editTextTransition")

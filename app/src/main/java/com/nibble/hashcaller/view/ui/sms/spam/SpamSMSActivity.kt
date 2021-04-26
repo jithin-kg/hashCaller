@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_LONG_PRESS
 import com.nibble.hashcaller.view.ui.sms.individual.util.UNMARK_ITEM
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -105,8 +106,13 @@ class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
         }
     }
     private fun onContactItemClicked(view: View, threadId: Long, position: Int, address: String, clickType:Int): Int {
-        startIndividualSMSActivity(address, view)
-
+        when(clickType){
+            TYPE_LONG_PRESS -> {
+                toast("Slide left or right to delete")
+            }else ->{
+                startIndividualSMSActivity(address, view)
+            }
+        }
         return UNMARK_ITEM
     }
 

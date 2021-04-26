@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    app:layoutDescription="@xml/activity_search_contact_scene"
+    tools:context=".view.ui.contacts.search.SearchFragment">
+
+    <TextView
+        android:id="@+id/tvCallSearchSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:alpha="0.87"
+        android:gravity="center"
+        android:text="Search in contacts"
+        android:textColor="@color/textColor"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/search_background"
+        android:elevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCallSearchSmall">
+
+        <ImageButton
+            android:id="@+id/imgBtnBackCallhistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/searchVCallSearch"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+            tools:layout_editor_absoluteX="16dp" />
+
+        <EditText
+            android:id="@+id/searchVCallSearch"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:background="#00000000"
+            android:backgroundTint="@color/colorBackground"
+            android:hint="  Search "
+            android:queryBackground="@android:color/transparent"
+            android:queryHint="Search numbers, names"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnBackCallhistory"
+            app:layout_constraintTop_toTopOf="parent">
+            <!--important to give request focus to show softInput on activity loads           -->
+            <requestFocus />
+        </EditText>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tvQueryItem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text=""
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.048"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearch" />
+
+    <ImageView
+        android:id="@+id/imgVDividerCallsrch"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvQueryItem"
+        app:srcCompat="@drawable/horizontal_line_settings" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/reclrVResultFull"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgVDividerCallsrch" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgVDividerCallsrch" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
