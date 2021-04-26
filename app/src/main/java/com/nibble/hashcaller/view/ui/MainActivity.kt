@@ -64,6 +64,7 @@ import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -1003,7 +1004,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.spamSms -> {
-                Log.d(TAG, "onNavigationItemSelected: spam sms")
+                val intent = Intent(this, SpamSMSActivity::class.java)
+                startActivity(intent)
 
             }
             R.id.settingsMenuItem ->{

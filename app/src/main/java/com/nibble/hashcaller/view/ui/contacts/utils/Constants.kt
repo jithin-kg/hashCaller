@@ -27,7 +27,7 @@ import kotlin.collections.HashMap
  * Created by Jithin KG on 23,July,2020
  */
 
-const val SPAM_THREASHOLD = 0L
+const val SPAM_THREASHOLD = 15L
 const val CONTACT_ID = "contactId"
 const val CONTACT_ADDRES = "contact_address"
 const val SHAREDPREF_LOGGEDIN = "IsLoggedInSP"

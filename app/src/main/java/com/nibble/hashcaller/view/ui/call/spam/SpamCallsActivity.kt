@@ -52,7 +52,9 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
         swipeHandler = object : SwipeToDeleteCallback(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val adapter = binding.recyvlerV.adapter
-                viewmodel.delete(callLogAdapter?.getLogAt(viewHolder.adapterPosition))
+                val log = callLogAdapter?.getLogAt(viewHolder.adapterPosition)
+                viewmodel.delete(log)
+                toast("All Call history of ${log?.number} is deleted", Toast.LENGTH_LONG)
 
             }
         }
@@ -144,7 +146,7 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
                         val oldPos = viewmodel.markeditemsHelper.getPrevExpandedPosition()
                         viewmodel.markeditemsHelper.setExpandedLayout(id, position)
                         if(oldPos!=null){
-                            callLogAdapter?.notifyItemChanged(oldPos)
+//                            callLogAdapter?.notifyItemChanged(oldPos)
                         }
                         return EXPAND_LAYOUT
                     }else{

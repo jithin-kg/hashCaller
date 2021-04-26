@@ -98,6 +98,10 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
 
     }
 
+    fun getSMSAt(adapterPosition: Int): SmsThreadTable {
+        return smsList[adapterPosition]
+    }
+
     inner class SmsViewHolder(val binding:SmsListViewBinding) : RecyclerView.ViewHolder(binding.root),View.OnCreateContextMenuListener {
         var layoutExpandable: ConstraintLayout = binding.layoutExpandable
         private val name = binding.textVSMSCntctName

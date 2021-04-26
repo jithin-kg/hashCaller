@@ -87,9 +87,9 @@ class CallContainerRepository(
     /**
      * function to delete call logs in db by id, ie marked items
      */
-    suspend fun deleteCallLogsFromDBByid(id: Long) {
+    suspend fun deleteCallLogsFromDBByid(address: String) {
 //            callLogDAO?.delete(id)
-            callLogDAO?.markAsDeleted(id, true)
+            callLogDAO?.markAsDeleted(formatPhoneNumber(address), true)
         delay(400L)
     }
 

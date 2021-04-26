@@ -6,14 +6,15 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
+import com.nibble.hashcaller.work.formatPhoneNumber
 
 class SpamCallRepository(private val callLogDao: ICallLogDAO, private val context: Context) {
     fun getSpamCallLogLivedata(): LiveData<MutableList<CallLogTable>> {
        return callLogDao.getSpamCallLogLivedata()
     }
 
-    suspend fun deleteById(id: Long) {
-        callLogDao.delete(id)
+    suspend fun markAsDeleted(num: String) {
+        callLogDao.markAsDeleted(formatPhoneNumber(num))
 
     }
 

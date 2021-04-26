@@ -18,7 +18,7 @@ class SpamCallViewModel(private val repository: SpamCallRepository) : ViewModel(
     fun delete(logAt: CallLogTable?) = viewModelScope.launch {
         logAt?.id?.let {
 
-          val def1=  async { repository.deleteById(it) }
+          val def1=  async { repository.markAsDeleted(logAt.numberFormated) }
            val def2 =  async { repository.deleteCallLogsFromCp(logAt.number) }
            try {
                def1.await()

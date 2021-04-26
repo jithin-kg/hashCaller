@@ -16,7 +16,7 @@ import java.util.*
 @Entity(tableName = "call_log",indices = [Index(value =["id", "number"], unique = true)])
  data class CallLogTable (
     @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "number") var  number:String = "",
+    @ColumnInfo(name = "number") var  number:String = "", // number should be primary key, else there is duplicates
     @ColumnInfo(name = "id") var id: Long?,
     @ColumnInfo(name = "name") var name:String? = null,
     @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,

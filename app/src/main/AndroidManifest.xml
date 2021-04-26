@@ -48,28 +48,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <activity android:name=".view.ui.call.spam.SpamCallsActivity"></activity>
+        <activity android:name=".view.ui.sms.spam.SpamSMSActivity"></activity>
+        <activity android:name=".view.ui.call.spam.SpamCallsActivity" />
         <activity android:name=".view.ui.call.history.CallhistoryActivity" />
         <activity android:name=".view.ui.call.search.CallLogSearchActivity" />
         <activity android:name=".view.ui.notifications.ManageNotificationsActivity" />
-        <activity android:name=".view.ui.blockConfig.blockList.BlockListActivity"
-            android:theme="@style/AppTheme"
-
-            />
-        <activity android:name=".view.ui.manageblock.BlockManageActivity"
-            android:theme="@style/AppTheme"
-
-            />
-        <activity android:name=".view.ui.settings.SettingsActivity"
-            android:theme="@style/AppTheme"
-            />
-        <activity android:name=".view.ui.call.individualCallLog.IndividualCallLogActivity"
-            android:theme="@style/AppTheme"
-            />
-        <activity android:name=".view.ui.contacts.search.FulllSearchResultsActivity"
-            android:theme="@style/AppTheme"
-
-            />
+        <activity
+            android:name=".view.ui.blockConfig.blockList.BlockListActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".view.ui.manageblock.BlockManageActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".view.ui.settings.SettingsActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".view.ui.call.individualCallLog.IndividualCallLogActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".view.ui.contacts.search.FulllSearchResultsActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.search.SearchSMSActivity"
             android:theme="@style/AppTheme"
@@ -122,7 +120,6 @@
 
         <activity
             android:name=".view.ui.auth.ActivityVerifyOTP"
-
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.schedule.ScheduleActivity"
@@ -161,8 +158,7 @@
         <activity
             android:name=".view.ui.auth.ActivityPhoneAuth"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.splashactivity.SplashActivity">
+        <activity android:name=".view.ui.splashactivity.SplashActivity">
             <meta-data
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
                 android:value="@string/safety_net_api_key" />

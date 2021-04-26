@@ -197,7 +197,7 @@ class CallContainerViewModel(
 
         viewModelScope.launch {
 //            val as1 = async {
-            for(item in markedItems.value!!){
+            for(item in markedAddres){
                 async { repository?.deleteCallLogsFromDBByid(item) }.await()
             }
             emit(ON_COMPLETED)
