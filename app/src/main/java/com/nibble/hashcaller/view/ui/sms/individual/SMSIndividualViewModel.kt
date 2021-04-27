@@ -102,7 +102,11 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         contactAddress: String
 
     ): String? {
-        val time = repository?.addMessageToOutBox(msg, contactAddress)
+        var time :String? = ""
+        viewModelScope.launch {
+             time = repository?.addMessageToOutBox(msg, contactAddress)
+
+        }
         //save the id in the database so that we can use this id to change type of sms
         // from outbox to sent, only after successfully sending, and we need to delete the id  from
         // database after sending

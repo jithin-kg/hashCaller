@@ -16,6 +16,8 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -50,7 +52,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
 
     @SuppressLint("LongLogTag")
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result  = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "doWork: ")
 
@@ -81,7 +83,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                     val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
 
                     if(result.code() in (500..599)){
-                        return Result.retry()
+                        return@withContext Result.retry()
                     }
                     var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 
@@ -102,10 +104,10 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
 
         }catch (e: HttpException){
-            return Result.retry()
+            return@withContext Result.retry()
             Log.d(TAG, "doWork: retry")
         }
-        return Result.success()
+        return@withContext Result.success()
     }
 
     /**

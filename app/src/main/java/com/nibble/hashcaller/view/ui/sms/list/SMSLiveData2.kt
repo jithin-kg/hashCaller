@@ -85,7 +85,7 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
 
         return data
     }
-    fun update(address:String){
+    suspend fun update(address:String){
         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository =

@@ -10,6 +10,8 @@ import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 /**
@@ -22,7 +24,7 @@ class UserNetworkRepository(
 ){
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
     
-    suspend fun signup(userInfo:UserInfoDTO): Response<SingupResponse> {
+    suspend fun signup(userInfo:UserInfoDTO): Response<SingupResponse>   = withContext(Dispatchers.IO) {
 //        retrofitService = RetrofitClient.createaService(IuserService::class.java)
 
         val token = tokenManager.getToken()
@@ -35,11 +37,11 @@ class UserNetworkRepository(
         }
         Log.d(TAG, "signup:error body ${response?.errorBody()}")
 //        Log.d(TAG, "signup: ${response?.body()?.message}")
-        return response
+        return@withContext response
     }
 
-    suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo) {
-        this.userInfoDAO.insert(userInfo)
+    suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo)  = withContext(Dispatchers.IO){
+        userInfoDAO.insert(userInfo)
     }
 
     /**
@@ -53,12 +55,12 @@ class UserNetworkRepository(
 
     }
 
-    suspend fun getUserInfoFromServer(): Response<SingupResponse> {
+    suspend fun getUserInfoFromServer(): Response<SingupResponse> = withContext(Dispatchers.IO) {
         val token = tokenManager.getToken()
-        return retrofitService.getUserInfo(token)
+        return@withContext retrofitService.getUserInfo(token)
     }
 
-    suspend fun insertNewUserIntoDb(userInfo: UserInfo) {
+    suspend fun insertNewUserIntoDb(userInfo: UserInfo)  = withContext(Dispatchers.IO) {
         userInfoDAO?.insert(user = userInfo)
     }
 

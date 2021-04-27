@@ -8,6 +8,8 @@ import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.Exception
 
@@ -31,8 +33,8 @@ class SplashActivityRepository(
 //        return response
 //    }
 
-    suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo) {
-        this.userInfoDAO.insert(userInfo)
+    suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo)  = withContext(Dispatchers.IO) {
+        userInfoDAO.insert(userInfo)
     }
 
 
@@ -41,19 +43,19 @@ class SplashActivityRepository(
 
     }
 
-    suspend fun getuserInfo(): UserInfo? {
-        return userInfoDAO?.getUser()
+    suspend fun getuserInfo(): UserInfo?  = withContext(Dispatchers.IO) {
+        return@withContext userInfoDAO?.getUser()
     }
 
-    suspend fun getUserInfoFromServer(): Response<SingupResponse>? {
+    suspend fun getUserInfoFromServer(): Response<SingupResponse>?   = withContext(Dispatchers.IO){
         try {
             val token = tokenManager.getToken()
             val res =  retrofitService?.getUserInfo(token)
-            return res
+            return@withContext res
         }catch (e:Exception){
             Log.d(TAG, "getUserInfoFromServer: $e")
         }
-        return null
+        return@withContext null
 
     }
 

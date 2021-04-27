@@ -14,6 +14,8 @@ import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.nibble.hashcaller.utils.SpamNetworkRepository as SpamNetworkRepository1
 
 class SpamReportWorker (private val context: Context, private val params:WorkerParameters ) :
@@ -25,7 +27,7 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
     private val repository: SpamNetworkRepository1 = SpamNetworkRepository1(context)
 
 
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val num = inputData.getString(CONTACT_ADDRES)
         val report = ReportedUserDTo(num!!, "kerala", "0", "1")
 //        repository.report(report)
@@ -35,14 +37,14 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
 
            val response =  retrofitService?.report(report, token)
             if(response.code() in 500..599){
-                return Result.retry()
+                return@withContext Result.retry()
             }
         } catch (e: Exception) {
             Log.d(TAG, "doWork: ")
-            return Result.retry()
+            return@withContext Result.retry()
         }
 
-        return Result.success()
+        return@withContext Result.success()
     }
 companion object{
     const val TAG ="__SpamReportWorker"

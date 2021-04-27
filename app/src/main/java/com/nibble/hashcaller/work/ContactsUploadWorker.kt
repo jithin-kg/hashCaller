@@ -18,9 +18,7 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.util.*
 
@@ -37,7 +35,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
 
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
@@ -55,7 +53,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     val contactsNetworkRepository = ContactsNetworkRepository(context)
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
                     if(result?.code() in (500..599)){
-                        return Result.retry()
+                        return@withContext Result.retry()
                     }
 
                     Log.d(TAG, "result:$result")
@@ -81,10 +79,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //                uploadContactsToServer()
 
         }catch (e: HttpException){
-            return Result.retry()
+            return@withContext Result.retry()
             Log.d(TAG, "doWork: retry")
         }
-        return Result.success()
+        return@withContext Result.success()
     }
 
 

@@ -10,6 +10,8 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -30,7 +32,7 @@ class SMSIndividualLiveData(
         val URI: Uri = SMSContract.ALL_SMS_URI
         private const val TAG = "__MessagesLiveData"
     }
-    private fun getMessages(context: Context): List<SMS> {
+    private suspend fun getMessages(context: Context): List<SMS>  = withContext(Dispatchers.IO){
 
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
@@ -43,7 +45,7 @@ class SMSIndividualLiveData(
             mutedSendersDAO,
             smsThreadsDAO
         )
-        return repository.fetchIndividualSMS(contact)
+        return@withContext repository.fetchIndividualSMS(contact)
 
 //        val listOfMessages = mutableListOf<SMS>()
 //        var data = ArrayList<SMS>()

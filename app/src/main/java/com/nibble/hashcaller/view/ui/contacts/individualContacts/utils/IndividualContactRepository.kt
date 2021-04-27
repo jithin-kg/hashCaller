@@ -18,6 +18,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -53,9 +55,9 @@ class IndividualContactRepository(
      * Returns the contact information for the IndividualcontactViewactivity
      * from the local db with additional contact information succh as location, carrier..
      */
-    suspend fun getIndividualContact(phoneNum: String): ContactTable {
+    suspend fun getIndividualContact(phoneNum: String): ContactTable  = withContext(Dispatchers.IO){
         val res = dao.search(phoneNum)
-        return res
+        return@withContext res
     }
     suspend fun getPhoto(id: Long, phoneNum: String?): String {
         retrieveContactPhoto(id)
@@ -221,7 +223,7 @@ class IndividualContactRepository(
         * function to get contact details for a number
         */
        @SuppressLint("LongLogTag")
-       fun getContactDetailForNumber(phoneNumber: String): Contact? {
+       suspend fun getContactDetailForNumber(phoneNumber: String): Contact?  = withContext(Dispatchers.IO) {
            var cursor:Cursor? = null
            val phoneNum = phoneNumber.replace("+", "").trim()
            val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
@@ -243,13 +245,13 @@ class IndividualContactRepository(
            }finally {
                cursor2?.close()
            }
-            return contact
+           return@withContext contact
        }
 
        /**
         * function to get non thumbnail image ie clear image from cprovider
         */
-       suspend fun getClearImageFromCprovider(phoneNum: String): String? {
+       suspend fun getClearImageFromCprovider(phoneNum: String): String? = withContext(Dispatchers.IO) {
            var photoUri:String? = null
            val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNum));
            val cursor = context.contentResolver.query(uri, null,  null, null, null )
@@ -257,24 +259,24 @@ class IndividualContactRepository(
 //                    Log.d(TAG, "getConactInfoForNumber: data exist")
                photoUri = cursor.getString(cursor.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_URI))
            }
-          return photoUri
+           return@withContext photoUri
        }
 
        /**
         * function to get the image from db which received from server
         */
-       suspend fun getClearImageFromDb(phoneNum: String): String? {
+       suspend fun getClearImageFromDb(phoneNum: String): String? = withContext(Dispatchers.IO) {
            var photoUri:String? = null
-            return photoUri
+           return@withContext photoUri
        }
 
         fun getInfoFromServerForContact(): LiveData<ContactTable?>? {
            return phoneNum?.let { formatPhoneNumber(it) }?.let { dao?.findOne(it) }
        }
 
-       suspend fun getCallLogInfoForNum(phoneNum: String): CallLogTable? {
+       suspend fun getCallLogInfoForNum(phoneNum: String): CallLogTable?  = withContext(Dispatchers.IO){
         val formatedNum = formatPhoneNumber(phoneNum)
-          return  callLogDAO.find(formatedNum)
+           return@withContext callLogDAO.find(formatedNum)
        }
 
 

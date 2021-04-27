@@ -7,18 +7,20 @@ import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SpamCallRepository(private val callLogDao: ICallLogDAO, private val context: Context) {
     fun getSpamCallLogLivedata(): LiveData<MutableList<CallLogTable>> {
        return callLogDao.getSpamCallLogLivedata()
     }
 
-    suspend fun markAsDeleted(num: String) {
+    suspend fun markAsDeleted(num: String) = withContext(Dispatchers.IO) {
         callLogDao.markAsDeleted(formatPhoneNumber(num))
 
     }
 
-    suspend fun deleteCallLogsFromCp(number: String) {
+    suspend fun deleteCallLogsFromCp(number: String) = withContext(Dispatchers.IO) {
         try {
             var uri = CallLog.Calls.CONTENT_URI
             val selection = "${CallLog.Calls.NUMBER} = ?"

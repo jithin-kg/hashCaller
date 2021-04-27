@@ -10,6 +10,8 @@ import com.nibble.hashcaller.network.search.SearchResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class SearchNetworkRepository(private val context: Context){
@@ -17,7 +19,7 @@ class SearchNetworkRepository(private val context: Context){
     private var retrofitService:ISearchService? = null
     @SuppressLint("LongLogTag")
 
-    suspend fun search(phoneNum:String): Response<SerachRes>? {
+    suspend fun search(phoneNum:String): Response<SerachRes>?  = withContext(Dispatchers.IO){
         retrofitService = RetrofitClient.createaService(ISearchService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
         val tokenManager = TokenManager(sp)
@@ -28,10 +30,10 @@ class SearchNetworkRepository(private val context: Context){
 
 
 //        return response
-         return retrofitService?.search(SearchDTO(phoneNum), token)
+        return@withContext retrofitService?.search(SearchDTO(phoneNum), token)
     }
 
-    suspend fun incrementTotalSpamCount() {
+    suspend fun incrementTotalSpamCount()  = withContext(Dispatchers.IO) {
         retrofitService = RetrofitClient.createaService(ISearchService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 

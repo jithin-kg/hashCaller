@@ -18,9 +18,7 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.util.*
 
@@ -31,7 +29,7 @@ class ContactsAddressLocalWorker(private val context: Context, private val param
         CoroutineWorker(context, params){
     private val contactAddressDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
     private var allcontactsInContentProvider:MutableList<ContactUploadDTO> = mutableListOf()
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result  = withContext(Dispatchers.IO) {
         try {
             val contactRepository = ContactRepository(context)
             allcontactsInContentProvider.addAll( contactRepository.fetchContacts())
@@ -47,10 +45,10 @@ class ContactsAddressLocalWorker(private val context: Context, private val param
 
         }catch (e: HttpException){
             Log.d(TAG, "doWork: retry")
-            return Result.retry()
+            return@withContext Result.retry()
 
         }
-        return Result.success()
+        return@withContext Result.success()
     }
 
 

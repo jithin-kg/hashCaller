@@ -33,22 +33,22 @@ class ContactLocalSyncRepository(
 
     var  contactsFomLocalDB = contactLisDAO?.getContacts()
 
-    suspend fun getContact(phonNumber:String): ContactTable? {
+    suspend fun getContact(phonNumber:String): ContactTable?  = withContext(Dispatchers.IO){
         val res = contactLisDAO?.search(phonNumber)
 //        val res = contactLisDAO?.search()
 //        contactsFomLocalDB = res
-       return  res
+        return@withContext res
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun insertContacts(preparedContacts: List<ContactTable>) {
+    suspend fun insertContacts(preparedContacts: List<ContactTable>) = withContext(Dispatchers.IO) {
         Log.d(TAG, "insertContacts: ")
         val insert = contactLisDAO?.insert(preparedContacts)
         Log.d(TAG, "insertContacts:$insert ")
 
     }
 
-    suspend fun insertSingleContactItem(c: ContactTable) {
+    suspend fun insertSingleContactItem(c: ContactTable) = withContext(Dispatchers.IO) {
     contactLisDAO!!.insertSingleItem(c)
     }
 
@@ -57,7 +57,7 @@ class ContactLocalSyncRepository(
      * in content provider
      */
     @SuppressLint("LongLogTag")
-    suspend fun getContactsLike(queryString: String): MutableList<Contact>  {
+    suspend fun getContactsLike(queryString: String): MutableList<Contact>  = withContext(Dispatchers.IO)  {
 
         val listOfContacts = mutableListOf<Contact>()
          var lastNumber = ""
@@ -118,7 +118,7 @@ class ContactLocalSyncRepository(
             }
         }
 
-        return listOfContacts
+        return@withContext listOfContacts
 
     }
 

@@ -11,7 +11,9 @@ import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 class SpamSMSRepository(private val threadsDAO: ISMSThreadsDAO, private val context: Context) {
 
@@ -19,12 +21,12 @@ class SpamSMSRepository(private val threadsDAO: ISMSThreadsDAO, private val cont
        return threadsDAO.getSpamSMSLogLivedata()
     }
 
-    suspend fun markAsDeleted(id: Long) {
+    suspend fun markAsDeleted(id: Long)  = withContext(Dispatchers.IO){
         threadsDAO.markAsDeleted(id)
 
     }
 
-    suspend fun deleteSMSsFromCp(id: Long) {
+    suspend fun deleteSMSsFromCp(id: Long) = withContext(Dispatchers.IO) {
         try{
             var uri = Telephony.Sms.CONTENT_URI
             val selection = "${Telephony.Sms.THREAD_ID} = ?"

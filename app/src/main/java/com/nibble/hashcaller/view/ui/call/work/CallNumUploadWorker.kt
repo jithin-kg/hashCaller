@@ -17,6 +17,8 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallLocalRepository
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -37,7 +39,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
 
     @SuppressLint("LongLogTag")
-    override suspend fun doWork(): Result {
+    override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
             val networklivedta = ConnectionLiveData(context)
 
@@ -68,12 +70,15 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     /**
                      * send the list to server
                      */
+                    /**
+                     * send the list to server
+                     */
                     val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
 
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
 
                     if(result.code() in (500..599)){
-                        return Result.retry()
+                        return@withContext Result.retry()
                     }
 
                     for(cntct in result.body()!!.contacts){
@@ -91,10 +96,10 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
 
         }catch (e: HttpException){
-            return Result.retry()
+            return@withContext Result.retry()
             Log.d(TAG, "doWork: retry")
         }
-        return Result.success()
+        return@withContext Result.success()
     }
 
     /**

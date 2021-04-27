@@ -10,7 +10,9 @@ import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.view.ui.contacts.utils.ALREADY_EXISTS_IN_DB
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -23,25 +25,25 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
     val allBlockedList:LiveData<List<BlockedListPattern>> = blockedLIstDao.getAllBLockListPattern()
 
     @SuppressLint("LongLogTag")
-    suspend fun insert(blockedListPattern: BlockedListPattern): Int {
-        blockedLIstDao.find(formatPhoneNumber(blockedListPattern.numberPattern), blockedListPattern.type).apply {
-            if(this==null){
-                blockedLIstDao.insert(blockedListPattern).apply {
-                    return OPERATION_COMPLETED
-                }
+    suspend fun insert(blockedListPattern: BlockedListPattern): Int  = withContext(Dispatchers.IO){
+       val res =  blockedLIstDao.find(formatPhoneNumber(blockedListPattern.numberPattern), blockedListPattern.type)
+            if(res==null){
+                blockedLIstDao.insert(blockedListPattern)
+                return@withContext OPERATION_COMPLETED
+
             }else{
-                return ALREADY_EXISTS_IN_DB
+                return@withContext ALREADY_EXISTS_IN_DB
             }
-        }
+
     }
     @SuppressLint("LongLogTag")
-    suspend fun delete(blockedListPattern: String, type: Int){
+    suspend fun delete(blockedListPattern: String, type: Int) = withContext(Dispatchers.IO){
         val insert = blockedLIstDao.delete(blockedListPattern, type)
         Log.d(TAG, "insert: $insert")
     }
     @SuppressLint("LongLogTag")
-    suspend fun getListOfdata():List<BlockedListPattern>{
-        return blockedLIstDao.getAllBLockListPatternList()
+    suspend fun getListOfdata():List<BlockedListPattern> = withContext(Dispatchers.IO){
+        return@withContext blockedLIstDao.getAllBLockListPatternList()
 
 
     }

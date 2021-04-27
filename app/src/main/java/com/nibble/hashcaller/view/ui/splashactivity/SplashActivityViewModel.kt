@@ -66,13 +66,9 @@ class SplashActivityViewModel(
         var res :UserInfo? = null
             viewModelScope.launch {
                  res = repository?.getuserInfo()
-
             }
         return res
-
-
     }
-
    @SuppressLint("LongLogTag")
    fun getUserInfoFromServer(): LiveData<SingupResponse?> = liveData {
     var response:Response<SingupResponse>? = null

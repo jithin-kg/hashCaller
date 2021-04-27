@@ -13,6 +13,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -139,7 +141,7 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
 
         return data
     }
-    fun update(address:String){
+    suspend fun update(address:String) = withContext(Dispatchers.IO){
         val repository =
             SMSLocalRepository(
                 context,

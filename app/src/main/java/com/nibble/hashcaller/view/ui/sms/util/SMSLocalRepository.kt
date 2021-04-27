@@ -124,7 +124,7 @@ class SMSLocalRepository(
     }
 
 
-    fun getUnreadMsgCount(): Int? {
+    suspend fun getUnreadMsgCount(): Int?   = withContext(Dispatchers.IO){
         var cursor:Cursor? = null
         var cnt:Int? = 0
         var address = "44"
@@ -147,34 +147,30 @@ class SMSLocalRepository(
             cursor?.close()
         }
 
-        return cnt
+        return@withContext cnt
     }
 
     //gets sms for SMSLiveData to show all sms
-    suspend fun fetchSMS(searchText:String?, isrequestingFromSmsSpamList:Boolean = false): ArrayList<SmsThreadTable> {
-         fetchSMSForLivedata(null, isrequestingFromSmsSpamList).apply {
-            return this
-        }
+    suspend fun fetchSMS(searchText:String?, isrequestingFromSmsSpamList:Boolean = false): ArrayList<SmsThreadTable>  = withContext(Dispatchers.IO) {
+        return@withContext fetchSMSForLivedata(null, isrequestingFromSmsSpamList)
     }
 
 
     //this function fetches sms while searching
-    suspend fun getSms(searchQuery: String?): MutableList<SMS> {
+    suspend fun getSms(searchQuery: String?): MutableList<SMS>   = withContext(Dispatchers.IO){
 
-         fetchWithRawData(searchQuery, false).apply {
-             return this
-         }
+        return@withContext fetchWithRawData(searchQuery, false)
     }
 
 
     /**
      * function to mark the sms as read in smsthreads table
      */
-    suspend fun marAsReadInDB(contactAddress: String) {
+    suspend fun marAsReadInDB(contactAddress: String)  = withContext(Dispatchers.IO) {
         smsThreadsDAO?.markAsRead(contactAddress, 1)
     }
     @SuppressLint("LongLogTag")
-    fun markSMSAsRead(addressString: String?){
+    suspend fun markSMSAsRead(addressString: String?)  = withContext(Dispatchers.IO){
         try {
             /**
              * This commented out code marks all sms as read
@@ -497,7 +493,7 @@ class SMSLocalRepository(
         return@withContext data
     }
     @SuppressLint("LongLogTag")
-    private suspend fun fetchWithRawData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS> {
+    private suspend fun fetchWithRawData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS>  = withContext(Dispatchers.IO) {
         var data = ArrayList<SMS>()
         val listOfMessages = mutableListOf<SMS>()
 
@@ -634,7 +630,7 @@ class SMSLocalRepository(
 //        }
 //        r1.await()
 
-        return listOfMessages
+        return@withContext listOfMessages
     }
 
     private fun removeDeletedMSSFRomhashMap(setOfAdderss: MutableSet<String>) {
@@ -902,14 +898,10 @@ class SMSLocalRepository(
     private suspend fun getDetailsFromDB(
         num: String,
         sms: SMS
-    ): SMSSendersInfoFromServer?  {
+    ): SMSSendersInfoFromServer?   = withContext(Dispatchers.IO) {
         var r: SMSSendersInfoFromServer? = null
 
-        coroutineScope{
-            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
-        }.apply {
-            return r
-        }
+        return@withContext smssendersInfoDAO!!.find(formatPhoneNumber(num))
 //        GlobalScope.launch {
 //            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
 //        }.join()
@@ -1019,7 +1011,7 @@ class SMSLocalRepository(
 
     }
 
-    private  fun setCount(sms: SMS) {
+    private  fun setCount(sms: SMS)  {
         val addressString = sms.addressString
         var cnt:Int? = 0
 
@@ -1050,7 +1042,7 @@ class SMSLocalRepository(
     }
 
     @SuppressLint("LongLogTag")
-    fun fetchIndividualSMS(contact: String?): List<SMS> {
+    suspend fun fetchIndividualSMS(contact: String?): List<SMS>  = withContext(Dispatchers.IO) {
         Log.d(TAG+"individual", "contact is $contact ")
         var count = 0
         var smsRef : SMS = SMS()
@@ -1127,13 +1119,13 @@ class SMSLocalRepository(
         }
         Log.d(TAG+"individual", "fetchIndividualSMS: sizeL${smslist.size}, count:$count")
 
-        return smslist
+        return@withContext smslist
     }
 
     /**
      * Add to messages of type sd/dsds... to TextBasedSMSColums table
      */
-    fun addMessageToOutBox(msg: String, contactAddress: String): String {
+    suspend fun addMessageToOutBox(msg: String, contactAddress: String): String  = withContext(Dispatchers.IO) {
 //        Log.d(TAG, "addMessageToOutBox: ")
         var time = System.currentTimeMillis().toString()
 //        Log.d(TAG, "addMessageToOutBox: time is $time")
@@ -1161,11 +1153,11 @@ class SMSLocalRepository(
             Log.d(TAG, "addMessageToOutBox: exception $e")
         }
         Log.d(TAG, "id:$id")
-        return time
+        return@withContext time
 
     }
 
-    fun moveFromoutBoxToSent(time: String?, address: String){
+    suspend fun moveFromoutBoxToSent(time: String?, address: String)  = withContext(Dispatchers.IO){
 //        Log.d(TAG, "moveFromoutBoxToSent:  id $time")
 //        Log.d(TAG, "moveFromoutBoxToSent:  address $address")
         val values = ContentValues().apply {
@@ -1202,7 +1194,7 @@ class SMSLocalRepository(
 
     }
 
-    suspend fun deleteAllSpamSMS() {
+    suspend fun deleteAllSpamSMS()  = withContext(Dispatchers.IO) {
         val spamerslist = spamListDAO?.getAll()
         if (spamerslist != null) {
             for (spamer in spamerslist){
@@ -1337,7 +1329,7 @@ class SMSLocalRepository(
         smssendersInfoDAO!!.find(formatPhoneNumber(num))
     }
 
-    fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>> {
+    fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>>{
         return smssendersInfoDAO!!.getAllLiveData()
     }
 
@@ -1345,7 +1337,7 @@ class SMSLocalRepository(
      * function to return sms and address in content provider for SmsHashedNumUploadWorker
      */
     @SuppressLint("LongLogTag")
-    suspend fun fetchSmsForWorker(): MutableList<SMS> {
+    suspend fun fetchSmsForWorker(): MutableList<SMS>  = withContext(Dispatchers.IO) {
         var data = ArrayList<SMS>()
         var hashSetOfAddress:HashSet<String> = hashSetOf()
         try {
@@ -1435,7 +1427,7 @@ class SMSLocalRepository(
         Log.d(TAG, "fetchSmsForWorker: size of list is ${data.size}")
         if(data.size >= 1)
             Log.d(TAG, "fetchSmsForWorker: first item msg is  ${data[0].msg}")
-        return data
+        return@withContext data
     }
 
 
@@ -1721,7 +1713,7 @@ class SMSLocalRepository(
     /**
      * Adding a new sms sender info who is a spammer
      */
-    suspend fun markAsSpam(contactAddress: String, i: Int, s: String, s1: String) {
+    suspend fun markAsSpam(contactAddress: String, i: Int, s: String, s1: String)   = withContext(Dispatchers.IO){
        val formatedAddress = formatPhoneNumber(contactAddress)
         var name = ""
         var spamCount = 0L
@@ -1748,7 +1740,7 @@ class SMSLocalRepository(
 
 
     }
-    suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
+    suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>?  = withContext(Dispatchers.IO){
         var retrofitService:ISpamService? = null
 
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
@@ -1756,12 +1748,12 @@ class SMSLocalRepository(
 
         val tokenManager = TokenManager(sp)
         val token = tokenManager.getToken()
-        return retrofitService?.report(callerInfo, token)
+        return@withContext retrofitService?.report(callerInfo, token)
     }
 
 
     @SuppressLint("LongLogTag")
-    suspend fun deleteSmsThread(id:Long): Int {
+    suspend fun deleteSmsThread(id:Long): Int  = withContext(Dispatchers.IO) {
         smsDeletingStarted = true
         var numRowsDeleted = 0
 //        var copy:MutableList<Long> = mutableListOf()
@@ -1789,7 +1781,7 @@ class SMSLocalRepository(
             deleteList()
         }
 
-        return numRowsDeleted
+        return@withContext numRowsDeleted
     }
 
 
@@ -1801,7 +1793,7 @@ class SMSLocalRepository(
      * function to add contact address to muted_senders table,
      * no notification for incoming sms from muted senders
      */
-    suspend fun muteSenders() {
+    suspend fun muteSenders()   = withContext(Dispatchers.IO){
         var addressList: MutableList<MutedSenders> = mutableListOf()
         for (address in MarkedItemsHandler.markedContactAddress){
             val mutedSender = MutedSenders(formatPhoneNumber(address))
@@ -1810,7 +1802,7 @@ class SMSLocalRepository(
         mutedSendersDAO!!.insert(addressList)
     }
 
-    suspend fun deleteAllSMmsendersINo() {
+    suspend fun deleteAllSMmsendersINo()  = withContext(Dispatchers.IO) {
         smssendersInfoDAO!!.deleteAll()
         smsThreadsDAO?.deleteAll()
     }
@@ -2006,7 +1998,7 @@ class SMSLocalRepository(
     /**
      * function to get name for a contact address from DB in individual sms activity
      */
-    suspend fun getContactInfoFRomDB(pno: String): String? {
+    suspend fun getContactInfoFRomDB(pno: String): String?   = withContext(Dispatchers.IO){
 //        val numWithoutSpecialChars = replaceSpecialChars(pno)
         var result : SMSSendersInfoFromServer? = null
         var name :String ? = null
@@ -2022,17 +2014,14 @@ class SMSLocalRepository(
 //            }
 //
 //        }
-        smssendersInfoDAO!!.find(formatPhoneNumber(pno)).apply {
-            result =this
+        result = smssendersInfoDAO!!.find(formatPhoneNumber(pno))
             if(result!=null){
                 name = result!!.name
             }
-            return name
-        }
-
+        return@withContext name
     }
 
-    suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?, spammerCategory: Int) {
+    suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?, spammerCategory: Int)  = withContext(Dispatchers.IO) {
         val formatedAddress = formatPhoneNumber(contactAddress)
         smssendersInfoDAO!!.find(formatedAddress).apply {
             if(this!=null){
@@ -2048,11 +2037,11 @@ class SMSLocalRepository(
         }
     }
 
-    suspend fun insertIntoThreadsDb(smsChatsFromCprovider: MutableList<SmsThreadTable>) {
+    suspend fun insertIntoThreadsDb(smsChatsFromCprovider: MutableList<SmsThreadTable>)  = withContext(Dispatchers.IO){
         smsThreadsDAO?.insert(smsChatsFromCprovider)
     }
 
-    fun getSMSThreadsLivedata(): LiveData<MutableList<SmsThreadTable>>? {
+    fun getSMSThreadsLivedata(): LiveData<MutableList<SmsThreadTable>>?  {
         return smsThreadsDAO?.getAllLiveData()
     }
 
@@ -2072,7 +2061,7 @@ class SMSLocalRepository(
         return@withContext nameAndThumbnail
     }
 
-    suspend fun markAsDelete(threadId: Long) {
+    suspend fun markAsDelete(threadId: Long)   = withContext(Dispatchers.IO){
         smsThreadsDAO?.markAsDeleted(threadId, isDeleted = true)
 //        delay(400L)
 
@@ -2082,7 +2071,7 @@ class SMSLocalRepository(
      * function to delete threads id from db that are not in content provider
      * @param smsFromContentProvider all sms chatthreads in content provider
      */
-    suspend fun deleteFromDb(smsFromContentProvider: MutableList<SmsThreadTable>) {
+    suspend fun deleteFromDb(smsFromContentProvider: MutableList<SmsThreadTable>)  = withContext(Dispatchers.IO){
         var idsFromContentPovider : MutableList<Long> = mutableListOf()
         idsFromContentPovider.addAll(smsFromContentProvider.map { it.threadId})
 
@@ -2100,14 +2089,14 @@ class SMSLocalRepository(
 
     }
 
-    suspend fun updateThreadsDBWithServerInfo(item: SMSSendersInfoFromServer) {
+    suspend fun updateThreadsDBWithServerInfo(item: SMSSendersInfoFromServer) = withContext(Dispatchers.IO) {
         smsThreadsDAO?.updateWithServerInfo(item.contactAddress, item.spamReportCount, item.name)
     }
 
     /**
      * function to upate thread's content such as body , read, type, date
      */
-    suspend fun updateThreadContent(smsFromCprovider: MutableList<SmsThreadTable>) {
+    suspend fun updateThreadContent(smsFromCprovider: MutableList<SmsThreadTable>)  = withContext(Dispatchers.IO){
         for(item in smsFromCprovider){
             smsThreadsDAO?.find(contactAddress = item.numFormated).apply {
                 if(this!=null){
@@ -2128,9 +2117,9 @@ class SMSLocalRepository(
     /**
      *  function to get smsthreads details from db
      */
-    suspend fun getThreadInfo(contactAddress: String): SmsThreadTable? {
+    suspend fun getThreadInfo(contactAddress: String): SmsThreadTable?  = withContext(Dispatchers.IO) {
         val fnum = formatPhoneNumber(contactAddress)
-        return smsThreadsDAO?.find(fnum)
+        return@withContext smsThreadsDAO?.find(fnum)
     }
 
     /**
@@ -2282,15 +2271,15 @@ class SMSLocalRepository(
         return@withContext data
     }
 
-    suspend fun getInfoFromThreadDbForQuery(searchQuery: String?): List<SmsThreadTable>? {
-        return smsThreadsDAO?.findNameLike("%$searchQuery%")
+    suspend fun getInfoFromThreadDbForQuery(searchQuery: String?): List<SmsThreadTable>?   = withContext(Dispatchers.IO){
+        return@withContext smsThreadsDAO?.findNameLike("%$searchQuery%")
     }
 
     /**
      * function called when user searched for name, so exact number is given and in the result
      * spannable string will be the name containing searchquery
      */
-    suspend fun getSMSForAddress(numForSearching: String, searchQuery: String): ArrayList<SMS> {
+    suspend fun getSMSForAddress(numForSearching: String, searchQuery: String): ArrayList<SMS>  = withContext(Dispatchers.IO) {
         //todo if found result set spannable string to address and if body also contains set it also
         var data = ArrayList<SMS>()
         Log.d(TAG, "fetch: called")
@@ -2426,11 +2415,11 @@ class SMSLocalRepository(
 //        }
 //        r1.await()
 
-        return data
+        return@withContext data
     }
 
-    suspend fun findOneThreadById(id: Long): SmsThreadTable? {
-        return smsThreadsDAO?.findOneById(id)
+    suspend fun findOneThreadById(id: Long): SmsThreadTable?  = withContext(Dispatchers.IO) {
+        return@withContext smsThreadsDAO?.findOneById(id)
     }
 
 

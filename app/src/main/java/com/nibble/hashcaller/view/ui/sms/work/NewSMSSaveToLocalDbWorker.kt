@@ -38,21 +38,6 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
             var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()
-
-
-//            for (sms in allsms){
-//                val secret = Secrets().managecipher(context?.packageName!!, sms.addressString.toString()) // encoding the
-//                //phone number using my secret algorithm
-//                if(!sms.addressString.isNullOrEmpty())
-//                    if(sms.addressString!!.length >4){
-//                        var firstFiveDigitsOfAddress = sms.addressString!!.substring(0, 4)
-//                        val smsSendersInfoFromServerObj = SMSSendersInfoFromServer(null, secret,
-//                            -1, sms.addressString!!, Date(),
-//                            -1L, firstFiveDigitsOfAddress)
-//
-//                    }
-////
-//            }
             return Result.success()
         }catch (e:Exception){
             return Result.retry()
