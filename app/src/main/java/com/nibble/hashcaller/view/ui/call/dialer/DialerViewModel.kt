@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,8 +13,9 @@ class DialerViewModel(
     private val repository: DialerRepository?,
     private val contactSearchRepository: ContactSearchRepository?
 ) : ViewModel() {
+    
     private var phoneNumber: MutableLiveData<String>? = null
-    var searchResultLivedata : MutableLiveData<MutableList<Contact>> = MutableLiveData()
+    var searchResultLivedata : MutableLiveData<List<Contact>> = MutableLiveData()
 
 
     fun getPhoneNumber(): MutableLiveData<String>? {
@@ -34,12 +34,36 @@ class DialerViewModel(
     }
 
     fun searchContactsInDb(phoneNumber: String) = viewModelScope.launch{
-        searchResultLivedata.value =  contactSearchRepository?.getContactsLike(phoneNumber)
+//        val contactsContainingName :MutableList<Contact> = mutableListOf()
+//        val contactsContainingNum =  contactSearchRepository?.getContactsLike(phoneNumber)
+        var hashsetOfSearchResult : HashSet<Contact> = hashSetOf()
+        val combinationOfLetters =  NumberToStringMapper.printStringForNumber(phoneNumber)
+        combinationOfLetters.add(phoneNumber)
+       val fullSearchResult: MutableList<Contact> = mutableListOf()
+
+        for (str in combinationOfLetters){
+            contactSearchRepository?.getContactsLike(str)?.let { fullSearchResult.addAll(it) }
+        }
+        hashsetOfSearchResult.addAll(fullSearchResult)
+        searchResultLivedata.value = hashsetOfSearchResult.toList()
+
+//
+//        for (item in combinationOfLetters){
+////           contactSearchRepository?.getContactsLike(phoneNumber)?.let {
+////               contactsContainingName.addAll(it)
+////           }
+//       }
+
+
+        
+        
+
     }
 
 
     companion object{
         private const val TAG ="__DialerViewModel"
+//        var strCombinationForNum :Flow<String> = 
     }
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {

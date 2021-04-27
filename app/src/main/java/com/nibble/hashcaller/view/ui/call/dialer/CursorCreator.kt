@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 
 class CursorCreator {
@@ -12,6 +11,7 @@ class CursorCreator {
         fun createContactsSearchCursor(queryString: String, context:Context): Cursor? {
             var cursor: Cursor? = null
             val selectionArgs = arrayOf("%$queryString%", "%$queryString%")
+
             //phone number like queryString or  display name like query string.
 
             var selection = "${ContactsContract.CommonDataKinds.Phone.NUMBER} " +

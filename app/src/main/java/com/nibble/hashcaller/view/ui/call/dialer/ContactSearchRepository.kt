@@ -5,25 +5,20 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Color
 import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
 import android.util.Log
-import androidx.core.content.ContextCompat
-import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.work.formatPhoneNumber
 
 class ContactSearchRepository(private val context: Context) {
     @SuppressLint("LongLogTag")
-    suspend fun getContactsLike(queryString: String): MutableList<Contact>  {
+    suspend fun getContactsLike(queryItem: String): MutableList<Contact>  {
 
         val listOfContacts = mutableListOf<Contact>()
         var lastNumber = ""
         var prevName = ""
         var count = 0
-            val cursor: Cursor? = CursorCreator.createContactsSearchCursor(queryString, context)
+            val cursor: Cursor? = CursorCreator.createContactsSearchCursor(queryItem, context)
             try {
                 if(cursor != null && cursor.moveToFirst()){
                     do{
@@ -50,7 +45,7 @@ class ContactSearchRepository(private val context: Context) {
                                 }
                                 var contact = Contact(id, name, phoneNo, photoThumnail,
                                     photoURI, 1, firstletter =  firstLetter)
-                                setSpannableStringBuilder(contact, queryString, contact.name,  contact.phoneNumber)
+                                setSpannableStringBuilder(contact, queryItem, contact.name,  contact.phoneNumber)
                                 listOfContacts.add(contact)
                                 lastNumber = phoneNo
                                 prevName = name

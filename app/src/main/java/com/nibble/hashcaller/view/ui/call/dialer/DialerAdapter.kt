@@ -118,6 +118,8 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
             if(contact.spanEndPosName!=0 && contact.name!=null ){
                 binding .textVContactName.text = getSpannedString(contact.name!!, contact.spanStartPosName, contact.spanEndPosName, context)
                 firstChar = contact.name!![0].toString().toUpperCase()
+            }else{
+                binding.textVContactName.text = contact.name
             }
             if(contact.phoneNumber!=null && contact.spanEndPosNum !=0){
 
@@ -128,12 +130,14 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
                     context
                 )
                 firstChar = formatPhoneNumber(contact.phoneNumber!!).replace("+","")[0].toString().toUpperCase()
+            }else{
+                binding.tvNumber.text = contact.phoneNumber
             }
-            else{
-                name.text = contact.phoneNumber
-                firstChar = formatPhoneNumber(contact.phoneNumber!!).replace("+","")[0].toString().toUpperCase()
-
-            }
+//            else{
+////                name.text = contact.phoneNumber
+////                firstChar = formatPhoneNumber(contact.phoneNumber!!).replace("+","")[0].toString().toUpperCase()
+//
+//            }
 //            if(firstChar.isNullOrEmpty()){
 //                setNameFirstChar("+")
 //            }else{

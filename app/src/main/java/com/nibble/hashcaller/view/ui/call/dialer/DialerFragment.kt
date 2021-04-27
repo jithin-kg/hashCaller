@@ -27,6 +27,7 @@ import com.nibble.hashcaller.databinding.FragmentDialerBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
@@ -193,7 +194,13 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         nameObserver =
             Observer<String?> { phoneNumber -> // Update the UI, in this case, a TextView.
 
-                viewmodel.searchContactsInDb(phoneNumber)
+                if(phoneNumber.isNotEmpty()){
+                    viewmodel.searchContactsInDb(phoneNumber)
+
+
+                }else{
+                    callLogAdapter?.setList(emptyList())
+                }
                 searchQueryPhone = phoneNumber
                 if (phoneNumber != null) {
                     bottomSheetDialog.imgBtnBackspace.isEnabled = phoneNumber.isNotEmpty()
@@ -236,7 +243,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     private fun initRecyclerView() {
         binding.rcrViewCallLogs?.apply {
-            layoutManager = LinearLayoutManager(activity)
+            layoutManager = CustomLinearLayoutManager(context)
             val topSpacingDecorator =
                 TopSpacingItemDecoration(
                     30
