@@ -5,10 +5,12 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class CursorCreator {
     companion object{
-        fun createContactsSearchCursor(queryString: String, context:Context): Cursor? {
+        suspend fun createContactsSearchCursor(queryString: String, context:Context): Cursor?  = withContext(Dispatchers.IO){
             var cursor: Cursor? = null
             val selectionArgs = arrayOf("%$queryString%", "%$queryString%")
 
@@ -36,7 +38,7 @@ class CursorCreator {
                 Log.d(TAG, "createCursor: $e")
             }
 
-            return cursor
+            return@withContext cursor
 
         }
 

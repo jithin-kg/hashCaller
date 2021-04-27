@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.showHideBlockButton
+import com.nibble.hashcaller.view.ui.sms.individual.util.isOnMainThread
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
@@ -26,6 +27,7 @@ import kotlin.collections.HashMap
 /**
  * Created by Jithin KG on 23,July,2020
  */
+
 
 const val SPAM_THREASHOLD = 15L
 const val CONTACT_ID = "contactId"

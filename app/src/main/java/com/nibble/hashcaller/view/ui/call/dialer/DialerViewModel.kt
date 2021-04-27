@@ -1,10 +1,13 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.stubs.Contact
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.util.*
+import kotlin.collections.HashSet
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -34,18 +37,28 @@ class DialerViewModel(
     }
 
     fun searchContactsInDb(phoneNumber: String) = viewModelScope.launch{
+        var def:Job? = null
+        var def2 :Job? = null
+        cancelJob= true
+
+//        def?.cancelChildren()
+//        def2?.cancelChildren()
+//
+//        def?.cancel()
+//        def2?.cancel()
 //        val contactsContainingName :MutableList<Contact> = mutableListOf()
 //        val contactsContainingNum =  contactSearchRepository?.getContactsLike(phoneNumber)
-        var hashsetOfSearchResult : HashSet<Contact> = hashSetOf()
-        val combinationOfLetters =  NumberToStringMapper.printStringForNumber(phoneNumber)
-        combinationOfLetters.add(phoneNumber)
-       val fullSearchResult: MutableList<Contact> = mutableListOf()
+        cancelJob= false
+        def2= async {  NumberToStringMapper.printStringForNumber(phoneNumber) }
+        var combinationOfLetters = def2.await()
+//        hashsetOfSearchResult = Collections.synchronizedSet(hashsetOfSearchResult)
+//        val threadPool = Executors.newCachedThreadPool().asCoroutineDispatcher()
+            combinationOfLetters.add(phoneNumber)
+         def =   async {
+              getList(combinationOfLetters)
+          }
+        searchResultLivedata.value = def.await()
 
-        for (str in combinationOfLetters){
-            contactSearchRepository?.getContactsLike(str)?.let { fullSearchResult.addAll(it) }
-        }
-        hashsetOfSearchResult.addAll(fullSearchResult)
-        searchResultLivedata.value = hashsetOfSearchResult.toList()
 
 //
 //        for (item in combinationOfLetters){
@@ -60,9 +73,39 @@ class DialerViewModel(
 
     }
 
+    private suspend fun getList(combinationOfLetters: MutableList<String>): List<Contact> = withContext(Dispatchers.Default) {
+        var fullSearchResult: MutableList<Contact> = mutableListOf()
+        var hashsetOfSearchResult : HashSet<Contact> = hashSetOf()
+        val iterator = combinationOfLetters.iterator()
+        try {
+
+            while (iterator.hasNext()){
+                async { contactSearchRepository?.getContactsLike(iterator.next())?.let { fullSearchResult.addAll(it) } }.await()
+//              val res =   contactSearchRepository?.getContactsLike(iterator.next())
+//                if(!res.isNullOrEmpty()){
+//                    fullSearchResult.addAll(res)
+////                    break
+//                }
+//                contactSearchRepository?.getContactsLike(iterator.next())?.let { fullSearchResult.addAll(it) }
+//                yield()
+
+
+             }
+        }catch (e:Exception){
+            Log.d(TAG, "getList:exception $e")
+        }
+//        for (str in combinationOfLetters){
+//            contactSearchRepository?.getContactsLike(str)?.let { fullSearchResult.addAll(it) }
+//        }
+
+        hashsetOfSearchResult.addAll(fullSearchResult)
+        return@withContext hashsetOfSearchResult.toList()
+    }
+
 
     companion object{
         private const val TAG ="__DialerViewModel"
+        var cancelJob = false
 //        var strCombinationForNum :Flow<String> = 
     }
 }

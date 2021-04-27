@@ -9,10 +9,16 @@ import android.text.style.BackgroundColorSpan
 import android.util.Log
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
+import java.util.concurrent.Executors
 
 class ContactSearchRepository(private val context: Context) {
+    val threadPool = Executors.newCachedThreadPool().asCoroutineDispatcher()
+
     @SuppressLint("LongLogTag")
-    suspend fun getContactsLike(queryItem: String): MutableList<Contact>  {
+    suspend fun getContactsLike(queryItem: String): MutableList<Contact> = withContext(Dispatchers.IO)  {
 
         val listOfContacts = mutableListOf<Contact>()
         var lastNumber = ""
@@ -62,7 +68,7 @@ class ContactSearchRepository(private val context: Context) {
             }
 
 
-        return listOfContacts
+        return@withContext listOfContacts
 
     }
 

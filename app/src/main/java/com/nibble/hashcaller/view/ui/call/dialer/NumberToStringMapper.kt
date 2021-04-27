@@ -1,12 +1,15 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.util.Log
+import com.nibble.hashcaller.view.ui.call.dialer.DialerViewModel.Companion.cancelJob
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class NumberToStringMapper {
 
     companion object{
-        var count = 0
+//        var count = 0
         var list:MutableList<String> = mutableListOf()
 
         fun printStrings(
@@ -15,11 +18,11 @@ class NumberToStringMapper {
             str: StringBuilder
         ){
 
-            if(count>=10)
+            if (list.size >= 500 || cancelJob)
                 return
             if (i == phNo.length) {
 //                DialerViewModel.strCombinationForNum = str.toString()
-                count++
+//                count++
                     list.add(str.toString())
                 Log.d(TAG, "$str ")
                 return
@@ -39,13 +42,14 @@ class NumberToStringMapper {
 
         /**
          * function to genrate combination of character for dialpad
-         * and changes strCombinationForNum in DialerViewModel string value
+         * and changes
          */
-        fun printStringForNumber(phNo: String?): MutableList<String> {
+        suspend fun printStringForNumber(phNo: String?): MutableList<String> = withContext(
+            Dispatchers.Default) {
             // Create a HashMap
             list.clear()
 
-            count = 0
+//            count = 0
             val hm = HashMap<Char, String>()
 
             // For every digit, store characters that can
@@ -72,7 +76,7 @@ class NumberToStringMapper {
 
             }
 
-            return list
+            return@withContext list
         }
         const val TAG = "__NumberToStringMapper"
     }

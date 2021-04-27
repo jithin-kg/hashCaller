@@ -36,6 +36,10 @@ import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -62,6 +66,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 //    var phoneNumberViewModel: PhoneNumber? = null
     private lateinit var viewmodel: DialerViewModel
     private lateinit var  nameObserver: Observer<String?>
+    private  var job:Job?=null
 
     private var lastEditPosition = 0
     var callLogAdapter: DialerAdapter? = null
@@ -195,8 +200,13 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             Observer<String?> { phoneNumber -> // Update the UI, in this case, a TextView.
 
                 if(phoneNumber.isNotEmpty()){
-                    viewmodel.searchContactsInDb(phoneNumber)
-
+                    lifecycleScope.launchWhenStarted {
+                        job?.cancel()
+                        DialerViewModel.cancelJob = false
+//                        delay(1000L)
+                        job =   viewmodel.searchContactsInDb(phoneNumber)
+//                        yield()
+                    }
 
                 }else{
                     callLogAdapter?.setList(emptyList())
