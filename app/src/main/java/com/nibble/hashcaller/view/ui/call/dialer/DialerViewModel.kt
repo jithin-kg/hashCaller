@@ -1,10 +1,12 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
+import android.telephony.PhoneNumberUtils
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.sms.individual.util.normalizeString
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.HashSet
@@ -16,7 +18,15 @@ class DialerViewModel(
     private val repository: DialerRepository?,
     private val contactSearchRepository: ContactSearchRepository?
 ) : ViewModel() {
-    
+    init {
+        getAllCallLogs()
+    }
+
+    private fun getAllCallLogs() = viewModelScope.launch {
+        allContacts = contactSearchRepository?.getAllContacts()
+    }
+
+    private var allContacts:MutableList<Contact>? = mutableListOf()
     private var phoneNumber: MutableLiveData<String>? = null
     var searchResultLivedata : MutableLiveData<List<Contact>> = MutableLiveData()
 
@@ -36,28 +46,39 @@ class DialerViewModel(
 
     }
 
-    fun searchContactsInDb(phoneNumber: String) = viewModelScope.launch{
-        var def:Job? = null
-        var def2 :Job? = null
-        cancelJob= true
+    fun searchContactsInDb(text: String) = viewModelScope.launch{
 
-//        def?.cancelChildren()
-//        def2?.cancelChildren()
+        var filtered = allContacts?.filter {
+            val convertedName = PhoneNumberUtils.convertKeypadLettersToDigits(it.name.normalizeString())
+            it.doesContainPhoneNumber(text) || (convertedName.contains(text, true))
+
+        }?.sortedWith(compareBy{
+            !it.doesContainPhoneNumber(text)
+
+        })?.toMutableList()
+        searchResultLivedata.value = filtered
+        Log.d(TAG, "searchContactsInDb:${filtered?.size}")
+//        var def:Job? = null
+//        var def2 :Job? = null
+//        cancelJob= true
 //
-//        def?.cancel()
-//        def2?.cancel()
-//        val contactsContainingName :MutableList<Contact> = mutableListOf()
-//        val contactsContainingNum =  contactSearchRepository?.getContactsLike(phoneNumber)
-        cancelJob= false
-        def2= async {  NumberToStringMapper.printStringForNumber(phoneNumber) }
-        var combinationOfLetters = def2.await()
-//        hashsetOfSearchResult = Collections.synchronizedSet(hashsetOfSearchResult)
-//        val threadPool = Executors.newCachedThreadPool().asCoroutineDispatcher()
-            combinationOfLetters.add(phoneNumber)
-         def =   async {
-              getList(combinationOfLetters)
-          }
-        searchResultLivedata.value = def.await()
+////        def?.cancelChildren()
+////        def2?.cancelChildren()
+////
+////        def?.cancel()
+////        def2?.cancel()
+////        val contactsContainingName :MutableList<Contact> = mutableListOf()
+////        val contactsContainingNum =  contactSearchRepository?.getContactsLike(phoneNumber)
+//        cancelJob= false
+//        def2= async {  NumberToStringMapper.printStringForNumber(phoneNumber) }
+//        var combinationOfLetters = def2.await()
+////        hashsetOfSearchResult = Collections.synchronizedSet(hashsetOfSearchResult)
+////        val threadPool = Executors.newCachedThreadPool().asCoroutineDispatcher()
+//            combinationOfLetters.add(phoneNumber)
+//         def =   async {
+//              getList(combinationOfLetters)
+//          }
+//        searchResultLivedata.value = def.await()
 
 
 //

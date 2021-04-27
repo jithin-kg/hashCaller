@@ -57,7 +57,7 @@ class CallContainerRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownCallersInfoResponse> {
+    suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownCallersInfoResponse>  = withContext(Dispatchers.IO){
         retrofitService = RetrofitClient.createaService(ICallService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
@@ -66,10 +66,10 @@ class CallContainerRepository(
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
         Log.d(TAG, "uploadNumbersToGetInfo: response is ${response}")
-        return response
+        return@withContext response
     }
 
-    suspend fun getCallerInfoForAddressFromDB(number: String): CallersInfoFromServer? {
+    suspend fun getCallerInfoForAddressFromDB(number: String): CallersInfoFromServer?   = withContext(Dispatchers.IO){
         val numWithoutSpecialChars = formatPhoneNumber(number)
 //        var numberForQuery =numWithoutSpecialChars
 //        if(isNumericOnlyString(numWithoutSpecialChars)){
@@ -80,14 +80,14 @@ class CallContainerRepository(
             result= async { callerInfoFromServerDAO.find(numWithoutSpecialChars) }.await()
         }.join()
 
-        return result
+        return@withContext result
 
     }
 
     /**
      * function to delete call logs in db by id, ie marked items
      */
-    suspend fun deleteCallLogsFromDBByid(address: String) {
+    suspend fun deleteCallLogsFromDBByid(address: String) = withContext(Dispatchers.IO) {
 //            callLogDAO?.delete(id)
             callLogDAO?.markAsDeleted(formatPhoneNumber(address), true)
         delay(400L)
@@ -97,7 +97,7 @@ class CallContainerRepository(
      * delete call logs in content provider
      */
     @SuppressLint("LongLogTag")
-     fun deleteLog(id: String) {
+    suspend fun deleteLog(id: String) = withContext(Dispatchers.IO) {
 
 //        val queryString = "NUMBER=$number"
 //        context.contentResolver.delete(CallLog.Calls.CONTENT_URI, queryString, null);
@@ -128,33 +128,32 @@ class CallContainerRepository(
     /**
      * function to add contact address to mutedCallers
      */
-    suspend fun muteContactAddress(address: String): String {
-        mutedCallersDAO!!.insert(listOf(MutedCallers(address))).apply {
-            return address
-        }
+    suspend fun muteContactAddress(address: String): String = withContext(Dispatchers.IO) {
+        mutedCallersDAO!!.insert(listOf(MutedCallers(address)))
+        return@withContext address
+
 
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun unmuteByAddress(contactAdders: String): String {
+    suspend fun unmuteByAddress(contactAdders: String): String = withContext(Dispatchers.IO){
         Log.d(TAG, "unmuteByAddress:${contactAdders}")
-        mutedCallersDAO!!.delete(contactAdders).apply {
-            return contactAdders
-        }
+        mutedCallersDAO!!.delete(contactAdders)
+        return@withContext contactAdders
     }
 
     /**
      * Function to check whether a number is muted or not,
      * if contactaddress contains in db then it is  muted
      */
-    suspend fun isMmuted(address: String): Boolean {
+    suspend fun isMmuted(address: String): Boolean = withContext(Dispatchers.IO){
         var isMutedNum = false
-        mutedCallersDAO!!.find(address).apply {
-            if(this!=null){
+        val res = mutedCallersDAO!!.find(address)
+            if(res!=null){
                 isMutedNum = true
             }
-            return isMutedNum
-        }
+        return@withContext isMutedNum
+
     }
 
     suspend fun markCallerAsSpamer(formatPhoneNumber: String, spammerType: Int, s: String, s1: String) {
@@ -584,12 +583,12 @@ class CallContainerRepository(
 
     }
 
-    suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) {
+    suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO) {
         callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount)
     }
 
 
-    suspend fun getNameForAddressFromContentProvider(contactAddress: String): NameAndThumbnail? {
+    suspend fun getNameForAddressFromContentProvider(contactAddress: String): NameAndThumbnail?  = withContext(Dispatchers.IO){
          var name:String?
          var thumbnail:String?
          var nameAndThumbnail: NameAndThumbnail? = null
@@ -602,24 +601,21 @@ class CallContainerRepository(
             thumbnail = cursor2.getString(cursor2.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
             nameAndThumbnail = NameAndThumbnail(name?:"", thumbnail?:"")
         }
-        return nameAndThumbnail
+        return@withContext nameAndThumbnail
     }
 
     /**
      * searach in calllog db
      */
-    suspend fun findFromCallLogTable(contactAddress: String): CallLogTable? {
-        callLogDAO?.find(formatPhoneNumber(contactAddress)).apply {
-            return this
-        }
+    suspend fun findFromCallLogTable(contactAddress: String): CallLogTable?  = withContext(Dispatchers.IO){
+        return@withContext callLogDAO?.find(formatPhoneNumber(contactAddress))
+
     }
     /**
      * searach in calllog db
      */
-    suspend fun findOneFromCallLogTable(contactAddress: String): CallLogTable? {
-        callLogDAO?.findOne(formatPhoneNumber(contactAddress)).apply {
-            return this
-        }
+    suspend fun findOneFromCallLogTable(contactAddress: String): CallLogTable?  = withContext(Dispatchers.IO){
+        return@withContext callLogDAO?.findOne(formatPhoneNumber(contactAddress))
     }
 
     suspend fun getFirst10Logs(): MutableList<CallLogTable>? = withContext(Dispatchers.IO) {
@@ -640,7 +636,7 @@ class CallContainerRepository(
         }
     }
 
-    suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) {
+    suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO){
         callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount, TYPE_SPAM)
 
     }

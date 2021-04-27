@@ -11,9 +11,11 @@ import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -41,17 +43,14 @@ class SMSLiveData(
             SMSContract.INBOX_SMS_URI
         private const val TAG = "__SMSLiveDataFlow"
     }
-     private suspend fun getMessages(context: Context): ArrayList<SmsThreadTable> {
+     private suspend fun getMessages(context: Context): ArrayList<SmsThreadTable> = withContext(
+         Dispatchers.IO){
          pageOb.page = 0 //set page size to 0 when there is a change in sms
 
 //        SMSViewModel.isLoading.postValue(true)
 
 
-          repository!!.fetchSMSForLivedata(null, false).apply {
-//              Log.d(TAG, "getMessages: spamcount ${this[0].spamCount}")
-              return this
-              
-          }
+         return@withContext repository!!.fetchSMSForLivedata(null, false)
 
 
 
