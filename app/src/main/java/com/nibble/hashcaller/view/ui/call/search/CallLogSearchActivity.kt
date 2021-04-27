@@ -14,7 +14,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityCallLogSearchBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
+import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.makeCall
@@ -27,10 +27,10 @@ import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 
 class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHandler,
-    ITextChangeListener, View.OnClickListener, DialerAdapter.ViewHandlerHelper,
+    ITextChangeListener, View.OnClickListener, CallLogAdapter.ViewHandlerHelper,
     SMSListAdapter.NetworkHandler {
     private lateinit var binding: ActivityCallLogSearchBinding
-    private lateinit var searchAdapter : DialerAdapter
+    private lateinit var searchAdapter : CallLogAdapter
     private lateinit var editTextListener: TextChangeListener
     private var queryText = ""
     private var foundResultFor = ""
@@ -84,7 +84,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
     private fun initRecyclerView() {
 
 
-        searchAdapter = DialerAdapter(this,this,this ) {
+        searchAdapter = CallLogAdapter(this,this,this ) {
 
                 id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)};
 

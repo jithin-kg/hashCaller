@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
+import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
@@ -35,7 +35,7 @@ private const val ARG_PARAM2 = "param2"
 class CallHistoryFragment : Fragment(), View.OnClickListener {
     private lateinit var callHistoryFragment: View
     private lateinit var viewModel: CallHistoryViewmodel
-    var callLogAdapter: DialerAdapter? = null
+    var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,17 +154,17 @@ class CallHistoryFragment : Fragment(), View.OnClickListener {
         val v = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall)
 
         when(btn){
-            DialerAdapter.BUTTON_SIM_1->{
+            CallLogAdapter.BUTTON_SIM_1->{
                 Log.d(TAG, "onCallLogItemClicked: buttonsim 1")
                makeCall(callLog)
             }
-            DialerAdapter.BUTTON_SIM_2->{
+            CallLogAdapter.BUTTON_SIM_2->{
 
             }
-            DialerAdapter.BUTTON_SMS->{
+            CallLogAdapter.BUTTON_SMS->{
 
             }
-            DialerAdapter.BUTTON_INFO->{
+            CallLogAdapter.BUTTON_INFO->{
 
             }
 

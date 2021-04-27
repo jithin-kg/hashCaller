@@ -1,21 +1,21 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
-import com.nibble.hashcaller.repository.search.ContactSearchRepository
-import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.stubs.Contact
 import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class DialerViewModel(val callLogs:CallLogLiveData): ViewModel() {
+class DialerViewModel(
+    private val repository: DialerRepository?,
+    private val contactSearchRepository: ContactSearchRepository?
+) : ViewModel() {
     private var phoneNumber: MutableLiveData<String>? = null
+    var searchResultLivedata : MutableLiveData<MutableList<Contact>> = MutableLiveData()
 
 
     fun getPhoneNumber(): MutableLiveData<String>? {
@@ -24,11 +24,17 @@ class DialerViewModel(val callLogs:CallLogLiveData): ViewModel() {
             return phoneNumber
         }
         return phoneNumber
+    }
+
+
+
+    fun getFirst10Logs() = viewModelScope.launch  {
+       val result =  repository?.getFirst10Logs()
 
     }
 
-    fun getCallHistory() {
-
+    fun searchContactsInDb(phoneNumber: String) = viewModelScope.launch{
+        searchResultLivedata.value =  contactSearchRepository?.getContactsLike(phoneNumber)
     }
 
 

@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.contacts
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -9,18 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
-import kotlinx.android.synthetic.main.contact_list.view.*
 import java.util.*
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
-class ContactAdapter(private val context: Context, private val onContactItemClickListener: (contactItem:Contact)->Unit) :
+class ContactAdapter(private val context: Context, private val onContactItemClickListener: (binding:ContactListBinding, contactItem:Contact)->Unit) :
     androidx.recyclerview.widget.ListAdapter<Contact, RecyclerView.ViewHolder>(ContactItemDiffCallback()) {
 
     private var contacts = emptyList<Contact>()
@@ -30,9 +27,10 @@ class ContactAdapter(private val context: Context, private val onContactItemClic
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_list, parent, false)
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_list, parent, false)
+        val binding = ContactListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return ViewHolder(view)
+        return ViewHolder(binding)
     }
 
 //    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -61,14 +59,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         contacts = newContactList
         this.submitList(newContactList)
     }
-     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val name = view.textVContactName
-         private val circle = view.textViewcontactCrclr;
+     class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
+        private val name = binding.textVContactName
+         private val circle = binding.textViewcontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
             contact: Contact, context: Context,
-            onContactItemClickListener: (contatItem: Contact) -> Unit
+            onContactItemClickListener: (binding: ContactListBinding, contactItem: Contact) -> Unit
         ) {
             name.text = contact.name
 //           if(contact.photoThumnail !=null){
@@ -76,17 +74,17 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //           }
             //        Log.i(TAG, String.valueOf(no));
             if(contact.photoThumnail !=null){
-                view.textViewcontactCrclr.visibility = View.INVISIBLE
-                view.imgViewCntct.visibility = View.VISIBLE
-                view.contactCard.visibility = View.VISIBLE
-                loadImage(view.context, view.imgViewCntct, contact.photoThumnail)
+                binding.textViewcontactCrclr.visibility = View.INVISIBLE
+                binding.imgViewCntct.visibility = View.VISIBLE
+                binding.contactCard.visibility = View.VISIBLE
+                loadImage(context, binding.imgViewCntct, contact.photoThumnail)
 
 
             }else{
-                view.imgViewCntct.setImageURI(Uri.parse(""))
-                view.imgViewCntct.visibility = View.INVISIBLE
-                view.textViewcontactCrclr.visibility = View.VISIBLE
-                view.contactCard.visibility = View.INVISIBLE
+                binding.imgViewCntct.setImageURI(Uri.parse(""))
+                binding.imgViewCntct.visibility = View.INVISIBLE
+                binding.textViewcontactCrclr.visibility = View.VISIBLE
+                binding.contactCard.visibility = View.INVISIBLE
                 setNameFirstChar(contact)
                 generateCircleView(contact, context);
             }
@@ -97,9 +95,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
 
-            view.setOnClickListener{
+            binding.root.setOnClickListener{
 
-                onContactItemClickListener(contact)
+                onContactItemClickListener(binding, contact)
             }
         }
 

@@ -31,24 +31,20 @@ class SearchViewModel(
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
     var hashedPhoneNum:MutableLiveData<String> = MutableLiveData()
-    val searchResultLiveData:MutableLiveData<Cntct> = MutableLiveData()
 
-    var mt:MutableLiveData<List<ContactTable>>
-    var contactsLocalSearchLiveDAta: MutableLiveData<List<Contact>> = MutableLiveData()
+    var searchResultsLivedata:MutableLiveData<List<Contact>> = MutableLiveData()
+
     init{
          var contactsFromLocalDb : LiveData<List<ContactTable>>? = contactLocalSyncRepository.contactsFomLocalDB
-         mt = MutableLiveData<List<ContactTable>>(contactsFromLocalDb?.value)
+//         mt = MutableLiveData<List<ContactTable>>(contactsFromLocalDb?.value)
 //         mt = contactLocalSyncRepository.getContacts("")!!
     }
 
 
-    fun searchContactsInDb(phoneNumber: String):LiveData<List<Contact>> = liveData{
+    fun searchContactsInDb(phoneNumber: String) = viewModelScope.launch{
 
         if(!phoneNumber.trim().equals(""))  {
-            val c = contactLocalSyncRepository.getContactsLike(phoneNumber) as List<Contact>
-//            Log.d(TAG, "size is ${c?.size} ")
-//            contactsLocalSearchLiveDAta.value = c
-            emit(c)
+            searchResultsLivedata.value = contactLocalSyncRepository.getContactsLike(phoneNumber) as List<Contact>
         }
 //        else{
 //            contactsLocalSearchLiveDAta.value = emptyList()
@@ -77,7 +73,7 @@ class SearchViewModel(
                  res = searchNetworkRepository.search(hashedPhoneNum.value!!)
                  var result = res?.body()?.cntcts?.get(0)
 
-                 searchResultLiveData.value = result
+//                 searchResultLiveData.value = result
 
 //                 res = searchNetworkRepository.search("Iyfgga1yHP90u/mBwFS5XK2QNq3KRsr+ZYYGH6Lav5X4IS8FvzMlC/WKvxQ0+o1q7XXgcNZ8Olg6P5JEKXVAGnVlexUDbUsjCuwZgRbACGJ8jIueYOUcgc7w9N+K1+Sc6I7ZAe6vRLknjpLuLIy9DOMJ/wirO1s5tv+l/fgDbEJp7Jl1rOodiFZU1ysBl/2cel7+9Xozb1+ZJhkQk/hlKdX49MvXwVDmbO+2uGYIEIe7V6uNouPlpE7VAKg/VP29uySsxDNJFR8ABEvMJhEkqkQJTCmM4Jk0sQmgmV1e+44ugyIZPEZMMQPGT/M+D4w2JtAg21zHpEUmXtkGZ7Lyuxp55fUWk8ISAZ/wPm9BO9hYCC4mEGF3vWtxEJNoWKMLw6vxeGbOnaNVakZs0bze9OzTsJsz3Vxgv1arutT9gDl2FfB5IfTHoC85V9+J4AUGnn4v1Oel7NxdPici0DhBAawkb41FV+fW6LuUgtm1TpdxyKuxZOfObQS23XtmmArd9B44TjMNl0S7G3RsfG3BYCSFG+bxSEgPgWLboXjkwhFqLK0MH7oD2oLvrP2eZYWK+lJSt0g926zT94yC5Y5jQCatsN//ZKiOunxNPI2Gr6Nj2fVdEsGRIjAYBqiPxk/GmshlN3RLnFtlu+PQY+PDqdhxpA5ZbOsBgjbrtFyJ2o4=")
 

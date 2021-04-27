@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
@@ -171,13 +172,13 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                     30
                 )
 //                addItemDecoration(topSpacingDecorator)
-            contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
+            contactsRecyclerAdapter = ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->onContactItemClicked(binding, contact)}
             adapter = contactsRecyclerAdapter
 
         }
 
     }
-    private fun onContactItemClicked(contactItem: Contact){
+    private fun onContactItemClicked(binding: ContactListBinding, contactItem: Contact){
         Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
         val intent = Intent(context, IndividualCotactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
@@ -190,9 +191,9 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 //        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
         var pair:android.util.Pair<View, String>? = null
         if(contactItem.photoURI.isEmpty()){
-            pair = android.util.Pair(textViewcontactCrclr as View, "firstLetterTransition")
+            pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
         }else{
-            pair = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+            pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
         }
         pairList.add(pair)
         val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])

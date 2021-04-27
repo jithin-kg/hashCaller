@@ -1,604 +1,197 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
+import android.net.Uri
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.databinding.CallListBinding
-import com.nibble.hashcaller.utils.DummYViewHolder
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutId
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
-import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
-import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
+import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
-import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
-import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
-import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
-import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
-import com.nibble.hashcaller.view.utils.getRelativeTime
-import kotlinx.android.synthetic.main.call_list.view.*
+import com.nibble.hashcaller.work.formatPhoneNumber
+import java.util.*
 
-/**
- * Created by Jithin KG on 22,July,2020
- */
+class DialerAdapter(private val context: Context, private val onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact)->Unit) :
+    androidx.recyclerview.widget.ListAdapter<Contact, RecyclerView.ViewHolder>(ContactItemDiffCallback()) {
+    private var contacts = emptyList<Contact>()
+    private var searchQueryPhone = ""
 
-class DialerAdapter(private val context: Context,
-                    private val viewMarkingHandlerHelper: ViewHandlerHelper, private val  networkHandler: SMSListAdapter.NetworkHandler,
-                    private val onContactItemClickListener:
-                    (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int)->Int
-                   ) :
-    androidx.recyclerview.widget.ListAdapter<CallLogTable, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
-
-    private val VIEW_TYPE_LOG = 0;
-//    private val VIEW_TYPE_SPAM = 1;
-    private val VIEW_TYPE_LOADING = 1
-    private var callLogs: MutableList<CallLogTable> = mutableListOf()
     companion object{
-        private const val TAG = "__DialerAdapter";
-        var prevView:View? = null
-        var prevPos:Int? = null
-        var prevTag:String? = null
-        var prevTime : String? = null
-
-        const val BUTTON_SIM_1 = 0;
-        const val BUTTON_SIM_2 = 1;
-        const val BUTTON_SMS = 2;
-        const val BUTTON_INFO = 3;
-
+        private const val TAG = "__ContactAdapter";
     }
 
-     
-    
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):  RecyclerView.ViewHolder {
-        if(viewType == VIEW_TYPE_LOG){
-            //create binding here and pass it to viewholder
-//            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list, parent, false)
-            val logBinding =  CallListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_list, parent, false)
+        val binding = ContactSearchResultItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-
-            return ViewHolderCallLog(logBinding)
-        }else {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
-            return DummYViewHolder(view)
-        }
-
+        return ViewHolder(binding)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        if(this.callLogs.isNotEmpty() && position < callLogs.size)
-             if(this.callLogs[position].id == null){
-                return VIEW_TYPE_LOADING
+    //    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+//        val contact = contacts[position]
+//        holder.bind(contact, context, onContactItemClickListener)
+//    }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val contact = contacts[position]
+//    holder.bind(contact, context, onContactItemClickListener)
+        when(holder) {
+
+            is ViewHolder -> {
+                holder.bind(contacts[position],context, onContactItemClickListener)
             }
-        return VIEW_TYPE_LOG
-    }
 
-override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-    val contact = callLogs[position]
-    when(holder.itemViewType) {
-
-         VIEW_TYPE_LOG -> {
-
-
-             (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener, networkHandler)
         }
 
-        VIEW_TYPE_LOADING ->{
-            (holder as DummYViewHolder).bind()
-        }
-
-
     }
-
-}
 
     override fun getItemCount(): Int {
 //        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
-       return callLogs.size
+        return contacts.size
     }
 
-    fun submitCallLogs(newContactList: MutableList<CallLogTable>) {
-        callLogs = newContactList!!
+    fun setList(newContactList: List<Contact>) {
+        contacts = newContactList
         this.submitList(newContactList)
     }
 
+    fun setQuery(queryPhone: String) {
+        searchQueryPhone = queryPhone
+    }
 
-
-    inner class ViewHolderCallLog(private val logBinding:  CallListBinding) : RecyclerView.ViewHolder(logBinding.root) {
-        private val name = logBinding.textVcallerName
-        private val circle = logBinding.textViewCrclr;
-        private val expandableView = logBinding.layoutExpandableCall
-
+    class ViewHolder(private val binding: ContactSearchResultItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        private val name = binding.textVContactName
+        private val circle = binding.textViewcontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
-
         fun bind(
-            callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int) -> Int,
-            networkHandler: SMSListAdapter.NetworkHandler
+            contact: Contact, context: Context,
+            onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact) -> Unit
         ) {
-            Log.d(TAG, "bind: ")
-            expandableView.setTag(callLog.dateInMilliseconds)
+            name.text = contact.name
 
-            if (viewMarkingHandlerHelper.isMarked(callLog.id)) {
-                Log.d(TAG, "bind: ismarked")
-                logBinding.imgViewCallMarked.beVisible()
+//            binding.tvNumber.text = contact.phoneNumber
+            setSpanForNameSearch(contact, context)
+//           if(contact.photoThumnail !=null){
+//               view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
+//           }
+            //        Log.i(TAG, String.valueOf(no));
+            if(contact.photoThumnail !=null){
+                binding.textViewcontactCrclr.visibility = View.INVISIBLE
+                binding.imgViewCntct.visibility = View.VISIBLE
+                binding.contactCard.visibility = View.VISIBLE
+                loadImage(context, binding.imgViewCntct, contact.photoThumnail)
 
-            } else {
-                logBinding.imgViewCallMarked.beInvisible()
-            }
-            if(viewMarkingHandlerHelper.isViewExpanded(callLog.id!!)){
-             logBinding.layoutExpandableCall.beVisible()
+
             }else{
-                logBinding.layoutExpandableCall.beGone()
+                binding.imgViewCntct.setImageURI(Uri.parse(""))
+                binding.imgViewCntct.visibility = View.INVISIBLE
+                binding.textViewcontactCrclr.visibility = View.VISIBLE
+                binding.contactCard.visibility = View.INVISIBLE
+                setNameFirstChar(contact)
+                generateCircleView(contact, context);
+            }
+
+            val pNo = contact.phoneNumber
+            Log.d(TAG, "phone num $pNo ")
+//            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
+
+
+
+            binding.root.setOnClickListener{
+
+                onContactItemClickListener(binding, contact)
+            }
+        }
+
+        private fun setSpanForNameSearch(contact: Contact, context: Context) {
+            var firstChar = ""
+            if(contact.spanEndPosName!=0 && contact.name!=null ){
+                binding .textVContactName.text = getSpannedString(contact.name!!, contact.spanStartPosName, contact.spanEndPosName, context)
+                firstChar = contact.name!![0].toString().toUpperCase()
+            }
+            if(contact.phoneNumber!=null && contact.spanEndPosNum !=0){
+
+                binding .tvNumber.text = getSpannedString(
+                    contact.phoneNumber!!,
+                    contact.spanStartPosNum,
+                    contact.spanEndPosNum,
+                    context
+                )
+                firstChar = formatPhoneNumber(contact.phoneNumber!!).replace("+","")[0].toString().toUpperCase()
+            }
+            else{
+                name.text = contact.phoneNumber
+                firstChar = formatPhoneNumber(contact.phoneNumber!!).replace("+","")[0].toString().toUpperCase()
 
             }
-            val sim = callLog.simId
-            //todo simid can be -1 then, do not show this, invisisble
-            logBinding.tvSim.text = (sim + 1).toString()
-
-
-//            if (prevTime != null)
-//                if(prevTime == callLog.dateInMilliseconds){
-//                    expandableView.beVisible()
-//
-//                }else{
-//                   expandableView.beGone()
-//
-//                }
-//                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING && networkHandler.isInternetAvailable()) {
-//                    logBinding.pgBarCallItem.beVisible()
-//                }else{
-//                    logBinding.pgBarCallItem.beInvisible()
-//
-//                }
-
-                var nameStr:String = ""
-                var infoFoundFrom = SENDER_INFO_SEARCHING
-                if(!callLog.name.isNullOrEmpty()){
-                    infoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                    nameStr = callLog.name!!
-                }else if(!callLog.nameFromServer.isNullOrEmpty()){
-                    infoFoundFrom = SENDER_INFO_FROM_DB
-                    nameStr = callLog.nameFromServer!!
-                }else if(callLog.nameFromServer== null){
-                    infoFoundFrom = SENDER_INFO_SEARCHING
-                    nameStr = callLog.numberFormated
-                }else{
-                    infoFoundFrom = SENDER_INFO_NOT_FOUND
-                    nameStr = callLog.numberFormated
-                }
-
-            when (infoFoundFrom) {
-                SENDER_INFO_FROM_CONTENT_PROVIDER -> {
-                    if(callLog.thumbnailFromCp.isNotEmpty()){
-                        showImageInCircle(logBinding, callLog.thumbnailFromCp)
-                    }else{
-                        logBinding.imgVThumbnail.beInvisible()
-                        circle.beVisible()
-                        logBinding.pgBarCallItem.beInvisible()
-                    }
-
-                }
-                SENDER_INFO_FROM_DB -> {
-                    if(callLog.imageFromDb.isNotEmpty()){
-                        showImageInCircle(logBinding, callLog.imageFromDb)
-                    }else{
-                        logBinding.imgVThumbnail.beInvisible()
-                        circle.beVisible()
-                        logBinding.pgBarCallItem.beInvisible()
-
-                    }
-                }
-                SENDER_INFO_SEARCHING ->{
-                    logBinding.imgVThumbnail.beInvisible()
-                    circle.beVisible()
-                    logBinding.pgBarCallItem.beVisible()
-                }
-                else ->{
-                    logBinding.imgVThumbnail.beInvisible()
-                    circle.beVisible()
-                    logBinding.pgBarCallItem.beInvisible()
-                }
-
-            }
-            val firstLetter = nameStr[0]
-            val firstLetterString = firstLetter.toString().toUpperCase()
-
-                if (callLog.spamCount > SPAM_THREASHOLD || callLog.isReportedByUser) {
-
-                    name.setColorForText(R.color.spamText)
-//                    logBinding.imgViewCallSpamIcon.beVisible()
-                    circle.setRandomBackgroundCircle(TYPE_SPAM)
-                    circle.text = ""
-
-                } else {
-                    logBinding.imgViewCallSpamIcon.beInvisible()
-                    circle.setRandomBackgroundCircle(callLog.color)
-                    name.setColorForText(R.color.textColor)
-                    circle.text = firstLetterString
-
-                }
-            name.text = nameStr
-
-
-//            if(callLog.color!=0){
-//                circle.setRandomBackgroundCircle(callLog.color)
+//            if(firstChar.isNullOrEmpty()){
+//                setNameFirstChar("+")
 //            }else{
-//                callLog.color = circle.setRandomBackgroundCircle()
-//
+//                setNameFirstChar(firstChar)
 //            }
-
-            //call type
-            setCallTypeImage(callLog, logBinding.imgVCallType)
-
-
-            /**
-             * This is important to check else double/ duplicate marking of items occur
-             */
-            var id = getExpandedLayoutId()
-            if (id != null) {
-                if (id == callLog.id) {
-                    expandableView.beVisible()
-                } else {
-                    expandableView.beGone()
-
-
-                }
-            }
-            logBinding.textViewTime.text = getRelativeTime(callLog.dateInMilliseconds)
-            expandableView.tvExpandNumCall.text = callLog.numberFormated
-            setClickListener(logBinding.root, callLog)
         }
 
 
-        private fun setClickListener(view: View, callLog: CallLogTable) {
-            view.imgBtnCall.setOnClickListener{
-                val visibility =  it.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
-
-                onContactItemClickListener(
-                    callLog.id!!,
-                    this.adapterPosition,
-                    it,
-                    BUTTON_SIM_1,
-                    callLog,
-                    TYPE_MAKE_CALL,
-                    visibility
-                )
-            }
-            view.setOnLongClickListener { v ->
-                val visibility =  v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
-
-                var isToBeMarked = onContactItemClickListener(
-                    callLog.id!!,
-                    this.adapterPosition,
-                    v,
-                    BUTTON_SIM_1,
-                    callLog,
-                    TYPE_LONG_PRESS,
-                    visibility
-                )
-//                when (isToBeMarked) {
-//                    MARK_ITEM -> {
-//                        view.imgViewCallMarked.beVisible()
-//                    }
-//                    else -> {
-//                        view.imgViewCallMarked.beInvisible()
-//
-//                    }
-//                }
-                toggleMarkingAndExpand(isToBeMarked, view, logBinding)
-
-                true
-
-            }
-
-            logBinding.imgBtnExpandHistory.setOnClickListener {
-                val visibility = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
-
-                val isToBeMarked = onContactItemClickListener(
-                    callLog.id!!,
-                    this.adapterPosition,
-                    it,
-                    BUTTON_SIM_1,
-                    callLog,
-                    TYPE_CLICK_VIEW_CALL_HISTORY,
-                    visibility
-                )
-                Log.d(TAG, "setClickListener: imagBtnInfoExpand")
-                toggleMarkingAndExpand(isToBeMarked, view, logBinding)
-                true
-            }
-            logBinding.textViewCrclr.setOnClickListener{
-
-                val visibility =  logBinding.layoutExpandableCall.visibility
-
-                val isToBeMarked = onContactItemClickListener(
-                    callLog.id!!,
-                    this.adapterPosition,
-                    it,
-                    BUTTON_SIM_1,
-                    callLog,
-                    TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,
-                    visibility
-                )
-                toggleMarkingAndExpand(isToBeMarked, view, logBinding)
-
-            }
-            logBinding.imgVThumbnail.setOnClickListener{
-
-                val visibility =  logBinding.layoutExpandableCall.visibility
-
-                val isToBeMarked = onContactItemClickListener(
-                    callLog.id!!,
-                    this.adapterPosition,
-                    it,
-                    BUTTON_SIM_1,
-                    callLog,
-                    TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,
-                    visibility
-                )
-                toggleMarkingAndExpand(isToBeMarked, view, logBinding)
-
-            }
-//            view.imgBtnExpandHistory.setOnClickListener {
-////                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MAKE_CALL, callLog)
-//                true
-//            }
-
-            view.imgBtnSmsExpand.setOnClickListener {
-//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_START_INDIVIDUAL_SMS, callLog)
-                true
-            }
-
-            view.imgBtnInfoExpand.setOnClickListener {
-//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
-                onContactItemClickListener(callLog.id!!, adapterPosition,view, BUTTON_SIM_1, callLog, TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT, View.VISIBLE )
-                true
-            }
-
-
-
-            view.setOnClickListener(View.OnClickListener { v ->
-                val visibility =  v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
-
-                val isToBeMarked = onContactItemClickListener(
-                    callLog.id!!,
-                    this.adapterPosition,
-                    v,
-                    BUTTON_SIM_1,
-                    callLog,
-                    TYPE_CLICK,
-                    visibility
-                )
-                toggleMarkingAndExpand(isToBeMarked, view, logBinding)
-//                when (isToBeMarked) {
-//                    MARK_ITEM -> {
-//                        view.imgViewCallMarked.beVisible()
-//                    }
-//                    EXPAND_LAYOUT ->{
-//                        logBinding.layoutExpandableCall.beVisible()
-//                    }
-//                    COMPRESS_LAYOUT ->{
-//                        logBinding.layoutExpandableCall.beGone()
-//
-//                    }
-//                    else -> {
-//                        view.imgViewCallMarked.beInvisible()
-//
-//                    }
-//                }
-
-
-                //                if(viewExpanded== 1){
-//                    //iff marking not started expand the layout
-//                    toggleExpandableView(v, this.adapterPosition, callLog.id!!, expandableView)
-//                }
-
-            })
+        private fun getSpannedString(str: String, startPos: Int, endPos: Int, context: Context): SpannableStringBuilder {
+            val yellow =
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+            val span =  SpannableStringBuilder(str)
+            span.setSpan(
+                yellow,
+                startPos,
+                endPos,
+                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            return span
         }
 
-        private fun toggleExpandableView(
-            v: View,
-            pos: Int,
-            id: Long,
-            expandableView: ConstraintLayout
-        ) {
-
-            var expandedLyoutId = getExpandedLayoutId()
-            if (expandedLyoutId == null) {
-                //no views has not yet expanded, so expand the current layout
-                setExpandedLayoutId(id)
-                setExpandedLayoutView(expandableView)
-                expandableView.beVisible()
-
-            } else if (expandedLyoutId == id) {
-                //the layout is already expaned so, hide it
-                expandableView.beGone()
-                setExpandedLayoutId(null)
-                setExpandedLayoutView(null)
-            } else {
-                //new item expanded
-                getExpandedLayoutView()!!.beGone()
-                expandableView.beVisible()
-                setExpandedLayoutView(expandableView)
-                setExpandedLayoutId(id)
+        private fun setNameFirstChar(contact: Contact) {
+            val name: String = contact.name!!
+            val firstLetter = name[0]
+            val firstLetterString = firstLetter.toString().toUpperCase()
+            circle.text = firstLetterString
 
 
-            }
         }
 
+        private fun generateCircleView(contact: Contact, context: Context) {
+            val rand = Random()
 
-        private fun setNameFirstChar(callLog: CallLogTable) {
-//            private fun setNameFirstChar(callLog: CallLogTable) {
-//                if (callLog != null) {
-//                    if (callLog.spamCount > 0) {
-//                        logBinding.imgViewCallSpamIcon.beVisible()
-//                        logBinding.imgViewCallSpamIcon.setImageResource(R.drawable.ic_baseline_block_red)
-//                        circle.text = ""
-//                        callLog.color = circle.setRandomBackgroundCircle(TYPE_SPAM)
-//                    } else {
-//                        logBinding.imgViewCallSpamIcon.beInvisible()
-//                        val name: String =
-//                            if (callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
-//                        val firstLetter = name[0]
-//                        val firstLetterString = firstLetter.toString().toUpperCase()
-//                        circle.text = firstLetterString
-//                        callLog.color = circle.setRandomBackgroundCircle()
-//
-//                    }
-//                } else {
-//                    logBinding.imgViewCallSpamIcon.beInvisible()
-//                    val name: String =
-//                        if (callLog.name == null || callLog.name!!.isEmpty()) callLog.number else callLog.name!!
-//                    val firstLetter = name[0]
-//                    val firstLetterString = firstLetter.toString().toUpperCase()
-//                    circle.text = firstLetterString
-//                    callLog.color = circle.setRandomBackgroundCircle()
-//                }
-//
-//
-//            }
-
+            contact.drawable = circle.setRandomBackgroundCircle()
 
         }
 
     }
 
-    private fun toggleMarkingAndExpand(isToBeMarked: Int, view: View, logBinding: CallListBinding) {
-        Log.d(TAG, "toggleMarkingAndExpand: ")
-        when (isToBeMarked) {
-            MARK_ITEM -> {
-                view.imgViewCallMarked.beVisible()
-            }
-            EXPAND_LAYOUT ->{
-                logBinding.layoutExpandableCall.beVisible()
-            }
-            COMPRESS_LAYOUT ->{
-                logBinding.layoutExpandableCall.beGone()
 
-            }
-            else -> {
-                view.imgViewCallMarked.beInvisible()
 
-            }
-        }
-    }
 
-    private fun showImageInCircle(logBinding: CallListBinding, uri:String) {
-        logBinding.imgVThumbnail.beVisible()
-        loadImage(context, logBinding.imgVThumbnail, uri)
-        logBinding.imgVThumbnail.beVisible()
-        logBinding.textViewCrclr.beInvisible()
-        logBinding.pgBarCallItem.beInvisible()
-    }
 
-    class CallItemDiffCallback : DiffUtil.ItemCallback<CallLogTable>() {
-        override fun areItemsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
+    class ContactItemDiffCallback : DiffUtil.ItemCallback<Contact>() {
+        override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
             return  oldItem.id == newItem.id
 
 
         }
 
 
-        override fun areContentsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
-//            if(oldItem.ca)
-
+        override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+            //when we are using data class we dont need to compare all attributes
             return oldItem == newItem
+            //TODO compare both messages and if the addres is same and message
         }
 
-    }
-
-
-    private fun setCallTypeImage(callLog: CallLogTable, imageView: ImageView) {
-//             /** Call log type for incoming calls.  */
-//             val INCOMING_TYPE = 1
-//
-//             /** Call log type for outgoing calls.  */
-//             val OUTGOING_TYPE = 2
-//
-//             /** Call log type for missed calls.  */
-//             val MISSED_TYPE = 3
-//
-//             /** Call log type for voicemails.  */
-//             val VOICEMAIL_TYPE = 4
-//
-//             /** Call log type for calls rejected by direct user action.  */
-//             val REJECTED_TYPE = 5
-//
-//             /** Call log type for calls blocked automatically.  */
-//             val BLOCKED_TYPE = 6
-        if(callLog!=null){
-            if(callLog.spamCount > 0 ){
-//                textView.setColorForText( R.color.spamText)
-
-            }else{
-//                textView.setColorForText(R.color.textColor)
-
-            }
-        }else{
-//            textView.setColorForText(R.color.textColor)
-
-        }
-
-        when (callLog.type) {
-            1 -> { // incomming call
-                imageView.setImageResource(R.drawable.ic_baseline_call_received_24)
-//                textView.text = "Incoming call"
-
-            }
-            2 -> { // outgoing call
-                imageView.setImageResource(R.drawable.ic_baseline_call_made_24)
-//                textView.text = "Outgoing call"
-            }
-            3 -> {
-                imageView.setImageResource(R.drawable.ic_baseline_call_missed_24)
-//                textView.text = "Missed call"
-            }
-            5->{
-//                textView.text = "Rejected"
-                imageView.setImageResource(R.drawable.ic_baseline_call_missed_24)
-
-            }
-            6 ->{
-//                textView.text = "Blocked"
-                imageView.setImageResource(R.drawable.ic_baseline_block_no_color)
-
-            }
-
-        }
-    }
-
-    fun getLogAt(adapterPosition: Int): CallLogTable {
-        return callLogs[adapterPosition]
-    }
-
-    interface ViewHandlerHelper {
-        fun isMarked(id:Long?): Boolean
-        fun isViewExpanded(id:Long): Boolean
-
-
-    }
-    interface NetworkHandler {
-        fun isInternetAvailable(): Boolean
     }
 
 
 }
-
-
-

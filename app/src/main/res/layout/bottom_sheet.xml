@@ -13,6 +13,7 @@
         android:ems="10"
         android:maxLines="30"
         android:text=""
+        android:textColor="@color/textColor"
         android:textSize="30sp"
         android:textCursorDrawable="@null"
         android:background="@null"

@@ -56,7 +56,7 @@ class ContactSelectorActivity : AppCompatActivity() {
                     30
                 )
 //                addItemDecoration(topSpacingDecorator)
-            contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
+//            contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
             adapter = contactsRecyclerAdapter
 
         }

@@ -17,11 +17,17 @@ data class Contact(
     var drawable: Int = 1,
     var nameSpann: SpannableStringBuilder? = null,
     var phoneSpann: SpannableStringBuilder? = null,
-    var firstletter:String = ""
+    var firstletter:String = "",
+    var spanStartPosName: Int = 0,
+    var spanEndPosName: Int = 0,
+    var spanStartPosNum: Int = 0,
+    var spanEndPosNum: Int = 0
+
+
+
+
 
 )  {
-
-
 
 
 }

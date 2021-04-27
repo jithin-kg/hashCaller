@@ -7,11 +7,62 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="?attr/actionBarSize">
 
+    <Toolbar
+        android:id="@+id/toolbar_dialer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:background="@color/colorBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgBtnBackBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_close_24" />
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:alpha="0.87"
+                android:text="Calls identified as spam"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlock"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </Toolbar>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcrViewCallLogs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/contact_list" />
+            android:layout_height="0dp"
+            tools:listitem="@layout/contact_list"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_dialer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
     <!--    <include-->
     <!--        android:id="@+id/includeDialer"-->
@@ -27,53 +78,44 @@
     <!--        layout="@layout/sheet_dial_pad"-->
     <!--        />-->
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabShoDialPad2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="32dp"
-        android:background="#fff"
-        android:backgroundTint="#92EC6C"
-        android:clickable="true"
-        android:src="@drawable/ic_baseline_dialpad_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageButton
-        android:id="@+id/imgBtnCloseDialer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:backgroundTint="#fff"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_close_24" />
-
-    <Button
-        android:id="@+id/btnDialerPermission"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        android:visibility="gone"
+        android:layout_gravity="bottom|end"
+        android:contentDescription="dialpad"
+        android:textColor="@color/colorWhite"
+        android:layout_marginEnd="@dimen/bottom_fab_margin"
+        android:layout_marginBottom="8dp"
+        app:iconTint="@color/colorWhite"
+        app:icon="@drawable/ic_baseline_dialpad_24"
+        android:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            />
 
-    <ProgressBar
-        android:id="@+id/pgbarDialer"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:id="@+id/imgBtnCloseDialer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:backgroundTint="#fff"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_close_24" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/btnDialerPermission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

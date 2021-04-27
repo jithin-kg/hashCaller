@@ -18,7 +18,7 @@ import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
+import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
@@ -28,10 +28,10 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import kotlinx.android.synthetic.main.activity_block_list.*
 
 
-class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, SMSListAdapter.NetworkHandler {
+class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper, SMSListAdapter.NetworkHandler {
     private lateinit var binding: ActivitySpamCallsBinding
     private lateinit var layoutMngr: LinearLayoutManager
-    var callLogAdapter: DialerAdapter? = null
+    var callLogAdapter: CallLogAdapter? = null
     private var isInternetAvailable = false
     private lateinit var viewmodel: SpamCallViewModel
     private lateinit var swipeHandler: SwipeToDeleteCallback
@@ -88,7 +88,7 @@ class SpamCallsActivity : AppCompatActivity(), DialerAdapter.ViewHandlerHelper, 
 
             layoutMngr = layoutManager as CustomLinearLayoutManager
 
-            callLogAdapter = DialerAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity) {
+            callLogAdapter = CallLogAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity) {
 
                     id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ->onCallItemClicked(
                 id,

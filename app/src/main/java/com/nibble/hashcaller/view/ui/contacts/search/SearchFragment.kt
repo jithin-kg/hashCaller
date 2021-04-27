@@ -112,18 +112,18 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     }
 
     private fun observeSearchResults() {
-        this.searchViewmodel.searchResultLiveData.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
-                Log.d(TAG, "observeSearchResults: ")
-//                layoutSearchResult.visibility = View.VISIBLE
-                textVContactName.text = it.name
-                tvSearchResultLocation.text = it.location
-                tvSearchResultNameFirstLetter.text  = it.name[0].toString()
-
-
-            }
-
-        })
+//        this.searchViewmodel.searchResultLiveData.observe(viewLifecycleOwner, Observer {
+//            if(it!=null){
+//                Log.d(TAG, "observeSearchResults: ")
+////                layoutSearchResult.visibility = View.VISIBLE
+//                textVContactName.text = it.name
+//                tvSearchResultLocation.text = it.location
+//                tvSearchResultNameFirstLetter.text  = it.name[0].toString()
+//
+//
+//            }
+//
+//        })
     }
 
     private fun observerPhoneHashValue() {

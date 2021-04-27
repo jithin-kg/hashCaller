@@ -43,7 +43,7 @@ import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
+import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
@@ -83,7 +83,7 @@ import kotlinx.coroutines.delay
  * create an instance of this fragment.
  */
 class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
-    DialerAdapter.ViewHandlerHelper, ConfirmationClickListener,
+    CallLogAdapter.ViewHandlerHelper, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
     private  var _binding: FragmentCallBinding? = null
@@ -108,7 +108,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private lateinit var recyclerV : RecyclerView
     private lateinit var layoutMngr: LinearLayoutManager
     /************/
-    var callLogAdapter: DialerAdapter? = null
+    var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
 
@@ -403,7 +403,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                    30
 //                )
 //            addItemDecoration(topSpacingDecorator)
-            callLogAdapter = DialerAdapter(context,this@CallFragment, this@CallFragment) {
+            callLogAdapter = CallLogAdapter(context,this@CallFragment, this@CallFragment) {
 
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
             adapter = callLogAdapter
@@ -561,8 +561,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 unmuteUser()
             }
             R.id.fabBtnShowDialpad ->{
-                viewmodel.clearCallLogDB()
-//                (activity as MainActivity).showDialerFragment()
+//                viewmodel.clearCallLogDB()
+                (activity as MainActivity).showDialerFragment()
             }
             R.id.imgBtnCallTbrMore ->{
                 val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)

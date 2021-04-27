@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.Manifest
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,11 +22,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.databinding.FragmentDialerBinding
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.bottom_sheet.*
@@ -44,7 +48,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
-    DialerAdapter.ViewHandlerHelper {
+    CallLogAdapter.ViewHandlerHelper {
     private var _binding: FragmentDialerBinding ? = null
     private val binding get() = _binding!!
     private var isDflt = false
@@ -55,13 +59,15 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     private lateinit var bottomSheetDialog:BottomSheetDialog
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 //    var phoneNumberViewModel: PhoneNumber? = null
-    private lateinit var dialerViewModel: DialerViewModel
+    private lateinit var viewmodel: DialerViewModel
     private lateinit var  nameObserver: Observer<String?>
 
     private var lastEditPosition = 0
     var callLogAdapter: DialerAdapter? = null
     var newPos = 0
     var subStringLen = 0
+    private var searchQueryPhone = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,7 +106,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         // Inflate the layout for this fragment
         _binding = FragmentDialerBinding.inflate(inflater, container, false)
 
-        dialerViewModel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
+        viewmodel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
             DialerViewModel::class.java)
 
         setupBottomSheet()
@@ -111,37 +117,44 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
          */
         initEditTextPhoneNumberObserver()
         if(checkCallPermission()){
-            observeCallLog()
-            observeLiveDataLoading()
+            observeEditTextnum()
+            getFirst10items()
+            observeContacts()
+
         }
 
         observePermissionLiveData()
         return binding.root
     }
 
-    private fun observeLiveDataLoading() {
-        CallLogLiveData.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-                binding.pgbarDialer.visibility = View.VISIBLE
-            }else{
-                binding.pgbarDialer.visibility = View.GONE
-            }
+    private fun observeContacts() {
+        viewmodel.searchResultLivedata.observe(viewLifecycleOwner, Observer {
+            callLogAdapter?.setList(it)
+            callLogAdapter?.setQuery(searchQueryPhone)
         })
+    }
+
+    private fun getFirst10items() {
+//        viewmodel.getFirst10Logs().observe(viewLifecycleOwner, Observer {
+//            callLogAdapter?.itemCount.let { count ->
+//                    callLogAdapter?.submitCallLogs(it)
+//            }
+//        })
     }
 
     private fun observePermissionLiveData() {
         this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
             if(it){
                 Log.d(TAG, "observePermissionLiveData: permission given")
-                observeCallLog()
+                observeEditTextnum()
                 binding.btnDialerPermission.visibility = View.GONE
             }else{
                 binding.btnDialerPermission.visibility = View.VISIBLE
                 Log.d(TAG, "observePermissionLiveData: permission not given")
-                if (this.dialerViewModel!! != null  ) {
-                    if(this.dialerViewModel?.callLogs != null)
-                        if(this.dialerViewModel.callLogs!!.hasObservers())
-                            this.dialerViewModel?.callLogs?.removeObservers(this);
+                if (this.viewmodel!! != null  ) {
+                    if(this.viewmodel?.searchResultLivedata != null)
+                        if(this.viewmodel.searchResultLivedata!!.hasObservers())
+                            this.viewmodel?.searchResultLivedata?.removeObservers(this);
                 }
             }
         })
@@ -161,13 +174,10 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         return true
     }
 
-    private fun observeCallLog() {
-        dialerViewModel.getPhoneNumber()?.observe(viewLifecycleOwner, nameObserver)
-        dialerViewModel.callLogs.observe(viewLifecycleOwner, Observer { logs->
-            logs.let {
-//                callLogAdapter?.submitCallLogs(it)
-            }
-        })
+    private fun observeEditTextnum() {
+        viewmodel.getPhoneNumber()?.observe(viewLifecycleOwner, nameObserver)
+
+
     }
 
     override fun onDestroyView() {
@@ -182,16 +192,11 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
          */
         nameObserver =
             Observer<String?> { phoneNumber -> // Update the UI, in this case, a TextView.
-                Log.d(TAG, "onChanged: $phoneNumber")
-                //                newPos = editTextPhoneNumber.getSelectionEnd();
-                Log.d(TAG, "onChanged: previous position is : $newPos")
-                if (phoneNumber != null) {
-                    if(phoneNumber.length<=0){
-                        bottomSheetDialog.imgBtnBackspace.isEnabled = false
 
-                    }else{
-                        bottomSheetDialog.imgBtnBackspace.isEnabled = true
-                    }
+                viewmodel.searchContactsInDb(phoneNumber)
+                searchQueryPhone = phoneNumber
+                if (phoneNumber != null) {
+                    bottomSheetDialog.imgBtnBackspace.isEnabled = phoneNumber.isNotEmpty()
                 }else{
                     bottomSheetDialog.imgBtnBackspace.isEnabled = false
                 }
@@ -210,7 +215,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         bottomSheetDialog.setContentView(viewSheet)
         if(this.view?.visibility == View.VISIBLE){
             bottomSheetDialog.show()
-
 
 
         }
@@ -238,25 +242,32 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-//            callLogAdapter = DialerAdapter(context, this@DialerFragment) { id:Long, pos:Int, v:View, btn:Int, callLog: CallLogAndInfoFromServer, clickType:Int->onCallLogItemClicked(id, pos, v, btn, callLog, clickType)}
-//            adapter = callLogAdapter
+            callLogAdapter = DialerAdapter(context) { binding: ContactSearchResultItemBinding, contact: Contact ->onContactItemClicked(binding, contact)}
+            adapter = callLogAdapter
 
         }
     }
 
-    private fun onCallLogItemClicked(
-        id: Long,
-        pos: Int,
-        v: View,
-        btn: Int,
-        callLog: CallLogAndInfoFromServer,
-        clickType: Int
-    ): Int {
-        Log.d(TAG, "onCallLog item clicked: $id")
-//        val intent = Intent(context, IndividualCotactViewActivity::class.java )
-//        intent.putExtra(CONTACT_ID, id)
-//        startActivity(intent)
-        return 0
+    private fun onContactItemClicked(binding: ContactSearchResultItemBinding, contactItem: Contact){
+        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
+        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+        intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
+        intent.putExtra("name", contactItem.name )
+//        intent.putExtra("id", contactItem.id)
+        intent.putExtra("photo", contactItem.photoURI)
+        intent.putExtra("color", contactItem.drawable)
+        Log.d(TAG, "onContactItemClicked: ${contactItem.photoURI}")
+        val pairList = ArrayList<android.util.Pair<View, String>>()
+//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+        var pair:android.util.Pair<View, String>? = null
+        if(contactItem.photoURI.isEmpty()){
+            pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
+        }else{
+            pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
+        }
+        pairList.add(pair)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
+        startActivity(intent, options.toBundle())
     }
 
     private fun initListeners() {
@@ -416,7 +427,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         }
         Log.d("BACKSPACE", "substringLength$subStringLen")
 
-        dialerViewModel.getPhoneNumber()?.value = trimmedString
+        viewmodel.getPhoneNumber()?.value = trimmedString
     }
 
     private fun keypadClicked(s: String) {
@@ -452,11 +463,11 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             currentNum = num + s
             subStringLen = bottomSheetDialog.editTextTextDigits.selectionEnd
         }
-        dialerViewModel?.getPhoneNumber()?.value = currentNum
+        viewmodel?.getPhoneNumber()?.value = currentNum
     }
 
     private fun getPhoneNumFromViewModel(): String? {
-        val no: MutableLiveData<String>? = dialerViewModel.getPhoneNumber()
+        val no: MutableLiveData<String>? = viewmodel.getPhoneNumber()
         val num = no?.value
         if(num.equals(null)){
             return ""

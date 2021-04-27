@@ -6,31 +6,26 @@ import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySearchContactBinding
-import com.nibble.hashcaller.databinding.SearchResultLayoutBinding
+import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.search.utils.KeyboardUtils
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
-import kotlinx.android.synthetic.main.activity_search_contact.*
-import kotlinx.android.synthetic.main.contact_list.*
-import kotlinx.android.synthetic.main.search_result_item.*
-import kotlinx.android.synthetic.main.search_result_item1.*
-import kotlinx.android.synthetic.main.search_result_item2.*
 import java.util.*
 
 
@@ -40,7 +35,7 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 //    private lateinit var searchViewModel: SearchViewModel
 //    private lateinit var contactsSearchAdapter: SearchAdapter
     private lateinit var binding: ActivitySearchContactBinding
-    private lateinit var contactsSearchAdapterLocal: SearchAdapterLocal
+    private lateinit var contactsSearchAdapterLocal: ContactAdapter
 //    private lateinit var owner:ActivitySearchPhone
 //    private lateinit var  recyclerViewLocal:RecyclerView
     private lateinit var editTextListener: TextChangeListener
@@ -65,9 +60,7 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 //        window.enterTransition = enterAnimation
         binding = ActivitySearchContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        this.searchViewmodel = ViewModelProvider(
-            this, SearchInjectorUtil.provideUserInjectorUtil(
-                this)).get(SearchViewModel::class.java)
+        initViewmodel()
 
         initLayoutItems()
         binding.progressBar.beInvisible()
@@ -80,13 +73,19 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 //        initAdapter()
         observerPhoneHashValue()
         observeSearchResults()
-        observeLocalSearchResults()
+//        observeLocalSearchResults()
         initAdapter()
+    }
+
+    private fun initViewmodel() {
+        this.searchViewmodel = ViewModelProvider(
+            this, SearchInjectorUtil.provideUserInjectorUtil(
+                this)).get(SearchViewModel::class.java)
     }
 
     private fun initAdapter() {
 
-         this.contactsSearchAdapterLocal = SearchAdapterLocal(applicationContext){ listbinding: SearchResultLayoutBinding, contact:Contact -> onContactitemClicked(listbinding, contact) }
+         this.contactsSearchAdapterLocal = ContactAdapter(applicationContext) { binding: ContactListBinding, contact: Contact ->onContactItemClicked(binding, contact)}
 
         binding.reclrVResultFull.setHasFixedSize(true)
         binding.reclrVResultFull.layoutManager = CustomLinearLayoutManager(this)
@@ -97,30 +96,25 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
         binding.reclrVResultFull.adapter = contactsSearchAdapterLocal
     }
 
-    private fun onContactitemClicked(listBinding: SearchResultLayoutBinding, contact: Contact) {
+    private fun onContactItemClicked(listBinding: ContactListBinding, contact: Contact) {
 
-        val textViewcontactCrclr = listBinding.textViewSearchCrclr
-//        val imgViewCntct = listBinding.textViewSearchContactName
         val intent = Intent(this, IndividualCotactViewActivity::class.java )
-        intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, contact.phoneNumber)
+        intent.putExtra(CONTACT_ID, contact.phoneNumber)
         intent.putExtra("name", contact.name )
 //        intent.putExtra("id", contactItem.id)
         intent.putExtra("photo", contact.photoURI)
         intent.putExtra("color", contact.drawable)
+        Log.d(TAG, "onContactItemClicked: ${contact.photoURI}")
         val pairList = ArrayList<android.util.Pair<View, String>>()
 //        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
         var pair:android.util.Pair<View, String>? = null
-
-//        if(!contact.photoURI?.isEmpty()){
-//            pair = android.util.Pair(imgViewCntct as View,"contactImageTransition")
-//        }else{
-//            pair = android.util.Pair(textViewcontactCrclr as View, "firstLetterTransition")
-//        }
-        pair = android.util.Pair(textViewcontactCrclr as View, "firstLetterTransition")
-
+        if(contact.photoURI.isEmpty()){
+            pair = android.util.Pair(listBinding.textViewcontactCrclr as View, "firstLetterTransition")
+        }else{
+            pair = android.util.Pair(listBinding.imgViewCntct as View,"contactImageTransition")
+        }
         pairList.add(pair)
         val options = ActivityOptions.makeSceneTransitionAnimation(this,pairList[0])
-
         startActivity(intent, options.toBundle())
 
     }
@@ -229,23 +223,23 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 //        return true
 //    }
     private fun observeLocalSearchResults() {
-        this.searchViewmodel.mt.observe(this, Observer {
-            it.let {
-                if(it!=null){
-
-                    Log.d(TAG, "onCreate: ${it}")
-                    Log.d(TAG, "get contacts from local db  ")
-//                    setAdapterLocal(it)
-//                    Log.d(TAG, "onCreate: ${it?.get(1)}")
-                }
-//                for (item in cntcs){
-//                    Log.d(TAG, "onCreate: $cntcs")
+//        this.searchViewmodel.searchResultsLivedata.observe(this, Observer {
+//            it.let {
+//                if(it!=null){
+//
+//                    Log.d(TAG, "onCreate: ${it}")
+//                    Log.d(TAG, "get contacts from local db  ")
+////                    setAdapterLocal(it)
+////                    Log.d(TAG, "onCreate: ${it?.get(1)}")
 //                }
-                Log.d(TAG, "onCreate: ${it?.size}")
-
-//                Log.d(TAG, "onCreate: ${it?.get(0)}")
-            }
-        })
+////                for (item in cntcs){
+////                    Log.d(TAG, "onCreate: $cntcs")
+////                }
+//                Log.d(TAG, "onCreate: ${it?.size}")
+//
+////                Log.d(TAG, "onCreate: ${it?.get(0)}")
+//            }
+//        })
     }
 
     private fun setAdapterLocal(it: List<Contact>) {
@@ -258,9 +252,8 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
     }
 
     private fun observeSearchResults() {
-        this.searchViewmodel.searchResultLiveData.observe(this, Observer {
-
-
+        searchViewmodel.searchResultsLivedata.observe(this, Observer {
+            contactsSearchAdapterLocal.setContactList(it)
         })
     }
 
@@ -274,13 +267,7 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 
             binding.progressBar.beVisible()
 
-            this.searchViewmodel.searchContactsInDb(newText).observe(this, Observer {
-                Log.d(TAG, "onQueryTextChange: result from contact cprovider $it")
-                binding.progressBar.beInvisible()
-                if(it!=null){
-                    setAdapterLocal(it!!)
-                }
-            })
+            this.searchViewmodel.searchContactsInDb(newText)
 
         }
 
