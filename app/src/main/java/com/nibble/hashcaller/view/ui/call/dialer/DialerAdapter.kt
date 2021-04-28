@@ -17,10 +17,12 @@ import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
-class DialerAdapter(private val context: Context, private val onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact)->Unit) :
+class DialerAdapter(private val context: Context, private val onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact, clickType:Int)->Unit) :
     androidx.recyclerview.widget.ListAdapter<Contact, RecyclerView.ViewHolder>(ContactItemDiffCallback()) {
     private var contacts = emptyList<Contact>()
     private var searchQueryPhone = ""
@@ -75,7 +77,7 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
 
         fun bind(
             contact: Contact, context: Context,
-            onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact) -> Unit
+            onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact, clickType:Int) -> Unit
         ) {
             name.text = contact.name
 
@@ -85,7 +87,7 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
 //               view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
 //           }
             //        Log.i(TAG, String.valueOf(no));
-            if(contact.photoThumnail !=null){
+            if(!contact.photoThumnail.isNullOrEmpty()){
                 binding.textViewcontactCrclr.visibility = View.INVISIBLE
                 binding.imgViewCntct.visibility = View.VISIBLE
                 binding.contactCard.visibility = View.VISIBLE
@@ -105,11 +107,13 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
             Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
 
-
+            binding.imgBtnCall.setOnClickListener {
+                onContactItemClickListener(binding, contact, TYPE_MAKE_CALL)
+            }
 
             binding.root.setOnClickListener{
 
-                onContactItemClickListener(binding, contact)
+                onContactItemClickListener(binding, contact, TYPE_CLICK)
             }
         }
 
@@ -150,18 +154,29 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
             val yellow =
                 ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
             val span =  SpannableStringBuilder(str)
-            span.setSpan(
-                yellow,
-                startPos,
-                endPos,
-                Spanned.SPAN_EXCLUSIVE_INCLUSIVE
-            )
+            if(startPos in 0 until endPos){
+                span.setSpan(
+                    yellow,
+                    startPos,
+                    endPos,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+            }
+
             return span
         }
 
         private fun setNameFirstChar(contact: Contact) {
-            val name: String = contact.name!!
-            val firstLetter = name[0]
+            val name: String = contact.name
+            var firstLetter = ""
+                val formatedNum = formatPhoneNumber(contact.phoneNumber)
+            if(name.isNullOrEmpty() ){
+                if(!formatedNum.isNullOrEmpty()){
+                    firstLetter = formatedNum[0].toString()
+                }
+            }else{
+                firstLetter = name[0].toString()
+            }
             val firstLetterString = firstLetter.toString().toUpperCase()
             circle.text = firstLetterString
 

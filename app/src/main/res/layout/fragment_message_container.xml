@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".view.ui.MainActivity"
     android:background="@color/colorBackground"
+    android:layout_marginBottom="?attr/actionBarSize"
     android:backgroundTint="@color/colorBackground"
     android:id="@+id/MessagesFragment">
 
@@ -42,7 +43,7 @@
 
                 android:layout_marginStart="0dp"
                 app:layout_scrollFlags="scroll|enterAlways"
-                android:background="@drawable/toolbar_background"
+                android:background="@drawable/toolbar_background_round_border"
                 android:backgroundTint="@color/colorBackground">
 
                 <androidx.appcompat.widget.AppCompatImageButton

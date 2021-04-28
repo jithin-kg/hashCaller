@@ -43,6 +43,20 @@ class DialerViewModel(
 
     fun getFirst10Logs() = viewModelScope.launch  {
        val result =  repository?.getFirst10Logs()
+        val contacts: MutableList<Contact> = mutableListOf()
+
+        if (result != null) {
+            for (item in result){
+                val contact = item.id?.let { item.name?.let { it1 ->
+                    Contact(it,
+                        it1, item.number, item.thumbnailFromCp)
+                } }
+
+                contact?.let { contacts.add(it) }
+
+            }
+        }
+        searchResultLivedata.value = contacts
 
     }
 

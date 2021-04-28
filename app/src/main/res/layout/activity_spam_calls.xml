@@ -39,7 +39,7 @@ tools:context=".view.ui.call.spam.SpamCallsActivity">
             app:srcCompat="@drawable/ic_baseline_close_24" />
 
         <TextView
-            android:id="@+id/textView24"
+            android:id="@+id/tvDialerToolbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"

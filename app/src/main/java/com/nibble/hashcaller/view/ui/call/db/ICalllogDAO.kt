@@ -51,7 +51,7 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE numberFormated =:num")
     suspend fun markAsDeleted(num:String, isDeleted:Boolean = true)
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser ORDER BY dateInMilliseconds DESC LIMIT 10")
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser  AND name!='' ORDER BY dateInMilliseconds DESC LIMIT 10")
     suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false) : MutableList<CallLogTable>
 
     @Query("SELECT * FROM call_log WHERE numberFormated LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")

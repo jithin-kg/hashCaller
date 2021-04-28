@@ -432,25 +432,13 @@ class SMSIndividualAdapter( private val positionTracker:ItemPositionTracker,
 
 
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            if(oldItem.time == newItem.time){
-//                Log.d(TAG, "areItemsTheSame: time are same")
-            }else{
-//                Log.d(TAG, "areItemsTheSame: time not same")
-            }
-
-//            Log.d(TAG, "areItemsTheSame: ${newItem.currentDate}")
             return oldItem.id == newItem.id 
 
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            try {
-              val b=  oldItem.msg == newItem.msg && oldItem.type == newItem.type && oldItem.time == newItem.time
-                Log.d(TAG, "areContentsTheSame: b is $b")
-            }catch (e:Exception){
-                Log.d(TAG, "areContentsTheSame: exception $e")
-            }
-            return oldItem.msg == newItem.msg && oldItem.type == newItem.type && oldItem.time == newItem.time
+
+            return oldItem == newItem
 
         }
 

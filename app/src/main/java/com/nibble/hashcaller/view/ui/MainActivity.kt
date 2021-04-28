@@ -65,6 +65,8 @@ import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
@@ -128,14 +130,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var key : ByteArray
     private var metadata: FirebaseUserMetadata?= null;
-
+    private var savedState:Bundle? = null
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        savedState = savedInstanceState
         initViewModel()
 
 
@@ -452,6 +454,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         // Hide fragment contact
         if (contactFragment.isAdded) {
+
             ft.hide(contactFragment)
         }
 //        // Hide fragment call
@@ -471,12 +474,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
             ft.show(dialerFragment)
             dialerFragment.showDialPad()
-
+            bottomNavigationView.beGone()
         }
         // Commit changes
 //        ft.addToBackStack("test")
         ft.commit()
     }
+    //called from dialerfragment, important call this function only from dialer fragment
+    fun hideBottomNav(){
+        Log.d(TAG, "hideBottomNav: saved instance state is $savedState")
+            if(savedState!=null && dialerFragment.isVisible){
+                Log.d(TAG, "hideBottomNav: dialer frargment is visible")
+                bottomNavigationView.beGone()
+            }
+
+    }
+
 
     //    private void onSingnedOutcleanUp() {
     //        mUserName = "Anonymous";
@@ -495,7 +508,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        ft.hide(this.searchFragment)
 //        ft.remove(this.searchFragment).commit()
 //        ft.commit()
-        binding. bottomNavigationView.visibility = View.VISIBLE
 
     }
 
@@ -514,9 +526,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
     fun addAllFragments() {
+        ft = supportFragmentManager.beginTransaction()
+
         setDefaultFragment(DefaultFragmentManager.id)
 
-        ft = supportFragmentManager.beginTransaction()
+        ft.add(R.id.frame_fragmentholder, callFragment)
+        hideThisFragment(ft, callFragment, callFragment)
+
+        ft.add(R.id.frame_fragmentholder, dialerFragment)
+        hideThisFragment(ft, dialerFragment, dialerFragment)
+
         ft.add(R.id.frame_fragmentholder, messagesFragment)
         hideThisFragment(ft, messagesFragment, messagesFragment)
 
@@ -527,12 +546,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        ft.add(R.id.frame_fragmentholder, blockConfigFragment)
 //        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
 
-        ft.add(R.id.frame_fragmentholder, callFragment)
-        hideThisFragment(ft, callFragment, callFragment)
 //        fabBtnShowDialpad.visibility = View.VISIBLE
-
-        ft.add(R.id.frame_fragmentholder, dialerFragment)
-        hideThisFragment(ft, dialerFragment, dialerFragment)
 
         ft.commit()
     }
@@ -611,7 +625,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.show(contactFragment)
             unMarkItems()
             messagesFragment.showSearchView()
-
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -655,6 +668,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            fabBtnShowDialpad.visibility = View.VISIBLE
 
             ft.show(callFragment)
+
+            if(dialerFragment.isHidden){
+
+                binding.bottomNavigationView.beVisible()
+            }
         }
 
         // Commit changes
@@ -688,6 +706,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (messagesFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(messagesFragment)
+
+
 //            setDefaultFragment(R.id.bottombaritem_messages)
 
         }else{
@@ -708,12 +728,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            }
 //            super.onBackPressed();
 //        }
+
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed: ")
         if(dialerFragment.isVisible){
             val ft = supportFragmentManager.beginTransaction()
             ft.hide(dialerFragment)
             ft.show(callFragment)
+            binding.bottomNavigationView.beVisible()
+
 //            fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
         }else if(messagesFragment.isVisible){
@@ -740,7 +763,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
 
         else{
-            binding.bottomNavigationView.visibility = View.VISIBLE
 
             //for hiding search fragment
 //            if(this::searchFragment !=null){
@@ -860,7 +882,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //           }
 //        }
         }
-//        bottomNavigationView.visibility =View.GONE
 //        val i = Intent(baseContext, ActivityAddNewPattern::class.java)
         //        i.putExtra("PersonID", personID);
 //        startActivity(i)
