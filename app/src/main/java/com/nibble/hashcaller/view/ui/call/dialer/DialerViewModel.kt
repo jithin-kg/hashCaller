@@ -46,65 +46,9 @@ class DialerViewModel(
 
     }
 
-    fun searchContactsInDb(text: String) = viewModelScope.launch{
+    fun searchContactsInDb(text: String) = viewModelScope.launch {
 
-        var filtered = allContacts?.filter {
-            //converting name to digits, "1-800-GOOG-411" will return "1-800-4664-411"
-            val convertedName = PhoneNumberUtils.convertKeypadLettersToDigits(it.name.normalizeString())
-            //check if converted name contains search text
-            if(it.doesContainPhoneNumber(text)){
-                //phone number contains
-                it.spanStartPosNum = it.phoneNumber.indexOf(text)
-                it.spanEndPosNum = it.spanStartPosNum + text.length
-            }
-            if(convertedName.contains(text, true)){
-                //
-                it.spanStartPosName = convertedName.indexOf(text)
-                it.spanEndPosName = it.spanStartPosName + text.length
-            }
-            it.doesContainPhoneNumber(text) || (convertedName.contains(text, true))
-
-        }?.sortedWith(compareBy{
-            !it.doesContainPhoneNumber(text)
-        })?.toMutableList()
-        val newList:MutableList<Contact> = mutableListOf()
-        filtered?.let { newList.addAll(it) }
-        searchResultLivedata.value = newList
-
-//        var def:Job? = null
-//        var def2 :Job? = null
-//        cancelJob= true
-//
-////        def?.cancelChildren()
-////        def2?.cancelChildren()
-////
-////        def?.cancel()
-////        def2?.cancel()
-////        val contactsContainingName :MutableList<Contact> = mutableListOf()
-////        val contactsContainingNum =  contactSearchRepository?.getContactsLike(phoneNumber)
-//        cancelJob= false
-//        def2= async {  NumberToStringMapper.printStringForNumber(phoneNumber) }
-//        var combinationOfLetters = def2.await()
-////        hashsetOfSearchResult = Collections.synchronizedSet(hashsetOfSearchResult)
-////        val threadPool = Executors.newCachedThreadPool().asCoroutineDispatcher()
-//            combinationOfLetters.add(phoneNumber)
-//         def =   async {
-//              getList(combinationOfLetters)
-//          }
-//        searchResultLivedata.value = def.await()
-
-
-//
-//        for (item in combinationOfLetters){
-////           contactSearchRepository?.getContactsLike(phoneNumber)?.let {
-////               contactsContainingName.addAll(it)
-////           }
-//       }
-
-
-        
-        
-
+        searchResultLivedata.value = repository?.getFilteredlist(text, allContacts)
     }
 
     private suspend fun getList(combinationOfLetters: MutableList<String>): List<Contact> = withContext(Dispatchers.Default) {

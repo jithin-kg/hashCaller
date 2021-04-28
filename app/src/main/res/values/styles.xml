@@ -161,4 +161,8 @@
     <item name="android:statusBarColor">@color/colorPrimary</item>
 </style>
 
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:backgroundDimAmount">0</item>
+        <item name="background">@color/colorBackground</item>
+    </style>
 </resources>

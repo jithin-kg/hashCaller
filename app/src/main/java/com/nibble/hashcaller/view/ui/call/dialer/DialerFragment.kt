@@ -13,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.DialogFragment.STYLE_NORMAL
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -222,7 +224,9 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
 
     private fun setupBottomSheet() {
-        bottomSheetDialog = BottomSheetDialog(this.requireActivity())
+        bottomSheetDialog = BottomSheetDialog(this.requireActivity(), R.style.BottomSheetDialog)
+
+
 
         val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
 
@@ -298,7 +302,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         bottomSheetDialog.layoutNum8.setOnClickListener(this)
         bottomSheetDialog.layoutNum9.setOnClickListener(this)
         bottomSheetDialog.layoutStar.setOnClickListener(this)
-        bottomSheetDialog.layoutNumPound.setOnClickListener(this)
+        bottomSheetDialog.layoutPound.setOnClickListener(this)
 
         bottomSheetDialog.imgBtnBackspace.setOnClickListener(this)
         bottomSheetDialog.fabBtnMakeCall.setOnClickListener(this)
@@ -309,6 +313,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         bottomSheetDialog.editTextTextDigits.append("")
         binding.imgBtnCloseDialer.setOnClickListener(this)
         binding.btnDialerPermission.setOnClickListener(this)
+        binding.imgBtnBackBlock2.setOnClickListener(this)
 
 
 
@@ -327,6 +332,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
 
     override fun onClick(v: View?) {
+        Log.d(TAG, "onClick: ")
         when(v?.id){
             R.id.layoutNum0->{
                 keypadClicked("0")
@@ -364,14 +370,21 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             R.id.layoutStar->{
                 keypadClicked("*")
             }
-            R.id.layoutNumPound->{
+            R.id.layoutPound->{
                 keypadClicked("#")
+            }
+            R.id.imgBtnBackBlock2 -> {
+                Log.d(TAG, "onClick: close close dialerfragment")
+
+                closeDialerFragment()
+
             }
             R.id.fabShoDialPad2->{
                 bottomSheetDialog.show()
             }R.id.imgBtnCloseDialer->{
-            Log.d(TAG, "onClick: close button clicked")
+            
             closeDialerFragment()
+            
         }R.id.fabBtnMakeCall->{
             makeCall()
         }R.id.btnDialerPermission->{

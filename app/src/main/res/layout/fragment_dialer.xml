@@ -21,13 +21,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/imgBtnBackBlock"
+<!--            <ImageView-->
+<!--                android:id="@+id/imgBtnBackBlock"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"-->
+<!--                android:padding="8dp"-->
+<!--                android:elevation="2dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_baseline_close_24" />-->
+            <ImageButton
+                android:id="@+id/imgBtnBackBlock2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:elevation="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -40,12 +53,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:alpha="0.87"
-                android:text="Calls identified as spam"
+                android:text="All Contacts"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlock"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock" />
+                app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlock2"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
