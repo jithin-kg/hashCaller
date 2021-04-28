@@ -18,8 +18,7 @@ import kotlinx.coroutines.withContext
  * Created by Jithin KG on 03,July,2020
  */
 class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
-                                private val mutedCallersDAO : IMutedCallersDAO
-                                 ) {
+                                private val mutedCallersDAO : IMutedCallersDAO ) {
 
     //room executes all queries on a seperate thread
     val allBlockedList:LiveData<List<BlockedListPattern>> = blockedLIstDao.getAllBLockListPattern()
@@ -67,9 +66,6 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
         }else{
             emit(true)
         }
-
-
-
     }
 
     suspend fun clearAll() {

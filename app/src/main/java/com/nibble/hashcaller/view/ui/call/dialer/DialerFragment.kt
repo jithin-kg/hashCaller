@@ -203,11 +203,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                     lifecycleScope.launchWhenStarted {
                         job?.cancel()
                         DialerViewModel.cancelJob = false
-//                        delay(1000L)
                         job =   viewmodel.searchContactsInDb(phoneNumber)
-//                        yield()
                     }
-
                 }else{
                     callLogAdapter?.setList(emptyList())
                 }

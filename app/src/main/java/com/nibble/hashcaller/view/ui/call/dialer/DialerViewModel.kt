@@ -49,15 +49,28 @@ class DialerViewModel(
     fun searchContactsInDb(text: String) = viewModelScope.launch{
 
         var filtered = allContacts?.filter {
+            //converting name to digits, "1-800-GOOG-411" will return "1-800-4664-411"
             val convertedName = PhoneNumberUtils.convertKeypadLettersToDigits(it.name.normalizeString())
+            //check if converted name contains search text
+            if(it.doesContainPhoneNumber(text)){
+                //phone number contains
+                it.spanStartPosNum = it.phoneNumber.indexOf(text)
+                it.spanEndPosNum = it.spanStartPosNum + text.length
+            }
+            if(convertedName.contains(text, true)){
+                //
+                it.spanStartPosName = convertedName.indexOf(text)
+                it.spanEndPosName = it.spanStartPosName + text.length
+            }
             it.doesContainPhoneNumber(text) || (convertedName.contains(text, true))
 
         }?.sortedWith(compareBy{
             !it.doesContainPhoneNumber(text)
-
         })?.toMutableList()
-        searchResultLivedata.value = filtered
-        Log.d(TAG, "searchContactsInDb:${filtered?.size}")
+        val newList:MutableList<Contact> = mutableListOf()
+        filtered?.let { newList.addAll(it) }
+        searchResultLivedata.value = newList
+
 //        var def:Job? = null
 //        var def2 :Job? = null
 //        cancelJob= true
