@@ -1,22 +1,23 @@
 package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import com.nibble.hashcaller.network.NetworkResponseBase
+import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
+import com.nibble.hashcaller.network.NetworkResponseBase.Companion.SOMETHING_WRONG_HAPPEND
 import com.nibble.hashcaller.network.user.GetUserInfoResponse
+import com.nibble.hashcaller.network.user.Result
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.resolution
-import id.zelory.compressor.constraint.size
+import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import kotlinx.coroutines.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Response
 import java.io.File
 import java.lang.Exception
 
@@ -25,7 +26,7 @@ class UserInfoViewModel(
 ) :ViewModel(){
     var userInfo = userNetworkRepository.getUserInfo()
 //    val userInfo  = userNetworkRepository.getUserInfo()
-    fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?):LiveData<SingupResponse> = liveData{
+    fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?):LiveData<NetworkResponseBase<SingupResponse>> = liveData{
 
 
 
@@ -41,11 +42,26 @@ class UserInfoViewModel(
         try {
             Log.d(TAG, "upload: try")
             var result:String? = ""
-            val response = userNetworkRepository.signup(userInfo, body)
+            val response:Response<SingupResponse> = userNetworkRepository.signup(userInfo, body)
+
             Log.d(TAG, "upload: response is $response")
            if(response?.isSuccessful){
-               response.body()?.let { emit(it) }
+               response.body()?.let {
+                  if(response.code() !in (400 .. 599)){
+                  val genericResponse = NetworkResponseBase(it, EVERYTHING_WENT_WELL)
+                        emit(genericResponse)
+                  }
+
+               }
+           }else {
+               if(response.code() in (400 .. 599)){
+                val genericRespnse = NetworkResponseBase(
+                    SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
+                   emit(genericRespnse)
+               }
            }
+
+
 
 
 //        if(success){
@@ -124,27 +140,19 @@ class UserInfoViewModel(
     }
 
     fun compresSAndPrepareForUpload(imgFile: File?, context: GetInitialUserInfoActivity) :LiveData<MultipartBody.Part> = liveData {
-        val compressedImageFile: File = Compressor.compress(
-            context,
-            imgFile!!
-        ) {
-                                    resolution(48, 48)
-//                                    quality(80)
-//                                    format(Bitmap.CompressFormat.WEBP)
-            size(4000) // 4 kb
-        }
-        val requestFile: RequestBody =
-            compressedImageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-       val  body:MultipartBody.Part =  MultipartBody.Part.createFormData(
-            "image",
-            compressedImageFile.name,
-            requestFile
-        );
+
+
+
 
 //        val requestFile: okhttp3.RequestBody? =
 //            imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
 //        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
-        emit(body)
+        emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
+
+    }
+
+    fun processImage(context: Context, selectedImageUri: Uri?, imagePickerHelper: ImagePickerHelper) {
+        imagePickerHelper.processImage(context,selectedImageUri)
 
     }
 }

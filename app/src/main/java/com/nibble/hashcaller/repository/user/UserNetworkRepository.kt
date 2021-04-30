@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.repository.user
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
@@ -9,12 +10,19 @@ import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
+import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import java.io.File
 
 /**
  * Created by Jithin KG on 13,August,2020
@@ -22,7 +30,8 @@ import retrofit2.Response
 class UserNetworkRepository(
     private val tokenManager: TokenManager,
     private val userInfoDAO: UserInfoDAO,
-    private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO
+    private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO,
+    private val imageCompressor: ImageCompressor
 ){
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
     
@@ -68,6 +77,11 @@ class UserNetworkRepository(
 
     suspend fun insertNewUserIntoDb(userInfo: UserInfo)  = withContext(Dispatchers.IO) {
         userInfoDAO?.insert(user = userInfo)
+    }
+
+    suspend fun getCompressedImageBody(context: Context, imgFile: File?): MultipartBody.Part  = withContext(Dispatchers.Default){
+        return@withContext  imageCompressor.getCompressedImagePart(imgFile)
+
     }
 
     companion object{

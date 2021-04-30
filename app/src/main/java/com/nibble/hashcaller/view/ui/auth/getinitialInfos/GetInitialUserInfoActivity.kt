@@ -5,8 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.database.Cursor
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -16,34 +14,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetInitialUserInfoBinding
+import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
-import com.squareup.okhttp.RequestBody
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.size
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
+import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
 
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var binding:ActivityGetInitialUserInfoBinding
-    private var imgFile: File? = null
-    private var picturePath: String = ""
+//    private var imgFile: File? = null
+//    private var picturePath: String = ""
+    private lateinit var imagePickerHelper : ImagePickerHelper
     var body:MultipartBody.Part? = null
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +45,7 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         setContentView(binding.root)
         clearErrorMessageOnFocus()
         binding.btnUserContinue.setOnClickListener(this)
+        imagePickerHelper = ImagePickerHelper()
         userInfoViewModel = ViewModelProvider(
             this, UserInfoInjectorUtil.provideUserInjectorUtil(
                 this
@@ -126,59 +120,8 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
             when (requestCode) {
                 REQUEST_CODE_IMG_PICK -> if (resultCode == RESULT_OK && data != null) {
                     val selectedImageUri: Uri? = data.data
-                    val bytes =
-                        selectedImageUri?.let { contentResolver.openInputStream(it)?.readBytes() }
-                            ?: return
-                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-//                    binding.imgVAvatarInitial.setImageURI(selectedImage)
-                    loadImage(this, binding.imgVAvatarInitial, null, selectedImageUri)
-
-                    val inputStrm: InputStream? = contentResolver.openInputStream(data.data!!)
-
-                    prepareImageForUpload(getBytes(inputStrm!!))
-
-                    val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-                    if (selectedImageUri != null) {
-                        val cursor: Cursor? = contentResolver.query(
-                            selectedImageUri,
-                            filePathColumn, null, null, null
-                        )
-                        if (cursor != null) {
-                            cursor.moveToFirst()
-                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-                            picturePath = cursor.getString(columnIndex)
-                            imgFile = File(picturePath)
-//                            lifecycleScope.launchWhenStarted {
-//                                val compressedImageFile: File = Compressor.compress(
-//                                    this@GetInitialUserInfoActivity,
-//                                    imgFile!!
-//                                ) {
-////                                    resolution(1280, 720)
-////                                    quality(80)
-////                                    format(Bitmap.CompressFormat.WEBP)
-//                                    size(4000) // 700 kb
-//                                }
-//                                prepareImageForUpload(getBytes(inputStrm!!))
-
-//                                val requestFile: RequestBody? =
-//                                    imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
-//                                body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
-//                                body = compressedImageFile.
-//                               userInfoViewModel.compresSAndPrepareForUpload(imgFile,
-//                                   this@GetInitialUserInfoActivity).observe(this@GetInitialUserInfoActivity,
-//                                   Observer {
-//                                       body = it
-//                               })
-
-
-
-//                                Log.d(TAG, "onActivityResult:$compressedImageFile ")
-//                            }
-
-                            cursor.close()
-                        }
-                    }
+                    binding.imgVAvatarInitial.setImageURI(selectedImageUri)
+                    userInfoViewModel.processImage(this, selectedImageUri, imagePickerHelper)
                 }
             }
         }
@@ -187,25 +130,6 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
 
 
 
-    private fun prepareImageForUpload(imageBytes: ByteArray?) {
-        val requestFile: okhttp3.RequestBody? =
-            imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
-//        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
-
-
-    }
-
-    @Throws(IOException::class)
-    fun getBytes(`is`: InputStream): ByteArray? {
-        val byteBuff = ByteArrayOutputStream()
-        val buffSize = 1024
-        val buff = ByteArray(buffSize)
-        var len = 0
-        while (`is`.read(buff).also { len = it } != -1) {
-            byteBuff.write(buff, 0, len)
-        }
-        return byteBuff.toByteArray()
-    }
     @SuppressLint("LongLogTag")
 private fun sendUserInfo() {
 
@@ -213,7 +137,7 @@ private fun sendUserInfo() {
     val lastName = binding.editTextLName.text.toString().trim()
 //    val email = binding.editTextEmail.text.toString().trim()
 
-        userInfoViewModel.compresSAndPrepareForUpload(imgFile,
+        userInfoViewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile,
             this@GetInitialUserInfoActivity).observe(this@GetInitialUserInfoActivity,
             Observer {
                 body = it
@@ -247,17 +171,28 @@ private fun sendUserInfo() {
 
     @SuppressLint("LongLogTag")
     private fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?) {
+        binding.pgBarInfo.beVisible()
         userInfoViewModel.upload(userInfo, body).observe(this, Observer {
-            userInfoViewModel.saveUserInfoInLocalDb(it).observe(this, Observer {
-                when (it) {
-                    OPERATION_COMPLETED -> {
-                        saveToSharedPref(true)
-                        val i = Intent(this, MainActivity::class.java)
-                        startActivity(i)
-                        finish()
+            when(it.isEverytingWentWell){
+                EVERYTHING_WENT_WELL ->{
+                    binding.pgBarInfo.beInvisible()
+                    it.result?.let { it1 ->
+                        userInfoViewModel.saveUserInfoInLocalDb(it1).observe(this, Observer {
+                            when (it) {
+                                OPERATION_COMPLETED -> {
+                                    saveToSharedPref(true)
+                                    val i = Intent(this, MainActivity::class.java)
+                                    startActivity(i)
+                                    finish()
+                                }
+                            }
+                        })
                     }
+                } else ->{
+                binding.pgBarInfo.beInvisible()
+                toast("Something went wrong")
                 }
-            })
+            }
 
         })
 
