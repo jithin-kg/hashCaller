@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.showHideBlockButton
-import com.nibble.hashcaller.view.ui.sms.individual.util.isOnMainThread
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
@@ -29,6 +28,7 @@ import kotlin.collections.HashMap
  */
 
 
+const val   REQUEST_CODE_IMG_PICK = 1
 const val SPAM_THREASHOLD = 15L
 const val CONTACT_ID = "contactId"
 const val CONTACT_ADDRES = "contact_address"
@@ -152,11 +152,17 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
  * @param view : ImageView
  *
  */
-fun loadImage(context: Context, imgView: ImageView, photoUri: String? ) {
+fun loadImage(context: Context, imgView: ImageView, photoUriStr: String?, selectedImageUri: Uri?=null) {
 
+    var imgUri:Uri? = null
+    if(selectedImageUri!=null){
+      imgUri = selectedImageUri
+    }else{
+        imgUri = Uri.parse(photoUriStr)
+    }
     try {
-        if(photoUri!=null){
-            Glide.with(context).load(Uri.parse(photoUri))
+        if(photoUriStr!=null){
+            Glide.with(context).load(imgUri)
                 .into(imgView)
         }
     }catch (e:Exception){

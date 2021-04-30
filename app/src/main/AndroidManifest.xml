@@ -8,7 +8,6 @@
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="true" />
-
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />

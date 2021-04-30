@@ -286,6 +286,8 @@ companion object{
                                     }
                                 }
                             })
+                        }else{
+                            startGetUserInfoAcitvity()
                         }
                     }
                 }

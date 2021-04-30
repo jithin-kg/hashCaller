@@ -239,7 +239,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.switchIndividualContact.setOnClickListener(this)
         binding.imgBtnBlockIndividualContact.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
-        binding.imgBtnCallIndividualContact.setOnClickListener(this)
+        binding.imgVAvatarMain.setOnClickListener(this)
         binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
 
@@ -254,7 +254,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.tvFirstLetter.beInvisible()
 
         if(!photoUri.isNullOrEmpty()){
-            loadImage(this,binding.ivAvatar, photoUri)
+            loadImage(this, binding.ivAvatar, photoUri)
             binding.tvFirstLetter.beInvisible()
         }else{
             binding.ivAvatar.beInvisible()
@@ -313,7 +313,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
             R.id.imgBtnBack -> {
                 finish()
             }
-            R.id.imgBtnCallIndividualContact -> {
+            R.id.imgVAvatarMain -> {
                 makeCall(phoneNum)
             }
             R.id.imgBtnSMS -> {

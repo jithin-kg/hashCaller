@@ -113,7 +113,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
     <ImageButton
-        android:id="@+id/imgBtnCallIndividualContact"
+        android:id="@+id/imgVAvatarMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -132,9 +132,9 @@
         android:text="Call"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIndividualContact"
-        app:layout_constraintStart_toStartOf="@+id/imgBtnCallIndividualContact"
-        app:layout_constraintEnd_toEndOf="@+id/imgBtnCallIndividualContact"
+        app:layout_constraintTop_toBottomOf="@+id/imgVAvatarMain"
+        app:layout_constraintStart_toStartOf="@+id/imgVAvatarMain"
+        app:layout_constraintEnd_toEndOf="@+id/imgVAvatarMain"
         app:layout_constraintBottom_toTopOf="@+id/imgViewdividerIndvdlCntct"
         />
     <ImageView
@@ -179,7 +179,7 @@
         android:layout_marginTop="24dp"
         android:background="?android:selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toStartOf="@+id/imgBtnSMS"
-        app:layout_constraintStart_toEndOf="@+id/imgBtnCallIndividualContact"
+        app:layout_constraintStart_toEndOf="@+id/imgVAvatarMain"
         app:layout_constraintTop_toBottomOf="@+id/txtViewNumber"
         app:srcCompat="@drawable/circular_button_block"
         tools:visibility="visible" />

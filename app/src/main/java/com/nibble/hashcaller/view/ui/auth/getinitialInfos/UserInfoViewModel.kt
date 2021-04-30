@@ -9,6 +9,7 @@ import com.nibble.hashcaller.repository.user.UserNetworkRepository
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import kotlinx.coroutines.*
+import okhttp3.MultipartBody
 import java.lang.Exception
 
 class UserInfoViewModel(
@@ -16,7 +17,7 @@ class UserInfoViewModel(
 ) :ViewModel(){
     var userInfo = userNetworkRepository.getUserInfo()
 //    val userInfo  = userNetworkRepository.getUserInfo()
-    fun upload(userInfo: UserInfoDTO):LiveData<SingupResponse> = liveData{
+    fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?):LiveData<SingupResponse> = liveData{
 
 
 
@@ -32,7 +33,7 @@ class UserInfoViewModel(
         try {
             Log.d(TAG, "upload: try")
             var result:String? = ""
-            val response = userNetworkRepository.signup(userInfo)
+            val response = userNetworkRepository.signup(userInfo, body)
             Log.d(TAG, "upload: response is $response")
            if(response?.isSuccessful){
                response.body()?.let { emit(it) }
@@ -62,11 +63,11 @@ class UserInfoViewModel(
         viewModelScope.launch {
             val user = UserInfo(null)
             val result = singupResponse.result
-            user.email = result.email
+//            user.email = result.email
             user.firstname = result.firstName
             user.lastName = result.lastName
             user.phoneNumber = "2"
-            user.photoURI = ""
+            user.photoURI = result.image
 
             userNetworkRepository.saveUserInfoInLocalDb(user)
         }.join()

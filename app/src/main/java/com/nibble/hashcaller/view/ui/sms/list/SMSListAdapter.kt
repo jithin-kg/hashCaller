@@ -178,7 +178,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 binding.imgVThumbnail.beInvisible()
                 binding.card.beInvisible()
             }else{
-                loadImage(context,binding.imgVThumbnail, sms.thumbnailFromCp )
+                loadImage(context, binding.imgVThumbnail, sms.thumbnailFromCp)
                 binding.imgVThumbnail.beVisible()
                 binding.imgVBlkIconSms.beInvisible()
                 binding.card.beVisible()

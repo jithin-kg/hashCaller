@@ -160,7 +160,7 @@
             android:id="@+id/txtViewNumber"
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
-            android:id="@+id/imgBtnCallIndividualContact"
+            android:id="@+id/imgVAvatarInitial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"
@@ -198,7 +198,7 @@
             android:layout_height="wrap_content"
             android:visibility="invisible"
             motion:layout_editor_absoluteX="189dp"
-            motion:layout_constraintTop_toTopOf="@+id/imgBtnCallIndividualContact"
+            motion:layout_constraintTop_toTopOf="@+id/imgVAvatarInitial"
             android:layout_marginTop="16dp" />
         <Constraint
             android:id="@+id/tvSMSBtnInfo"

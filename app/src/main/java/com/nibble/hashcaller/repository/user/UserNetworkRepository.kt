@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.RetrofitClient
-import com.nibble.hashcaller.network.user.GetUserInfoResponse
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
@@ -12,6 +11,9 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
 
 /**
@@ -24,12 +26,13 @@ class UserNetworkRepository(
 ){
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
     
-    suspend fun signup(userInfo:UserInfoDTO): Response<SingupResponse>   = withContext(Dispatchers.IO) {
+    suspend fun signup(userInfo: UserInfoDTO, body: MultipartBody.Part?): Response<SingupResponse>   = withContext(Dispatchers.IO) {
 //        retrofitService = RetrofitClient.createaService(IuserService::class.java)
 
         val token = tokenManager.getToken()
-        
-        val response = retrofitService?.signup(userInfo, token)
+        val firstName = createPartFromString(userInfo.firstName)
+        val lastName = createPartFromString(userInfo.lastName)
+        val response = retrofitService?.signup(firstName,lastName, body, token)
         if(response.isSuccessful){
             Log.d(TAG, "signup: success")
         }else{
@@ -40,6 +43,9 @@ class UserNetworkRepository(
         return@withContext response
     }
 
+    fun createPartFromString(str:String): RequestBody {
+        return str.toRequestBody(MultipartBody.FORM)
+    }
     suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo)  = withContext(Dispatchers.IO){
         userInfoDAO.insert(userInfo)
     }
