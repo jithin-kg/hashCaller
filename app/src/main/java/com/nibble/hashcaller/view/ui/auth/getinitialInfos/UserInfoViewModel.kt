@@ -8,8 +8,16 @@ import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.lang.Exception
 
 class UserInfoViewModel(
@@ -113,5 +121,30 @@ class UserInfoViewModel(
     fun insertUserInfo(userInfo: GetUserInfoResponse?) = viewModelScope.launch{
         val user = UserInfo(null, userInfo!!.firstName, userInfo!!.lastName, "", "", "")
         userNetworkRepository.insertNewUserIntoDb(user)
+    }
+
+    fun compresSAndPrepareForUpload(imgFile: File?, context: GetInitialUserInfoActivity) :LiveData<MultipartBody.Part> = liveData {
+        val compressedImageFile: File = Compressor.compress(
+            context,
+            imgFile!!
+        ) {
+                                    resolution(48, 48)
+//                                    quality(80)
+//                                    format(Bitmap.CompressFormat.WEBP)
+            size(4000) // 4 kb
+        }
+        val requestFile: RequestBody =
+            compressedImageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+       val  body:MultipartBody.Part =  MultipartBody.Part.createFormData(
+            "image",
+            compressedImageFile.name,
+            requestFile
+        );
+
+//        val requestFile: okhttp3.RequestBody? =
+//            imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
+//        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
+        emit(body)
+
     }
 }

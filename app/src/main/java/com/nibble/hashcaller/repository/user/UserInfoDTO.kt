@@ -9,9 +9,9 @@ data class UserInfoDTO(
 
     var firstName:String="",
     var lastName:String="",
-    var phoneNumber:String = "912",
-    var email:String = "",
-    var gender:String = "32",
-    @Part("profilePic")
-    var profilePic : MultipartBody.Part? = null
+//    var phoneNumber:String = "912",
+//    var email:String = "",
+//    var gender:String = "32",
+//    @Part("profilePic")
+//    var profilePic : MultipartBody.Part? = null
 )

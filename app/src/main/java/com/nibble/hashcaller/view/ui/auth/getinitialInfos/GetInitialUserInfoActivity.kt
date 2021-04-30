@@ -1,9 +1,11 @@
 package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetInitialUserInfoBinding
@@ -23,17 +26,16 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
-
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.squareup.okhttp.RequestBody
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.size
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
+import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
 
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
@@ -127,7 +129,6 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
                     val bytes =
                         selectedImageUri?.let { contentResolver.openInputStream(it)?.readBytes() }
                             ?: return
-
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
 //                    binding.imgVAvatarInitial.setImageURI(selectedImage)
@@ -136,31 +137,61 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
                     val inputStrm: InputStream? = contentResolver.openInputStream(data.data!!)
 
                     prepareImageForUpload(getBytes(inputStrm!!))
-//                    val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-//                    if (selectedImageUri != null) {
-//                        val cursor: Cursor? = contentResolver.query(
-//                            selectedImageUri,
-//                            filePathColumn, null, null, null
-//                        )
-//                        if (cursor != null) {
-//                            cursor.moveToFirst()
-//                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-//                            picturePath = cursor.getString(columnIndex)
-//                            imgFile = File(picturePath)
-//
-//                            cursor.close()
-//                        }
-//                    }
+
+                    val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+                    if (selectedImageUri != null) {
+                        val cursor: Cursor? = contentResolver.query(
+                            selectedImageUri,
+                            filePathColumn, null, null, null
+                        )
+                        if (cursor != null) {
+                            cursor.moveToFirst()
+                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+                            picturePath = cursor.getString(columnIndex)
+                            imgFile = File(picturePath)
+//                            lifecycleScope.launchWhenStarted {
+//                                val compressedImageFile: File = Compressor.compress(
+//                                    this@GetInitialUserInfoActivity,
+//                                    imgFile!!
+//                                ) {
+////                                    resolution(1280, 720)
+////                                    quality(80)
+////                                    format(Bitmap.CompressFormat.WEBP)
+//                                    size(4000) // 700 kb
+//                                }
+//                                prepareImageForUpload(getBytes(inputStrm!!))
+
+//                                val requestFile: RequestBody? =
+//                                    imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
+//                                body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
+//                                body = compressedImageFile.
+//                               userInfoViewModel.compresSAndPrepareForUpload(imgFile,
+//                                   this@GetInitialUserInfoActivity).observe(this@GetInitialUserInfoActivity,
+//                                   Observer {
+//                                       body = it
+//                               })
+
+
+
+//                                Log.d(TAG, "onActivityResult:$compressedImageFile ")
+//                            }
+
+                            cursor.close()
+                        }
+                    }
                 }
             }
         }
 
     }
 
+
+
     private fun prepareImageForUpload(imageBytes: ByteArray?) {
-        val requestFile: RequestBody? =
+        val requestFile: okhttp3.RequestBody? =
             imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
-        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
+//        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
+
 
     }
 
@@ -182,25 +213,32 @@ private fun sendUserInfo() {
     val lastName = binding.editTextLName.text.toString().trim()
 //    val email = binding.editTextEmail.text.toString().trim()
 
+        userInfoViewModel.compresSAndPrepareForUpload(imgFile,
+            this@GetInitialUserInfoActivity).observe(this@GetInitialUserInfoActivity,
+            Observer {
+                body = it
 
-    binding.editTextFName.error = null
+                binding.editTextFName.error = null
 //    binding.editTextEmail.error = null
-    binding.editTextLName.error = null
-    val isValid = validateInput(firstName, lastName);
-    if(isValid){
-        Log.d(TAG, "isvalid: ")
-        var userInfo = UserInfoDTO()
-        userInfo.firstName = firstName;
-        userInfo.lastName =  lastName;
-        userInfo.email = "email";
+                binding.editTextLName.error = null
+                val isValid = validateInput(firstName, lastName);
+                if(isValid){
+                    Log.d(TAG, "isvalid: ")
+                    var userInfo = UserInfoDTO()
+                    userInfo.firstName = firstName;
+                    userInfo.lastName =  lastName;
+//        userInfo.email = "email";
 
 //        val body: MultipartBody.Part = createFormData.createFormData("files[0]", file.getName(), requestFile)
 //        userInfo.profilePic =imgPart
 
 
 
-        upload(userInfo, body)
-    }
+                    upload(userInfo, body)
+                }
+            })
+
+
 
 
 }

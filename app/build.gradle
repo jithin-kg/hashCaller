@@ -210,7 +210,8 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-
+    //image compression
+    implementation 'id.zelory:compressor:3.0.1'
     //permission livedata
 ////For coroutines
 //    implementation 'com.sagar:coroutinespermission:1.0.0'
