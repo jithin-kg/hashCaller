@@ -8,18 +8,15 @@ import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.IHashedNumDao
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.resolution
-import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
 import java.io.File
@@ -37,11 +34,15 @@ class UserNetworkRepository(
     
     suspend fun signup(userInfo: UserInfoDTO, body: MultipartBody.Part?): Response<SingupResponse>   = withContext(Dispatchers.IO) {
 //        retrofitService = RetrofitClient.createaService(IuserService::class.java)
-
         val token = tokenManager.getToken()
         val firstName = createPartFromString(userInfo.firstName)
         val lastName = createPartFromString(userInfo.lastName)
-        val response = retrofitService?.signup(firstName,lastName, body, token)
+        val hashedNum = createPartFromString(userInfo.hashedNum)
+        val phoneNumber = createPartFromString(userInfo.phoneNumber)
+        val countryCode = createPartFromString(userInfo.countryCode)
+        val countryISO = createPartFromString(userInfo.countryISO)
+        val response = retrofitService?.signup(firstName, lastName, hashedNum, phoneNumber, countryCode, countryISO, body, token)
+
         if(response.isSuccessful){
             Log.d(TAG, "signup: success")
         }else{
@@ -56,6 +57,7 @@ class UserNetworkRepository(
         return str.toRequestBody(MultipartBody.FORM)
     }
     suspend  fun saveUserInfoInLocalDb(userInfo: UserInfo)  = withContext(Dispatchers.IO){
+
         userInfoDAO.insert(userInfo)
     }
 
@@ -83,6 +85,9 @@ class UserNetworkRepository(
         return@withContext  imageCompressor.getCompressedImagePart(imgFile)
 
     }
+
+
+
 
     companion object{
         private const val TAG = "__UserNetworkRepository"

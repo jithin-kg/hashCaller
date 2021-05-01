@@ -118,6 +118,7 @@ class CountrycodeHelper(val context: Context) {
                     TAG,
                     "getCountryIso   ${lsuSubscriptionInfo.countryIso}"
                 )
+                lsuSubscriptionInfo.iccId
                  countryIso = lsuSubscriptionInfo.countryIso.toUpperCase()
             }
         }

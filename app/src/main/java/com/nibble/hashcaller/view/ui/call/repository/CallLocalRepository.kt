@@ -8,6 +8,8 @@ import android.util.Log
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
 class CallLocalRepository(private val context: Context) {
@@ -17,7 +19,7 @@ class CallLocalRepository(private val context: Context) {
 
         private const val TAG = "__CallLocalRepository"
     }
-     fun getCallLog():List<CallLogData>{
+     suspend fun getCallLog():List<CallLogData> = withContext(Dispatchers.IO){
         val hashSetOfNumber : HashSet<String> = HashSet()
         val listOfCallLogs = mutableListOf<CallLogData>()
         val projection = arrayOf(
@@ -68,6 +70,11 @@ class CallLocalRepository(private val context: Context) {
                      *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
+                    /**
+                     *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
+                     *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
+                     *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
+                     */
                     dateInMilliseconds += name + id + Math.random().toString();
 
                     val log = CallLogData(id, formatedNum, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
@@ -82,7 +89,7 @@ class CallLocalRepository(private val context: Context) {
         }
 
 
-        return listOfCallLogs
+         return@withContext listOfCallLogs
 
     }
 }

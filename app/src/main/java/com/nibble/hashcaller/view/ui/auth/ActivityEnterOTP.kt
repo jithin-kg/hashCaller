@@ -17,6 +17,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import kotlinx.android.synthetic.main.activity_enter_o_t_p.*
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -27,7 +28,6 @@ import kotlin.math.log
 class ActivityEnterOTP : AppCompatActivity(), View.OnClickListener {
 
     private val TAG: String? = "ActivityEnterOTP"
-
     var phoneNumber: String? = null
     var mAuth: FirebaseAuth? = null
     private var otpSent = false
@@ -46,13 +46,9 @@ class ActivityEnterOTP : AppCompatActivity(), View.OnClickListener {
         phoneNumber = "+16605551234"
         mAuth = FirebaseAuth.getInstance()
         mAuth!!.firebaseAuthSettings.forceRecaptchaFlowForTesting(true)
-
-        Log.d(ActivityEnterOTP.TAG, "onCreate: $mAuth")
         btnCaptcha.setOnClickListener(this)
         button2.setOnClickListener(this)
         observeCapchaRequest()
-
-
 
     }
 

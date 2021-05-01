@@ -172,9 +172,10 @@ private fun sendUserInfo() {
     @SuppressLint("LongLogTag")
     private fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?) {
         binding.pgBarInfo.beVisible()
-        userInfoViewModel.upload(userInfo, body).observe(this, Observer {
+        userInfoViewModel.upload(userInfo, body, this).observe(this, Observer {
             when(it.isEverytingWentWell){
                 EVERYTHING_WENT_WELL ->{
+
                     binding.pgBarInfo.beInvisible()
                     it.result?.let { it1 ->
                         userInfoViewModel.saveUserInfoInLocalDb(it1).observe(this, Observer {

@@ -9,17 +9,14 @@ import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
 
-object UserInfoInjectorUtil {
+object PhoneAuthInjectorUtil {
     fun provideUserInjectorUtil(context:Context) : UserViewModelFactory {
         val userInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).userInfoDAo() }
         val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
-        val userHashedNumDAo = context?.let { HashCallerDatabase.getDatabaseInstance(it).userHashedNumDAO() }
-
+        val userHashedNumDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).userHashedNumDAO() }
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
         val imageCompressor = ImageCompressor(context)
         val countryCodeHelper = CountrycodeHelper(context)
-        val userHashedNumRepository = UserHasehdNumRepository(userHashedNumDAo, countryCodeHelper)
-
         val userNetworkRepository = UserNetworkRepository(
             TokenManager(sp),
             userInfoDAO,
@@ -27,6 +24,7 @@ object UserInfoInjectorUtil {
             imageCompressor
         )
 
+        val userHashedNumRepository = UserHasehdNumRepository(userHashedNumDAO, countryCodeHelper)
         return UserViewModelFactory(
             userNetworkRepository,
             userHashedNumRepository

@@ -34,8 +34,8 @@ class ImagePickerHelper {
 
         val inputStrm: InputStream? = context.contentResolver.openInputStream(selectedImageUri)
         prepareImageForUpload(getBytes(inputStrm!!))
-
-        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+            //todo DEPERECATED , change this
+            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
         if (selectedImageUri != null) {
             val cursor: Cursor? = context.contentResolver.query(
                 selectedImageUri,

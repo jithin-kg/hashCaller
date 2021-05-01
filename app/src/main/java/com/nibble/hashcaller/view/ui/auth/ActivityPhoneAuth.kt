@@ -7,16 +7,29 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityPhoneAuthBinding
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.PhoneAuthInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import kotlinx.android.synthetic.main.activity_phone_auth.*
 
-class ActivityPhoneAuth : AppCompatActivity() {
+
+class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
     var displayedInstruction = false
+    private lateinit var userInfoViewModel: UserInfoViewModel
+
+    private lateinit var binding:ActivityPhoneAuthBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_phone_auth)
+        binding = ActivityPhoneAuthBinding.inflate(layoutInflater)
 
-        editTextPhone?.addTextChangedListener(object : TextWatcher {
+        setContentView(binding.root)
+        initListeners()
+        initViewModel()
+        binding.editTextPhone?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence,
                 start: Int,
@@ -31,18 +44,18 @@ class ActivityPhoneAuth : AppCompatActivity() {
                 before: Int,
                 count: Int
             ) {
-                if(editTextPhone.text.isEmpty()){
-                    textViewHashValue.text = ""
-                    textViewInstruction?.text = ""
+                if(binding.editTextPhone.text.isEmpty()){
+                    binding.textViewHashValue.text = ""
+                    binding.textViewInstruction?.text = ""
                 }else{
                     val hashGenerator = HasValueGenerator()
                     val hashValue: String? =
-                        hashGenerator.generateHash(editTextPhone?.text.toString())
+                        hashGenerator.generateHash(binding.editTextPhone?.text.toString())
                     if (!displayedInstruction) {
-                        textViewInstruction?.text = "Take a look at how we save your phone number"
+                       binding.textViewInstruction?.text = "Take a look at how we save your phone number"
                         displayedInstruction = true
                     }
-                    textViewHashValue?.text = hashValue
+                    binding.textViewHashValue?.text = hashValue
                 }
 
             }
@@ -53,13 +66,44 @@ class ActivityPhoneAuth : AppCompatActivity() {
         })
     }
 
-    fun passPhoneNumber(view: View?) {
+    private fun initViewModel() {
+        userInfoViewModel = ViewModelProvider(
+            this, PhoneAuthInjectorUtil.provideUserInjectorUtil(
+                this
+            )
+        ).get(
+            UserInfoViewModel::class.java
+        )
+    }
+
+    private fun initListeners() {
+        binding.buttonGo.setOnClickListener(this)
+    }
+
+    fun passPhoneNumber() {
+
         val phoneNumber =
-            editTextPhone?.text.toString().trim { it <= ' ' }
-        val i = Intent(this@ActivityPhoneAuth, ActivityVerifyOTP::class.java)
-        i.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-        i.putExtra("phoneNumber", phoneNumber)
-        startActivity(i)
-        finish()
+            binding.editTextPhone?.text.toString().trim { it <= ' ' }
+        userInfoViewModel.saveUserPhoneHash(this, phoneNumber).observe(this, Observer {
+            when(it){
+                OPERATION_COMPLETED ->{
+                    val i = Intent(this@ActivityPhoneAuth, ActivityVerifyOTP::class.java)
+                    i.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
+                    i.putExtra("phoneNumber", phoneNumber)
+                    startActivity(i)
+                    finish()
+                }
+            }
+        })
+
+
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.buttonGo ->{
+                passPhoneNumber()
+            }
+        }
     }
 }

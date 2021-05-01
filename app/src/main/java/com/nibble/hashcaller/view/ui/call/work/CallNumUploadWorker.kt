@@ -29,8 +29,10 @@ import java.util.concurrent.TimeUnit
  *
  * worker for uploading callers  number to server inorder to  get info about the callers
  */
+
 class CallNumUploadWorker(private val context: Context, private val params:WorkerParameters ) :
         CoroutineWorker(context, params){
+
     val contacts = mutableListOf<ContactUploadDTO>()
     private val callersListDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private lateinit var callersListTobeSendToServer: MutableList<ContactAddressWithHashDTO>

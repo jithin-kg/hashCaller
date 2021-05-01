@@ -19,6 +19,11 @@ interface IuserService {
     suspend fun signup(
         @Part("firstName") firstName:RequestBody,
         @Part("lastName") lastName:RequestBody,
+        @Part("hashedNum") hashedNum:RequestBody,
+        @Part("phoneNumber") phoneNumber:RequestBody,
+        @Part("countryCode") countryCode:RequestBody,
+        @Part("countryISO") countryISO:RequestBody,
+
         @Part image: MultipartBody.Part?,
         @Header ("Authorization") token:String
     ):Response<SingupResponse>

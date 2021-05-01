@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.network.NetworkResponseBase
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.SOMETHING_WRONG_HAPPEND
@@ -12,9 +13,11 @@ import com.nibble.hashcaller.network.user.Result
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHasehdNumRepository
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -22,15 +25,21 @@ import java.io.File
 import java.lang.Exception
 
 class UserInfoViewModel(
-    private val userNetworkRepository: UserNetworkRepository
+    private val userNetworkRepository: UserNetworkRepository,
+    private val userHashedNumRepository: UserHasehdNumRepository
 ) :ViewModel(){
     var userInfo = userNetworkRepository.getUserInfo()
 //    val userInfo  = userNetworkRepository.getUserInfo()
-    fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?):LiveData<NetworkResponseBase<SingupResponse>> = liveData{
 
 
+    fun upload(userInfo: UserInfoDTO,
+              body: MultipartBody.Part?,
+          context: Context
+                ):LiveData<NetworkResponseBase<SingupResponse>>
+            = liveData{
 
-        Log.d(TAG, "upload: inside ")
+
+//    Secrets().managecipher(context.packageName, formattedPhoneNum)
     /**
          * saving user info in local db
          */
@@ -40,26 +49,34 @@ class UserInfoViewModel(
 //        saveUserInfoInLocalDb(userInfo)
 //            userNetworkRepository.signup(userInfo)
         try {
-            Log.d(TAG, "upload: try")
-            var result:String? = ""
-            val response:Response<SingupResponse> = userNetworkRepository.signup(userInfo, body)
 
-            Log.d(TAG, "upload: response is $response")
-           if(response?.isSuccessful){
-               response.body()?.let {
-                  if(response.code() !in (400 .. 599)){
-                  val genericResponse = NetworkResponseBase(it, EVERYTHING_WENT_WELL)
-                        emit(genericResponse)
-                  }
+           val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
+            if(hashedNumResultFromDb!=null){
+                var result:String? = ""
+                val info = UserInfoDTO()
+                info.firstName = userInfo.firstName
+                info.lastName = userInfo.lastName
+                info.hashedNum = hashedNumResultFromDb.hashedNumber
+                info.phoneNumber = hashedNumResultFromDb.phoneNumber
+                info.countryCode = userHashedNumRepository.getCoutryCode()
+                info.countryISO = userHashedNumRepository.getCoutryISO()
+                val response:Response<SingupResponse> = userNetworkRepository.signup(info, body)
+                if(response?.isSuccessful){
+                    response.body()?.let {
+                        if(response.code() !in (400 .. 599)){
+                            val genericResponse = NetworkResponseBase(it, EVERYTHING_WENT_WELL)
+                            emit(genericResponse)
+                        }
+                    }
+                }else {
+                    if(response.code() in (400 .. 599)){
+                        val genericRespnse = NetworkResponseBase(
+                            SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
+                        emit(genericRespnse)
+                    }
+                }
+            }
 
-               }
-           }else {
-               if(response.code() in (400 .. 599)){
-                val genericRespnse = NetworkResponseBase(
-                    SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
-                   emit(genericRespnse)
-               }
-           }
 
 
 
@@ -92,7 +109,6 @@ class UserInfoViewModel(
             user.lastName = result.lastName
             user.phoneNumber = "2"
             user.photoURI = result.image
-
             userNetworkRepository.saveUserInfoInLocalDb(user)
         }.join()
         emit(OPERATION_COMPLETED)
@@ -154,5 +170,12 @@ class UserInfoViewModel(
     fun processImage(context: Context, selectedImageUri: Uri?, imagePickerHelper: ImagePickerHelper) {
         imagePickerHelper.processImage(context,selectedImageUri)
 
+    }
+
+    fun saveUserPhoneHash(context: Context, phoneNumber: String):LiveData<Int> = liveData{
+        val formattedPhoneNum = formatPhoneNumber(phoneNumber)
+        val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+        userHashedNumRepository.saveUserPhoneHash(hashedPhoneNum, formattedPhoneNum)
+        emit(OPERATION_COMPLETED)
     }
 }

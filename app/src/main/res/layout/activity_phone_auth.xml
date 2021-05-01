@@ -73,7 +73,6 @@
         android:elevation="6dp"
 
         android:minHeight="56dp"
-        android:onClick="passPhoneNumber"
         android:text="Go"
         android:textColor="#ffff"
         android:textFontWeight="2"

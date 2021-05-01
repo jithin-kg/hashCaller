@@ -23,12 +23,13 @@ import javax.crypto.spec.SecretKeySpec
  */
 class ContactsNetworkRepository (private val context: Context){
 
-    private var retrofitService: IContactsService? = null
+//    private var retrofitService: IContactsService? = null
     private var keyStore: KeyStore? = null
     private val ANDROID_KEY_STORE = "AndroidKeyStore"
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
     private var decryptor: Decryptor? = null
     private val TAG = "__ContactsNetworkRepository"
+    private var retrofitService : IContactsService?= RetrofitClient.createaService(IContactsService::class.java)
 
     init {
         initKeyStore()
@@ -43,7 +44,6 @@ class ContactsNetworkRepository (private val context: Context){
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 
-            retrofitService = RetrofitClient.createaService(IContactsService::class.java)
 
 //            val contactListObject =
 //                ContactsListHelper(contacts)

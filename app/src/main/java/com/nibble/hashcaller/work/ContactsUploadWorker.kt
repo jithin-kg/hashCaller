@@ -18,6 +18,7 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.util.*
@@ -31,6 +32,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     val contacts = mutableListOf<ContactUploadDTO>()
     private  var contactsListOf12: List<List<ContactUploadDTO>> = mutableListOf()
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
+val countryCodeHelper = CountrycodeHelper(context)
 
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
@@ -45,10 +47,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
                 for (contactSublist in contactsListOf12){
                     Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
-                    val countryCode =   "91" //for emulator country code should be 91
-//            val countryISO = countryCodeHelper.getCountryISO()
-                    val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
-
+//                    val countryCode =   "91" //for emulator country code should be 91
+                    val countryISO = countryCodeHelper.getCountryISO()
+//                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
+                    val countryCode = countryCodeHelper.getCountrycode()
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                     val contactsNetworkRepository = ContactsNetworkRepository(context)
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
