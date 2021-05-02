@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.splashactivity
 
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -27,6 +28,7 @@ import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.vmadalin.easypermissions.EasyPermissions
 import java.io.IOException
 import java.security.*
 import javax.crypto.BadPaddingException
@@ -432,10 +434,9 @@ companion object{
     }
 
     private fun checkPermission(): Boolean {
-        sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-
-        return sharedPreferences.getBoolean("isPermissionGiven",false)
-
+        return EasyPermissions.hasPermissions(this,
+            Manifest.permission.READ_CONTACTS
+        )
     }
 
 

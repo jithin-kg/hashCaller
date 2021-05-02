@@ -216,6 +216,14 @@
             android:id="@+id/imgBtnSMS"
             motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp" />
+        <Constraint
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            motion:layout_editor_absoluteX="104dp"
+            android:id="@+id/imgBtnCallindividual"
+            motion:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp" />
     </ConstraintSet>
     <!--    <Transition-->
     <!--        motion:constraintSetEnd="@+id/end"-->

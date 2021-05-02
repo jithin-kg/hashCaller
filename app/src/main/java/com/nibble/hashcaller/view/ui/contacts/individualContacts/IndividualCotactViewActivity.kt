@@ -41,6 +41,7 @@ import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener, MyUndoListener.SnackBarListner,
     PopupMenu.OnMenuItemClickListener {
+
     private lateinit var binding:ActivityIndividualCotactViewBinding
     private lateinit var viewModel:IndividualcontactViewModel
     private lateinit var photoURI:String
@@ -239,7 +240,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.switchIndividualContact.setOnClickListener(this)
         binding.imgBtnBlockIndividualContact.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
-        binding.imgVAvatarMain.setOnClickListener(this)
+        binding.imgBtnCallindividual.setOnClickListener(this)
         binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
 
@@ -313,7 +314,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
             R.id.imgBtnBack -> {
                 finish()
             }
-            R.id.imgVAvatarMain -> {
+            R.id.imgBtnCallindividual -> {
                 makeCall(phoneNum)
             }
             R.id.imgBtnSMS -> {

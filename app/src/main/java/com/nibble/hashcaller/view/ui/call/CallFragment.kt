@@ -304,7 +304,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     @AfterPermissionGranted(REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION)
     fun methodRequiresTwoPermission() {
         Log.d(TAG, "methodRequiresTwoPermission: ")
-        if (EasyPermissions.hasPermissions(context, READ_CALL_LOG, READ_CONTACTS)) {
+        if (EasyPermissions.hasPermissions(context, READ_CALL_LOG, READ_CONTACTS, READ_PHONE_STATE)) {
             // Already have permission, do the thing
             Log.d(TAG, "methodRequiresTwoPermission: already permission")
         } else {
@@ -313,7 +313,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 host = this,
                   "read contacts ",
                   requestCode = REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION,
-                  perms = arrayOf(READ_CALL_LOG, READ_CONTACTS)
+                  perms = arrayOf(READ_CALL_LOG, READ_CONTACTS, READ_PHONE_STATE)
             )
         }
     }
