@@ -4,7 +4,7 @@
     <group android:id="@+id/group1" android:checkableBehavior="single">
         <item
             android:id="@+id/drawerConfigureBlocking"
-            android:title="Configure Blocking"
+            android:title="Configure blocking"
             android:icon="@drawable/ic_baseline_security_24"
             android:state_activated="false"
 
@@ -17,11 +17,22 @@
             />
         <item
             android:id="@+id/spamCalls"
-            android:title="Spam Calls"
+            android:title="Spam calls"
             android:icon="@drawable/ic_baseline_call_drawer"
             android:state_activated="false"
             />
-
+        <item
+            android:id="@+id/myBlockLIst"
+            android:title="My block list"
+            android:icon="@drawable/ic_baseline_block_drawer"
+            android:state_activated="false"
+            />
+        <item
+            android:id="@+id/notifications"
+            android:title="Notifications"
+            android:icon="@drawable/ic_baseline_notifications_drawer"
+            android:state_activated="false"
+            />
     </group>
     <group android:id="@+id/group2"
         android:checkableBehavior="single">
@@ -31,9 +42,10 @@
             android:icon="@drawable/ic_baseline_settings_2"
             android:state_activated="false"
             />
+
         <item
             android:id="@+id/inviteMenuItem"
-            android:title="Invite Friends"
+            android:title="Invite friends"
             android:icon="@drawable/ic_baseline_invite_drawer"
             android:state_activated="false"
             />

@@ -13,6 +13,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.lang.Exception
 
 class SearchNetworkRepository(private val context: Context){
 
@@ -20,17 +21,19 @@ class SearchNetworkRepository(private val context: Context){
     @SuppressLint("LongLogTag")
 
     suspend fun search(phoneNum:String): Response<SerachRes>?  = withContext(Dispatchers.IO){
-        retrofitService = RetrofitClient.createaService(ISearchService::class.java)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-        val tokenManager = TokenManager(sp)
-        val token = tokenManager.getToken()
+        var result : Response<SerachRes>? = null
+        try {
+            retrofitService = RetrofitClient.createaService(ISearchService::class.java)
+            val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+            val tokenManager = TokenManager(sp)
+            val token = tokenManager.getToken()
+            result =  retrofitService?.search(SearchDTO(phoneNum), token)
+        }catch (e:Exception){
 
-//        val response = retrofitService?.search(SearchDTO(phoneNum), token)
-//        Log.d(TAG, "signup: ${response?.body()?.message}")
+            Log.d(TAG, "search:exception $e")
+        }
 
-
-//        return response
-        return@withContext retrofitService?.search(SearchDTO(phoneNum), token)
+        return@withContext result
     }
 
     suspend fun incrementTotalSpamCount()  = withContext(Dispatchers.IO) {

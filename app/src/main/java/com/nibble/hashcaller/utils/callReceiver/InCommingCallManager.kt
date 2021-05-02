@@ -6,8 +6,11 @@ import android.content.Intent
 import android.util.Log
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
@@ -15,6 +18,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import retrofit2.Response
 
 /**
  * Created by Jithin KG on 20,July,2020
@@ -29,15 +33,19 @@ class InCommingCallManager(
     private  val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
     private val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
     private val phoneNumber = formatPhoneNumber(phoneNumber)
-
+    private val internetChecker = InternetChecker(context)
 
 
 
     fun manageCall()  {
     CoroutineScope(Dispatchers.IO).launch {
+        var deferedSearchInSeraver:Deferred<Response<SerachRes>?>? = null
+   if( internetChecker.isnetworkAvailable()){
+       deferedSearchInSeraver = async { searchRepository.search(phoneNumber) }
+   }
 
-    val deferedSearchInSeraver = async { searchRepository.search(phoneNumber) }
     val deferedFindInContacts = async { contactAdressesDAO.find(phoneNumber) }
+
 
             val deferedBlockByPattern = async {
                 var match = false
@@ -69,7 +77,7 @@ class InCommingCallManager(
             }
 
         }
-      val res =   deferedSearchInSeraver.await()
+      val res:Response<SerachRes>? =   deferedSearchInSeraver?.await()
         if(!res?.body()?.cntcts.isNullOrEmpty()){
             val result = res?.body()?.cntcts?.get(0)
             if(result!!.spammCount > 0){

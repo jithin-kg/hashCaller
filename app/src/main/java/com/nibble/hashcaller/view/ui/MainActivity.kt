@@ -57,6 +57,7 @@ import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
@@ -67,6 +68,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
+import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
@@ -1072,9 +1074,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 val intent = Intent(this, BlockManageActivity::class.java)
                 startActivity(intent)
             }
-            R.id.inviteMenuItem ->{
-
+            R.id.myBlockLIst ->{
+                val intent = Intent(this, BlockListActivity::class.java)
+                startActivity(intent)
             }
+            R.id.notifications ->{
+                val intent = Intent(this, ManageNotificationsActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.inviteMenuItem ->{
+            }
+
         }
         return false
     }
