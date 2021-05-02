@@ -23,6 +23,7 @@ import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
@@ -215,6 +216,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private fun initListeners() {
         binding.btnGivecontactPermission.setOnClickListener(this)
         binding.searchViewContacts.setOnClickListener(this)
+        binding.imgBtnHamBergerCntct.setOnClickListener(this)
 
     }
 
@@ -257,6 +259,9 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             }
             R.id.searchViewContacts->{
                 startSearchActivity()
+            }
+            R.id.imgBtnHamBergerCntct ->{
+                (activity as MainActivity).showDrawer()
             }
 
             else->{

@@ -58,7 +58,7 @@
                 android:backgroundTint="@color/colorBackground">
 
                 <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnAvatarMainCalls"
+                    android:id="@+id/imgBtnHamBrgerCalls"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginStart="32dp"
@@ -178,12 +178,11 @@
                                     android:hint="Search in Calls"
                                     android:iconifiedByDefault="false"
                                     android:queryBackground="@android:color/transparent"
-
                                     android:queryHint="Search numbers, names"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
                                     app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMainCalls"
+                                    app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintVertical_bias="0.0" />
 

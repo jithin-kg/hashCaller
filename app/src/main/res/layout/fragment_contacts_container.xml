@@ -13,42 +13,68 @@
         android:id="@+id/appbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:elevation="0dp"
-        android:elevation="0dp"
-        android:layout_margin="12dp"
+        app:elevation="2dp"
+        android:elevation="2dp"
         app:layout_scrollFlags="scroll|enterAlways"
         android:background="@color/colorBackground"
         >
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@drawable/toolbar_background_round_border"-->
+<!--            app:elevation="4dp"-->
+<!--            android:elevation="4dp"-->
+<!--            android:layout_margin="4dp"-->
+<!--            app:contentInsetStartWithNavigation="0dp"-->
+<!--            app:navigationIcon="@drawable/ic_baseline_menu_24"-->
+<!--            app:layout_scrollFlags="scroll|enterAlways">-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/callToolbarLayoutItems"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="70dp"
+            android:layout_marginStart="0dp"
+            app:layout_scrollFlags="scroll|enterAlways"
             android:background="@drawable/toolbar_background_round_border"
-            app:elevation="4dp"
-            android:elevation="4dp"
-            android:layout_margin="4dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:backgroundTint="@color/colorBackground">
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/imgBtnHamBergerCntct"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="4dp"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_baseline_menu_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/searchViewContacts"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/searchViewContacts"
-                android:layout_width="match_parent"
-                android:cursorVisible="false"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="10dp"
-                android:focusedByDefault="false"
-                android:drawableLeft="@drawable/ic_baseline_search"
-                android:drawablePadding="16dp"
-                android:iconifiedByDefault="false"
-                android:transitionName="@string/search_view_transition"
-                android:hint="search phone, name, hash..."
-                android:focusable="false"
                 android:background="#00000000"
-                android:queryHint="Search numbers, names" />
-        </androidx.appcompat.widget.Toolbar>
+                android:cursorVisible="false"
+                android:drawablePadding="16dp"
+                android:focusable="false"
+                android:focusedByDefault="false"
+                android:hint="Search in contacts"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search numbers, names"
+                android:transitionName="@string/search_view_transition"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnHamBergerCntct"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBergerCntct"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnHamBergerCntct" />
+<!--        </androidx.appcompat.widget.Toolbar>-->
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
@@ -102,7 +128,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="invisible"
-        android:text="Give permission mhaaan"/>
+        android:text="Give permission"/>
     <TextView
         android:id="@+id/tvCntctPermissionInfo"
         android:layout_width="wrap_content"

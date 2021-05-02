@@ -48,7 +48,7 @@ class CallLogAdapter(private val context: Context,
     private val VIEW_TYPE_LOADING = 1
     private var callLogs: MutableList<CallLogTable> = mutableListOf()
     companion object{
-        private const val TAG = "__DialerAdapter";
+        private const val TAG = "__CallLogAdapter";
         var prevView:View? = null
         var prevPos:Int? = null
         var prevTag:String? = null

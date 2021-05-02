@@ -271,7 +271,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.fabBtnShowDialpad.setOnClickListener(this)
         binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
         binding.imgBtnCallTbrMore.setOnClickListener(this)
-        binding.imgBtnAvatarMainCalls.setOnClickListener(this)
+        binding.imgBtnHamBrgerCalls.setOnClickListener(this)
         binding.searchViewCall.setOnClickListener(this)
 
         bottomSheetDialog.radioS.setOnClickListener(this)
@@ -613,7 +613,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 popup.setOnMenuItemClickListener(this)
                 popup.show()
             }
-            R.id.imgBtnAvatarMainCalls ->{
+            R.id.imgBtnHamBrgerCalls ->{
                 (activity as MainActivity).showDrawer()
 //                requireContext().startSettingsActivity(activity)
             }
