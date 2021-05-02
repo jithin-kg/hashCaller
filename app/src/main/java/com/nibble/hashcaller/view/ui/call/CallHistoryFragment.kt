@@ -18,7 +18,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import kotlinx.android.synthetic.main.fragment_call_history.view.*
 
 
@@ -200,9 +199,9 @@ class CallHistoryFragment : Fragment(), View.OnClickListener {
         Log.d(TAG, "onClick: ")
         when(v?.id){
             R.id.btnCallhistoryPermission->{
-               val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
-                Log.d(TAG, "onClick: res is $res")
-                this.permissionGivenLiveData.value = res
+//               val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
+//                Log.d(TAG, "onClick: res is $res")
+//                this.permissionGivenLiveData.value = res
             }
         }
     }

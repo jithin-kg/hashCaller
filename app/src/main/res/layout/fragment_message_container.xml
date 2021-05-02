@@ -11,6 +11,13 @@
     android:id="@+id/MessagesFragment">
 
 
+    <Button
+        android:id="@+id/btnRequestSMSPermisssion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Give Permissions"
+        android:layout_gravity="center"
+        />
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -206,7 +213,7 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 <!--important, android:overScrollMode="never" added to remove shadow-->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcrViewSMSList"
+        android:id="@+id/recyclreviewSMSContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBackground"

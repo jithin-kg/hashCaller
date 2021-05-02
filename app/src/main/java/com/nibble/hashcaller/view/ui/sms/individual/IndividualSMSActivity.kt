@@ -33,11 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
@@ -595,39 +591,40 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun requesetPermission(): Boolean {
         var permissionGiven = false
+
         //persmission
-        Dexter.withContext(this)
-            .withPermissions(
-                Manifest.permission.CALL_PHONE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.ANSWER_PHONE_CALLS,
-                Manifest.permission.READ_CALL_LOG,
-                Manifest.permission.RECEIVE_MMS,
-                Manifest.permission.SEND_SMS,
-                Manifest.permission.READ_SMS
-
-            ).withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
+//        Dexter.withContext(this)
+//            .withPermissions(
+//                Manifest.permission.CALL_PHONE,
+//                Manifest.permission.READ_PHONE_STATE,
+//                Manifest.permission.ANSWER_PHONE_CALLS,
+//                Manifest.permission.READ_CALL_LOG,
+//                Manifest.permission.RECEIVE_MMS,
+//                Manifest.permission.SEND_SMS,
+//                Manifest.permission.READ_SMS
 //
-                    report.let {
-                        if(report?.areAllPermissionsGranted()!!){
-                            permissionGiven = true
-//                            setSharedPref(true)
-                            permissionGivenLiveDAta.value = true
-//                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
-
-                        }
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest?>?,
-                    token: PermissionToken?
-                ) { /* ... */
-                    token?.continuePermissionRequest()
-//                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
-                }
-            }).check()
+//            ).withListener(object : MultiplePermissionsListener {
+//                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
+////
+//                    report.let {
+//                        if(report?.areAllPermissionsGranted()!!){
+//                            permissionGiven = true
+////                            setSharedPref(true)
+//                            permissionGivenLiveDAta.value = true
+////                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
+//
+//                        }
+//                    }
+//                }
+//
+//                override fun onPermissionRationaleShouldBeShown(
+//                    permissions: List<PermissionRequest?>?,
+//                    token: PermissionToken?
+//                ) { /* ... */
+//                    token?.continuePermissionRequest()
+////                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
+//                }
+//            }).check()
         return permissionGiven
     }
 

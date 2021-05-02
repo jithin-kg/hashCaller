@@ -8,7 +8,7 @@ package com.nibble.hashcaller.utils.callHandlers.base.events
  */
 sealed class UiEvent()
 
-data class PermissionDenied(val requestCode: Int, val perms: MutableList<String>) : UiEvent()
-data class PermissionGranted(val requestCode: Int, val perms: MutableList<String>) : UiEvent()
-object PhoneManifestPermissionsEnabled : UiEvent()
+//data class PermissionDenied(val requestCode: Int, val perms: MutableList<String>) : UiEvent()
+//data class PermissionGranted(val requestCode: Int, val perms: MutableList<String>) : UiEvent()
+//object PhoneManifestPermissionsEnabled : UiEvent()
 object PhoneCapabilityEnabled : UiEvent()

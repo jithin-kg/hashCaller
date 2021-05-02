@@ -1,7 +1,7 @@
 package com.nibble.hashcaller.work
 
-import ContactRepository
 import android.content.Context
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -12,7 +12,6 @@ import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
-import com.nibble.hashcaller.local.db.contacts.ContactAddresses
 import com.nibble.hashcaller.network.contact.ContactUploadResponseItem
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
@@ -37,8 +36,15 @@ val countryCodeHelper = CountrycodeHelper(context)
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
+    private var contactRepository:WorkerContactRepository? = null
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
+            val cursor = context!!.contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null, null, null,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+            )
+             contactRepository = WorkerContactRepository( cursor)
 
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
 
@@ -90,20 +96,21 @@ val countryCodeHelper = CountrycodeHelper(context)
 
 
     private suspend fun setNewlySavedContactsList() {
-        val contactRepository = ContactRepository(context)
         val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
-       val  allcontactsInContentProvider =  contactRepository.fetchContacts()
+       val  allcontactsInContentProvider =  contactRepository?.fetchContacts()
 
-        for(contact in allcontactsInContentProvider){
+        if (allcontactsInContentProvider != null) {
+            for(contact in allcontactsInContentProvider){
 
-            if(!contact.phoneNumber.isNullOrEmpty()){
-                val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
-                val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
-                if(res==null){
-                    Log.d("__NOTINDB", "$formattedPhoneNum")
-                    val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
-                    val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
-                    contacts.add(cntctDtoObj)
+                if(!contact.phoneNumber.isNullOrEmpty()){
+                    val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
+                    val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
+                    if(res==null){
+                        Log.d("__NOTINDB", "$formattedPhoneNum")
+                        val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                        val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
+                        contacts.add(cntctDtoObj)
+                    }
                 }
             }
         }

@@ -18,7 +18,14 @@
 
     </FrameLayout>
 
-
+    <Button
+        android:id="@+id/btnCallFragmentPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Give permissions"
+        android:textColor="@color/colorWhite"
+        />
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarCallContainer"
         android:layout_height="wrap_content"

@@ -21,13 +21,11 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
@@ -49,15 +47,16 @@ import com.google.firebase.auth.FirebaseUserMetadata
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
-import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
-import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -893,18 +892,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            val no = phoneNumberViewModel.phoneNumber
 //            return no?.value
 //        }
-
+//
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == 100) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                call()
-            } else {
-                Toast.makeText(this, "call permission denied", Toast.LENGTH_SHORT).show()
-            }
+    Log.d(TAG, "onRequestPermissionsResult: ")
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    when(requestCode){
+        REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION ->{
+            callFragment.getDataDelayed()
         }
+        REQUEST_CODE_READ_CONTACTS ->{
+            contactFragment.getData()
+        }
+        REQUEST_CODE_READ_SMS_CONTACTS ->{
+            messagesFragment.getDataDelayed()
+        }
+
+
+    }
+//        if (requestCode == 100) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                call()
+//            } else {
+//                Toast.makeText(this, "call permission denied", Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     //

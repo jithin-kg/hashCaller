@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
@@ -117,7 +116,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
                             if(dy > 0){
                                 if(!isSizeEqual){
                                     viewMesages.shimmerViewContainer.visibility = View.VISIBLE
-                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
+//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
                                 }
 //                                    }
                             }
@@ -218,8 +217,9 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
             this.viewMesages.shimmerViewContainer.visibility = View.GONE
-            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
+//            viewMesages.rcrViewSMSList.visibility = View.VISIBLE
             SMSListAdapter.searchQry = searchQry
+
         })
     }
     private fun observeLive() {
@@ -245,7 +245,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        rcrViewSMSList.adapter  = null
+//        rcrViewSMSList.adapter  = null
     }
 
     @SuppressLint("WrongViewCast")
@@ -280,18 +280,18 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
 
     private fun initRecyclerView() {
-        rcrViewSMSList?.apply {
-            layoutManager = LinearLayoutManager(activity)
-            layoutMngr = layoutManager as LinearLayoutManager
+//        rcrViewSMSList?.apply {
+//            layoutManager = LinearLayoutManager(activity)
+//            layoutMngr = layoutManager as LinearLayoutManager
 //            smsRecyclerAdapter = SMSListAdapter(context, this@SMSListFragment){view:View, threadId:Long, pos:Int,
 //                                                                               pno:String->onContactItemClicked(view,threadId, pos, pno)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
-            adapter = smsRecyclerAdapter
+//            adapter = smsRecyclerAdapter
 
 //                setContacts()
 
 //                adapter.onItemClick =
-        }
+//        }
     }
     private fun onDeleteItemClicked(){
 
@@ -336,7 +336,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btnSmsPermission ->{
-                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+//                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
             }
             else ->{
                 smsListVIewModel.getUnrealMsgCount()

@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
@@ -345,7 +344,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.btnSmsReadPermission ->{
-                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+//                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
 
             }
         }

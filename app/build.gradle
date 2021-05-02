@@ -173,7 +173,7 @@ dependencies {
     //botton navbar
 //    implementation 'androidx.appcompat:appcompat:1.2.0'
     //runtime permission
-    implementation 'com.karumi:dexter:6.2.1'
+//    implementation 'com.karumi:dexter:6.2.1'
     //swipe to delete
 //    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
     //skeleton shimmer
@@ -200,7 +200,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
-    implementation 'pub.devrel:easypermissions:3.0.0'
+//    implementation 'pub.devrel:easypermissions:3.0.0'
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     //leakcanary to find memory leak
@@ -221,6 +221,7 @@ dependencies {
 
 //    //navifation drawer
 //    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.vmadalin:easypermissions-ktx:0.1.0'
 
     
 

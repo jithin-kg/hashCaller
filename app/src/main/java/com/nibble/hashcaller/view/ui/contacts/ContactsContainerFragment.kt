@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -24,22 +22,23 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySerchContacts
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.android.synthetic.main.contact_list.*
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.delay
 
@@ -104,16 +103,16 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         _binding = FragmentContactsContainerBinding.inflate(inflater, container, false)
 
         initListeners()
-        initRecyclerView()
 
         ViewCompat.setTransitionName(binding.searchViewContacts, binding.searchViewContacts.transitionName)
         val contextThemeWrapper: Context =
             ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
 
         if(checkContactPermission()){
+            initRecyclerView()
             getData()
-
-
+        }else{
+            hideRecyevlerView()
         }
 
         binding.searchViewContacts.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
@@ -127,6 +126,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     return binding.root
     }
+
+
     private fun observeUserInfo() {
         sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
             if(it!=null){
@@ -136,16 +137,29 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         })
     }
 
-    private fun getData() {
+     fun getData() {
+        showRecyclerView()
         lifecycleScope.launchWhenStarted {
             delay(2000L)
             initViewmodel()
             observerContactList()
-            observePermissionLiveData()
             observeUserInfo()
 
         }
     }
+
+    private fun showRecyclerView() {
+        binding.btnGivecontactPermission.beInvisible()
+        binding.rcrViewContactsList.beVisible()
+        binding.shimmerViewContainer.beInvisible()
+    }
+
+    private fun hideRecyevlerView() {
+        binding.rcrViewContactsList.beInvisible()
+        binding.shimmerViewContainer.beInvisible()
+        binding.btnGivecontactPermission.beVisible()
+    }
+
 
     private fun initViewmodel() {
         contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context, lifecycleScope)).get(ContactsViewModel::class.java)
@@ -156,12 +170,10 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     }
 
     private fun checkContactPermission(): Boolean {
-        val permissionContact =
-            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CALL_LOG)
-        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
-            return false
-        }
-        return true
+        return EasyPermissions.hasPermissions(context,
+            Manifest.permission.READ_CONTACTS
+        )
+
     }
     private fun initRecyclerView() {
 
@@ -206,28 +218,6 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     }
 
-    private fun observePermissionLiveData() {
-        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
-            if(value == true){
-                binding.btnGivecontactPermission.beGone()
-                binding.tvCntctPermissionInfo.beGone()
-//                this.contactsView.pgBarCntcList.visibility = View.VISIBLE
-                observerContactList()
-            }else{
-                binding.btnGivecontactPermission.beVisible()
-                binding.tvCntctPermissionInfo.beVisible()
-//                this.contactsView.pgBarCntcList.visibility = View.GONE
-
-                if (this.contactViewModel!! != null  ) {
-                    if(this.contactViewModel?.contacts != null)
-                        if(this.contactViewModel.contacts!!.hasObservers())
-                            this.contactViewModel?.contacts?.removeObservers(this);
-                }
-
-
-            }
-        })
-    }
 
     private fun observerContactList() {
         try {
@@ -260,8 +250,9 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         Log.d(TAG, "onClick: searchview")
         when(v?.id){
             R.id.btnGivecontactPermission -> {
+                requestCntcPermissions()
                 Log.d(TAG, "onClick: request permission")
-                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+//                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
 
             }
             R.id.searchViewContacts->{
@@ -279,6 +270,25 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             }
         }
 
+    }
+
+    @AfterPermissionGranted(REQUEST_CODE_READ_CONTACTS)
+    private fun requestCntcPermissions() {
+        Log.d(TAG, "methodRequiresTwoPermission: ")
+        if (EasyPermissions.hasPermissions(context, Manifest.permission.READ_CALL_LOG)) {
+            // Already have permission, do the thing
+            Log.d(TAG, "methodRequiresTwoPermission: already permission")
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(
+                host = this,
+                "read contacts ",
+                requestCode = REQUEST_CODE_READ_CONTACTS,
+                perms = arrayOf(
+                    Manifest.permission.READ_CONTACTS
+                )
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -306,7 +316,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     }
     override fun onResume() {
         super.onResume()
-        this.permissionGivenLiveData.value  = checkContactPermission()
+//        checkContactPermission()
 
     }
 

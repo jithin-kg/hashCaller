@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
@@ -226,7 +225,7 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
 
     override fun onDestroyView() {
         super.onDestroyView()
-        rcrViewSMSList.adapter  = null
+//        rcrViewSMSList.adapter  = null
     }
 
     @SuppressLint("WrongViewCast")
@@ -312,7 +311,7 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btnSmsReadPermission ->{
-                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+//                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
             }
             else ->{
                 smsListVIewModel.getUnrealMsgCount()

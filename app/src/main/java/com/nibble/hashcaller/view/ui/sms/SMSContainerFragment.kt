@@ -1,12 +1,13 @@
 package com.nibble.hashcaller.view.ui.sms
 
 import android.Manifest
+import android.Manifest.permission.READ_CONTACTS
+import android.Manifest.permission.READ_SMS
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Build
@@ -23,9 +24,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -36,14 +35,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil.requesetPermission
-import com.nibble.hashcaller.view.ui.contacts.startSettingsActivity
+
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -59,6 +58,8 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
@@ -89,7 +90,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     var skeletonLayout: LinearLayout? = null
     var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
-    private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     private var layoutMngr: LinearLayoutManager? = null
     private lateinit var searchViewMessages: EditText
     private var isLoading = false
@@ -102,7 +102,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isPaused = false
     private lateinit var toolbar : Toolbar
-    private lateinit var sharedUserInfoViewmodel: UserInfoViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,40 +121,48 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         // Inflate the layout for this fragment
         _binding = FragmentMessageContainerBinding.inflate(inflater, container, false)
         viewMesagesRef = binding.root
-        registerForContextMenu( binding.rcrViewSMSList ) // context menu registering
+        registerForContextMenu( binding.recyclreviewSMSContainer ) // context menu registering
+        setupBottomSheet()
+        initListeners()
+        initRecyclerView()
 
         if(checkContactPermission())
         {
-            initRecyclerView()
 //            getFirstPageOfSMS()
            getDataDelayed()
+        }else{
+            hideRecyclerView()
         }
 
         return  binding.root
     }
 
-    private fun getDataDelayed() {
+     fun getDataDelayed() {
+         showRecyclerView()
         lifecycleScope.launchWhenStarted {
             delay(2000L)
             initVieModel()
             observeSMSList()
             observeSMSThreadsLivedata()
             observeSendersInfoFromServer()
-            setupBottomSheet()
-            initListeners()
             observeMarkedItems()
             observeInternetLivedata()
-            observeUserInfo()
         }
     }
-    private fun observeUserInfo() {
-        sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
-                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-                binding.tvCirculrAvtr.text = fLetter
-            }
-        })
+
+    private fun showRecyclerView() {
+        binding.recyclreviewSMSContainer.beVisible()
+        binding.shimmerViewContainer.beVisible()
+        binding.btnRequestSMSPermisssion.beInvisible()
     }
+    private fun hideRecyclerView(){
+        binding.recyclreviewSMSContainer.beInvisible()
+        binding.shimmerViewContainer.beInvisible()
+        binding.btnRequestSMSPermisssion.beVisible()
+    }
+
+
+
 
     private fun observeInternetLivedata() {
         val cl = context?.let { ConnectionLiveData(it) }
@@ -186,7 +193,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun addScrollListener() {
-        binding.rcrViewSMSList.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        binding.recyclreviewSMSContainer.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 //                if(dy>0){
@@ -218,7 +225,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
                                 if(!isSizeEqual){
 //                                    binding.shimmer_view_container.visibility = View.VISIBLE
-                                    binding.rcrViewSMSList.rcrViewSMSList.beInvisible()
+                                    binding.recyclreviewSMSContainer.beInvisible()
                                 }
 //                                    }
                             }
@@ -234,51 +241,19 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
 
-    private fun observePermissionLiveData() {
-        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer { value->
-            //this caused to view not updating afte returning from individual sms activity,
-            //after user blockes a number and comes that the spam counts were not getting updated
-            if(value == true){
-//                this.viewMesages.btnSmsPermission.visibility = View.GONE
-//                this.viewMesages.tvSMSPermission.visibility = View.GONE
-                if(this.viewmodel!=null)
-                if(this.viewmodel!!.SMS?.hasObservers()){
-                    Log.d(TAG, "observePermissionLiveData: already have observer")
-                }else{
-                    observeSMSList()
-                    Log.d(TAG, "observePermissionLiveData: do not have observer")
-                }
 
-            }else{
-//                this.viewMesages.btnSmsPermission.visibility = View.VISIBLE
-//                this.viewMesages.tvSMSPermission.visibility = View.VISIBLE
-                if (this.viewmodel!! != null  ) {
-                    if(this.viewmodel?.SMS != null)
-                        if(this.viewmodel!!.SMS!!.hasObservers())
-                            this.viewmodel?.SMS?.removeObservers(this);
-                }
-
-
-            }
-
-
-        })
-    }
 
     private fun checkContactPermission(): Boolean {
-        val permissionContact =
-            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_SMS)
-        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
-            return false
-        }
-        return true
+        return EasyPermissions.hasPermissions(context, Manifest.permission.READ_CONTACTS,
+            READ_SMS
+        )
     }
 
 
 
 
     private fun initListeners() {
-//        viewMesages.btnSmsPermission.setOnClickListener(this)
+        binding.btnRequestSMSPermisssion.setOnClickListener(this)
         binding.searchViewSms.setOnClickListener(this)
         binding.imgBtnTbrMuteSender.setOnClickListener(this)
         binding.imgBtnTbrBlock.setOnClickListener(this)
@@ -286,7 +261,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrDelete.setOnClickListener(this)
         binding.imgBtnAvatarMain.setOnClickListener(this)
         binding.fabSendNewSMS.setOnClickListener(this)
-
         bottomSheetDialog.radioS.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
         bottomSheetDialog.imgExpand.setOnClickListener(this)
@@ -361,9 +335,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun initVieModel() {
         viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
             SMSViewModel::class.java)
-        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
-            UserInfoViewModel::class.java
-        )
+
     }
 
 
@@ -388,7 +360,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             binding.shimmerViewContainer.beGone()
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
 //            binding.shimmer_view_container.visibility = View.GONE
-            binding.rcrViewSMSList.visibility = View.VISIBLE
+            binding.recyclreviewSMSContainer.visibility = View.VISIBLE
             SMSListAdapter.searchQry = searchQry
         })
     }
@@ -396,7 +368,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "onDestroyView: ")
-        binding.rcrViewSMSList.adapter  = null
+        binding.recyclreviewSMSContainer.adapter  = null
     }
 
     @InternalCoroutinesApi
@@ -412,7 +384,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun initRecyclerView() {
-       binding. rcrViewSMSList?.apply {
+       binding.recyclreviewSMSContainer?.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as LinearLayoutManager
             smsRecyclerAdapter = SMSListAdapter(context, this@SMSContainerFragment, this@SMSContainerFragment, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
@@ -467,7 +439,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        viewmodel.updateWithNewSenderInfo()
         isPaused = false
 
-        this.permissionGivenLiveData.value  = checkContactPermission()
 
     }
 
@@ -542,9 +513,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     override fun onClick(v: View?) {
+        Log.d(TAG, "onClick: ")
         when(v?.id){
-            R.id.btnSmsPermission ->{
-                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+            R.id.btnRequestSMSPermisssion ->{
+                requestSMSPermissions()
             }
             R.id.searchViewSms->{
                 startSearchActivity()
@@ -581,11 +553,29 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 //               requireContext().startSettingsActivity(activity)
             }
-
             else ->{
                 viewmodel?.getUnrealMsgCount()
 
             }
+        }
+    }
+    @AfterPermissionGranted(REQUEST_CODE_READ_SMS_CONTACTS)
+    private fun requestSMSPermissions() {
+        if (EasyPermissions.hasPermissions(context, READ_SMS, READ_CONTACTS)) {
+           showRecyclerView()
+        } else {
+            // Do not have permissions, request them now
+                hideRecyclerView()
+
+            EasyPermissions.requestPermissions(
+                host = this,
+                "read contacts ",
+                requestCode = REQUEST_CODE_READ_SMS_CONTACTS,
+                perms = arrayOf(
+                    READ_SMS,
+                    READ_CONTACTS
+                )
+            )
         }
     }
 
@@ -789,6 +779,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     /**
      * callback of ConfirmDialogfragment for deleting sms
      */
+
     override fun onYesConfirmationDelete() {
         Log.d(TAG, "deleteSms: called")
 //        for(id in markedItems){
@@ -847,7 +838,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                         startActivityForResult(roleRequestIntent, requestCode)
                     }else{
                         isDefault = true
-                        requesetPermission(requireContext())
+//                        requesetPermission(requireContext())
                     }
                 }
             } else {

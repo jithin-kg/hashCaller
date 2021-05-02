@@ -14,18 +14,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_RESULT_CODE
 import kotlinx.android.synthetic.main.activity_permission_request.*
 
 
 class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
-
     private lateinit var sharedPreferences: SharedPreferences
         private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -121,40 +115,40 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun requesetPermission(): Boolean {
-        var permissionGiven = false
+        var permissionGiven = true
         //persmission
-        Dexter.withContext(this)
-            .withPermissions(
-                Manifest.permission.CALL_PHONE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.ANSWER_PHONE_CALLS,
-                Manifest.permission.READ_CALL_LOG,
-                Manifest.permission.RECEIVE_MMS,
-                Manifest.permission.SEND_SMS,
-                Manifest.permission.READ_SMS
-
-            ).withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
+//        Dexter.withContext(this)
+//            .withPermissions(
+//                Manifest.permission.CALL_PHONE,
+//                Manifest.permission.READ_PHONE_STATE,
+//                Manifest.permission.ANSWER_PHONE_CALLS,
+//                Manifest.permission.READ_CALL_LOG,
+//                Manifest.permission.RECEIVE_MMS,
+//                Manifest.permission.SEND_SMS,
+//                Manifest.permission.READ_SMS
 //
-                    report.let {
-                        if(report?.areAllPermissionsGranted()!!){
-                            permissionGiven = true
-                            setSharedPref(true)
-                            permissionGivenLiveDAta.value = true
-//                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
-
-                        }
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest?>?,
-                    token: PermissionToken?
-                ) { /* ... */
-                    token?.continuePermissionRequest()
-//                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
-                }
-            }).check()
+//            ).withListener(object : MultiplePermissionsListener {
+//                override fun onPermissionsChecked(report: MultiplePermissionsReport?) { /* ... */
+////
+//                    report.let {
+//                        if(report?.areAllPermissionsGranted()!!){
+//                            permissionGiven = true
+//                            setSharedPref(true)
+//                            permissionGivenLiveDAta.value = true
+////                            Toast.makeText(applicationContext, "thank you", Toast.LENGTH_SHORT).show()
+//
+//                        }
+//                    }
+//                }
+//
+//                override fun onPermissionRationaleShouldBeShown(
+//                    permissions: List<PermissionRequest?>?,
+//                    token: PermissionToken?
+//                ) { /* ... */
+//                    token?.continuePermissionRequest()
+////                    Toast.makeText(applicationContext, "onPermissionRationaleShouldBeShown", Toast.LENGTH_SHORT).show()
+//                }
+//            }).check()
         return permissionGiven
     }
     @SuppressLint("LongLogTag")

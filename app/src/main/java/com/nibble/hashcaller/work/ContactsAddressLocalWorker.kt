@@ -1,23 +1,14 @@
 package com.nibble.hashcaller.work
 
-import ContactRepository
 import android.content.Context
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.nibble.hashcaller.Secrets
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
-import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
-import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
 import com.nibble.hashcaller.local.db.contacts.ContactAddresses
-import com.nibble.hashcaller.network.contact.ContactUploadResponseItem
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
-import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.util.*
@@ -31,7 +22,13 @@ class ContactsAddressLocalWorker(private val context: Context, private val param
     private var allcontactsInContentProvider:MutableList<ContactUploadDTO> = mutableListOf()
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO) {
         try {
-            val contactRepository = ContactRepository(context)
+            val cursor = context!!.contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null, null, null,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+            )
+
+            val contactRepository = WorkerContactRepository( cursor)
             allcontactsInContentProvider.addAll( contactRepository.fetchContacts())
             for (ct in allcontactsInContentProvider){
                 contactAddressDAO.find(ct.phoneNumber).apply {

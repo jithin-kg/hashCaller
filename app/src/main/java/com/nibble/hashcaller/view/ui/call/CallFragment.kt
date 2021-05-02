@@ -1,11 +1,10 @@
 package com.nibble.hashcaller.view.ui.call
 
-import android.Manifest
+import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +22,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -36,6 +34,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
@@ -53,7 +52,6 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -66,6 +64,8 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
@@ -125,10 +125,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
-    if(checkContactPermission()){
         initRecyclerView()
+        if(checkContactPermission()){
         getDataDelayed()
-    }
+         }else{
+             hideRecyclerView()
+        }
 
     setupBottomSheet()
     initListeners()
@@ -141,6 +143,20 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
+    private fun hideRecyclerView() {
+
+        binding.btnCallFragmentPermission.beVisible()
+        binding.rcrViewCallHistoryLogs.beInvisible()
+        binding.shimmerViewContainerCall.beInvisible()
+    }
+
+    private fun showRecyclerView() {
+
+        binding.btnCallFragmentPermission.beInvisible()
+        binding.rcrViewCallHistoryLogs.beVisible()
+        binding.shimmerViewContainerCall.beVisible()
+    }
+
     private fun observeUserInfo() {
         sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
             if(it!=null){
@@ -150,7 +166,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         })
     }
 
-    private fun getDataDelayed() {
+     fun getDataDelayed() {
+        showRecyclerView()
+
         initViewModel()
         getFirst10items()
 
@@ -260,6 +278,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         bottomSheetDialog.radioScam.setOnClickListener(this)
         bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
+        binding.btnCallFragmentPermission.setOnClickListener(this)
     }
 
 
@@ -276,18 +295,34 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
 
-    private fun checkContactPermission(): Boolean {
-        val permissionSms =
-            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CALL_LOG)
-        if(permissionSms!= PackageManager.PERMISSION_GRANTED){
-            Log.d(TAG, "checkContactPermission: false")
-//            this.callFragment!!.pgbarCallHistory.visibility = View.GONE
-            return false
-        }
-        Log.d(TAG, "checkContactPermission: true")
-
-        return true
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d(TAG, "onRequestPermissionsResult: ")
+        // EasyPermissions handles the request result.
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
+    @AfterPermissionGranted(REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION)
+    fun methodRequiresTwoPermission() {
+        Log.d(TAG, "methodRequiresTwoPermission: ")
+        if (EasyPermissions.hasPermissions(context, READ_CALL_LOG, READ_CONTACTS)) {
+            // Already have permission, do the thing
+            Log.d(TAG, "methodRequiresTwoPermission: already permission")
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(
+                host = this,
+                  "read contacts ",
+                  requestCode = REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION,
+                  perms = arrayOf(READ_CALL_LOG, READ_CONTACTS)
+            )
+        }
+    }
+    private fun checkContactPermission(): Boolean {
+       return EasyPermissions.hasPermissions(context, READ_CALL_LOG,
+           READ_CONTACTS)
+    }
+
+
 
     private fun addScrollListener() {
         binding.rcrViewCallHistoryLogs.addOnScrollListener(object : RecyclerView.OnScrollListener(){
@@ -332,7 +367,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             isScreeningApp = ( activity as AppCompatActivity).isScreeningRoleHeld()
         }
 
-        this.permissionGivenLiveData.value  = checkContactPermission()
+//        this.permissionGivenLiveData.value  = checkContactPermission()
     }
 
     private fun initViewModel() {
@@ -527,6 +562,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
         when (v?.id) {
+            R.id.btnCallFragmentPermission ->{
+                methodRequiresTwoPermission()
+            }
 //            R.id.fabBtnShowDialpad-> {
 //                Log.d(TAG, "onClick: show dialpad button clicked")
 ////                if (bottomSheetBehavior?.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -544,9 +582,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            Log.d(TAG, "onClick: clicked ")
 //        }
             R.id.btnCallhistoryPermission->{
-                val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
-                Log.d(TAG, "onClick: res is $res")
-                this.permissionGivenLiveData.value = res
+//                val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
+//                Log.d(TAG, "onClick: res is $res")
+//                this.permissionGivenLiveData.value = res
             }
             R.id.imgBtnCallTbrDelete->{
                 deletemarkedLogs()
@@ -1065,14 +1103,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      * called from mainactivity on back button pressed
      */
     fun clearMarkeditems() {
-       viewmodel.clearMarkedItems()
-        lifecycleScope.launchWhenStarted {
+        if(checkContactPermission()){
+            viewmodel.clearMarkedItems()
+            lifecycleScope.launchWhenStarted {
+                for(position in viewmodel.markedItemsPositions){
+                    callLogAdapter?.notifyItemChanged(position)
+                }
 
-            for(position in viewmodel.markedItemsPositions){
-                callLogAdapter?.notifyItemChanged(position)
+                viewmodel.clearMarkedItemPositions()
             }
-            viewmodel.clearMarkedItemPositions()
         }
+
 //        showSearchView()
     }
 

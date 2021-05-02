@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.PermissionUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
@@ -225,7 +224,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         when(v?.id){
             R.id.btnGivecontactPermission ->{
                 Log.d(TAG, "onClick: request permission")
-                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
+//                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
             }
         }
     }
