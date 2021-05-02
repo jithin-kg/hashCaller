@@ -3,11 +3,13 @@ package com.nibble.hashcaller.view.ui.sms.individual.util
 import android.Manifest
 import android.app.Activity
 import android.app.SearchManager
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
@@ -23,6 +25,7 @@ val Context.config: Config get() = Config.newInstance(applicationContext)
 
 fun Context.getSharedPrefs() = getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
 val Context.baseConfig: BaseConfig get() = BaseConfig.newInstance(this)
+
 
 
 /**

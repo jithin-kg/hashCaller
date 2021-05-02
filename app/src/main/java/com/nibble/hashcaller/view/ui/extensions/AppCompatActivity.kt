@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.extensions
 
+import android.app.Activity
 import android.app.role.RoleManager
 import android.content.ContentUris
 import android.content.Context
@@ -10,6 +11,7 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 
 fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
 
@@ -29,14 +31,14 @@ fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
     startActivity(i)
 }
 @RequiresApi(Build.VERSION_CODES.Q)
-fun AppCompatActivity. requestScreeningRole(){
+    fun AppCompatActivity. requestScreeningRole(){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
         val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
         if(!isHeld){
             //ask the user to set your app as the default screening app
             val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-            startActivityForResult(intent, 123)
+            startActivityForResult(intent, ROLE_SCREENING_APP_REQUEST_CODE)
         } else {
             //you are already the default screening app!
         }
@@ -54,4 +56,17 @@ fun AppCompatActivity. isScreeningRoleHeld(): Boolean {
         roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
     }
     return roleHeld
+}
+fun Activity.requestScreeningRole(){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+        if(!isHeld){
+            //ask the user to set your app as the default screening app
+            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+            startActivityForResult(intent, 123)
+        } else {
+            //you are already the default screening app!
+        }
+    }
 }

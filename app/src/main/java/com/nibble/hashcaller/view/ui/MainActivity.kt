@@ -21,6 +21,7 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -29,6 +30,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import androidx.work.Constraints
@@ -53,6 +56,7 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
@@ -62,17 +66,21 @@ import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
+import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.ContactsAddressLocalWorker
 import com.nibble.hashcaller.work.ContactsUploadWorker
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.launch
@@ -99,7 +107,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private val viewPager: ViewPager? = null
     var fab: FloatingActionButton? = null
     private lateinit var sharedPreferences: SharedPreferences
-//    private lateinit var userInfoViewModel: UserInfoViewModel
+    private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
     //    private lateinit var blockConfigFragment: BlockConfigFragment
@@ -137,7 +145,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedState = savedInstanceState
-        initViewModel()
+
 
 
 
@@ -177,6 +185,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         mangeCipherInSharedPref()
         observeUserInfoLiveData()
         setupContactUploadWork()
+
+        observeUserInfo()
+    }
+
+    private fun observeUserInfo() {
+        userInfoViewModel.userInfo.observe(this, Observer {
+            if (it != null) {
+                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+                val header = binding.navView.getHeaderView(0)
+               val headerImgView =  header.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgViewAvatarMain)
+               val firstLetterView = header.findViewById<TextView>(R.id.tvFirstLetterMain)
+               val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
+                fullName.text = "${it.firstname} ${it.lastName}"
+                if(!it.photoURI.isNullOrEmpty()){
+                    headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
+                    firstLetterView.beInvisible()
+                }else{
+                    firstLetterView.beVisible()
+                }
+            }
+        })
     }
 
 
@@ -292,13 +321,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initViewModel() {
-//        userInfoViewModel = ViewModelProvider(
-//            this, MainActivityInjectorUtil.provideUserInjectorUtil(
-//                this
-//            )
-//        ).get(
-//            UserInfoViewModel::class.java
-//        )
+        userInfoViewModel = ViewModelProvider(
+            this, MainActivityInjectorUtil.provideUserInjectorUtil(
+                this
+            )
+        ).get(
+            UserInfoViewModel::class.java
+        )
     }
 
 
@@ -1007,20 +1036,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-    //    @RequiresApi(Build.VERSION_CODES.Q)
-//    fun requestScreeningRole(){
-//         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//           val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
-//            val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-//             if(!isHeld){
-//                 //ask the user to set your app as the default screening app
-//                 val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
-//                 startActivityForResult(intent, 123)
-//             } else {
-//                 //you are already the default screening app!
-//             }
-//        }
-//    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -1052,6 +1067,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             R.id.spamCalls ->{
                 val intent = Intent(this, SpamCallsActivity::class.java)
                 startActivity(intent)
+            }
+            R.id.drawerConfigureBlocking ->{
+                val intent = Intent(this, BlockManageActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.inviteMenuItem ->{
+
             }
         }
         return false

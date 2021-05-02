@@ -49,4 +49,5 @@
     <dimen name="circular_avatar_item_width">52dp</dimen>
     <dimen name="margin_end_dial_char">32dp</dimen>
     <dimen name="margin_top_dial_char">4dp</dimen>
+    <dimen name="avatar_side_drawer">140dp</dimen>
 </resources>

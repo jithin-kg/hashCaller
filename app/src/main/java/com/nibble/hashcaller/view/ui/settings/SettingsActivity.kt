@@ -14,6 +14,9 @@ import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_block_manage.*
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -43,26 +46,12 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
                 binding.tvFirstLetterMain.text = fLetter
                 binding.tvFullNameMain.text = "${it.firstname} ${it.lastName}"
-
-//                val base64String =
-//                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAA..."
-                val base64String = it.photoURI
-                val decodedString: ByteArray =
-                    android.util.Base64.decode(base64String, android.util.Base64.DEFAULT)
-                val decodedByte =
-                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-                binding.imgViewAvatarMain.setImageBitmap(decodedByte)
-
-//                val base64Image = base64String.split(",".toRegex()).toTypedArray()[1]
-//
-//                val decodedString: ByteArray = android.util.Base64.decode(
-//                    base64Image,
-//                    android.util.Base64.DEFAULT
-//                )
-//                val decodedByte =
-//                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-//                binding.imgViewAvatarMain.setImageBitmap(decodedByte)
-                Log.d(TAG, "observeUserInfo: $decodedByte")
+                if(!it.photoURI.isNullOrEmpty()){
+                    binding.imgViewAvatarMain.setImageBitmap(getDecodedBytes(it.photoURI))
+                    binding.tvFirstLetterMain.beInvisible()
+                }else{
+                    binding.tvFirstLetterMain.beVisible()
+                }
             }
         })
     }

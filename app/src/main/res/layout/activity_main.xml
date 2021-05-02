@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+
     android:background="@color/colorBackground"
     tools:context="com.nibble.hashcaller.view.ui.MainActivity"
     tools:openDrawer="start">
@@ -31,6 +32,7 @@
        >
 
     </FrameLayout>
+
 <!--    <include-->
 <!--        android:id="@+id/bottom_sheet"-->
 <!--        android:elevation="16dp"-->
@@ -97,12 +99,16 @@
 onNavigationItemSelected does not work-->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
-        android:layout_gravity="start"
         android:layout_height="match_parent"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="start"
+        app:itemHorizontalPadding="40dp"
+        app:itemIconPadding="28dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/colorBackground"
         app:headerLayout="@layout/drawer_header"
         app:menu="@menu/drawer_main_menu"
-
         />
 
 </androidx.drawerlayout.widget.DrawerLayout>

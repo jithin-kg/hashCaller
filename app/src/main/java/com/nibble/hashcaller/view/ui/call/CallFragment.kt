@@ -301,25 +301,31 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         // EasyPermissions handles the request result.
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
+
     @AfterPermissionGranted(REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION)
     fun methodRequiresTwoPermission() {
         Log.d(TAG, "methodRequiresTwoPermission: ")
-        if (EasyPermissions.hasPermissions(context, READ_CALL_LOG, READ_CONTACTS, READ_PHONE_STATE)) {
+        if (EasyPermissions.hasPermissions(context, READ_CALL_LOG,
+                WRITE_CALL_LOG,  READ_CONTACTS, READ_PHONE_STATE)) {
+
             // Already have permission, do the thing
             Log.d(TAG, "methodRequiresTwoPermission: already permission")
         } else {
             // Do not have permissions, request them now
             EasyPermissions.requestPermissions(
                 host = this,
-                  "read contacts ",
+                "Hash caller need call logs permission to identify unknown callers in your call history",
                   requestCode = REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION,
-                  perms = arrayOf(READ_CALL_LOG, READ_CONTACTS, READ_PHONE_STATE)
+                  perms = arrayOf(READ_CALL_LOG, READ_CONTACTS, READ_PHONE_STATE,
+                            WRITE_CALL_LOG)
             )
         }
     }
+
     private fun checkContactPermission(): Boolean {
        return EasyPermissions.hasPermissions(context, READ_CALL_LOG,
-           READ_CONTACTS)
+           READ_CONTACTS,
+                WRITE_CALL_LOG)
     }
 
 
@@ -728,12 +734,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun deletemarkedLogs() {
-
         val dialog = ConfirmDialogFragment(this,
             getSpannableString("This can't be undone"),
             getSpannableString("Delete call history ? "), TYPE_DELETE)
         dialog.show(childFragmentManager, "sample")
     }
+
 
     private fun showDialerFragment() {
         val ft = childFragmentManager.beginTransaction()

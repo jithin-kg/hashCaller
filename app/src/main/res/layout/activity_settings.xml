@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -10,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorBackground"
         tools:context=".view.ui.settings.SettingsActivity">
 
         <ImageButton
@@ -35,10 +37,14 @@
             app:layout_constraintStart_toEndOf="@+id/imgBtnBackMain"
             app:layout_constraintTop_toTopOf="@+id/imgBtnBackMain" />
 
-        <ImageView
+        <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/imgViewAvatarMain"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:clickable="true"
+            android:background="@drawable/contact_circular_background_grey"
+            app:civ_border_width = "1dp"
+            app:civ_border_color="@color/colorBackground"
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toStartOf="parent"

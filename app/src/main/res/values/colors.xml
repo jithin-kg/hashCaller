@@ -56,6 +56,7 @@
     <color name="bottom_nav_color">#ffff</color>
     <color name="search_background_color">#E6E6E6</color>
     <color name="avatar_circle_bg_color">#DD939090</color>
+    <color name="icon_color_drawer">#A3000000</color>
 
 
 </resources>

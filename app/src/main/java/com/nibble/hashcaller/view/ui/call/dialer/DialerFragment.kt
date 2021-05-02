@@ -371,9 +371,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             R.id.layoutNum1->{
                 keypadClicked("1")
             }
-            R.id.layoutNum1->{
-                keypadClicked("1")
-            }
             R.id.layoutNum2->{
                 keypadClicked("2")
             }
@@ -448,11 +445,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
 
     private fun backspacePhoneNumEditText() {
-        Log.d(
-            "BACKSPACE",
-            "delete button clicked: " + bottomSheetDialog.editTextTextDigits.selectionEnd
-                .toString() + " " + bottomSheetDialog.editTextTextDigits.selectionStart.toString()
-        )
 
         val pos: Int = bottomSheetDialog.editTextTextDigits.selectionEnd
 //
@@ -482,10 +474,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
 
     private fun keypadClicked(s: String) {
-        Log.d(
-            TAG,
-            "keypadClicked: current position " +bottomSheetDialog.editTextTextDigits?.selectionEnd
-        )
         val num: String? = getPhoneNumFromViewModel()
 
 //        Log.d(TAG, "keypadClicked: num "+num);

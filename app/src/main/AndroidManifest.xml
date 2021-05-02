@@ -48,11 +48,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <activity android:name=".view.ui.sms.spam.SpamSMSActivity"></activity>
-        <activity android:name=".view.ui.call.spam.SpamCallsActivity" />
-        <activity android:name=".view.ui.call.history.CallhistoryActivity" />
-        <activity android:name=".view.ui.call.search.CallLogSearchActivity" />
-        <activity android:name=".view.ui.notifications.ManageNotificationsActivity" />
+        <activity
+            android:name=".view.ui.sms.spam.SpamSMSActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".view.ui.call.spam.SpamCallsActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity android:name=".view.ui.call.history.CallhistoryActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity android:name=".view.ui.call.search.CallLogSearchActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity android:name=".view.ui.notifications.ManageNotificationsActivity"
+            android:theme="@style/AppTheme"
+            />
         <activity
             android:name=".view.ui.blockConfig.blockList.BlockListActivity"
             android:theme="@style/AppTheme" />
@@ -175,6 +185,7 @@
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
             android:parentActivityName=".view.ui.MainActivity"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

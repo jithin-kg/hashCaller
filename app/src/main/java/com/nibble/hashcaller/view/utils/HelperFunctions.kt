@@ -1,18 +1,19 @@
 package com.nibble.hashcaller.view.utils
 
-import android.util.Log
-import com.nibble.hashcaller.view.ui.extensions.round
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.util.*
-
-import kotlin.math.round
 
 
 private const val TAG = "__HelperFunctions"
 
-
+fun getDecodedBytes(photoUri:String): Bitmap? {
+    val decodedString: ByteArray =
+        android.util.Base64.decode(photoUri, android.util.Base64.DEFAULT)
+    return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+}
 fun getDate(milliSeconds: Long, dateFormat: String?): String? {
     // Create a DateFormatter object for displaying date in specified format.
     val formatter = SimpleDateFormat(dateFormat)
