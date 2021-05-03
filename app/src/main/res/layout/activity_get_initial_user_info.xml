@@ -32,29 +32,29 @@
         app:layout_constraintTop_toTopOf="@+id/guideline2"
         />
 
-    <ImageView
-        android:id="@+id/imgVCamBground"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="12dp"
-        android:src="@drawable/contact_circular_background_primary"
-        app:layout_constraintBottom_toBottomOf="@+id/imgVAvatarInitial"
-        app:layout_constraintEnd_toEndOf="@+id/imgVAvatarInitial"
+        <ImageView
+            android:id="@+id/imgVCamBground"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="12dp"
+            android:src="@drawable/contact_circular_background_primary"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVAvatarInitial"
+            app:layout_constraintEnd_toEndOf="@+id/imgVAvatarInitial"
 
-        />
+            />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imgVCam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.84"
-        android:elevation="8dp"
-        android:src="@drawable/ic_baseline_photo_camera_24"
-        app:layout_constraintBottom_toBottomOf="@+id/imgVCamBground"
-        app:layout_constraintEnd_toEndOf="@+id/imgVCamBground"
-        app:layout_constraintStart_toStartOf="@+id/imgVCamBground"
-        app:layout_constraintTop_toTopOf="@+id/imgVCamBground" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgVCam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.84"
+            android:elevation="8dp"
+            android:src="@drawable/ic_baseline_photo_camera_24"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVCamBground"
+            app:layout_constraintEnd_toEndOf="@+id/imgVCamBground"
+            app:layout_constraintStart_toStartOf="@+id/imgVCamBground"
+            app:layout_constraintTop_toTopOf="@+id/imgVCamBground" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

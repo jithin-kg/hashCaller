@@ -64,7 +64,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
             "read contacts ",
             requestCode = PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS,
             perms = arrayOf(
-                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.READ_CONTACTS
             )
         )
     }

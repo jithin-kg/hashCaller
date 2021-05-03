@@ -7,7 +7,7 @@
     android:background="@color/colorBackground">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imgViewAvatarMain"
+        android:id="@+id/imgViewAvatarDrawer"
         android:layout_width="@dimen/avatar_side_drawer"
         android:layout_height="@dimen/avatar_side_drawer"
         android:layout_marginTop="64dp"
@@ -27,10 +27,10 @@
         android:text="J"
         android:textColor="@color/colorWhite"
         android:textSize="32sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imgViewAvatarMain"
-        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
-        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
-        app:layout_constraintTop_toTopOf="@+id/imgViewAvatarMain" />
+        app:layout_constraintBottom_toBottomOf="@+id/imgViewAvatarDrawer"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarDrawer"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarDrawer"
+        app:layout_constraintTop_toTopOf="@+id/imgViewAvatarDrawer" />
 
     <TextView
         android:id="@+id/tvNavDrawerName"
@@ -42,5 +42,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgViewAvatarMain" />
+        app:layout_constraintTop_toBottomOf="@+id/imgViewAvatarDrawer" />
 </androidx.constraintlayout.widget.ConstraintLayout>

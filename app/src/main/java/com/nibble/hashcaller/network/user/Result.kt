@@ -5,5 +5,5 @@ data class Result(
     val firstName: String,
 //    val gender: String,
     val lastName: String,
-    val image: String
+    val image: String?
 )

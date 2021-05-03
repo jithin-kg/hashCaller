@@ -81,7 +81,7 @@ class MyCallScreeningService: CallScreeningService() {
         phoneNumber: String,
         response: CallResponse.Builder,
         callDetails: Details
-    ) = GlobalScope.launch {
+    ) = CoroutineScope(Dispatchers.IO).launch {
         val formatedNum = formatPhoneNumber(phoneNumber)
             supervisorScope {
                 val isMutedJob =  async {  helper.isMutedNumber(formatedNum) }

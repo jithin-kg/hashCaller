@@ -1,7 +1,9 @@
 package com.nibble.hashcaller.view.utils
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.google.android.material.textfield.TextInputLayout
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -13,6 +15,35 @@ fun getDecodedBytes(photoUri:String): Bitmap? {
     val decodedString: ByteArray =
         android.util.Base64.decode(photoUri, android.util.Base64.DEFAULT)
     return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+}
+
+/**
+ * function to validate user input in getinitialinfo activity and profile acticity forms
+ */
+@SuppressLint("LongLogTag")
+ fun validateInput(firstName: String, lastName: String,
+                          textFieldOne: TextInputLayout, outlineField2: TextInputLayout
+): Boolean {
+    var isValid = true;
+    if( firstName.isEmpty() || firstName.length < 3 || firstName.length > 25){
+        textFieldOne.error = "First name should contain at least 3 characters"
+        isValid = false;
+    }
+    if(firstName.length> 25){
+        textFieldOne.error = "First name can have maximum 25 characters"
+        isValid = false
+    }
+    if( lastName.length > 25){
+        outlineField2.error = "Last name can have maximum 25  characters"
+        isValid = false;
+
+    }
+    if( lastName.isEmpty() || lastName.length < 2 ){
+        outlineField2.error = "Last name should contain at least 3 characters"
+        isValid = false;
+    }
+
+    return isValid
 }
 fun getDate(milliSeconds: Long, dateFormat: String?): String? {
     // Create a DateFormatter object for displaying date in specified format.

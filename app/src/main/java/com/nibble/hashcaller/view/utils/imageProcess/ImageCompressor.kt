@@ -11,10 +11,10 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 class ImageCompressor(private val context: Context) {
-    suspend fun getCompressedImagePart(imgFile: File?): MultipartBody.Part {
+    suspend fun getCompressedImagePart(imgFile: File): MultipartBody.Part {
         val compressedImageFile: File = Compressor.compress(
             context,
-            imgFile!!
+            imgFile
         ) {
             resolution(48, 48)
 //                                    quality(80)

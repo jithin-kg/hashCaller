@@ -69,6 +69,7 @@ import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
+import com.nibble.hashcaller.view.ui.profile.ProfileActivity
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
@@ -116,6 +117,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var contactFragment: ContactsContainerFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
+    private lateinit var header:View
+    private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
+    private lateinit var firstLetterView:TextView
 //    var  searchFragment: SearchFragment? = null
 
 
@@ -173,7 +177,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         initViewModel()
         setupNavigationDrawer()
-
+        initHeaderView()
 
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -187,17 +191,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         mangeCipherInSharedPref()
         observeUserInfoLiveData()
         setupContactUploadWork()
-
         observeUserInfo()
+        initListeners()
+
+    }
+
+    private fun initListeners() {
+        headerImgView.setOnClickListener(this)
+    }
+
+    private fun initHeaderView() {
+         header = binding.navView.getHeaderView(0)
+
+         headerImgView =  header.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgViewAvatarDrawer)
+         firstLetterView = header.findViewById<TextView>(R.id.tvFirstLetterMain)
+
     }
 
     private fun observeUserInfo() {
-        userInfoViewModel.userInfo.observe(this, Observer {
+
+        userInfoViewModel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-                val header = binding.navView.getHeaderView(0)
-               val headerImgView =  header.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgViewAvatarMain)
-               val firstLetterView = header.findViewById<TextView>(R.id.tvFirstLetterMain)
                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
                 fullName.text = "${it.firstname} ${it.lastName}"
                 if(!it.photoURI.isNullOrEmpty()){
@@ -903,7 +918,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onClick(v: View) {
         Log.d(TAG, "onClick: ")
         when(v.id){
-
+            R.id.imgViewAvatarDrawer ->{
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+            }
 //        R.id.fabBtnShowDialpad->{
 //            showDialerFragment()
 //           GlobalScope.launch {
@@ -1082,6 +1100,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 val intent = Intent(this, ManageNotificationsActivity::class.java)
                 startActivity(intent)
             }
+
             R.id.inviteMenuItem ->{
             }
 

@@ -158,7 +158,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun observeUserInfo() {
-        sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
+        sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
             if(it!=null){
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
 //                binding.tvCircularAvatar.text = fLetter
@@ -1110,14 +1110,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      */
     fun clearMarkeditems() {
         if(checkContactPermission()){
-            viewmodel.clearMarkedItems()
-            lifecycleScope.launchWhenStarted {
-                for(position in viewmodel.markedItemsPositions){
-                    callLogAdapter?.notifyItemChanged(position)
-                }
+            if(this::viewmodel.isInitialized){
+                viewmodel.clearMarkedItems()
+                lifecycleScope.launchWhenStarted {
+                    for(position in viewmodel.markedItemsPositions){
+                        callLogAdapter?.notifyItemChanged(position)
+                    }
 
-                viewmodel.clearMarkedItemPositions()
+                    viewmodel.clearMarkedItemPositions()
+                }
             }
+
         }
 
 //        showSearchView()

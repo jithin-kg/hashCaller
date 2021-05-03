@@ -130,7 +130,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
 
     private fun observeUserInfo() {
-        sharedUserInfoViewmodel.userInfo.observe(viewLifecycleOwner, Observer {
+        sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
             if(it!=null){
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
 //                binding.tvCntctPermissionInfo.text = fLetter

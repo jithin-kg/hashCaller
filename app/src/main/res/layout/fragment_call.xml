@@ -175,7 +175,7 @@
                                     android:focusable="false"
                                     android:layout_marginStart="24dp"
                                     android:focusedByDefault="false"
-                                    android:hint="Search in Calls"
+                                    android:hint="search in Calls"
                                     android:iconifiedByDefault="false"
                                     android:queryBackground="@android:color/transparent"
                                     android:queryHint="Search numbers, names"

@@ -1,9 +1,7 @@
 package com.nibble.hashcaller.view.ui.settings
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -18,9 +16,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.android.synthetic.main.activity_block_manage.*
-import kotlinx.android.synthetic.main.activity_settings.*
-import java.util.*
 
 
 class SettingsActivity : AppCompatActivity(), View.OnClickListener {
@@ -41,7 +36,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
 
     }
     private fun observeUserInfo() {
-        sharedUserInfoViewmodel.userInfo.observe(this, Observer {
+        sharedUserInfoViewmodel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
                 binding.tvFirstLetterMain.text = fLetter

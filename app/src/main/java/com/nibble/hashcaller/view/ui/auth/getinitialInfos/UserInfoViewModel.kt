@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.network.NetworkResponseBase
@@ -28,7 +29,7 @@ class UserInfoViewModel(
     private val userNetworkRepository: UserNetworkRepository,
     private val userHashedNumRepository: UserHasehdNumRepository
 ) :ViewModel(){
-    var userInfo = userNetworkRepository.getUserInfo()
+    var userInfoLivedata = userNetworkRepository.getUserInfo()
 //    val userInfo  = userNetworkRepository.getUserInfo()
 
 
@@ -108,7 +109,7 @@ class UserInfoViewModel(
             user.firstname = result.firstName
             user.lastName = result.lastName
             user.phoneNumber = "2"
-            user.photoURI = result.image
+            user.photoURI = result.image?:""
             userNetworkRepository.saveUserInfoInLocalDb(user)
         }.join()
         emit(OPERATION_COMPLETED)
@@ -155,15 +156,22 @@ class UserInfoViewModel(
         userNetworkRepository.insertNewUserIntoDb(user)
     }
 
-    fun compresSAndPrepareForUpload(imgFile: File?, context: GetInitialUserInfoActivity) :LiveData<MultipartBody.Part> = liveData {
+    /**
+     * function to compress image
+     */
+    fun compresSAndPrepareForUpload(imgFile: File?, context: Context) :LiveData<MultipartBody.Part?> = liveData {
 
+        if(imgFile==null){
+            emit(null)
+        }else{
+            emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
 
+        }
 
 
 //        val requestFile: okhttp3.RequestBody? =
 //            imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
 //        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
-        emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
 
     }
 

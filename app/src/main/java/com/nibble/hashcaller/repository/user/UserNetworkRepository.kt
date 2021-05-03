@@ -8,8 +8,6 @@ import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.IHashedNumDao
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
@@ -32,7 +30,7 @@ class UserNetworkRepository(
 ){
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
     
-    suspend fun signup(userInfo: UserInfoDTO, body: MultipartBody.Part?): Response<SingupResponse>   = withContext(Dispatchers.IO) {
+    suspend fun signup(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse>   = withContext(Dispatchers.IO) {
 //        retrofitService = RetrofitClient.createaService(IuserService::class.java)
         val token = tokenManager.getToken()
         val firstName = createPartFromString(userInfo.firstName)
@@ -41,7 +39,7 @@ class UserNetworkRepository(
         val phoneNumber = createPartFromString(userInfo.phoneNumber)
         val countryCode = createPartFromString(userInfo.countryCode)
         val countryISO = createPartFromString(userInfo.countryISO)
-        val response = retrofitService?.signup(firstName, lastName, hashedNum, phoneNumber, countryCode, countryISO, body, token)
+        val response = retrofitService?.signup(firstName, lastName, hashedNum, phoneNumber, countryCode, countryISO, imgMultipartBody, token)
 
         if(response.isSuccessful){
             Log.d(TAG, "signup: success")
@@ -81,7 +79,7 @@ class UserNetworkRepository(
         userInfoDAO?.insert(user = userInfo)
     }
 
-    suspend fun getCompressedImageBody(context: Context, imgFile: File?): MultipartBody.Part  = withContext(Dispatchers.Default){
+    suspend fun getCompressedImageBody(context: Context, imgFile: File): MultipartBody.Part  = withContext(Dispatchers.Default){
         return@withContext  imageCompressor.getCompressedImagePart(imgFile)
 
     }

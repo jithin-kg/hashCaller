@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.utils
 
 import android.Manifest
+import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import com.android.i18n.phonenumbers.PhoneNumberUtil
 import com.android.i18n.phonenumbers.PhoneNumberUtil.getInstance
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
+import com.vmadalin.easypermissions.EasyPermissions
 
 /**
  * helper class to get sim operator name and country code
@@ -20,15 +22,15 @@ import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 class CountrycodeHelper(val context: Context) {
 
 
-     fun getCountrycode(): Int {
+     fun getCountrycode(): String {
 
-         var countryCode = 0
+         var countryCode = ""
          if(isPhoneReadStatePermissionGiven()){
 
 
 
 //            SubscriptionManager.ACTION_REFRESH_SUBSCRIPTION_PLANS
-             countryCode = getCountryCode()
+             countryCode = getCountryCode().toString()
 
         }
 
@@ -37,36 +39,36 @@ class CountrycodeHelper(val context: Context) {
 
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "LogNotTimber")
     private fun getCountryCode(): Int {
         val subscriptionInfoList = mutableListOf<OperatorInformationDTO>()
-
         val subscriptionManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
         val subscriptionInfos:List<SubscriptionInfo> =subscriptionManager.activeSubscriptionInfoList
         var cCode = 0
         for (element in subscriptionInfos) {
             val lsuSubscriptionInfo: SubscriptionInfo = element
             val operatorDisplayName = lsuSubscriptionInfo.displayName
-            Log.d(TAG, "getNumber " + lsuSubscriptionInfo.getNumber())
+            Log.d(TAG, "getNumber ${lsuSubscriptionInfo.number}")
+
 //                    val tel =  getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager;
 //                    val operator = tel.networkOperator
 //                    val simOperator = tel.simOperator
 
-            Log.d(
-                TAG,
-                "network display : $operatorDisplayName"
-            )
-
-            Log.d(
-                TAG,
-                "getCountryIso   ${lsuSubscriptionInfo.countryIso}"
-            )
+            Log.d(TAG, "network display : $operatorDisplayName")
+            Log.d(TAG, "getCountryIso   ${lsuSubscriptionInfo.countryIso}")
             val countryIso = lsuSubscriptionInfo.countryIso.toUpperCase()
-            val countryCode = io.michaelrocks.libphonenumber.android.PhoneNumberUtil.createInstance(context).getCountryCodeForRegion(countryIso)
+            val countryCode =
+                io.michaelrocks.libphonenumber.android.PhoneNumberUtil.createInstance(context)
+                    .getCountryCodeForRegion(countryIso)
             Log.d(TAG, "getSimOperator: coutry code is $countryCode")
             cCode = countryCode
 
-            subscriptionInfoList.add(OperatorInformationDTO(operatorDisplayName.toString(), lsuSubscriptionInfo.countryIso ))
+            subscriptionInfoList.add(
+                OperatorInformationDTO(
+                    operatorDisplayName.toString(),
+                    lsuSubscriptionInfo.countryIso
+                )
+            )
 
         }
         return cCode
@@ -74,22 +76,23 @@ class CountrycodeHelper(val context: Context) {
     }
 
     private fun isPhoneReadStatePermissionGiven(): Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true
-
-        }
-        return false
+       return  EasyPermissions.hasPermissions(context, READ_PHONE_STATE)
+//        if (ActivityCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.READ_PHONE_STATE
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//            return true
+//
+//        }
+//        return false
     }
 
     fun getcountryCodeOfUser(){
 
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "LogNotTimber")
     fun getCountryISO(): String {
         var countryIso  = ""
         if (isPhoneReadStatePermissionGiven()) {

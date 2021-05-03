@@ -49,7 +49,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <activity android:name=".view.ui.profile.ProfileActivity"></activity>
+        <activity android:name=".view.ui.profile.ProfileActivity"
+            android:theme="@style/AppTheme"
+            ></activity>
         <activity
             android:name=".view.ui.sms.spam.SpamSMSActivity"
             android:theme="@style/AppTheme" />

@@ -66,7 +66,6 @@ class InCommingCallManager(
                 }
     }
     try {
-
         deferedFindInContacts.await().apply {
             Log.d(TAG, "manageCall: deferedFindInContacts await")
             if (this == null) {
@@ -75,7 +74,6 @@ class InCommingCallManager(
                     notificationHelper.showNotificatification(true, phoneNumber)
                 }
             }
-
         }
       val res:Response<SerachRes>? =   deferedSearchInSeraver?.await()
         if(!res?.body()?.cntcts.isNullOrEmpty()){

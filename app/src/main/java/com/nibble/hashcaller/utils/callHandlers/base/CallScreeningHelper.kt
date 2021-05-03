@@ -9,6 +9,8 @@ import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class CallScreeningHelper(private val context: Context, private val contactAdressesDAO: IContactAddressesDao) {
@@ -19,26 +21,28 @@ class CallScreeningHelper(private val context: Context, private val contactAdres
     var mutedCallersDAO: IMutedCallersDAO =  context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
     var blockedListpatternDAO: BlockedLIstDao =  context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
 
-    suspend fun isMutedNumber(phoneNumber: String): Boolean {
+
+
+    suspend fun isMutedNumber(phoneNumber: String): Boolean  = withContext(Dispatchers.IO) {
         var isMuted = false
-        mutedCallersDAO.find(formatPhoneNumber(phoneNumber)).apply {
-            if(this!=null){
+        val res = mutedCallersDAO.find(formatPhoneNumber(phoneNumber))
+            if(res!=null){
                 isMuted = true
             }
-            return isMuted
-        }
+        return@withContext isMuted
+
 
     }
 
     /**
      * function to check whether the phoneNumber is followes the pattern that user added to black list
      */
-    suspend fun isBlockedByPattern(phoneNumber: String): Boolean {
+    suspend fun isBlockedByPattern(phoneNumber: String): Boolean = withContext(Dispatchers.IO) {
         var match = false
 
 
-             blockedListpatternDAO.getAllBLockListPatternList().apply {
-                for (item in this){
+             val res =  blockedListpatternDAO.getAllBLockListPatternList()
+                for (item in res){
                     Log.d(TAG, "isBlockedByPattern: ${item.numberPattern}")
                     if(item.type == NUMBER_STARTS_WITH){
                         match =   phoneNumber.startsWith(item.numberPattern)
@@ -51,24 +55,24 @@ class CallScreeningHelper(private val context: Context, private val contactAdres
                         break
                     }
                 }
-            }
 
-        return match
+
+        return@withContext match
 
     }
 
     /**
      * function returns true if the user enabled block non contacts call
      */
-    suspend fun isThisCallTobeBlocked(formatedNum: String, blockNonContactsEnabled: Boolean):Boolean {
-        contactAdressesDAO.find(formatedNum).apply {
-            if(this == null){
+    suspend fun isThisCallTobeBlocked(formatedNum: String, blockNonContactsEnabled: Boolean):Boolean  = withContext(Dispatchers.IO){
+        val res = contactAdressesDAO.find(formatedNum)
+            if(res == null){
                 if(blockNonContactsEnabled){
-                    return true
+                    return@withContext true
                 }
             }
-        }
-        return false
+
+        return@withContext false
     }
 
 }

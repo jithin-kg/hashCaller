@@ -27,6 +27,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
+import com.nibble.hashcaller.view.utils.validateInput
 import okhttp3.MultipartBody
 
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
@@ -37,7 +38,7 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
 //    private var imgFile: File? = null
 //    private var picturePath: String = ""
     private lateinit var imagePickerHelper : ImagePickerHelper
-    var body:MultipartBody.Part? = null
+    var imgeMultipartBody:MultipartBody.Part? = null
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,12 +141,11 @@ private fun sendUserInfo() {
         userInfoViewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile,
             this@GetInitialUserInfoActivity).observe(this@GetInitialUserInfoActivity,
             Observer {
-                body = it
+                imgeMultipartBody = it
 
                 binding.editTextFName.error = null
-//    binding.editTextEmail.error = null
                 binding.editTextLName.error = null
-                val isValid = validateInput(firstName, lastName);
+                val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
                 if(isValid){
                     Log.d(TAG, "isvalid: ")
                     var userInfo = UserInfoDTO()
@@ -158,7 +158,7 @@ private fun sendUserInfo() {
 
 
 
-                    upload(userInfo, body)
+                    upload(userInfo, imgeMultipartBody)
                 }
             })
 
@@ -255,29 +255,7 @@ private fun sendUserInfo() {
         editor.commit()
     }
 
-    @SuppressLint("LongLogTag")
-    private fun validateInput(firstName: String, lastName: String): Boolean {
-        var isValid = true;
-        if( firstName.isEmpty() || firstName.length < 3 || firstName.length > 25){
-            binding.outlinedTextField.error = "First name should contain at least 3 characters"
-            isValid = false;
-        }
-        if(firstName.length> 25){
-            binding.outlinedTextField.error = "First name can have maximum 25 characters"
-            isValid = false
-        }
-        if( lastName.length > 25){
-            binding.outlinedTextField2.error = "Last name can have maximum 25  characters"
-            isValid = false;
 
-        }
-        if( lastName.isEmpty() || lastName.length < 2 ){
-            binding.outlinedTextField2.error = "Last name should contain at least 3 characters"
-            isValid = false;
-        }
-
-        return isValid
-}
 
     companion object{
         const val TAG = "__GetInitialUserInfoActivity"
