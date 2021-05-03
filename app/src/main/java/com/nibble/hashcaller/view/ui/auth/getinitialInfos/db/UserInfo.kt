@@ -35,7 +35,7 @@ data class UserInfo (
     @ColumnInfo(name = "hashed_phone_no") var hashedPhoneNumber:String = "",
     @ColumnInfo(name = "phone_no") var phoneNumber: String = "",
     @ColumnInfo(name = "email") var email: String = "",
-    @ColumnInfo(name = "photo_uri") var photoURI: String = ""
+    @ColumnInfo(name = "photo_uri") var photoURI: String = "" // base 64 encoded string of image
 
 
 

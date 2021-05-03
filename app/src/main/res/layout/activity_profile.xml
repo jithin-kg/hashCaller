@@ -11,15 +11,16 @@
         android:layout_width="@dimen/individual_contact_avatar"
         android:layout_height="@dimen/individual_contact_avatar"
         android:layout_marginTop="80dp"
-        android:src="@drawable/contact_circular_background"
-        android:tag="avatar"
         android:clickable="true"
+        android:background="@drawable/contact_circular_background_grey"
+        android:tag="avatar"
         android:transitionName="contactImageTransition"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvFirstLetterMain"
         android:layout_width="wrap_content"
@@ -32,6 +33,7 @@
         app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
         app:layout_constraintStart_toStartOf="@+id/ivAvatar"
         app:layout_constraintTop_toTopOf="@+id/ivAvatar" />
+
     <ImageView
         android:id="@+id/imgVCamBground"
         android:layout_width="32dp"
@@ -55,6 +57,7 @@
         app:layout_constraintEnd_toEndOf="@+id/imgVCamBground"
         app:layout_constraintStart_toStartOf="@+id/imgVCamBground"
         app:layout_constraintTop_toTopOf="@+id/imgVCamBground" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlinedTextField"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -111,15 +114,27 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginStart="16dp"
-        android:visibility="invisible"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:paddingVertical="16dp"
         android:text="Save"
         android:textAllCaps="false"
         android:textColor="@color/colorWhite"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/pgBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/outlinedTextField2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,4 +24,7 @@ interface UserInfoDAO {
     @Query("SELECT * FROM user_info LIMIT 1")
     suspend fun getUser(): UserInfo?
 
+    @Query("UPDATE user_info SET first_name =:firstName, last_name =:lastName, photo_uri =:imageUri ")
+    suspend fun updateUserInfo(firstName: String, lastName: String, imageUri: String)
+
 }

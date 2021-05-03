@@ -3,7 +3,6 @@ package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.network.NetworkResponseBase
@@ -15,6 +14,7 @@ import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHasehdNumRepository
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
@@ -33,73 +33,7 @@ class UserInfoViewModel(
 //    val userInfo  = userNetworkRepository.getUserInfo()
 
 
-    fun upload(userInfo: UserInfoDTO,
-              body: MultipartBody.Part?,
-          context: Context
-                ):LiveData<NetworkResponseBase<SingupResponse>>
-            = liveData{
 
-
-//    Secrets().managecipher(context.packageName, formattedPhoneNum)
-    /**
-         * saving user info in local db
-         */
-        /**
-         * saving user info in local db
-         */
-//        saveUserInfoInLocalDb(userInfo)
-//            userNetworkRepository.signup(userInfo)
-        try {
-
-           val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
-            if(hashedNumResultFromDb!=null){
-                var result:String? = ""
-                val info = UserInfoDTO()
-                info.firstName = userInfo.firstName
-                info.lastName = userInfo.lastName
-                info.hashedNum = hashedNumResultFromDb.hashedNumber
-                info.phoneNumber = hashedNumResultFromDb.phoneNumber
-                info.countryCode = userHashedNumRepository.getCoutryCode()
-                info.countryISO = userHashedNumRepository.getCoutryISO()
-                val response:Response<SingupResponse> = userNetworkRepository.signup(info, body)
-                if(response?.isSuccessful){
-                    response.body()?.let {
-                        if(response.code() !in (400 .. 599)){
-                            val genericResponse = NetworkResponseBase(it, EVERYTHING_WENT_WELL)
-                            emit(genericResponse)
-                        }
-                    }
-                }else {
-                    if(response.code() in (400 .. 599)){
-                        val genericRespnse = NetworkResponseBase(
-                            SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
-                        emit(genericRespnse)
-                    }
-                }
-            }
-
-
-
-
-
-//        if(success){
-//            Log.d(TAG, "signup: ${response?.body()}")
-//             result = response?.body()?.message
-//
-//            Log.d(TAG, "signup: $result")
-//        }else{
-//            Log.d(TAG, "signup: failure")
-//        }
-//            Log.d(TAG, "upload: response is $result.")
-//            emit(Resource.success(response))
-        }catch (e:Exception){
-            Log.d(TAG, "upload: exception $e")
-//            emit(Resource.error(null, e.message));
-        }
-
-
-
-    }
 
     fun saveUserInfoInLocalDb(singupResponse: SingupResponse):LiveData<Int> = liveData {
         viewModelScope.launch {
@@ -185,5 +119,95 @@ class UserInfoViewModel(
         val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
         userHashedNumRepository.saveUserPhoneHash(hashedPhoneNum, formattedPhoneNum)
         emit(OPERATION_COMPLETED)
+    }
+
+    fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<NetworkResponseBase<SingupResponse>> = liveData{
+            try {
+                val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
+                if(hashedNumResultFromDb!=null){
+                    val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
+                    val response:Response<SingupResponse> = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
+                    emit(getGenericResponse(response))
+                }
+            }catch (e:Exception){
+                Log.d(TAG, "updateUserInfo: exception $e")
+            }
+    }
+
+    fun upload(userInfo: UserInfoDTO,
+               body: MultipartBody.Part?,
+               context: Context
+    ):LiveData<NetworkResponseBase<SingupResponse>>
+            = liveData{
+//    Secrets().managecipher(context.packageName, formattedPhoneNum)
+        /**
+         * saving user info in local db
+         */
+        /**
+         * saving user info in local db
+         */
+//        saveUserInfoInLocalDb(userInfo)
+//            userNetworkRepository.signup(userInfo)
+        try {
+
+            val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
+            if(hashedNumResultFromDb!=null){
+                var result:String? = ""
+                val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
+                val response:Response<SingupResponse> = userNetworkRepository.signup(info, body)
+               emit(getGenericResponse(response))
+            }
+
+        }catch (e:Exception){
+            Log.d(TAG, "upload: exception $e")
+//            emit(Resource.error(null, e.message));
+        }
+
+    }
+
+    private fun getGenericResponse(response: Response<SingupResponse>): NetworkResponseBase<SingupResponse> {
+        if(response?.isSuccessful){
+            response.body()?.let {
+                if(response.code() !in (400 .. 599)){
+                    return NetworkResponseBase(it, EVERYTHING_WENT_WELL)
+                }
+            }
+        }else {
+            if(response.code() in (400 .. 599)){
+                return NetworkResponseBase(
+                    SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
+            }
+        }
+        return NetworkResponseBase(
+            SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
+    }
+
+    private fun gePreparedPhonenum(userInfo: UserInfoDTO, hashedNumResultFromDb: UserHashedNumber): UserInfoDTO {
+        val info = UserInfoDTO()
+        info.firstName = userInfo.firstName
+        info.lastName = userInfo.lastName
+        info.hashedNum = hashedNumResultFromDb.hashedNumber
+        info.phoneNumber = hashedNumResultFromDb.phoneNumber
+        info.countryCode = userHashedNumRepository.getCoutryCode()
+        info.countryISO = userHashedNumRepository.getCoutryISO()
+        return info
+    }
+
+    fun updateUserInfoInDb(
+        firstName: String?,
+        lastName: String?,
+        imgeFromServer: String?
+    ) : LiveData<Int> = liveData{
+
+        try {
+            if(!firstName.isNullOrEmpty()){
+                val user = UserInfo(null)
+                userNetworkRepository.updateUserInfoInDb(firstName, lastName?:"", imgeFromServer?:"")
+                emit(OPERATION_COMPLETED)
+            }
+        }catch (e:Exception){
+            Log.d(TAG, "updateUserInfoInDb: $e")
+        }
+
     }
 }

@@ -1,7 +1,6 @@
 package com.nibble.hashcaller.repository.user
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.RetrofitClient
@@ -28,27 +27,53 @@ class UserNetworkRepository(
     private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO,
     private val imageCompressor: ImageCompressor
 ){
+    private lateinit var firstName:RequestBody
+    private lateinit var lastName :RequestBody
+    private lateinit var hashedNum :RequestBody
+    private lateinit var phoneNumber :RequestBody
+    private lateinit var countryCode :RequestBody
+    private lateinit var countryISO :RequestBody
+    private var token = ""
+
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
-    
+
+    suspend fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse> = withContext(Dispatchers.IO) {
+        prepareRquestBody(userInfo)
+        return@withContext retrofitService.updateUserInfo(
+            firstName,
+            lastName,
+            hashedNum,
+            phoneNumber,
+            countryCode,
+            countryISO,
+            imgMultipartBody,
+            token
+        )
+    }
     suspend fun signup(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse>   = withContext(Dispatchers.IO) {
 //        retrofitService = RetrofitClient.createaService(IuserService::class.java)
-        val token = tokenManager.getToken()
-        val firstName = createPartFromString(userInfo.firstName)
-        val lastName = createPartFromString(userInfo.lastName)
-        val hashedNum = createPartFromString(userInfo.hashedNum)
-        val phoneNumber = createPartFromString(userInfo.phoneNumber)
-        val countryCode = createPartFromString(userInfo.countryCode)
-        val countryISO = createPartFromString(userInfo.countryISO)
-        val response = retrofitService?.signup(firstName, lastName, hashedNum, phoneNumber, countryCode, countryISO, imgMultipartBody, token)
+        prepareRquestBody(userInfo)
+        //        Log.d(TAG, "signup: ${response?.body()?.message}")
+        return@withContext retrofitService?.signup(
+            firstName,
+            lastName,
+            hashedNum,
+            phoneNumber,
+            countryCode,
+            countryISO,
+            imgMultipartBody,
+            token
+        )
+    }
 
-        if(response.isSuccessful){
-            Log.d(TAG, "signup: success")
-        }else{
-            Log.d(TAG, "signup: failure")
-        }
-        Log.d(TAG, "signup:error body ${response?.errorBody()}")
-//        Log.d(TAG, "signup: ${response?.body()?.message}")
-        return@withContext response
+    private fun prepareRquestBody(userInfo: UserInfoDTO) {
+        token = tokenManager.getToken()
+        firstName = createPartFromString(userInfo.firstName)
+        lastName = createPartFromString(userInfo.lastName)
+        hashedNum = createPartFromString(userInfo.hashedNum)
+        phoneNumber = createPartFromString(userInfo.phoneNumber)
+        countryCode = createPartFromString(userInfo.countryCode)
+        countryISO = createPartFromString(userInfo.countryISO)
     }
 
     fun createPartFromString(str:String): RequestBody {
@@ -64,6 +89,9 @@ class UserNetworkRepository(
      */
      fun getUserInfo(): LiveData<UserInfo> {
         return this.userInfoDAO.getUserInfoLiveData()
+    }
+    suspend fun updateUserInfoInDb(firstName: String, lastName: String, imageUri: String) = withContext(Dispatchers.IO) {
+        userInfoDAO?.updateUserInfo(firstName, lastName, imageUri)
     }
 
     suspend fun setContactsInHashMap() {

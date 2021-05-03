@@ -23,11 +23,22 @@ interface IuserService {
         @Part("phoneNumber") phoneNumber:RequestBody,
         @Part("countryCode") countryCode:RequestBody,
         @Part("countryISO") countryISO:RequestBody,
-
         @Part image: MultipartBody.Part?,
         @Header ("Authorization") token:String
     ):Response<SingupResponse>
 
+    @Multipart
+    @POST("user/updateUserInfo")
+    suspend fun updateUserInfo(
+        @Part("firstName") firstName:RequestBody,
+        @Part("lastName") lastName:RequestBody,
+        @Part("hashedNum") hashedNum:RequestBody,
+        @Part("phoneNumber") phoneNumber:RequestBody,
+        @Part("countryCode") countryCode:RequestBody,
+        @Part("countryISO") countryISO:RequestBody,
+        @Part image: MultipartBody.Part?,
+        @Header ("Authorization") token:String
+    ): Response<SingupResponse>
     //retrieves cipher from hashcaller server
     @POST("user/getCipher")
     suspend fun getCipher(
@@ -39,5 +50,7 @@ interface IuserService {
         @Header("Authorization")
         token: String
     ) : Response<SingupResponse>
+
+
 
 }

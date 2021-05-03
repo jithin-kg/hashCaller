@@ -12,12 +12,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityProfileBinding
+import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.view.utils.validateInput
@@ -30,7 +34,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private var firstName:String? = null
     private var lastName:String? = null
     private lateinit var imagePickerHelper : ImagePickerHelper
-    var body: MultipartBody.Part? = null
+    var imageMultipartBody: MultipartBody.Part? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +127,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         viewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile,
             this).observe(this,
             Observer {
-                body = it
+                imageMultipartBody = it
 
                 binding.editTextFName.error = null
 //    binding.editTextEmail.error = null
@@ -135,7 +139,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                     userInfo.firstName = firstName;
                     userInfo.lastName =  lastName;
 
-                    update(userInfo, body)
+                    update(userInfo, imageMultipartBody)
                 }
             })
 
@@ -143,8 +147,26 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    private fun update(userInfo: UserInfoDTO, body: MultipartBody.Part?){
+    private fun update(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?){
+        binding.pgBar.beVisible()
+        viewModel.updateUserInfoInServer(userInfo, imgMultiPart).observe(this, Observer {
+            when (it.isEverytingWentWell) {
+                EVERYTHING_WENT_WELL -> {
+                   viewModel.updateUserInfoInDb(it.result?.result?.firstName,
+                       it.result?.result?.lastName, it.result?.result?.image).observe(this, Observer { status ->
+                           when(status){
+                               OPERATION_COMPLETED ->{
+                                   binding.pgBar.beGone()
 
+                               }
+                           }
+                   })
+                }
+                else ->{
+                    toast("Something went wrong")
+                }
+            }
+        })
     }
     private fun startImagePickActivity() {
         val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
