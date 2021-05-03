@@ -11,6 +11,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 class ImageCompressor(private val context: Context) {
+
     suspend fun getCompressedImagePart(imgFile: File): MultipartBody.Part {
         val compressedImageFile: File = Compressor.compress(
             context,
@@ -19,7 +20,7 @@ class ImageCompressor(private val context: Context) {
             resolution(48, 48)
 //                                    quality(80)
 //                                    format(Bitmap.CompressFormat.WEBP)
-            size(4000) // 4 kb
+            size(compressionLimit) // 30 kb
         }
         val requestFile: RequestBody =
             compressedImageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
@@ -29,5 +30,8 @@ class ImageCompressor(private val context: Context) {
             requestFile
         );
         return body
+    }
+    companion object{
+        const val compressionLimit = 30000L // 30 kb
     }
 }

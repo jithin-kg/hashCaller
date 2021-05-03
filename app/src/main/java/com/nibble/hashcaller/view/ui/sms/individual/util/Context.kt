@@ -17,17 +17,38 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.nibble.hashcaller.R
+
+import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.util.*
 
 val Context.config: Config get() = Config.newInstance(applicationContext)
 
 fun Context.getSharedPrefs() = getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
 val Context.baseConfig: BaseConfig get() = BaseConfig.newInstance(this)
-
-
-
+//
+//suspend fun Context.saveToken( key:String, value:String){
+//    val wrapedKey =  stringPreferencesKey(key)
+//    tokeDataStore.edit {
+//        it[wrapedKey] = value
+//    }
+//}
+//
+// fun Context.getToken( key:String): Flow<String> {
+//    val wrapedKey =  stringPreferencesKey(key)
+//    val tokenFlow: Flow<String> = tokeDataStore.data.map {
+//        it[wrapedKey]?:""
+//    }
+//    return tokenFlow
+//}
 /**
  * Request focus for searchview and show soft input focused on searchView
  * @param searchView Searchview
