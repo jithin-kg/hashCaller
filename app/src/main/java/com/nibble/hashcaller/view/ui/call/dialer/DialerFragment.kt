@@ -108,7 +108,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         // Inflate the layout for this fragment
         _binding = FragmentDialerBinding.inflate(inflater, container, false)
 
-        viewmodel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
+        viewmodel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context?.applicationContext, lifecycleScope)).get(
             DialerViewModel::class.java)
         initRecyclerView()
         setupBottomSheet()

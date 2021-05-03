@@ -293,6 +293,7 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
         val i = Intent(this, GetInitialUserInfoActivity::class.java)
         startActivity(i)
         finish()
+        
     }
     //todo if existing user get first and last name from server and save in db
 

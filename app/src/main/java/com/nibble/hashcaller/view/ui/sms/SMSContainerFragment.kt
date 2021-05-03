@@ -82,7 +82,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     var smsRecyclerAdapter: SMSListAdapter? = null
     private lateinit var searchV: SearchView
     private var searchQry:String? = null
-    private lateinit var cntx: Context
     private lateinit var smsFlowHelper:SMSHelperFlow
     private lateinit var sView: EditText
     private lateinit var sharedPreferences: SharedPreferences
@@ -106,7 +105,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cntx = this!!.requireContext()
+
         pageOb.page = 0
 
     }
@@ -333,7 +332,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         }
     }
     private fun initVieModel() {
-        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
+        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context?.applicationContext, lifecycleScope)).get(
             SMSViewModel::class.java)
 
     }
@@ -387,7 +386,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
        binding.recyclreviewSMSContainer?.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as LinearLayoutManager
-            smsRecyclerAdapter = SMSListAdapter(context, this@SMSContainerFragment, this@SMSContainerFragment, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
+            smsRecyclerAdapter = SMSListAdapter(context.applicationContext, this@SMSContainerFragment, this@SMSContainerFragment, this@SMSContainerFragment){ view: View, threadId:Long, pos:Int,
                                                                                 pno:String, clickType:Int->onContactItemClicked(view,threadId, pos, pno, clickType)  }
 //            smsRecyclerAdapter = SMSListAdapter(context, onContactItemClickListener =){view:View, pos:Int ->onLongpressClickLister(view,pos)}
             adapter = smsRecyclerAdapter

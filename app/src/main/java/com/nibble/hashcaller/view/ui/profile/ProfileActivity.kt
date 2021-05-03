@@ -97,7 +97,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun initViewmodel() {
         viewModel = ViewModelProvider(
             this, UserInfoInjectorUtil.provideUserInjectorUtil(
-                this
+                applicationContext
             )
         ).get(
             UserInfoViewModel::class.java

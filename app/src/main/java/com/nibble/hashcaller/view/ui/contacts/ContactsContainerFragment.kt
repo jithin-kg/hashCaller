@@ -163,8 +163,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
 
     private fun initViewmodel() {
-        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context, lifecycleScope)).get(ContactsViewModel::class.java)
-        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
+        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context?.applicationContext, lifecycleScope)).get(ContactsViewModel::class.java)
+        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(context?.applicationContext!!)).get(
             UserInfoViewModel::class.java
         )
 

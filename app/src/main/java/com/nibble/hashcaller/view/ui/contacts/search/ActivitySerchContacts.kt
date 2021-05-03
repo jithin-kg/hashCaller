@@ -80,7 +80,7 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
     private fun initViewmodel() {
         this.searchViewmodel = ViewModelProvider(
             this, SearchInjectorUtil.provideUserInjectorUtil(
-                this)).get(SearchViewModel::class.java)
+                applicationContext)).get(SearchViewModel::class.java)
     }
 
     private fun initAdapter() {

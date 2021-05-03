@@ -69,7 +69,7 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
     private fun initViewModel() {
         userInfoViewModel = ViewModelProvider(
             this, PhoneAuthInjectorUtil.provideUserInjectorUtil(
-                this
+                applicationContext
             )
         ).get(
             UserInfoViewModel::class.java

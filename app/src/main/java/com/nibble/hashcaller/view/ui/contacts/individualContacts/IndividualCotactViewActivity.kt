@@ -86,7 +86,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         viewModel =ViewModelProvider(
             this, IndividualContactInjectorUtil.provideUserInjectorUtil(
-                this,phoneNum, lifecycleScope
+                applicationContext,phoneNum, lifecycleScope
             )
         ).get(
             IndividualcontactViewModel::class.java

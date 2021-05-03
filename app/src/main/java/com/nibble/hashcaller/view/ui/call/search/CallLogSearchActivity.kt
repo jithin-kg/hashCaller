@@ -71,7 +71,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
     }
 
     private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, CalllogSearchInjectorUtil.provideDialerViewModelFactory(this)).get(
+        viewmodel = ViewModelProvider(this, CalllogSearchInjectorUtil.provideDialerViewModelFactory(applicationContext)).get(
             CallLogSearchViewModel::class.java)
     }
 

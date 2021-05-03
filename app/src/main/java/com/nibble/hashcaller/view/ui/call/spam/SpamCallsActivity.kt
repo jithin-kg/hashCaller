@@ -69,7 +69,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
     }
 
     private fun initViewmodel() {
-        viewmodel = ViewModelProvider(this, SpamCallInjectorUtil.provideViewmodelFactory(this)).get(
+        viewmodel = ViewModelProvider(this, SpamCallInjectorUtil.provideViewmodelFactory(applicationContext)).get(
             SpamCallViewModel::class.java
         )
     }

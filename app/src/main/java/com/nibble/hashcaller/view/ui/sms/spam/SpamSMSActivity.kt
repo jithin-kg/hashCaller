@@ -86,7 +86,7 @@ class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
         itemTouchHelper.attachToRecyclerView(binding.recyvlerV)
     }
     private fun initViewmodel() {
-        viewmodel = ViewModelProvider(this, SpamSMSInjectorUtil.provideViewmodelFactory(this)).get(
+        viewmodel = ViewModelProvider(this, SpamSMSInjectorUtil.provideViewmodelFactory(applicationContext)).get(
             SpamSMSViewModel::class.java
         )
     }

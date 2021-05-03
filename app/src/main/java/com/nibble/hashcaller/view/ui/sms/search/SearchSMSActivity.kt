@@ -118,7 +118,7 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
 
     private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, SmsSearchInjectorUtil.provideDialerViewModelFactory(this)).get(
+        viewmodel = ViewModelProvider(this, SmsSearchInjectorUtil.provideDialerViewModelFactory(applicationContext)).get(
             SMSSearchViewModel::class.java)
     }
 

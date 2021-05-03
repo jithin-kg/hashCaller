@@ -57,7 +57,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     private fun initViewmodel() {
         viewmodel = ViewModelProvider(
             this, SettingsInjectorUtil.provideContactsViewModelFactory(
-                this
+                applicationContext
             )
         ).get(
             SettingsViewModel::class.java

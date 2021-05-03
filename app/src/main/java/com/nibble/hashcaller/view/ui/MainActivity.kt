@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         listenUiEvents()
         requestAlertWindowPermission()
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
-        val c = ContextCompat.getColor(this, R.color.textColor);
+        val c = ContextCompat.getColor(applicationContext, R.color.textColor);
 
         initViewModel()
         setupNavigationDrawer()
@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun requestAlertWindowPermission() {
         // Show alert dialog to the user saying a separate permission is needed
         // Show alert dialog to the user saying a separate permission is needed
-        if(!canDrawOverlays(this)){
+        if(!canDrawOverlays(applicationContext)){
             val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
             startActivity(myIntent)
         }
@@ -340,7 +340,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun initViewModel() {
         userInfoViewModel = ViewModelProvider(
             this, MainActivityInjectorUtil.provideUserInjectorUtil(
-                this
+                applicationContext
             )
         ).get(
             UserInfoViewModel::class.java
@@ -460,7 +460,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        variableData2 = savedInstanceState.getString("AStringKey2")
     }
     private fun syncSpamList() {
-        val list = CountrycodeHelper(this).getCountrycode()
+        val list = CountrycodeHelper(applicationContext).getCountrycode()
         val spamSyncRepository = SpamSyncRepository()
 //        SpamSyncManager.sync(list, spamSyncRepository, this)
 
@@ -919,7 +919,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onClick: ")
         when(v.id){
             R.id.imgViewAvatarDrawer ->{
-                val intent = Intent(this, ProfileActivity::class.java)
+                val intent = Intent(applicationContext, ProfileActivity::class.java)
                 startActivity(intent)
             }
 //        R.id.fabBtnShowDialpad->{

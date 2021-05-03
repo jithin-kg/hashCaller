@@ -67,7 +67,7 @@ class IndividualCallLogActivity : AppCompatActivity(), IndividualCallLogAdapter.
             CallLog.Calls.CONTENT_FILTER_URI,
             Uri.encode(num)
         );
-        viewmodel = ViewModelProvider(this, IndividualCallLogInjectorUtil.provideDialerViewModelFactory(this, lifecycleScope, URI)).get(
+        viewmodel = ViewModelProvider(this, IndividualCallLogInjectorUtil.provideDialerViewModelFactory(applicationContext, lifecycleScope, URI)).get(
             IndividualCallViewModel::class.java)
 
     }

@@ -34,7 +34,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding = ActivityBlockManageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewmodel = ViewModelProvider(this, BlockSettingsInjectorUtil.provideContactsViewModelFactory(this)).get(
+        viewmodel = ViewModelProvider(this, BlockSettingsInjectorUtil.provideContactsViewModelFactory(applicationContext)).get(
             BlockSettingsViewModel::class.java)
         toggleRequestScreeningRoleBtn()
         initListeners()

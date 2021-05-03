@@ -97,7 +97,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     var layoutBottomSheet: ConstraintLayout? = null
     private lateinit var dialerFragment: DialerFragment
-    private lateinit var viewmodel: CallContainerViewModel
+    private  var __viewmodel: CallContainerViewModel? = null
+    private  val viewmodel get() = __viewmodel!!
     private lateinit var sharedUserInfoViewmodel: UserInfoViewModel
     private  var lastOperationPerformed: Int ? = null
     private lateinit var bottomSheetDialog: BottomSheetDialog
@@ -377,7 +378,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context, lifecycleScope)).get(
+        __viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope)).get(
             CallContainerViewModel::class.java)
         sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
             UserInfoViewModel::class.java
@@ -431,6 +432,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         Log.d(TAG, "onDestroyView: ")
 //        viewmodel.callLogTableData?.removeObserver(this)
         _binding = null
+        __viewmodel = null
     }
 
 
@@ -444,7 +446,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                    30
 //                )
 //            addItemDecoration(topSpacingDecorator)
-            callLogAdapter = CallLogAdapter(context,this@CallFragment, this@CallFragment) {
+            callLogAdapter = CallLogAdapter(context.applicationContext,this@CallFragment, this@CallFragment) {
 
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
             adapter = callLogAdapter
@@ -1110,7 +1112,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      */
     fun clearMarkeditems() {
         if(checkContactPermission()){
-            if(this::viewmodel.isInitialized){
+            if(__viewmodel!=null){
                 viewmodel.clearMarkedItems()
                 lifecycleScope.launchWhenStarted {
                     for(position in viewmodel.markedItemsPositions){
