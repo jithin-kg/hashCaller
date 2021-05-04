@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             Manifest.permission.READ_CONTACTS,
             CALL_PHONE,
             READ_PHONE_STATE,
-            ANSWER_PHONE_CALLS,
+            ANSWER_PHONE_CALLS
 
         )
     }

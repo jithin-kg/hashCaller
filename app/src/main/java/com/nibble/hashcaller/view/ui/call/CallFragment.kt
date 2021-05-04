@@ -231,7 +231,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun observeCallLogFromDb() {
         this.viewmodel.callLogTableData!!.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observeCallLogFromDb: size ${it.size}")
             callLogAdapter?.submitCallLogs(it)
         })
 

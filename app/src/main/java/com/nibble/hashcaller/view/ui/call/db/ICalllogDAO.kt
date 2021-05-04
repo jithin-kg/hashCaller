@@ -19,8 +19,11 @@ interface ICallLogDAO {
     @Query("DELETE from call_log WHERE id=:id")
     suspend fun delete(id: Long)
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser ORDER BY dateInMilliseconds DESC ")
-    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser: Boolean = false): LiveData<MutableList<CallLogTable>>
+    @Query("SELECT * FROM call_log WHERE (isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser )  AND spamCount <=:spamLimit ORDER BY dateInMilliseconds DESC ")
+    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser: Boolean = false, spamLimit: Long = SPAM_THREASHOLD): LiveData<MutableList<CallLogTable>>
+
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser  AND name!=''  AND spamCount <=:spamLimit  ORDER BY dateInMilliseconds DESC LIMIT 10")
+    suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false, spamLimit: Long = SPAM_THREASHOLD) : MutableList<CallLogTable>
 
     @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
     suspend fun getAllCallLog(): MutableList<CallLogTable>
@@ -51,8 +54,7 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE numberFormated =:num")
     suspend fun markAsDeleted(num:String, isDeleted:Boolean = true)
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser  AND name!='' ORDER BY dateInMilliseconds DESC LIMIT 10")
-    suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false) : MutableList<CallLogTable>
+
 
     @Query("SELECT * FROM call_log WHERE numberFormated LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
     suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
@@ -60,7 +62,7 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount, color =:color WHERE numberFormated =:contactAddress")
     suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true, color:Int = TYPE_SPAM)
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser AND spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser OR spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")
     fun getSpamCallLogLivedata(isDeleted: Boolean = false, isReportedByUser: Boolean = true, spamLimit: Long = SPAM_THREASHOLD):LiveData<MutableList<CallLogTable>>
 
 
