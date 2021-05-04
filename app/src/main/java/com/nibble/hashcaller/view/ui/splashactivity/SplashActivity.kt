@@ -85,7 +85,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         rcfirebaseAuth = FirebaseAuth.getInstance()
         initViewModel()
-        //Start home activity
 //         close splash activity
         if (checkPermission()) {
             firebaseAuthListener()
@@ -208,11 +207,6 @@ class SplashActivity : AppCompatActivity() {
 
                     saveToken(idToken) //save token to sharedpref
 
-                    //check if we have a loggedInstatus in sharedPreference
-//                    val loggedIn = sharedPreferences.getBoolean("IS_LOGGEDIN", false)
-
-//                     if(!loggedIn){
-                    //go to the activity after saving the token
                     if(!isUserInfoExistInDb()){
                         //check in firebase
 
@@ -276,6 +270,7 @@ class SplashActivity : AppCompatActivity() {
     }
     private fun startMainActivity() {
         val i = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(i)
         finish()
     }
@@ -501,6 +496,8 @@ class SplashActivity : AppCompatActivity() {
         if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
             rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
         }
+
+        _dataStoreViewModel = null
         _userInfoViewModel = null
         super.onDestroy()
 

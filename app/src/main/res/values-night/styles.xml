@@ -18,8 +18,8 @@
               so that it is visible when layout colorPrimaryDark is white-->
         <item name="android:windowLightStatusBar">false</item>
         <!--        end -->
-
     </style>
+
 
     <style name="chat_timings">
 

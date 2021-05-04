@@ -4,12 +4,15 @@ package com.nibble.hashcaller.repository.contacts
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.contact.ContactsUploadResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EncryptorObject
+import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import retrofit2.Response
 
 import java.io.IOException
@@ -51,36 +54,22 @@ class ContactsNetworkRepository (private val context: Context){
 //            list.add("hi")
         var token = ""
         try {
-            decryptor = Decryptor()
-            token = decryptor?.decryptData(
-                SAMPLE_ALIAS,
-                EncryptorObject.encryption,
-                EncryptorObject.iv
-            ).toString()
+//            decryptor = Decryptor()
+            val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+            val tokenManager = TokenManager(sp, DataStoreRepository(context))
+            token = tokenManager.getToken()
+//            token = decryptor?.decryptData(
+//                SAMPLE_ALIAS,
+//                EncryptorObject.encryption,
+//                EncryptorObject.iv
+//            ).toString()
 
-        } catch (e: UnrecoverableEntryException) {
+        } catch (e: Exception) {
             Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: NoSuchAlgorithmException) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: KeyStoreException) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: NoSuchPaddingException) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: NoSuchProviderException) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: IOException) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: InvalidKeyException) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        } catch (e: IllegalBlockSizeException) {
-            e.printStackTrace()
-        } catch (e: BadPaddingException) {
-            e.printStackTrace()
-        } catch (e: InvalidAlgorithmParameterException) {
-            e.printStackTrace()
         }
 
 
+        return retrofitService?.uploadContacts(contacts, token)
 
 
 //        val decryptFromStringToke = decryptor.decryptFromStringToke(SAMPLE_ALIAS, tkn.toString())
@@ -107,7 +96,6 @@ class ContactsNetworkRepository (private val context: Context){
 //            Log.d(TAG, "uploadContacts:failure ")
 //        }
 
-        return retrofitService?.uploadContacts(contacts, token)
     }
     companion object{
         private const val TAG = "__ContactsNetworkRepository"

@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_RESULT_CODE
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.activity_permission_request.*
@@ -73,13 +74,14 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
         // EasyPermissions handles the request result.
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
+    @SuppressLint("LongLogTag")
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         Log.d(TAG, "onPermissionsDenied: ")
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        val i = Intent()
-        setResult(PERMISSION_RESULT_CODE, i)
+        val i = Intent(this, MainActivity::class.java)
+        startActivity(i)
         finish()
     }
 

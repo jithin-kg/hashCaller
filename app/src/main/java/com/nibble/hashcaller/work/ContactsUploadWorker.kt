@@ -59,6 +59,7 @@ val countryCodeHelper = CountrycodeHelper(context)
                     val countryCode = countryCodeHelper.getCountrycode()
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                     val contactsNetworkRepository = ContactsNetworkRepository(context)
+
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()

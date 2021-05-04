@@ -175,15 +175,15 @@
         <activity android:name=".view.ui.splashactivity.SplashActivity"
             android:launchMode="singleInstance"
             >
-            <meta-data
-                android:name="com.google.android.safetynet.ATTEST_API_KEY"
-                android:value="@string/safety_net_api_key" />
+<!--            <meta-data-->
+<!--                android:name="com.google.android.safetynet.ATTEST_API_KEY"-->
+<!--                android:value="@string/safety_net_api_key" />-->
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".view.ui.contacts.individualContacts.IndividualCotactViewActivity"
@@ -236,7 +236,17 @@
             android:name=".view.ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/splashScreenTheme"
-            android:windowSoftInputMode="adjustPan" /> <!-- Service that delivers messages from the phone "quick response" -->
+            android:windowSoftInputMode="adjustPan" > <!-- Service that delivers messages from the phone "quick response" -->
+            <meta-data
+                android:name="com.google.android.safetynet.ATTEST_API_KEY"
+                android:value="@string/safety_net_api_key" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service
             android:name=".view.ui.sms.services.HeadlessSmsSendService"
             android:exported="true"

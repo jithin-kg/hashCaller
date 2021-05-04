@@ -49,6 +49,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
+import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
+import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
@@ -56,12 +58,15 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
+import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
@@ -77,6 +82,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
+import com.nibble.hashcaller.view.ui.splashactivity.SplashActivity
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -84,6 +90,7 @@ import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.ContactsAddressLocalWorker
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.coroutines.launch
@@ -127,50 +134,94 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     //    private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    private var savedState:Bundle? = null
+    private var metadata:FirebaseUserMetadata?= null;
+    private var _dataStoreViewModel: DataStoreViewmodel? = null
+    private val dataStoreViewModel  get() = _dataStoreViewModel!!
     ///////////////////////////splash ////////////////////////////
-
     private val RC_SIGN_IN = 1
 
     private lateinit var rcfirebaseAuth: FirebaseAuth
     private lateinit var rcAuthStateListener: FirebaseAuth.AuthStateListener
-    //    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-//    private val userCollectionRef: CollectionReference = db.collection("Users")
     var user: FirebaseUser? = null
-    private lateinit var encryptor: EnCryptor
-    private lateinit var decryptor: Decryptor
-    private val SAMPLE_ALIAS = "SOMETHINGNEW"
-//    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var key : ByteArray
-    private var metadata: FirebaseUserMetadata?= null;
-    private var savedState:Bundle? = null
+
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.AppTheme)
+
         savedState = savedInstanceState
+        initDataStoreViewmodel()
+
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        if (checkPermission()) {
+            firebaseAuthListener()
+            initMainActivityComponents(savedState)
 
 
+        } else {
+            val i = Intent(this, PermissionRequestActivity::class.java)
+//            startActivityForResult(i, PERMISSION_REQUEST_CODE)
+            startActivity(i)
+            finish()
+        }
 
 
         //Start home activity
 //         close splash activity
 
-        initMainActivityComponents(savedInstanceState)
 
 
 
     }
+    private fun checkPermission(): Boolean {
+        return EasyPermissions.hasPermissions(this,
+            Manifest.permission.READ_CONTACTS
+        )
+    }
+    private fun firebaseAuthListener() {
+        rcAuthStateListener =
+            FirebaseAuth.AuthStateListener { firebaseAuth ->
+                user = firebaseAuth.currentUser
+                //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
+                if (user != null) {
+                    //user is signed in
+                    checkUserInfoInDb()
 
+                } else {
+                    // user is signed out
+                    onSingnedOutcleanUp()
+
+                }
+            }
+    }
+    private fun onSingnedOutcleanUp() {
+
+        val i = Intent(this, ActivityPhoneAuth::class.java)
+//        startActivityForResult(i, RC_SIGN_IN)
+        startActivity(i)
+        finish()
+    }
+    private fun checkUserInfoInDb() {
+        dataStoreViewModel.getToken().observe(this, Observer {
+            if(!it.isNullOrEmpty()){
+//                initMainActivityComponents(savedState)
+
+            }else{
+                onSingnedOutcleanUp()
+            }
+        })
+    }
     private fun initMainActivityComponents(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
+
         hideKeyboard(this)
 //        setStatusBarColor(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        listenUiEvents()
+//        listenUiEvents()
         requestAlertWindowPermission()
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(applicationContext, R.color.textColor);
@@ -194,6 +245,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         observeUserInfo()
         initListeners()
 
+    }
+
+    private fun initDataStoreViewmodel() {
+        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(this)).get(
+            DataStoreViewmodel::class.java)
     }
 
     private fun initListeners() {
@@ -236,7 +292,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
+    override fun onDestroy() {
+        viewModelStore.clear()
+        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
+            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
+        }
 
+        _dataStoreViewModel = null
+//        _userInfoViewModel = null
+        super.onDestroy()
+
+
+    }
     private fun listenUiEvents() {
 //       uiEvent.observe(this, {
 //            when (it) {
@@ -437,11 +504,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.d(TAG, "onSaveInstanceState: ")
-        supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
-        supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
-        supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
-        supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
+            Log.d(TAG, "onSaveInstanceState: ")
+            supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
+            supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
+            supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
+            supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
+
 //        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
 //        if(this.searchFragment!=null)
 //            if(this.searchFragment?.isAdded!!)
@@ -527,7 +595,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     //called from dialerfragment, important call this function only from dialer fragment
     fun hideBottomNav(){
-        Log.d(TAG, "hideBottomNav: saved instance state is $savedState")
+//        Log.d(TAG, "hideBottomNav: saved instance state is $savedState")
             if(savedState!=null && dialerFragment.isVisible){
                 Log.d(TAG, "hideBottomNav: dialer frargment is visible")
                 bottomNavigationView.beGone()
@@ -853,13 +921,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    }
 
     override fun onPostResume() {
+        super.onPostResume()
         Log.i(TAG, "Onresume")
         //        checkPermission();
 
 //        if(getCurrentTheme() == 1){
 //            setcurrentThemeInSharedPref()
 //        }
-        super.onPostResume()
+        if (checkPermission()) {
+            if(::rcAuthStateListener.isInitialized)
+                rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
+        }
         //        firebaseHelper.addFirebaseAuthListener();
     }
 
@@ -912,6 +984,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onStart() {
         Log.i(TAG, "OnStart")
         super.onStart()
+        this.user = rcfirebaseAuth!!.currentUser
+
         //        checkPermission();
     }
 
@@ -1068,7 +1142,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     Log.d(TAG, "onActivityResult: user does not set as the defaul screening app")
                 }
             }
-            else -> {}
+            PERMISSION_REQUEST_CODE ->{
+                firebaseAuthListener()
+
+            }
+
         }
     }
 
