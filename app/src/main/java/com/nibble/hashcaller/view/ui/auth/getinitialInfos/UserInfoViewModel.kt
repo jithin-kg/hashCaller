@@ -36,7 +36,7 @@ class UserInfoViewModel(
 
 
     fun saveUserInfoInLocalDb(singupResponse: SingupResponse):LiveData<Int> = liveData {
-        viewModelScope.launch {
+        try {
             val user = UserInfo(null)
             val result = singupResponse.result
 //            user.email = result.email
@@ -45,13 +45,23 @@ class UserInfoViewModel(
             user.phoneNumber = "2"
             user.photoURI = result.image?:""
             userNetworkRepository.saveUserInfoInLocalDb(user)
-        }.join()
-        emit(OPERATION_COMPLETED)
+            emit(OPERATION_COMPLETED)
+        }catch (e:Exception){
+
+            Log.d(TAG, "saveUserInfoInLocalDb: $e")
+        }
+           
 //        userNetworkRepository.saveUserInfoInLocalDb(userInfo = )
     }
 
     fun setContactsHashMap() = viewModelScope.launch {
 //            contactsRepository.setContactsMetaInfoHashMap()
+    }
+
+    fun getUserInfo():UserInfo? {
+        var res :UserInfo? = null
+
+        return res
     }
 
     companion object{
@@ -65,24 +75,25 @@ class UserInfoViewModel(
         super.onCleared()
     }
 
-    fun getUserInfoFromServer(): LiveData<SingupResponse> = liveData {
-        viewModelScope.launch {
+    fun getUserInfoFromServer(encodeTokenString: String): LiveData<SingupResponse> = liveData {
             try {
-                val response =  userNetworkRepository.getUserInfoFromServer()
+                val response =  userNetworkRepository.getUserInfoFromServer(encodeTokenString)
                 Log.d(TAG, "getUserInfoFromServer: response: $response")
                 Log.d(TAG, "getUserInfoFromServer: responsebody: ${response.body()}")
                 if(response.isSuccessful){
                     if(response.body()!=null)
-                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
                         emit(response.body()!!)
-                    }
+//                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
+//                        emit(response.body()!!)
+//                    }
+                }else{
+                    Log.d(TAG, "getUserInfoFromServer: ${response.errorBody()}")
                 }
 
             }catch (e:Exception){
                 Log.d(TAG, "getUserInfoFromServer: exception $e")
 
             }
-        }
     }
 
     fun insertUserInfo(userInfo: GetUserInfoResponse?) = viewModelScope.launch{
@@ -102,13 +113,11 @@ class UserInfoViewModel(
 
         }
 
-
 //        val requestFile: okhttp3.RequestBody? =
 //            imageBytes?.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, imageBytes.size)
 //        body = requestFile?.let { MultipartBody.Part.createFormData("image", "image.jpg", it) }
 
     }
-
     fun processImage(context: Context, selectedImageUri: Uri?, imagePickerHelper: ImagePickerHelper) {
         imagePickerHelper.processImage(context,selectedImageUri)
 

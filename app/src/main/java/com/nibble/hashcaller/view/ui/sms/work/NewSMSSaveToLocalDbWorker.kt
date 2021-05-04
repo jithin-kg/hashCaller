@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
@@ -34,7 +35,8 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 spamListDAO,
                 smssendersInfoDAO,
                 mutedSendersDAO,
-                smsThreadsDAO
+                smsThreadsDAO,
+                DataStoreRepository(context)
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
             var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()

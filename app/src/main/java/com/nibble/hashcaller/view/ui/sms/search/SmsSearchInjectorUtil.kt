@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.sms.search
 
 import android.content.Context
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
@@ -21,7 +22,8 @@ object SmsSearchInjectorUtil {
             spamListDAO,
             smssendersInfoDAO,
             mutedSendersDAO,
-            smsThreadsDAO
+            smsThreadsDAO,
+            DataStoreRepository(context)
         ) }
         val smsSearchRepository =
             SMSSearchRepository(smsSearchQueriesDAO!!)

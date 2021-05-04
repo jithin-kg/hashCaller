@@ -20,13 +20,14 @@ class CipherNetworkRepository (private val context: Context){
         retrofitService = RetrofitClient.createaService(IuserService::class.java)
 
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-        val tokenManager = TokenManager(sp)
-        val token = tokenManager.getToken()
+//        val tokenManager = TokenManager(sp)
+//        val token = tokenManager.getToken()
 
-        val response = retrofitService?.getCipher(token)
+//        val response = retrofitService?.getCipher(token)
         Log.d(TAG, "getCipher: ")
-        Log.d(TAG, "signup: ${response?.body()?.cipher}")
-        return response
+//        Log.d(TAG, "signup: ${response?.body()?.cipher}")
+//        return response
+        return null
     }
     companion object{
         private const val TAG = "__CipherNetworkRepository"

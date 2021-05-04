@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Telephony
 import android.util.Log
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
@@ -31,7 +32,8 @@ class SMScontainerRepository(
     val context: Context,
     val smsSenderInfoDAO: SMSSendersInfoFromServerDAO,
     val mutedSendersDAO: IMutedSendersDAO?,
-    val blockedOrSpamSenderDAO: IBlockedOrSpamSendersDAO?
+    val blockedOrSpamSenderDAO: IBlockedOrSpamSendersDAO?,
+    private val dataStoreRepostitory:DataStoreRepository
 ) {
 
     private var retrofitService:ISpamService? = null
@@ -54,7 +56,7 @@ class SMScontainerRepository(
          retrofitService = RetrofitClient.createaService(ISpamService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
+        val tokenManager = TokenManager(sp, dataStoreRepostitory )
         val token = tokenManager.getToken()
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
@@ -126,7 +128,7 @@ class SMScontainerRepository(
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
+        val tokenManager = TokenManager(sp, dataStoreRepostitory)
         val token = tokenManager.getToken()
         return retrofitService?.report(callerInfo, token)
     }

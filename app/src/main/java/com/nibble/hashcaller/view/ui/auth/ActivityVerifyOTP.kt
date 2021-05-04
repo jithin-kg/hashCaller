@@ -3,10 +3,14 @@ package com.nibble.hashcaller.view.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -14,6 +18,14 @@ import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
+import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.utils.auth.EnCryptor
+import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
 
@@ -24,6 +36,14 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var auth: FirebaseAuth
+    private  var _userInfoViewModel: UserInfoViewModel? = null
+    private val userInfoViewModel get() = _userInfoViewModel!!
+    private var _dataStoreViewmodel: DataStoreViewmodel? = null
+    private val dataStoreViewmodel get() = _dataStoreViewmodel!!
+    private lateinit var encryptor: EnCryptor
+    private val SAMPLE_ALIAS = "SOMETHINGNEW"
+
+
     var code: String? = null
 
     // [END declare_auth]
@@ -33,6 +53,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_testauth)
+        initViewModel()
 
         phoneNumber = intent.getStringExtra("phoneNumber")
 
@@ -51,10 +72,17 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     }
 
 
+    private fun initViewModel() {
+        _userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(applicationContext)).get(
+            UserInfoViewModel::class.java)
 
+        _dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+            DataStoreViewmodel::class.java
+        )
+    }
     private fun registerCallback() {
-        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
+        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 // This callback will be invoked in two situations:
                 // 1 - Instant verification. In some cases the phone number can be instantly
@@ -116,7 +144,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                Log.d(TAG, "onCodeSent:$verificationId")
 
                 // Save verification ID and resending token so we can use them later
                 storedVerificationId = verificationId
@@ -136,8 +163,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
-//        updateUI(currentUser)
-        Log.d(TAG, "onStart: current user $currentUser")
         // [START_EXCLUDE]
         if (verificationInProgress && validatePhoneNumber()) {
 //            startPhoneNumberVerification(binding.fieldPhoneNumber.text.toString())
@@ -232,7 +257,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         return true
     }
     companion object {
-        const val TAG = "__testauth"
+        const val TAG = "__ActivityVerifyOTP"
         private const val KEY_VERIFY_IN_PROGRESS = "key_verify_in_progress"
         private const val STATE_INITIALIZED = 1
         private const val STATE_VERIFY_FAILED = 3
@@ -247,7 +272,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
 
             R.id.verifyManually ->{
-
                 verifycode(otpview.text.toString())
             }
         }
@@ -292,6 +316,111 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 //        setPinInView(code)
         val i = Intent()
         i.putExtra("RC_SIGN_IN", 1)
+        val user = Firebase.auth.currentUser
+//        val userTokenCallBack = user?.let { UserTokenCallBack(it) }
+        user!!.getIdToken(true)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    var token = task.result?.token
+                    // Send token to your backend via HTTPS
+                    if(!token.isNullOrEmpty()){
+                        encryptor = EnCryptor()
+                        val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
+                        val encodeTokenString = Base64.encodeToString(
+                            encryptedText,
+                            Base64.DEFAULT
+                        )
+                        dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
+                            if (it == OPERATION_COMPLETED) {
+                            //        setResult(1, i)
+                            //        finish()
+                               checkUserInfoInServer(encodeTokenString)
+                            }
+                        })
+                    }
+
+                }else{
+                    Log.d(TAG, "onSignedInInitialize:${task.exception}")
+                }
+            }
+//        userTokenCallBack?.onSignedInInititalize { token, exception ->
+//            if(!token.isNullOrEmpty()){
+//                encryptor = EnCryptor()
+//                val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
+//                val encodeTokenString = Base64.encodeToString(
+//                    encryptedText,
+//                    Base64.DEFAULT
+//                )
+//                dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
+//                    if (it == OPERATION_COMPLETED) {
+////        setResult(1, i)
+////        finish()
+//                userInfoViewModel.getUserInfoFromServer(encodeTokenString).observe(this, Observer { userinfo ->
+//                    if(userinfo!= null){
+//                        if(!userinfo.result.firstName.isNullOrEmpty()){
+//                            //user exists in server
+//                            userInfoViewModel.saveUserInfoInLocalDb(userinfo).observe(this, Observer { status ->
+//                               when(status){
+//                                   OPERATION_COMPLETED -> {
+//                                     startMainActivity()
+//                                   }
+//                               }
+//                            })
+//                        }else{
+//                            //user info not exists in server
+//                            startGetUserInfoActivity()
+//                        }
+//                    }
+//                })
+//                    }
+//                })
+//            }
+//
+//
+//        }
+//
+//        setResult(1, i)
+//        finish()
+    }
+
+    private fun checkUserInfoInServer(encodeTokenString: String) {
+        lifecycleScope.launchWhenStarted {
+            userInfoViewModel.getUserInfoFromServer(encodeTokenString).observe(this@ActivityVerifyOTP, Observer { userinfo ->
+                if(userinfo!= null){
+                    if(!userinfo.result.firstName.isNullOrEmpty()){
+                        //user exists in server
+                        userInfoViewModel.saveUserInfoInLocalDb(userinfo).observe(this@ActivityVerifyOTP, Observer { status ->
+                            when(status){
+                                OPERATION_COMPLETED -> {
+                                    startMainActivity()
+                                }
+                            }
+                        })
+                    }else{
+                        //user info not exists in server
+                        startGetUserInfoActivity()
+                    }
+                }
+            })
+        }
+    }
+
+    private fun startMainActivity() {
+        val i = Intent(this, MainActivity::class.java)
+        startActivity(i)
+        finish()
+    }
+
+    private fun startGetUserInfoActivity() {
+        Log.d(TAG, "startGetUserInfoAcitvity: called")
+        val i = Intent(this, GetInitialUserInfoActivity::class.java)
+        startActivity(i)
+        finish()
+
+    }
+
+    private fun startSplashActivity() {
+        val i = Intent()
         setResult(1, i)
         finish()
     }

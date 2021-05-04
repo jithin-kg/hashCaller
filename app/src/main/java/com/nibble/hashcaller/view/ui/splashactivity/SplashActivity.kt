@@ -11,19 +11,24 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
-import com.nibble.hashcaller.datastore.PreferencesKeys
+import com.nibble.hashcaller.network.user.GetUserInfoResponse
+import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
-import com.nibble.hashcaller.utils.auth.FirebaseListnerHelper
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
@@ -39,18 +44,17 @@ import javax.crypto.spec.SecretKeySpec
 //TODO I should check this in each activity whether the use is logged in or not,
 //make seperate helper class for this checking
 
-class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthStateListener {
+class SplashActivity : AppCompatActivity() {
 
     private val TAG = "__SplashActivity"
 
     private val RC_SIGN_IN = 1
 
     private lateinit var rcfirebaseAuth: FirebaseAuth
-//    private lateinit var rcAuthStateListener: AuthStateListener
+    private lateinit var rcAuthStateListener: AuthStateListener
     //    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 //    private val userCollectionRef: CollectionReference = db.collection("Users")
     var user: FirebaseUser? = null
-    private lateinit var firebaseAuthListenerHelper : FirebaseListnerHelper
     private lateinit var encryptor: EnCryptor
     private lateinit var decryptor: Decryptor
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
@@ -63,59 +67,74 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
         private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
 
         private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
-        private  var __userInfoViewModel: SplashActivityViewModel? = null
-        private  val userInfoViewModel get() =  __userInfoViewModel!!
-        private  var __dataStoreViewmodel: DataStoreViewmodel? = null
-        private val dataStoreViewmodel get() =  __dataStoreViewmodel!!
+        private  var _userInfoViewModel: UserInfoViewModel? = null
+        private  val userInfoViewModel get() = _userInfoViewModel!!
+
+        private var _dataStoreViewModel: DataStoreViewmodel? = null
+        private val dataStoreViewModel  get() = _dataStoreViewModel!!
 //    private lateinit var skey:SecretKey
     }
     override fun onPause() {
         super.onPause()
-        if(::rcfirebaseAuth.isInitialized && ::firebaseAuthListenerHelper.isInitialized){
-            rcfirebaseAuth.removeAuthStateListener(firebaseAuthListenerHelper.rcAuthStateListener)    }
+        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
+            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
         }
-    
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-                initViewModel()
         rcfirebaseAuth = FirebaseAuth.getInstance()
-        firebaseAuthListenerHelper = FirebaseListnerHelper(this )
-        observetoken()
+        initViewModel()
+        //Start home activity
+//         close splash activity
         if (checkPermission()) {
-            firebaseAuthListenerHelper.firebaseAuthListener()
+            firebaseAuthListener()
         } else {
             val i = Intent(this@SplashActivity, PermissionRequestActivity::class.java)
             startActivityForResult(i, PERMISSION_REQUEST_CODE)
         }
-    }
-
-    private fun observetoken() {
-//        dataStoreViewmodel.getToken().observe(this, Observer {
-//            if(!it.isNullOrEmpty()){
-//                startMainActivity()
-//            }
-//        })
-
-
-        dataStoreViewmodel.getToken().observe(this, Observer {
-         if(!it.isNullOrEmpty()){
-             startMainActivity()
-         }
-        })
 
     }
+
     private fun initViewModel() {
-        __dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
-            DataStoreViewmodel::class.java
-        )
+        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(this)).get(
+            DataStoreViewmodel::class.java)
 
-        __userInfoViewModel = ViewModelProvider(this, SplashActivityInjectorUtil.provideViewModelFactory(applicationContext)).get(
-            SplashActivityViewModel::class.java)
     }
+
+    private fun firebaseAuthListener() {
+        rcAuthStateListener =
+            AuthStateListener { firebaseAuth ->
+                user = firebaseAuth.currentUser
+                //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
+                if (user != null) {
+                    //user is signed in
+                  checkUserInfoInDb()
+
+                } else {
+                    // user is signed out
+                    onSingnedOutcleanUp()
+
+                }
+            }
+    }
+
+    private fun checkUserInfoInDb() {
+      dataStoreViewModel.getToken().observe(this, Observer {
+          if(!it.isNullOrEmpty()){
+              startMainActivity()
+          }else{
+              onSingnedOutcleanUp()
+          }
+      })
+    }
+
+
     private fun  saveToken(idToken: String?) {
         try {
             encryptor = EnCryptor()
             val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,idToken.toString())
+
             /**
              * Base64.encode method helps to get the encrypted byte array to readable string
              * which we want to save in sharedPrefrences
@@ -125,10 +144,16 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
                 encryptedText,
                 Base64.DEFAULT
             )
-            dataStoreViewmodel.saveToken(encodeTokenString)
-
 //        Base64.decode(encodeTokenString, Base64.DEFAULT)
 
+
+//            Saving encryped token in sharedPreferences
+            sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+
+            editor.putString(SHARED_PREFERENCE_TOKEN_KEY, encodeTokenString)
+
+            editor.commit()
 
 
         } catch (e: UnrecoverableEntryException) {
@@ -174,6 +199,81 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
     }
 
 
+    private fun onSignedInInitialize() {
+        user!!.getIdToken(true)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    var idToken = task.result?.token
+                    // Send token to your backend via HTTPS
+
+                    saveToken(idToken) //save token to sharedpref
+
+                    //check if we have a loggedInstatus in sharedPreference
+//                    val loggedIn = sharedPreferences.getBoolean("IS_LOGGEDIN", false)
+
+//                     if(!loggedIn){
+                    //go to the activity after saving the token
+                    if(!isUserInfoExistInDb()){
+                        //check in firebase
+
+//                        val isNewUserInFirebase = isNewUserInFirebase()
+//
+//                        if(isNewUserInFirebase){
+//                            Log.d(TAG, "onSignedInInitialize:checkIfNewUser Returned true")
+//                            startGetUserInfoAcitvity()
+//
+//
+//                        }
+//                        else{
+//                            if(!isUserInfoExistInDb()){
+
+//                                 val i = Intent(this, GetInitialUserInfoActivity::class.java)
+//                                 startActivity(i)
+                        //check user exist in server
+//                        getUserInfoFromServer()
+//                                if(getUserInfoFromServer() == null){
+//                                    startGetUserInfoAcitvity()
+//                                }else {
+//                                    val i = Intent(this, MainActivity::class.java)
+//                                    startActivity(i)
+//                                    finish()
+//                                }
+
+
+//                            }else{
+//                                //already existing user in server
+//                                saveToSharedPref(true)
+//                                //if ther is no user info in local db navigate to getInitial info activity
+//                                startMainActivity()
+//
+//                            }
+//                        }
+
+                    }else{
+                        //user info exist in db
+//                        startMainActivity()
+                    }
+
+//                     }
+
+//                     else{
+//                         //user logged in
+//                         Log.d(TAG, "onSignedInInitialize: userLogged in  ")
+//
+//                         val i = Intent(this, MainActivity::class.java)
+//                         startActivity(i)
+//                         finish()
+//                     }
+
+//                    generateEncryptedKey()
+                }
+//                else {
+//                    // Handle error -> task.getException();
+//                }
+            }
+
+
+    }
     private fun startMainActivity() {
         val i = Intent(this, MainActivity::class.java)
         startActivity(i)
@@ -181,56 +281,40 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
     }
 
     private fun getUserInfoFromServer() {
-        userInfoViewModel.getUserInfoFromServer().observe(this, Observer {
-            if(it!=null){
-                if(it.result!=null){
-                    if(!it.result.firstName.isNullOrEmpty()){
-                        userInfoViewModel.saveUserInfo(it.result).observe(this, Observer {
-                            when(it){
-                                OPERATION_COMPLETED ->{
-
-                                    val editor = sharedPreferences.edit()
-                                    editor.putBoolean("isUserInfoAvailable", true)
-                                    editor.commit()
-                                    startMainActivity()
-                                }
-                            }
-                        })
-                    }else{
-                        startGetUserInfoAcitvity()
-                    }
-                }
-            }
-        })
+//        userInfoViewModel.getUserInfoFromServer().observe(this, Observer {
+//            if(it!=null){
+//                if(it.result!=null){
+//                    if(!it.result.firstName.isNullOrEmpty()){
+//                        userInfoViewModel.saveUserInfo(it.result).observe(this, Observer {
+//                            when(it){
+//                                OPERATION_COMPLETED ->{
+//
+//                                    val editor = sharedPreferences.edit()
+//                                    editor.putBoolean("isUserInfoAvailable", true)
+//                                    editor.commit()
+//                                    startMainActivity()
+//                                }
+//                            }
+//                        })
+//                    }else{
+//                        startGetUserInfoAcitvity()
+//                    }
+//                }
+//            }
+//        })
 
 
 
     }
 
-    override fun onSignedInInitialize(currentUser: FirebaseUser) {
-        user = currentUser
-        user!!.getIdToken(true)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    var idToken = task.result?.token
-                    // Send token to your backend via HTTPS
-                    saveToken(idToken)
 
-                    if(!isUserInfoExistInDb()){
-                        getUserInfoFromServer()
+    private fun onSingnedOutcleanUp() {
 
-                    }else{
-
-                        startMainActivity()
-                    }
-                }
-            }
+        val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
+//        startActivityForResult(i, RC_SIGN_IN)
+        startActivity(i)
+        finish()
     }
-
-     override fun onSingnedOutcleanUp() {
-         val i = Intent(this@SplashActivity, ActivityPhoneAuth::class.java)
-         startActivityForResult(i, RC_SIGN_IN)
-     }
 
     //This is called after OTP verification
     override fun onActivityResult(
@@ -238,28 +322,32 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
         resultCode: Int,
         data: Intent?
     ) {
+
         var phoneNumber: String? = ""
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RC_SIGN_IN) {
-            Log.d(TAG, "onActivityResult: note this ")
-//            IdpResponse response = IdpResponse.fromResultIntent(data);
-//            if (resultCode == Activity.RESULT_OK) {
-            if(rcfirebaseAuth.currentUser!=null){
-                phoneNumber = rcfirebaseAuth?.currentUser?.phoneNumber
-                user = rcfirebaseAuth?.currentUser
-                val uid = user!!.uid
-
-//                onSignedInInitialize()
-            }
-
-
-        }
+//        if (requestCode == RC_SIGN_IN) {
+//            Log.d(TAG, "onActivityResult: note this ")
+////            IdpResponse response = IdpResponse.fromResultIntent(data);
+////            if (resultCode == Activity.RESULT_OK) {
+//            if(rcfirebaseAuth.currentUser!=null){
+//                phoneNumber = rcfirebaseAuth?.currentUser?.phoneNumber
+//                user = rcfirebaseAuth?.currentUser
+//                val uid = user!!.uid
+//
+////                onSignedInInitialize()
+//            }
+//
+//
+//
+//
+//        }
         if(requestCode == PERMISSION_REQUEST_CODE ){
             Log.d(TAG, "onActivityResult: Permission given")
-            firebaseAuthListenerHelper.firebaseAuthListener()
+            firebaseAuthListener()
         }
     }
+
 
     private fun isNewUserInFirebase(): Boolean {
         metadata = rcfirebaseAuth?.currentUser!!.metadata
@@ -273,11 +361,67 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
             return true;
         }
         return false
+
+
     }
+
     private fun isUserInfoExistInDb(): Boolean {
-        Log.d(TAG, "isNewUserInServer: ")
         return sharedPreferences.getBoolean("isUserInfoAvailable", false)
     }
+
+//        var isUserInfoExists = false
+//        val userInfo = UserInfoDTO()
+//        lifecycleScope.launchWhenStarted {
+//           val user =  userInfoViewModel.getUserInfo()
+//            if(user !=null){
+//                isUserInfoExists = true
+//            }
+//        }
+//
+//        return isUserInfoExists
+//        userInfoViewModel.upload(userInfo).observe(this, Observer {
+//            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
+//                val resMessage = resource.data?.body()?.message
+//                when (resource.status) {
+//
+//                    Status.SUCCESS -> {
+//                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
+//                            Log.d(TAG, "checkIfNewUser: no such user")
+//                            //This is a new user
+////                            val i = Intent(this, GetInitialUserInfoActivity::class.java)
+////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                            //set userLoggedIn = false in shared preference
+//
+//                            saveToSharedPref(false)
+//
+////                            startActivity(i)
+//
+//                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
+//                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
+////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+////                            //set userLogedIn = true in shared preferecce
+//                            saveToSharedPref(true)
+//                            status = true
+////                            applicationContext.startActivity(i)
+//
+//                        }
+//                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
+//                    }
+//                    Status.LOADING -> {
+//                        Log.d(TAG, "checkIfNewUser: Loading")
+//                    }
+//                    else -> {
+//                        Log.d(TAG, "checkIfNewUser: else $resource")
+//                        Log.d(TAG, "checkIfNewUser:error ")
+//                    }
+//
+//
+//                }
+//
+//            }
+//        })
+//        return status
+//    }
 
     private fun saveToSharedPref(b: Boolean) {
         sharedPreferences = getSharedPreferences(
@@ -293,7 +437,6 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
         val i = Intent(this, GetInitialUserInfoActivity::class.java)
         startActivity(i)
         finish()
-        
     }
     //todo if existing user get first and last name from server and save in db
 
@@ -354,19 +497,12 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
     }
 
     override fun onDestroy() {
-//        viewModelStore.clear()
-                super.onDestroy()
-        __userInfoViewModel = null
-        __dataStoreViewmodel = null
-        Log.d(TAG, "onDestroy: ")
-        if(::rcfirebaseAuth.isInitialized && ::firebaseAuthListenerHelper.isInitialized){
-
-            rcfirebaseAuth.removeAuthStateListener(firebaseAuthListenerHelper.rcAuthStateListener)
+        viewModelStore.clear()
+        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
+            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
         }
-//        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
-//            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
-//        }
-
+        _userInfoViewModel = null
+        super.onDestroy()
 
 
     }
@@ -375,8 +511,8 @@ class SplashActivity : AppCompatActivity(), FirebaseListnerHelper.IFirebaseAuthS
         super.onPostResume()
 
         if (checkPermission()) {
-//            if(::rcAuthStateListener.isInitialized)
-//                rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
+            if(::rcAuthStateListener.isInitialized)
+                rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
         }
     }
 }

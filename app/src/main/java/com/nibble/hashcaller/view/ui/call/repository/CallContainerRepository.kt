@@ -8,6 +8,7 @@ import android.provider.CallLog
 import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.network.RetrofitClient
@@ -38,7 +39,8 @@ class CallContainerRepository(
     val context: Context,
     val callerInfoFromServerDAO: CallersInfoFromServerDAO,
     val mutedCallersDAO: IMutedCallersDAO?,
-    private val callLogDAO: ICallLogDAO?
+    private val callLogDAO: ICallLogDAO?,
+    private val dataStoreRepository:DataStoreRepository
 ) {
 
     private var retrofitService:ICallService? = null
@@ -61,7 +63,7 @@ class CallContainerRepository(
         retrofitService = RetrofitClient.createaService(ICallService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
+        val tokenManager = TokenManager(sp,dataStoreRepository)
         val token = tokenManager.getToken()
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)

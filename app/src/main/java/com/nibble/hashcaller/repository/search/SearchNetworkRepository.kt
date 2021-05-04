@@ -3,6 +3,7 @@ package com.nibble.hashcaller.repository.search
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.search.ISearchService
@@ -15,7 +16,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.Exception
 
-class SearchNetworkRepository(private val context: Context){
+class SearchNetworkRepository(private val context: Context, private val dataStoreRepository: DataStoreRepository ){
 
     private var retrofitService:ISearchService? = null
     @SuppressLint("LongLogTag")
@@ -25,7 +26,7 @@ class SearchNetworkRepository(private val context: Context){
         try {
             retrofitService = RetrofitClient.createaService(ISearchService::class.java)
             val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-            val tokenManager = TokenManager(sp)
+            val tokenManager = TokenManager(sp, dataStoreRepository)
             val token = tokenManager.getToken()
             result =  retrofitService?.search(SearchDTO(phoneNum), token)
         }catch (e:Exception){
@@ -40,7 +41,7 @@ class SearchNetworkRepository(private val context: Context){
         retrofitService = RetrofitClient.createaService(ISearchService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
+        val tokenManager = TokenManager(sp, dataStoreRepository)
         val token = tokenManager.getToken()
 
         retrofitService!!.incrementTotalSpamCount(token)

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
@@ -55,7 +56,8 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 spamListDAO,
                 smssendersInfoDAO,
                 mutedSendersDAO,
-                smsThreadsDAO
+                smsThreadsDAO,
+                DataStoreRepository(context)
             )
          repository.fetchSMSForLivedata(null, false).apply {
             return this
@@ -94,7 +96,8 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 spamListDAO,
                 smssendersInfoDAO,
                 mutedSendersDAO,
-                smsThreadsDAO
+                smsThreadsDAO,
+                DataStoreRepository(context)
             )
         repository.markSMSAsRead(address)
     }

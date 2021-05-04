@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
@@ -42,7 +43,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         context,
         sMSSendersInfoFromServerDAO,
         mutedSendersDAO,
-        blockedOrSpamSenders
+        blockedOrSpamSenders,
+        DataStoreRepository(context)
     )
     private val smsTracker:NewSmsTrackerHelper = NewSmsTrackerHelper( repository, sMSSendersInfoFromServerDAO)
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
@@ -61,7 +63,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 spamListDAO,
                 smssendersInfoDAO,
                 mutedSendersDAO,
-                smsThreadsDAO
+                smsThreadsDAO,
+                DataStoreRepository(context)
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
@@ -70,7 +73,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 context,
                 smssendersInfoDAO,
                 mutedSendersDAO,
-                blockedOrSpamSenders
+                blockedOrSpamSenders,
+                DataStoreRepository(context)
             )
 
 

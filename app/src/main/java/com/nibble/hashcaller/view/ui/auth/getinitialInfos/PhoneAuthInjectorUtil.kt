@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
 import android.content.Context
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
 import com.nibble.hashcaller.utils.auth.TokenManager
@@ -18,7 +19,7 @@ object PhoneAuthInjectorUtil {
         val imageCompressor = ImageCompressor(context)
         val countryCodeHelper = CountrycodeHelper(context)
         val userNetworkRepository = UserNetworkRepository(
-            TokenManager(sp),
+            TokenManager(sp, DataStoreRepository(context)),
             userInfoDAO,
             senderInfoFromServerDAO,
             imageCompressor

@@ -13,6 +13,7 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
@@ -109,7 +110,8 @@ class SMSLocalRepository(
     private val spamListDAO: SpamListDAO?,
     val smssendersInfoDAO: SMSSendersInfoFromServerDAO?,
     private val mutedSendersDAO: IMutedSendersDAO?,
-    private val smsThreadsDAO: ISMSThreadsDAO?
+    private val smsThreadsDAO: ISMSThreadsDAO?,
+    private val dataStoreRepostiroy: DataStoreRepository
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -1746,7 +1748,7 @@ class SMSLocalRepository(
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
+        val tokenManager = TokenManager(sp, dataStoreRepostiroy)
         val token = tokenManager.getToken()
         return@withContext retrofitService?.report(callerInfo, token)
     }

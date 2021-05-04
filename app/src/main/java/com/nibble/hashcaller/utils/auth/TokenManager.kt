@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
+import com.nibble.hashcaller.datastore.DataStoreRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 import java.io.IOException
 import java.security.*
@@ -16,7 +20,7 @@ import javax.crypto.NoSuchPaddingException
  * This class healps to get encrypted token with iv from shared preferences
  * and return the  decrypted  token.
  */
-class TokenManager(private val sharedPreferences:SharedPreferences) {
+class TokenManager(private val sharedPreferences:SharedPreferences,private val dataStoreRepository: DataStoreRepository) {
 
 //    private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
@@ -28,12 +32,12 @@ class TokenManager(private val sharedPreferences:SharedPreferences) {
         private const val IVArrStart = 0
         private const val IVArrEnd = 12
     }
-     fun  getToken(): String {
+     suspend fun  getToken(): String {
         var token = ""
 //       applicationContext.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-        val stringTokenFromSharedPref = sharedPreferences.getString(SHARED_PREFERENCE_TOKEN_KEY, "")
-
-        val tokneByteOne = Base64.decode(stringTokenFromSharedPref, Base64.DEFAULT)
+//        val stringTokenFromSharedPref = sharedPreferences.getString(SHARED_PREFERENCE_TOKEN_KEY, "")
+          val encodedToken =  dataStoreRepository.getToken()
+        val tokneByteOne = Base64.decode(encodedToken, Base64.DEFAULT)
 
         val iv = tokneByteOne.copyOfRange(
             IVArrStart,

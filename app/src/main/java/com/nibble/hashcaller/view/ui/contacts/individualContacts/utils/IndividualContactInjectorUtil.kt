@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.contacts.individualContacts.utils
 
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
@@ -21,7 +22,11 @@ object IndividualContactInjectorUtil {
         val repository = IndividualContactRepository(contactsListDAO, context, callersInfoFromServer, phoneNum, callLogDAO)
 
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
-        val spamNetworkRepository = context?.let { SpamNetworkRepository(it, spamListDAO) }
+        val spamNetworkRepository = context?.let { SpamNetworkRepository(
+            it,
+            spamListDAO,
+            DataStoreRepository(context)
+        ) }
 
 
         IndividualContactLiveData.phoneNumber = phoneNumber

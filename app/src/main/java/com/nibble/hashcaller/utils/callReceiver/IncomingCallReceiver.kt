@@ -8,6 +8,7 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
@@ -50,7 +51,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
             if (phoneNumber == null) {
                 return
             }
-            searchRepository = SearchNetworkRepository(context)
+            searchRepository = SearchNetworkRepository(context, DataStoreRepository(context))
             val inComingCallManager: InCommingCallManager = InCommingCallManager(context,
                 phoneNumber, context.isBlockNonContactsEnabled(),
                 notificationHelper, searchRepository)

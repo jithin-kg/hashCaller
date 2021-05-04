@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.call.utils
 
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
@@ -28,7 +29,8 @@ object CallContainerInjectorUtil {
                 it,
                 callerInfoFromServerDAO!!,
                 mutedCallersDAO,
-                callLogDAO
+                callLogDAO,
+                DataStoreRepository(context)
             )
         }
 

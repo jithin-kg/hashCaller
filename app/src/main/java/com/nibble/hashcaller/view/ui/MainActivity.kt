@@ -461,7 +461,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     private fun syncSpamList() {
         val list = CountrycodeHelper(applicationContext).getCountrycode()
-        val spamSyncRepository = SpamSyncRepository()
+//        val spamSyncRepository = SpamSyncRepository()
 //        SpamSyncManager.sync(list, spamSyncRepository, this)
 
     }

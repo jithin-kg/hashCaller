@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -16,8 +17,9 @@ class DataStoreViewmodel(private val repository: DataStoreRepository) : ViewMode
        emit(repository.getToken())
     }
 
-    fun saveToken(encodeTokenString: String) = viewModelScope.launch {
+    fun saveToken(encodeTokenString: String) :LiveData<Int> = liveData {
         repository.saveToken(  encodeTokenString)
+        emit(OPERATION_COMPLETED)
     }
 
     override fun onCleared() {

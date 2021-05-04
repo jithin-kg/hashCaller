@@ -15,14 +15,14 @@ class SpamSyncRepository {
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
-        val token = tokenManager.getToken()
+//        val tokenManager = TokenManager(sp)
+//        val token = tokenManager.getToken()
 
 //        val response = retrofitService?.search(SearchDTO(phoneNum), token)
 //        Log.d(TAG, "signup: ${response?.body()?.message}")
 
 
 //        return response
-        retrofitService?.syncSpamListOfOperator(operatorInformations, token)
+//        retrofitService?.syncSpamListOfOperator(operatorInformations, token)
     }
 }

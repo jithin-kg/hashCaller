@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
@@ -25,7 +26,7 @@ class SearchHelper{
             num = Secrets().managecipher(context.packageName, num!!)//encoding the number with my algorithm
 
                 try {
-                    val searchRepository = SearchNetworkRepository(context)
+                    val searchRepository = SearchNetworkRepository(context, DataStoreRepository(context))
                     val res = searchRepository.search(num)
                     if(!res?.body()?.cntcts.isNullOrEmpty()){
                         val result = res?.body()?.cntcts?.get(0)

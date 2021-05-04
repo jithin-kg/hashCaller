@@ -66,7 +66,7 @@ class UserNetworkRepository(
         )
     }
 
-    private fun prepareRquestBody(userInfo: UserInfoDTO) {
+    private suspend fun prepareRquestBody(userInfo: UserInfoDTO) {
         token = tokenManager.getToken()
         firstName = createPartFromString(userInfo.firstName)
         lastName = createPartFromString(userInfo.lastName)
@@ -98,7 +98,7 @@ class UserNetworkRepository(
 
     }
 
-    suspend fun getUserInfoFromServer(): Response<SingupResponse> = withContext(Dispatchers.IO) {
+    suspend fun getUserInfoFromServer(encodeTokenString: String): Response<SingupResponse> = withContext(Dispatchers.IO) {
         val token = tokenManager.getToken()
         return@withContext retrofitService.getUserInfo(token)
     }

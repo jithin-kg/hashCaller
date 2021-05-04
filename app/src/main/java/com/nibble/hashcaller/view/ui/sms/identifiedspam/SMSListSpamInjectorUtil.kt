@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
@@ -26,7 +27,8 @@ object SMSListSpamInjectorUtil {
             spamListDAO,
             smssendersInfoDAO,
             mutedSendersDAO,
-            smsThreadsDAO
+            smsThreadsDAO,
+            DataStoreRepository(context)
         ) }
 
         return SMSListSpamViewModelFactory(smsSpamLiveData, repository)

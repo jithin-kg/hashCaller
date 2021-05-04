@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
@@ -60,7 +61,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     context,
                     callersInfoFromServerDAO,
                     mutedCallersDAO,
-                    callLogDAO
+                    callLogDAO,
+                    DataStoreRepository(context)
                 )
 
 

@@ -3,6 +3,7 @@ package com.nibble.hashcaller.repository.spam
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.blocklist.SpammerInfo
 import com.nibble.hashcaller.network.RetrofitClient
@@ -15,7 +16,8 @@ import retrofit2.Response
 
 class SpamNetworkRepository(
     private val context: Context,
-    private val spamListDAO: SpamListDAO?
+    private val spamListDAO: SpamListDAO?,
+    private val dataStoreRepository: DataStoreRepository
 ){
 
     private var retrofitService:ISpamService? = null
@@ -25,7 +27,7 @@ class SpamNetworkRepository(
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
         val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp)
+        val tokenManager = TokenManager(sp,dataStoreRepository)
         val token = tokenManager.getToken()
 
 //        val response = retrofitService?.search(SearchDTO(phoneNum), token)

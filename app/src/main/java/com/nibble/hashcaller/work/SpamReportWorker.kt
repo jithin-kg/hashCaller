@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.network.RetrofitClient
@@ -24,7 +25,8 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
         RetrofitClient.createaService(ISpamService::class.java)
     private val sp =
         context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-    private val repository: SpamNetworkRepository1 = SpamNetworkRepository1(context)
+    private val  dataStoreRepostory = DataStoreRepository(context)
+    private val repository: SpamNetworkRepository1 = SpamNetworkRepository1(context, dataStoreRepostory)
 
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
@@ -32,7 +34,7 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
         val report = ReportedUserDTo(num!!, "kerala", "0", "1")
 //        repository.report(report)
         try {
-            val tokenManager = TokenManager(sp)
+            val tokenManager = TokenManager(sp, dataStoreRepostory )
             val token = tokenManager.getToken()
 
            val response =  retrofitService?.report(report, token)
