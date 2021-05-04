@@ -11,6 +11,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
@@ -62,7 +63,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     callersInfoFromServerDAO,
                     mutedCallersDAO,
                     callLogDAO,
-                    DataStoreRepository(context)
+                    DataStoreRepository(context.tokeDataStore)
                 )
 
 

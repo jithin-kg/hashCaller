@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 
 object IndividualContactInjectorUtil {
@@ -25,7 +26,7 @@ object IndividualContactInjectorUtil {
         val spamNetworkRepository = context?.let { SpamNetworkRepository(
             it,
             spamListDAO,
-            DataStoreRepository(context)
+            DataStoreRepository(context.tokeDataStore)
         ) }
 
 

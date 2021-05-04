@@ -4,8 +4,11 @@ import android.app.Application
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.datastore.preferences.preferencesDataStore
+import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -15,6 +18,8 @@ import androidx.appcompat.app.AppCompatDelegate
  * !!!!Warning you have to re install the application when you make change in
  * channel to take effect
  */
+val Context.tokeDataStore by preferencesDataStore(name = USER_PREFERENCES_NAME)
+
 class HashCaller : Application(){
     /**This will be called before any start of activity, right when our app will start.
      * This is the perfect place to setup our channels

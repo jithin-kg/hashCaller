@@ -1,10 +1,11 @@
 package com.nibble.hashcaller.datastore
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -12,15 +13,28 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 
-class DataStoreRepository(private val context: Context)  {
+class DataStoreRepository(private val tokeDataStore: DataStore<Preferences>)  {
+        suspend fun saveTken( key:String, value:String){
+            val wrapedKey =  stringPreferencesKey(key)
+            tokeDataStore.edit {
+                it[wrapedKey] = value
+            }
+        }
 
+        suspend fun getToken(tokeDataStore: DataStore<Preferences>, key:String): String {
+            val wrapedKey =  stringPreferencesKey(key)
+            val tokenFlow:Flow<String> = tokeDataStore.data.map {
+                it[wrapedKey]?:""
+            }
+            return tokenFlow.first()
+        }
     suspend fun getToken(): String  = withContext(Dispatchers.IO){
-        return@withContext DataStoreManager.getToken(context,  PreferencesKeys.TOKEN)
+        return@withContext getToken(tokeDataStore,  PreferencesKeys.TOKEN)
 
     }
 
     suspend fun saveToken(encodeTokenString: String) = withContext(Dispatchers.IO) {
-        DataStoreManager.saveTken(context, PreferencesKeys.TOKEN, encodeTokenString)
+       saveTken( PreferencesKeys.TOKEN, encodeTokenString)
     }
 //    suspend fun saveToken( key:String, value:String){
 //        val wrapedKey =  stringPreferencesKey(key)

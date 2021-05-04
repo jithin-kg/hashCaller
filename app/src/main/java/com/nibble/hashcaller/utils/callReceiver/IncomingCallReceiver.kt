@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 
@@ -51,7 +52,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
             if (phoneNumber == null) {
                 return
             }
-            searchRepository = SearchNetworkRepository(context, DataStoreRepository(context))
+            searchRepository = SearchNetworkRepository(context, DataStoreRepository(context.tokeDataStore))
             val inComingCallManager: InCommingCallManager = InCommingCallManager(context,
                 phoneNumber, context.isBlockNonContactsEnabled(),
                 notificationHelper, searchRepository)

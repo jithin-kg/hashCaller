@@ -10,6 +10,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
@@ -53,7 +54,7 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context)
+                DataStoreRepository(context.tokeDataStore)
             )
 //        val res =  repository.getSMSForViewModel(null, true)
             val res:MutableList<SMS> = mutableListOf()
@@ -151,7 +152,7 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context)
+                DataStoreRepository(context.tokeDataStore)
             )
         repository.markSMSAsRead(address)
     }

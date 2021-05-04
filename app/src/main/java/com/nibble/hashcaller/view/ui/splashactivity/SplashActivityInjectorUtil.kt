@@ -4,6 +4,7 @@ import android.content.Context
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 
 
@@ -15,7 +16,7 @@ object SplashActivityInjectorUtil {
         val userInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).userInfoDAo() }
         val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val sp = context!!.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-        val tokenManager: TokenManager = TokenManager(sp, DataStoreRepository(context))
+        val tokenManager: TokenManager = TokenManager(sp, DataStoreRepository(context.tokeDataStore))
         val repository = context?.let { SplashActivityRepository(tokenManager, userInfoDAO!!,senderInfoFromServerDAO!!) }
 
 

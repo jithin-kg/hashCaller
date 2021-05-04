@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initDataStoreViewmodel() {
-        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(this)).get(
+        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
             DataStoreViewmodel::class.java)
     }
 

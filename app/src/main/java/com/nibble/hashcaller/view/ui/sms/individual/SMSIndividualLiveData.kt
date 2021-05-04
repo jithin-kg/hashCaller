@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -45,7 +46,7 @@ class SMSIndividualLiveData(
             smssendersInfoDAO,
             mutedSendersDAO,
             smsThreadsDAO,
-            DataStoreRepository(context)
+            DataStoreRepository(context.tokeDataStore)
         )
         return@withContext repository.fetchIndividualSMS(contact)
 

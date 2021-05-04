@@ -12,6 +12,7 @@ import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -44,7 +45,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         sMSSendersInfoFromServerDAO,
         mutedSendersDAO,
         blockedOrSpamSenders,
-        DataStoreRepository(context)
+        DataStoreRepository(context.tokeDataStore)
     )
     private val smsTracker:NewSmsTrackerHelper = NewSmsTrackerHelper( repository, sMSSendersInfoFromServerDAO)
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
@@ -64,7 +65,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context)
+                DataStoreRepository(context.tokeDataStore)
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
@@ -74,7 +75,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 blockedOrSpamSenders,
-                DataStoreRepository(context)
+                DataStoreRepository(context.tokeDataStore)
             )
 
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
 
@@ -26,12 +27,12 @@ object SMSIndividualInjectorUtil {
             smssendersInfoDAO,
             mutedSendersDAO,
             smsThreadsDAO,
-            DataStoreRepository(context)
+            DataStoreRepository(context.tokeDataStore)
         ) }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(
             it,
             spamListDAO,
-            DataStoreRepository(context)
+            DataStoreRepository(context.tokeDataStore)
         ) }
         val smsLocalRepository = SMSLocalRepository(
             context!!,
@@ -39,7 +40,7 @@ object SMSIndividualInjectorUtil {
             smssendersInfoDAO,
             mutedSendersDAO,
             smsThreadsDAO,
-            DataStoreRepository(context)
+            DataStoreRepository(context.tokeDataStore)
         )
 
         val messagesLiveData = context?.let {

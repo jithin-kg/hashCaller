@@ -5,14 +5,11 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.nibble.hashcaller.datastore.DataStoreRepository
-import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
-import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +22,7 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
         RetrofitClient.createaService(ISpamService::class.java)
     private val sp =
         context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-    private val  dataStoreRepostory = DataStoreRepository(context)
+    private val  dataStoreRepostory = DataStoreRepository(context.tokeDataStore)
     private val repository: SpamNetworkRepository1 = SpamNetworkRepository1(context, dataStoreRepostory)
 
 

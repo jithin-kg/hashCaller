@@ -5,11 +5,11 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModelFactory
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 
 object FullSearchInjectorUtil {
     fun provideUserInjectorUtil(context:Context) : FullSearchViewModelFactory {
-        val searchNetworkRepository = SearchNetworkRepository(context, DataStoreRepository(context))
+        val searchNetworkRepository = SearchNetworkRepository(context, DataStoreRepository(context.tokeDataStore))
         val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
         val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
 

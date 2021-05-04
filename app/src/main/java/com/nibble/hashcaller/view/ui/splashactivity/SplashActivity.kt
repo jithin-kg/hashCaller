@@ -96,7 +96,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(this)).get(
+        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
             DataStoreViewmodel::class.java)
 
     }
