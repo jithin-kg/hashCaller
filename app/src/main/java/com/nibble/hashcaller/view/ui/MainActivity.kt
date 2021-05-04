@@ -141,8 +141,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     ///////////////////////////splash ////////////////////////////
     private val RC_SIGN_IN = 1
 
-    private lateinit var rcfirebaseAuth: FirebaseAuth
-    private lateinit var rcAuthStateListener: FirebaseAuth.AuthStateListener
+
+
+    private  var _rcfirebaseAuth: FirebaseAuth? = null
+    private  val rcfirebaseAuth get() =  _rcfirebaseAuth!!
+    private  var _rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
+    private  val  rcAuthStateListener get() =  _rcAuthStateListener!!
+
     var user: FirebaseUser? = null
 
     ///////////////////////////// end //////////////////////////////////////////
@@ -156,7 +161,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         savedState = savedInstanceState
         initDataStoreViewmodel()
 
-        rcfirebaseAuth = FirebaseAuth.getInstance()
+        _rcfirebaseAuth = FirebaseAuth.getInstance()
         if (checkPermission()) {
             firebaseAuthListener()
             initMainActivityComponents(savedState)
@@ -183,7 +188,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         )
     }
     private fun firebaseAuthListener() {
-        rcAuthStateListener =
+        _rcAuthStateListener =
             FirebaseAuth.AuthStateListener { firebaseAuth ->
                 user = firebaseAuth.currentUser
                 //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
@@ -294,10 +299,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onDestroy() {
         viewModelStore.clear()
-        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
-            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
+        if(_rcfirebaseAuth!=null && _rcAuthStateListener!=null){
+            _rcfirebaseAuth!!.removeAuthStateListener(_rcAuthStateListener!!)
         }
-
+        _rcAuthStateListener = null
+        _rcfirebaseAuth = null
         _dataStoreViewModel = null
 //        _userInfoViewModel = null
         super.onDestroy()
@@ -929,8 +935,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            setcurrentThemeInSharedPref()
 //        }
         if (checkPermission()) {
-            if(::rcAuthStateListener.isInitialized)
-                rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
+            if(_rcAuthStateListener!=null && _rcAuthStateListener !=null)
+                _rcfirebaseAuth?.addAuthStateListener(_rcAuthStateListener!!)
         }
         //        firebaseHelper.addFirebaseAuthListener();
     }

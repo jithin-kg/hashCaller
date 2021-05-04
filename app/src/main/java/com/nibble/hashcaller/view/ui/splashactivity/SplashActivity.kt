@@ -50,8 +50,10 @@ class SplashActivity : AppCompatActivity() {
 
     private val RC_SIGN_IN = 1
 
-    private lateinit var rcfirebaseAuth: FirebaseAuth
-    private lateinit var rcAuthStateListener: AuthStateListener
+    private  var _rcfirebaseAuth: FirebaseAuth? = null
+    private  val rcfirebaseAuth get() =  _rcfirebaseAuth!!
+    private  var _rcAuthStateListener: AuthStateListener? = null
+    private  val  rcAuthStateListener get() =  _rcAuthStateListener!!
     //    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 //    private val userCollectionRef: CollectionReference = db.collection("Users")
     var user: FirebaseUser? = null
@@ -76,14 +78,13 @@ class SplashActivity : AppCompatActivity() {
     }
     override fun onPause() {
         super.onPause()
-        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
-            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
+        if(_rcfirebaseAuth!=null && _rcAuthStateListener!=null){
+            _rcfirebaseAuth?.removeAuthStateListener(_rcAuthStateListener!!)
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        rcfirebaseAuth = FirebaseAuth.getInstance()
+        _rcfirebaseAuth = FirebaseAuth.getInstance()
         initViewModel()
 //         close splash activity
         if (checkPermission()) {
@@ -102,7 +103,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun firebaseAuthListener() {
-        rcAuthStateListener =
+        _rcAuthStateListener =
             AuthStateListener { firebaseAuth ->
                 user = firebaseAuth.currentUser
                 //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
@@ -493,10 +494,12 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         viewModelStore.clear()
-        if(::rcfirebaseAuth.isInitialized && ::rcAuthStateListener.isInitialized){
-            rcfirebaseAuth.removeAuthStateListener(rcAuthStateListener)
+        if(_rcfirebaseAuth !=null && rcAuthStateListener!=null){
+            _rcAuthStateListener?.let { _rcfirebaseAuth?.removeAuthStateListener(it) }
         }
-
+            user = null
+        _rcfirebaseAuth = null
+        _rcAuthStateListener = null
         _dataStoreViewModel = null
         _userInfoViewModel = null
         super.onDestroy()
@@ -508,8 +511,8 @@ class SplashActivity : AppCompatActivity() {
         super.onPostResume()
 
         if (checkPermission()) {
-            if(::rcAuthStateListener.isInitialized)
-                rcfirebaseAuth?.addAuthStateListener(rcAuthStateListener)
+            if(_rcAuthStateListener!=null && _rcAuthStateListener!=null)
+                _rcfirebaseAuth?.addAuthStateListener(_rcAuthStateListener!!)
         }
     }
 }
