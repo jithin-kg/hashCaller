@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.auth
 
 import android.Manifest
+import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.provider.Telephony
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -59,13 +61,17 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
         }
     }
 
+
     private fun requestPermission() {
         EasyPermissions.requestPermissions(
             host = this,
             "read contacts ",
             requestCode = PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS,
             perms = arrayOf(
-                Manifest.permission.READ_CONTACTS
+                READ_CONTACTS,
+                CALL_PHONE,
+                READ_PHONE_STATE,
+                ANSWER_PHONE_CALLS,
             )
         )
     }

@@ -12,13 +12,12 @@ import retrofit2.Response
 
 class SpamNetworkRepository(private val context: Context,private val dataStoreRepository: DataStoreRepository) {
     private val  retrofitService:ISpamService = RetrofitClient.createaService(ISpamService::class.java)
-    private val  sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
     suspend fun report(callerInfo: ReportedUserDTo): Response<NetWorkResponse>? {
 
 
-        val tokenManager = TokenManager(sp,dataStoreRepository )
-        val token = tokenManager.getToken()
+        val tokenManager = TokenManager(dataStoreRepository )
+        val token = tokenManager.getDecryptedToken()
 
         return retrofitService?.report(callerInfo, token)
     }

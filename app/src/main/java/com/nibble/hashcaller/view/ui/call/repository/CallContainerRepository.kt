@@ -61,10 +61,8 @@ class CallContainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownCallersInfoResponse>  = withContext(Dispatchers.IO){
         retrofitService = RetrofitClient.createaService(ICallService::class.java)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-
-        val tokenManager = TokenManager(sp,dataStoreRepository)
-        val token = tokenManager.getToken()
+        val tokenManager = TokenManager(dataStoreRepository)
+        val token = tokenManager.getDecryptedToken()
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
         Log.d(TAG, "uploadNumbersToGetInfo: response is ${response}")

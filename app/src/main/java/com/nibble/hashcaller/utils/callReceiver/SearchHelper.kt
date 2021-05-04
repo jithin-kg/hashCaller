@@ -6,6 +6,7 @@ import android.util.Log
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -21,13 +22,13 @@ class SearchHelper{
             num = Secrets().managecipher(context.packageName, num!!)//encoding the number with my algorithm
 
                 try {
-                    val searchRepository = SearchNetworkRepository(context, DataStoreRepository(context.tokeDataStore))
+                    val searchRepository = SearchNetworkRepository(TokenManager( DataStoreRepository(context.tokeDataStore)))
                     val res = searchRepository.search(num)
                     if(!res?.body()?.cntcts.isNullOrEmpty()){
                         val result = res?.body()?.cntcts?.get(0)
                         Log.d(TAG, "searchForNumberInServer: result $result")
 
-                        if(result!!.spammCount > 0){
+                        if(result!!.spammCount?:0 > 0){
 
 
                         }

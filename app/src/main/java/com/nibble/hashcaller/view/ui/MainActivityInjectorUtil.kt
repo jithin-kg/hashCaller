@@ -17,7 +17,6 @@ object MainActivityInjectorUtil {
         val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
         val hasehdNumDAo = context?.let { HashCallerDatabase.getDatabaseInstance(it).userHashedNumDAO() }
 //        val contactsRepository = ContactRepositoryTwo(context)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
         val imageCompressor: ImageCompressor = ImageCompressor(context)
         val countryCodeHelper = CountrycodeHelper(context)
 
@@ -25,7 +24,7 @@ object MainActivityInjectorUtil {
         val userHasehdNumRepository = UserHasehdNumRepository(hasehdNumDAo, countryCodeHelper)
 
         val userNetworkRepository = UserNetworkRepository(
-            TokenManager(sp, DataStoreRepository(context.tokeDataStore)),
+            TokenManager(DataStoreRepository(context.tokeDataStore)),
             userInfoDAO,
             senderInfoFromServerDAO,
             imageCompressor

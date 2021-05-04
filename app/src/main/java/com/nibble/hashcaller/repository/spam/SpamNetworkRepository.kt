@@ -25,10 +25,9 @@ class SpamNetworkRepository(
 
     suspend fun report(callerInfo: ReportedUserDTo): Response<NetWorkResponse>? {
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
 
-        val tokenManager = TokenManager(sp,dataStoreRepository)
-        val token = tokenManager.getToken()
+        val tokenManager = TokenManager(dataStoreRepository)
+        val token = tokenManager.getDecryptedToken()
 
 //        val response = retrofitService?.search(SearchDTO(phoneNum), token)
 //        Log.d(TAG, "signup: ${response?.body()?.message}")

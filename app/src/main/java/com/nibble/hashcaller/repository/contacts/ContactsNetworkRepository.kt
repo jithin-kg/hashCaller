@@ -54,9 +54,8 @@ class ContactsNetworkRepository (private val context: Context){
         var token = ""
         try {
 //            decryptor = Decryptor()
-            val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-            val tokenManager = TokenManager(sp, DataStoreRepository(context.tokeDataStore))
-            token = tokenManager.getToken()
+            val tokenManager = TokenManager(DataStoreRepository(context.tokeDataStore))
+            token = tokenManager.getDecryptedToken()
 //            token = decryptor?.decryptData(
 //                SAMPLE_ALIAS,
 //                EncryptorObject.encryption,

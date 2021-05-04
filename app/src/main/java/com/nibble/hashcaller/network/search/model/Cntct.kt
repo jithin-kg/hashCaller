@@ -6,17 +6,17 @@ import java.io.Serializable
 
 data class Cntct(
     @SerializedName("name")
-    val name: String,
+    val name: String? = "",
     @SerializedName("phoneNumber")
     val phoneNumber: String,
 
     @SerializedName("spamCount")
-    val spammCount : Int,
+    val spammCount : Int? = 0,
     @SerializedName("carrier")
-    val carrier: String,
+    val carrier: String?="",
     @SerializedName("location")
-    val location: String,
+    val location: String?="",
     @SerializedName("country")
-    val country: String
+    val country: String?=""
 
 ):Serializable // it it important to extent serializable

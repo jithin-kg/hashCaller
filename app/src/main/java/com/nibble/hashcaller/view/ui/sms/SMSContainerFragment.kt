@@ -119,7 +119,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         // Inflate the layout for this fragment
         _binding = FragmentMessageContainerBinding.inflate(inflater, container, false)
-        viewMesagesRef = binding.root
+//        viewMesagesRef = binding.root
         registerForContextMenu( binding.recyclreviewSMSContainer ) // context menu registering
         setupBottomSheet()
         initListeners()
@@ -472,7 +472,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         private const val TAG = "__SMSContainerFragment"
         //todo remove this, this is a memory leak
-        private  var viewMesagesRef: View?=null
+//        private  var viewMesagesRef: View?=null
 
 
         var mapofAddressAndSMS: HashMap<String, SMS> = hashMapOf() // for findin duplicate sms in list
@@ -483,27 +483,27 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
          * function to update marked item count in fragment
          */
         fun updateSelectedItemCount(count:Int){
-            if(count>0){
-                this.viewMesagesRef!!.tvSelectedCount.visibility = View.VISIBLE
-                this.viewMesagesRef!!.tvSelectedCount.text = "$count Selected"
-            }else{
-                this.viewMesagesRef!!.tvSelectedCount.visibility = View.INVISIBLE
-                this.viewMesagesRef!!.tvSelectedCount.text = ""
-                markingStarted = false
-
-                this.viewMesagesRef!!.searchViewSms.visibility = View.VISIBLE
-                this.viewMesagesRef!!.imgBtnTbrMuteSender.visibility = View.INVISIBLE
-                this.viewMesagesRef!!.imgBtnTbrBlock.visibility = View.INVISIBLE
-                this.viewMesagesRef!!.imgBtnTbrDelete.visibility = View.INVISIBLE
-                this.viewMesagesRef!!.tvSelectedCount.visibility = View.INVISIBLE
-            }
+//            if(count>0){
+//                binding.tvSelectedCount.visibility = View.VISIBLE
+//                this.viewMesagesRef!!.tvSelectedCount.text = "$count Selected"
+//            }else{
+//                this.viewMesagesRef!!.tvSelectedCount.visibility = View.INVISIBLE
+//                this.viewMesagesRef!!.tvSelectedCount.text = ""
+//                markingStarted = false
+//
+//                this.viewMesagesRef!!.searchViewSms.visibility = View.VISIBLE
+//                this.viewMesagesRef!!.imgBtnTbrMuteSender.visibility = View.INVISIBLE
+//                this.viewMesagesRef!!.imgBtnTbrBlock.visibility = View.INVISIBLE
+//                this.viewMesagesRef!!.imgBtnTbrDelete.visibility = View.INVISIBLE
+//                this.viewMesagesRef!!.tvSelectedCount.visibility = View.INVISIBLE
+//            }
         }
         fun showHideBlockButton() {
-            if(markedItems.size == 1){
-                viewMesagesRef!!.imgBtnTbrBlock.visibility = View.VISIBLE
-            }else{
-                viewMesagesRef!!.imgBtnTbrBlock.visibility = View.INVISIBLE
-            }
+//            if(markedItems.size == 1){
+//                viewMesagesRef!!.imgBtnTbrBlock.visibility = View.VISIBLE
+//            }else{
+//                viewMesagesRef!!.imgBtnTbrBlock.visibility = View.INVISIBLE
+//            }
         }
 
 

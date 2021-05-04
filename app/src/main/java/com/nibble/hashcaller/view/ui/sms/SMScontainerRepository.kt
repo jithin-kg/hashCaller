@@ -7,7 +7,6 @@ import android.util.Log
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
-import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
 import com.nibble.hashcaller.local.db.sms.block.IBlockedOrSpamSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
@@ -54,10 +53,8 @@ class SMScontainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownSMSsendersInfoResponse> {
          retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-
-        val tokenManager = TokenManager(sp, dataStoreRepostitory )
-        val token = tokenManager.getToken()
+        val tokenManager = TokenManager( dataStoreRepostitory )
+        val token = tokenManager.getDecryptedToken()
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
         Log.d(TAG, "uploadNumbersToGetInfo: response is ${response}")
@@ -126,10 +123,8 @@ class SMScontainerRepository(
 
     suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-
-        val tokenManager = TokenManager(sp, dataStoreRepostitory)
-        val token = tokenManager.getToken()
+        val tokenManager = TokenManager( dataStoreRepostitory)
+        val token = tokenManager.getDecryptedToken()
         return retrofitService?.report(callerInfo, token)
     }
 

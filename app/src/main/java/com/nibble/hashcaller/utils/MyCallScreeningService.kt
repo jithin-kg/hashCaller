@@ -13,21 +13,23 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callHandlers.base.CallScreeningHelper
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.notifications.HashCaller
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
-import com.nibble.hashcaller.view.ui.sms.individual.util.BLOCK_INCOMMING_CALL
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 
 //https://developer.android.com/reference/android/telecom/CallScreeningService#respondToCall(android.telecom.Call.Details,%20android.telecom.CallScreeningService.CallResponse)
 //https://zoransasko.medium.com/detecting-and-rejecting-incoming-phone-calls-on-android-9e0cff04ef20
@@ -37,7 +39,8 @@ class MyCallScreeningService: CallScreeningService() {
     private lateinit var helper: CallScreeningHelper
     var blockedListpatternDAO: BlockedLIstDao =  this?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
     var contactAdressesDAO =  this?.let { HashCallerDatabase.getDatabaseInstance(it).contactAddressesDAO() }
-
+    private val searchRepository:SearchNetworkRepository  =  SearchNetworkRepository(TokenManager(DataStoreRepository(this.tokeDataStore)
+    ))
     /**
      * important to look into CallScreeningService source code to findout how to work with this class
      */
@@ -52,7 +55,8 @@ class MyCallScreeningService: CallScreeningService() {
         val phoneNumber = getPhoneNumber(callDetails)
         var response = CallResponse.Builder()
         CoroutineScope(Dispatchers.IO).launch {
-            handleThisCall(phoneNumber, response, callDetails)
+            val hashedNum = Secrets().managecipher(this@MyCallScreeningService.packageName, formatPhoneNumber(phoneNumber))
+            handleThisCall(phoneNumber, response, callDetails,hashedNum)
         }
         
 //        response = handlePhoneCall(response, phoneNumber, callDetails)
@@ -77,20 +81,23 @@ class MyCallScreeningService: CallScreeningService() {
         startActivity(i)
     }
 
+    @SuppressLint("LongLogTag")
     private fun handleThisCall(
         phoneNumber: String,
         response: CallResponse.Builder,
-        callDetails: Details
+        callDetails: Details,
+        hashedNum: String
     ) = CoroutineScope(Dispatchers.IO).launch {
         val formatedNum = formatPhoneNumber(phoneNumber)
             supervisorScope {
-                val isMutedJob =  async {  helper.isMutedNumber(formatedNum) }
-                val jobPatternBlock =  async { helper.isBlockedByPattern(formatedNum) }
-                val jobNonContactBlock = async {
+                val deferedIsMutedJob =  async {  helper.isMutedNumber(formatedNum) }
+                val deferedPatternBlock =  async { helper.isBlockedByPattern(formatedNum) }
+                val deferedNonContactBlock = async {
                     helper.isThisCallTobeBlocked(formatedNum,isBlockNonContactsEnabled()) }
 
+                val defredServerInfo = async { searchRepository.search(hashedNum) }
                 try {
-                   isMutedJob.await().apply {
+                   deferedIsMutedJob.await().apply {
                        if(this){
                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                                response.setSilenceCall(true)
@@ -101,7 +108,7 @@ class MyCallScreeningService: CallScreeningService() {
 
                 }
                 val result1 =  try {
-                    jobPatternBlock.await().apply { 
+                    deferedPatternBlock.await().apply {
                         if(this){
                             response.setDisallowCall(true)
                             respondToCall(callDetails, response.build())
@@ -112,7 +119,7 @@ class MyCallScreeningService: CallScreeningService() {
                     false
                 }
                 val result2 =  try {
-                    jobNonContactBlock.await().apply { 
+                    deferedNonContactBlock.await().apply {
                         if(this){
                             response.setDisallowCall(true)
                             respondToCall(callDetails, response.build())
@@ -120,6 +127,12 @@ class MyCallScreeningService: CallScreeningService() {
 
 
                         }
+                    }
+                    try{
+                        val searchResponse = defredServerInfo.await()
+                        Log.d(TAG, "handleThisCall: ${searchResponse?.body()?.cntcts}")
+                    }catch(e:Exception){
+                        Log.d(TAG, "search in server : $e")
                     }
                 }catch (e:Exception){
                     false

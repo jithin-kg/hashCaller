@@ -1746,10 +1746,8 @@ class SMSLocalRepository(
         var retrofitService:ISpamService? = null
 
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val sp = context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-
-        val tokenManager = TokenManager(sp, dataStoreRepostiroy)
-        val token = tokenManager.getToken()
+        val tokenManager = TokenManager( dataStoreRepostiroy)
+        val token = tokenManager.getDecryptedToken()
         return@withContext retrofitService?.report(callerInfo, token)
     }
 

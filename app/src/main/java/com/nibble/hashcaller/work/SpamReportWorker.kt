@@ -31,8 +31,8 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
         val report = ReportedUserDTo(num!!, "kerala", "0", "1")
 //        repository.report(report)
         try {
-            val tokenManager = TokenManager(sp, dataStoreRepostory )
-            val token = tokenManager.getToken()
+            val tokenManager = TokenManager(dataStoreRepostory )
+            val token = tokenManager.getDecryptedToken()
 
            val response =  retrofitService?.report(report, token)
             if(response.code() in 500..599){

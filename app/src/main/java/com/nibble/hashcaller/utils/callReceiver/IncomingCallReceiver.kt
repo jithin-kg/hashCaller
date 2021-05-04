@@ -8,12 +8,20 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
 
 /**
@@ -52,15 +60,82 @@ class IncomingCallReceiver : BroadcastReceiver(){
             if (phoneNumber == null) {
                 return
             }
-            searchRepository = SearchNetworkRepository(context, DataStoreRepository(context.tokeDataStore))
-            val inComingCallManager: InCommingCallManager = InCommingCallManager(context,
-                phoneNumber, context.isBlockNonContactsEnabled(),
-                notificationHelper, searchRepository)
-            inComingCallManager.manageCall()
+
+            /**
+             * importatnt to launch using global scope because the
+             * onReceive will return immediately and BroadcastReceiver will die before launch completes
+             * https://stackoverflow.com/questions/58710363/cancel-coroutines-in-a-broadcastreceiver
+             */
+
+            GlobalScope.launch {
+                var isSpam = false
+                val inComingCallManager =   getIncomminCallManager(phoneNumber, context)
+                val hasedNum = getHashedNum(phoneNumber, context)
+                
+                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hasedNum) }
+                val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
+                val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
+                //todo also search for infor from server in local db about callers or a better way is if
+                //to add number which are spam received from server info during worker,
+                //insert them to blockpattern list, then check if block common spammers enabled
+                try {
+                    val isBlockedByPattern  = defBlockedByPattern.await()
+                    if(isBlockedByPattern){
+                        endCall(inComingCallManager, phoneNumber, context)
+
+                    }
+                }catch (e:Exception){
+                    Log.d(TAG, "onReceive: $e")
+                }
+               
+                try {
+                    val resFromServer = defServerHandling.await()
+                    if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                        endCall(inComingCallManager, phoneNumber, context)
+
+                    }
+                }catch (e:Exception){
+                    Log.d(TAG, "onReceive: $e ")
+                }
+                try {
+                    if(defNonContactsBlocked.await()){
+                        endCall(inComingCallManager, phoneNumber, context)
+
+                    }
+                }catch (e:Exception){
+                    Log.d(TAG, "onReceive: $e")
+                }
+                
+               
+//                inComingCallManager.manageCall()
+
+            }
 
 
 
         }
+    }
+
+    private fun endCall(
+        inComingCallManager: InCommingCallManager,
+        phoneNumber: String,
+        context: Context
+    ) {
+        inComingCallManager.endIncommingCall(context)
+        notificationHelper.showNotificatification(true, phoneNumber)
+    }
+
+    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+
+        return  InCommingCallManager(context,
+            phoneNumber, context.isBlockNonContactsEnabled(),
+            notificationHelper, searchRepository)
+    }
+
+    private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
+        return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+
     }
 
     private fun getNotificationHelper(context: Context): NotificationHelper {
@@ -82,9 +157,6 @@ class IncomingCallReceiver : BroadcastReceiver(){
         Log.d(TAG +"increment", "incrementTotalSpamCountByHashCallerInServer: ")
             searchRepository.incrementTotalSpamCount()
     }
-
-
-
 
 
     companion object {

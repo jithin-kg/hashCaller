@@ -8,6 +8,7 @@ import android.telecom.Call;
 import android.telecom.CallScreeningService;
 import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -20,10 +21,12 @@ import java.lang.reflect.Method;
  */
 public class CallEnder implements ITelephony {
     private Context context;
+    private String TAG = "__CallEnder";
 
     public CallEnder(Context context){
         this.context = context;
     }
+
     @SuppressLint("MissingPermission")
     public boolean endIncomingCall(){
 
@@ -40,6 +43,7 @@ public class CallEnder implements ITelephony {
             }
 
         } catch ( Exception e) {
+            Log.d(TAG, "endIncomingCall:exception  " + e.toString());
             e.printStackTrace();
         }
         return callEnded;
@@ -75,6 +79,7 @@ public class CallEnder implements ITelephony {
             }
 
         } catch ( Exception e) {
+            Log.d(TAG, "silenceIncomingCall: "+e.toString());
             e.printStackTrace();
         }
         return callMuted;
@@ -93,6 +98,7 @@ public class CallEnder implements ITelephony {
             telephonyService.endCall();
 
         } catch (Exception e) {
+            Log.d(TAG, "endIncommingCall: "+ e.toString());
             e.printStackTrace();
         }
     }
@@ -137,4 +143,6 @@ public class CallEnder implements ITelephony {
     public void silenceRinger() {
 
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui
 
 import android.Manifest
+import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -184,7 +185,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     private fun checkPermission(): Boolean {
         return EasyPermissions.hasPermissions(this,
-            Manifest.permission.READ_CONTACTS
+            Manifest.permission.READ_CONTACTS,
+            CALL_PHONE,
+            READ_PHONE_STATE,
+            ANSWER_PHONE_CALLS,
+
         )
     }
     private fun firebaseAuthListener() {
