@@ -3,7 +3,6 @@ package com.nibble.hashcaller.utils.callReceiver
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.network.search.model.Cntct
@@ -13,7 +12,6 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 
 /**
@@ -23,7 +21,7 @@ class InCommingCallManager(
     private val context: Context,
     phoneNumber: String,
     private val blockNonContactsEnabled: Boolean,
-    private val notificationHelper: NotificationHelper,
+    private val notificationHelper: NotificationHelper?,
     private val searchRepository: SearchNetworkRepository,
     private val internetChecker: InternetChecker,
     private val blockedListpatternDAO: BlockedLIstDao,

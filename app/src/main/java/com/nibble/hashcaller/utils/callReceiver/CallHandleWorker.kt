@@ -2,7 +2,6 @@ package com.nibble.hashcaller.utils.callReceiver
 
 import android.app.Notification
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.*
@@ -16,7 +15,6 @@ import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
-import com.nibble.hashcaller.utils.notifications.HashCaller.Companion.NOTIFICATION_CHANNEL_NAME
 import com.nibble.hashcaller.utils.notifications.HashCaller.Companion.NOTIFICATION_ID
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled

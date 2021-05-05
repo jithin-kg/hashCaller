@@ -2,25 +2,102 @@ package com.nibble.hashcaller.utils.callReceiver
 
 import android.R
 import android.app.*
-import android.app.Service.START_NOT_STICKY
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.Nullable
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
+import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.datastore.DataStoreRepository
+import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.utils.internet.InternetChecker
+import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.*
 
 
 class ForegroundService : Service() {
+    private lateinit var phoneNumber: String
+    private lateinit var  searchRepository: SearchNetworkRepository
+    private lateinit var notificationHelper: NotificationHelper
+    private lateinit var inComingCallManager: InCommingCallManager
     override fun onCreate() {
         Log.d(TAG, "onCreate: ")
         super.onCreate()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val input = intent.getStringExtra("inputExtra")
+        showNotification(intent)
+        phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
+        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        supervisorScope.launch {
+//                delay(15000L)
+            var isSpam = false
+            inComingCallManager =   getIncomminCallManager(phoneNumber, this@ForegroundService)
+            val hasedNum = getHashedNum(phoneNumber, this@ForegroundService)
+            val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                hasedNum
+            ) }
+            val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
+            val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
+            try {
+                Log.d(CallhandlService.TAG, "onReceive: firsttry")
+                val isBlockedByPattern  = defBlockedByPattern.await()
+                if(isBlockedByPattern){
+                    isSpam = true
+                    endCall(inComingCallManager, phoneNumber, this@ForegroundService)
+                }
+            }catch (e: Exception){
+                Log.d(CallhandlService.TAG, "onReceive: $e")
+            }
+            try {
+                Log.d(CallhandlService.TAG, "onReceive: second try")
+                val resFromServer = defServerHandling.await()
+                if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                    isSpam = true
+                    endCall(inComingCallManager, phoneNumber, this@ForegroundService)
+
+                }
+            }catch (e: Exception){
+                Log.d(CallhandlService.TAG, "onReceive: $e ")
+            }
+            try {
+                Log.d(CallhandlService.TAG, "onReceive: third try ")
+                val r = defNonContactsBlocked.await()
+                if(r){
+                    endCall(inComingCallManager, phoneNumber, this@ForegroundService)
+
+                }
+            }catch (e: Exception){
+                Log.d(CallhandlService.TAG, "onReceive: $e")
+            }
+
+        }
+        Log.d(TAG, "onStartCommand: ")
+        //do heavy work on a background thread
+        stopSelf();
+        return START_NOT_STICKY
+    }
+    private fun endCall(
+        inComingCallManager: InCommingCallManager,
+        phoneNumber: String,
+        context: Context
+    ) {
+        inComingCallManager.endIncommingCall(context)
+//        notificationHelper.showNotificatification(true, phoneNumber)
+    }
+    private fun showNotification(intent: Intent) {
+        val input = intent.getStringExtra(CONTACT_ADDRES)
         createNotificationChannel()
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -34,10 +111,6 @@ class ForegroundService : Service() {
             .setContentIntent(pendingIntent)
             .build()
         startForeground(1, notification)
-        Log.d(TAG, "onStartCommand: ")
-        //do heavy work on a background thread
-        //stopSelf();
-        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
@@ -63,7 +136,25 @@ class ForegroundService : Service() {
             manager?.createNotificationChannel(serviceChannel)
         }
     }
+    private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
+        return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
 
+    }
+    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+        val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
+
+        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+        val internetChecker = InternetChecker(context)
+        val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
+
+        return  InCommingCallManager(
+            context,
+            phoneNumber, context.isBlockNonContactsEnabled(),
+            null, searchRepository,
+            internetChecker, blockedListpatternDAO,
+            contactAdressesDAO
+        )
+    }
     companion object {
         const val CHANNEL_ID = "ForegroundServiceChannel"
         const val TAG = "__ForegroundService"
