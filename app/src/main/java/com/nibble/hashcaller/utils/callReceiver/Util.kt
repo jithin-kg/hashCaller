@@ -13,7 +13,7 @@ object Util {
 
         val serviceComponent = ComponentName(context, TestJobService::class.java)
         val builder = JobInfo.Builder(0, serviceComponent)
-        builder.setMinimumLatency((1 * 1000).toLong()) // wait at least
+        builder.setMinimumLatency((1 * 1).toLong()) // wait at least
         builder.setOverrideDeadline((3 * 1000).toLong()) // maximum delay
         //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED); // require unmetered network
         //builder.setRequiresDeviceIdle(true); // device should be idle

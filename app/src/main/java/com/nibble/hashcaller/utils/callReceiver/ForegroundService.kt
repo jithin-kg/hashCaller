@@ -17,6 +17,7 @@ import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.internet.InternetChecker
+import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
@@ -54,13 +55,20 @@ class ForegroundService : Service() {
         //do heavy work on a background thread
         Log.d(TAG, "onStartCommand: ")
         val input = intent?.getStringExtra("inputExtra")
-        createNotificationChannel()
+//        createNotificationChannel()
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,
             0, notificationIntent, 0
         )
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+//        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
+//            .setContentTitle("Foreground Service Kotlin Example")
+//            .setContentText("input")
+//            .setPriority(NotificationCompat.PRIORITY_LOW)
+//            .setSmallIcon(R.drawable.ic_menu_call)
+//            .setContentIntent(pendingIntent)
+//            .build()
+        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
             .setContentTitle("Foreground Service Kotlin Example")
             .setContentText(input)
             .setSmallIcon(R.drawable.ic_menu_call)
@@ -69,7 +77,7 @@ class ForegroundService : Service() {
         startForeground(1, notification)
 
         val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        supervisorScope.launch {
+
             supervisorScope.launch {
 //                delay(15000L)
                 var isSpam = false
@@ -112,7 +120,7 @@ class ForegroundService : Service() {
                     Log.d(CallhandlService.TAG, "onReceive: $e")
                 }
 
-            }
+
             Log.d(TAG, "onStartCommand: after a delay")
             delay(500L)
             stopSelf();
