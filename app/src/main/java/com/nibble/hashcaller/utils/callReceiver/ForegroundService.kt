@@ -52,6 +52,7 @@ class ForegroundService : Service() {
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //do heavy work on a background thread
+        Log.d(TAG, "onStartCommand: ")
         val input = intent?.getStringExtra("inputExtra")
         createNotificationChannel()
         val notificationIntent = Intent(this, MainActivity::class.java)
@@ -113,8 +114,10 @@ class ForegroundService : Service() {
 
             }
             Log.d(TAG, "onStartCommand: after a delay")
+            delay(500L)
+            stopSelf();
+
         }
-        //stopSelf();
         return START_NOT_STICKY
     }
     override fun onBind(intent: Intent): IBinder? {

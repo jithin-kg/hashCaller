@@ -1,11 +1,16 @@
 package com.nibble.hashcaller.utils.callReceiver
 
 import android.annotation.SuppressLint
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
+import android.content.Context.JOB_SCHEDULER_SERVICE
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 
 
 /**
@@ -48,6 +53,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
             if (phoneNumber == null) {
                 return
             }
+            Util.scheduleJob(context);
 //            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 //            val data = Data.Builder()
 //            data.putString(CONTACT_ADDRES, phoneNumber)
@@ -63,7 +69,23 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //            val serviceIntent = Intent(context, ForegroundService::class.java)
 //            serviceIntent.putExtra(CONTACT_ADDRES, phoneNumber)
 //            ContextCompat.startForegroundService(context, serviceIntent)
-            ForegroundService.startService(context, "Something", phoneNumber)
+//            ForegroundService.startService(context, "Something", phoneNumber)
+
+
+//            val componentName = ComponentName(context, MyJobService::class.java)
+//            val jobInfo = JobInfo.Builder(12, componentName)
+//                .setRequiresCharging(true)
+//                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+//                .build()
+//
+//            val jobScheduler = getSystemService(context,MyJobService::class.java ) as JobScheduler
+//            val resultCode = jobScheduler.schedule(jobInfo)
+//            if (resultCode == JobScheduler.RESULT_SUCCESS) {
+//                Log.d(TAG, "Job scheduled!")
+//            } else {
+//                Log.d(TAG, "Job not scheduled")
+//            }
+
         }else {
 //            val serviceIntent = Intent(context, ForegroundService::class.java)
 //          context. stopService(serviceIntent)

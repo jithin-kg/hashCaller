@@ -55,10 +55,9 @@
             android:enabled="true"
             android:exported="true" />
 
-<!--        <service android:name=".utils.callReceiver.CallhandlService"-->
-<!--            android:permission="android.permission.BIND_JOB_SERVICE"-->
-<!--            android:exported="false"-->
-<!--            />-->
+        <service android:name=".utils.callReceiver.TestJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            />
 
         <activity android:name=".view.ui.profile.ProfileActivity"
             android:theme="@style/AppTheme"
