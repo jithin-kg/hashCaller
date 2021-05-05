@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.core.content.ContextCompat
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 
 
 /**
@@ -62,13 +60,13 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //            intent.putExtra(CONTACT_ADDRES, phoneNumber)
 //            CallhandlService.enqueueWork(context.applicationContext, intent)
 
-            val serviceIntent = Intent(context, ForegroundService::class.java)
-            serviceIntent.putExtra(CONTACT_ADDRES, phoneNumber)
-            ContextCompat.startForegroundService(context, serviceIntent)
-
+//            val serviceIntent = Intent(context, ForegroundService::class.java)
+//            serviceIntent.putExtra(CONTACT_ADDRES, phoneNumber)
+//            ContextCompat.startForegroundService(context, serviceIntent)
+            ForegroundService.startService(context, "Something", phoneNumber)
         }else {
-            val serviceIntent = Intent(context, ForegroundService::class.java)
-          context. stopService(serviceIntent)
+//            val serviceIntent = Intent(context, ForegroundService::class.java)
+//          context. stopService(serviceIntent)
 //            if(CallhandlService.isServiceCurrentlyRunning()){
 //                context.stopService(intent)
 //
