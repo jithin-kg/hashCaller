@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -26,6 +27,7 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActi
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
 
@@ -41,7 +43,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private var _dataStoreViewmodel: DataStoreViewmodel? = null
     private val dataStoreViewmodel get() = _dataStoreViewmodel!!
     private lateinit var encryptor: EnCryptor
-    private val SAMPLE_ALIAS = "SOMETHINGNEW"
 
 
     var code: String? = null
@@ -320,28 +321,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 //        val userTokenCallBack = user?.let { UserTokenCallBack(it) }
         user!!.getIdToken(true)
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    var token = task.result?.token
-                    // Send token to your backend via HTTPS
-                    if(!token.isNullOrEmpty()){
-                        encryptor = EnCryptor()
-                        val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
-                        val encodeTokenString = Base64.encodeToString(
-                            encryptedText,
-                            Base64.DEFAULT
-                        )
-                        dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
-                            if (it == OPERATION_COMPLETED) {
-                            //        setResult(1, i)
-                            //        finish()
-                               checkUserInfoInServer(encodeTokenString)
-                            }
-                        })
-                    }
-
-                }else{
-                    Log.d(TAG, "onSignedInInitialize:${task.exception}")
-                }
+               saveTokenInDataStore(task)
             }
 //        userTokenCallBack?.onSignedInInititalize { token, exception ->
 //            if(!token.isNullOrEmpty()){
@@ -381,6 +361,31 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 //
 //        setResult(1, i)
 //        finish()
+    }
+
+    private fun saveTokenInDataStore(task: Task<GetTokenResult>) {
+        if (task.isSuccessful) {
+            var token = task.result?.token
+            // Send token to your backend via HTTPS
+            if(!token.isNullOrEmpty()){
+                encryptor = EnCryptor()
+                val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
+                val encodeTokenString = Base64.encodeToString(
+                    encryptedText,
+                    Base64.DEFAULT
+                )
+                dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
+                    if (it == OPERATION_COMPLETED) {
+                        //        setResult(1, i)
+                        //        finish()
+                        checkUserInfoInServer(encodeTokenString)
+                    }
+                })
+            }
+
+        }else{
+            Log.d(TAG, "onSignedInInitialize:${task.exception}")
+        }
     }
 
     private fun checkUserInfoInServer(encodeTokenString: String) {

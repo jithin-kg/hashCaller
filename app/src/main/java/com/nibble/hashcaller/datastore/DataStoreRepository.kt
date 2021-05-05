@@ -1,11 +1,14 @@
 package com.nibble.hashcaller.datastore
 
 import android.content.Context
+import android.util.Base64
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -35,6 +38,16 @@ class DataStoreRepository(private val tokeDataStore: DataStore<Preferences>)  {
 
     suspend fun saveToken(encodeTokenString: String) = withContext(Dispatchers.IO) {
        saveTken( PreferencesKeys.TOKEN, encodeTokenString)
+    }
+
+    suspend fun getEncryptedStr(token: String): String = withContext(Dispatchers.IO){
+        val encryptor = EnCryptor()
+        val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
+        val encodeTokenString = Base64.encodeToString(
+            encryptedText,
+            Base64.DEFAULT
+        )
+        return@withContext encodeTokenString?:""
     }
 //    suspend fun saveToken( key:String, value:String){
 //        val wrapedKey =  stringPreferencesKey(key)

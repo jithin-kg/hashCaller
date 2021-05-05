@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
+import android.util.Base64
 import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
@@ -60,6 +61,7 @@ import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
+import com.nibble.hashcaller.view.ui.auth.ActivityVerifyOTP
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
@@ -67,10 +69,7 @@ import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
-import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_REQUEST_CODE
-import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
-import com.nibble.hashcaller.view.ui.contacts.utils.unMarkItems
+import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
@@ -128,6 +127,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var header:View
     private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
     private lateinit var firstLetterView:TextView
+
 //    var  searchFragment: SearchFragment? = null
 
 
@@ -208,6 +208,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 }
             }
     }
+
+    private fun saveTokenIfConnected() {
+        user?.getIdToken(true)
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    var token = task.result?.token
+                    // Send token to your backend via HTTPS
+                    if(!token.isNullOrEmpty()){
+                        dataStoreViewModel.getEncryptedStr(token.toString()).observe(this, Observer {encodeTokenString ->
+                            dataStoreViewModel.saveTokenViewmodelScope(encodeTokenString)
+                        })
+
+                    }
+
+                }else{
+                    Log.d(ActivityVerifyOTP.TAG, "onSignedInInitialize:${task.exception}")
+                }
+            }
+    }
+
     private fun onSingnedOutcleanUp() {
 
         val i = Intent(this, ActivityPhoneAuth::class.java)
@@ -934,6 +954,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onPostResume() {
         super.onPostResume()
         Log.i(TAG, "Onresume")
+        saveTokenIfConnected()
+
         //        checkPermission();
 
 //        if(getCurrentTheme() == 1){

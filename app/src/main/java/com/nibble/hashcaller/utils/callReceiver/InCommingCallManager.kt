@@ -3,11 +3,10 @@ package com.nibble.hashcaller.utils.callReceiver
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
@@ -16,7 +15,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import retrofit2.Response
 
 /**
  * Created by Jithin KG on 20,July,2020
@@ -26,34 +24,27 @@ class InCommingCallManager(
     phoneNumber: String,
     private val blockNonContactsEnabled: Boolean,
     private val notificationHelper: NotificationHelper,
-    private val searchRepository: SearchNetworkRepository
+    private val searchRepository: SearchNetworkRepository,
+    private val internetChecker: InternetChecker,
+    private val blockedListpatternDAO: BlockedLIstDao,
+    private val contactAdressesDAO: IContactAddressesDao
 )  {
-    private  val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
-    private val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
     private val phoneNumber = formatPhoneNumber(phoneNumber)
-    private val internetChecker = InternetChecker(context)
 
 
     suspend fun searchInServerAndHandle(hasedNum: String): Cntct = withContext(Dispatchers.IO) {
-        val deferedSearchInSeraver = async { searchRepository.search(hasedNum) }
         var searchResult = Cntct("", phoneNumber, 0, "", "", "")
         try {
-             val response = deferedSearchInSeraver.await()
-
-            if(!response?.body()?.cntcts.isNullOrEmpty()){
-                val result = response?.body()?.cntcts?.get(0)
-                if(result!= null){
-                    searchResult = Cntct(result.name?:"", phoneNumber, result.spammCount?:0, result.carrier?:"", result.location?:"", result.country?:"" )
-
+            if(internetChecker.isnetworkAvailable()){
+                val response = searchRepository.search(hasedNum)
+                if(!response?.body()?.cntcts.isNullOrEmpty()){
+                    val result = response?.body()?.cntcts?.get(0)
+                    if(result!= null){
+                        searchResult = Cntct(result.name?:"", phoneNumber, result.spammCount?:0, result.carrier?:"", result.location?:"", result.country?:"" )
+                    }
                 }
-
-
-
-
-            }else{
-                Log.d(TAG, "searchInServerAndHandle:empty response  ")
             }
-        }catch (e:java.lang.Exception){
+        }catch (e:Exception){
             Log.d(TAG, "searchInServerAndHandle:exception  $e")
         }
         return@withContext searchResult

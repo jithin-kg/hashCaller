@@ -10,9 +10,12 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
+import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
@@ -71,7 +74,6 @@ class IncomingCallReceiver : BroadcastReceiver(){
                 var isSpam = false
                 val inComingCallManager =   getIncomminCallManager(phoneNumber, context)
                 val hasedNum = getHashedNum(phoneNumber, context)
-                
                 val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hasedNum) }
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
@@ -126,11 +128,18 @@ class IncomingCallReceiver : BroadcastReceiver(){
     }
 
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+          val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
+
         searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+        val internetChecker = InternetChecker(context)
+         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
 
         return  InCommingCallManager(context,
             phoneNumber, context.isBlockNonContactsEnabled(),
-            notificationHelper, searchRepository)
+            notificationHelper, searchRepository,
+            internetChecker, blockedListpatternDAO,
+            contactAdressesDAO
+            )
     }
 
     private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {

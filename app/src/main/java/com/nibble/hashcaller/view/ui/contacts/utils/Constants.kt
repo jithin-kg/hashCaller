@@ -27,6 +27,7 @@ import kotlin.collections.HashMap
  * Created by Jithin KG on 23,July,2020
  */
 const val USER_PREFERENCES_NAME = "data_store_pref"
+val SAMPLE_ALIAS = "SOMETHINGNEW"
 
 const val TOKEN_DATASTORE = "token"
 const val   REQUEST_CODE_IMG_PICK = 1

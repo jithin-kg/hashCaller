@@ -13,15 +13,16 @@ import java.lang.Exception
 
 class SearchNetworkRepository(private val tokenManager: TokenManager){
 
-    private var retrofitService:ISearchService? = null
+    private var retrofitService:ISearchService?  = RetrofitClient.createaService(ISearchService::class.java)
     @SuppressLint("LongLogTag")
 
     suspend fun search(phoneNum:String): Response<SerachRes>?  = withContext(Dispatchers.IO){
         var result : Response<SerachRes>? = null
         try {
-            retrofitService = RetrofitClient.createaService(ISearchService::class.java)
+
             val token = tokenManager.getDecryptedToken()
             result =  retrofitService?.search(SearchDTO(phoneNum), token)
+            Log.d(TAG, "search: $result")
         }catch (e:Exception){
 
             Log.d(TAG, "search:exception $e")
@@ -31,10 +32,13 @@ class SearchNetworkRepository(private val tokenManager: TokenManager){
     }
 
     suspend fun incrementTotalSpamCount()  = withContext(Dispatchers.IO) {
-        retrofitService = RetrofitClient.createaService(ISearchService::class.java)
-        val token = tokenManager.getDecryptedToken()
+       try {
+           val token = tokenManager.getDecryptedToken()
 
-        retrofitService!!.incrementTotalSpamCount(token)
+           retrofitService!!.incrementTotalSpamCount(token)
+       }catch (e:Exception){
+           Log.d(TAG, "incrementTotalSpamCount: ")
+       }
     }
 
     companion object{
