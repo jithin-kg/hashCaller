@@ -4,15 +4,16 @@ import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
 import com.nibble.hashcaller.datastore.DataStoreRepository
+import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 import java.io.IOException
-import java.lang.Exception
 import java.security.*
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
+import kotlin.Exception
 
 /**
  * Created by Jithin KG on 29,July,2020
@@ -22,7 +23,6 @@ import javax.crypto.NoSuchPaddingException
 class TokenManager(private val dataStoreRepository: DataStoreRepository) {
 
 //    private lateinit var sharedPreferences: SharedPreferences
-    private val SAMPLE_ALIAS = "SOMETHINGNEW"
 
     companion object{
         private const val TAG= "__TokenManager"

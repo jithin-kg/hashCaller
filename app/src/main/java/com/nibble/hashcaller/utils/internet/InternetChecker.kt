@@ -6,30 +6,24 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class InternetChecker(private val context: Context) {
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val cm = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
 
-    fun isnetworkAvailable(): Boolean {
-        return validNetworks.size > 0
-    }
-    init {
-        checkNetwork()
-    }
-    fun checkNetwork(){
-    networkCallback = createNetworkCallback()
+
+
+    fun checkNetwork(nCback: (isAvail:Boolean) -> Unit) {
+    networkCallback = createNetworkCallback(nCback)
     val networkRequest = NetworkRequest.Builder()
         .addCapability(NET_CAPABILITY_INTERNET)
         .build()
     cm.registerNetworkCallback(networkRequest, networkCallback)
+
+
 }
-    private fun createNetworkCallback() = object : ConnectivityManager.NetworkCallback() {
+    private fun createNetworkCallback(nCback: (isAvail: Boolean) -> Unit) = object : ConnectivityManager.NetworkCallback() {
         /*
          Called when a network is detected. If that network has internet, save it in the Set.
          Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
@@ -39,14 +33,15 @@ class InternetChecker(private val context: Context) {
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             if (hasInternetCapability == true) {
                 // check if this network actually has internet
-                CoroutineScope(Dispatchers.IO).launch {
-                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
-                    if(hasInternet){
-                        withContext(Dispatchers.Main){
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
+//                    if(is){
+//                        withContext(Dispatchers.Main){
                             validNetworks.add(network)
-                        }
-                    }
-                }
+                return nCback(validNetworks.size >0)
+//                        }
+//                    }
+//                }
             }
         }
 

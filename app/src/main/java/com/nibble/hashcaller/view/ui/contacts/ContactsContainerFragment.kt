@@ -217,6 +217,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         binding.btnGivecontactPermission.setOnClickListener(this)
         binding.searchViewContacts.setOnClickListener(this)
         binding.imgBtnHamBergerCntct.setOnClickListener(this)
+        binding.fabBtn.setOnClickListener(this)
 
     }
 
@@ -256,6 +257,10 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                 Log.d(TAG, "onClick: request permission")
 //                this.permissionGivenLiveData.value = PermissionUtil.requesetPermission(this.requireActivity())
 
+            }
+            R.id.fabBtn -> {
+                Log.d(TAG, "onClick: delete")
+                contactViewModel.delteContactsInformation()
             }
             R.id.searchViewContacts->{
                 startSearchActivity()

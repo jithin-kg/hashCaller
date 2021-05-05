@@ -27,6 +27,12 @@ class HashCaller : Application(){
     companion object{
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
+
+        //CALL SERVICE
+        const val CHANNEL_3_CALL_SERVICE_ID ="chanel3"
+        const val NOTIFICATION_CHANNEL_NAME = "callerId"
+        const val NOTIFICATION_ID = 1
+
 //          var callFragment: CallFragment? = null
 //          var messagesFragment: SMSContainerFragment? = null
 //          var blockConfigFragment: BlockConfigFragment? = null

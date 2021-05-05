@@ -35,6 +35,8 @@ interface IContactIformationDAO {
 
     @Query("SELECT * FROM contacts_information WHERE number =:phonNumber  LIMIT 1")
      fun  findOne(phonNumber: String):LiveData<ContactTable?>
+     @Query("DELETE FROM contacts_information")
+     suspend fun delete()
 
 
 //    suspend fun getInfoForNumber(phoneNum: String?) :ContactTable

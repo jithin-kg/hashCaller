@@ -32,22 +32,28 @@ class InCommingCallManager(
     private val phoneNumber = formatPhoneNumber(phoneNumber)
 
 
-    suspend fun searchInServerAndHandle(hasedNum: String): Cntct = withContext(Dispatchers.IO) {
+    suspend fun searchInServerAndHandle(hasedNum: String): Cntct {
         var searchResult = Cntct("", phoneNumber, 0, "", "", "")
         try {
-            if(internetChecker.isnetworkAvailable()){
+
+//            if(internetChecker.isnetworkAvailable()){
+                Log.d(TAG, "searchInServerAndHandle: internet available")
                 val response = searchRepository.search(hasedNum)
-                if(!response?.body()?.cntcts.isNullOrEmpty()){
+            Log.d(TAG, "searchInServerAndHandle: response from server is   $response")
+
+            if(!response?.body()?.cntcts.isNullOrEmpty()){
                     val result = response?.body()?.cntcts?.get(0)
                     if(result!= null){
                         searchResult = Cntct(result.name?:"", phoneNumber, result.spammCount?:0, result.carrier?:"", result.location?:"", result.country?:"" )
                     }
                 }
-            }
+//            }else{
+//                Log.d(TAG, "searchInServerAndHandle: internet not availble")
+//            }
         }catch (e:Exception){
             Log.d(TAG, "searchInServerAndHandle:exception  $e")
         }
-        return@withContext searchResult
+        return searchResult
 
     }
 
@@ -99,7 +105,7 @@ class InCommingCallManager(
         c.silenceIncomingCall()
     }
 
-    suspend fun isBlockedByPattern(): Boolean  = withContext(Dispatchers.IO){
+    suspend fun isBlockedByPattern(): Boolean {
         var match = false
       for (item in blockedListpatternDAO.getAllBLockListPatternList()){
 
@@ -115,14 +121,14 @@ class InCommingCallManager(
                     break
               }
              }
-        return@withContext match
+        return match
 
     }
 
     /**
      * if the function returns true block the call
      */
-    suspend fun isNonContactsCallsAllowed(): Boolean  = withContext(Dispatchers.IO){
+    suspend fun isNonContactsCallsAllowed(): Boolean {
         var isBlock  = false
         val res = contactAdressesDAO.find(phoneNumber)
             if (res == null) {
@@ -133,7 +139,7 @@ class InCommingCallManager(
 //                    notificationHelper.showNotificatification(true, phoneNumber)
                 }
             }
-        return@withContext isBlock
+        return isBlock
 
     }
 

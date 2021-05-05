@@ -213,6 +213,10 @@ class ContactLocalSyncRepository(
 
     }
 
+    suspend fun deleteAllitems()   = withContext(Dispatchers.IO){
+        contactLisDAO?.delete()
+    }
+
 
     companion object{
         private const val TAG = "__ContactLocalSyncRepository"

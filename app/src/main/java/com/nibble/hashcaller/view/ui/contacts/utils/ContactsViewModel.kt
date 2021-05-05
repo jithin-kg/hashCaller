@@ -89,5 +89,9 @@ class ContactsViewModel(
 //        WorkManager.getInstance().enqueue(request)
     }
 
+    fun delteContactsInformation() = viewModelScope.launch {
+        contactLocalSyncRepository.deleteAllitems()
+    }
+
 
 }

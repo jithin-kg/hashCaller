@@ -32,10 +32,6 @@ class IncommingCallViewModel(
                 emit(Resource.loading(data=null))
         var res: Response<NetWorkResponse>? = null
              try {
-
-//                    mt.value  = cntctsFromDb?.value
-//                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
-
                     var number = formatPhoneNumber(phoneNumber)
                     number = Secrets().managecipher(packageName, number)
                    res = spamNetworkRepository.report(ReportedUserDTo(

@@ -137,17 +137,6 @@
         android:layout_marginTop="100dp"
         />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabBtnDeleteSMS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:textColor="@color/colorWhite"
-        android:layout_margin="32dp"
-        app:iconTint="@color/colorWhite"
-        android:visibility="invisible"
-        app:icon="@drawable/ic_delete_white_24"
-        android:backgroundTint="@color/colorPrimary" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabBtn"
         android:layout_width="wrap_content"

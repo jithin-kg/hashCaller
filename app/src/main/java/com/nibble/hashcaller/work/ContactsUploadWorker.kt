@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.work
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.ContactsContract
 import android.util.Log
@@ -50,7 +51,6 @@ val countryCodeHelper = CountrycodeHelper(context)
 
             setNewlySavedContactsList()
             if(!contactsListOf12.isNullOrEmpty()){
-
                 for (contactSublist in contactsListOf12){
                     Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
 //                    val countryCode =   "91" //for emulator country code should be 91
@@ -96,6 +96,7 @@ val countryCodeHelper = CountrycodeHelper(context)
 
 
 
+    @SuppressLint("LongLogTag")
     private suspend fun setNewlySavedContactsList() {
         val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
        val  allcontactsInContentProvider =  contactRepository?.fetchContacts()
@@ -105,11 +106,15 @@ val countryCodeHelper = CountrycodeHelper(context)
 
                 if(!contact.phoneNumber.isNullOrEmpty()){
                     val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
+
                     val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
                     if(res==null){
                         Log.d("__NOTINDB", "$formattedPhoneNum")
                         val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                        Log.d("__hashedInContactUploadWorker", "setNewlySavedContactsList: hashed num is ${hashedPhoneNum}")
+
                         val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
+
                         contacts.add(cntctDtoObj)
                     }
                 }
@@ -122,7 +127,6 @@ val countryCodeHelper = CountrycodeHelper(context)
     private suspend fun saveContactsToLocalDB(cntactsFromServer: List<ContactUploadResponseItem>?) {
         Log.d(TAG, "saveContactsToLocalDB:  ")
         var cts:MutableList<ContactTable>? = mutableListOf();
-
         if (cntactsFromServer != null) {
             for(item in cntactsFromServer){
                 Log.d(TAG, "saveContactsToLocalDB: inserting ${item}")

@@ -47,11 +47,11 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
         try {
             val networklivedta = ConnectionLiveData(context)
 
-            Log.d(TAG, "doWork: ")
             val callersLocalRepository =
                 CallLocalRepository(
                     context
                 )
+
             val allcallsincontentProvider = callersLocalRepository.getCallLog()
             val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
             val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
@@ -124,7 +124,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(formatPhoneNumber(caller.number))
 
             if(callersInfoAvailableInLocalDb == null){
-                Log.d(TAG, "doWork: no data available in db for number ${caller.number}")
 
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                 val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
@@ -136,7 +135,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     //We need to check if new data information about the number is available server
                     //todo this is getting called all the time, need to check on this
 
-//                    Log.d(TAG, "doWork: outdated data")
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                     callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))
@@ -150,7 +148,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
         //if the size of the list is greater than 12 then splice it into chunks of 12 and rest
         //to reduce load on server, we only sends 12 items at a time
         callersListChunkOfSize12 = callersListTobeSendToServer.chunked(12)
-        Log.d(TAG, "setlistOfAllUnknownSenders : chucked list is $callersListChunkOfSize12")
 
 
     }

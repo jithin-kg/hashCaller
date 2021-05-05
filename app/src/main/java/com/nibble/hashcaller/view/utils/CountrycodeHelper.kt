@@ -48,19 +48,15 @@ class CountrycodeHelper(val context: Context) {
         for (element in subscriptionInfos) {
             val lsuSubscriptionInfo: SubscriptionInfo = element
             val operatorDisplayName = lsuSubscriptionInfo.displayName
-            Log.d(TAG, "getNumber ${lsuSubscriptionInfo.number}")
 
 //                    val tel =  getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager;
 //                    val operator = tel.networkOperator
 //                    val simOperator = tel.simOperator
 
-            Log.d(TAG, "network display : $operatorDisplayName")
-            Log.d(TAG, "getCountryIso   ${lsuSubscriptionInfo.countryIso}")
             val countryIso = lsuSubscriptionInfo.countryIso.toUpperCase()
             val countryCode =
                 io.michaelrocks.libphonenumber.android.PhoneNumberUtil.createInstance(context)
                     .getCountryCodeForRegion(countryIso)
-            Log.d(TAG, "getSimOperator: coutry code is $countryCode")
             cCode = countryCode
 
             subscriptionInfoList.add(
@@ -107,20 +103,9 @@ class CountrycodeHelper(val context: Context) {
             for (element in subscriptionInfos) {
                 val lsuSubscriptionInfo: SubscriptionInfo = element
                 val operatorDisplayName = lsuSubscriptionInfo.displayName
-                Log.d(TAG, "getNumber " + lsuSubscriptionInfo.getNumber())
 //                    val tel =  getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager;
 //                    val operator = tel.networkOperator
 //                    val simOperator = tel.simOperator
-
-                Log.d(
-                    TAG,
-                    "network display : $operatorDisplayName"
-                )
-
-                Log.d(
-                    TAG,
-                    "getCountryIso   ${lsuSubscriptionInfo.countryIso}"
-                )
                 lsuSubscriptionInfo.iccId
                  countryIso = lsuSubscriptionInfo.countryIso.toUpperCase()
             }

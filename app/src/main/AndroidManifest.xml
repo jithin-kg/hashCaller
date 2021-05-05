@@ -48,6 +48,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
+        <service android:name=".utils.callReceiver.CallhandlService"/>
         <activity android:name=".view.ui.profile.ProfileActivity"
             android:theme="@style/AppTheme"
             ></activity>
