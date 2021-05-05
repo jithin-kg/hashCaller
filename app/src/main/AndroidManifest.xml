@@ -8,13 +8,15 @@
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="true" />
-
+     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.PROCESS_INCOMING_CALLS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -48,7 +50,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <service android:name=".utils.callReceiver.CallhandlService"/>
+        <service
+            android:name=".utils.callReceiver.ForegroundService"
+            android:enabled="true"
+            android:exported="true" />
+
+<!--        <service android:name=".utils.callReceiver.CallhandlService"-->
+<!--            android:permission="android.permission.BIND_JOB_SERVICE"-->
+<!--            android:exported="false"-->
+<!--            />-->
+
         <activity android:name=".view.ui.profile.ProfileActivity"
             android:theme="@style/AppTheme"
             ></activity>

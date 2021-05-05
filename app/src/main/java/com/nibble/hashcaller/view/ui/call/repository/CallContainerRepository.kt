@@ -65,7 +65,6 @@ class CallContainerRepository(
         val token = tokenManager.getDecryptedToken()
 
         val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
-        Log.d(TAG, "uploadNumbersToGetInfo: response is ${response}")
         return@withContext response
     }
 
@@ -107,7 +106,6 @@ class CallContainerRepository(
 //        var numRowsDeleted = 0
 
         try {
-                Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = CallLog.Calls.CONTENT_URI
                 val selection = "${CallLog.Calls.NUMBER} = ?"
 //                callLogDAO?.delete(id)
@@ -137,7 +135,6 @@ class CallContainerRepository(
 
     @SuppressLint("LongLogTag")
     suspend fun unmuteByAddress(contactAdders: String): String = withContext(Dispatchers.IO){
-        Log.d(TAG, "unmuteByAddress:${contactAdders}")
         mutedCallersDAO!!.delete(contactAdders)
         return@withContext contactAdders
     }
@@ -359,7 +356,6 @@ class CallContainerRepository(
 //
 //                        i++
 //                    }
-                    Log.d(TAG, "getRawCallLogs: -------------------------------------------------")
                     var number = cursor.getString(0)
                     val formatedNum = formatPhoneNumber(number)
                     if(!setOfAddres.contains(formatedNum)){
@@ -373,9 +369,7 @@ class CallContainerRepository(
                     val id = cursor.getLong(4)
                     var dateInMilliseconds = cursor.getLong(5)
                     var subId = cursor.getString(6)
-                    Log.d(TAG+"sub", "getRawCallLogs: $subId")
                     var simID =  simIds.indexOf(removeAllNonNumbericChars(subId))
-                    Log.d(TAG+"simId", "getRawCallLogs: $simID")
 
                     val fmt =
                         SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")

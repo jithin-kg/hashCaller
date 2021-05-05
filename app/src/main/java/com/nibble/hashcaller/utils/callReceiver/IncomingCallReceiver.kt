@@ -4,27 +4,9 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.annotation.RequiresApi
-import com.nibble.hashcaller.Secrets
-import com.nibble.hashcaller.datastore.DataStoreRepository
-import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
-import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import com.nibble.hashcaller.utils.NotificationHelper
-import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.utils.internet.InternetChecker
-import com.nibble.hashcaller.utils.notifications.tokeDataStore
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
-import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
-import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
-import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.*
-import java.lang.Exception
+import androidx.core.content.ContextCompat
 
 
 /**
@@ -32,6 +14,9 @@ import java.lang.Exception
  * this class recieves the broadcast intent about call state
  */
 class IncomingCallReceiver : BroadcastReceiver(){
+    val ACTION_DO_STUFF = "action_do_stuff"
+    val intent = Intent( )
+
     init {
 
     }
@@ -43,16 +28,17 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //    private lateinit var notificationHelper: NotificationHelper
 //    private lateinit var  searchRepository: SearchNetworkRepository
 
-    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission", "LogNotTimber") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
 //        notificationHelper = getNotificationHelper(context)
 
+//        goAsync()
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
 
             return
         }
         val newState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+        Log.d(TAG, "onReceive:state is  $newState")
         if (TelephonyManager.EXTRA_STATE_RINGING == newState) {
 
             val phoneNumber =
@@ -63,68 +49,29 @@ class IncomingCallReceiver : BroadcastReceiver(){
             if (phoneNumber == null) {
                 return
             }
-            val intentService = Intent(context,CallhandlService("CallhandlService")::class.java )
-            intentService.putExtra(CONTACT_ADDRES, phoneNumber)
-            context.startService(intentService)
-//            /**
-//             * importatnt to launch using global scope because the
-//             * onReceive will return immediately and BroadcastReceiver will die before launch completes
-//             * https://stackoverflow.com/questions/58710363/cancel-coroutines-in-a-broadcastreceiver
-//             */
-//            val supervisorScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-//            supervisorScope.launch {
-//                var isSpam = false
-//                val inComingCallManager =   getIncomminCallManager(phoneNumber, context)
-//                val hasedNum = getHashedNum(phoneNumber, context)
-//                //46a418e15711ea36c113b2fb9a157ade7aea9dd453254952428e7a2117f119c0
-//                //00c2551169dde5d78ee4c3424feef14e09a75d3b91d9e7e2f5878b370508dd65 worker
-//                Log.d("__hashedNumInReceiver", "onReceive: $hasedNum")
-//                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hasedNum) }
-//                val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
-//                val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
-//                //todo also search for infor from server in local db about callers or a better way is if
-//                //to add number which are spam received from server info during worker,
-//                //insert them to blockpattern list, then check if block common spammers enabled
-//                try {
-//                    Log.d(TAG, "onReceive: firsttry")
-//                    val isBlockedByPattern  = defBlockedByPattern.await()
-//                    if(isBlockedByPattern){
-//                        isSpam = true
-//                        endCall(inComingCallManager, phoneNumber, context)
-//                    }
-//                }catch (e:Exception){
-//                    Log.d(TAG, "onReceive: $e")
-//                }
+//            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+//            val data = Data.Builder()
+//            data.putString(CONTACT_ADDRES, phoneNumber)
 //
-//                try {
-//                    Log.d(TAG, "onReceive: second try")
-//                    val resFromServer = defServerHandling.await()
-//                    if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
-//                        isSpam = true
-//                        endCall(inComingCallManager, phoneNumber, context)
+//            val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallHandleWorker::class.java)
+////                .setConstraints(constraints)
+//                .setInputData(data.build())
+//                .build()
 //
-//                    }
-//                }catch (e:Exception){
-//                    Log.d(TAG, "onReceive: $e ")
-//                }
-//                try {
-//                    Log.d(TAG, "onReceive: third try ")
-//                    val r = defNonContactsBlocked.await()
-//                    if(r){
-//                        endCall(inComingCallManager, phoneNumber, context)
-//
-//                    }
-//                }catch (e:Exception){
-//                    Log.d(TAG, "onReceive: $e")
-//                }
-////                context.startActivityIncommingCallView(null, phoneNumber)
-//
-////                inComingCallManager.manageCall()
+//            intent.putExtra(CONTACT_ADDRES, phoneNumber)
+//            CallhandlService.enqueueWork(context.applicationContext, intent)
+
+            val serviceIntent = Intent(context, ForegroundService::class.java)
+            serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android")
+            ContextCompat.startForegroundService(context, serviceIntent)
+
+        }else {
+            val serviceIntent = Intent(context, ForegroundService::class.java)
+          context. stopService(serviceIntent)
+//            if(CallhandlService.isServiceCurrentlyRunning()){
+//                context.stopService(intent)
 //
 //            }
-
-
-
         }
     }
 

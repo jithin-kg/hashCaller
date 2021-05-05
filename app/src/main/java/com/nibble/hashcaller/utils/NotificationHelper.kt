@@ -21,7 +21,7 @@ class NotificationHelper(
 
     ) {
 
-    val notificationCmpt =   NotificationCompat.Builder(context, HashCaller.CHANNEL_2_ID)
+    var notificationCmpt =   NotificationCompat.Builder(context, HashCaller.CHANNEL_2_ID)
     val  resultIntent= Intent(context, MainActivity::class.java)
     var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
@@ -58,5 +58,19 @@ class NotificationHelper(
             notificationManagerCmpt.notify(2, notification)
 
         }
+    }
+
+    fun showNotificationForgroundCallService(phoneNumber: String) {
+        val notification = notificationCmpt
+            .setSmallIcon(R.drawable.ic_baseline_block_red)
+            .setContentTitle("Call from $phoneNumber")
+            .setContentText("Caller id is active")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setContentIntent(resultPendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManagerCmpt.notify(2, notification)
     }
 }
