@@ -34,7 +34,7 @@ class SearchHelper{
                         }
                         val i = Intent(context, ActivityIncommingCallView::class.java)
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        i.putExtra("name", result.name)
+                        i.putExtra("name", result.firstName)
                         i.putExtra("phoneNumber", phoneNumber)
                         i.putExtra("spamcount", result.spammCount)
                         i.putExtra("carrier", result.carrier)

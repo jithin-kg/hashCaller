@@ -62,9 +62,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         viewModel = ViewModelProvider(this, IncommingCallInjectorUtil.provideUserInjectorUtil(this)).get(
             IncommingCallViewModel::class.java)
 
-        val callerInfo = Cntct("jithin", "803830",
-            0, "vodafone",
-        "banglore", "IN")
+//        val callerInfo = Cntct(, "803830",
+//            "", "vodafone",
+//        "banglore", "IN")
 
 
 

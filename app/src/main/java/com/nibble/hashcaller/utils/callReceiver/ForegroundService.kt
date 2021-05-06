@@ -21,6 +21,7 @@ import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
+import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -104,7 +105,10 @@ class ForegroundService : Service() {
                     if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true
                         endCall(inComingCallManager, phoneNumber, this@ForegroundService)
-
+                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
+                    }
+                    if(!resFromServer.firstName.isNullOrEmpty()){
+                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
                     }
                 }catch (e: Exception){
                     Log.d(CallhandlService.TAG, "onReceive: $e ")
@@ -122,7 +126,7 @@ class ForegroundService : Service() {
 
 
             Log.d(TAG, "onStartCommand: after a delay")
-            delay(500L)
+            delay(5000L)
             stopSelf();
 
         }

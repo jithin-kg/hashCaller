@@ -31,7 +31,7 @@ class InCommingCallManager(
 
 
     suspend fun searchInServerAndHandle(hasedNum: String): Cntct {
-        var searchResult = Cntct("", phoneNumber, 0, "", "", "")
+        var searchResult = Cntct("",  "", "", "", "", "", "", 0)
         try {
 
 //            if(internetChecker.isnetworkAvailable()){
@@ -42,7 +42,8 @@ class InCommingCallManager(
             if(!response?.body()?.cntcts.isNullOrEmpty()){
                     val result = response?.body()?.cntcts?.get(0)
                     if(result!= null){
-                        searchResult = Cntct(result.name?:"", phoneNumber, result.spammCount?:0, result.carrier?:"", result.location?:"", result.country?:"" )
+                        searchResult = Cntct("", result.firstName, result.lastName, result.carrier?:"",
+                            result.location?:"", result.lineType, result.country?:"", result.spammCount  )
                     }
                 }
 //            }else{
