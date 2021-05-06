@@ -54,8 +54,15 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 //        getWindow().setBackgroundDrawable( ColorDrawable(android.graphics.Color.TRANSPARENT))
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        /**
+         * important to setLayout outherwise activity goes full screen
+         */
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
         window.setBackgroundDrawable( ColorDrawable(Color.TRANSPARENT));
-        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+//        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 //        (this as AppCompatActivity).supportActionBar!!.title ="My APP Title"
 ////        supportActionBar?.hide();
 //        val actionbar: ActionBar? = supportActionBar
@@ -71,10 +78,8 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 //        supportActionBar?.title = ""
 
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-//        this.setFinishOnTouchOutside(false)
+        this.setFinishOnTouchOutside(true)
         viewModel = ViewModelProvider(this, IncommingCallInjectorUtil.provideUserInjectorUtil(this)).get(
             IncommingCallViewModel::class.java
         )
@@ -88,7 +93,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         binding.txtVPhoneNum.text = phoneNumber
         binding.txtVcallerName.text =  name
         binding.txtVCountry.text =  location
-        binding.txtVCountry.text =  carrier
 //        if(callerInfo.spammerStatus !=null)
         if(spamcount > 0){
             Log.d(TAG, "onCreate: spammer calling");
