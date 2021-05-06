@@ -57,6 +57,7 @@ import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
@@ -1169,9 +1170,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            123 -> {
+            ROLE_SCREENING_APP_REQUEST_CODE -> {
+
                 if (resultCode == Activity.RESULT_OK) {
                     //The user set you as the default screening app!
+//                        dataStoreViewModel.userSelectedAsScreeningApp()
                     Log.d(TAG, "onActivityResult: user set as as the defaul screening app")
                 } else {
                     //the user didn't set you as the default screening app...

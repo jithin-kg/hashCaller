@@ -110,9 +110,6 @@ class ForegroundService : Service() {
                     Log.d(CallhandlService.TAG, "onReceive: $e")
                 }
 
-
-            Log.d(TAG, "onStartCommand: after a delay")
-            delay(5000L)
             stopSelf();
 
         }

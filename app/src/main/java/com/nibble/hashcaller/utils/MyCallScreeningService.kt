@@ -17,6 +17,8 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callHandlers.base.CallScreeningHelper
@@ -27,7 +29,10 @@ import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
+import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
+import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -129,6 +134,38 @@ class MyCallScreeningService: CallScreeningService() {
                     }
                     try{
                         val searchResponse = defredServerInfo.await()
+                        val result = searchResponse?.body()?.cntcts
+
+                        if(searchResponse?.body()?.status == StatusCodes.OK){
+
+                            if(searchResponse?.body()?.cntcts !=null){
+                                val cntctInfoFromserver = CntctitemForView(result?.firstName?:"", result?.lastName?:"", result?.carrier?:"",
+                                    result?.location?:"", result?.lineType?:"",
+                                    result?.country?:"",
+                                    result?.spammCount?:0,
+                                    searchResponse?.body()?.status?:0)
+
+                                if(searchResponse!!.body()!!.cntcts!!.spammCount?:0 > SPAM_THREASHOLD){
+                                    if(isBlockTopSpammersAutomaticallyEnabled()){
+                                        response.setDisallowCall(true)
+                                        respondToCall(callDetails, response.build())
+                                        showNotificatification(true, formatedNum)
+
+                                    }
+                                    else{
+                                        this@MyCallScreeningService.startActivityIncommingCallView(cntctInfoFromserver, phoneNumber)
+                                        response.setDisallowCall(false)
+                                        respondToCall(callDetails, response.build())
+                                    }
+                                }else{
+                                    this@MyCallScreeningService.startActivityIncommingCallView(cntctInfoFromserver, phoneNumber)
+                                    response.setDisallowCall(false)
+                                    respondToCall(callDetails, response.build())
+                                }
+                            }
+
+//                            startActivityIncommingCallView(cntctInfoFromserver, phoneNumber)
+                        }
                         Log.d(TAG, "handleThisCall: ${searchResponse?.body()?.cntcts}")
                     }catch(e:Exception){
                         Log.d(TAG, "search in server : $e")
@@ -136,7 +173,7 @@ class MyCallScreeningService: CallScreeningService() {
                 }catch (e:Exception){
                     false
                 }
-
+            respondToCall(callDetails, response.build())
             }
 
     }
