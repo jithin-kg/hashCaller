@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.network.contact
 
-import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import retrofit2.Response

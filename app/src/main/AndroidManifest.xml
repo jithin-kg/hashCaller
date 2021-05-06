@@ -163,7 +163,7 @@
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:theme="@style/mytheme" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->

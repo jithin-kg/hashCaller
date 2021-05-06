@@ -25,6 +25,7 @@ import javax.crypto.Cipher
 /**
  * Created by Jithin KG on 22,July,2020
  */
+
 class SearchViewModel(
     private val searchNetworkRepository: SearchNetworkRepository,
     private  val contactLocalSyncRepository: ContactLocalSyncRepository
@@ -71,7 +72,7 @@ class SearchViewModel(
                  hashedPhoneNum.value = Secrets().managecipher(packageName, num)//encoding the number with my algorithm
 
                  res = searchNetworkRepository.search(hashedPhoneNum.value!!)
-                 var result = res?.body()?.cntcts?.get(0)
+                 var result = res?.body()?.cntcts
 
 //                 searchResultLiveData.value = result
 

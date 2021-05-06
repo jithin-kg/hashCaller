@@ -6,9 +6,6 @@ import java.io.Serializable
 
 data class Cntct(
 
-    @SerializedName("_id")
-    val _id: String,
-
     @SerializedName("firstName")
     val firstName: String? = "",
 

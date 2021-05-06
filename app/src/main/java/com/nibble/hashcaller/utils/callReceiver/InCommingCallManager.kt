@@ -31,7 +31,7 @@ class InCommingCallManager(
 
 
     suspend fun searchInServerAndHandle(hasedNum: String): Cntct {
-        var searchResult = Cntct("",  "", "", "", "", "", "", 0)
+        var searchResult = Cntct(  "", "", "", "", "", "", 0)
         try {
 
 //            if(internetChecker.isnetworkAvailable()){
@@ -39,13 +39,13 @@ class InCommingCallManager(
                 val response = searchRepository.search(hasedNum)
             Log.d(TAG, "searchInServerAndHandle: response from server is   $response")
 
-            if(!response?.body()?.cntcts.isNullOrEmpty()){
-                    val result = response?.body()?.cntcts?.get(0)
+//            if(response?.body()){
+                    val result = response?.body()?.cntcts
                     if(result!= null){
-                        searchResult = Cntct("", result.firstName, result.lastName, result.carrier?:"",
-                            result.location?:"", result.lineType, result.country?:"", result.spammCount  )
+                        searchResult = Cntct(result.firstName?:"", result.lastName?:"", result.carrier?:"",
+                            result.location?:"", result.lineType?:"", result.country?:"", result.spammCount?:0  )
                     }
-                }
+//                }
 //            }else{
 //                Log.d(TAG, "searchInServerAndHandle: internet not availble")
 //            }

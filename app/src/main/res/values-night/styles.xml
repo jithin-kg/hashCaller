@@ -20,6 +20,28 @@
         <!--        end -->
     </style>
 
+    <!-- Base application theme. -->
+    <style name="IncommingCallViewTheme" parent="@style/Theme.AppCompat.Dialog">
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+<!--        <item name="android:windowSoftInputMode">stateHidden</item>-->
+<!--        <item name="colorAccent">@color/colorPrimary</item>-->
+<!--        <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>-->
+<!--        <item name="fontFamily"> sans-serif</item>-->
+
+<!--        &lt;!&ndash;        For enabling window activity transition&ndash;&gt;-->
+<!--        <item name="android:windowActivityTransitions">true</item>-->
+<!--        <item name="android:windowIsTranslucent">true</item>-->
+<!--        &lt;!&ndash;        end &ndash;&gt;-->
+<!--        &lt;!&ndash; android:windowLightStatusBar is important, this makes status bar item colors dark-->
+<!--              so that it is visible when layout colorPrimaryDark is white&ndash;&gt;-->
+<!--        <item name="android:windowLightStatusBar">false</item>-->
+        <!--        end -->
+    </style>
+    <style name="mytheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="windowNoTitle">true</item>
+    </style>
 
     <style name="chat_timings">
 

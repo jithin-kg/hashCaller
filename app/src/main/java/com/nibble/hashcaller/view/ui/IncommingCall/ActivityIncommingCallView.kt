@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.search.model.Cntct
 import kotlinx.android.synthetic.main.activity_incomming_call_view.*
 
@@ -19,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_incomming_call_view.*
  */
 
 class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding: ActivityIncommingCallViewBinding
     @SuppressLint("LongLogTag")
     private lateinit var viewModel:IncommingCallViewModel
     private lateinit var callerInfo:Cntct
@@ -45,7 +48,13 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 //        dialog.showDialog("hi")
 //        getWindow().setBackgroundDrawable( ColorDrawable(android.graphics.Color.TRANSPARENT))
-        setContentView(R.layout.activity_incomming_call_view)
+        binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        supportActionBar?.hide();
+//        val actionbar: ActionBar? = supportActionBar
+//        actionbar?.title = ""
+//        actionbar?.hide()
+
 
 //        appbar.isEnabled = false
 //        val toolbar: Toolbar = findViewById<View>(R.id.toolbar) as Toolbar
@@ -60,19 +69,19 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 //        this.setFinishOnTouchOutside(false)
         viewModel = ViewModelProvider(this, IncommingCallInjectorUtil.provideUserInjectorUtil(this)).get(
-            IncommingCallViewModel::class.java)
+            IncommingCallViewModel::class.java
+        )
 
 //        val callerInfo = Cntct(, "803830",
 //            "", "vodafone",
 //        "banglore", "IN")
 
 
-
-        btnReportCaller.setOnClickListener(this)
-        txtVPhoneNum.text = phoneNumber
-        txtVCarrier.text =  name
-        txtVCity.text =  location
-        txtVCountry.text =  carrier
+        binding.imgBtnCloseIncommin.setOnClickListener(this)
+        binding.txtVPhoneNum.text = phoneNumber
+        binding.txtVcallerName.text =  name
+        binding.txtVCountry.text =  location
+        binding.txtVCountry.text =  carrier
 //        if(callerInfo.spammerStatus !=null)
         if(spamcount > 0){
             Log.d(TAG, "onCreate: spammer calling");
@@ -93,9 +102,10 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
         when(v?.id){
-            R.id.btnReportCaller->{
+            R.id.imgBtnCloseIncommin -> {
                 Log.d(TAG, "onClick: btn")
-                reportuser()
+                finish()
+//                reportuser()
             }
         }
     }
