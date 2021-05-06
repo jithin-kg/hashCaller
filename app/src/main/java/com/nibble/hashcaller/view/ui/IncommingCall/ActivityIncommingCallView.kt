@@ -2,10 +2,13 @@ package com.nibble.hashcaller.view.ui.IncommingCall
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -34,23 +37,27 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        requestWindowFeature(Window.FEATURE_NO_TITLE)
+
          name = intent.getStringExtra("name")
          phoneNumber = intent.getStringExtra("phoneNumber")
          spamcount = intent.getIntExtra("spamcount", 0)
         location  = intent.getStringExtra("location")
         carrier  = intent.getStringExtra("carrier")
+
 //        setTheme(R.style.AppTheme)
 //        callerInfo = i.getSerializableExtra("SerachRes") as Cntct
 
 //        Log.d(TAG, "onCreate: $callerInfo")
-        val dialog = IncommingDialog(this)
+//        val dialog = IncommingDialog(this)
 
 //        dialog.showDialog("hi")
 //        getWindow().setBackgroundDrawable( ColorDrawable(android.graphics.Color.TRANSPARENT))
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.hide();
+        window.setBackgroundDrawable( ColorDrawable(Color.TRANSPARENT));
+        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+//        (this as AppCompatActivity).supportActionBar!!.title ="My APP Title"
+////        supportActionBar?.hide();
 //        val actionbar: ActionBar? = supportActionBar
 //        actionbar?.title = ""
 //        actionbar?.hide()
