@@ -5,11 +5,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
-import androidx.appcompat.app.ActionBar
+import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,12 +15,13 @@ import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.search.model.Cntct
 import kotlinx.android.synthetic.main.activity_incomming_call_view.*
 
+
 /**
  * !!important to have theme Theme.Holo.Dialog.NoActionBar,
  * the activity should be inheriting Activity not AppcompactActivity
  */
 
-class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
+class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, View.OnTouchListener  {
     private lateinit var binding: ActivityIncommingCallViewBinding
     @SuppressLint("LongLogTag")
     private lateinit var viewModel:IncommingCallViewModel
@@ -34,60 +32,53 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private  var location :String = ""
     private  var carrier :String = ""
     private  var spamcount : Int = 0
+    var dX = 0f
+    var dY = 0f
+    var lastAction = 0
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-         name = intent.getStringExtra("name")?:""
-         phoneNumber = intent.getStringExtra("phoneNumber")?:""
-         spamcount = intent.getIntExtra("spamcount", 0)
-        location  = intent.getStringExtra("location")?:""
-        carrier  = intent.getStringExtra("carrier")?:""
-
-//        setTheme(R.style.AppTheme)
-//        callerInfo = i.getSerializableExtra("SerachRes") as Cntct
-
-//        Log.d(TAG, "onCreate: $callerInfo")
-//        val dialog = IncommingDialog(this)
-
-//        dialog.showDialog("hi")
-//        getWindow().setBackgroundDrawable( ColorDrawable(android.graphics.Color.TRANSPARENT))
+       getIntents()
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        /**
-         * important to setLayout outherwise activity goes full screen
-         */
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        window.setBackgroundDrawable( ColorDrawable(Color.TRANSPARENT));
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        configurePopupActivity()
+       initViewmodel()
+        initListeners()
+       setViewElements()
+//
+    }
 
-//        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-//        (this as AppCompatActivity).supportActionBar!!.title ="My APP Title"
-////        supportActionBar?.hide();
-//        val actionbar: ActionBar? = supportActionBar
-//        actionbar?.title = ""
-//        actionbar?.hide()
+    private fun initListeners() {
+        binding.cnstraintlyoutInner.setOnTouchListener(this)
+    }
 
-
-//        appbar.isEnabled = false
-//        val toolbar: Toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-//        setSupportActionBar(toolbar)
-//        supportActionBar!!.setDisplayShowTitleEnabled(false)
-
-
-//        supportActionBar?.title = ""
-
-
-        this.setFinishOnTouchOutside(true)
+    private fun initViewmodel() {
         viewModel = ViewModelProvider(this, IncommingCallInjectorUtil.provideUserInjectorUtil(this)).get(
             IncommingCallViewModel::class.java
         )
+    }
 
-//        val callerInfo = Cntct(, "803830",
-//            "", "vodafone",
-//        "banglore", "IN")
+    private fun getIntents() {
+        name = intent.getStringExtra("name")?:""
+        phoneNumber = intent.getStringExtra("phoneNumber")?:""
+        spamcount = intent.getIntExtra("spamcount", 0)
+        location  = intent.getStringExtra("location")?:""
+        carrier  = intent.getStringExtra("carrier")?:""
+    }
 
+    private fun configurePopupActivity() {
+        /**
+         * important to setLayout outherwise activity goes full screen
+         */
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
 
+        this.setFinishOnTouchOutside(true)
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun setViewElements() {
         binding.imgBtnCloseIncommin.setOnClickListener(this)
         binding.tvPhoneNumIncomming.text = "+918086176336"
         binding.txtVcallerName.text =  "Jithin Kg"
@@ -101,7 +92,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             layoutIncommingCall.setBackgroundColor(Color.parseColor("#0CBDEA"))
 
         }
-//
     }
 
     companion object{
@@ -126,5 +116,27 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         viewModel.report(phoneNumber, packageName).observe(this, Observer {
             Log.d(TAG, "reportuser: observing")
         })
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when (event!!.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                dX = binding.cnstraintlyoutInner.x - event!!.rawX
+                dY = binding.cnstraintlyoutInner.y - event!!.rawY
+                lastAction = MotionEvent.ACTION_DOWN
+            }
+            MotionEvent.ACTION_MOVE -> {
+                binding.cnstraintlyoutInner.y = event!!.rawY + dY
+                binding.cnstraintlyoutInner.setX(event!!.rawX + dX)
+                lastAction = MotionEvent.ACTION_MOVE
+            }
+            MotionEvent.ACTION_UP -> if (lastAction === MotionEvent.ACTION_DOWN) Toast.makeText(
+                this,
+                "Clicked!",
+                Toast.LENGTH_SHORT
+            ).show()
+            else -> return false
+        }
+        return true
     }
 }
