@@ -60,6 +60,7 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.ActivityVerifyOTP
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
@@ -69,6 +70,7 @@ import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
+import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
@@ -158,6 +160,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
+
 
         savedState = savedInstanceState
         initDataStoreViewmodel()

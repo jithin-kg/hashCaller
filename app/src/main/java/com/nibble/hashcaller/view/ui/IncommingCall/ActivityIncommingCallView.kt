@@ -38,11 +38,11 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-         name = intent.getStringExtra("name")
-         phoneNumber = intent.getStringExtra("phoneNumber")
+         name = intent.getStringExtra("name")?:""
+         phoneNumber = intent.getStringExtra("phoneNumber")?:""
          spamcount = intent.getIntExtra("spamcount", 0)
-        location  = intent.getStringExtra("location")
-        carrier  = intent.getStringExtra("carrier")
+        location  = intent.getStringExtra("location")?:""
+        carrier  = intent.getStringExtra("carrier")?:""
 
 //        setTheme(R.style.AppTheme)
 //        callerInfo = i.getSerializableExtra("SerachRes") as Cntct
@@ -58,7 +58,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
          * important to setLayout outherwise activity goes full screen
          */
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         window.setBackgroundDrawable( ColorDrawable(Color.TRANSPARENT));
 //        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
@@ -90,9 +89,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 
         binding.imgBtnCloseIncommin.setOnClickListener(this)
-        binding.txtVPhoneNum.text = phoneNumber
-        binding.txtVcallerName.text =  name
-        binding.txtVCountry.text =  location
+        binding.tvPhoneNumIncomming.text = "+918086176336"
+        binding.txtVcallerName.text =  "Jithin Kg"
+        binding.txtVLocaltion.text =  "Kerala india"
 //        if(callerInfo.spammerStatus !=null)
         if(spamcount > 0){
             Log.d(TAG, "onCreate: spammer calling");

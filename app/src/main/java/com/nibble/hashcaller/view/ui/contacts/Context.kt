@@ -27,14 +27,14 @@ import java.util.*
 
 
 fun Context.startActivityIncommingCallView(cntc: Cntct, phoneNumber: String) {
-
         val i = Intent(this, ActivityIncommingCallView::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        i.putExtra("name", cntc?.firstName)
-        i.putExtra("phoneNumber", phoneNumber)
-        i.putExtra("spamcount", cntc?.spammCount)
-        i.putExtra("carrier", cntc?.carrier)
-        i.putExtra("location", cntc?.location)
+        i.putExtra("name", cntc?.firstName?:"")
+        i.putExtra("phoneNumber", phoneNumber?:"")
+
+        i.putExtra("spamcount", cntc?.spammCount?:0)
+        i.putExtra("carrier", cntc?.carrier?:"")
+        i.putExtra("location", cntc?.location?:"")
         startActivity(i)
         //if there is no info about the caller in server db
 //        val i = Intent(this, ActivityIncommingCallView::class.java)
