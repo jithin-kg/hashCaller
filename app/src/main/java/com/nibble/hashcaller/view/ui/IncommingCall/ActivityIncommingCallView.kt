@@ -13,6 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.search.model.Cntct
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LOCATION
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
 import kotlinx.android.synthetic.main.activity_incomming_call_view.*
 
 
@@ -27,7 +32,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     private lateinit var viewModel:IncommingCallViewModel
     private lateinit var callerInfo:Cntct
     @SuppressLint("LongLogTag")
-    private  var name :String = ""
+    private  var firstName :String = ""
     private  var phoneNumber :String = ""
     private  var location :String = ""
     private  var carrier :String = ""
@@ -38,7 +43,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
        getIntents()
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -51,6 +55,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
 
     private fun initListeners() {
         binding.cnstraintlyoutInner.setOnTouchListener(this)
+        binding.layoutIncommingCall.setOnClickListener(this)
     }
 
     private fun initViewmodel() {
@@ -60,11 +65,11 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     }
 
     private fun getIntents() {
-        name = intent.getStringExtra("name")?:""
-        phoneNumber = intent.getStringExtra("phoneNumber")?:""
-        spamcount = intent.getIntExtra("spamcount", 0)
-        location  = intent.getStringExtra("location")?:""
-        carrier  = intent.getStringExtra("carrier")?:""
+        firstName = intent.getStringExtra(FIRST_NAME)?:""
+        phoneNumber = intent.getStringExtra(PHONE_NUMBER)?:""
+        spamcount = intent.getIntExtra(SPAM_COUNT, 0)
+        location  = intent.getStringExtra(LOCATION)?:""
+        carrier  = intent.getStringExtra(CARRIER)?:""
     }
 
     private fun configurePopupActivity() {
@@ -80,9 +85,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     @SuppressLint("LongLogTag")
     private fun setViewElements() {
         binding.imgBtnCloseIncommin.setOnClickListener(this)
-        binding.tvPhoneNumIncomming.text = "+918086176336"
-        binding.txtVcallerName.text =  "Jithin Kg"
-        binding.txtVLocaltion.text =  "Kerala india"
+        binding.tvPhoneNumIncomming.text = phoneNumber
+        binding.txtVcallerName.text =  firstName
+        binding.txtVLocaltion.text =  location
 //        if(callerInfo.spammerStatus !=null)
         if(spamcount > 0){
             Log.d(TAG, "onCreate: spammer calling");
@@ -107,6 +112,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
                 finish()
 //                reportuser()
             }
+            R.id.layoutIncommingCall ->{
+                finish()
+            }
         }
     }
 
@@ -117,7 +125,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
             Log.d(TAG, "reportuser: observing")
         })
     }
-
+//https://stackoverflow.com/questions/9398057/android-move-a-view-on-touch-move-action-move
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when (event!!.actionMasked) {
             MotionEvent.ACTION_DOWN -> {

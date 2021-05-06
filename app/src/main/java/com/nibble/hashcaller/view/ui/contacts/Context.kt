@@ -7,13 +7,18 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
-import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.utils.callReceiver.SearchHelper
+import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LAST_NAME
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LOCATION
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
@@ -26,15 +31,17 @@ import java.util.*
 
 
 
-fun Context.startActivityIncommingCallView(cntc: Cntct, phoneNumber: String) {
+fun Context.startActivityIncommingCallView(cntc: CntctitemForView, phoneNumber: String) {
         val i = Intent(this, ActivityIncommingCallView::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        i.putExtra("name", cntc?.firstName?:"")
-        i.putExtra("phoneNumber", phoneNumber?:"")
+        i.putExtra(FIRST_NAME, cntc?.firstName?:"")
+        i.putExtra(LAST_NAME, cntc?.lastName?:"")
+        i.putExtra(PHONE_NUMBER, phoneNumber?:"")
 
-        i.putExtra("spamcount", cntc?.spammCount?:0)
-        i.putExtra("carrier", cntc?.carrier?:"")
-        i.putExtra("location", cntc?.location?:"")
+        i.putExtra(SPAM_COUNT, cntc?.spammCount?:0)
+        i.putExtra(CARRIER, cntc?.carrier?:"")
+        i.putExtra(LOCATION, cntc?.location?:"")
+        i.putExtra(STATUS_CODE, cntc.statusCode)
         startActivity(i)
         //if there is no info about the caller in server db
 //        val i = Intent(this, ActivityIncommingCallView::class.java)

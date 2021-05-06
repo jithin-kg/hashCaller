@@ -13,6 +13,7 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
+import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
@@ -31,6 +32,7 @@ import kotlinx.coroutines.*
  * long running operations are getting cancelled
  * for refrence in foreground service use the link below
  * https://androidwave.com/foreground-service-android-example/
+ * This foreground service starts the Incomming call view Activity
  */
 class ForegroundService : Service() {
     private val CHANNEL_ID = "ForegroundService Kotlin"
@@ -55,30 +57,10 @@ class ForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //do heavy work on a background thread
         Log.d(TAG, "onStartCommand: ")
-        val input = intent?.getStringExtra("inputExtra")
 //        createNotificationChannel()
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, notificationIntent, 0
-        )
-//        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
-//            .setContentTitle("Foreground Service Kotlin Example")
-//            .setContentText("input")
-//            .setPriority(NotificationCompat.PRIORITY_LOW)
-//            .setSmallIcon(R.drawable.ic_menu_call)
-//            .setContentIntent(pendingIntent)
-//            .build()
-        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
-            .setContentTitle("Foreground Service Kotlin Example")
-            .setContentText(input)
-            .setSmallIcon(R.drawable.ic_menu_call)
-            .setContentIntent(pendingIntent)
-            .build()
-        startForeground(1, notification)
 
+       showNotification(intent)
         val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
             supervisorScope.launch {
 //                delay(15000L)
                 var isSpam = false
@@ -105,11 +87,15 @@ class ForegroundService : Service() {
                     if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true
                         endCall(inComingCallManager, phoneNumber, this@ForegroundService)
-                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
                     }
-                    if(!resFromServer.firstName.isNullOrEmpty()){
+//                    if(!resFromServer.firstName.isNullOrEmpty()){
+//                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
+//                    }
+                    if(resFromServer.statusCode == StatusCodes.OK){
                         this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
+
                     }
+
                 }catch (e: Exception){
                     Log.d(CallhandlService.TAG, "onReceive: $e ")
                 }
@@ -132,6 +118,23 @@ class ForegroundService : Service() {
         }
         return START_NOT_STICKY
     }
+
+    private fun showNotification(intent: Intent?) {
+        val input = intent?.getStringExtra("inputExtra")
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0, notificationIntent, 0
+        )
+        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
+            .setContentTitle("Caller id is active")
+            .setContentText(input)
+            .setSmallIcon(R.drawable.ic_menu_call)
+            .setContentIntent(pendingIntent)
+            .build()
+        startForeground(1, notification)
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }

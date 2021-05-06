@@ -29,7 +29,7 @@ import kotlinx.coroutines.*
 
 /**
  * JobService to be scheduled by the JobScheduler.
- * start another service
+ * start another service -> ForegroundService
  * https://www.vogella.com/tutorials/AndroidTaskScheduling/article.html
  * refer Services.java library file for notification information
  */
@@ -37,8 +37,7 @@ import kotlinx.coroutines.*
 
 class TestJobService : JobService() {
     private lateinit var  searchRepository: SearchNetworkRepository
-    private lateinit var notificationHelper: NotificationHelper
-    private lateinit var inComingCallManager: InCommingCallManager
+
     override fun onStartJob(params: JobParameters): Boolean {
 
         ForegroundService.startService(this, "", phoneNum)
@@ -50,33 +49,7 @@ class TestJobService : JobService() {
 
         return false // false ->indicates that job should not be restarted when stopped
     }
-    private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
-        return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
 
-    }
-    private fun endCall(
-        inComingCallManager: InCommingCallManager,
-        phoneNumber: String,
-        context: Context
-    ) {
-        inComingCallManager.endIncommingCall(context)
-//        notificationHelper.showNotificatification(true, phoneNumber)
-    }
-    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
-        val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
-
-        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
-        val internetChecker = InternetChecker(context)
-        val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
-
-        return  InCommingCallManager(
-            context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
-            null, searchRepository,
-            internetChecker, blockedListpatternDAO,
-            contactAdressesDAO
-        )
-    }
     companion object {
         fun setPhoneNumber(phoneNumber: String) {
             phoneNum = phoneNumber

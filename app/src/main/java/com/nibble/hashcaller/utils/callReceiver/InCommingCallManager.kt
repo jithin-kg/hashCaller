@@ -5,7 +5,9 @@ import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
+import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.Cntct
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
@@ -30,20 +32,21 @@ class InCommingCallManager(
     private val phoneNumber = formatPhoneNumber(phoneNumber)
 
 
-    suspend fun searchInServerAndHandle(hasedNum: String): Cntct {
-        var searchResult = Cntct(  "", "", "", "", "", "", 0)
+    suspend fun searchInServerAndHandle(hasedNum: String): CntctitemForView {
+        var searchResult = CntctitemForView(  "", "", "", "", "", "", 0)
         try {
-
 //            if(internetChecker.isnetworkAvailable()){
                 Log.d(TAG, "searchInServerAndHandle: internet available")
                 val response = searchRepository.search(hasedNum)
             Log.d(TAG, "searchInServerAndHandle: response from server is   $response")
 
-//            if(response?.body()){
                     val result = response?.body()?.cntcts
                     if(result!= null){
-                        searchResult = Cntct(result.firstName?:"", result.lastName?:"", result.carrier?:"",
-                            result.location?:"", result.lineType?:"", result.country?:"", result.spammCount?:0  )
+                        searchResult = CntctitemForView(result.firstName?:"", result.lastName?:"", result.carrier?:"",
+                            result.location?:"", result.lineType?:"",
+                            result.country?:"",
+                        result.spammCount?:0,
+                                    response.body()?.status?:0)
                     }
 //                }
 //            }else{
