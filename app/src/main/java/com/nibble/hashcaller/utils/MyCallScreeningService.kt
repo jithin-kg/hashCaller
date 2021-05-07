@@ -136,7 +136,7 @@ class MyCallScreeningService: CallScreeningService() {
                         val searchResponse = defredServerInfo.await()
                         val result = searchResponse?.body()?.cntcts
 
-                        if(searchResponse?.body()?.status == StatusCodes.OK){
+                        if(searchResponse?.body()?.status == StatusCodes.STATUS_OK){
 
                             if(searchResponse?.body()?.cntcts !=null){
                                 val cntctInfoFromserver = CntctitemForView(result?.firstName?:"", result?.lastName?:"", result?.carrier?:"",

@@ -56,11 +56,18 @@
            />
 
         <service
-            android:name=".utils.callReceiver.ForegroundService"
+            android:name=".utils.callReceiver.IncommingCallForegroundService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".utils.callReceiver.TestJobService"
+            android:name=".utils.callReceiver.CallFeedbackForegroundService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".utils.callReceiver.IncommingCallJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".utils.callReceiver.CallFeedbackJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity

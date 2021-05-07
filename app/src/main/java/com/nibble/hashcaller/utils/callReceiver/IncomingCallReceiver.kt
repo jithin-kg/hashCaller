@@ -1,16 +1,12 @@
 package com.nibble.hashcaller.utils.callReceiver
 
 import android.annotation.SuppressLint
-import android.app.role.RoleManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.telecom.CallScreeningService
 import android.telephony.TelephonyManager
+import android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
-import com.nibble.hashcaller.view.ui.call.ScreeningService
 import java.lang.Exception
 
 
@@ -19,36 +15,28 @@ import java.lang.Exception
  * this class recieves the broadcast intent about call state
  */
 class IncomingCallReceiver : BroadcastReceiver(){
-    val ACTION_DO_STUFF = "action_do_stuff"
-
-    init {
-
-    }
+    
     @SuppressLint("MissingPermission", "LogNotTimber") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
-
        try {
-           if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
+              if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
                return
-           }
-           val newState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
-           when(newState){
+                }
+//           val newState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+           when(intent.getStringExtra(TelephonyManager.EXTRA_STATE)){
                TelephonyManager.EXTRA_STATE_RINGING -> {
-                   //todo in jobscheduler check if screening role given, then the searching is not necessary
-                   scheduleJobIncommingcaller(context, intent)
+                   Log.d(TAG, "onReceive: incomming")
 
-                   var roleHeld = false
-                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                       val roleManager = context.getSystemService(Context.ROLE_SERVICE) as RoleManager
-                       roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-                       Log.d(TAG, "onReceive: role held ${roleHeld}")
-                   }
+//                   scheduleJobIncommingcaller(context, intent)
+                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
                }
                TelephonyManager.EXTRA_STATE_IDLE -> {
-                   scheduleJobCallEnded(context, intent)
+//                   Util.setPhoneNumInUtil("")
+                   //call ended
+//                   scheduleCallFeedbackJob(context, intent)
                }
            }
-           
+
        }catch (e:Exception){
            Log.d(TAG, "onReceive: exception $e")
        }
@@ -56,10 +44,12 @@ class IncomingCallReceiver : BroadcastReceiver(){
 
 
 
-    private fun scheduleJobCallEnded(context: Context, intent: Intent) {
-        val phoneNumber =
-            intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
-        Log.d(TAG, "scheduleJobCallEnded: $phoneNumber")
+
+    private fun scheduleCallFeedbackJob(context: Context, intent: Intent) {
+//        val phoneNumber =
+//            intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
+//        Log.d(TAG, "scheduleJobCallEnded: $phoneNumber")
+//        Util.scheduleCallFeedbackJob(context, phoneNumber);
     }
 
     private fun scheduleJobIncommingcaller(context: Context, intent: Intent) {
@@ -71,7 +61,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
         if (phoneNumber == null) {
             return
         }
-        Util.scheduleJob(context, phoneNumber);
+//        Util.scheduleIncommingJob(context, phoneNumber);
     }
 
 

@@ -18,8 +18,6 @@
                so that it is visible when layout colorPrimaryDark is white-->
         <item name="android:windowLightStatusBar">true</item>
 <!--        end -->
-
-
         <item name="android:windowContentTransitions">true</item>
     </style>
 <!--    https://stackoverflow.com/questions/30184031/appcompatactivity-as-a-dialog-without-title-->
@@ -103,6 +101,7 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
     </style>
 
 

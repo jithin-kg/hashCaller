@@ -12,7 +12,12 @@ class IntentKeys {
         const val SPAM_COUNT = "spamcount"
         const val CARRIER = "carrier"
         const val LOCATION = "location"
+        const val COUNTRY = "coutry"
         const val STATUS_CODE = "status_code"
+        const val SHOW_FEEDBACK_VIEW = "show_feedback_view" // indicate whether show feedback view , boolean
+        const val EXPAND_INCOMMING_VIEW = "com.nibble.hashcaller.expand_incomming_view" // these are send thrugh broadcast receiver
+        const val UPDATE_INCOMMING_VIEW = "com.nibble.hashcaller.update_incomming_view" // these are send thrugh broadcast receiver
+        const val CLOSE_INCOMMING_VIEW = "com.nibble.hashcaller.close_incomming_view"
 
 
     }

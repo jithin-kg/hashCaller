@@ -1,10 +1,12 @@
 package com.nibble.hashcaller.view.ui.contacts
 
 import android.annotation.SuppressLint
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
 import android.view.View
@@ -13,12 +15,15 @@ import androidx.fragment.app.FragmentActivity
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.COUNTRY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LAST_NAME
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LOCATION
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
@@ -30,8 +35,39 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
 
+fun Context.closeIncommingCallView(){
+//    val i = Intent(this, ActivityIncommingCallView::class.java)
+//        i.putExtra("kill", 1)
+//    startActivity(i)
+}
+fun Context.isActivityIncommingCallViewVisible():Boolean{
+    return ActivityIncommingCallView.isVisible?:false
+}
 
-fun Context.startActivityIncommingCallView(cntc: CntctitemForView, phoneNumber: String) {
+/**
+ * This is called to update incoming call view with search result from server
+ * called from IncommingCallreceiver to get intent with extras result from server
+ * @param resFromServer
+ * @return intent with incomming caller info from server
+ */
+fun Context.getPreparedincommingIntent(
+    resFromServer: CntctitemForView,
+    phoneNumber: String,
+    showFeedbackView: Boolean
+): Intent {
+    val intent = Intent(UPDATE_INCOMMING_VIEW) // this is used in incomming caller broadcast receiver to filter intetn
+    intent.putExtra(FIRST_NAME, resFromServer.firstName?:"" )
+    intent.putExtra(LAST_NAME, resFromServer.lastName?:"" )
+    intent.putExtra(PHONE_NUMBER, phoneNumber )
+    intent.putExtra(SPAM_COUNT, resFromServer.spammCount?:0 )
+    intent.putExtra(CARRIER, resFromServer.carrier?:"")
+    intent.putExtra(LOCATION, resFromServer.location?:0 )
+    intent.putExtra(COUNTRY, resFromServer.country?:0 )
+    intent.putExtra(STATUS_CODE, resFromServer?.statusCode)
+    intent.putExtra(SHOW_FEEDBACK_VIEW, showFeedbackView)
+    return intent
+}
+fun Context.startActivityIncommingCallView(cntc: CntctitemForView?, phoneNumber: String, showFeedbackView:Boolean = false) {
         val i = Intent(this, ActivityIncommingCallView::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         i.putExtra(FIRST_NAME, cntc?.firstName?:"")
@@ -41,7 +77,11 @@ fun Context.startActivityIncommingCallView(cntc: CntctitemForView, phoneNumber: 
         i.putExtra(SPAM_COUNT, cntc?.spammCount?:0)
         i.putExtra(CARRIER, cntc?.carrier?:"")
         i.putExtra(LOCATION, cntc?.location?:"")
-        i.putExtra(STATUS_CODE, cntc.statusCode)
+        i.putExtra(STATUS_CODE, cntc?.statusCode)
+        i.putExtra(SHOW_FEEDBACK_VIEW, showFeedbackView)
+
+//        i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
         startActivity(i)
         //if there is no info about the caller in server db
 //        val i = Intent(this, ActivityIncommingCallView::class.java)
@@ -133,6 +173,19 @@ fun Context.isBlockTopSpammersAutomaticallyEnabled():Boolean{
     return sharedpreferences.getBoolean("isBlockTopSpamersAutomaticallyEnabled", false)
 }
 
+/**
+ * Called to check whether the application have Screening app role held
+ * @return {@code true} if the app is default call screening app.
+ * {@code false} if the app is not the default call screening app.
+ */
+ fun Context.isCallScreeningRoleHeld(): Boolean {
+    var roleHeld = false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+    }
+    return roleHeld
+}
 
 fun Context.isReceiveNotificationForSpamSMSEnabled(): Boolean {
     val sharedpreferences = getSharedPreferences(SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS, Context.MODE_PRIVATE)

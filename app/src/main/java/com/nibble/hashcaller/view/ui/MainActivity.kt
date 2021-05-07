@@ -266,7 +266,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if(!isScreeningRoleHeld()){
+            if(!this. isScreeningRoleHeld()){
                 requestScreeningRole()
 
             }

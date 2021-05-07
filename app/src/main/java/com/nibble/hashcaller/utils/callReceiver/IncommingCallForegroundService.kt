@@ -14,6 +14,8 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
@@ -21,8 +23,7 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
-import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -34,7 +35,7 @@ import kotlinx.coroutines.*
  * https://androidwave.com/foreground-service-android-example/
  * This foreground service starts the Incomming call view Activity
  */
-class ForegroundService : Service() {
+class IncommingCallForegroundService : Service() {
     private val CHANNEL_ID = "ForegroundService Kotlin"
     private lateinit var  searchRepository: SearchNetworkRepository
     private lateinit var notificationHelper: NotificationHelper
@@ -45,12 +46,12 @@ class ForegroundService : Service() {
         const val TAG = "__ForegroundService"
         fun startService(context: Context, message: String, num: String) {
             phoneNumber = num
-            val startIntent = Intent(context, ForegroundService::class.java)
+            val startIntent = Intent(context, IncommingCallForegroundService::class.java)
             startIntent.putExtra("inputExtra", message)
             ContextCompat.startForegroundService(context, startIntent)
         }
         fun stopService(context: Context) {
-            val stopIntent = Intent(context, ForegroundService::class.java)
+            val stopIntent = Intent(context, IncommingCallForegroundService::class.java)
             context.stopService(stopIntent)
         }
     }
@@ -58,57 +59,77 @@ class ForegroundService : Service() {
         //do heavy work on a background thread
         Log.d(TAG, "onStartCommand: ")
 //        createNotificationChannel()
+//        ActivityIncommingCallView.fa.
 
        showNotification(intent)
+
+//        this.closeIncommingCallView()
         val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
             supervisorScope.launch {
+                if (!this@IncommingCallForegroundService.isCallScreeningRoleHeld()) {
+                    //start operations iff screening role not avaialble
+                    Log.d(TAG, "onReceive: role not held")
+                    this@IncommingCallForegroundService.startActivityIncommingCallView(
+                        //start incomming call screen at start and show seraching... in view, then update with data from server
+                        CntctitemForView(statusCode = STATUS_SEARHING_IN_PROGRESS), phoneNumber)
 //                delay(15000L)
-                var isSpam = false
-                inComingCallManager =   getIncomminCallManager(phoneNumber, this@ForegroundService)
-                val hasedNum = getHashedNum(phoneNumber, this@ForegroundService)
-                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                    hasedNum
-                ) }
-                val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
-                val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
-                try {
-                    Log.d(CallhandlService.TAG, "onReceive: firsttry")
-                    val isBlockedByPattern  = defBlockedByPattern.await()
-                    if(isBlockedByPattern){
-                        isSpam = true
-                        endCall(inComingCallManager, phoneNumber, this@ForegroundService)
+                    var isSpam = false
+                    inComingCallManager =   getIncomminCallManager(phoneNumber, this@IncommingCallForegroundService)
+                    val hasedNum = getHashedNum(phoneNumber, this@IncommingCallForegroundService)
+                    val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                        hasedNum
+                    ) }
+                    val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
+                    val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
+                    try {
+                        Log.d(CallhandlService.TAG, "onReceive: firsttry")
+                        val isBlockedByPattern  = defBlockedByPattern.await()
+                        if(isBlockedByPattern){
+                            isSpam = true
+                            endCall(inComingCallManager, phoneNumber, this@IncommingCallForegroundService)
+                        }
+                    }catch (e: Exception){
+                        Log.d(CallhandlService.TAG, "onReceive: $e")
                     }
-                }catch (e: Exception){
-                    Log.d(CallhandlService.TAG, "onReceive: $e")
-                }
-                try {
-                    Log.d(CallhandlService.TAG, "onReceive: second try")
-                    val resFromServer = defServerHandling.await()
-                    if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
-                        isSpam = true
-                        endCall(inComingCallManager, phoneNumber, this@ForegroundService)
-                    }
+                    try {
+
+                        Log.d(CallhandlService.TAG, "onReceive: second try")
+                        val resFromServer = defServerHandling.await()
+                        if(resFromServer.statusCode == StatusCodes.STATUS_OK){
+                            if(this@IncommingCallForegroundService.isActivityIncommingCallViewVisible()){
+                                val intent =  this@IncommingCallForegroundService.getPreparedincommingIntent(resFromServer, phoneNumber, false)
+                                sendBroadcast(intent)
+                            }else{
+                                this@IncommingCallForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
+
+                            }
+
+                        }
+                        if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                            isSpam = true
+                            endCall(inComingCallManager, phoneNumber, this@IncommingCallForegroundService)
+                        }
 //                    if(!resFromServer.firstName.isNullOrEmpty()){
 //                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
 //                    }
-                    if(resFromServer.statusCode == StatusCodes.OK){
-                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
 
+
+                    }catch (e: Exception){
+                        Log.d(CallhandlService.TAG, "onReceive: $e ")
+                    }
+                    try {
+                        Log.d(CallhandlService.TAG, "onReceive: third try ")
+                        val r = defNonContactsBlocked.await()
+                        if(r){
+                            endCall(inComingCallManager, phoneNumber, this@IncommingCallForegroundService)
+
+                        }
+                    }catch (e: Exception){
+                        Log.d(CallhandlService.TAG, "onReceive: $e")
                     }
 
-                }catch (e: Exception){
-                    Log.d(CallhandlService.TAG, "onReceive: $e ")
                 }
-                try {
-                    Log.d(CallhandlService.TAG, "onReceive: third try ")
-                    val r = defNonContactsBlocked.await()
-                    if(r){
-                        endCall(inComingCallManager, phoneNumber, this@ForegroundService)
 
-                    }
-                }catch (e: Exception){
-                    Log.d(CallhandlService.TAG, "onReceive: $e")
-                }
 
             stopSelf();
 

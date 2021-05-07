@@ -149,7 +149,6 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
 //            }
         }
 
-
         private fun getSpannedString(str: String, startPos: Int, endPos: Int, context: Context): SpannableStringBuilder {
             val yellow =
                 ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))

@@ -1,30 +1,10 @@
 package com.nibble.hashcaller.utils.callReceiver
 
-import android.R
-import android.app.PendingIntent
+import android.annotation.SuppressLint
 import android.app.job.JobParameters
 import android.app.job.JobService
-import android.content.Context
-import android.content.Intent
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import com.nibble.hashcaller.Secrets
-import com.nibble.hashcaller.datastore.DataStoreRepository
-import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import com.nibble.hashcaller.utils.NotificationHelper
-import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.utils.internet.InternetChecker
-import com.nibble.hashcaller.utils.notifications.HashCaller
-import com.nibble.hashcaller.utils.notifications.HashCaller.Companion.NOTIFICATION_ID
-import com.nibble.hashcaller.utils.notifications.tokeDataStore
-import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
-import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
-import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.*
 
 
 /**
@@ -35,8 +15,7 @@ import kotlinx.coroutines.*
  */
 
 
-class TestJobService : JobService() {
-    private lateinit var  searchRepository: SearchNetworkRepository
+class IncommingCallJobService : JobService() {
 
     /**
      * jobFinished() is not a method you override, and the system won’t call it.
@@ -47,10 +26,15 @@ class TestJobService : JobService() {
      * If you forget to call jobFinished(), your app is going to look pretty guilty in the battery stats lineup
      * https://medium.com/google-developers/scheduling-jobs-like-a-pro-with-jobscheduler-286ef8510129
      */
+    @SuppressLint("LongLogTag")
     override fun onStartJob(params: JobParameters): Boolean {
 
-        ForegroundService.startService(this, "", phoneNum)
+        IncommingCallForegroundService.startService(this, "", phoneNum)
 //        Log.d(TAG, "onStartJob: ")
+        // it is important to call this function so that system can cancel this job , the foreground service
+        //will work on its ow
+        Log.d(TAG, "onStartJob: ")
+
         jobFinished(params, false)
         return false
     }
@@ -58,6 +42,7 @@ class TestJobService : JobService() {
     /**
      * onStopJob() is called by the system if the job is cancelled before being finished.
      */
+    @SuppressLint("LongLogTag")
     override fun onStopJob(params: JobParameters): Boolean {
         Log.d(TAG, "onStopJob: ")
         return false // false ->indicates that job should not be restarted when stopped
@@ -70,7 +55,8 @@ class TestJobService : JobService() {
             phoneNum = phoneNumber
         }
 
-        private const val TAG = "__SyncService"
+
+        private const val TAG = "__IncommingCallJobService"
         var phoneNum: String = ""
 
     }

@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
-    android:layout_marginTop="100dp"
     android:background="@android:color/transparent"
     android:backgroundTint="@android:color/transparent"
     android:excludeFromRecents="true"
@@ -129,39 +128,57 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/txtVCity"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginBottom="8dp"-->
-    <!--        android:text="city"-->
-    <!--        app:layout_constraintBottom_toTopOf="@+id/btnReportCaller"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.5"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/txtVPhoneNum" />-->
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/layoutExpandedIncomming"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingBottom="32dp"-->
+<!--        android:elevation="6dp"-->
+
+<!--        android:background="@drawable/incomming_call_background_expanded"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/cnstraintlyoutInner"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/cnstraintlyoutInner"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/cnstraintlyoutInner">-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/imgBtnCallIncomming"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:padding="8dp"-->
+<!--            android:src="@drawable/ic_baseline_call_24"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingSMS"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/imgBtnCallIncomingSMS"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:padding="8dp"-->
+<!--            android:src="@drawable/ic_baseline_sms_24"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingBlock"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomming"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/imgBtnCallIncomingBlock"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:padding="8dp"-->
+<!--            android:src="@drawable/ic_baseline_block_24"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingSMS"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/txtVCarrier"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginBottom="8dp"-->
-    <!--        android:text="carrier"-->
-    <!--        app:layout_constraintBottom_toTopOf="@+id/txtVPhoneNum"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.5"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/txtVCountry" />-->
-
-    <!--    <Button-->
-    <!--        android:id="@+id/btnReportCaller"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Report spam"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.5"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/txtVCity" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>
