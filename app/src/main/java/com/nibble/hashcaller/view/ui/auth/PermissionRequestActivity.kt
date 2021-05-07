@@ -71,7 +71,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                 READ_CONTACTS,
                 CALL_PHONE,
                 READ_PHONE_STATE,
-                ANSWER_PHONE_CALLS,
+                RECEIVE_SMS
             )
         )
     }

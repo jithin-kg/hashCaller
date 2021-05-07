@@ -6,14 +6,12 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.search.SearchResponse
-import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.utils.hashPhoneNum
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.security.KeyFactory
@@ -110,7 +108,9 @@ class SearchViewModel(
         return encoded;
     }
 
-
+    fun findOnecontact(phoneNumber: String):LiveData<String> = liveData{
+        contactLocalSyncRepository.getNameFromPhoneNumber(phoneNumber)?.let { emit(it) }
+    }
 
 
     /**

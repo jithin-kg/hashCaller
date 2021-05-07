@@ -365,7 +365,9 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".utils.callReceiver.IncomingCallReceiver">
+        <receiver android:name=".utils.callReceiver.IncomingCallReceiver"
+            android:exported="false"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>

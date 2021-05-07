@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Color
+import android.net.Uri
 import android.provider.ContactsContract
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -13,6 +14,7 @@ import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.getStringValue
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.CoroutineScope
@@ -27,8 +29,8 @@ class ContactLocalSyncRepository(
     private val contactLisDAO: IContactIformationDAO?,
     private val context: Context
 ) {
-     fun getCount(): LiveData<Int>? {
-       return contactLisDAO?.getCount()
+    fun getCount(): LiveData<Int>? {
+        return contactLisDAO?.getCount()
     }
 
     var  contactsFomLocalDB = contactLisDAO?.getContacts()
@@ -49,7 +51,7 @@ class ContactLocalSyncRepository(
     }
 
     suspend fun insertSingleContactItem(c: ContactTable) = withContext(Dispatchers.IO) {
-    contactLisDAO!!.insertSingleItem(c)
+        contactLisDAO!!.insertSingleItem(c)
     }
 
     /**
@@ -60,63 +62,65 @@ class ContactLocalSyncRepository(
     suspend fun getContactsLike(queryString: String): MutableList<Contact>  = withContext(Dispatchers.IO)  {
 
         val listOfContacts = mutableListOf<Contact>()
-         var lastNumber = ""
-         var prevName = ""
+        var lastNumber = ""
+        var prevName = ""
         var count = 0
-        CoroutineScope(Dispatchers.IO).launch {
-            val cursor:Cursor? = createCursor(queryString)
-            try {
-                if(cursor != null && cursor.moveToFirst()){
-                    do{
+        val cursor:Cursor? = createCursor(queryString)
+        try {
+            if(cursor != null && cursor.moveToFirst()){
+                do{
 
-                        if(count < 2){
-                            count++
-                        }
-                        var id = cursor.getString(0).toLong()
-                        var name = cursor.getString(1)
-                        var phoneNo = cursor.getString(2)
+                    if(count < 2){
+                        count++
+                    }
+                    var id = cursor.getString(0).toLong()
+                    var name = cursor.getString(1)
+                    var phoneNo = cursor.getString(2)
 
-                        val photoThumnail = cursor.getString(3)
+                    val photoThumnail = cursor.getString(3)
 
-                        var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
-                        if(name!=null){
-                            if(prevName != name && lastNumber != phoneNo){
-                                val nameSpann = getSpannableStringBuilderName(name,  queryString)
-                                val phoneSpann = getSpnabelStringPhone(phoneNo, queryString)
-                                var firstLetter = ""
-                                if(name.isNotEmpty()){
-                                    firstLetter = name[0].toString()
-                                }else{
-                                    val formatedNum = formatPhoneNumber(phoneNo)
-                                    firstLetter = formatedNum[0].toString()
-                                }
-                                val add = listOfContacts.add(
-                                    Contact(
-                                        id,
-                                        name,
-                                        phoneNo,
-                                        photoThumnail,
-                                        photoURI,
-                                        1,
-                                        nameSpann,
-                                        phoneSpann,
-                                        firstLetter
-                                    )
-                                )
-                                lastNumber = phoneNo
-                                prevName = name
+                    var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
+                    if(name!=null){
+                        if(prevName != name && lastNumber != phoneNo){
+                            val nameSpann = getSpannableStringBuilderName(name,  queryString)
+                            val phoneSpann = getSpnabelStringPhone(phoneNo, queryString)
+                            var firstLetter = ""
+                            if(name.isNotEmpty()){
+                                firstLetter = name[0].toString()
+                            }else{
+                                val formatedNum = formatPhoneNumber(phoneNo)
+                                firstLetter = formatedNum[0].toString()
                             }
-
+                            val add = listOfContacts.add(
+                                Contact(
+                                    id,
+                                    name,
+                                    phoneNo,
+                                    photoThumnail,
+                                    photoURI,
+                                    1,
+                                    nameSpann,
+                                    phoneSpann,
+                                    firstLetter
+                                )
+                            )
+                            lastNumber = phoneNo
+                            prevName = name
                         }
 
+                    }
 
-                    }while (cursor.moveToNext())
-                    cursor.close()
-                }
-            }catch (e:java.lang.Exception){
-                Log.d(TAG, "getContactsLike: exception $e")
+
+                }while (cursor.moveToNext())
             }
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "getContactsLike: exception $e")
+        }finally {
+
+            cursor?.close()
+
         }
+
 
         return@withContext listOfContacts
 
@@ -133,7 +137,7 @@ class ContactLocalSyncRepository(
         queryString: String
     ): SpannableStringBuilder? {
 
-       return getSpannedString(nameStr, queryString)
+        return getSpannedString(nameStr, queryString)
 
     }
 
@@ -198,11 +202,11 @@ class ContactLocalSyncRepository(
                 ContactsContract.Contacts.PHOTO_URI
 
             )
-             cursor = context.contentResolver.query(
+            cursor = context.contentResolver.query(
                 ContactLiveData.URI,
                 projection,
                 selection,
-                 selectionArgs,
+                selectionArgs,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " COLLATE NOCASE ASC"
             )
         }catch (e:Exception){
@@ -215,6 +219,31 @@ class ContactLocalSyncRepository(
 
     suspend fun deleteAllitems()   = withContext(Dispatchers.IO){
         contactLisDAO?.delete()
+    }
+
+    @SuppressLint("LongLogTag")
+    suspend fun getNameFromPhoneNumber(phoneNumber: String): String = withContext(Dispatchers.IO) {
+        var cursor:Cursor? = null
+        var name = phoneNumber
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber))
+        val projection = arrayOf(
+            ContactsContract.PhoneLookup.DISPLAY_NAME
+        )
+        try {
+             cursor = context.contentResolver.query(uri, projection, null, null, null)
+            cursor.use {
+                if (cursor?.moveToFirst() == true) {
+                    name=  cursor.getStringValue(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "getNameFromPhoneNumber: $e")
+        }
+        finally {
+            cursor?.close()
+        }
+
+        return@withContext name
     }
 
 

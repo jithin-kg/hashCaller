@@ -17,6 +17,7 @@ object Util {
      *
      */
     fun scheduleIncommingJob(context: Context, numFromReceiver: String?) {
+        Log.d(TAG, "scheduleIncommingJob: called")
         if(!numFromReceiver.isNullOrEmpty()){
             if(phoneNum!=numFromReceiver){
                 Log.d(TAG, "scheduleIncommingJob: $phoneNum")

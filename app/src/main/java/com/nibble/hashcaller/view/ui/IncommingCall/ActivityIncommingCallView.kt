@@ -30,6 +30,8 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
+import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -43,7 +45,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, View.OnTouchListener  {
     private lateinit var binding: ActivityIncommingCallViewBinding
     @SuppressLint("LongLogTag")
-    private lateinit var viewModel:IncommingCallViewModel
+    private lateinit var viewModel: SearchViewModel
     private lateinit var callerInfo:Cntct
     @SuppressLint("LongLogTag")
     private  var firstName :String = ""
@@ -60,20 +62,30 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: ")
         isVisible = true
-//        val close = intent.getIntExtra("kill", 0)
-//        if(close==1){
-//            finishAfterTransition()
-//        }
         registerForBroadCastReceiver()
        getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configurePopupActivity()
-       initViewmodel()
+        initViewmodel()
         initListeners()
-       setViewElements()
-//
+        setViewElements()
+        getUserInfoFromContacts()
+        getUserInfoFromServer()
+
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun getUserInfoFromContacts() {
+        viewModel.findOnecontact(phoneNumber).observe(this, Observer {
+            Log.d(TAG, "getUserInfoFromContacts: ${it}")
+            binding.txtVcallerName.text = it
+        })
+    }
+    private fun getUserInfoFromServer(){
+
     }
 
 
@@ -106,13 +118,12 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
             binding.cnstraintlyoutInner.setOnTouchListener(this)
         }
         binding.imgBtnCloseIncommin.setOnClickListener(this)
-        binding.layoutIncommingCall.setOnClickListener(this)
+//        binding.layoutIncommingCall.setOnClickListener(this)
     }
 
     private fun initViewmodel() {
-        viewModel = ViewModelProvider(this, IncommingCallInjectorUtil.provideUserInjectorUtil(this)).get(
-            IncommingCallViewModel::class.java
-        )
+        viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext)).get(
+            SearchViewModel::class.java)
     }
 
     private fun getIntentxras(intent: Intent) {
@@ -156,7 +167,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
             )
 
         }else{
-            Log.d(TAG, "onCreate: spam count less than 1 ${spamcount}")
             binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
                 this,
                 R.drawable.incomming_call_background
@@ -165,17 +175,16 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
 
         }
 
-        if(showfeedbackView){
-//            binding.layoutExpandedIncomming.beVisible()
-        }else{
-//            binding.layoutExpandedIncomming.beGone()
-        }
+//        if(showfeedbackView){
+////            binding.layoutExpandedIncomming.beVisible()
+//        }else{
+////            binding.layoutExpandedIncomming.beGone()
+//        }
     }
 
     companion object{
         // property to check whether the Activity is visible,
         var  isVisible: Boolean? = false
-
         private const val TAG = "__ActivityIncommingCallView"
     }
 
@@ -187,11 +196,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
                 Log.d(TAG, "onClick: btn")
                 closeActivity()
 //                reportuser()
-            }
-
-            R.id.layoutIncommingCall -> {
-                closeActivity()
-
             }
         }
     }
@@ -207,9 +211,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     @SuppressLint("LongLogTag")
     private fun reportuser() {
 
-        viewModel.report(phoneNumber, packageName).observe(this, Observer {
-            Log.d(TAG, "reportuser: observing")
-        })
+//        viewModel.report(phoneNumber, packageName).observe(this, Observer {
+//            Log.d(TAG, "reportuser: observing")
+//        })
     }
 //https://stackoverflow.com/questions/9398057/android-move-a-view-on-touch-move-action-move
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
