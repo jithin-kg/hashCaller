@@ -50,10 +50,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <activity android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"
+        <activity android:name=".view.ui.IncommingCall.DragabbleActivity"></activity>
+        <activity
+            android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.NoActionBar"
-           />
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".utils.callReceiver.IncommingCallForegroundService"
@@ -174,7 +175,7 @@
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.Dialog.Alert" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->
@@ -365,9 +366,9 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".utils.callReceiver.IncomingCallReceiver"
-            android:exported="false"
-            >
+        <receiver
+            android:name=".utils.callReceiver.IncomingCallReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
