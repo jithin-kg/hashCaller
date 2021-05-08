@@ -38,6 +38,7 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.IncommingCall.DragabbleActivity
+import com.nibble.hashcaller.view.ui.IncommingCall.ModelActivity
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.MyUndoListener
@@ -609,7 +610,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             }
             R.id.fabBtnShowDialpad ->{
 //                viewmodel.clearCallLogDB()
-                val i = Intent(context, DragabbleActivity::class.java)
+                val i = Intent(context, ModelActivity::class.java)
                 startActivity(i)
 
 //                (activity as MainActivity).showDialerFragment()

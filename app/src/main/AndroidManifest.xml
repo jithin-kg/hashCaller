@@ -50,7 +50,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <activity android:name=".view.ui.IncommingCall.DragabbleActivity"></activity>
+        <activity android:name=".view.ui.IncommingCall.ModelActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity android:name=".view.ui.IncommingCall.DragabbleActivity" />
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"
             android:launchMode="singleInstance"
