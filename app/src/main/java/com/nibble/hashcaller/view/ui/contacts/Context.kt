@@ -50,6 +50,10 @@ fun Context.startFloatingService(command: String = "") {
         this.startService(intent)
     }
 
+
+}
+fun Context.stopFloatingService(){
+    stopService(Intent(this, FloatingService::class.java))
 }
 fun Context.closeIncommingCallView(){
 //    val i = Intent(this, ActivityIncommingCallView::class.java)

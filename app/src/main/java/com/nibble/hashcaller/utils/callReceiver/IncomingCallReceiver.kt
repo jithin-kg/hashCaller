@@ -8,6 +8,8 @@ import android.telephony.TelephonyManager
 import android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER
 import android.util.Log
 import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.contacts.startFloatingService
+import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import java.lang.Exception
 
 
@@ -29,13 +31,16 @@ class IncomingCallReceiver : BroadcastReceiver(){
                    Log.d(TAG, "onReceive: incomming")
 //                   scheduleJobIncommingcaller(context, intent)
                    //icannot start a job because it is not always working
-                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+                  context.startFloatingService()
+
+//                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 //                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
                }
                TelephonyManager.EXTRA_STATE_IDLE -> {
 //                   Util.setPhoneNumInUtil("")
                    //call ended
 //                   scheduleCallFeedbackJob(context, intent)
+                  context.stopFloatingService()
                }
            }
 
