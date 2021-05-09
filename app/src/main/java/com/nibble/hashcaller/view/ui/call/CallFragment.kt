@@ -37,6 +37,8 @@ import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.IncommingCall.DragabbleActivity
+import com.nibble.hashcaller.view.ui.IncommingCall.ModelActivity
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.MyUndoListener
