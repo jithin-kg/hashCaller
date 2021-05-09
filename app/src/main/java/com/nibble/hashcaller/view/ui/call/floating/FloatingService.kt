@@ -121,8 +121,8 @@ class FloatingService : Service() {
         // Be sure to show the notification first for all commands.
         // Don't worry, repeated calls have no effects.
         showNotification()
-        val window = Window(this)
-        window.open()
+//        val window = Window(this)
+//        window.open()
         // Show the floating window for adding a new note.
         if (command == INTENT_COMMAND_NOTE) {
 //            Toast.makeText(

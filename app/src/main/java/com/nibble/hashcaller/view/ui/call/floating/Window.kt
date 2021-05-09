@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.call.floating
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
+import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Gravity
@@ -69,9 +70,24 @@ class Window(private val context: Context) {
         rootView.findViewById<View>(R.id.content_button).setOnClickListener {
             Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
         }
+        rootView.findViewById<View>(R.id.window_header).registerDraggableTouchListener(
+            initialPosition = { Point(windowParams.x, windowParams.y) },
+            positionListener = { x, y -> setPosition(x, y) }
+        )
     }
-
-
+    private fun setPosition(x: Int, y: Int) {
+        windowParams.x = x
+        windowParams.y = y
+        update()
+    }
+    private fun update() {
+        try {
+            windowManager.updateViewLayout(rootView, windowParams)
+        } catch (e: Exception) {
+            // Ignore exception for now, but in production, you should have some
+            // warning for the user here.
+        }
+    }
     init {
         initWindowParams()
         initWindow()
