@@ -115,7 +115,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
 
     private fun initListeners() {
         if(!showfeedbackView){
-            binding.cnstraintlyoutInner.setOnTouchListener(this)
+            binding.root.setOnTouchListener(this)
         }
         binding.imgBtnCloseIncommin.setOnClickListener(this)
 //        binding.layoutIncommingCall.setOnClickListener(this)
@@ -140,10 +140,10 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
         /**
          * important to setLayout outherwise activity goes full screen
          */
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
 
-        this.setFinishOnTouchOutside(true)
+//        this.setFinishOnTouchOutside(true)
     }
 
     @SuppressLint("LongLogTag")
@@ -219,13 +219,13 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when (event!!.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                dX = binding.cnstraintlyoutInner.x - event!!.rawX
-                dY = binding.cnstraintlyoutInner.y - event!!.rawY
+                dX = binding.root.x - event!!.rawX
+                dY = binding.root.y - event!!.rawY
                 lastAction = MotionEvent.ACTION_DOWN
             }
             MotionEvent.ACTION_MOVE -> {
-                binding.cnstraintlyoutInner.y = event!!.rawY + dY
-                binding.cnstraintlyoutInner.setX(event!!.rawX + dX)
+                binding.root.y = event!!.rawY + dY
+                binding.root.x = event!!.rawX + dX
                 lastAction = MotionEvent.ACTION_MOVE
             }
             MotionEvent.ACTION_UP -> if (lastAction === MotionEvent.ACTION_DOWN) Toast.makeText(

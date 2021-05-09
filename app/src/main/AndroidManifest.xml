@@ -50,11 +50,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
-        <activity android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"
+        <activity android:name=".view.ui.call.floating.SampleActivityStartnotification"></activity>
+        <activity
+            android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.NoActionBar"
-           />
+            android:theme="@style/AppTheme.NoActionBar" />
 
+        <service
+            android:name=".view.ui.call.floating.FloatingService"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:stopWithTask="false" />
         <service
             android:name=".utils.callReceiver.IncommingCallForegroundService"
             android:enabled="true"
@@ -365,9 +373,9 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".utils.callReceiver.IncomingCallReceiver"
-            android:exported="false"
-            >
+        <receiver
+            android:name=".utils.callReceiver.IncomingCallReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>

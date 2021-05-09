@@ -25,6 +25,8 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.call.floating.FloatingService
+import com.nibble.hashcaller.view.ui.call.floating.INTENT_COMMAND
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
@@ -35,6 +37,20 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
 
+fun Context.startFloatingService(command: String = "") {
+
+    val intent = Intent(this, FloatingService::class.java)
+    if (command.isNotBlank()) {
+        intent.putExtra(INTENT_COMMAND, command)
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        this.startForegroundService(intent)
+    } else {
+        this.startService(intent)
+    }
+
+}
 fun Context.closeIncommingCallView(){
 //    val i = Intent(this, ActivityIncommingCallView::class.java)
 //        i.putExtra("kill", 1)

@@ -46,6 +46,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.nibble.hashcaller.view.ui.call.floating.SampleActivityStartnotification
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
@@ -608,7 +609,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             }
             R.id.fabBtnShowDialpad ->{
 //                viewmodel.clearCallLogDB()
-                val i = Intent(context, ActivityIncommingCallView::class.java)
+                val i = Intent(context, SampleActivityStartnotification::class.java)
                 startActivity(i)
 
 //                (activity as MainActivity).showDialerFragment()
