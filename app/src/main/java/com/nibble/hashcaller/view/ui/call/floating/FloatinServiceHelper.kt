@@ -20,7 +20,7 @@ class FloatinServiceHelper(
 ) {
 
     suspend fun  handleCall(){
-
+    var isInfoFoundInCprovider = false
         supervisorScope.launch {
             if (!isCallScreeningRoleHeld) {
                 //start operations iff screening role not avaialble
@@ -40,9 +40,17 @@ class FloatinServiceHelper(
                 val definfoFromDb = async { inComingCallManager.getAvailbleInfoInDb() }
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
                 try {
+                    val contactInCprovider = defredInfoFromCprovider.await()
+                    if(contactInCprovider!=null){
+                        //the caller is in contact, so set information in db as caller information
+                        isInfoFoundInCprovider = true
+                        window.updateWithcontentProviderInfo(contactInCprovider)
+                    }
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
-                       window.updateWithServerInfo(infoAvailableInDb, phoneNumber)
+                        if(!isInfoFoundInCprovider){
+                            window.updateWithServerInfo(infoAvailableInDb, phoneNumber)
+                        }
                     }else{
                         //todo check date of the info received from server, if today - date >0 search in server
                          defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(

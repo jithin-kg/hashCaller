@@ -53,7 +53,6 @@ class ContactLiveData(private val context: Context, private val lifecycleScope: 
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
                 ContactsContract.Contacts.PHOTO_URI
-
             )
              cursor = context.contentResolver.query(
                 URI,
@@ -115,7 +114,7 @@ class ContactLiveData(private val context: Context, private val lifecycleScope: 
         }finally {
             cursor?.close()
         }
-        isLoading.postValue(false)
+
        val sortedList = sortAndSet(listOfContacts)
         return@withContext listOfContacts
 

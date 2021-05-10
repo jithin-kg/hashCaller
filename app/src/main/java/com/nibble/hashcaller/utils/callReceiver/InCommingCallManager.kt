@@ -2,13 +2,19 @@ package com.nibble.hashcaller.utils.callReceiver
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.ContactsContract
 import android.util.Log
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
 import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.getStringValue
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
@@ -147,7 +153,7 @@ class InCommingCallManager(
         val res = callerInfoFromServerDAO.find(phoneNumber)
         if(res!=null){
             contactitemForView = CntctitemForView(
-                firstName = res.title,
+                firstName = res.firstName,
                 carrier = res.carrier,
                 location = res.city,
                 country = res.country,
@@ -159,8 +165,36 @@ class InCommingCallManager(
         return@withContext contactitemForView
     }
 
-    fun infoFromContentProvider() {
+    suspend fun infoFromContentProvider(): Contact?  = withContext(Dispatchers.IO){
 
+        var contact:Contact? = null
+        var cursor: Cursor? = null
+        var name = phoneNumber
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber))
+        val projection = arrayOf(
+            ContactsContract.PhoneLookup.CONTACT_ID,
+            ContactsContract.PhoneLookup.DISPLAY_NAME,
+            ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI
+        )
+        try {
+            cursor = context.contentResolver.query(uri, projection, null, null, null)
+            cursor.use {
+                if (cursor?.moveToFirst() == true) {
+                    //this table contains, stared contacts and other usefull informations
+                    val id = cursor.getStringValue(ContactsContract.PhoneLookup.CONTACT_ID)
+                    name=  cursor.getStringValue(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                    val thumbnail = cursor.getStringValue(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI)
+                   contact =  Contact(id.toLong(), name = name, photoThumnail =thumbnail)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "getNameFromPhoneNumber: $e")
+        }
+        finally {
+            cursor?.close()
+        }
+        Log.d(TAG, "infoFromContentProvider:name is  $name ")
+        return@withContext contact
     }
 
 

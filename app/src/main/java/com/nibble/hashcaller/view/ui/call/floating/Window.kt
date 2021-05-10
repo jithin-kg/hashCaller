@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
@@ -22,6 +23,7 @@ import kotlinx.coroutines.withContext
 
 class Window(private val context: Context) {
 
+    private var callerInfoFoundFrom = INFO_SEARCHING
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private val rootView = layoutInflater.inflate(R.layout.window, null)
@@ -29,7 +31,6 @@ class Window(private val context: Context) {
     private val tvFirstLetter:TextView = rootView.findViewById<TextView>(R.id.tvFistLetterWindow)
     private val tvLocation:TextView = rootView.findViewById(R.id.txtVLocaltionWindow)
     private val layoutInnerWindow: ConstraintLayout = rootView.findViewById(R.id.layoutInnerWindow)
-
     private val windowParams = WindowManager.LayoutParams(
         0,
         0,
@@ -137,43 +138,72 @@ class Window(private val context: Context) {
     }
 
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
+        if(callerInfoFoundFrom!= INFO_FOUND_FROM_CPROVIDER){
+            //only update contents with server info iff info has not yet found from contentprovider
+            //TODO check for image uri from server and local db, if img uri in db isNullOrEpty then show image from server if exists
+            //todo cellular, country informations are to be shown, without this
+            //country informations should be shown even if no internet, im using  io.michaelrocks:libphonenumbe, use it
+            var name:String? = ""
+            var  location:String? = ""
+            name = (resFromServer.firstName + resFromServer.lastName).trim()
+            if(name.isNullOrEmpty()){
+                name = phoneNumber
+            }
 
-        var name:String? = ""
-        var  location:String? = ""
-        name = (resFromServer.firstName + resFromServer.lastName).trim()
-        if(name.isNullOrEmpty()){
-        name = phoneNumber
+            var firstLetter = ""
+            if(!resFromServer.firstName.isNullOrEmpty()){
+                firstLetter = resFromServer.firstName[0].toString()
+            }else if(!resFromServer.lastName.isNullOrEmpty()){
+                firstLetter = resFromServer.lastName[0].toString()
+            }else{
+                firstLetter = formatPhoneNumber(phoneNumber)[0].toString()
+            }
+
+            if(!resFromServer.location.isNullOrEmpty()){
+                location = resFromServer.location
+            }else if(!resFromServer.country.isNullOrEmpty()){
+                location = resFromServer.country
+            }
+            tvFirstLetter.text = firstLetter
+            tvName.text = name
+            tvLocation.text = location
         }
-
-        var firstLetter = ""
-        if(!resFromServer.firstName.isNullOrEmpty()){
-        firstLetter = resFromServer.firstName[0].toString()
-        }else if(!resFromServer.lastName.isNullOrEmpty()){
-        firstLetter = resFromServer.lastName[0].toString()
-        }else{
-        firstLetter = formatPhoneNumber(phoneNumber)[0].toString()
-        }
-
-        if(!resFromServer.location.isNullOrEmpty()){
-            location = resFromServer.location
-        }else if(!resFromServer.country.isNullOrEmpty()){
-            location = resFromServer.country
-        }
-
-        tvFirstLetter.text = firstLetter
-        tvName.text = name
-        tvLocation.text = location
-
         if(resFromServer.spammCount> SPAM_THREASHOLD){
-            layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
+         layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
         }else{
-            layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background )
+          layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background )
         }
+
     }
 
+    suspend fun updateWithcontentProviderInfo(contactInfoInCprovider: Contact) = withContext(Dispatchers.Main) {
+        var firstName:String? = ""
+        var firstLetter:String?   = ""
+        var photoThumbnailUri:String? = ""
+        if(!contactInfoInCprovider.name.isNullOrEmpty()){
+            firstName = contactInfoInCprovider.name
+        }
 
+        if(!contactInfoInCprovider.photoThumnail.isNullOrEmpty()){
+            photoThumbnailUri = contactInfoInCprovider.photoThumnail
+        }
+        if(!firstName.isNullOrEmpty()){
+            tvName.text = firstName
+            firstLetter = firstName[0].toString()
+            tvFirstLetter.text = firstLetter
+            setCallerInfoFoundFrom(INFO_FOUND_FROM_CPROVIDER)
+        }
+
+    }
+
+fun setCallerInfoFoundFrom(foundFrom:Int){
+    callerInfoFoundFrom = foundFrom
+}
     companion object{
         const val TAG = "__Window"
+        const val INFO_SEARCHING = 0
+        const val INFO_FOUND_FROM_CPROVIDER = 1
+        const val INFO_FOUND_FROM_SERVER = 2
     }
 
 }

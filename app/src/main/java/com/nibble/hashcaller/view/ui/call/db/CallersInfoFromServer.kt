@@ -32,7 +32,7 @@ data class CallersInfoFromServer (
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name = "contact_address") var contactAddress: String= "",
     @ColumnInfo(name = "type") var  spammerType: Int = 0,
-    @ColumnInfo(name = "name") var title:String = "",
+    @ColumnInfo(name = "name") var firstName:String = "",
     @ColumnInfo(name = "informationReceivedDate") val informationReceivedDate:Date,
     @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = 0,
     @ColumnInfo(name = "city") var city: String  = "",

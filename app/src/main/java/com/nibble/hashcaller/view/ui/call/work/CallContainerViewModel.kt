@@ -113,7 +113,7 @@ class CallContainerViewModel(
                   val  info =  async {  repository!!.getCallerInfoForAddressFromDB(log.number!!) }.await()
                   if(info!=null){
                       if(log.name.isNullOrEmpty()){
-                         log.name = info.title
+                         log.name = info.firstName
                       }
                       log.spamCount = info.spamReportCount
                   }
@@ -376,9 +376,9 @@ class CallContainerViewModel(
           for(item in list){
              val res =  async { repository?.findFromCallLogTable(item.contactAddress)  }.await()
               if(res!=null){
-                  if(res.nameFromServer!= item.title ){
+                  if(res.nameFromServer!= item.firstName ){
                       repository?.updateCallLogWithServerInfo(item)
-                  }else if( res.spamCount < item.spamReportCount && item.spamReportCount > SPAM_THREASHOLD){
+                  }else if( res.spamCount < item.spamReportCount ){
                       repository?.updateCallLogWithSpamerDetails(item)
                   }
               }
@@ -435,7 +435,7 @@ class CallContainerViewModel(
 
             if(callLogTableInfo!=null  ){
                 if(serverInfo!=null){
-                    if(callLogTableInfo.nameFromServer != serverInfo.title || callLogTableInfo.spamCount < serverInfo.spamReportCount){
+                    if(callLogTableInfo.nameFromServer != serverInfo.firstName || callLogTableInfo.spamCount < serverInfo.spamReportCount){
                         repository?.updateCallLogWithServerInfo(serverInfo)
                     }
                 }

@@ -22,7 +22,6 @@ import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
 import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
-import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -438,7 +437,7 @@ class CallContainerRepository(
         callerInfoFromServerDAO.find(formatPhoneNumber(log.number)).apply {
             if(this !=null){
                 if(log.name.isNullOrEmpty()){
-                    log.name = this.title
+                    log.name = this.firstName
 //                    log.callerInfoFoundFrom = SENDER_INFO_FROM_DB
                 }else{
                     //if there is name already in the log then it would be got from content provider
@@ -579,7 +578,7 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO) {
-        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount)
+        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, serverInfo.firstName, serverInfo.spamReportCount)
     }
 
 
@@ -632,7 +631,7 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO){
-        callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress, serverInfo.title, serverInfo.spamReportCount, TYPE_SPAM)
+        callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress, serverInfo.firstName, serverInfo.spamReportCount, TYPE_SPAM)
 
     }
 
