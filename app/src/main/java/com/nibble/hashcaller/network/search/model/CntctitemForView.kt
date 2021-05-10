@@ -18,7 +18,7 @@ data class CntctitemForView(
 
     val country: String="",
 
-    val spammCount : Int = 0,
+    val spammCount : Long = 0L,
 
     val statusCode:Int = STATUS_SEARHING_IN_PROGRESS
 )

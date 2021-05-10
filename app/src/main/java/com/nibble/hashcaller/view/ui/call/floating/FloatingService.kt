@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -131,13 +130,15 @@ class FloatingService    : Service() {
         val searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
+        val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
 
         return  InCommingCallManager(
             context,
             phoneNumber, context.isBlockNonContactsEnabled(),
             null, searchRepository,
             internetChecker, blockedListpatternDAO,
-            contactAdressesDAO
+            contactAdressesDAO,
+            callerInfoFromServerDAO
         )
     }
 

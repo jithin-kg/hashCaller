@@ -133,12 +133,15 @@ class CallHandleWorker(private val context: Context, private val workerParameter
         searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
+        val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
 
-        return  InCommingCallManager(context,
+        return  InCommingCallManager(
+            context,
             phoneNumber, context.isBlockNonContactsEnabled(),
             notificationHelper, searchRepository,
             internetChecker, blockedListpatternDAO,
-            contactAdressesDAO
+            contactAdressesDAO,
+            callerInfoFromServerDAO
         )
     }
 

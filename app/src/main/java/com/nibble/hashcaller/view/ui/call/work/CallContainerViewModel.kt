@@ -390,6 +390,8 @@ class CallContainerViewModel(
         repository!!.clearCallersInfoFromServer()
         blockListPatternRepository.clearAll()
 
+
+
     }
 
     fun clearMarkedItems() = viewModelScope.launch{

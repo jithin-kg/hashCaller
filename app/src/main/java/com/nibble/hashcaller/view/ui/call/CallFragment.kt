@@ -607,7 +607,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 unmuteUser()
             }
             R.id.fabBtnShowDialpad ->{
-//                viewmodel.clearCallLogDB()
+                viewmodel.clearCallLogDB()
 //                val i = Intent(context, SampleActivityStartnotification::class.java)
 //                startActivity(i)
 //                context?.startFloatingService()

@@ -74,11 +74,12 @@ class IncommingCallForegroundService : Service() {
                         CntctitemForView(statusCode = STATUS_SEARHING_IN_PROGRESS), phoneNumber)
 //                delay(15000L)
                     var isSpam = false
-                    inComingCallManager =   getIncomminCallManager(phoneNumber, this@IncommingCallForegroundService)
+//                    inComingCallManager =   getIncomminCallManager(phoneNumber, this@IncommingCallForegroundService)
                     val hasedNum = getHashedNum(phoneNumber, this@IncommingCallForegroundService)
                     val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
                         hasedNum
-                    ) }
+                    )}
+
                     val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                     val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
                     try {
@@ -176,21 +177,22 @@ class IncommingCallForegroundService : Service() {
 //        inComingCallManager.endIncommingCall(context)
 //        notificationHelper.showNotificatification(true, phoneNumber)
     }
-    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
-        val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
-
-        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
-        val internetChecker = InternetChecker(context)
-        val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
-
-        return  InCommingCallManager(
-            context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
-            null, searchRepository,
-            internetChecker, blockedListpatternDAO,
-            contactAdressesDAO
-        )
-    }
+//    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+////        val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
+////
+////        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+////        val internetChecker = InternetChecker(context)
+////        val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
+////
+////        return  InCommingCallManager(
+////            context,
+////            phoneNumber, context.isBlockNonContactsEnabled(),
+////            null, searchRepository,
+////            internetChecker, blockedListpatternDAO,
+////            contactAdressesDAO,
+////            callerInfoFromServerDAO
+////        )
+//    }
 //    private lateinit var phoneNumber: String
 //    private lateinit var  searchRepository: SearchNetworkRepository
 //    private lateinit var notificationHelper: NotificationHelper

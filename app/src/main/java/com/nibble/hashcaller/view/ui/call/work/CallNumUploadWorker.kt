@@ -39,8 +39,17 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     private val callersListDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private lateinit var callersListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
     private lateinit var callersListChunkOfSize12: List<List<ContactAddressWithHashDTO>>
-
-
+    val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
+    val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
+    val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
+    val callContainerRepository =
+        CallContainerRepository(
+            context,
+            callersInfoFromServerDAO,
+            mutedCallersDAO,
+            callLogDAO,
+            DataStoreRepository(context.tokeDataStore)
+        )
 
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
@@ -53,28 +62,12 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 )
 
             val allcallsincontentProvider = callersLocalRepository.getCallLog()
-            val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
-            val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
-            val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
-
-            val callContainerRepository =
-                CallContainerRepository(
-                    context,
-                    callersInfoFromServerDAO,
-                    mutedCallersDAO,
-                    callLogDAO,
-                    DataStoreRepository(context.tokeDataStore)
-                )
-
 
             setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
 
 
             if(callersListChunkOfSize12.isNotEmpty()){
                 for (senderInfoSublist in callersListChunkOfSize12){
-                    /**
-                     * send the list to server
-                     */
                     /**
                      * send the list to server
                      */
@@ -88,7 +81,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
                     for(cntct in result.body()!!.contacts){
                         val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                            formatPhoneNumber(cntct.phoneNumber), 0, cntct.name,
+                            formatPhoneNumber(cntct.phoneNumber), 0, cntct.firstName?:"",
                             Date(), cntct.spamCount)
                         callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                     }
@@ -114,7 +107,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     private suspend fun setlistOfAllUnknownCallers(
         allcallsInContentProvider: List<CallLogData>,
         callerssInfoFromServerDAO: CallersInfoFromServerDAO
-    ) {
+    )  = withContext(Dispatchers.IO){
 
         callersListTobeSendToServer  = mutableListOf()
 
@@ -126,6 +119,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             if(callersInfoAvailableInLocalDb == null){
 
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
+                //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927 ->123
+                //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927
                 val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                 callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))
 

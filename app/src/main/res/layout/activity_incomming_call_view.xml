@@ -128,57 +128,56 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:id="@+id/layoutExpandedIncomming"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:paddingBottom="32dp"-->
-<!--        android:elevation="6dp"-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutExpandedIncomming"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp"
+        android:elevation="6dp"
 
-<!--        android:background="@drawable/incomming_call_background_expanded"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/cnstraintlyoutInner"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/cnstraintlyoutInner"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/cnstraintlyoutInner">-->
+        android:background="@drawable/incomming_call_background_expanded"
+        app:layout_constraintEnd_toEndOf="@+id/cnstraintlyoutInner"
+        app:layout_constraintStart_toStartOf="@+id/cnstraintlyoutInner"
+        app:layout_constraintTop_toBottomOf="@+id/cnstraintlyoutInner">
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/imgBtnCallIncomming"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="32dp"-->
-<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--            android:padding="8dp"-->
-<!--            android:src="@drawable/ic_baseline_call_24"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingSMS"-->
-<!--            app:layout_constraintHorizontal_bias="0.5"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <ImageButton
+            android:id="@+id/imgBtnCallIncomming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_call_24"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingSMS"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/imgBtnCallIncomingSMS"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="32dp"-->
-<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--            android:padding="8dp"-->
-<!--            android:src="@drawable/ic_baseline_sms_24"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingBlock"-->
-<!--            app:layout_constraintHorizontal_bias="0.5"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomming"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <ImageButton
+            android:id="@+id/imgBtnCallIncomingSMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_sms_24"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingBlock"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomming"
+            app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/imgBtnCallIncomingBlock"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="32dp"-->
-<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--            android:padding="8dp"-->
-<!--            android:src="@drawable/ic_baseline_block_24"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHorizontal_bias="0.5"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingSMS"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <ImageButton
+            android:id="@+id/imgBtnCallIncomingBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_block_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingSMS"
+            app:layout_constraintTop_toTopOf="parent" />
 
-
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -70,6 +70,7 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
 
     suspend fun clearAll() {
         blockedLIstDao.deleteAll()
+
     }
 
 

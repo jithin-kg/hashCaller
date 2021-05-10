@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.call.floating
 import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
@@ -32,11 +33,25 @@ class FloatinServiceHelper(
 //                delay(15000L)
                 var isSpam = false
 
-                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                    hashedNum
-                ) }
+
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
+                var defServerHandling:Deferred<CntctitemForView>? = null
+                val definfoFromDb = async { inComingCallManager.getAvailbleInfoInDb() }
+                val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
+                try {
+                    val infoAvailableInDb = definfoFromDb.await()
+                    if(infoAvailableInDb!=null){
+                       window.updateWithServerInfo(infoAvailableInDb, phoneNumber)
+                    }else{
+                        //todo check date of the info received from server, if today - date >0 search in server
+                         defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                            hashedNum
+                        ) }
+                    }
+                }catch (e:Exception){
+                    Log.d(TAG, "handleCall: $e")
+                }
                 try {
                     Log.d(TAG, "onReceive: firsttry")
                     val isBlockedByPattern  = defBlockedByPattern.await()
@@ -51,32 +66,15 @@ class FloatinServiceHelper(
                 try {
 
                     Log.d(TAG, "onReceive: second try")
-                    val resFromServer = defServerHandling.await()
-                    if(resFromServer.statusCode == StatusCodes.STATUS_OK){
-
+                    val resFromServer = defServerHandling?.await()
+                    if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
                         window.updateWithServerInfo(resFromServer, phoneNumber)
-//                        if(this@FloatingService.isActivityIncommingCallViewVisible()){
-//                            val intent =  this@FloatingService.getPreparedincommingIntent(resFromServer,
-//                                phoneNumber, false)
-//                            sendBroadcast(intent)
-//                        }else{
-//                            this@FloatingService.startActivityIncommingCallView(resFromServer,
-//                                phoneNumber
-//                            )
-//
-//                        }
-
                     }
-                    if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true
                         endCall(inComingCallManager,
                             phoneNumber)
                     }
-//                    if(!resFromServer.firstName.isNullOrEmpty()){
-//                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
-//                    }
-
-
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e ")
                 }

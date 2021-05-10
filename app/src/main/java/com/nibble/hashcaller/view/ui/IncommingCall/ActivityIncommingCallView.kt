@@ -141,8 +141,8 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
          * important to setLayout outherwise activity goes full screen
          */
 
-//        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
 
 
 //        this.setFinishOnTouchOutside(true)

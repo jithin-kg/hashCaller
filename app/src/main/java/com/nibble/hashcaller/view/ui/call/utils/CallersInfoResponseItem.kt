@@ -1,12 +1,16 @@
 package com.nibble.hashcaller.view.ui.call.utils
 
 import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
 
 @Keep
 data class CallersInfoResponseItem (
     var phoneNumber:String = "",
     var type: Int = 0,
-    var name: String = "",
+    @SerializedName("firstName")
+    val firstName: String? = "",
+    @SerializedName("lastName")
+    val lastName: String? = "",
     var city: String = "",
     var country:String = "",
     var carier: String = "",

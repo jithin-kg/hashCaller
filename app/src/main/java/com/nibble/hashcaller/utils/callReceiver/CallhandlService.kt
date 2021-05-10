@@ -50,7 +50,6 @@ class CallhandlService : JobIntentService(){
                 Log.d(TAG, "onHandleWork: not stoped")
             }
 //            intent?.let {
-
                 phoneNumber = "6505551212"
                 notificationHelper = getNotificationHelper(this)
 
@@ -131,13 +130,14 @@ class CallhandlService : JobIntentService(){
         searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
-
+        val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
         return  InCommingCallManager(
             context,
             phoneNumber, context.isBlockNonContactsEnabled(),
             notificationHelper, searchRepository,
             internetChecker, blockedListpatternDAO,
-            contactAdressesDAO
+            contactAdressesDAO,
+            callerInfoFromServerDAO
         )
     }
 
@@ -219,7 +219,6 @@ class CallhandlService : JobIntentService(){
         fun enqueueWork(context: Context, work: Intent) {
             enqueueWork(context, CallhandlService::class.java, JOB_ID, work)
         }
-
         fun isServiceCurrentlyRunning(): Boolean {
             return isServiceRunning
         }

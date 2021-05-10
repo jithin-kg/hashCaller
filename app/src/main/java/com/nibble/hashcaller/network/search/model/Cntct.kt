@@ -25,7 +25,7 @@ data class Cntct(
     val country: String?="",
 
     @SerializedName("spamCount")
-    val spammCount : Int? = 0,
+    val spammCount : Long? = 0,
 
 
 

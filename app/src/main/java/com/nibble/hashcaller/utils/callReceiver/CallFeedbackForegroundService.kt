@@ -16,8 +16,6 @@ import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.utils.constants.IntentKeys
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.EXPAND_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
@@ -129,13 +127,15 @@ class CallFeedbackForegroundService : Service() {
         searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
+        val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
 
         return  InCommingCallManager(
             context,
             phoneNumber, context.isBlockNonContactsEnabled(),
             null, searchRepository,
             internetChecker, blockedListpatternDAO,
-            contactAdressesDAO
+            contactAdressesDAO,
+            callerInfoFromServerDAO
         )
     }
 }

@@ -538,6 +538,7 @@ class CallContainerRepository(
     suspend fun clearCallersInfoFromServer() {
         callerInfoFromServerDAO.deleteAll()
         callLogDAO?.deleteAll()
+
     }
 
     suspend fun insertIntoCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) = withContext(Dispatchers.IO) {
