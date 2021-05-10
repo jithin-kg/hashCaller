@@ -27,6 +27,7 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMI
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.call.floating.FloatingService
 import com.nibble.hashcaller.view.ui.call.floating.INTENT_COMMAND
+import com.nibble.hashcaller.view.ui.call.floating.INTENT_COMMAND_EXIT
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
@@ -53,7 +54,11 @@ fun Context.startFloatingService(command: String = "") {
 
 }
 fun Context.stopFloatingService(){
-    stopService(Intent(this, FloatingService::class.java))
+//    stopService(Intent(this, FloatingService::class.java))
+    val exitIntent = Intent(this, FloatingService::class.java).apply {
+        putExtra(INTENT_COMMAND, INTENT_COMMAND_EXIT)
+    }
+    startService(exitIntent)
 }
 fun Context.closeIncommingCallView(){
 //    val i = Intent(this, ActivityIncommingCallView::class.java)

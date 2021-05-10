@@ -6,18 +6,16 @@ import android.graphics.PixelFormat
 import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.nibble.hashcaller.R
 
 class Window(private val context: Context) {
 
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private val rootView = layoutInflater.inflate(R.layout.window, null)
+    private val rootView = layoutInflater.inflate(R.layout.window, null) as ConstraintLayout
 
     private val windowParams = WindowManager.LayoutParams(
         0,
@@ -53,6 +51,7 @@ class Window(private val context: Context) {
         // We have to set gravity for which the calculated position is relative.
         params.gravity = Gravity.TOP or Gravity.LEFT
         params.width = (widthInDp * dm.density).toInt()
+//        params.width = ViewGroup.LayoutParams.MATCH_PARENT
         params.height = (heightInDp * dm.density).toInt()
         params.x = (dm.widthPixels - params.width) / 2
         params.y = (dm.heightPixels - params.height) / 2
@@ -67,10 +66,10 @@ class Window(private val context: Context) {
     private fun initWindow() {
         // Using kotlin extension for views caused error, so good old findViewById is used
         rootView.findViewById<View>(R.id.window_close).setOnClickListener { close() }
-        rootView.findViewById<View>(R.id.content_button).setOnClickListener {
-            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
-        }
-        rootView.findViewById<View>(R.id.window_header).registerDraggableTouchListener(
+//        rootView.findViewById<View>(R.id.content_button).setOnClickListener {
+//            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
+//        }
+        rootView.findViewById<View>(R.id.layoutIncommingCall).registerDraggableTouchListener(
             initialPosition = { Point(windowParams.x, windowParams.y) },
             positionListener = { x, y -> setPosition(x, y) }
         )

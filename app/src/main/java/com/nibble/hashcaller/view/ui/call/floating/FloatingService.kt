@@ -17,13 +17,11 @@ private const val NOTIFICATION_CHANNEL_GENERAL = "quicknote_general"
 private const val CODE_FOREGROUND_SERVICE = 1
 private const val CODE_EXIT_INTENT = 2
 private const val CODE_NOTE_INTENT = 3
-
+//https://localazy.com/blog/floating-windows-on-android-5-moving-window
 class FloatingService : Service() {
 
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-
     /**
      * Remove the foreground notification and stop the service.
      */

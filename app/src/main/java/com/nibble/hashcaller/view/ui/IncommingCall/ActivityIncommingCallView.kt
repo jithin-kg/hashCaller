@@ -203,6 +203,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     }
 
     private fun closeActivity() {
+
 //        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         finishAfterTransition()
 //        val anim = AnimationUtils.loadAnimation(this, R.anim.exit_to_bottom)
