@@ -56,6 +56,7 @@ import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.
 import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -611,8 +612,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             }
             R.id.fabBtnShowDialpad ->{
 //                viewmodel.clearCallLogDB()
-                val i = Intent(context, SampleActivityStartnotification::class.java)
-                startActivity(i)
+//                val i = Intent(context, SampleActivityStartnotification::class.java)
+//                startActivity(i)
+               context?.startFloatingService()
 
 //                (activity as MainActivity).showDialerFragment()
             }

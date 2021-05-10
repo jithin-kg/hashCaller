@@ -10,6 +10,9 @@ import android.view.*
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class Window(private val context: Context) {
 
@@ -49,11 +52,16 @@ class Window(private val context: Context) {
     ) {
         val dm = getCurrentDisplayMetrics()
         // We have to set gravity for which the calculated position is relative.
+        //do not remove commented code for params.width and height
         params.gravity = Gravity.TOP or Gravity.LEFT
-        params.width = (widthInDp * dm.density).toInt()
-//        params.width = ViewGroup.LayoutParams.MATCH_PARENT
-        params.height = (heightInDp * dm.density).toInt()
-        params.x = (dm.widthPixels - params.width) / 2
+//        params.width = (widthInDp * dm.density).toInt()
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT
+//        params.height = (heightInDp * dm.density).toInt()
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+//        params.x = (dm.widthPixels - params.width) / 2
+        params.x = 0
+//        params.horizontalMargin = 8f
+
         params.y = (dm.heightPixels - params.height) / 2
     }
 
@@ -65,19 +73,25 @@ class Window(private val context: Context) {
 
     private fun initWindow() {
         // Using kotlin extension for views caused error, so good old findViewById is used
-//        rootView.findViewById<View>(R.id.window_close).setOnClickListener { close() }
-//        rootView.findViewById<View>(R.id.content_button).setOnClickListener {
-//            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
-//        }
+        rootView.findViewById<View>(R.id.imgBtnCloseIncommin).setOnClickListener { close() }
+        rootView.findViewById<View>(R.id.layoutWindowParent).setOnClickListener {
+            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
+        }
+//       rootView.findViewById<View>(R.id.layoutWindowParent).registerDraggableTouchListener()
         rootView.findViewById<View>(R.id.layoutWindowParent).registerDraggableTouchListener(
             initialPosition = { Point(windowParams.x, windowParams.y) },
             positionListener = { x, y -> setPosition(x, y) }
         )
+
     }
     private fun setPosition(x: Int, y: Int) {
-        windowParams.x = x
+//        windowParams.x = x
         windowParams.y = y
         update()
+        if(rootView.findViewById<View>(R.id.layoutDragIndicator).visibility == View.VISIBLE){
+            rootView.findViewById<View>(R.id.layoutDragIndicator).beGone()
+        }
+
     }
     private fun update() {
         try {
