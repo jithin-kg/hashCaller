@@ -1,0 +1,134 @@
+package com.nibble.hashcaller.view.ui.call.floating
+
+import android.content.Context
+import android.util.Log
+import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import kotlinx.coroutines.*
+
+class FloatinServiceHelper(
+    private val inComingCallManager: InCommingCallManager,
+    private val isCallScreeningRoleHeld: Boolean,
+    private val hashedNum: String,
+    private val supervisorScope: CoroutineScope,
+    private val window: Window,
+    private val phoneNumber: String,
+    private val context:Context
+) {
+
+    suspend fun  handleCall(){
+
+        supervisorScope.launch {
+            if (!isCallScreeningRoleHeld) {
+                //start operations iff screening role not avaialble
+                Log.d(TAG, "onReceive: role not held")
+//                this@FloatingService.startActivityIncommingCallView(
+//                    //start incomming call screen at start and show seraching... in view, then update with data from server
+//                    CntctitemForView(statusCode = StatusCodes.STATUS_SEARHING_IN_PROGRESS),
+//                    phoneNumber
+//                )
+//                delay(15000L)
+                var isSpam = false
+
+                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                    hashedNum
+                ) }
+                val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
+                val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
+                try {
+                    Log.d(TAG, "onReceive: firsttry")
+                    val isBlockedByPattern  = defBlockedByPattern.await()
+                    if(isBlockedByPattern){
+                        isSpam = true
+                        endCall(inComingCallManager,
+                            phoneNumber, )
+                    }
+                }catch (e: Exception){
+                    Log.d(TAG, "onReceive: $e")
+                }
+                try {
+
+                    Log.d(TAG, "onReceive: second try")
+                    val resFromServer = defServerHandling.await()
+                    if(resFromServer.statusCode == StatusCodes.STATUS_OK){
+
+                        window.updateWithServerInfo(resFromServer, phoneNumber)
+//                        if(this@FloatingService.isActivityIncommingCallViewVisible()){
+//                            val intent =  this@FloatingService.getPreparedincommingIntent(resFromServer,
+//                                phoneNumber, false)
+//                            sendBroadcast(intent)
+//                        }else{
+//                            this@FloatingService.startActivityIncommingCallView(resFromServer,
+//                                phoneNumber
+//                            )
+//
+//                        }
+
+                    }
+                    if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                        isSpam = true
+                        endCall(inComingCallManager,
+                            phoneNumber)
+                    }
+//                    if(!resFromServer.firstName.isNullOrEmpty()){
+//                        this@ForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
+//                    }
+
+
+                }catch (e: Exception){
+                    Log.d(TAG, "onReceive: $e ")
+                }
+                try {
+                    Log.d(TAG, "onReceive: third try ")
+                    val r = defNonContactsBlocked.await()
+                    if(r){
+                        endCall(inComingCallManager,
+                            phoneNumber,)
+
+                    }
+                }catch (e: Exception){
+                    Log.d(TAG, "onReceive: $e")
+                }
+
+            }
+
+
+//            stopSelf();
+
+        }.join()
+        context.stopFloatingService()
+    }
+
+
+//    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+//        val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
+//
+//        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+//        val internetChecker = InternetChecker(context)
+//        val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
+//
+//        return  InCommingCallManager(
+//            context,
+//            phoneNumber, context.isBlockNonContactsEnabled(),
+//            null, searchRepository,
+//            internetChecker, blockedListpatternDAO,
+//            contactAdressesDAO
+//        )
+//    }
+
+
+    private fun endCall(
+        inComingCallManager: InCommingCallManager,
+        phoneNumber: String
+    ) {
+        inComingCallManager.endIncommingCall()
+//        notificationHelper.showNotificatification(true, phoneNumber)
+    }
+
+    companion object{
+        const val TAG = "__FloatinServiceHelper"
+
+    }
+}

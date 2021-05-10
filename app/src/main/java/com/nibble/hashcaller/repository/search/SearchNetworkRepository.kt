@@ -18,14 +18,15 @@ class SearchNetworkRepository(private val tokenManager: TokenManager){
 
     //todo https://stackoverflow.com/questions/38233687/how-to-use-the-firebase-refreshtoken-to-reauthenticate
     // i should user a refresh token
+
     suspend fun search(phoneNum:String): Response<SerachRes>?  = withContext(Dispatchers.IO){
         var result : Response<SerachRes>? = null
         try {
             val token = tokenManager.getDecryptedToken()
             result =  retrofitService?.search(SearchDTO(phoneNum), token)
             Log.d(TAG, "search: $result")
-        }catch (e:Exception){
 
+        }catch (e:Exception){
             Log.d(TAG, "search:exception $e")
         }
 

@@ -66,7 +66,7 @@ class InCommingCallManager(
                     match = phoneNumber.endsWith(item.numberPattern)
                 }
                 if(match){
-                    endIncommingCall(context)
+                    endIncommingCall()
                     break
                 }
             }
@@ -78,7 +78,7 @@ class InCommingCallManager(
     }
 
 
-     fun endIncommingCall(context: Context) {
+     fun endIncommingCall() {
          Log.d(TAG, "endIncommingCall: ")
         val c = CallEnder(context)
         c.endIncomingCall()

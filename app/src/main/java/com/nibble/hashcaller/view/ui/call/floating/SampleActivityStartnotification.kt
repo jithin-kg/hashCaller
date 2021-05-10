@@ -9,6 +9,6 @@ class SampleActivityStartnotification : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sample_startnotification)
-        startFloatingService()
+//        startFloatingService(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
     }
 }

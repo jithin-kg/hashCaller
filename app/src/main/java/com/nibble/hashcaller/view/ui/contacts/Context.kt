@@ -17,17 +17,20 @@ import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.COUNTRY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LAST_NAME
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LOCATION
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.call.floating.FloatingService
-import com.nibble.hashcaller.view.ui.call.floating.INTENT_COMMAND
-import com.nibble.hashcaller.view.ui.call.floating.INTENT_COMMAND_EXIT
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
 import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
@@ -38,27 +41,56 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
 
-fun Context.startFloatingService(command: String = "") {
+fun Context.startFloatingService(phoneNumber: String?) {
 
     val intent = Intent(this, FloatingService::class.java)
-    if (command.isNotBlank()) {
-        intent.putExtra(INTENT_COMMAND, command)
-    }
+    phoneNumber?.let {
+        intent.putExtra(CONTACT_ADDRES, phoneNumber)
+        intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE )
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        this.startForegroundService(intent)
-    } else {
-        this.startService(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent)
+        } else {
+            this.startService(intent)
+        }
     }
-
+//    if (!phoneNumber.isNullOrEmpty()) {
+////        intent.putExtra(INTENT_COMMAND, phoneNumber)
+//        intent.putExtra(CONTACT_ADDRES, phoneNumber)
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            this.startForegroundService(intent)
+//        } else {
+//            this.startService(intent)
+//        }
+//    }
+//
+//
 
 }
-fun Context.stopFloatingService(){
+
+/**
+ * function to stop floating service and floating window based on
+ * @param closeFloatingServiceAndWindow if  param is true close window and floatinwindow
+ * else stop stop service only
+ *
+ */
+fun Context.stopFloatingService(closeFloatingServiceAndWindow:Boolean = false){
 //    stopService(Intent(this, FloatingService::class.java))
-    val exitIntent = Intent(this, FloatingService::class.java).apply {
-        putExtra(INTENT_COMMAND, INTENT_COMMAND_EXIT)
+//    stopService(Intent(this, FloatingService::class.java))
+    if(closeFloatingServiceAndWindow){
+        val exitIntent = Intent(this, FloatingService::class.java).apply {
+            putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE_AND_WINDOW)
+        }
+        startService(exitIntent)
+    }else{
+        val exitIntent = Intent(this, FloatingService::class.java).apply {
+            putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE)
+        }
+        startService(exitIntent)
     }
-    startService(exitIntent)
+
+
 }
 fun Context.closeIncommingCallView(){
 //    val i = Intent(this, ActivityIncommingCallView::class.java)

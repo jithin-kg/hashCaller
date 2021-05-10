@@ -156,8 +156,8 @@ class CallhandlService : JobIntentService(){
         phoneNumber: String,
         context: Context
     ) {
-        inComingCallManager.endIncommingCall(context)
-        notificationHelper.showNotificatification(true, phoneNumber)
+//        inComingCallManager.endIncommingCall(context)
+//        notificationHelper.showNotificatification(true, phoneNumber)
     }
 
     private fun startForgroundSerive(){

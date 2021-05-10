@@ -9,6 +9,7 @@
     android:id="@+id/layoutWindowParent"
     >
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutInnerWindow"
         android:layout_width="match_parent"
         android:elevation="8dp"
         android:layout_marginHorizontal="8dp"
@@ -28,11 +29,11 @@
             app:srcCompat="@drawable/circular_avatar_main_background" />
 
         <TextView
+            android:id="@+id/tvFistLetterWindow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="J"
-
+            android:text="H"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/imgVAvatarIncomming"
@@ -53,16 +54,16 @@
             android:src="@drawable/ic_baseline_close_white" />
 
         <TextView
-            android:id="@+id/txtVcallerName"
+            android:id="@+id/txtVcallerNameWindow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:letterSpacing="0.1"
-            android:text="caller name"
+            android:text="Searching.."
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/txtVLocaltion"
+            app:layout_constraintBottom_toTopOf="@+id/txtVLocaltionWindow"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnCloseIncommin"
             app:layout_constraintHorizontal_bias="0.068"
             app:layout_constraintStart_toEndOf="@+id/imgVAvatarIncomming"
@@ -70,7 +71,7 @@
             app:layout_constraintVertical_chainStyle="spread" />
 
         <TextView
-            android:id="@+id/txtVLocaltion"
+            android:id="@+id/txtVLocaltionWindow"
             android:layout_width="112dp"
             android:layout_height="17dp"
             android:alpha="0.79"
@@ -78,8 +79,8 @@
             android:text="Kerala India"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toTopOf="@+id/tvPhoneNumIncomming"
-            app:layout_constraintStart_toStartOf="@+id/txtVcallerName"
-            app:layout_constraintTop_toBottomOf="@+id/txtVcallerName" />
+            app:layout_constraintStart_toStartOf="@+id/txtVcallerNameWindow"
+            app:layout_constraintTop_toBottomOf="@+id/txtVcallerNameWindow" />
 
         <TextView
             android:id="@+id/tvPhoneNumIncomming"
@@ -93,8 +94,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvhashCallerIncommin"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/txtVLocaltion"
-            app:layout_constraintTop_toBottomOf="@+id/txtVLocaltion"
+            app:layout_constraintStart_toStartOf="@+id/txtVLocaltionWindow"
+            app:layout_constraintTop_toBottomOf="@+id/txtVLocaltionWindow"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView

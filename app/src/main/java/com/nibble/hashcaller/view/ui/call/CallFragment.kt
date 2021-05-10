@@ -36,9 +36,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
-import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
-import com.nibble.hashcaller.view.ui.IncommingCall.DragabbleActivity
-import com.nibble.hashcaller.view.ui.IncommingCall.ModelActivity
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.MyUndoListener
@@ -48,7 +45,6 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
-import com.nibble.hashcaller.view.ui.call.floating.SampleActivityStartnotification
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
@@ -614,7 +610,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                viewmodel.clearCallLogDB()
 //                val i = Intent(context, SampleActivityStartnotification::class.java)
 //                startActivity(i)
-               context?.startFloatingService()
+//                context?.startFloatingService()
+//               context?.startFloatingServiceintent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 
 //                (activity as MainActivity).showDialerFragment()
             }

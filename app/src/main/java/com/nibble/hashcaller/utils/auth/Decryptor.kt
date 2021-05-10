@@ -47,7 +47,7 @@ public class Decryptor {
         encryptedData: ByteArray?,
         encryptionIv: ByteArray?
     ): String? {
-
+    //todo add try catch here becase runtime errors
         val fullByteArray = encryptionIv!! + encryptedData!!;
         val fullString = Base64.encodeToString(fullByteArray, Base64.DEFAULT)
 

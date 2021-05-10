@@ -18,7 +18,10 @@ class IntentKeys {
         const val EXPAND_INCOMMING_VIEW = "com.nibble.hashcaller.expand_incomming_view" // these are send thrugh broadcast receiver
         const val UPDATE_INCOMMING_VIEW = "com.nibble.hashcaller.update_incomming_view" // these are send thrugh broadcast receiver
         const val CLOSE_INCOMMING_VIEW = "com.nibble.hashcaller.close_incomming_view"
-
+        const val INTENT_COMMAND = "com.nibble.hashcaller.incommingCallintent"
+        const val STOP_FLOATING_SERVICE = "com.nibble.stop_floating_service"
+        const val STOP_FLOATING_SERVICE_AND_WINDOW = "com.nibble.close_service_n_window"
+        const val START_FLOATING_SERVICE = "com.nibble.start_floatin_window"
 
     }
 }

@@ -120,7 +120,7 @@ class CallFeedbackForegroundService : Service() {
         phoneNumber: String,
         context: Context
     ) {
-        inComingCallManager.endIncommingCall(context)
+//        inComingCallManager.endIncommingCall(context)
 //        notificationHelper.showNotificatification(true, phoneNumber)
     }
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {

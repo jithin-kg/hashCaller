@@ -4,8 +4,7 @@
     <solid android:color="@color/spamText"/>
 <!--    <corners android:radius="8dp"-->
 <!--        />-->
-    <corners android:topLeftRadius="8dp"
-        android:topRightRadius="8dp"
+    <corners android:radius="8dp"
         />
 
 </shape>

@@ -151,8 +151,8 @@ class CallHandleWorker(private val context: Context, private val workerParameter
         phoneNumber: String,
         context: Context
     ) {
-        inComingCallManager.endIncommingCall(context)
-        notificationHelper.showNotificatification(true, phoneNumber)
+//        inComingCallManager.endIncommingCall(context)
+//        notificationHelper.showNotificatification(true, phoneNumber)
     }
     companion object {
         const val TAG =  "__CallHandleWorker"

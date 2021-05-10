@@ -164,8 +164,8 @@ class IncommingCallForegroundService : Service() {
             manager!!.createNotificationChannel(serviceChannel)
         }
     }
-        private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
-        return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+    private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
+    return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
 
     }
     private fun endCall(
@@ -173,7 +173,7 @@ class IncommingCallForegroundService : Service() {
         phoneNumber: String,
         context: Context
     ) {
-        inComingCallManager.endIncommingCall(context)
+//        inComingCallManager.endIncommingCall(context)
 //        notificationHelper.showNotificatification(true, phoneNumber)
     }
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
