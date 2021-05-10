@@ -15,7 +15,7 @@ class Window(private val context: Context) {
 
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private val rootView = layoutInflater.inflate(R.layout.window, null) as ConstraintLayout
+    private val rootView = layoutInflater.inflate(R.layout.window, null)
 
     private val windowParams = WindowManager.LayoutParams(
         0,
@@ -65,11 +65,11 @@ class Window(private val context: Context) {
 
     private fun initWindow() {
         // Using kotlin extension for views caused error, so good old findViewById is used
-        rootView.findViewById<View>(R.id.window_close).setOnClickListener { close() }
+//        rootView.findViewById<View>(R.id.window_close).setOnClickListener { close() }
 //        rootView.findViewById<View>(R.id.content_button).setOnClickListener {
 //            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
 //        }
-        rootView.findViewById<View>(R.id.layoutIncommingCall).registerDraggableTouchListener(
+        rootView.findViewById<View>(R.id.layoutWindowParent).registerDraggableTouchListener(
             initialPosition = { Point(windowParams.x, windowParams.y) },
             positionListener = { x, y -> setPosition(x, y) }
         )
