@@ -1,4 +1,4 @@
-package com.nibble.hashcaller.view.ui.call.floating
+package com.nibble.hashcaller.utils.callscreening
 
 import android.app.*
 import android.content.Context
@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
@@ -21,13 +22,12 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.call.floating.Window
 import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.sms.individual.util.call
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 //const val INTENT_COMMAND = "com.localazy.quicknote.COMMAND"
 const val INTENT_COMMAND_EXIT = "EXIT"
@@ -38,9 +38,8 @@ private const val CODE_FOREGROUND_SERVICE = 1
 private const val CODE_EXIT_INTENT = 2
 private const val CODE_NOTE_INTENT = 3
 //https://localazy.com/blog/floating-windows-on-android-5-moving-window
-class FloatingService: Service() {
-    private lateinit var floatinServiceHelper:FloatinServiceHelper
-    private  var _window:Window? = null
+class CallScreeningFloatingService: Service() {
+    private  var _window: Window? = null
     private  val window:Window get() = _window!!
 
         override fun onBind(intent: Intent?): IBinder? = null
@@ -51,112 +50,45 @@ class FloatingService: Service() {
         stopForeground(true)
         stopSelf()
     }
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
-        val command:String? = intent.getStringExtra(INTENT_COMMAND)
+        val command: String? = intent.getStringExtra(INTENT_COMMAND)
+        Log.d(TAG, "onStartCommand: $randomvalue")
+//        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+//        supervisorScope.launch {
+//            delay(6000L)
+//            Log.d(TAG, "onStartCommand: $randomvalue")
+//        }
+////        val callresponse:com.nibble.hashcaller.utils.callscreening.CallResponse= intent.getSerializableExtra("response") as CallResponse
+//        callresponse.builder.setDisallowCall(true)
+//        respondToCall(mCallDetails,  callresponse.builder.build())
 //        // Exit the service if we receive the EXIT command.
 //        // START_NOT_STICKY is important here, we don't want
 //        // the service to be relaunched.
-        if(!this.isCallScreeningRoleHeld()){
             //only perform operations in this service iff call screening role is not held
-            command?.let {
-                if(_window == null){
-                    _window = Window(this)
-                    windowCompanion = window
-                }
-//            _window = Window(this)
-                if (command == STOP_FLOATING_SERVICE_AND_WINDOW) {
-                    window.close()
-                    stopService()
-                    return START_NOT_STICKY
-                }else if(command == STOP_FLOATING_SERVICE){
-//                stopService()
-                    //important to call stop foreground, this only removes the notification
-                    //calling StopService will result in unable to close window automaticallly when call ended
-                    stopForeground(true)
-                    return START_NOT_STICKY
+//            command?.let {
+//                if (_window == null) {
+//                    _window = Window(this)
+//                }
+////            _window = Window(this)
+//                if (command == STOP_FLOATING_SERVICE_AND_WINDOW) {
+//                    window.close()
+//                    stopService()
+//                    return START_NOT_STICKY
+//                } else if (command == STOP_FLOATING_SERVICE) {
+////                stopService()
+//                    //important to call stop foreground, this only removes the notification
+//                    //calling StopService will result in unable to close window automaticallly when call ended
+//                    stopForeground(true)
+//                    return START_NOT_STICKY
+//
+//                } else if (command == START_FLOATING_SERVICE) {
+//                    window.open()
+//                }
+//            }
 
-                } else if(command == START_FLOATING_SERVICE){
-                    window.open()
-
-                    phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
-                    // Be sure to show the notification first for all commands.
-                    // Don't worry, repeated calls have no effects.
-
-                    val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-                    supervisorScope.launch {
-                        val hashedNum =    getHashedNum(phoneNumber,
-                            this@FloatingService
-                        )
-                        floatinServiceHelper = FloatinServiceHelper(
-                            getIncomminCallManager(FloatingService.phoneNumber, this@FloatingService),
-                            hashedNum,
-                            supervisorScope,
-                            window,
-                            phoneNumber,
-                            this@FloatingService
-                        )
-                        floatinServiceHelper.handleCall()
-                    }
-                }
-            }
-        }else{
-            stopService()
-        }
-
-
-
-
-//        val window = Window(this)
-//        window.open()
-        // Show the floating window for adding a new note.
-
-
-//        if (command == INTENT_COMMAND_NOTE) {
-////            Toast.makeText(
-////                this,
-////                "Floating window to be added in the next lessons.",
-////                Toast.LENGTH_SHORT
-////            ).show()
-//            val window = Window(this)
-//            window.open()
-//        }
         return START_STICKY
-    }
-
-    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
-        val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
-
-        val searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
-        val internetChecker = InternetChecker(context)
-        val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
-        val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
-
-        return  InCommingCallManager(
-            context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
-            null, searchRepository,
-            internetChecker, blockedListpatternDAO,
-            contactAdressesDAO,
-            callerInfoFromServerDAO
-        )
-    }
-
-
-
-
-    private   fun getHashedNum(phoneNumber: String, context: Context): String {
-       var hashed = ""
-        try {
-            Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
-             hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
-            Log.d(TAG, "getHashedNum: $hashed")
-            //2fde9f69809082858fa7a55d441fde7ab7beea302204a437a793d2545fc381a9 ->123123
-            return hashed
-        }catch (e:Exception){
-            Log.d(TAG, "getHashedNum: $e")
-        }
-       return hashed
     }
 
 
@@ -239,21 +171,19 @@ class FloatingService: Service() {
 
 
     companion object{
+        fun handleCall() {
+
+        }
+
+        suspend fun setRandomevalue(i: Int) {
+            randomvalue = i
+            delay(3000L)
+            Log.d(TAG, "setRandomevalue: $randomvalue")
+        }
+        var randomvalue = 0
         const val TAG = "__FloatingService"
-        var windowCompanion:Window? = null
         var phoneNumber: String = ""
-        fun startService(context: Context, message: String, num: String) {
-            phoneNumber = num
-//            val startIntent = Intent(context, FloatingService::class.java)
-//            startIntent.putExtra("inputExtra", message)
-//            ContextCompat.startForegroundService(context, startIntent)
-        }
-        fun stopService(context: Context) {
-            val stopIntent = Intent(context, FloatingService::class.java)
-            context.stopService(stopIntent)
-        }
-        fun getInflatedWindow(): Window? {
-            return windowCompanion
-        }
+
+
     }
 }

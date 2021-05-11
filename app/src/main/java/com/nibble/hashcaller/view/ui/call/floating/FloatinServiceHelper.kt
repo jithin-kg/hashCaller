@@ -11,7 +11,6 @@ import kotlinx.coroutines.*
 
 class FloatinServiceHelper(
     private val inComingCallManager: InCommingCallManager,
-    private val isCallScreeningRoleHeld: Boolean,
     private val hashedNum: String,
     private val supervisorScope: CoroutineScope,
     private val window: Window,
@@ -22,15 +21,9 @@ class FloatinServiceHelper(
     suspend fun  handleCall(){
     var isInfoFoundInCprovider = false
         supervisorScope.launch {
-            if (!isCallScreeningRoleHeld) {
                 //start operations iff screening role not avaialble
                 Log.d(TAG, "onReceive: role not held")
-//                this@FloatingService.startActivityIncommingCallView(
-//                    //start incomming call screen at start and show seraching... in view, then update with data from server
-//                    CntctitemForView(statusCode = StatusCodes.STATUS_SEARHING_IN_PROGRESS),
-//                    phoneNumber
-//                )
-//                delay(15000L)
+
                 var isSpam = false
 
 
@@ -98,7 +91,7 @@ class FloatinServiceHelper(
                     Log.d(TAG, "onReceive: $e")
                 }
 
-            }
+
 
 
 //            stopSelf();

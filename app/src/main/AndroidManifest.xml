@@ -69,6 +69,14 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:stopWithTask="false" />
+
+        <service
+            android:name=".utils.callscreening.CallScreeningFloatingService"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:stopWithTask="false" />
         <service
             android:name=".utils.callReceiver.IncommingCallForegroundService"
             android:enabled="true"
@@ -160,7 +168,7 @@
         </activity>
 
         <service
-            android:name=".utils.MyCallScreeningService"
+            android:name=".utils.callscreening.MyCallScreeningService"
             android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
+import com.nibble.hashcaller.utils.callscreening.WindowObj
 import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 
@@ -31,16 +32,19 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //                   scheduleJobIncommingcaller(context, intent)
                    //icannot start a job because it is not always working
 
-                  context.startFloatingService( intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+//                  context.startFloatingService( intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 
 //                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 //                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
                }
                TelephonyManager.EXTRA_STATE_IDLE -> {
+
+                   WindowObj.closeWindow()
 //                   Util.setPhoneNumInUtil("")
                    //call ended
 //                   scheduleCallFeedbackJob(context, intent)
-                  context.stopFloatingService(true)
+//                  context.stopFloatingService(true)
+
                }
            }
 
