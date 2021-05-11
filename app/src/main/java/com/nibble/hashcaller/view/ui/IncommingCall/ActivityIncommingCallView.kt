@@ -13,11 +13,13 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
@@ -33,8 +35,10 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMI
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
 /**
@@ -42,7 +46,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
  * the activity should be inheriting Activity not AppcompactActivity
  */
 
-class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, View.OnTouchListener  {
+class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityIncommingCallViewBinding
     @SuppressLint("LongLogTag")
     private lateinit var viewModel: SearchViewModel
@@ -55,25 +59,28 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
     private  var carrier :String = ""
     private  var spamcount : Int = 0
     private var statusCode = STATUS_SEARHING_IN_PROGRESS
-    var dX = 0f
-    var dY = 0f
-    var lastAction = 0
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
+    private  var selectedRadioButton: RadioButton? = null
+
     private  var mMessageReceiver: BroadcastReceiver? = null
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
         isVisible = true
-        registerForBroadCastReceiver()
+//        registerForBroadCastReceiver()
        getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configurePopupActivity()
         initViewmodel()
+        setupBottomSheet()
         initListeners()
         setViewElements()
         getUserInfoFromContacts()
         getUserInfoFromServer()
+
 
     }
 
@@ -113,13 +120,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
         setViewElements()
     }
 
-    private fun initListeners() {
-        if(!showfeedbackView){
-            binding.root.setOnTouchListener(this)
-        }
-        binding.imgBtnCloseIncommin.setOnClickListener(this)
-//        binding.layoutIncommingCall.setOnClickListener(this)
-    }
+
 
     private fun initViewmodel() {
         viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext)).get(
@@ -184,12 +185,21 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
 //        }
     }
 
-    companion object{
-        // property to check whether the Activity is visible,
-        var  isVisible: Boolean? = false
-        private const val TAG = "__ActivityIncommingCallView"
-    }
 
+    private fun initListeners() {
+        binding.imgBtnCloseIncommin.setOnClickListener(this)
+        binding.imgBtnCallIncomingBlock.setOnClickListener(this)
+        binding.imgBtnCallIncomingSMS.setOnClickListener(this)
+        binding.imgBtnCallIncomming.setOnClickListener(this)
+
+
+
+        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioScam.setOnClickListener(this)
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+        bottomSheetDialog.btnBlock.setOnClickListener(this)
+//        binding.layoutIncommingCall.setOnClickListener(this)
+    }
     @SuppressLint("LongLogTag")
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
@@ -199,12 +209,46 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
                 closeActivity()
 //                reportuser()
             }
+            R.id.imgBtnCallIncomingBlock ->{
+                showBottomSheetDialog()
+            }
+            R.id.imgBtnCallIncomingSMS ->{
+
+            }
+
+            R.id.imgBtnCallIncomming ->{
+
+            }
+        }
+    }
+
+    private fun showBottomSheetDialog() {
+        bottomSheetDialog.show()
+
+    }
+    private fun setupBottomSheet() {
+        bottomSheetDialog = BottomSheetDialog(this)
+        bottomSheetDialogfeedback = BottomSheetDialog(this)
+        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+        val viewSheetFeedback = layoutInflater.inflate(R.layout.bottom_sheet_block_feedback, null)
+
+        bottomSheetDialog.setContentView(viewSheet)
+        bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
+
+        selectedRadioButton = bottomSheetDialog.radioScam
+        bottomSheetDialog.imgExpand.setOnClickListener(this)
+
+
+
+        bottomSheetDialog.setOnDismissListener {
+            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+
         }
     }
 
     private fun closeActivity() {
 
-//        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         finishAfterTransition()
 //        val anim = AnimationUtils.loadAnimation(this, R.anim.exit_to_bottom)
 //        binding.cnstraintlyoutInner.startAnimation(anim)
@@ -218,29 +262,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
 //            Log.d(TAG, "reportuser: observing")
 //        })
     }
-//https://stackoverflow.com/questions/9398057/android-move-a-view-on-touch-move-action-move
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        when (event!!.actionMasked) {
-            MotionEvent.ACTION_DOWN -> {
-                dX = binding.root.x - event!!.rawX
-                dY = binding.root.y - event!!.rawY
-                lastAction = MotionEvent.ACTION_DOWN
-            }
-            MotionEvent.ACTION_MOVE -> {
-                binding.root.y = event!!.rawY + dY
-                binding.root.x = event!!.rawX + dX
-                lastAction = MotionEvent.ACTION_MOVE
-            }
-            MotionEvent.ACTION_UP -> if (lastAction === MotionEvent.ACTION_DOWN) Toast.makeText(
-                this,
-                "Clicked!",
-                Toast.LENGTH_SHORT
-            ).show()
-            else -> return false
-        }
-        return true
-    }
-
 //    override fun onNewIntent(intent: Intent?) {
 //        super.onNewIntent(intent)
 //        finish()
@@ -294,5 +315,10 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener, Vie
         super.onDestroy()
         Log.d(TAG, "onDestroy: ")
         isVisible = null
+    }
+    companion object{
+        // property to check whether the Activity is visible,
+        var  isVisible: Boolean? = false
+        private const val TAG = "__ActivityIncommingCallView"
     }
 }

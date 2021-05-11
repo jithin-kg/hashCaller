@@ -61,12 +61,13 @@ class FloatingService: Service() {
             //only perform operations in this service iff call screening role is not held
             command?.let {
                 if(_window == null){
-                    _window = Window(this)
+                    _window = Window(this, phoneNumber)
                     windowCompanion = window
                 }
 //            _window = Window(this)
                 if (command == STOP_FLOATING_SERVICE_AND_WINDOW) {
                     window.close()
+                    startActivityIncommingCallView(null, phoneNumber)
                     stopService()
                     return START_NOT_STICKY
                 }else if(command == STOP_FLOATING_SERVICE){
@@ -101,6 +102,9 @@ class FloatingService: Service() {
                 }
             }
         }else{
+            if(command == STOP_FLOATING_SERVICE_AND_WINDOW){
+                startActivityIncommingCallView(null, "phoneNumber")
+            }
             stopService()
         }
 

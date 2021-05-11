@@ -8,7 +8,7 @@
         <item name="android:windowSoftInputMode">stateHidden</item>
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
-        <item name="fontFamily"> sans-serif</item>
+        <item name="fontFamily"> @font/roboto</item>
 
         <!--        For enabling window activity transition-->
         <item name="android:windowActivityTransitions">true</item>
@@ -18,6 +18,25 @@
               so that it is visible when layout colorPrimaryDark is white-->
         <item name="android:windowLightStatusBar">false</item>
         <!--        end -->
+    </style>
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_background</item>
+    </style>
+    <style name="PopupTheme"  parent="@style/Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="backgroundColor">@color/colorBackground</item>
+<!--        <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>-->
+        <item name="fontFamily"> sans-serif</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+
+    </style>
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
 
@@ -95,6 +114,11 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="backgroundColor">@color/colorBackground</item>
     </style>
 
 

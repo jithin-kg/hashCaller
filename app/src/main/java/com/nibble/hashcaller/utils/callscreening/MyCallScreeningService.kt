@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.util.Log
@@ -26,18 +25,14 @@ import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
-import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.call.floating.FloatingService
 import com.nibble.hashcaller.view.ui.call.floating.Window
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
-import com.nibble.hashcaller.view.ui.contacts.startFloatingService
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -68,13 +63,12 @@ class MyCallScreeningService: CallScreeningService() {
 //    rivate val notificationManager = NotificationManagerImpl()
     @SuppressLint("LongLogTag")
     override fun onScreenCall(callDetails: Call.Details) {
-
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
         val phoneNumber = getPhoneNumber(callDetails)
 //        responseBuilder = CallResponse.Builder()
         showNotification()
-        _window = Window(this)
+        _window = Window(this, phoneNumber)
         window.open()
         WindowObj.setWindow(window)
 //        startCallScreeningForegroundService()
@@ -95,7 +89,7 @@ class MyCallScreeningService: CallScreeningService() {
             helper.handleCall()
 //            stopForeground(true)
 //            stopSelf()
-            delay(15000L)
+//            delay(15000L)
             stopForeground(true)
             stopSelf()
             Log.d(TAG, "onScreenCall: after 10 seconds")

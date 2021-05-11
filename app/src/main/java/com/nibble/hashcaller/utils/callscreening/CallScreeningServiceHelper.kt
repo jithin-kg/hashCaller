@@ -88,6 +88,7 @@ class CallScreeningServiceHelper(
                     val resFromServer = defServerHandling?.await()
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
                         window.updateWithServerInfo(resFromServer, phoneNumber)
+
                     }
                     if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true

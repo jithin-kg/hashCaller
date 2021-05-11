@@ -42,6 +42,7 @@
     <color name="numbersTextColor">#1B6EAC</color>
 
     <color name="textColor">#000000</color>
+    <color name="textColorBlack">#000000</color>
     <color name="textColorSecondary">#2E2D2D</color>
     <color name="lineColor">#101126</color>
     <color name="edtxt_phone_auth_bg">#D8D9DA</color>
@@ -58,6 +59,10 @@
     <color name="search_background_color">#E6E6E6</color>
     <color name="avatar_circle_bg_color">#DD939090</color>
     <color name="icon_color_drawer">#A3000000</color>
+    <color name="circular_color1">#A1E08A</color>
+    <color name="circular_color2">#6BBFE5</color>
+    <color name="circular_color3">#819DEC</color>
+    <color name="circular_color4">#F087B4</color>
 
 
 </resources>

@@ -16,12 +16,11 @@ import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class Window(private val context: Context) {
+class Window(private val context: Context,private val phoneNumber: String) {
 
     private var callerInfoFoundFrom = INFO_SEARCHING
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -29,6 +28,7 @@ class Window(private val context: Context) {
     private val rootView = layoutInflater.inflate(R.layout.window, null)
     private val tvName:TextView = rootView.findViewById<TextView>(R.id.txtVcallerNameWindow)
     private val tvFirstLetter:TextView = rootView.findViewById<TextView>(R.id.tvFistLetterWindow)
+    private val tvPhoneNumIncomming: TextView = rootView.findViewById<TextView>(R.id.tvPhoneNumIncomming)
     private val tvLocation:TextView = rootView.findViewById(R.id.txtVLocaltionWindow)
     private val layoutInnerWindow: ConstraintLayout = rootView.findViewById(R.id.layoutInnerWindow)
     private val windowParams = WindowManager.LayoutParams(
@@ -93,6 +93,8 @@ class Window(private val context: Context) {
             initialPosition = { Point(windowParams.x, windowParams.y) },
             positionListener = { x, y -> setPosition(x, y) }
         )
+
+        tvPhoneNumIncomming.text = phoneNumber
     }
     private fun setPosition(x: Int, y: Int) {
 //        windowParams.x = x

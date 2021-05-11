@@ -90,7 +90,34 @@ fun Context.stopFloatingService(closeFloatingServiceAndWindow:Boolean = false){
         startService(exitIntent)
     }
 
+}
+fun Context.startActivityIncommingCallView(cntc: CntctitemForView?, phoneNumber: String, showFeedbackView:Boolean = false) {
 
+    val i = Intent(this, ActivityIncommingCallView::class.java)
+
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    i.putExtra(FIRST_NAME, cntc?.firstName?:"")
+    i.putExtra(LAST_NAME, cntc?.lastName?:"")
+    i.putExtra(PHONE_NUMBER, phoneNumber?:"")
+
+    i.putExtra(SPAM_COUNT, cntc?.spammCount?:0)
+    i.putExtra(CARRIER, cntc?.carrier?:"")
+    i.putExtra(LOCATION, cntc?.location?:"")
+    i.putExtra(STATUS_CODE, cntc?.statusCode)
+    i.putExtra(SHOW_FEEDBACK_VIEW, showFeedbackView)
+
+//        i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+    startActivity(i)
+    //if there is no info about the caller in server db
+//        val i = Intent(this, ActivityIncommingCallView::class.java)
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//        i.putExtra("name", "")
+//        i.putExtra("phoneNumber", phoneNumber)
+//        i.putExtra("spamcount", "")
+//        i.putExtra("carrier", "")
+//        i.putExtra("location", "")
+//        startActivity(i)
 }
 fun Context.closeIncommingCallView(){
 //    val i = Intent(this, ActivityIncommingCallView::class.java)
@@ -124,34 +151,7 @@ fun Context.getPreparedincommingIntent(
     intent.putExtra(SHOW_FEEDBACK_VIEW, showFeedbackView)
     return intent
 }
-fun Context.startActivityIncommingCallView(cntc: CntctitemForView?, phoneNumber: String, showFeedbackView:Boolean = false) {
 
-    val i = Intent(this, ActivityIncommingCallView::class.java)
-
-    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    i.putExtra(FIRST_NAME, cntc?.firstName?:"")
-    i.putExtra(LAST_NAME, cntc?.lastName?:"")
-    i.putExtra(PHONE_NUMBER, phoneNumber?:"")
-
-    i.putExtra(SPAM_COUNT, cntc?.spammCount?:0)
-    i.putExtra(CARRIER, cntc?.carrier?:"")
-    i.putExtra(LOCATION, cntc?.location?:"")
-    i.putExtra(STATUS_CODE, cntc?.statusCode)
-    i.putExtra(SHOW_FEEDBACK_VIEW, showFeedbackView)
-
-//        i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-    startActivity(i)
-        //if there is no info about the caller in server db
-//        val i = Intent(this, ActivityIncommingCallView::class.java)
-//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        i.putExtra("name", "")
-//        i.putExtra("phoneNumber", phoneNumber)
-//        i.putExtra("spamcount", "")
-//        i.putExtra("carrier", "")
-//        i.putExtra("location", "")
-//        startActivity(i)
-}
 val Context.telecomManager: TelecomManager get() = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
 
