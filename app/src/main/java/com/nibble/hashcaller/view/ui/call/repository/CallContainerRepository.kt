@@ -161,7 +161,7 @@ class CallContainerRepository(
 
                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
                     formatPhoneNumber(formatPhoneNumber), spammerType, "",
-                    Date(), 1)
+                    informationReceivedDate =Date(), spamReportCount = 1L)
                 callerInfoFromServerDAO.insert(listOf(callerInfoTobeSavedInDatabase))
             }
         }
@@ -311,6 +311,7 @@ class CallContainerRepository(
     }
 
     fun getCallLogLiveDAtaFromDB(): LiveData<List<CallersInfoFromServer>> {
+
         return callerInfoFromServerDAO.getAllLiveData()
     }
 
@@ -578,7 +579,7 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO) {
-        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, serverInfo.firstName, serverInfo.spamReportCount)
+        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, nameFromServer = serverInfo.firstName,spamCount =  serverInfo.spamReportCount)
     }
 
 

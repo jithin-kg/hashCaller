@@ -10,12 +10,12 @@ import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
 import com.nibble.hashcaller.network.search.model.CntctitemForView
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.getStringValue
 import com.nibble.hashcaller.utils.internet.InternetChecker
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
@@ -23,6 +23,7 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
+import java.util.*
 
 /**
  * Created by Jithin KG on 20,July,2020
@@ -195,6 +196,37 @@ class InCommingCallManager(
         }
         Log.d(TAG, "infoFromContentProvider:name is  $name ")
         return@withContext contact
+    }
+
+    suspend fun saveInfoFromServer(resFromServer: CntctitemForView?, phoneNumber: String) = withContext(Dispatchers.IO) {
+        val res = callerInfoFromServerDAO.find(phoneNumber)
+        if(res== null){
+            val info = CallersInfoFromServer(
+                null, phoneNumber,
+                0,
+                resFromServer?.firstName?:"",
+                resFromServer?.lastName?:"",
+                         Date(),
+                resFromServer?.spammCount?:0L,
+                resFromServer?.location?:"",
+                resFromServer?.country?:"",
+                resFromServer?.carrier?:"",
+                false
+                )
+
+            callerInfoFromServerDAO.insert(listOf(info))
+        }else{
+            callerInfoFromServerDAO?.updateWithServerinfo(
+                 contactAddress =  phoneNumber,
+                firstName = resFromServer?.firstName?:"",
+                lastName = resFromServer?.lastName?:"",
+                informationReceivedDate = Date(),
+                spamReportCount = resFromServer?.spammCount?:0L,
+                city = resFromServer?.location?:"",
+                country = resFromServer?.country?:"",
+                carrier = resFromServer?.carrier?:""
+                )
+        }
     }
 
 

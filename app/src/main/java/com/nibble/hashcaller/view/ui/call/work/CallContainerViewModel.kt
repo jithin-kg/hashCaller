@@ -366,6 +366,7 @@ class CallContainerViewModel(
     }
 
     fun getCallLogFromServer() : LiveData<List<CallersInfoFromServer>>  {
+
         return  repository!!.getCallLogLiveDAtaFromDB()
     }
 
@@ -373,8 +374,9 @@ class CallContainerViewModel(
      * called when info about a caller comes from server, or db changes
      */
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
-          for(item in list){
-             val res =  async { repository?.findFromCallLogTable(item.contactAddress)  }.await()
+
+        for(item in list){
+             val res =  repository?.findFromCallLogTable(item.contactAddress)
               if(res!=null){
                   if(res.nameFromServer!= item.firstName ){
                       repository?.updateCallLogWithServerInfo(item)
@@ -383,7 +385,6 @@ class CallContainerViewModel(
                   }
               }
           }
-
     }
 
     fun clearCallLogDB() = viewModelScope.launch {

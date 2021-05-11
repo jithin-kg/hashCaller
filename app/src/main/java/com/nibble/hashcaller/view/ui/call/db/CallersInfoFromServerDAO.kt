@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import org.intellij.lang.annotations.Flow
+import java.util.*
 
 /**
  * table which holds user reported and other other spammers number
@@ -35,6 +36,18 @@ interface CallersInfoFromServerDAO {
 
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount,isBlockedByUser =:isBlockedByUser  WHERE contact_address =:contactAddress ")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String, isBlockedByUser:Boolean)
+
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier WHERE contact_address =:contactAddress ")
+    suspend fun updateWithServerinfo(
+                                     contactAddress: kotlin.String,
+                                     firstName:String,
+                                     lastName: String,
+                                     informationReceivedDate:Date,
+                                     spamReportCount:Long,
+                                     city:String,
+                                     country:String,
+                                     carrier:String
+                                     )
 
     @Query("UPDATE  callers_info_from_server  SET isBlockedByUser =:isBlockedByUser, spamReportCount =:spamCount WHERE contact_address =:contactAddress")
     suspend fun unBlock(isBlockedByUser:Boolean, contactAddress: kotlin.String, spamCount: Long)

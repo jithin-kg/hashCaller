@@ -81,8 +81,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
                     for(cntct in result.body()!!.contacts){
                         val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                            formatPhoneNumber(cntct.phoneNumber), 0, cntct.firstName?:"",
-                            Date(), cntct.spamCount)
+                            contactAddress = formatPhoneNumber(cntct.phoneNumber), 0, firstName = cntct.firstName?:"",
+                            informationReceivedDate =Date(),spamReportCount =  cntct.spamCount)
                         callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                     }
                     callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)

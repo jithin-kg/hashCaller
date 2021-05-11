@@ -417,11 +417,16 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun observeCallLogInfoFromServer() {
-        this.viewmodel.getCallLogFromServer().observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observeCallLogInfoFromServer: ")
+        lifecycleScope.launchWhenStarted {
+            //important not to remove the delay here, becase this is getting called before calllog table data is triggered
+            delay(2000L)
+           viewmodel.getCallLogFromServer().observe(viewLifecycleOwner, Observer {
+                Log.d(TAG, "observeCallLogInfoFromServer: ")
 
-            viewmodel.updateWithNewInfoFromServer(it)
-        })
+                viewmodel.updateWithNewInfoFromServer(it)
+            })
+        }
+
     }
 
     /**

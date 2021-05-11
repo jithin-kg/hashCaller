@@ -179,11 +179,10 @@ class IndividualcontactViewModel(
             }else{
 
                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                    formatPhoneNumber(formatedPhoneNumber), 0,  "",
-                    Date(), 1, isBlockedByUser = true)
+                    contactAddress= formatPhoneNumber(formatedPhoneNumber), spammerType=0,  firstName="",
+                    informationReceivedDate = Date(),spamReportCount =  1, isBlockedByUser = true)
                 callersInfoFromServer.insert(listOf(callerInfoTobeSavedInDatabase))
                 emit(OPERATION_BLOCKED)
-
             }
         }
     }

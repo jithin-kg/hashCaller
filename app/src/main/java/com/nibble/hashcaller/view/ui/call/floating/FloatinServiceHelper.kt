@@ -83,6 +83,7 @@ class FloatinServiceHelper(
                         endCall(inComingCallManager,
                             phoneNumber)
                     }
+                    inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e ")
                 }
@@ -92,7 +93,6 @@ class FloatinServiceHelper(
                     if(r){
                         endCall(inComingCallManager,
                             phoneNumber,)
-
                     }
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
