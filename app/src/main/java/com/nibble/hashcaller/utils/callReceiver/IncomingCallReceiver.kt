@@ -32,7 +32,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //                   scheduleJobIncommingcaller(context, intent)
                    //icannot start a job because it is not always working
 
-//                  context.startFloatingService( intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+                  context.startFloatingService( intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 
 //                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 //                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
@@ -43,7 +43,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //                   Util.setPhoneNumInUtil("")
                    //call ended
 //                   scheduleCallFeedbackJob(context, intent)
-//                  context.stopFloatingService(true)
+                  context.stopFloatingService(true)
 
                }
            }

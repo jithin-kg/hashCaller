@@ -68,20 +68,17 @@ class MyCallScreeningService: CallScreeningService() {
 //    rivate val notificationManager = NotificationManagerImpl()
     @SuppressLint("LongLogTag")
     override fun onScreenCall(callDetails: Call.Details) {
-        _window = Window(this)
-        window.open()
-        WindowObj.setWindow(window)
+
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
         val phoneNumber = getPhoneNumber(callDetails)
-        responseToCall = com.nibble.hashcaller.utils.callscreening.CallResponse(CallResponse.Builder())
 //        responseBuilder = CallResponse.Builder()
-
         showNotification()
+        _window = Window(this)
+        window.open()
+        WindowObj.setWindow(window)
 //        startCallScreeningForegroundService()
         supervisorScope.launch {
-            CallScreeningFloatingService.setRandomevalue(20)
-
 //            CallScreeningFloatingService.handleCall()
             val hashedNum =    getHashedNum(
                 phoneNumber,
@@ -94,11 +91,7 @@ class MyCallScreeningService: CallScreeningService() {
                 phoneNumber,
                 this@MyCallScreeningService,
                 window
-
-
-
             ) { resToCall: Boolean -> { respondeToTheCall(resToCall) } }
-
             helper.handleCall()
 //            stopForeground(true)
 //            stopSelf()

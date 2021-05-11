@@ -54,7 +54,7 @@ class CallScreeningFloatingService: Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
         val command: String? = intent.getStringExtra(INTENT_COMMAND)
-        Log.d(TAG, "onStartCommand: $randomvalue")
+
 //        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 //        supervisorScope.launch {
 //            delay(6000L)
@@ -171,16 +171,7 @@ class CallScreeningFloatingService: Service() {
 
 
     companion object{
-        fun handleCall() {
 
-        }
-
-        suspend fun setRandomevalue(i: Int) {
-            randomvalue = i
-            delay(3000L)
-            Log.d(TAG, "setRandomevalue: $randomvalue")
-        }
-        var randomvalue = 0
         const val TAG = "__FloatingService"
         var phoneNumber: String = ""
 

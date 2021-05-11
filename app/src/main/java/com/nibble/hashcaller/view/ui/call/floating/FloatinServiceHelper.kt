@@ -34,6 +34,7 @@ class FloatinServiceHelper(
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
                 try {
                     val contactInCprovider = defredInfoFromCprovider.await()
+//                    window.open()
                     if(contactInCprovider!=null){
                         //the caller is in contact, so set information in db as caller information
                         isInfoFoundInCprovider = true

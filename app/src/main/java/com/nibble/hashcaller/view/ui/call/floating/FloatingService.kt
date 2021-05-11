@@ -78,7 +78,7 @@ class FloatingService: Service() {
 
                 } else if(command == START_FLOATING_SERVICE){
                     window.open()
-
+                    Log.d(TAG, "onStartCommand: window opening")
                     phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
                     // Be sure to show the notification first for all commands.
                     // Don't worry, repeated calls have no effects.
