@@ -7,13 +7,27 @@
 <!--    colorAceent attribute is responsible for tint of editTex,checkbox,radiobutton,fab-->
 <!--Ripple animation on button click is controlled by colorControlHighlight-->
 <!--    <color name="colorPrimary">#4B53BC</color>-->
+<!--    https://www.canva.com/colors/color-wheel/-->
     <color name="colorPrimary">#4F57BF</color>
+    <color name="primary_analogus_one">#4F8FBF</color>
+    <color name="primary_analogus_two">#7F4FBF</color>
+
     <color name="colorIncommingBackground">#4B53BC</color>
     <color name="colorPrimaryLowOpacity">#944F57BF</color>
     <color name="colorPrimaryLight">#8383f2</color>
 <!--    <color name="colorPrimaryDark">#6264AA</color>-->
     <color name="colorPrimaryDark">#ffff</color>
     <color name="colorPrimaryDarkest">#082d8e</color>
+
+<!--    <color name="circular_color1">#A1E08A</color>-->
+<!--    <color name="circular_color2">#6BBFE5</color>-->
+<!--    <color name="circular_color3">#819DEC</color>-->
+<!--    <color name="circular_color4">#F087B4</color>-->
+<!--    Tetradic colors from canva color wheen based on primary colors color variation from color wheel-->
+    <color name="circular_color1">#4FBFB7</color>
+    <color name="circular_color2">#7F4FBF</color>
+    <color name="circular_color3">#BF4F57</color>
+    <color name="circular_color4">#8FBF4F</color>
 
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
@@ -59,10 +73,7 @@
     <color name="search_background_color">#E6E6E6</color>
     <color name="avatar_circle_bg_color">#DD939090</color>
     <color name="icon_color_drawer">#A3000000</color>
-    <color name="circular_color1">#A1E08A</color>
-    <color name="circular_color2">#6BBFE5</color>
-    <color name="circular_color3">#819DEC</color>
-    <color name="circular_color4">#F087B4</color>
+
 
 
 </resources>

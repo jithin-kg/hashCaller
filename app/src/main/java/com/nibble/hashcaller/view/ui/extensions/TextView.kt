@@ -45,7 +45,6 @@ fun TextView.setRandomBackgroundCircle(color: Int? =null): Int {
             this.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background_spam)
 
         }
-
         else -> {
             this.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
         }
