@@ -613,7 +613,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 unmuteUser()
             }
             R.id.fabBtnShowDialpad ->{
-//                viewmodel.clearCallLogDB()
+                viewmodel.clearCallLogDB()
                 context?.startActivityIncommingCallView(null, "100101")
 
 //                (activity as MainActivity).showDialerFragment()

@@ -55,7 +55,7 @@ class CallScreeningServiceHelper(
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
                         if(!isInfoFoundInCprovider){
-//                            window.updateWithServerInfo(infoAvailableInDb, phoneNumber)
+                            WindowObj.getWindowObj()?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
                     }else{
                         //todo check date of the info received from server, if today - date >0 search in server
@@ -86,14 +86,12 @@ class CallScreeningServiceHelper(
                     val resFromServer = defServerHandling?.await()
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
 //                        window.updateWithServerInfo(resFromServer, phoneNumber)
-
                     }
                     if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true
                         if(!respondedToCall){
                             respondedToCall = true
                             resToCallCallBack(true)
-
                         }
                     }
                     inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)

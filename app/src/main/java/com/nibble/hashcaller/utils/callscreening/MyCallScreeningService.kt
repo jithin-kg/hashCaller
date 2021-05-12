@@ -80,7 +80,6 @@ class MyCallScreeningService: CallScreeningService() {
                 phoneNumber,
                 this@MyCallScreeningService
             )
-
             helper = CallScreeningServiceHelper(
                 getIncomminCallManager(phoneNumber, this@MyCallScreeningService),
                 hashedNum,

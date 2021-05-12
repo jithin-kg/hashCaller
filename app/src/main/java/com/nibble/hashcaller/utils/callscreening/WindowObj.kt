@@ -10,15 +10,21 @@ object WindowObj {
     fun setWindow(obj: Window){
         window = WeakReference(obj)
     }
+    fun getWindowObj(): Window? {
+        return window?.get()
+    }
 
     fun closeWindow(){
        val windowStrong =  window?.get() //get strong reference
-//        windowStrong?.close()
+        windowStrong?.close()
         if(windowStrong == null){
             Log.d(TAG, "closeWindow: window is null")
         }else{
             Log.d(TAG, "closeWindow: window is not null")
         }
+    }
+    fun clearReference(){
+        window = null
     }
 const val TAG = "__WindowObj"
 }

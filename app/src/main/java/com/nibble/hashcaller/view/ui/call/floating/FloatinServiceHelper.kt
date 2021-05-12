@@ -47,9 +47,13 @@ class FloatinServiceHelper(
                         }
                     }else{
                         //todo check date of the info received from server, if today - date >0 search in server
-                         defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                            hashedNum
-                        ) }
+                        if(!isCallScreeningRoleHeld){
+                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                                hashedNum
+                            ) }
+                        }
+
+
                     }
                 }catch (e:Exception){
                     Log.d(TAG, "handleCall: $e")

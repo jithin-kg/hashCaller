@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
@@ -85,7 +86,7 @@ class Window(private val context: Context,private val phoneNumber: String) {
 
     private fun initWindow() {
         // Using kotlin extension for views caused error, so good old findViewById is used
-        rootView.findViewById<View>(R.id.imgBtnCloseIncommin).setOnClickListener { close() }
+        rootView.findViewById<View>(R.id.imgBtnCloseIncommin).setOnClickListener { closeManually() }
         rootView.findViewById<View>(R.id.layoutWindowParent).setOnClickListener {
             Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
         }
@@ -133,6 +134,7 @@ class Window(private val context: Context,private val phoneNumber: String) {
     fun close() {
         try {
             windowManager.removeView(rootView)
+
         } catch (e: Exception) {
             // Ignore exception for now, but in production, you should have some
             // warning for the user here.
@@ -141,6 +143,21 @@ class Window(private val context: Context,private val phoneNumber: String) {
             Log.d(TAG, "close: $e")
         }
     }
+
+    fun closeManually() {
+        try {
+            windowManager.removeView(rootView)
+            context.stopFloatingService(true)
+
+        } catch (e: Exception) {
+            // Ignore exception for now, but in production, you should have some
+            // warning for the user here.
+//                context.toast("unable to close window")
+
+            Log.d(TAG, "close: $e")
+        }
+    }
+
 
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
         if(callerInfoFoundFrom!= INFO_FOUND_FROM_CPROVIDER){

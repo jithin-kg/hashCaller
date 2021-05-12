@@ -17,6 +17,7 @@ import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.utils.callscreening.WindowObj
 import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
@@ -58,6 +59,8 @@ class FloatingService: Service() {
         Log.d(TAG+"init", "onCreate: ")
         if(_window == null){
             _window = Window(this, phoneNumber)
+            WindowObj.setWindow(window)
+
 //                    windowCompanion = window
         }
 
@@ -69,6 +72,7 @@ class FloatingService: Service() {
         val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
                 window.close()
+                WindowObj.clearReference()
                 stopService()
             }
             else if(command == START_FLOATING_SERVICE){
