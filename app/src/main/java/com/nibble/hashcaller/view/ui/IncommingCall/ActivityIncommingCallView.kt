@@ -9,13 +9,10 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -25,21 +22,16 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.network.search.model.Cntct
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.LOCATION
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
@@ -54,12 +46,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private lateinit var viewModel: SearchViewModel
     private lateinit var callerInfo:Cntct
     @SuppressLint("LongLogTag")
-    private  var firstName :String = ""
     private var showfeedbackView = false
     private  var phoneNumber :String = ""
-    private  var location :String = ""
-    private  var carrier :String = ""
-    private  var spamcount : Int = 0
+    private lateinit var userInfo: CntctitemForView
     private var statusCode = STATUS_SEARHING_IN_PROGRESS
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
@@ -71,22 +60,24 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private  var mMessageReceiver: BroadcastReceiver? = null
     private var previousCheckedRadioButton: RadioButton? = null
     private  var btnBlock: Button? = null
+
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
         isVisible = true
 //        registerForBroadCastReceiver()
-       getIntentxras(intent)
+        getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configurePopupActivity()
         initViewmodel()
         setupBottomSheet()
         initListeners()
-        setViewElements()
+        binding.tvPhoneNumIncomming.text = intent.getStringExtra(CONTACT_ADDRES)
+//        setViewElements()
         getUserInfoFromContacts()
-        getUserInfoFromServer()
+        getUserInfoFromDb()
 
 
     }
@@ -98,8 +89,12 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             binding.txtVcallerName.text = it
         })
     }
-    private fun getUserInfoFromServer(){
-
+    private fun getUserInfoFromDb(){
+        viewModel.getCallerInfoFromDb(phoneNumber).observe(this, Observer {
+            if(it!=null) {
+                setViewElements(it)
+            }
+        })
     }
 
 
@@ -110,7 +105,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
                 Log.d(TAG, "onReceive: broadcast")
                 when(intent?.action){
                     UPDATE_INCOMMING_VIEW ->{
-                        updateViewWithData(intent)
+//                        updateViewWithData(intent)
                     }
 
                 }
@@ -123,8 +118,8 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun updateViewWithData(intent: Intent) {
-        getIntentxras(intent)
-        setViewElements()
+//        getIntentxras(intent)
+//        setViewElements()
     }
 
 
@@ -135,13 +130,19 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun getIntentxras(intent: Intent) {
-        firstName = intent.getStringExtra(FIRST_NAME)?:""
+//        var firstName = intent.getStringExtra(FIRST_NAME)?:""
+//        val lastName = intent.getStringExtra(LAST_NAME)?:""
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)?:""
-        spamcount = intent.getIntExtra(SPAM_COUNT, 0)
-        location  = intent.getStringExtra(LOCATION)?:""
-        carrier  = intent.getStringExtra(CARRIER)?:""
+//        val spamcount = intent.getIntExtra(SPAM_COUNT, 0)
+//        val location  = intent.getStringExtra(LOCATION)?:""
+//        val carrier  = intent.getStringExtra(CARRIER)?:""
+//        userInfo = CntctitemForView(
+//            firstName= firstName,
+//            lastName = l
+//        )
+
         showfeedbackView = intent.getBooleanExtra(SHOW_FEEDBACK_VIEW, false)
-        statusCode = intent.getIntExtra(STATUS_CODE, STATUS_SEARHING_IN_PROGRESS)
+//        statusCode = intent.getIntExtra(STATUS_CODE, STATUS_SEARHING_IN_PROGRESS)
     }
 
     private fun configurePopupActivity() {
@@ -157,39 +158,27 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     }
 
     @SuppressLint("LongLogTag")
-    private fun setViewElements() {
-        binding.tvPhoneNumIncomming.text = phoneNumber
+    private fun setViewElements(callersInfoFromServer: CallersInfoFromServer) {
+//        binding.tvPhoneNumIncomming.text = phoneNumber
 
-        binding.txtVLocaltion.text =  location
+        binding.txtVLocaltion.text =  callersInfoFromServer.city
         if(statusCode == STATUS_SEARHING_IN_PROGRESS){
-            binding.txtVcallerName.text =  "Searching.."
+            binding.txtVcallerName.text = phoneNumber
         }else{
-            binding.txtVcallerName.text =  firstName
+            binding.txtVcallerName.text =  callersInfoFromServer.firstName
 
         }
 
 //        if(callerInfo.spammerStatus !=null)
-        if(spamcount > SPAM_THREASHOLD){
+        if(callersInfoFromServer.spamReportCount > SPAM_THREASHOLD){
             Log.d(TAG, "onCreate: spammer calling");
             binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
-                this,
-                R.drawable.incomming_call_background_spam
-            )
-
+                this,  R.drawable.incomming_call_background_spam )
         }else{
             binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
-                this,
-                R.drawable.incomming_call_background
-            )
-
+                this, R.drawable.incomming_call_background )
 
         }
-
-//        if(showfeedbackView){
-////            binding.layoutExpandedIncomming.beVisible()
-//        }else{
-////            binding.layoutExpandedIncomming.beGone()
-//        }
     }
 
 

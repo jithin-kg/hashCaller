@@ -16,6 +16,7 @@ import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -135,6 +136,8 @@ class Window(private val context: Context,private val phoneNumber: String) {
         } catch (e: Exception) {
             // Ignore exception for now, but in production, you should have some
             // warning for the user here.
+                context.toast("unable to close window")
+
             Log.d(TAG, "close: $e")
         }
     }

@@ -52,12 +52,12 @@ class CallScreeningServiceHelper(
                     if(contactInCprovider!=null){
                         //the caller is in contact, so set information in db as caller information
                         isInfoFoundInCprovider = true
-                        window.updateWithcontentProviderInfo(contactInCprovider)
+//                        window.updateWithcontentProviderInfo(contactInCprovider)
                     }
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
                         if(!isInfoFoundInCprovider){
-                            window.updateWithServerInfo(infoAvailableInDb, phoneNumber)
+//                            window.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
                     }else{
                         //todo check date of the info received from server, if today - date >0 search in server
@@ -87,7 +87,7 @@ class CallScreeningServiceHelper(
                     Log.d(TAG, "onReceive: second try")
                     val resFromServer = defServerHandling?.await()
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
-                        window.updateWithServerInfo(resFromServer, phoneNumber)
+//                        window.updateWithServerInfo(resFromServer, phoneNumber)
 
                     }
                     if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){

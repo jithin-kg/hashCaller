@@ -2,6 +2,7 @@ package com.nibble.hashcaller.network.search.model
 
 
 import com.google.gson.annotations.SerializedName
+import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import java.io.Serializable
 
 data class Cntct(
@@ -26,6 +27,9 @@ data class Cntct(
 
     @SerializedName("spamCount")
     val spammCount : Long? = 0,
+
+    @SerializedName("isInfoFoundInDb")
+    val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER
 
 
 

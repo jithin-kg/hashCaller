@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.telephony.PhoneStateListener
+import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.nibble.hashcaller.R
@@ -15,14 +17,12 @@ import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +42,8 @@ class FloatingService: Service() {
     private lateinit var floatinServiceHelper:FloatinServiceHelper
     private  var _window:Window? = null
     private  val window:Window get() = _window!!
-
-        override fun onBind(intent: Intent?): IBinder? = null
+    private var onStartCalled = false
+    override fun onBind(intent: Intent?): IBinder? = null
     /**
      * Remove the foreground notification and stop the service.
      */
@@ -51,69 +51,110 @@ class FloatingService: Service() {
         stopForeground(true)
         stopSelf()
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        Log.d(TAG+"init", "onCreate: ")
+        if(_window == null){
+            _window = Window(this, phoneNumber)
+//                    windowCompanion = window
+        }
+        window.open()
+    }
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
-        val command:String? = intent.getStringExtra(INTENT_COMMAND)
-//        // Exit the service if we receive the EXIT command.
+//        super.onStartCommand(intent, flags, startId)
+        val command = intent.getStringExtra(INTENT_COMMAND)
+            if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
+                window.close()
+                stopService()
+            }
+        if(!onStartCalled){
+
+
+
+            Log.d(TAG+"init", "onStartCommand: ")
+            registerCallStateListener { phoneNumber, callState ->
+                when(callState){
+                    TelephonyManager.CALL_STATE_RINGING ->{
+                        onStartCalled = true
+                        //        // Exit the service if we receive the EXIT command.
 //        // START_NOT_STICKY is important here, we don't want
 //        // the service to be relaunched.
-        if(!this.isCallScreeningRoleHeld()){
-            //only perform operations in this service iff call screening role is not held
-            command?.let {
-                if(_window == null){
-                    _window = Window(this, phoneNumber)
-                    windowCompanion = window
-                }
-//            _window = Window(this)
-                if (command == STOP_FLOATING_SERVICE_AND_WINDOW) {
-                    window.close()
-                    startActivityIncommingCallView(null, phoneNumber)
-                    stopService()
-                    return START_NOT_STICKY
-                }else if(command == STOP_FLOATING_SERVICE){
-//                stopService()
-                    //important to call stop foreground, this only removes the notification
-                    //calling StopService will result in unable to close window automaticallly when call ended
-                    stopForeground(true)
-                    return START_NOT_STICKY
+//        if(this.isCallScreeningRoleHeld()){
+                        //only perform operations in this service iff call screening role is not held
+//            command?.let {
 
-                } else if(command == START_FLOATING_SERVICE){
-                    window.open()
-                    Log.d(TAG, "onStartCommand: window opening")
-                    phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
-                    // Be sure to show the notification first for all commands.
-                    // Don't worry, repeated calls have no effects.
 
-                    val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-                    supervisorScope.launch {
-                        val hashedNum =    getHashedNum(phoneNumber,
-                            this@FloatingService
-                        )
-                        floatinServiceHelper = FloatinServiceHelper(
-                            getIncomminCallManager(FloatingService.phoneNumber, this@FloatingService),
-                            hashedNum,
-                            supervisorScope,
-                            window,
-                            phoneNumber,
-                            this@FloatingService
-                        )
-                        floatinServiceHelper.handleCall()
+////            _window = Window(this)
+//                if (command == STOP_FLOATING_SERVICE_AND_WINDOW) {
+//                    window.close()
+//
+//                    startActivityIncommingCallView(null, phoneNumber)
+//                    stopService()
+//                    return@let START_NOT_STICKY
+//                }else if(command == STOP_FLOATING_SERVICE){
+////                stopService()
+//                    //important to call stop foreground, this only removes the notification
+//                    //calling StopService will result in unable to close window automaticallly when call ended
+//                    stopForeground(true)
+//                    return@let START_NOT_STICKY
+//
+//                } else
+
+                        if(command == START_FLOATING_SERVICE){
+
+                            Log.d(TAG, "onStartCommand: window opening")
+                            // Be sure to show the notification first for all commands.
+                            // Don't worry, repeated calls have no effects.
+
+                            val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+                            supervisorScope.launch {
+                                val hashedNum =    getHashedNum(phoneNumber,
+                                    this@FloatingService
+                                )
+                                floatinServiceHelper = FloatinServiceHelper(
+                                    getIncomminCallManager(FloatingService.phoneNumber, this@FloatingService),
+                                    hashedNum,
+                                    supervisorScope,
+                                    window,
+                                    phoneNumber,
+                                    this@FloatingService,
+                                    isCallScreeningRoleHeld()
+                                )
+                                floatinServiceHelper.handleCall()
+                            }
+//                        return START_NOT_STICKY
+                        }
+//            }
+//        }
+
+//        else{
+////            if(command == STOP_FLOATING_SERVICE_AND_WINDOW){
+////                startActivityIncommingCallView(null, phoneNumber)
+////            }
+////            stopService()
+//        }
+                    }
+                    TelephonyManager.CALL_STATE_IDLE -> {
+                        stopService()
+                        Log.d(TAG, "idle callback : ")
+                        window.close()
                     }
                 }
             }
-        }else{
-            if(command == STOP_FLOATING_SERVICE_AND_WINDOW){
-                startActivityIncommingCallView(null, "phoneNumber")
-            }
-            stopService()
-        }
+//        val command:String? = intent.getStringExtra(INTENT_COMMAND)
+//        phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
+
+
 
 
 
 
 //        val window = Window(this)
 //        window.open()
-        // Show the floating window for adding a new note.
+            // Show the floating window for adding a new note.
 
 
 //        if (command == INTENT_COMMAND_NOTE) {
@@ -125,7 +166,44 @@ class FloatingService: Service() {
 //            val window = Window(this)
 //            window.open()
 //        }
+        }
+
         return START_STICKY
+    }
+
+    private fun registerCallStateListener(listener:(phoneNumber:String, callState:Int)-> Unit) {
+
+        val telephony = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        telephony.listen(object : PhoneStateListener() {
+            override fun onCallStateChanged(state: Int, incomingNumber: String) {
+//                Log.d(TAG, "onCallStateChanged: ")
+                super.onCallStateChanged(state, incomingNumber)
+                if (incomingNumber.isNotEmpty()) {
+                    when (state) {
+                        TelephonyManager.CALL_STATE_RINGING -> {
+                            Log.d(TAG, "onCallStateChanged:ringing $incomingNumber ")
+//                            startFloatingService(incomingNumber)
+                           if(incomingNumber.isNotEmpty()){
+                               listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
+                           }
+
+                        }
+                        TelephonyManager.CALL_STATE_IDLE -> {
+                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
+                            if(incomingNumber.isNotEmpty()){
+                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
+                            }
+//                            stopFloatingService(true, incomingNumber)
+                        }
+//                        TelephonyManager.CALL_STATE_OFFHOOK -> {
+//                            Log.d(TAG, "onCallStateChanged: ofhook $incomingNumber")
+//                        }
+//                        TelephonyManager.EXTRA_CARRIER_NAME
+                    }
+                }
+
+            }
+        }, PhoneStateListener.LISTEN_CALL_STATE)
     }
 
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
@@ -244,7 +322,7 @@ class FloatingService: Service() {
 
     companion object{
         const val TAG = "__FloatingService"
-        var windowCompanion:Window? = null
+//        var windowCompanion:Window? = null
         var phoneNumber: String = ""
         fun startService(context: Context, message: String, num: String) {
             phoneNumber = num
@@ -256,8 +334,8 @@ class FloatingService: Service() {
             val stopIntent = Intent(context, FloatingService::class.java)
             context.stopService(stopIntent)
         }
-        fun getInflatedWindow(): Window? {
-            return windowCompanion
-        }
+//        fun getInflatedWindow(): Window? {
+//            return windowCompanion
+//        }
     }
 }

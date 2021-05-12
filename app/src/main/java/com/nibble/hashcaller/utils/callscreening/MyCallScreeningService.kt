@@ -28,7 +28,6 @@ import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
-import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.floating.Window
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
@@ -68,9 +67,9 @@ class MyCallScreeningService: CallScreeningService() {
         val phoneNumber = getPhoneNumber(callDetails)
 //        responseBuilder = CallResponse.Builder()
         showNotification()
-        _window = Window(this, phoneNumber)
-        window.open()
-        WindowObj.setWindow(window)
+//        _window = Window(this, phoneNumber)
+//        window.open()
+//        WindowObj.setWindow(window)
 //        startCallScreeningForegroundService()
         supervisorScope.launch {
 //            CallScreeningFloatingService.handleCall()
@@ -153,14 +152,14 @@ class MyCallScreeningService: CallScreeningService() {
     private fun startCallViewActivity() {
 //        https://stackoverflow.com/questions/63509860/how-to-start-activity-from-callscreeningservice-in-java
 
-        val i = Intent(this, ActivityIncommingCallView::class.java)
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        i.putExtra("name", "sample")
-        i.putExtra("phoneNumber", "808123")
-        i.putExtra("spamcount",0)
-        i.putExtra("carrier","sample")
-        i.putExtra("location", "sample")
-        startActivity(i)
+//        val i = Intent(this, ActivityIncommingCallView::class.java)
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//        i.putExtra("name", "sample")
+//        i.putExtra("phoneNumber", "808123")
+//        i.putExtra("spamcount",0)
+//        i.putExtra("carrier","sample")
+//        i.putExtra("location", "sample")
+//        startActivity(i)
     }
 
 

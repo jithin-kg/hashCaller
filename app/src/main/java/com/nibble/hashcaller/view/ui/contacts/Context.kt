@@ -45,7 +45,6 @@ fun Context.startFloatingService(phoneNumber: String?) {
 
     val intent = Intent(this, FloatingService::class.java)
     phoneNumber?.let {
-        intent.putExtra(CONTACT_ADDRES, phoneNumber)
         intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -76,21 +75,20 @@ fun Context.startFloatingService(phoneNumber: String?) {
  *
  */
 fun Context.stopFloatingService(
-    closeFloatingServiceAndWindow: Boolean = false,
-    incomingNumber: String
+    closeFloatingServiceAndWindow: Boolean = false
 ){
 //    stopService(Intent(this, FloatingService::class.java))
 //    stopService(Intent(this, FloatingService::class.java))
     if(closeFloatingServiceAndWindow){
         val exitIntent = Intent(this, FloatingService::class.java).apply {
             putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE_AND_WINDOW)
-            putExtra(CONTACT_ADDRES, incomingNumber)
+//            putExtra(CONTACT_ADDRES, incomingNumber)
         }
         startService(exitIntent)
     }else{
         val exitIntent = Intent(this, FloatingService::class.java).apply {
             putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE)
-            putExtra(CONTACT_ADDRES, incomingNumber)
+//            putExtra(CONTACT_ADDRES, incomingNumber)
 
         }
         startService(exitIntent)

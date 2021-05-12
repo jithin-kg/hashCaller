@@ -6,6 +6,9 @@ import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 
 
+const val INFO_FOUND_IN_SERVER = 1
+const val INFO_NOT_FOUND_IN_SERVER = 0
+
 const val KEY_INTENT_BLOCK_LIST = "numberContaining"
 const val NUMBER_STARTS_WITH= 0
 const val NUMBER_CONTAINING = 1

@@ -44,6 +44,7 @@ class InCommingCallManager(
 
     suspend fun searchInServerAndHandle(hasedNum: String): CntctitemForView {
         var searchResult = CntctitemForView(  "", "", "", "", "", "", 0)
+
         try {
                 val response = searchRepository.search(hasedNum)
 
@@ -53,7 +54,10 @@ class InCommingCallManager(
                             result.location?:"", result.lineType?:"",
                             result.country?:"",
                         result.spammCount?:0L,
-                                    response.body()?.status?:0)
+                                    response.body()?.status?:0,
+                                        isInfoFoundInDb = result.isInfoFoundInDb?:0
+
+                        )
                     }
 
         }catch (e:Exception){
@@ -201,6 +205,7 @@ class InCommingCallManager(
     suspend fun saveInfoFromServer(resFromServer: CntctitemForView?, phoneNumber: String) = withContext(Dispatchers.IO) {
         val res = callerInfoFromServerDAO.find(phoneNumber)
         if(res== null){
+
             val info = CallersInfoFromServer(
                 null, phoneNumber,
                 0,
@@ -211,7 +216,8 @@ class InCommingCallManager(
                 resFromServer?.location?:"",
                 resFromServer?.country?:"",
                 resFromServer?.carrier?:"",
-                false
+                false,
+                        isUserInfoFoundInServer = resFromServer?.isInfoFoundInDb?:0
                 )
 
             callerInfoFromServerDAO.insert(listOf(info))

@@ -10,6 +10,8 @@ import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.IncommingCall.LocalDbSearchRepository
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.utils.hashPhoneNum
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.launch
@@ -26,7 +28,8 @@ import javax.crypto.Cipher
 
 class SearchViewModel(
     private val searchNetworkRepository: SearchNetworkRepository,
-    private  val contactLocalSyncRepository: ContactLocalSyncRepository
+    private val contactLocalSyncRepository: ContactLocalSyncRepository,
+    private val localDbSearchRepository: LocalDbSearchRepository
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
     var hashedPhoneNum:MutableLiveData<String> = MutableLiveData()
@@ -68,7 +71,6 @@ class SearchViewModel(
 //                 val encPhone = encryptPhoneNum(hashedPhone, key)
                  val num = formatPhoneNumber(phoneNumber)
                  hashedPhoneNum.value = Secrets().managecipher(packageName, num)//encoding the number with my algorithm
-
                  res = searchNetworkRepository.search(hashedPhoneNum.value!!)
                  var result = res?.body()?.cntcts
 
@@ -110,6 +112,10 @@ class SearchViewModel(
 
     fun findOnecontact(phoneNumber: String):LiveData<String> = liveData{
         contactLocalSyncRepository.getNameFromPhoneNumber(phoneNumber)?.let { emit(it) }
+    }
+
+    fun getCallerInfoFromDb(phoneNumber: String) :LiveData<CallersInfoFromServer?> = liveData {
+        emit(localDbSearchRepository.getInfoForNumber(phoneNumber))
     }
 
 

@@ -17,6 +17,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallLocalRepository
+import com.nibble.hashcaller.view.ui.call.utils.CallersInfoResponseItem
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -80,9 +81,17 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     }
 
                     for(cntct in result.body()!!.contacts){
-                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                            contactAddress = formatPhoneNumber(cntct.phoneNumber), 0, firstName = cntct.firstName?:"",
-                            informationReceivedDate =Date(),spamReportCount =  cntct.spamCount)
+
+                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+                            null,
+                            contactAddress = formatPhoneNumber(cntct.phoneNumber),
+                            0,
+                            firstName = cntct.firstName?:"",
+                            informationReceivedDate =Date(),
+                            spamReportCount =  cntct.spamCount,
+                            isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0
+                        )
+
                         callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                     }
                     callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)

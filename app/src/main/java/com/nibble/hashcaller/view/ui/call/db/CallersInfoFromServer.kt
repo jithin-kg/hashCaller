@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.db
 
 import androidx.room.*
+import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -40,7 +41,6 @@ data class CallersInfoFromServer (
     @ColumnInfo(name = "country") var country: String = "",
     @ColumnInfo(name = "carrier") var carrier: String = "",
     @ColumnInfo(name = "isBlockedByUser") var isBlockedByUser: Boolean = false,
-
-
+    @ColumnInfo(name = "isInfoFoundInServer") var isUserInfoFoundInServer : Int = INFO_NOT_FOUND_IN_SERVER
     ) {
 }

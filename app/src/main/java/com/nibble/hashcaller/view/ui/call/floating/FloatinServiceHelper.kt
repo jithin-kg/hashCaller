@@ -5,7 +5,6 @@ import android.util.Log
 import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
-import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import kotlinx.coroutines.*
 
@@ -15,7 +14,8 @@ class FloatinServiceHelper(
     private val supervisorScope: CoroutineScope,
     private val window: Window,
     private val phoneNumber: String,
-    private val context:Context
+    private val context: Context,
+    private val isCallScreeningRoleHeld: Boolean
 ) {
 
     suspend fun  handleCall(){
@@ -59,6 +59,7 @@ class FloatinServiceHelper(
                     val isBlockedByPattern  = defBlockedByPattern.await()
                     if(isBlockedByPattern){
                         isSpam = true
+
                         endCall(inComingCallManager,
                             phoneNumber, )
                     }
@@ -71,7 +72,6 @@ class FloatinServiceHelper(
                     val resFromServer = defServerHandling?.await()
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
                         window.updateWithServerInfo(resFromServer, phoneNumber)
-
                     }
                     if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true
@@ -99,7 +99,7 @@ class FloatinServiceHelper(
 //            stopSelf();
 
         }.join()
-        context.stopFloatingService(incomingNumber = "incomingNumber")
+//        context.stopFloatingService(incomingNumber = "incomingNumber")
 
     }
 
