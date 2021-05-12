@@ -75,22 +75,29 @@ fun Context.startFloatingService(phoneNumber: String?) {
  * else stop stop service only
  *
  */
-fun Context.stopFloatingService(closeFloatingServiceAndWindow:Boolean = false){
+fun Context.stopFloatingService(
+    closeFloatingServiceAndWindow: Boolean = false,
+    incomingNumber: String
+){
 //    stopService(Intent(this, FloatingService::class.java))
 //    stopService(Intent(this, FloatingService::class.java))
     if(closeFloatingServiceAndWindow){
         val exitIntent = Intent(this, FloatingService::class.java).apply {
             putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE_AND_WINDOW)
+            putExtra(CONTACT_ADDRES, incomingNumber)
         }
         startService(exitIntent)
     }else{
         val exitIntent = Intent(this, FloatingService::class.java).apply {
             putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE)
+            putExtra(CONTACT_ADDRES, incomingNumber)
+
         }
         startService(exitIntent)
     }
 
 }
+
 fun Context.startActivityIncommingCallView(cntc: CntctitemForView?, phoneNumber: String, showFeedbackView:Boolean = false) {
 
     val i = Intent(this, ActivityIncommingCallView::class.java)

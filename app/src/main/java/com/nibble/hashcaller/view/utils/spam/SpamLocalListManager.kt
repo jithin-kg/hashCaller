@@ -62,7 +62,7 @@ object SpamLocalListManager{
             titeString = title.substring(0, 5)
             titeString = "$titeString..."
         }
-        bottomSheetDialog.tvExpand.text = titeString
+//        bottomSheetDialog.tvExpand.text = titeString
 
 //       bottomSheetDialog.imgExpand.setImageResource(R.drawable.ic_baseline_expand_more_white)
 //        bottomSheetDialog.layoutExpand.background = ContextCompat.getDrawable(this,R.drawable.expand_background)

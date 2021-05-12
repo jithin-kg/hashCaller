@@ -155,8 +155,6 @@ class MyCallScreeningService: CallScreeningService() {
 
         val i = Intent(this, ActivityIncommingCallView::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-
         i.putExtra("name", "sample")
         i.putExtra("phoneNumber", "808123")
         i.putExtra("spamcount",0)

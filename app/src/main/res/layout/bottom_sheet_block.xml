@@ -15,63 +15,53 @@
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        android:background="@drawable/bottom_sheet_background"-->
 <!--        >-->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutExpand"
 
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tvBlockAndReport"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:background="@color/colorWhite"
-            android:clickable="true"
-            android:focusable="true"
-            app:layout_constraintBottom_toBottomOf="@+id/radioGroup"
+            android:text="Block and report"
+            android:textSize="20sp"
+            android:textColor="@color/textColor"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.953"
-            app:layout_constraintStart_toEndOf="@+id/radioGroup"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
+    <ImageView
+        android:id="@+id/imgVHairline"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:alpha="0.12"
+        android:src="@drawable/horizontal_line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvBlockAndReport"
 
-            <ImageView
-                android:id="@+id/imgExpand"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_baseline_expand_more_24"
-                app:layout_constraintBottom_toTopOf="@id/tvExpand"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvExpand"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="More"
-                app:layout_constraintBottom_toBottomOf="@+id/layoutExpand"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        />
         <RadioGroup
-
             android:id="@+id/radioGroup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-
+            android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/radioPersonOrBusiness"
-            app:layout_constraintEnd_toStartOf="@+id/layoutExpand"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/imgVHairline">
 
             <RadioButton
                 android:id="@+id/radioScam"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:checked="true"
+                android:textColor="@color/textColor"
                 android:background="@drawable/radio_background"
                 android:buttonTint="@color/colorPrimary"
                 android:drawableLeft="@drawable/ic_baseline_warning_24"
@@ -81,11 +71,12 @@
                 android:text="Scam" />
 
             <RadioButton
-                android:id="@+id/radioS"
+                android:id="@+id/radioSales"
                 android:layout_marginEnd="16dp"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/textColor"
                 android:background="@drawable/radio_background"
                 android:buttonTint="@color/colorPrimary"
                 android:drawableLeft="@drawable/ic_baseline_headset_mic_24"
@@ -112,11 +103,11 @@
 
             <RadioButton
                 android:id="@+id/radioBusiness"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
-                android:checked="true"
+                android:textColor="@color/textColor"
                 android:background="@drawable/radio_background"
                 android:buttonTint="@color/colorPrimary"
                 android:paddingEnd="16dp"
@@ -126,9 +117,11 @@
 
             <RadioButton
                 android:id="@+id/radioPerson"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+
+                android:textColor="@color/textColor"
                 android:background="@drawable/radio_background"
                 android:buttonTint="@color/colorPrimary"
                 android:paddingEnd="16dp"
@@ -150,25 +143,25 @@
             app:layout_constraintStart_toStartOf="@+id/radioPersonOrBusiness"
             app:layout_constraintTop_toBottomOf="@+id/radioPersonOrBusiness" />
 
-        <Button
-            android:id="@+id/btnBlock"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="32dp"
-            android:paddingVertical="16dp"
-            android:text="Continue"
-            android:textAllCaps="false"
-            android:textColor="@color/colorWhite"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioPersonOrBusiness"
-            app:layout_constraintVertical_bias="0.0"/>
+    <Button
+        android:id="@+id/btnBlock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:paddingVertical="16dp"
+        android:text="Continue"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioPersonOrBusiness"
+        app:layout_constraintVertical_bias="0.0" />
 
 <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 

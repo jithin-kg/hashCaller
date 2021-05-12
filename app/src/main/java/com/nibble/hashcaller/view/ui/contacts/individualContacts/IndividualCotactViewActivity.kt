@@ -54,7 +54,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = -1
     private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
-    private lateinit var imgExpand:ImageView
+//    private lateinit var imgExpand:ImageView
     private lateinit var radioScam:RadioButton
     private lateinit var radioS:RadioButton
     private lateinit var btnBlock:Button
@@ -152,12 +152,12 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
         tvSpamfeedbackMsg = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
 
-        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
+//        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
         radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
-        radioS = bottomSheetDialog.findViewById<RadioButton>(R.id.radioS) as RadioButton
+        radioS = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales) as RadioButton
         btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock) as Button
         selectedRadioButton = radioScam
-        imgExpand.setOnClickListener(this)
+//        imgExpand.setOnClickListener(this)
 
 
 //        if(this.view?.visibility == View.VISIBLE){
@@ -246,7 +246,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         radioS.setOnClickListener(this)
         radioScam.setOnClickListener(this)
-        imgExpand.setOnClickListener(this)
+//        imgExpand.setOnClickListener(this)
        btnBlock.setOnClickListener(this)
     }
 
@@ -352,7 +352,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
                     }
                 }
-                R.id.radioS -> {
+                R.id.radioSales -> {
 
                     val checked = v.isChecked
                     if (checked) {

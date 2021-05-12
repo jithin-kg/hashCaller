@@ -279,7 +279,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
         selectedRadioButton = bottomSheetDialog.radioScam
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
 
 
@@ -412,9 +412,9 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun initListners() {
         binding.imgBtnSendSMS.setOnClickListener(this)
         binding.imgBtnBackSmsIndividual.setOnClickListener(this)
-        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioSales.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
         binding.imgViewCallBtn.setOnClickListener(this)
         binding.imgBtnSearchSMS.setOnClickListener(this)
@@ -924,14 +924,14 @@ class IndividualSMSActivity : AppCompatActivity(),
                 Log.d(TAG, "onClick: ")
                 addToBlockList(contact!!)
             }
-            R.id.imgExpand->{
-                Log.d(TAG, "onClick: img button")
-                val popup = PopupMenu(this, bottomSheetDialog.viewPopup)
-                popup.inflate(R.menu.image_chooser_popup)
-                popup.setOnMenuItemClickListener(this)
-                popup.show()
-
-            }
+//            R.id.imgExpand->{
+//                Log.d(TAG, "onClick: img button")
+//                val popup = PopupMenu(this, bottomSheetDialog.viewPopup)
+//                popup.inflate(R.menu.image_chooser_popup)
+//                popup.setOnMenuItemClickListener(this)
+//                popup.show()
+//
+//            }
             R.id.imgViewCallBtn->{
                 call(contactAddress)
             }
@@ -1081,11 +1081,11 @@ class IndividualSMSActivity : AppCompatActivity(),
 
                     }
                 }
-                R.id.radioS->{
+                R.id.radioSales->{
 
                     val checked = v.isChecked
                     if(checked){
-                        selectedRadioButton= bottomSheetDialog.radioS
+                        selectedRadioButton= bottomSheetDialog.radioSales
                         this.spammerType = SpamLocalListManager.SPAMM_TYPE_SALES
                         Log.d(TAG, "onClick: radio scam")
 //                                spinnerSelected.value = false

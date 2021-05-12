@@ -276,9 +276,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnHamBrgerCalls.setOnClickListener(this)
         binding.searchViewCall.setOnClickListener(this)
 
-        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioSales.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
         binding.btnCallFragmentPermission.setOnClickListener(this)
     }
@@ -671,7 +671,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
         selectedRadioButton = bottomSheetDialog.radioScam
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
         
 

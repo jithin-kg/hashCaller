@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +39,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
@@ -62,8 +64,13 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
-
+    private  var radioSales: RadioButton? = null
+    private  var radioScam : RadioButton?= null
+    private  var radioBusiness: RadioButton?= null
+    private  var radioPerson: RadioButton?= null
     private  var mMessageReceiver: BroadcastReceiver? = null
+    private var previousCheckedRadioButton: RadioButton? = null
+    private  var btnBlock: Button? = null
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -194,11 +201,13 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 
 
-        bottomSheetDialog.radioS.setOnClickListener(this)
-        bottomSheetDialog.radioScam.setOnClickListener(this)
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
-        bottomSheetDialog.btnBlock.setOnClickListener(this)
-//        binding.layoutIncommingCall.setOnClickListener(this)
+        radioBusiness?.setOnClickListener(this)
+        radioPerson?.setOnClickListener(this)
+        radioSales?.setOnClickListener(this)
+        radioScam?.setOnClickListener(this)
+
+        btnBlock?.setOnClickListener(this)
+
     }
     @SuppressLint("LongLogTag")
     override fun onClick(v: View?) {
@@ -217,9 +226,23 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.imgBtnCallIncomming ->{
-
+            }
+            R.id.radioScam, R.id.radioSales, R.id.radioPerson, R.id.radioBusiness    ->{
+//                toast("radio scan clicked")
+                radioClicked(v as RadioButton)
             }
         }
+    }
+
+    private fun radioClicked(v: RadioButton) {
+       if(previousCheckedRadioButton?.id != v.id){
+           previousCheckedRadioButton?.isChecked = false
+           v.isChecked = true
+           previousCheckedRadioButton = v
+       }else{
+           v.isChecked = false
+           previousCheckedRadioButton = null
+       }
     }
 
     private fun showBottomSheetDialog() {
@@ -236,9 +259,14 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
         selectedRadioButton = bottomSheetDialog.radioScam
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
-
+        radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness)
+        radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson)
+        radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales)
+        radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam)
+        previousCheckedRadioButton = radioScam
+        btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock)
 
         bottomSheetDialog.setOnDismissListener {
             Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")

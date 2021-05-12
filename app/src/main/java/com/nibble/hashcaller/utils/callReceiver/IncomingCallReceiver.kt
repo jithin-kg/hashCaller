@@ -4,13 +4,11 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
-import com.nibble.hashcaller.utils.callscreening.WindowObj
 import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
-
-import java.lang.Exception
 
 
 /**
@@ -21,36 +19,56 @@ class IncomingCallReceiver : BroadcastReceiver(){
     
     @SuppressLint("MissingPermission", "LogNotTimber") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
-       try {
-              if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
-               return
+
+        val telephony = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        telephony.listen(object : PhoneStateListener() {
+            override fun onCallStateChanged(state: Int, incomingNumber: String) {
+                super.onCallStateChanged(state, incomingNumber)
+                if(!incomingNumber.isNullOrEmpty()){
+                    when(state){
+                        TelephonyManager.CALL_STATE_RINGING ->{
+                            context.startFloatingService(incomingNumber)
+                        }
+                        TelephonyManager.CALL_STATE_IDLE ->{
+                            context.stopFloatingService(true, incomingNumber)
+                        }
+                    }
+                    Log.d(TAG, "onCallStateChanged: $incomingNumber")
                 }
-//           val newState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
-           when(intent.getStringExtra(TelephonyManager.EXTRA_STATE)){
-               TelephonyManager.EXTRA_STATE_RINGING -> {
-                   Log.d(TAG, "onReceive: incomming")
-//                   scheduleJobIncommingcaller(context, intent)
-                   //icannot start a job because it is not always working
 
-                  context.startFloatingService( intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
-
-//                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
-//                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
-               }
-               TelephonyManager.EXTRA_STATE_IDLE -> {
-
-                   WindowObj.closeWindow()
-//                   Util.setPhoneNumInUtil("")
-                   //call ended
-//                   scheduleCallFeedbackJob(context, intent)
-                  context.stopFloatingService(true)
-
-               }
-           }
-
-       }catch (e:Exception){
-           Log.d(TAG, "onReceive: exception $e")
-       }
+            }
+        }, PhoneStateListener.LISTEN_CALL_STATE)
+//
+//       try {
+//              if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
+//               return
+//                }
+////           val newState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+//           when(intent.getStringExtra(TelephonyManager.EXTRA_STATE)){
+//               TelephonyManager.EXTRA_STATE_RINGING -> {
+//                   Log.d(TAG, "onReceive: incomming")
+////                   scheduleJobIncommingcaller(context, intent)
+//                   //icannot start a job because it is not always working
+//
+//                   context.startFloatingService(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+//
+////                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+////                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
+//               }
+//               TelephonyManager.EXTRA_STATE_IDLE -> {
+//
+//                   WindowObj.closeWindow()
+////                   Util.setPhoneNumInUtil("")
+//                   //call ended
+////                   scheduleCallFeedbackJob(context, intent)
+//                   context.stopFloatingService(true)
+//
+//               }
+//           }
+//
+//       }catch (e: Exception){
+//           Log.d(TAG, "onReceive: exception $e")
+//       }
     }
 
 

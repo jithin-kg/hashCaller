@@ -260,9 +260,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrDelete.setOnClickListener(this)
         binding.imgBtnAvatarMain.setOnClickListener(this)
         binding.fabSendNewSMS.setOnClickListener(this)
-        bottomSheetDialog.radioS.setOnClickListener(this)
+        bottomSheetDialog.radioSales.setOnClickListener(this)
         bottomSheetDialog.radioScam.setOnClickListener(this)
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
 
     }
@@ -318,7 +318,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
         selectedRadioButton = bottomSheetDialog.radioScam
-        bottomSheetDialog.imgExpand.setOnClickListener(this)
+//        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
 
 //        if(this.view?.visibility == View.VISIBLE){
@@ -523,10 +523,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             R.id.imgBtnTbrBlock->{
                 blockUser()
             }
-            R.id.imgExpand->{
-                showPopupMenu(R.menu.image_chooser_popup, bottomSheetDialog.viewPopup)
-
-            }
+//            R.id.imgExpand->{
+//                showPopupMenu(R.menu.image_chooser_popup, bottomSheetDialog.viewPopup)
+//
+//            }
             R.id.imgBtnTbrDelete ->{
                 deleteMarkedSMSThreads()
             }
