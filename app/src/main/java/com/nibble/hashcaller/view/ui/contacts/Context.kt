@@ -41,18 +41,15 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
 
-fun Context.startFloatingService(phoneNumber: String?) {
+fun Context.startFloatingService() {
 
     val intent = Intent(this, FloatingService::class.java)
-    phoneNumber?.let {
         intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE )
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.startForegroundService(intent)
         } else {
             this.startService(intent)
         }
-    }
 //    if (!phoneNumber.isNullOrEmpty()) {
 ////        intent.putExtra(INTENT_COMMAND, phoneNumber)
 //        intent.putExtra(CONTACT_ADDRES, phoneNumber)

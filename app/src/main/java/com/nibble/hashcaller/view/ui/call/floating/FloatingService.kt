@@ -43,6 +43,7 @@ class FloatingService: Service() {
     private  var _window:Window? = null
     private  val window:Window get() = _window!!
     private var onStartCalled = false
+    private var phoneNumber = ""
     override fun onBind(intent: Intent?): IBinder? = null
     /**
      * Remove the foreground notification and stop the service.
@@ -59,7 +60,7 @@ class FloatingService: Service() {
             _window = Window(this, phoneNumber)
 //                    windowCompanion = window
         }
-        window.open()
+
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -70,20 +71,18 @@ class FloatingService: Service() {
                 window.close()
                 stopService()
             }
-        if(!onStartCalled){
-
-
-
-            Log.d(TAG+"init", "onStartCommand: ")
-            registerCallStateListener { phoneNumber, callState ->
-                when(callState){
-                    TelephonyManager.CALL_STATE_RINGING ->{
-                        onStartCalled = true
-                        //        // Exit the service if we receive the EXIT command.
+            else if(command == START_FLOATING_SERVICE){
+                if(!onStartCalled){
+                    window.open()
+                    registerCallStateListener { phoneNumber, callState ->
+                        when(callState){
+                            TelephonyManager.CALL_STATE_RINGING ->{
+                                onStartCalled = true
+                                //        // Exit the service if we receive the EXIT command.
 //        // START_NOT_STICKY is important here, we don't want
 //        // the service to be relaunched.
 //        if(this.isCallScreeningRoleHeld()){
-                        //only perform operations in this service iff call screening role is not held
+                                //only perform operations in this service iff call screening role is not held
 //            command?.let {
 
 
@@ -103,30 +102,30 @@ class FloatingService: Service() {
 //
 //                } else
 
-                        if(command == START_FLOATING_SERVICE){
+                                if(command == START_FLOATING_SERVICE){
 
-                            Log.d(TAG, "onStartCommand: window opening")
-                            // Be sure to show the notification first for all commands.
-                            // Don't worry, repeated calls have no effects.
+                                    Log.d(TAG, "onStartCommand: window opening")
+                                    // Be sure to show the notification first for all commands.
+                                    // Don't worry, repeated calls have no effects.
 
-                            val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-                            supervisorScope.launch {
-                                val hashedNum =    getHashedNum(phoneNumber,
-                                    this@FloatingService
-                                )
-                                floatinServiceHelper = FloatinServiceHelper(
-                                    getIncomminCallManager(FloatingService.phoneNumber, this@FloatingService),
-                                    hashedNum,
-                                    supervisorScope,
-                                    window,
-                                    phoneNumber,
-                                    this@FloatingService,
-                                    isCallScreeningRoleHeld()
-                                )
-                                floatinServiceHelper.handleCall()
-                            }
+                                    val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+                                    supervisorScope.launch {
+                                        val hashedNum =    getHashedNum(phoneNumber,
+                                            this@FloatingService
+                                        )
+                                        floatinServiceHelper = FloatinServiceHelper(
+                                            getIncomminCallManager(phoneNumber, this@FloatingService),
+                                            hashedNum,
+                                            supervisorScope,
+                                            window,
+                                            phoneNumber,
+                                            this@FloatingService,
+                                            isCallScreeningRoleHeld()
+                                        )
+                                        floatinServiceHelper.handleCall()
+                                    }
 //                        return START_NOT_STICKY
-                        }
+                                }
 //            }
 //        }
 
@@ -136,14 +135,14 @@ class FloatingService: Service() {
 ////            }
 ////            stopService()
 //        }
+                            }
+//                            TelephonyManager.CALL_STATE_IDLE -> {
+//                                stopService()
+//                                Log.d(TAG, "idle callback : ")
+//                                window.close()
+//                            }
+                        }
                     }
-                    TelephonyManager.CALL_STATE_IDLE -> {
-                        stopService()
-                        Log.d(TAG, "idle callback : ")
-                        window.close()
-                    }
-                }
-            }
 //        val command:String? = intent.getStringExtra(INTENT_COMMAND)
 //        phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
 
@@ -154,7 +153,7 @@ class FloatingService: Service() {
 
 //        val window = Window(this)
 //        window.open()
-            // Show the floating window for adding a new note.
+                    // Show the floating window for adding a new note.
 
 
 //        if (command == INTENT_COMMAND_NOTE) {
@@ -166,7 +165,10 @@ class FloatingService: Service() {
 //            val window = Window(this)
 //            window.open()
 //        }
-        }
+                }
+            }
+
+
 
         return START_STICKY
     }
@@ -188,13 +190,13 @@ class FloatingService: Service() {
                            }
 
                         }
-                        TelephonyManager.CALL_STATE_IDLE -> {
-                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
-                            if(incomingNumber.isNotEmpty()){
-                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
-                            }
-//                            stopFloatingService(true, incomingNumber)
-                        }
+//                        TelephonyManager.CALL_STATE_IDLE -> {
+//                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
+//                            if(incomingNumber.isNotEmpty()){
+//                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
+//                            }
+////                            stopFloatingService(true, incomingNumber)
+//                        }
 //                        TelephonyManager.CALL_STATE_OFFHOOK -> {
 //                            Log.d(TAG, "onCallStateChanged: ofhook $incomingNumber")
 //                        }
@@ -323,17 +325,17 @@ class FloatingService: Service() {
     companion object{
         const val TAG = "__FloatingService"
 //        var windowCompanion:Window? = null
-        var phoneNumber: String = ""
-        fun startService(context: Context, message: String, num: String) {
-            phoneNumber = num
-//            val startIntent = Intent(context, FloatingService::class.java)
-//            startIntent.putExtra("inputExtra", message)
-//            ContextCompat.startForegroundService(context, startIntent)
-        }
-        fun stopService(context: Context) {
-            val stopIntent = Intent(context, FloatingService::class.java)
-            context.stopService(stopIntent)
-        }
+//        var phoneNumber: String = ""
+//        fun startService(context: Context, message: String, num: String) {
+////            phoneNumber = num
+////            val startIntent = Intent(context, FloatingService::class.java)
+////            startIntent.putExtra("inputExtra", message)
+////            ContextCompat.startForegroundService(context, startIntent)
+////        }
+//        fun stopService(context: Context) {
+//            val stopIntent = Intent(context, FloatingService::class.java)
+//            context.stopService(stopIntent)
+//        }
 //        fun getInflatedWindow(): Window? {
 //            return windowCompanion
 //        }

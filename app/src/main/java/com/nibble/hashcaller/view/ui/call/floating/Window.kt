@@ -136,7 +136,7 @@ class Window(private val context: Context,private val phoneNumber: String) {
         } catch (e: Exception) {
             // Ignore exception for now, but in production, you should have some
             // warning for the user here.
-                context.toast("unable to close window")
+//                context.toast("unable to close window")
 
             Log.d(TAG, "close: $e")
         }

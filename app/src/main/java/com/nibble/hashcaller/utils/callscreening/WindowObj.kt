@@ -13,7 +13,7 @@ object WindowObj {
 
     fun closeWindow(){
        val windowStrong =  window?.get() //get strong reference
-        windowStrong?.close()
+//        windowStrong?.close()
         if(windowStrong == null){
             Log.d(TAG, "closeWindow: window is null")
         }else{

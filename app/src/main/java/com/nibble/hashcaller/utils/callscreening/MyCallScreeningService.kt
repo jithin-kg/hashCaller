@@ -32,6 +32,7 @@ import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.floating.Window
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
+import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -53,8 +54,8 @@ class MyCallScreeningService: CallScreeningService() {
     private lateinit var mCallDetails:Call.Details
     private lateinit var responseBuilder:CallResponse.Builder
     private lateinit var responseToCall:com.nibble.hashcaller.utils.callscreening.CallResponse
-    private  var _window:Window? = null
-    private  val window:Window get() = _window!!
+//    private  var _window:Window? = null
+//    private  val window:Window get() = _window!!
     /**
      * important to look into CallScreeningService source code to findout how to work with this class
      */
@@ -66,7 +67,9 @@ class MyCallScreeningService: CallScreeningService() {
         Log.d(TAG, "onScreenCall: ")
         val phoneNumber = getPhoneNumber(callDetails)
 //        responseBuilder = CallResponse.Builder()
-        showNotification()
+//        showNotification()
+        startFloatingService()
+
 //        _window = Window(this, phoneNumber)
 //        window.open()
 //        WindowObj.setWindow(window)
@@ -77,20 +80,21 @@ class MyCallScreeningService: CallScreeningService() {
                 phoneNumber,
                 this@MyCallScreeningService
             )
+
             helper = CallScreeningServiceHelper(
                 getIncomminCallManager(phoneNumber, this@MyCallScreeningService),
                 hashedNum,
                 supervisorScope,
                 phoneNumber,
-                this@MyCallScreeningService,
-                window
+                this@MyCallScreeningService
             ) { resToCall: Boolean -> { respondeToTheCall(resToCall) } }
             helper.handleCall()
+
 //            stopForeground(true)
 //            stopSelf()
 //            delay(15000L)
-            stopForeground(true)
-            stopSelf()
+//            stopForeground(true)
+//            stopSelf()
             Log.d(TAG, "onScreenCall: after 10 seconds")
         }
 

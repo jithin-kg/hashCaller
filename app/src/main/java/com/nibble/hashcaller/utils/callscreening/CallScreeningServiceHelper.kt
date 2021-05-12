@@ -27,12 +27,10 @@ class CallScreeningServiceHelper(
     private val supervisorScope: CoroutineScope,
     private val phoneNumber: String,
     private val context: Context,
-    private val window: Window,
     private val resToCallCallBack: (Boolean) -> () -> Unit) {
     private var respondedToCall = false
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun  handleCall() = withContext(Dispatchers.IO){
-        showNotification()
 
         var isInfoFoundInCprovider = false
         supervisorScope.launch {

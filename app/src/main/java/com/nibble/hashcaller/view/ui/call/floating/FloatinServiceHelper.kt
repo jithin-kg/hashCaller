@@ -59,7 +59,6 @@ class FloatinServiceHelper(
                     val isBlockedByPattern  = defBlockedByPattern.await()
                     if(isBlockedByPattern){
                         isSpam = true
-
                         endCall(inComingCallManager,
                             phoneNumber, )
                     }
@@ -92,10 +91,6 @@ class FloatinServiceHelper(
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
                 }
-
-
-
-
 //            stopSelf();
 
         }.join()
@@ -131,6 +126,5 @@ class FloatinServiceHelper(
 
     companion object{
         const val TAG = "__FloatinServiceHelper"
-
     }
 }

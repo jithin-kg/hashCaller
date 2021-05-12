@@ -56,7 +56,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //                   scheduleJobIncommingcaller(context, intent)
                    //icannot start a job because it is not always working
 
-                   context.startFloatingService("")
+                   context.startFloatingService()
 
 //                   context.startActivityIncommingCallView(null, intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
 //                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
