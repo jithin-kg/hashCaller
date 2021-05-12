@@ -19,15 +19,15 @@
     <color name="colorPrimaryDark">#ffff</color>
     <color name="colorPrimaryDarkest">#082d8e</color>
 
-<!--    <color name="circular_color1">#A1E08A</color>-->
-<!--    <color name="circular_color2">#6BBFE5</color>-->
-<!--    <color name="circular_color3">#819DEC</color>-->
-<!--    <color name="circular_color4">#F087B4</color>-->
+    <color name="circular_color1">#8EDA72</color>
+    <color name="circular_color2">#64C1EC</color>
+    <color name="circular_color3">#218CBD</color>
+    <color name="circular_color4">#EC659F</color>
 <!--    Tetradic colors from canva color wheen based on primary colors color variation from color wheel-->
-    <color name="circular_color1">#4FBFB7</color>
-    <color name="circular_color2">#7F4FBF</color>
-    <color name="circular_color3">#BF4F57</color>
-    <color name="circular_color4">#8FBF4F</color>
+<!--    <color name="circular_color1">#4FBFB7</color>-->
+<!--    <color name="circular_color2">#7F4FBF</color>-->
+<!--    <color name="circular_color3">#BF4F57</color>-->
+<!--    <color name="circular_color4">#8FBF4F</color>-->
 
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
