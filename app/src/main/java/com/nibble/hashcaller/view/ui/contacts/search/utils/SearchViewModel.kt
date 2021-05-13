@@ -6,14 +6,19 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.search.SearchResponse
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.IncommingCall.LocalDbSearchRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
+import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
 import com.nibble.hashcaller.view.utils.hashPhoneNum
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.security.KeyFactory
@@ -29,7 +34,8 @@ import javax.crypto.Cipher
 class SearchViewModel(
     private val searchNetworkRepository: SearchNetworkRepository,
     private val contactLocalSyncRepository: ContactLocalSyncRepository,
-    private val localDbSearchRepository: LocalDbSearchRepository
+    private val localDbSearchRepository: LocalDbSearchRepository,
+    private val libCoutryCodeHelper: LibCoutryCodeHelper
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
     var hashedPhoneNum:MutableLiveData<String> = MutableLiveData()
@@ -116,6 +122,64 @@ class SearchViewModel(
 
     fun getCallerInfoFromDb(phoneNumber: String) :LiveData<CallersInfoFromServer?> = liveData {
         emit(localDbSearchRepository.getInfoForNumber(phoneNumber))
+    }
+
+    fun getCountryForNumber(phoneNumber: String) :LiveData<String> = liveData {
+       emit( libCoutryCodeHelper.getCountryCode(phoneNumber))
+    }
+
+    fun getCallerInfo(phoneNumber: String): LiveData<CntctitemForView> = liveData {
+        var defContentProviderInfo:Deferred<String>? = null
+        var defInfoInDb : Deferred<CallersInfoFromServer?>? = null
+        var infoInCProvider:String? = null
+        var infoAvailableInDb: CallersInfoFromServer? = null
+        var firstName = ""
+        var lastName = ""
+        var location = ""
+        var country = ""
+        var spamCount = 0L
+
+        viewModelScope.launch {
+           defContentProviderInfo =  async { contactLocalSyncRepository.getNameFromPhoneNumber(phoneNumber) }
+           defInfoInDb =  async { localDbSearchRepository.getInfoForNumber(phoneNumber) }
+
+       }.join()
+        try {
+            infoInCProvider=  defContentProviderInfo?.await()
+        }catch (e:Exception){
+            Log.d(TAG, "getCallerInfo: $e")
+        }
+
+        try{
+            infoAvailableInDb = defInfoInDb?.await()
+        }catch (e:Exception){
+            Log.d(TAG, "getCallerInfo: $e")
+        }
+        try {
+           country =  libCoutryCodeHelper.getCountryCode(phoneNumber)
+        }catch (e:java.lang.Exception){
+            Log.d(TAG, "getCallerInfo: $e")
+        }
+        if(!infoInCProvider.isNullOrEmpty()){
+            firstName = infoInCProvider
+        }else if(infoAvailableInDb!= null){
+            if(!infoAvailableInDb.firstName.isNullOrEmpty()){
+                firstName = infoAvailableInDb.firstName
+            }
+           spamCount = infoAvailableInDb.spamReportCount?:0L
+
+        }else{
+            firstName = phoneNumber
+        }
+
+
+        val info = CntctitemForView(
+            firstName = firstName,
+            country = country,
+            isInfoFoundInDb = infoAvailableInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
+            spammCount = spamCount
+        )
+        emit(info)
     }
 
 

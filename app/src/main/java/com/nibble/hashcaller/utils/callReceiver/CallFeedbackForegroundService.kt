@@ -22,7 +22,6 @@ import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isActivityIncommingCallViewVisible
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
-import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -68,11 +67,11 @@ class CallFeedbackForegroundService : Service() {
 //                sendBroadcast(Intent(EXPAND_INCOMMING_VIEW))
             }else{
                 delay(1000L)
-                this@CallFeedbackForegroundService.startActivityIncommingCallView(
-                    null,
-                    phoneNumber,
-                    true
-                )
+//                this@CallFeedbackForegroundService.startActivityIncommingCallView(
+//                    null,
+//                    phoneNumber,
+//                    true
+//                )
             }
 
 

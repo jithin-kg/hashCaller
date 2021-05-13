@@ -69,9 +69,9 @@ class IncommingCallForegroundService : Service() {
                 if (!this@IncommingCallForegroundService.isCallScreeningRoleHeld()) {
                     //start operations iff screening role not avaialble
                     Log.d(TAG, "onReceive: role not held")
-                    this@IncommingCallForegroundService.startActivityIncommingCallView(
-                        //start incomming call screen at start and show seraching... in view, then update with data from server
-                        CntctitemForView(statusCode = STATUS_SEARHING_IN_PROGRESS), phoneNumber)
+//                    this@IncommingCallForegroundService.startActivityIncommingCallView(
+//                        //start incomming call screen at start and show seraching... in view, then update with data from server
+//                        CntctitemForView(statusCode = STATUS_SEARHING_IN_PROGRESS), phoneNumber)
 //                delay(15000L)
                     var isSpam = false
 //                    inComingCallManager =   getIncomminCallManager(phoneNumber, this@IncommingCallForegroundService)
@@ -101,7 +101,7 @@ class IncommingCallForegroundService : Service() {
                                 val intent =  this@IncommingCallForegroundService.getPreparedincommingIntent(resFromServer, phoneNumber, false)
                                 sendBroadcast(intent)
                             }else{
-                                this@IncommingCallForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
+//                                this@IncommingCallForegroundService.startActivityIncommingCallView(resFromServer, phoneNumber)
 
                             }
 

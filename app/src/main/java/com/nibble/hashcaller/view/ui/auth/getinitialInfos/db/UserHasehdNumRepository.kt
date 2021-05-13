@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.auth.getinitialInfos.db
 
 import android.content.Context
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -33,8 +32,8 @@ class UserHasehdNumRepository(
     }
 
     fun getCoutryusinLibPhonenumber(context: Context){
-        val util = PhoneNumberUtil.createInstance(context)
-        val numProto = util.parse("917012289206", "")
-        numProto.countryCode
+//        val util = PhoneNumberUtil.createInstance(context)
+//        val numProto = util.parse("917012289206", "")
+//        numProto.countryCode
     }
 }

@@ -26,10 +26,8 @@ import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
-import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
@@ -60,11 +58,10 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private  var mMessageReceiver: BroadcastReceiver? = null
     private var previousCheckedRadioButton: RadioButton? = null
     private  var btnBlock: Button? = null
-
+//    private var country = ""
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: ")
         isVisible = true
 //        registerForBroadCastReceiver()
         getIntentxras(intent)
@@ -74,28 +71,37 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         initViewmodel()
         setupBottomSheet()
         initListeners()
-        binding.tvPhoneNumIncomming.text = intent.getStringExtra(CONTACT_ADDRES)
-//        setViewElements()
-        getUserInfoFromContacts()
-        getUserInfoFromDb()
+        phoneNumber = intent.getStringExtra(PHONE_NUMBER)
+        binding.tvPhoneNumIncomming.text = phoneNumber
+        Log.d(TAG, "onCreate: $phoneNumber")
+
+        getCallerInfo()
 
 
     }
 
+    private fun getCallerInfo() {
+        viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
+            setViewElements(it)
+//            if(it.in)
+        })
+    }
     @SuppressLint("LongLogTag")
-    private fun getUserInfoFromContacts() {
-        viewModel.findOnecontact(phoneNumber).observe(this, Observer {
-            Log.d(TAG, "getUserInfoFromContacts: ${it}")
-            binding.txtVcallerName.text = it
-        })
+    private fun setViewElements(callersInfo: CntctitemForView) {
+
+        binding.txtVLocaltion.text = callersInfo.country +" " + callersInfo.location
+        binding.txtVcallerName.text = callersInfo.firstName
+        if(callersInfo.spammCount > SPAM_THREASHOLD){
+            Log.d(TAG, "onCreate: spammer calling");
+            binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
+                this,  R.drawable.incomming_call_background_spam )
+        }else{
+            binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
+                this, R.drawable.incomming_call_background )
+
+        }
     }
-    private fun getUserInfoFromDb(){
-        viewModel.getCallerInfoFromDb(phoneNumber).observe(this, Observer {
-            if(it!=null) {
-                setViewElements(it)
-            }
-        })
-    }
+
 
 
     private fun registerForBroadCastReceiver() {
@@ -157,29 +163,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 //        this.setFinishOnTouchOutside(true)
     }
 
-    @SuppressLint("LongLogTag")
-    private fun setViewElements(callersInfoFromServer: CallersInfoFromServer) {
-//        binding.tvPhoneNumIncomming.text = phoneNumber
 
-        binding.txtVLocaltion.text =  callersInfoFromServer.city
-        if(statusCode == STATUS_SEARHING_IN_PROGRESS){
-            binding.txtVcallerName.text = phoneNumber
-        }else{
-            binding.txtVcallerName.text =  callersInfoFromServer.firstName
 
-        }
 
-//        if(callerInfo.spammerStatus !=null)
-        if(callersInfoFromServer.spamReportCount > SPAM_THREASHOLD){
-            Log.d(TAG, "onCreate: spammer calling");
-            binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
-                this,  R.drawable.incomming_call_background_spam )
-        }else{
-            binding.cnstraintlyoutInner.background = ContextCompat.getDrawable(
-                this, R.drawable.incomming_call_background )
-
-        }
-    }
 
 
     private fun initListeners() {

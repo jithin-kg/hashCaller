@@ -31,7 +31,6 @@ class CallScreeningServiceHelper(
     private var respondedToCall = false
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun  handleCall() = withContext(Dispatchers.IO){
-
         var isInfoFoundInCprovider = false
         supervisorScope.launch {
                 //start operations iff screening role not avaialble
@@ -39,7 +38,7 @@ class CallScreeningServiceHelper(
 
                 var isSpam = false
 
-
+                 WindowObj.getWindowObj()?.setPhoneNum(phoneNumber)
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
                 var defServerHandling:Deferred<CntctitemForView>? = null
@@ -50,7 +49,8 @@ class CallScreeningServiceHelper(
                     if(contactInCprovider!=null){
                         //the caller is in contact, so set information in db as caller information
                         isInfoFoundInCprovider = true
-//                        window.updateWithcontentProviderInfo(contactInCprovider)
+                        WindowObj.getWindowObj()?.updateWithcontentProviderInfo(contactInCprovider)
+
                     }
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
@@ -85,7 +85,7 @@ class CallScreeningServiceHelper(
                     Log.d(TAG, "onReceive: second try")
                     val resFromServer = defServerHandling?.await()
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
-//                        window.updateWithServerInfo(resFromServer, phoneNumber)
+                        WindowObj.getWindowObj()?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
                     if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                         isSpam = true

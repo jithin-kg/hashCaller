@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/incomming_call_background_non_rounded"
         android:clickable="true"
         android:elevation="8dp"
@@ -90,10 +90,11 @@
             android:layout_width="112dp"
             android:layout_height="17dp"
             android:alpha="0.79"
-            android:text="Kerala India"
+            android:text="Location"
             android:textColor="@color/colorWhite"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/tvPhoneNumIncomming"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="@+id/txtVcallerName"
             app:layout_constraintTop_toBottomOf="@+id/txtVcallerName" />
 
@@ -102,9 +103,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-
             android:layout_marginBottom="16dp"
             android:text="918086176336"
+            android:textSize="12sp"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvhashCallerIncommin"

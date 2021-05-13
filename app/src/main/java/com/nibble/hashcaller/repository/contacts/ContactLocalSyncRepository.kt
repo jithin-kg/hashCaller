@@ -224,7 +224,7 @@ class ContactLocalSyncRepository(
     @SuppressLint("LongLogTag")
     suspend fun getNameFromPhoneNumber(phoneNumber: String): String = withContext(Dispatchers.IO) {
         var cursor:Cursor? = null
-        var name = phoneNumber
+        var name = ""
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber))
         val projection = arrayOf(
             ContactsContract.PhoneLookup.DISPLAY_NAME

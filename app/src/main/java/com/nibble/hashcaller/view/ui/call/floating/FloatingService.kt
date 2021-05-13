@@ -9,6 +9,7 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -24,7 +25,9 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
+import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -41,10 +44,11 @@ private const val CODE_NOTE_INTENT = 3
 //https://localazy.com/blog/floating-windows-on-android-5-moving-window
 class FloatingService: Service() {
     private lateinit var floatinServiceHelper:FloatinServiceHelper
-    private  var _window:Window? = null
-    private  val window:Window get() = _window!!
+    private  var window:Window? = null
+
     private var onStartCalled = false
-    private var phoneNumber = ""
+    private var mphoneNumberStr = ""
+    private var countryCodeHelper: LibCoutryCodeHelper? = null
     override fun onBind(intent: Intent?): IBinder? = null
     /**
      * Remove the foreground notification and stop the service.
@@ -52,35 +56,50 @@ class FloatingService: Service() {
     private fun stopService() {
         stopForeground(true)
         stopSelf()
+        window = null
     }
 
+    /**
+     * Use this function to create single  instances,
+     * onCreate called only once, but
+     */
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG+"init", "onCreate: ")
-        if(_window == null){
-            _window = Window(this, phoneNumber)
-            WindowObj.setWindow(window)
+        countryCodeHelper = LibCoutryCodeHelper(PhoneNumberUtil.getInstance())
+
+
+        if(window == null){
+            window = Window(this, countryCodeHelper)
+            WindowObj.setWindow(window!!)
+
 
 //                    windowCompanion = window
         }
 
     }
 
+    /**
+     * Called every time a startService of this service called
+     */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
 //        super.onStartCommand(intent, flags, startId)
         val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
-                window.close()
+                window?.close()
                 WindowObj.clearReference()
+                window = null
+                startActivityIncommingCallView(mphoneNumberStr)
                 stopService()
             }
             else if(command == START_FLOATING_SERVICE){
                 if(!onStartCalled){
-                    window.open()
+                    window?.open()
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
                             TelephonyManager.CALL_STATE_RINGING ->{
+                                mphoneNumberStr = phoneNumber
                                 onStartCalled = true
                                 //        // Exit the service if we receive the EXIT command.
 //        // START_NOT_STICKY is important here, we don't want
@@ -107,13 +126,13 @@ class FloatingService: Service() {
 //                } else
 
                                 if(command == START_FLOATING_SERVICE){
-
                                     Log.d(TAG, "onStartCommand: window opening")
                                     // Be sure to show the notification first for all commands.
                                     // Don't worry, repeated calls have no effects.
 
                                     val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
                                     supervisorScope.launch {
+                                        window?.setPhoneNum(phoneNumber)
                                         val hashedNum =    getHashedNum(phoneNumber,
                                             this@FloatingService
                                         )
@@ -140,11 +159,12 @@ class FloatingService: Service() {
 ////            stopService()
 //        }
                             }
-//                            TelephonyManager.CALL_STATE_IDLE -> {
+                            TelephonyManager.CALL_STATE_IDLE -> {
+
 //                                stopService()
 //                                Log.d(TAG, "idle callback : ")
 //                                window.close()
-//                            }
+                            }
                         }
                     }
 //        val command:String? = intent.getStringExtra(INTENT_COMMAND)
@@ -194,13 +214,13 @@ class FloatingService: Service() {
                            }
 
                         }
-//                        TelephonyManager.CALL_STATE_IDLE -> {
-//                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
-//                            if(incomingNumber.isNotEmpty()){
-//                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
-//                            }
-////                            stopFloatingService(true, incomingNumber)
-//                        }
+                        TelephonyManager.CALL_STATE_IDLE -> {
+                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
+                            if(incomingNumber.isNotEmpty()){
+                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
+                            }
+//                            stopFloatingService(true, incomingNumber)
+                        }
 //                        TelephonyManager.CALL_STATE_OFFHOOK -> {
 //                            Log.d(TAG, "onCallStateChanged: ofhook $incomingNumber")
 //                        }
@@ -328,6 +348,8 @@ class FloatingService: Service() {
 
     companion object{
         const val TAG = "__FloatingService"
+
+
 //        var windowCompanion:Window? = null
 //        var phoneNumber: String = ""
 //        fun startService(context: Context, message: String, num: String) {

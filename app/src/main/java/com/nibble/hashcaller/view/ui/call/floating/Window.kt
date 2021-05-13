@@ -17,13 +17,15 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
+import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
-class Window(private val context: Context,private val phoneNumber: String) {
-
+class Window(
+    private val context: Context,
+    private val countryCodeHelper: LibCoutryCodeHelper?
+) {
+    private var phoneNumber:String = ""
     private var callerInfoFoundFrom = INFO_SEARCHING
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -96,7 +98,7 @@ class Window(private val context: Context,private val phoneNumber: String) {
             positionListener = { x, y -> setPosition(x, y) }
         )
 
-        tvPhoneNumIncomming.text = phoneNumber
+
     }
     private fun setPosition(x: Int, y: Int) {
 //        windowParams.x = x
@@ -118,6 +120,22 @@ class Window(private val context: Context,private val phoneNumber: String) {
     init {
         initWindowParams()
         initWindow()
+
+
+    }
+
+    private  suspend fun setCountryCode() = withContext(Dispatchers.IO)  {
+        if(phoneNumber.isNotEmpty()){
+            val country = countryCodeHelper?.getCountryCode(phoneNumber)
+            setcountry(country)
+        }
+
+    }
+
+    private suspend fun setcountry(country: String?) = withContext(Dispatchers.Main) {
+        Log.d(TAG, "setCountryCode: $country")
+        tvLocation.text = country
+        tvPhoneNumIncomming.text = phoneNumber
     }
 
 
@@ -160,6 +178,8 @@ class Window(private val context: Context,private val phoneNumber: String) {
 
 
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
+//        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
+
         if(callerInfoFoundFrom!= INFO_FOUND_FROM_CPROVIDER){
             //only update contents with server info iff info has not yet found from contentprovider
             //TODO check for image uri from server and local db, if img uri in db isNullOrEpty then show image from server if exists
@@ -168,9 +188,9 @@ class Window(private val context: Context,private val phoneNumber: String) {
             var name:String? = ""
             var  location:String? = ""
             name = (resFromServer.firstName + resFromServer.lastName).trim()
-            if(name.isNullOrEmpty()){
-                name = phoneNumber
-            }
+//            if(name.isNullOrEmpty()){
+//                name = phoneNumber
+//            }
 
             var firstLetter = ""
             if(!resFromServer.firstName.isNullOrEmpty()){
@@ -187,8 +207,11 @@ class Window(private val context: Context,private val phoneNumber: String) {
                 location = resFromServer.country
             }
             tvFirstLetter.text = firstLetter
-            tvName.text = name
-            tvLocation.text = location
+            if(name.isNotEmpty()){
+                tvName.text = name
+            }
+
+//            tvLocation.text = location
         }
         if(resFromServer.spammCount> SPAM_THREASHOLD){
          layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
@@ -202,6 +225,7 @@ class Window(private val context: Context,private val phoneNumber: String) {
         var firstName:String? = ""
         var firstLetter:String?   = ""
         var photoThumbnailUri:String? = ""
+//        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
         if(!contactInfoInCprovider.name.isNullOrEmpty()){
             firstName = contactInfoInCprovider.name
         }
@@ -221,6 +245,12 @@ class Window(private val context: Context,private val phoneNumber: String) {
 fun setCallerInfoFoundFrom(foundFrom:Int){
     callerInfoFoundFrom = foundFrom
 }
+
+     suspend fun setPhoneNum(num:String) = withContext(Dispatchers.IO) {
+        phoneNumber = num
+        setCountryCode()
+
+    }
     companion object{
         const val TAG = "__Window"
         const val INFO_SEARCHING = 0

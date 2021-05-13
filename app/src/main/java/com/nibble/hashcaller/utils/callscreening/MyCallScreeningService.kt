@@ -76,6 +76,7 @@ class MyCallScreeningService: CallScreeningService() {
 //        startCallScreeningForegroundService()
         supervisorScope.launch {
 //            CallScreeningFloatingService.handleCall()
+
             val hashedNum =    getHashedNum(
                 phoneNumber,
                 this@MyCallScreeningService

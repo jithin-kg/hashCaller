@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.android.i18n.phonenumbers.PhoneNumberUtil
 import com.android.i18n.phonenumbers.PhoneNumberUtil.getInstance
+import com.google.i18n.phonenumbers.PhoneNumberUtil.*
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.utils.spam.OperatorInformationDTO
 import com.vmadalin.easypermissions.EasyPermissions
@@ -54,9 +55,10 @@ class CountrycodeHelper(val context: Context) {
 //                    val simOperator = tel.simOperator
 
             val countryIso = lsuSubscriptionInfo.countryIso.toUpperCase()
-            val countryCode =
-                io.michaelrocks.libphonenumber.android.PhoneNumberUtil.createInstance(context)
-                    .getCountryCodeForRegion(countryIso)
+            val countryCode = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance().getCountryCodeForRegion(countryIso)
+//            val countryCode =
+//                io.michaelrocks.libphonenumber.android.PhoneNumberUtil.createInstance(context)
+//                    .getCountryCodeForRegion(countryIso)
             cCode = countryCode
 
             subscriptionInfoList.add(
