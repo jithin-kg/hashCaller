@@ -13,10 +13,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.CallListBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutId
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getExpandedLayoutView
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutId
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.setExpandedLayoutView
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -193,15 +189,15 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             /**
              * This is important to check else double/ duplicate marking of items occur
              */
-            var id = getExpandedLayoutId()
-            if (id != null) {
-                if (id == callLog.id) {
-                    expandableView.beVisible()
-                } else {
-                    expandableView.beGone()
-
-                }
-            }
+//            var id = getExpandedLayoutId()
+//            if (id != null) {
+//                if (id == callLog.id) {
+//                    expandableView.beVisible()
+//                } else {
+//                    expandableView.beGone()
+//
+//                }
+//            }
             logBinding.textViewTime.text = getRelativeTime(callLog.dateInMilliseconds)
             expandableView.tvExpandNumCall.text = callLog.number
             setClickListener(logBinding.root, callLog)
@@ -277,27 +273,27 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             expandableView: ConstraintLayout
         ) {
 
-            var expandedLyoutId = getExpandedLayoutId()
-            if (expandedLyoutId == null) {
-                //no views has not yet expanded, so expand the current layout
-                setExpandedLayoutId(id)
-                setExpandedLayoutView(expandableView)
-                expandableView.beVisible()
-
-            } else if (expandedLyoutId == id) {
-                //the layout is already expaned so, hide it
-                expandableView.beGone()
-                setExpandedLayoutId(null)
-                setExpandedLayoutView(null)
-            } else {
-                //new item expanded
-                getExpandedLayoutView()!!.beGone()
-                expandableView.beVisible()
-                setExpandedLayoutView(expandableView)
-                setExpandedLayoutId(id)
-
-
-            }
+//            var expandedLyoutId = getExpandedLayoutId()
+//            if (expandedLyoutId == null) {
+//                //no views has not yet expanded, so expand the current layout
+//                setExpandedLayoutId(id)
+//                setExpandedLayoutView(expandableView)
+//                expandableView.beVisible()
+//
+//            } else if (expandedLyoutId == id) {
+//                //the layout is already expaned so, hide it
+//                expandableView.beGone()
+//                setExpandedLayoutId(null)
+//                setExpandedLayoutView(null)
+//            } else {
+//                //new item expanded
+//                getExpandedLayoutView()!!.beGone()
+//                expandableView.beVisible()
+//                setExpandedLayoutView(expandableView)
+//                setExpandedLayoutId(id)
+//
+//
+//            }
         }
 
 

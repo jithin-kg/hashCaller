@@ -86,7 +86,7 @@ class FloatingService: Service() {
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
-//        super.onStartCommand(intent, flags, startId)
+        super.onStartCommand(intent, flags, startId)
         val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
                 window?.close()

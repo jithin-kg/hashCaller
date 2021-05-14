@@ -8,7 +8,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 /**
  * call
  */
-object IndividualMarkedItemHandlerCall {
+class IndividualMarkedItemHandlerCall {
 
     private var markedItems:MutableSet<Long> = mutableSetOf()
     private var markedViews:MutableSet<View> = mutableSetOf()

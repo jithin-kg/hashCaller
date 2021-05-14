@@ -195,6 +195,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
     }
 
     private fun markItem(id: Long, clickType: Int, position: Int, number: String): Int {
+
         if(viewmodel.markeditemsHelper.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
             //if is empty and click type is long then start marking
             viewmodel.markeditemsHelper.addTomarkeditems(id, position, number)
@@ -202,7 +203,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         }else if(clickType == TYPE_LONG_PRESS && viewmodel.markeditemsHelper.markedItems.value!!.isNotEmpty()){
             //already some items are marked
             if(viewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
-                viewmodel.markeditemsHelper.removeMarkeditemById(id, position)
+                viewmodel.markeditemsHelper.removeMarkeditemById(id, position,number)
                 return UNMARK_ITEM
             }else{
 
@@ -212,7 +213,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         }else if(clickType == TYPE_CLICK && viewmodel.markeditemsHelper.markedItems.value!!.isNotEmpty()){
             //already markig started , mark on unamrk new item
             if(viewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
-                viewmodel.markeditemsHelper.removeMarkeditemById(id, position)
+                viewmodel.markeditemsHelper.removeMarkeditemById(id, position,number)
                 return UNMARK_ITEM
             }else{
                 viewmodel.markeditemsHelper.addTomarkeditems(id, position, number)
@@ -227,9 +228,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
 
     private fun startCallHistoryActivity(callLog: CallLogTable, view: View) {
         viewmodel.markeditemsHelper.setExpandedLayout(null, null)
-
         val intent = getContactIntent(callLog, CallFragment.INDIVIDUAL_CALL_LOG_ACTIVITY)
-
         startActivity(intent)
     }
     private fun getContactIntent(

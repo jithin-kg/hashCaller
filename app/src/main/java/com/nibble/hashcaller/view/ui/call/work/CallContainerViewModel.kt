@@ -16,7 +16,7 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.addAllMarkedItemToDeletedIds
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.deletedIds
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.markedIds
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
+import com.nibble.hashcaller.view.ui.call.spam.MarkeditemsHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
@@ -42,32 +42,26 @@ class CallContainerViewModel(
 
     var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
     var expandedLayoutId: Long? = null
-    var expandedLayoutPositin:Int? = null
+//    var expandedLayoutPositin:Int? = null
 
-    var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
-    var markedAddres:MutableSet<String> = mutableSetOf()
-    var markedItemsPositions: HashSet<Int> = hashSetOf()
+    var markeditemsHelper = MarkeditemsHelper()
 
 
     init {
     }
 
     fun clearMarkeditems(){
-        markedItems.value?.clear()
-        markedAddres.clear()
+            markeditemsHelper.clearMarkeditems()
+//        markeditemsHelper.markedItems.value?.clear()
+//        markeditemsHelper.markedAddres.clear()
+
     }
     fun addTomarkeditems(id: Long, position: Int, number: String){
-        markedItems.value!!.add(id)
-        markedItemsPositions.add(position)
-        markedItems.value = markedItems.value
-        markedAddres.add(number)
-        contactAddress = number
+            markeditemsHelper.addTomarkeditems(id, position, number)
+
     }
     fun removeMarkeditemById(id: Long, position: Int, number: String){
-        markedItems.value!!.remove(id)
-        markedAddres.remove(number)
-        markedItemsPositions.remove(position)
-        markedItems.value = markedItems.value
+        markeditemsHelper.removeMarkeditemById(id, position, number)
     }
     fun updateMutableData(list: List<CallLogTable>) {
         val mutableList: MutableList<CallLogTable> = mutableListOf()
@@ -135,7 +129,7 @@ class CallContainerViewModel(
         return markedIds.size > 0
     }
     fun markItem(id: Long, view: View, pos: Int, address: String) : LiveData<Int> = liveData {
-        markedItems.value!!.add(id)
+        markeditemsHelper.markedItems.value!!.add(id)
 
 //        var mutableList : MutableList<CallLogTable> = mutableListOf()
 //        mutableCalllogTableData.value?.let { mutableList.addAll(it) }
@@ -197,14 +191,14 @@ class CallContainerViewModel(
 
         viewModelScope.launch {
 //            val as1 = async {
-            for(item in markedAddres){
+            for(item in markeditemsHelper.markedAddres){
                 //first mark as deleted for quickly showing that user that operation done quickly
                 //because deleting the item at first make a chance of showing it when deletion happens in
                 //content provider in the following loop, so first mark as delete is a better way to go.
                 async { repository?.deleteCallLogsFromDBByid(item) }.await()
             }
             emit(ON_COMPLETED)
-            for (item in markedAddres) {
+            for (item in markeditemsHelper.markedAddres) {
                 repository?.deleteLog(item)
 //                async { repository?.deleteCallLogsFromDBByid(item) }
 //                    kotlinx.coroutines.delay(500L)
@@ -253,12 +247,12 @@ class CallContainerViewModel(
 
     fun muteMarkedCaller() :LiveData<Int> = liveData {
         emit(OPERATION_PENDING)
-        var address = getMarkedContactAddress()!!
-        address = formatPhoneNumber(address)
-        viewModelScope.launch {
-            contactAddress = async { repository!!.muteContactAddress(address) }.await()
-
-        }.join()
+//        var address = getMarkedContactAddress()!!
+//        address = formatPhoneNumber(address)
+//        viewModelScope.launch {
+//            contactAddress = async { repository!!.muteContactAddress(address) }.await()
+//
+//        }.join()
 
         emit(OPERATION_COMPLETED)
 
@@ -274,29 +268,29 @@ class CallContainerViewModel(
     }
     fun unmuteByAddress() :LiveData<Int> = liveData {
             emit(OPERATION_PENDING)
-            var address = getMarkedContactAddress()!!
-            address = formatPhoneNumber(address)
-            viewModelScope.launch {
-                contactAddress = async { repository!!.unmuteByAddress(address) }.await()
-
-            }.join()
+//            var address = getMarkedContactAddress()!!
+//            address = formatPhoneNumber(address)
+//            viewModelScope.launch {
+//                contactAddress = async { repository!!.unmuteByAddress(address) }.await()
+//
+//            }.join()
 
             emit(OPERATION_COMPLETED)
     }
 
     fun checkWhetherMutedOrBlocked() = liveData<Int>{
-        var address = formatPhoneNumber(getMarkedContactAddress()!!)
+//        var address = formatPhoneNumber(getMarkedContactAddress()!!)
 
 //        viewModelScope.launch {
 //
 //        }
-        repository!!.isMmuted(address).apply {
-            if(this){
-                emit(IS_MUTED_ADDRESS)
-            }else{
-                emit(IS_NOT_MUTED_ADDRESS)
-            }
-        }
+//        repository!!.isMmuted(address).apply {
+//            if(this){
+//                emit(IS_MUTED_ADDRESS)
+//            }else{
+//                emit(IS_NOT_MUTED_ADDRESS)
+//            }
+//        }
 
     }
 
@@ -404,8 +398,10 @@ class CallContainerViewModel(
     }
 
     fun clearMarkedItems() = viewModelScope.launch{
-        markedItems.value?.clear()
-        markedItems.value = markedItems.value
+        markeditemsHelper.markedItems.value?.clear()
+        markeditemsHelper.markedItems.value = markeditemsHelper.markedItems.value
+//        markedItems.value?.clear()
+//        markedItems.value = markedItems.value
 //        var list = mutableListOf<CallLogAndInfoFromServer>()
 //        var list2 = mutableListOf<CallLogAndInfoFromServer>()
 //        mutableCalllogTableData.value?.let { list.addAll(it) }
@@ -484,12 +480,13 @@ class CallContainerViewModel(
 
 
     fun clearMarkedItemPositions() = viewModelScope.launch{
-        markedItemsPositions.clear()
+        markeditemsHelper.clearMarkedItemPositions()
+//        markedItemsPositions.clear()
     }
 
     fun getmarkedItemSize(): Int {
 
-        var size = markedItems.value?.size
+        var size = markeditemsHelper.markedItems.value?.size
         return size ?: 0
     }
 
@@ -502,20 +499,25 @@ class CallContainerViewModel(
     }
 
     fun isThisViewExpanded(id: Long): Boolean {
-        return id == expandedLayoutId
+        return id == markeditemsHelper.getExpandedLayoutId()
     }
 
     fun setExpandedLayout(id: Long?, position: Int?) {
-        expandedLayoutId = id
-        expandedLayoutPositin = position
+        markeditemsHelper.setExpandedLayout(id, position)
+//        expandedLayoutId = id
+//        expandedLayoutPositin = position
     }
 
     fun getPreviousExpandedLayout(): Long? {
-        return expandedLayoutId
+        return markeditemsHelper.getExpandedLayoutId()
     }
 
     fun getPrevExpandedPosition(): Int? {
-        return expandedLayoutPositin
+        return markeditemsHelper.getExpanedLayoutPosition()
+    }
+
+    fun getmarkeditemPositions(): Iterable<Int> {
+        return markeditemsHelper.markedItemsPositions
     }
 
 

@@ -2,27 +2,38 @@ package com.nibble.hashcaller.view.ui.call.spam
 
 import androidx.lifecycle.MutableLiveData
 
-
 class MarkeditemsHelper {
 
-    var expandedLayoutId: Long? = null
-    var expandedLayoutPositin:Int? = null
+    var markedAddres:MutableSet<String> = mutableSetOf()
+    private var expandedLayoutId: Long? = null
+    private var expandedLayoutPositin:Int? = null
     var contactAddress = ""
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
     var markedItemsPositions: HashSet<Int> = hashSetOf()
 
+
+    fun getExpanedLayoutPosition(): Int? {
+        return expandedLayoutPositin
+    }
+    fun getExpandedLayoutId(): Long? {
+        return expandedLayoutId
+    }
     fun getPreviousExpandedLayout(): Long? {
         return expandedLayoutId
+
     }
 
     fun clearMarkeditems(){
         markedItems.value?.clear()
+        markedAddres.clear()
     }
     fun addTomarkeditems(id: Long, position: Int, number: String){
         markedItems.value!!.add(id)
         markedItemsPositions.add(position)
         markedItems.value = markedItems.value
         contactAddress = number
+        markedAddres.add(number)
+
     }
     fun isThisViewExpanded(id: Long): Boolean {
         return id == expandedLayoutId
@@ -41,8 +52,10 @@ class MarkeditemsHelper {
         expandedLayoutId = id
         expandedLayoutPositin = position
     }
-    fun removeMarkeditemById(id: Long, position: Int){
+    fun removeMarkeditemById(id: Long, position: Int, number: String){
+
         markedItems.value!!.remove(id)
+        markedAddres.remove(number)
         markedItemsPositions.remove(position)
         markedItems.value = markedItems.value
     }

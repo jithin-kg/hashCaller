@@ -48,8 +48,6 @@ import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.clearlists
-import com.nibble.hashcaller.view.ui.call.utils.IndividualMarkedItemHandlerCall.getMarkedContactAddress
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
@@ -217,7 +215,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun observeMarkedItems() {
-        viewmodel.markedItems.observe(viewLifecycleOwner, Observer {
+        viewmodel.markeditemsHelper.markedItems.observe(viewLifecycleOwner, Observer {
             when(it.size){
                 0 ->{
                     showSearchView()
@@ -654,7 +652,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     requireActivity().toast("Enabled notification for ${viewmodel.contactAddress} ", Toast.LENGTH_LONG)
                     binding.imgBtnCallUnMuteCaller.beInvisible()
                     binding.imgBtnCallTbrMuteCaller.beVisible()
-                    clearlists()
+//                    clearlists()
                     showSearchView()
                 }
             }
@@ -718,11 +716,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                         bottomSheetDialog.hide()
                         bottomSheetDialog.dismiss()
                         bottomSheetDialogfeedback.show()
-                        var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
-                        val  sb =  SpannableStringBuilder(txt);
-                        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
+//                        var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
+//                        val  sb =  SpannableStringBuilder(txt);
+//                        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
                         // sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-                        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
+//                        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
                         showSearchView()
                     }
                 }
@@ -735,10 +733,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
     private fun muteMarkedCaller() {
 //        val dialog = ConfirmDialogFragment(this,  "Mut")
-        val dialog = ConfirmDialogFragment(this,
-            getSpannableString("You won't receive call notification from ${getMarkedContactAddress()}"),
-            getSpannableString("Mute caller  "), TYPE_MUTE)
-        dialog.show(childFragmentManager, "sample")
+//        val dialog = ConfirmDialogFragment(this,
+//            getSpannableString("You won't receive call notification from ${getMarkedContactAddress()}"),
+//            getSpannableString("Mute caller  "), TYPE_MUTE)
+//        dialog.show(childFragmentManager, "sample")
 
 
     }
@@ -894,7 +892,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     fun getMarkedItemsSize(): Int {
-       return  viewmodel.getmarkedItemSize()
+       return  viewmodel.markeditemsHelper.getmarkedItemSize()
     }
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
 
@@ -949,33 +947,37 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun markItem(id: Long, clickType: Int, position: Int, number: String): Int {
-        if(viewmodel.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
-            //if is empty and click type is long then start marking
-           viewmodel.addTomarkeditems(id, position, number)
-            return MARK_ITEM
-        }else if(clickType == TYPE_LONG_PRESS && viewmodel.markedItems.value!!.isNotEmpty()){
-            //already some items are marked
-            if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id, position, number)
-                return UNMARK_ITEM
-            }else{
+        if(viewmodel.markeditemsHelper.markedItems.value !=null){
+            if(viewmodel.markeditemsHelper.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
+                //if is empty and click type is long then start marking
+                viewmodel.addTomarkeditems(id, position, number)
+                return MARK_ITEM
+            }else if(clickType == TYPE_LONG_PRESS && viewmodel.markeditemsHelper.markedItems.value!!.isNotEmpty()){
+                //already some items are marked
+                if(viewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
+                    viewmodel.removeMarkeditemById(id, position, number)
+                    return UNMARK_ITEM
+                }else{
 
-                viewmodel.addTomarkeditems(id, position, number)
-                return MARK_ITEM
-            }
-        }else if(clickType == TYPE_CLICK && viewmodel.markedItems.value!!.isNotEmpty()){
-            //already markig started , mark on unamrk new item
-            if(viewmodel.markedItems.value!!.contains(id)){
-                viewmodel.removeMarkeditemById(id, position, number)
+                    viewmodel.addTomarkeditems(id, position, number)
+                    return MARK_ITEM
+                }
+            }else if(clickType == TYPE_CLICK && viewmodel.markeditemsHelper.markedItems.value!!.isNotEmpty()){
+                //already markig started , mark on unamrk new item
+                if(viewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
+                    viewmodel.removeMarkeditemById(id, position, number)
+                    return UNMARK_ITEM
+                }else{
+                    viewmodel.addTomarkeditems(id, position, number)
+                    return MARK_ITEM
+                }
+            }else {
+                // normal click
                 return UNMARK_ITEM
-            }else{
-                viewmodel.addTomarkeditems(id, position, number)
-                return MARK_ITEM
             }
-        }else {
-            // normal click
-            return UNMARK_ITEM
         }
+        return UNMARK_ITEM
+
 
     }
 
@@ -1097,7 +1099,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //                   showSnackBar("You no longer notified on from 800")
 //                val sbar = Snackbar.make(cordinateLyoutMainActivity, "You no longer notified on from 800", Snackbar.LENGTH_SHORT)
 //                sbar.show()
-                    clearlists()
+//                    clearlists()
                     showSearchView()
                 }
             }
@@ -1123,7 +1125,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             if(__viewmodel!=null){
                 viewmodel.clearMarkedItems()
                 lifecycleScope.launchWhenStarted {
-                    for(position in viewmodel.markedItemsPositions){
+                    for(position in viewmodel.getmarkeditemPositions()){
                         callLogAdapter?.notifyItemChanged(position)
                     }
 
@@ -1141,8 +1143,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      */
     override fun isMarked(id: Long?): Boolean {
         var isMrked = false
-        if(viewmodel.markedItems.value !=null){
-            if(viewmodel.markedItems.value!!.contains(id)){
+        if(viewmodel.markeditemsHelper.markedItems.value !=null){
+            if(viewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
                 isMrked = true
             }
         }
