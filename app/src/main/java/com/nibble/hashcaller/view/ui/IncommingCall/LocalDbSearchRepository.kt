@@ -11,7 +11,7 @@ class LocalDbSearchRepository(private val callersInfoFromServerDAO: CallersInfoF
 
 
     suspend fun getInfoForNumber(phoneNumber: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
-        delay(1000L)
+//        delay(1000L)
         return@withContext callersInfoFromServerDAO.find(formatPhoneNumber(phoneNumber))
     }
 

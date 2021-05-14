@@ -22,9 +22,11 @@ import com.nibble.hashcaller.utils.callscreening.WindowObj
 import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 
@@ -101,52 +103,12 @@ class FloatingService: Service() {
                             TelephonyManager.CALL_STATE_RINGING ->{
                                 mphoneNumberStr = phoneNumber
                                 onStartCalled = true
-                                //        // Exit the service if we receive the EXIT command.
-//        // START_NOT_STICKY is important here, we don't want
-//        // the service to be relaunched.
-//        if(this.isCallScreeningRoleHeld()){
-                                //only perform operations in this service iff call screening role is not held
-//            command?.let {
-
-
-////            _window = Window(this)
-//                if (command == STOP_FLOATING_SERVICE_AND_WINDOW) {
-//                    window.close()
-//
-//                    startActivityIncommingCallView(null, phoneNumber)
-//                    stopService()
-//                    return@let START_NOT_STICKY
-//                }else if(command == STOP_FLOATING_SERVICE){
-////                stopService()
-//                    //important to call stop foreground, this only removes the notification
-//                    //calling StopService will result in unable to close window automaticallly when call ended
-//                    stopForeground(true)
-//                    return@let START_NOT_STICKY
-//
-//                } else
 
                                 if(command == START_FLOATING_SERVICE){
                                     Log.d(TAG, "onStartCommand: window opening")
                                     // Be sure to show the notification first for all commands.
                                     // Don't worry, repeated calls have no effects.
-
-                                    val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-                                    supervisorScope.launch {
-                                        window?.setPhoneNum(phoneNumber)
-                                        val hashedNum =    getHashedNum(phoneNumber,
-                                            this@FloatingService
-                                        )
-                                        floatinServiceHelper = FloatinServiceHelper(
-                                            getIncomminCallManager(phoneNumber, this@FloatingService),
-                                            hashedNum,
-                                            supervisorScope,
-                                            window,
-                                            phoneNumber,
-                                            this@FloatingService,
-                                            isCallScreeningRoleHeld()
-                                        )
-                                        floatinServiceHelper.handleCall()
-                                    }
+                                    doHandleCall(phoneNumber)
 //                        return START_NOT_STICKY
                                 }
 //            }
@@ -190,11 +152,38 @@ class FloatingService: Service() {
 //            window.open()
 //        }
                 }
+            }else if(command == START_FLOATING_SERVICE_FROM_SCREENING_SERVICE){
+                window?.open()
+                mphoneNumberStr = intent.getStringExtra(CONTACT_ADDRES)
+                onStartCalled = true
+                Log.d(TAG, "onStartCommand: numfromservice: $mphoneNumberStr")
+                doHandleCall(mphoneNumberStr)
             }
 
 
 
         return START_STICKY
+    }
+
+    private fun doHandleCall(phoneNumber: String) {
+
+        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        supervisorScope.launch {
+            window?.setPhoneNum(phoneNumber)
+            val hashedNum =    getHashedNum(phoneNumber,
+                this@FloatingService
+            )
+            floatinServiceHelper = FloatinServiceHelper(
+                getIncomminCallManager(phoneNumber, this@FloatingService),
+                hashedNum,
+                supervisorScope,
+                window,
+                phoneNumber,
+                this@FloatingService,
+                isCallScreeningRoleHeld()
+            )
+            floatinServiceHelper.handleCall()
+        }
     }
 
     private fun registerCallStateListener(listener:(phoneNumber:String, callState:Int)-> Unit) {

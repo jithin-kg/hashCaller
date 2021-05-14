@@ -22,6 +22,7 @@ class IntentKeys {
         const val STOP_FLOATING_SERVICE = "com.nibble.stop_floating_service"
         const val STOP_FLOATING_SERVICE_AND_WINDOW = "com.nibble.close_service_n_window"
         const val START_FLOATING_SERVICE = "com.nibble.start_floatin_window"
+        const val START_FLOATING_SERVICE_FROM_SCREENING_SERVICE = "com.nibble.start_floatin_window_from_screening"
 
     }
 }

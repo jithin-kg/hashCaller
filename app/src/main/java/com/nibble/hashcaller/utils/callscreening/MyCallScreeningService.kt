@@ -33,6 +33,7 @@ import com.nibble.hashcaller.view.ui.call.floating.Window
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.startFloatingService
+import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -68,7 +69,7 @@ class MyCallScreeningService: CallScreeningService() {
         val phoneNumber = getPhoneNumber(callDetails)
 //        responseBuilder = CallResponse.Builder()
 //        showNotification()
-        startFloatingService()
+        startFloatingServiceFromScreeningService(phoneNumber)
 
 //        _window = Window(this, phoneNumber)
 //        window.open()

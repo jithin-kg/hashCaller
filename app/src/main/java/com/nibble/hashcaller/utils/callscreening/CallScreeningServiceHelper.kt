@@ -94,7 +94,10 @@ class CallScreeningServiceHelper(
                             resToCallCallBack(true)
                         }
                     }
-                    inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
+                    if(resFromServer!=null){
+                        inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
+                    }
+
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e ")
                 }

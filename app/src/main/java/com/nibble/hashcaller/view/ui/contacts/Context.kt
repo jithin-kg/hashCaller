@@ -24,6 +24,7 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
@@ -50,18 +51,20 @@ fun Context.startFloatingService() {
         } else {
             this.startService(intent)
         }
-//    if (!phoneNumber.isNullOrEmpty()) {
-////        intent.putExtra(INTENT_COMMAND, phoneNumber)
-//        intent.putExtra(CONTACT_ADDRES, phoneNumber)
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            this.startForegroundService(intent)
-//        } else {
-//            this.startService(intent)
-//        }
-//    }
-//
-//
+
+}
+
+fun Context.startFloatingServiceFromScreeningService(phoneNumber: String) {
+
+    val intent = Intent(this, FloatingService::class.java)
+    intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE_FROM_SCREENING_SERVICE )
+    intent.putExtra(CONTACT_ADDRES,phoneNumber )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        this.startForegroundService(intent)
+    } else {
+        this.startService(intent)
+    }
 
 }
 
@@ -97,7 +100,7 @@ fun Context.startActivityIncommingCallView( phoneNumber: String) {
 
     val i = Intent(this, ActivityIncommingCallView::class.java)
     i.putExtra(PHONE_NUMBER, phoneNumber?:"")
-// i.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+    i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
     startActivity(i)
 }
 fun Context.closeIncommingCallView(){
