@@ -133,10 +133,10 @@
         android:id="@+id/layoutExpandedIncomming"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingBottom="32dp"
+        android:background="@drawable/incomming_call_background_expanded"
         android:elevation="4dp"
 
-        android:background="@drawable/incomming_call_background_expanded"
+        android:paddingBottom="32dp"
         app:layout_constraintEnd_toEndOf="@+id/cnstraintlyoutInner"
         app:layout_constraintStart_toStartOf="@+id/cnstraintlyoutInner"
         app:layout_constraintTop_toBottomOf="@+id/cnstraintlyoutInner">
@@ -151,6 +151,7 @@
             android:src="@drawable/ic_baseline_call_24"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingSMS"
             app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -175,10 +176,25 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
             android:src="@drawable/ic_baseline_block_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSearchForCaller"
             app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingSMS"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+
+            />
+        <ImageButton
+            android:id="@+id/imgBtnSearchForCaller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingBlock"
+            app:layout_constraintTop_toTopOf="parent"
+
+            />
+
 
         <TextView
             android:id="@+id/tvCallIncommingExpanded"
@@ -213,5 +229,15 @@
             app:layout_constraintStart_toStartOf="@+id/imgBtnCallIncomingBlock"
             app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIncomingBlock" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Details"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/textColor"
+            app:layout_constraintTop_toBottomOf="@+id/imgBtnSearchForCaller"
+            app:layout_constraintStart_toStartOf="@+id/imgBtnSearchForCaller"
+            app:layout_constraintEnd_toEndOf="@+id/imgBtnSearchForCaller"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

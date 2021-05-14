@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.floating
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Point
 import android.os.Build
@@ -14,11 +15,16 @@ import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.constants.IntentKeys
+import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
+import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.formatPhoneNumber
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.*
 
 class Window(
@@ -35,6 +41,7 @@ class Window(
     private val tvPhoneNumIncomming: TextView = rootView.findViewById<TextView>(R.id.tvPhoneNumIncomming)
     private val tvLocation:TextView = rootView.findViewById(R.id.txtVLocaltionWindow)
     private val layoutInnerWindow: ConstraintLayout = rootView.findViewById(R.id.layoutInnerWindow)
+    private val imgVAvatar : CircleImageView = rootView.findViewById(R.id.imgVAvatarIncomming)
     private val windowParams = WindowManager.LayoutParams(
         0,
         0,
@@ -120,7 +127,7 @@ class Window(
     init {
         initWindowParams()
         initWindow()
-
+        context.sendBroadcast(Intent(IntentKeys.CLOSE_INCOMMING_VIEW))
 
     }
 
@@ -209,6 +216,14 @@ class Window(
             tvFirstLetter.text = firstLetter
             if(name.isNotEmpty()){
                 tvName.text = name
+            }
+
+            if(!resFromServer.thumbnailImg.isNullOrEmpty()){
+                imgVAvatar.setImageBitmap(getDecodedBytes(resFromServer.thumbnailImg))
+                tvFirstLetter.beGone()
+            }else{
+                imgVAvatar.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circular_avatar_main_background))
+                tvFirstLetter.beVisible()
             }
 
 //            tvLocation.text = location

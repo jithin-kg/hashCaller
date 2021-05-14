@@ -14,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.finishAfterTransition
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +25,7 @@ import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
@@ -63,7 +66,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isVisible = true
-//        registerForBroadCastReceiver()
+        registerForBroadCastReceiver()
         getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -83,6 +86,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private fun getCallerInfo() {
         viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
             setViewElements(it)
+            if(!it.isSearchedForCallerInserver){
+                //search fo
+            }
 //            if(it.in)
         })
     }
@@ -110,8 +116,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d(TAG, "onReceive: broadcast")
                 when(intent?.action){
-                    UPDATE_INCOMMING_VIEW ->{
+                    CLOSE_INCOMMING_VIEW ->{
 //                        updateViewWithData(intent)
+                        finishAfterTransition()
                     }
 
                 }
@@ -119,7 +126,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             }
         }
         val intentFilter = IntentFilter()
-        intentFilter.addAction(UPDATE_INCOMMING_VIEW)
+        intentFilter.addAction(CLOSE_INCOMMING_VIEW)
         registerReceiver(mMessageReceiver, intentFilter);
     }
 
@@ -318,8 +325,12 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         super.onDestroy()
         Log.d(TAG, "onDestroy: ")
         isVisible = null
+        finish()
+
     }
     companion object{
+
+
         // property to check whether the Activity is visible,
         var  isVisible: Boolean? = false
         private const val TAG = "__ActivityIncommingCallView"

@@ -29,7 +29,11 @@ data class Cntct(
     val spammCount : Long? = 0,
 
     @SerializedName("isInfoFoundInDb")
-    val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER
+    val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
+
+    @SerializedName("thumbnailImg")
+    val thumbnailImg:String = ""
+
 
 
 

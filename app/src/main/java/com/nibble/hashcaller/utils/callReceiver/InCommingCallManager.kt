@@ -42,8 +42,8 @@ class InCommingCallManager(
     private val phoneNumber = formatPhoneNumber(num)
 
 
-    suspend fun searchInServerAndHandle(hasedNum: String): CntctitemForView {
-        var searchResult = CntctitemForView(  "", "", "", "", "", "", 0)
+    suspend fun searchInServerAndHandle(hasedNum: String): CntctitemForView? {
+        var searchResult:CntctitemForView? = null
 
         try {
                 val response = searchRepository.search(hasedNum)
@@ -51,11 +51,12 @@ class InCommingCallManager(
                     val result = response?.body()?.cntcts
                     if(result!= null){
                         searchResult = CntctitemForView(result.firstName?:"", result.lastName?:"", result.carrier?:"",
-                            result.location?:"", result.lineType?:"",
-                            result.country?:"",
-                        result.spammCount?:0L,
-                                    response.body()?.status?:0,
-                                        isInfoFoundInDb = result.isInfoFoundInDb?:0
+                            location = result.location?:"", result.lineType?:"",
+                            country = result.country?:"",
+                            spammCount = result.spammCount?:0L,
+                                thumbnailImg = result.thumbnailImg?:"",
+                                    statusCode = response.body()?.status?:0,
+                                        isInfoFoundInServer = result.isInfoFoundInDb?:0
 
                         )
                     }
@@ -155,14 +156,16 @@ class InCommingCallManager(
 
     suspend fun getAvailbleInfoInDb(): CntctitemForView? = withContext(Dispatchers.IO) {
         var contactitemForView : CntctitemForView? = null
-        val res = callerInfoFromServerDAO.find(phoneNumber)
+        val res = callerInfoFromServerDAO.find(formatPhoneNumber(phoneNumber))
         if(res!=null){
             contactitemForView = CntctitemForView(
                 firstName = res.firstName,
+                lastName = res.lastName,
                 carrier = res.carrier,
                 location = res.city,
                 country = res.country,
                 spammCount = res.spamReportCount,
+                thumbnailImg = res.thumbnailImg,
                 statusCode = STATUS_OK
             )
 
@@ -203,27 +206,29 @@ class InCommingCallManager(
     }
 
     suspend fun saveInfoFromServer(resFromServer: CntctitemForView?, phoneNumber: String) = withContext(Dispatchers.IO) {
-        val res = callerInfoFromServerDAO.find(phoneNumber)
-        if(res== null){
+        val formatedNum = formatPhoneNumber(phoneNumber)
 
+        val res = callerInfoFromServerDAO.find(formatedNum)
+        if(res== null){
             val info = CallersInfoFromServer(
-                null, phoneNumber,
-                0,
-                resFromServer?.firstName?:"",
-                resFromServer?.lastName?:"",
-                         Date(),
-                resFromServer?.spammCount?:0L,
-                resFromServer?.location?:"",
-                resFromServer?.country?:"",
-                resFromServer?.carrier?:"",
-                false,
-                        isUserInfoFoundInServer = resFromServer?.isInfoFoundInDb?:0
+                contactAddress = formatedNum,
+                spammerType = 0,
+                firstName = resFromServer?.firstName?:"",
+                lastName = resFromServer?.lastName?:"",
+                 informationReceivedDate =         Date(),
+                spamReportCount = resFromServer?.spammCount?:0L,
+                city = resFromServer?.location?:"",
+                country = resFromServer?.country?:"",
+                carrier = resFromServer?.carrier?:"",
+                isBlockedByUser = false,
+            isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?:0,
+                thumbnailImg = resFromServer?.thumbnailImg?:""
                 )
 
             callerInfoFromServerDAO.insert(listOf(info))
         }else{
             callerInfoFromServerDAO?.updateWithServerinfo(
-                 contactAddress =  phoneNumber,
+                 contactAddress = formatedNum,
                 firstName = resFromServer?.firstName?:"",
                 lastName = resFromServer?.lastName?:"",
                 informationReceivedDate = Date(),

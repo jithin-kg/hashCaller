@@ -41,7 +41,7 @@ class CallScreeningServiceHelper(
                  WindowObj.getWindowObj()?.setPhoneNum(phoneNumber)
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
-                var defServerHandling:Deferred<CntctitemForView>? = null
+                var defServerHandling:Deferred<CntctitemForView?>? = null
                 val definfoFromDb = async { inComingCallManager.getAvailbleInfoInDb() }
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
                 try {

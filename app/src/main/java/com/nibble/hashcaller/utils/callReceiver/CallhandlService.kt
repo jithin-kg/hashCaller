@@ -89,7 +89,7 @@ class CallhandlService : JobIntentService(){
                     try {
                         Log.d(TAG, "onReceive: second try")
                         val resFromServer = defServerHandling.await()
-                        if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                        if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                             isSpam = true
                             endCall(inComingCallManager, phoneNumber, this@CallhandlService)
 

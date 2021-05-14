@@ -159,9 +159,12 @@ class CallContainerRepository(
                 callerInfoFromServerDAO.update(this.spamReportCount+1, this.contactAddress, true)
             }else{
 
-                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(null,
-                    formatPhoneNumber(formatPhoneNumber), spammerType, "",
-                    informationReceivedDate =Date(), spamReportCount = 1L)
+                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+                    contactAddress= formatPhoneNumber(formatPhoneNumber),
+                    spammerType= spammerType,
+                    firstName="",
+                    informationReceivedDate =Date(),
+                    spamReportCount = 1L)
                 callerInfoFromServerDAO.insert(listOf(callerInfoTobeSavedInDatabase))
             }
         }

@@ -138,7 +138,7 @@ class SearchViewModel(
         var location = ""
         var country = ""
         var spamCount = 0L
-
+        var serverQueryPerfomed = false
         viewModelScope.launch {
            defContentProviderInfo =  async { contactLocalSyncRepository.getNameFromPhoneNumber(phoneNumber) }
            defInfoInDb =  async { localDbSearchRepository.getInfoForNumber(phoneNumber) }
@@ -152,6 +152,9 @@ class SearchViewModel(
 
         try{
             infoAvailableInDb = defInfoInDb?.await()
+            if(infoAvailableInDb !=null){
+                serverQueryPerfomed = true
+            }
         }catch (e:Exception){
             Log.d(TAG, "getCallerInfo: $e")
         }
@@ -176,9 +179,11 @@ class SearchViewModel(
         val info = CntctitemForView(
             firstName = firstName,
             country = country,
-            isInfoFoundInDb = infoAvailableInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
-            spammCount = spamCount
+            isInfoFoundInServer = infoAvailableInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
+            spammCount = spamCount,
+            isSearchedForCallerInserver = serverQueryPerfomed
         )
+        //todo add property doSearch in server in emiting object, if infoindb in null or (INFO_NOT_FOUND_IN_SERVER & days > 0)
         emit(info)
     }
 

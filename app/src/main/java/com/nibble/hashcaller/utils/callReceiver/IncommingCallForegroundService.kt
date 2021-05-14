@@ -96,7 +96,7 @@ class IncommingCallForegroundService : Service() {
 
                         Log.d(CallhandlService.TAG, "onReceive: second try")
                         val resFromServer = defServerHandling.await()
-                        if(resFromServer.statusCode == StatusCodes.STATUS_OK){
+                        if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
                             if(this@IncommingCallForegroundService.isActivityIncommingCallViewVisible()){
                                 val intent =  this@IncommingCallForegroundService.getPreparedincommingIntent(resFromServer, phoneNumber, false)
                                 sendBroadcast(intent)
@@ -106,7 +106,7 @@ class IncommingCallForegroundService : Service() {
                             }
 
                         }
-                        if(resFromServer.spammCount?:0 > SPAM_THREASHOLD){
+                        if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
                             isSpam = true
                             endCall(inComingCallManager, phoneNumber, this@IncommingCallForegroundService)
                         }

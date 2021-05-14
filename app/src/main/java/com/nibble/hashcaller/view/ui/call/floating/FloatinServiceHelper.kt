@@ -27,7 +27,7 @@ class FloatinServiceHelper(
                 var isSpam = false
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
-                var defServerHandling:Deferred<CntctitemForView>? = null
+                var defServerHandling:Deferred<CntctitemForView?>? = null
                 val definfoFromDb = async { inComingCallManager.getAvailbleInfoInDb() }
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
                 try {
@@ -79,7 +79,10 @@ class FloatinServiceHelper(
                         endCall(inComingCallManager,
                             phoneNumber)
                     }
-                    inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
+                    if(resFromServer!=null){
+                        inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
+                    }
+
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e ")
                 }

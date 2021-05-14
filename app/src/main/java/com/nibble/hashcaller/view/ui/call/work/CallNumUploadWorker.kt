@@ -83,9 +83,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     for(cntct in result.body()!!.contacts){
 
                         val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                            null,
                             contactAddress = formatPhoneNumber(cntct.phoneNumber),
-                            0,
+                            spammerType = 0,
                             firstName = cntct.firstName?:"",
                             informationReceivedDate =Date(),
                             spamReportCount =  cntct.spamCount,

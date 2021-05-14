@@ -614,7 +614,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             }
             R.id.fabBtnShowDialpad ->{
                 viewmodel.clearCallLogDB()
-                context?.startActivityIncommingCallView( "100101")
+//                context?.startActivityIncommingCallView( "100101")
 
 //                (activity as MainActivity).showDialerFragment()
             }
