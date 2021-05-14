@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -19,7 +20,9 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetInitialUserInfoBinding
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
@@ -28,7 +31,9 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.view.utils.validateInput
+import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
+import java.util.jar.Manifest
 
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
@@ -105,9 +110,28 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
                 sendUserInfo()
             }
             R.id.imgVAvatarInitial -> {
-                startImagePickActivity()
+                if(hasStoragePermission()){
+                    startImagePickActivity()
+                }else{
+                    EasyPermissions.requestPermissions(this, perms= arrayOf(READ_EXTERNAL_STORAGE),
+                        rationale = "Hash caller need storage permission to configure profile picture",
+                        requestCode=REQUEST_CODE_STORAGE)
+                }
+
             }
         }
+
+    }
+    @SuppressLint("LongLogTag")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d(TAG, "onRequestPermissionsResult: ")
+        // EasyPermissions handles the request result.
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    private fun hasStoragePermission(): Boolean {
+        return EasyPermissions.hasPermissions(this, READ_EXTERNAL_STORAGE)
     }
 
     private fun startImagePickActivity() {

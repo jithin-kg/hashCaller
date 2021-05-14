@@ -32,6 +32,7 @@ val SAMPLE_ALIAS = "SOMETHINGNEW"
 const val TOKEN_DATASTORE = "token"
 const val   REQUEST_CODE_IMG_PICK = 1
 const val SPAM_THREASHOLD = 0L
+const val DATE_THREASHOLD = 1
 const val CONTACT_ID = "contactId"
 const val CONTACT_ADDRES = "contact_address"
 const val SHAREDPREF_LOGGEDIN = "IsLoggedInSP"

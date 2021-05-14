@@ -4,6 +4,7 @@ package com.nibble.hashcaller.network.search.model
 import androidx.annotation.Keep
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
+import java.util.*
 
 @Keep
 data class CntctitemForView(
@@ -18,7 +19,7 @@ data class CntctitemForView(
     val lineType: String ="",
 
     val country: String="",
-
+    val informationReceivedDate:Date,
     val spammCount : Long = 0L,
     val thumbnailImg:String = "",
     val statusCode:Int = STATUS_SEARHING_IN_PROGRESS,

@@ -24,6 +24,7 @@ import retrofit2.Response
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
+import java.util.*
 import javax.crypto.Cipher
 
 
@@ -181,7 +182,8 @@ class SearchViewModel(
             country = country,
             isInfoFoundInServer = infoAvailableInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
             spammCount = spamCount,
-            isSearchedForCallerInserver = serverQueryPerfomed
+            isSearchedForCallerInserver = serverQueryPerfomed,
+            informationReceivedDate = Date()
         )
         //todo add property doSearch in server in emiting object, if infoindb in null or (INFO_NOT_FOUND_IN_SERVER & days > 0)
         emit(info)

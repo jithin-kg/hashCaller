@@ -46,7 +46,7 @@ interface CallersInfoFromServerDAO {
                                      spamReportCount:Long,
                                      city:String,
                                      country:String,
-                                     carrier:String
+                                     carrier:String,
                                      )
 
     @Query("UPDATE  callers_info_from_server  SET isBlockedByUser =:isBlockedByUser, spamReportCount =:spamCount WHERE contact_address =:contactAddress")

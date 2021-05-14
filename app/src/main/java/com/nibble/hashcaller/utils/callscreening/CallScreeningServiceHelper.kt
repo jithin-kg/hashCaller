@@ -3,7 +3,6 @@ package com.nibble.hashcaller.utils.callscreening
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.Service
 import android.content.Context
 import android.os.Build
 import android.telecom.CallScreeningService
@@ -14,9 +13,9 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
-import com.nibble.hashcaller.view.ui.call.floating.Window
-import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
+import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
 import kotlinx.coroutines.*
 private const val NOTIFICATION_CHANNEL_GENERAL = "quicknote_general"
 private const val CODE_FOREGROUND_SERVICE = 1
@@ -42,7 +41,7 @@ class CallScreeningServiceHelper(
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
                 var defServerHandling:Deferred<CntctitemForView?>? = null
-                val definfoFromDb = async { inComingCallManager.getAvailbleInfoInDb() }
+                val definfoAvaialbleInDb = async { inComingCallManager.getAvailbleInfoInDb() }
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
                 try {
                     val contactInCprovider = defredInfoFromCprovider.await()
@@ -52,16 +51,17 @@ class CallScreeningServiceHelper(
                         WindowObj.getWindowObj()?.updateWithcontentProviderInfo(contactInCprovider)
 
                     }
-                    val infoAvailableInDb = definfoFromDb.await()
+                    val infoAvailableInDb = definfoAvaialbleInDb.await()
                     if(infoAvailableInDb!=null){
                         if(!isInfoFoundInCprovider){
                             WindowObj.getWindowObj()?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
+                        if(isCurrentDateAndPrevDateisGreaterThanLimit(infoAvailableInDb.informationReceivedDate, DATE_THREASHOLD)){
+                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
+                        }
+
                     }else{
-                        //todo check date of the info received from server, if today - date >0 search in server
-                         defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                            hashedNum
-                        ) }
+                         defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
                     }
                 }catch (e:Exception){
                     Log.d(TAG, "handleCall: $e")

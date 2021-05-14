@@ -5,7 +5,9 @@ import android.util.Log
 import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
 import kotlinx.coroutines.*
 
 class FloatinServiceHelper(
@@ -42,15 +44,19 @@ class FloatinServiceHelper(
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
                         if(!isInfoFoundInCprovider){
-
                             window?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
+                        }
+                        if(
+                            isCurrentDateAndPrevDateisGreaterThanLimit(infoAvailableInDb.informationReceivedDate, DATE_THREASHOLD)
+                            && !isCallScreeningRoleHeld){
+                                //if data is out of date then get new updated data from server
+                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
+
                         }
                     }else{
                         //todo check date of the info received from server, if today - date >0 search in server
                         if(!isCallScreeningRoleHeld){
-                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                                hashedNum
-                            ) }
+                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
                         }
                     }
                 }catch (e:Exception){

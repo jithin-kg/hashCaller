@@ -56,7 +56,8 @@ class InCommingCallManager(
                             spammCount = result.spammCount?:0L,
                                 thumbnailImg = result.thumbnailImg?:"",
                                     statusCode = response.body()?.status?:0,
-                                        isInfoFoundInServer = result.isInfoFoundInDb?:0
+                                        isInfoFoundInServer = result.isInfoFoundInDb?:0,
+                                    informationReceivedDate = Date()
 
                         )
                     }
@@ -166,7 +167,8 @@ class InCommingCallManager(
                 country = res.country,
                 spammCount = res.spamReportCount,
                 thumbnailImg = res.thumbnailImg,
-                statusCode = STATUS_OK
+                statusCode = STATUS_OK,
+                informationReceivedDate = Date()
             )
 
         }

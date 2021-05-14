@@ -1,11 +1,13 @@
 package com.nibble.hashcaller.view.ui.profile
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
@@ -14,6 +16,8 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityProfileBinding
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
+import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -26,6 +30,7 @@ import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.view.utils.validateInput
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
 
 class ProfileActivity : AppCompatActivity(), View.OnClickListener {
@@ -112,14 +117,30 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.ivAvatar ->{
-                startImagePickActivity()
+                if(hasStoragePermission()) {
+                    startImagePickActivity()
+                }else{
+                    EasyPermissions.requestPermissions(this, perms= arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        rationale = "Hash caller need storage permission to configure profile picture",
+                        requestCode= PermisssionRequestCodes.REQUEST_CODE_STORAGE
+                    )
+                }
             }
             R.id.btnUpdate ->{
                 updateUserInfo()
             }
         }
     }
-
+    private fun hasStoragePermission(): Boolean {
+        return EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+    @SuppressLint("LongLogTag")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d(TAG, "onRequestPermissionsResult: ")
+        // EasyPermissions handles the request result.
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
     private fun updateUserInfo() {
         val firstName = binding.editTextFName.text.toString().trim()
         val lastName = binding.editTextLName.text.toString().trim()
