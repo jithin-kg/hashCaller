@@ -2,10 +2,9 @@ package com.nibble.hashcaller.utils.internet
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
-import android.net.ConnectivityManager
-import android.net.Network
+import android.net.*
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
-import android.net.NetworkRequest
+import android.util.Log
 
 class InternetChecker(private val context: Context) {
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
@@ -13,7 +12,10 @@ class InternetChecker(private val context: Context) {
     private val validNetworks: MutableSet<Network> = HashSet()
 
 
-
+    /**
+     * this funtion accepts a callback and returns whether
+     * has internet or not
+     */
     fun checkNetwork(nCback: (isAvail:Boolean) -> Unit) {
     networkCallback = createNetworkCallback(nCback)
     val networkRequest = NetworkRequest.Builder()
@@ -45,14 +47,46 @@ class InternetChecker(private val context: Context) {
             }
         }
 
+        override fun onUnavailable() {
+            Log.d(TAG, "onUnavailable: ")
+            super.onUnavailable()
+        }
+
+        override fun onLosing(network: Network, maxMsToLive: Int) {
+            Log.d(TAG, "onLosing: ")
+            super.onLosing(network, maxMsToLive)
+        }
+
+        override fun onCapabilitiesChanged(
+            network: Network,
+            networkCapabilities: NetworkCapabilities
+        ) {
+            super.onCapabilitiesChanged(network, networkCapabilities)
+            Log.d(TAG, "onCapabilitiesChanged: ")
+        }
+
+        override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
+            super.onLinkPropertiesChanged(network, linkProperties)
+            Log.d(TAG, "onLinkPropertiesChanged: ")
+        }
+
+        override fun onBlockedStatusChanged(network: Network, blocked: Boolean) {
+            super.onBlockedStatusChanged(network, blocked)
+            Log.d(TAG, "onBlockedStatusChanged: ")
+        }
+
         /*
-          If the callback was registered with registerNetworkCallback() it will be called for each network which no longer satisfies the criteria of the callback.
-          Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
-         */
+                                          If the callback was registered with registerNetworkCallback() it will be called for each network which no longer satisfies the criteria of the callback.
+                                          Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
+                                         */
         override fun onLost(network: Network) {
             validNetworks.remove(network)
         }
 
+    }
+
+    companion object{
+        const val TAG = "__InternetChecker"
     }
 
 }

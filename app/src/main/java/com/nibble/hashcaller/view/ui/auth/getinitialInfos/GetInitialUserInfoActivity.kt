@@ -106,6 +106,7 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         Log.d(TAG, "onClick: ")
         when(v?.id){
             R.id.btnUserContinue -> {
+                binding.btnUserContinue.isEnabled = false
                 Log.d(TAG, "onClick: btn")
                 sendUserInfo()
             }
@@ -205,6 +206,7 @@ private fun sendUserInfo() {
                         userInfoViewModel.saveUserInfoInLocalDb(it1).observe(this, Observer {
                             when (it) {
                                 OPERATION_COMPLETED -> {
+
                                     saveToSharedPref(true)
                                     val i = Intent(this, MainActivity::class.java)
                                     startActivity(i)
@@ -216,7 +218,8 @@ private fun sendUserInfo() {
                 } else ->{
                 binding.pgBarInfo.beInvisible()
                 toast("Something went wrong")
-                }
+                binding.btnUserContinue.isEnabled = true
+            }
             }
 
         })

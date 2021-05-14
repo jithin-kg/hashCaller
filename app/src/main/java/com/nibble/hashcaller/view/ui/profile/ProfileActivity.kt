@@ -17,6 +17,8 @@ import com.nibble.hashcaller.databinding.ActivityProfileBinding
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
+import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -40,6 +42,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private var lastName:String? = null
     private lateinit var imagePickerHelper : ImagePickerHelper
     var imageMultipartBody: MultipartBody.Part? = null
+    private lateinit var internetChecker:InternetChecker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +111,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             UserInfoViewModel::class.java
         )
         imagePickerHelper = ImagePickerHelper()
-
+        internetChecker = InternetChecker(this)
     }
     companion object{
         const val TAG = "__ProfileActivity"
@@ -131,6 +134,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
     }
+
     private fun hasStoragePermission(): Boolean {
         return EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)
     }
@@ -142,27 +146,38 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
     private fun updateUserInfo() {
-        val firstName = binding.editTextFName.text.toString().trim()
-        val lastName = binding.editTextLName.text.toString().trim()
 
-        viewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile,
-            this).observe(this,
-            Observer {
-                imageMultipartBody = it
+        internetChecker.checkNetwork {
+            Log.d(TAG, "updateUserInfo: $it") 
+        }
+//        }
+//            if(it){
+                binding.btnUpdate.isEnabled = false
+                val firstName = binding.editTextFName.text.toString().trim()
+                val lastName = binding.editTextLName.text.toString().trim()
 
-                binding.editTextFName.error = null
+                viewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile, this).observe(this,
+                    Observer {
+                        imageMultipartBody = it
+
+                        binding.editTextFName.error = null
 //    binding.editTextEmail.error = null
-                binding.editTextLName.error = null
-                val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
-                if(isValid){
+                        binding.editTextLName.error = null
+                        val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
+                        if(isValid){
 
-                    var userInfo = UserInfoDTO()
-                    userInfo.firstName = firstName;
-                    userInfo.lastName =  lastName;
+                            var userInfo = UserInfoDTO()
+                            userInfo.firstName = firstName;
+                            userInfo.lastName =  lastName;
 
-                    update(userInfo, imageMultipartBody)
-                }
-            })
+                            update(userInfo, imageMultipartBody)
+                        }
+                    })
+//            }else{
+//                toast("No internet")
+//            }
+//        }
+
 
 
 
@@ -178,7 +193,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                            when(status){
                                OPERATION_COMPLETED ->{
                                    binding.pgBar.beGone()
-
+                                   binding.btnUpdate.isEnabled = true
                                }
                            }
                    })

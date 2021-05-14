@@ -17,7 +17,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import kotlinx.android.synthetic.main.activity_phone_auth.*
 
 
-    class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
+class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
     var displayedInstruction = false
     private lateinit var userInfoViewModel: UserInfoViewModel
 
@@ -102,6 +102,7 @@ import kotlinx.android.synthetic.main.activity_phone_auth.*
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.buttonGo ->{
+                binding.buttonGo.isEnabled = false
                 passPhoneNumber()
             }
         }

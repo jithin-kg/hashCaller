@@ -19,6 +19,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityTestauthBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.utils.auth.EnCryptor
@@ -28,11 +29,13 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
 
 
 class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding : ActivityTestauthBinding
     private var verificationInProgress = false
     private var storedVerificationId: String? = ""
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
@@ -52,8 +55,8 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_testauth)
+        binding = ActivityTestauthBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initViewModel()
 
         phoneNumber = intent.getStringExtra("phoneNumber")
@@ -62,7 +65,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
         }
-        verifyManually.setOnClickListener(this)
+        binding.verifyManually.setOnClickListener(this)
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -149,8 +152,8 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 // Save verification ID and resending token so we can use them later
                 storedVerificationId = verificationId
                 resendToken = token
-                verifyManually.isEnabled = true
-                pgBarOtpVerify.visibility = View.GONE
+                binding.verifyManually.isEnabled = true
+
                 tvOTPInfo.text = "we just sent you an SMS verification code to +${phoneNumber}"
                 // [START_EXCLUDE]
                 // Update UI
@@ -273,6 +276,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
 
             R.id.verifyManually ->{
+                binding.verifyManually.isEnabled = false
                 verifycode(otpview.text.toString())
             }
         }
@@ -397,6 +401,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                         userInfoViewModel.saveUserInfoInLocalDb(userinfo).observe(this@ActivityVerifyOTP, Observer { status ->
                             when(status){
                                 OPERATION_COMPLETED -> {
+                                    binding. pgBarOtpVerify.beGone()
                                     startMainActivity()
                                 }
                             }
