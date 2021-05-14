@@ -198,6 +198,9 @@ class CallContainerViewModel(
         viewModelScope.launch {
 //            val as1 = async {
             for(item in markedAddres){
+                //first mark as deleted for quickly showing that user that operation done quickly
+                //because deleting the item at first make a chance of showing it when deletion happens in
+                //content provider in the following loop, so first mark as delete is a better way to go.
                 async { repository?.deleteCallLogsFromDBByid(item) }.await()
             }
             emit(ON_COMPLETED)
@@ -206,7 +209,13 @@ class CallContainerViewModel(
 //                async { repository?.deleteCallLogsFromDBByid(item) }
 //                    kotlinx.coroutines.delay(500L)
                 Log.d(TAG, "deleteThread: iterating $item")
+                //delete the item from call log table as well , because just after this deletion is performed
+                //if an incomming call comes, it will not show in call log, since it is marked as deleted previously
+                //so delete items which are marked as deleted
+                repository?.deleteCallLogFromDb(item)
             }
+
+
             clearMarkeditems()
 
         }.join()
@@ -374,7 +383,6 @@ class CallContainerViewModel(
      * called when info about a caller comes from server, or db changes
      */
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
-
         for(item in list){
              val res =  repository?.findFromCallLogTable(item.contactAddress)
               if(res!=null){
@@ -414,13 +422,27 @@ class CallContainerViewModel(
         val as1 = async {
            repository?.insertIntoCallLogDb(logs)
         }
-        val as2 = async { repository?.deleteCallLogs(logs) }
+        val as2 = async { updateCallLogIds(logs) }
         val as3 = async { getInformationForTheseNumbers() }
         val as5 = async { updateNameAndSpamCount(logs) }
+        val as4 = async { repository?.deleteCallLogs(logs) }
+
         as2.await()
         as1.await()
         as3.await()
+        as4.await()
 
+    }
+
+    private suspend fun updateCallLogIds(logs: MutableList<CallLogTable>) {
+        for (item in logs){
+            val res = repository?.findOneFromCallLogTable(item.numberFormated)
+            if (res!=null){
+                if(res.id!= item.id){
+                    repository?.updateIdWithContentProviderInfo(item)
+                }
+            }
+        }
     }
 
     private suspend fun updateNameAndSpamCount(logs: MutableList<CallLogTable>) {

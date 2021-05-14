@@ -839,7 +839,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                         callLogAdapter?.notifyItemChanged(oldPos)
                     }
                 }
-                return  markItem(id, clickType, position,callLog.numberFormated)
+                return  markItem(id, clickType, position,callLog.number)
 
             }
             TYPE_CLICK_VIEW_CALL_HISTORY ->{
@@ -852,7 +852,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                     startIndividualContactActivity(callLog, view)
                     return UNMARK_ITEM
                 }else{
-                    return  markItem(id, TYPE_CLICK, position,callLog.numberFormated) // mark item
+                    return  markItem(id, TYPE_CLICK, position,callLog.number) // mark item
                 }
             }
 
@@ -877,7 +877,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
                     }
                 }else{
-                    return markItem(id, clickType, position, callLog.numberFormated)
+                    return markItem(id, clickType, position, callLog.number)
                 }
             }
         }

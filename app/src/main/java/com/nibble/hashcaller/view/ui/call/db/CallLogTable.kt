@@ -8,6 +8,7 @@ import java.util.*
 //Todo unique contact address
 /**
  *table containing all call logs with all met info about that call
+ *number formated and number feilds are needed, becase while deleting call log non formated number is needed to perform deletion.
  *
  */
 

@@ -93,9 +93,10 @@ class CallContainerRepository(
 
     /**
      * delete call logs in content provider
+     * @param nonFormatedNum number received from calllog table as it is
      */
     @SuppressLint("LongLogTag")
-    suspend fun deleteLog(id: String) = withContext(Dispatchers.IO) {
+    suspend fun deleteLog(nonFormatedNum: String) = withContext(Dispatchers.IO) {
 
 //        val queryString = "NUMBER=$number"
 //        context.contentResolver.delete(CallLog.Calls.CONTENT_URI, queryString, null);
@@ -108,7 +109,7 @@ class CallContainerRepository(
                 var uri = CallLog.Calls.CONTENT_URI
                 val selection = "${CallLog.Calls.NUMBER} = ?"
 //                callLogDAO?.delete(id)
-                val selectionArgs = arrayOf(id.toString())
+                val selectionArgs = arrayOf(nonFormatedNum)
                     context.contentResolver.delete(uri, selection, selectionArgs)
 
         }catch (e: Exception) {
@@ -562,17 +563,17 @@ class CallContainerRepository(
      */
     suspend fun deleteCallLogs(logsFromContentProvider: MutableList<CallLogTable>) = withContext(Dispatchers.IO) {
 
-        var idsFromContentPovider : MutableList<Long> = mutableListOf()
-        idsFromContentPovider.addAll(logsFromContentProvider.map { it.id!!})
+        var idsFromContentPovider : MutableList<String> = mutableListOf()
+        idsFromContentPovider.addAll(logsFromContentProvider.map { it.numberFormated})
 
-        var idsFromCallLogTable : MutableList<Long> = mutableListOf()
+        var contactAddressFromCallLogTable : MutableList<String> = mutableListOf()
 
         callLogDAO?.getAllForDeleting().apply {
             if(this!=null){
-                idsFromCallLogTable.addAll(this.map {it.id!!})
-                val idsToBeRemoved = idsFromCallLogTable - idsFromContentPovider
+                contactAddressFromCallLogTable.addAll(this.map {it.numberFormated!!})
+                val idsToBeRemoved = contactAddressFromCallLogTable - idsFromContentPovider
                 for(id in idsToBeRemoved){
-                    callLogDAO?.delete(id)
+                    callLogDAO?.deleteBycontactAddress(id)
 
                 }
             }
@@ -637,6 +638,20 @@ class CallContainerRepository(
     suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO){
         callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress, serverInfo.firstName, serverInfo.spamReportCount, TYPE_SPAM)
 
+    }
+
+    suspend fun updateIdWithContentProviderInfo(item: CallLogTable) = withContext(Dispatchers.IO) {
+        callLogDAO?.updateIdAndRelatedInfos(item.numberFormated,
+            item.id,
+            item.duration,
+            item.dateInMilliseconds,
+            item.thumbnailFromCp,
+            item.simId
+            )
+    }
+
+    suspend fun deleteCallLogFromDb(item: String) {
+        callLogDAO?.deleteBycontactAddress(formatPhoneNumber(item))
     }
 
 

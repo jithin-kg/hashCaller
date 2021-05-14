@@ -65,5 +65,11 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser OR spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")
     fun getSpamCallLogLivedata(isDeleted: Boolean = false, isReportedByUser: Boolean = true, spamLimit: Long = SPAM_THREASHOLD):LiveData<MutableList<CallLogTable>>
 
+    @Query("UPDATE  call_log  SET duration=:duration, dateInMilliseconds =:dateInMilliseconds, thumbnailFromCp =:thumbnailFromCp,id=:id, simId=:simId   WHERE numberFormated =:numberFormated")
+    suspend fun updateIdAndRelatedInfos(numberFormated: String, id: Long?, duration: String, dateInMilliseconds: Long, thumbnailFromCp: String, simId: Int)
+
+    @Query("DELETE from call_log WHERE numberFormated=:numFormated")
+    suspend fun deleteBycontactAddress(numFormated: String)
+
 
 }
