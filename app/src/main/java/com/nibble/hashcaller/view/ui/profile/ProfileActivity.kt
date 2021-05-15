@@ -4,11 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +19,7 @@ import com.nibble.hashcaller.databinding.ActivityProfileBinding
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
+import com.nibble.hashcaller.utils.internet.CheckNetwork
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
@@ -43,15 +46,19 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var imagePickerHelper : ImagePickerHelper
     var imageMultipartBody: MultipartBody.Part? = null
     private lateinit var internetChecker:InternetChecker
-
+    private lateinit var networkChecker:CheckNetwork
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
+        networkChecker = CheckNetwork(this)
         setContentView(binding.root)
         initViewmodel()
         observeUserInfo()
         observeFormfields()
         initListeners()
+        networkChecker.registerNetworkCallback()
+
     }
 
     private fun initListeners() {
@@ -146,12 +153,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
     private fun updateUserInfo() {
-
-        internetChecker.checkNetwork {
-            Log.d(TAG, "updateUserInfo: $it") 
-        }
-//        }
-//            if(it){
+            if(CheckNetwork.isetworkConnected()){
                 binding.btnUpdate.isEnabled = false
                 val firstName = binding.editTextFName.text.toString().trim()
                 val lastName = binding.editTextLName.text.toString().trim()
@@ -173,9 +175,9 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                             update(userInfo, imageMultipartBody)
                         }
                     })
-//            }else{
-//                toast("No internet")
-//            }
+            }else{
+                toast("No internet")
+            }
 //        }
 
 
