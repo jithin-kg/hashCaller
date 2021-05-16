@@ -15,12 +15,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
@@ -29,10 +31,8 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.call.floating.Window
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
-import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -55,7 +55,9 @@ class MyCallScreeningService: CallScreeningService() {
     private lateinit var mCallDetails:Call.Details
     private lateinit var responseBuilder:CallResponse.Builder
     private lateinit var responseToCall:com.nibble.hashcaller.utils.callscreening.CallResponse
-//    private  var _window:Window? = null
+    private  var rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
+    private lateinit var tokenHelper: TokenHelper
+    //    private  var _window:Window? = null
 //    private  val window:Window get() = _window!!
     /**
      * important to look into CallScreeningService source code to findout how to work with this class
@@ -64,12 +66,19 @@ class MyCallScreeningService: CallScreeningService() {
 //    rivate val notificationManager = NotificationManagerImpl()
     @SuppressLint("LongLogTag")
     override fun onScreenCall(callDetails: Call.Details) {
+        rcAuthStateListener =
+            FirebaseAuth.AuthStateListener { firebaseAuth ->
+                val user = firebaseAuth.currentUser
+                tokenHelper = TokenHelper(user)
+
+            }
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
         val phoneNumber = getPhoneNumber(callDetails)
 //        responseBuilder = CallResponse.Builder()
 //        showNotification()
         startFloatingServiceFromScreeningService(phoneNumber)
+
 
 //        _window = Window(this, phoneNumber)
 //        window.open()
@@ -136,7 +145,10 @@ class MyCallScreeningService: CallScreeningService() {
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
 
-        val searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+        val searchRepository = SearchNetworkRepository(
+            TokenManager(DataStoreRepository(context.tokeDataStore)),
+            tokenHelper
+        )
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()

@@ -14,21 +14,21 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.finishAfterTransition
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
@@ -61,28 +61,39 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private  var mMessageReceiver: BroadcastReceiver? = null
     private var previousCheckedRadioButton: RadioButton? = null
     private  var btnBlock: Button? = null
-//    private var country = ""
+    private  var rcfirebaseAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
+
+    //    private var country = ""
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isVisible = true
+
         registerForBroadCastReceiver()
         getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configurePopupActivity()
-        initViewmodel()
+        firebaseAuthListener()
+//        initViewmodel()
         setupBottomSheet()
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
         binding.tvPhoneNumIncomming.text = phoneNumber
         Log.d(TAG, "onCreate: $phoneNumber")
 
-        getCallerInfo()
+//        getCallerInfo()
 
 
     }
 
+    private fun firebaseAuthListener() {
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        user = rcfirebaseAuth?.currentUser
+        tokenHelper = TokenHelper(user)
+    }
     private fun getCallerInfo() {
         viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
             setViewElements(it)
@@ -138,7 +149,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 
     private fun initViewmodel() {
-        viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext)).get(
+        viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper!!)).get(
             SearchViewModel::class.java)
     }
 
@@ -315,6 +326,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         super.onStop()
         //to prevent memory leak
         if(mMessageReceiver!=null){
+
             unregisterReceiver(mMessageReceiver)
 
         }

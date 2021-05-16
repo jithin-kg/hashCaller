@@ -9,11 +9,15 @@ import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 
 object FullSearchInjectorUtil {
-    fun provideUserInjectorUtil(context:Context) : FullSearchViewModelFactory {
-        val searchNetworkRepository = SearchNetworkRepository(TokenManager( DataStoreRepository(context.tokeDataStore)))
-        val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
-        val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
+    fun provideUserInjectorUtil(context:Context) : FullSearchViewModelFactory? {
+//        val searchNetworkRepository = SearchNetworkRepository(
+//            TokenManager( DataStoreRepository(context.tokeDataStore)),
+//            tokenHelper
+//        )
+//        val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
+//        val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
 
-        return FullSearchViewModelFactory(searchNetworkRepository, contactLocalSyncRepository)
+//        return FullSearchViewModelFactory(searchNetworkRepository, contactLocalSyncRepository)
+            return null
     }
 }

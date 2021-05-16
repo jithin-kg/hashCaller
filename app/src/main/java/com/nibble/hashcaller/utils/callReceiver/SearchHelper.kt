@@ -1,7 +1,6 @@
 package com.nibble.hashcaller.utils.callReceiver
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -21,8 +20,11 @@ class SearchHelper{
             num = Secrets().managecipher(context.packageName, num!!)//encoding the number with my algorithm
 
                 try {
-                    val searchRepository = SearchNetworkRepository(TokenManager( DataStoreRepository(context.tokeDataStore)))
-                    val res = searchRepository.search(num)
+//                    val searchRepository = SearchNetworkRepository(
+//                        TokenManager( DataStoreRepository(context.tokeDataStore)),
+//                        tokenHelper
+//                    )
+//                    val res = searchRepository.search(num, token)
 //                    if(!res?.body()?.cntcts.()){
 //                        val result = res?.body()?.cntcts?.get(0)
 //                        Log.d(TAG, "searchForNumberInServer: result $result")

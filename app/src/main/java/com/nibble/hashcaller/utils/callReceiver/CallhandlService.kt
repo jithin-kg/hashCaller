@@ -127,7 +127,10 @@ class CallhandlService : JobIntentService(){
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
 
-        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+//        searchRepository = SearchNetworkRepository(
+//            TokenManager(DataStoreRepository(context.tokeDataStore)),
+//            tokenHelper
+//        )
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()

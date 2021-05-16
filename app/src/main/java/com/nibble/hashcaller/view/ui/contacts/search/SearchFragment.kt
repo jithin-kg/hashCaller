@@ -15,7 +15,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
-import kotlinx.android.synthetic.main.contact_list.textVContactName
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
 import kotlinx.android.synthetic.main.search_result_item.*
@@ -57,7 +56,8 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         sharedElementEnterTransition=  TransitionInflater.from(activity).inflateTransition(R.transition.fragment_transition)
 //        sharedElementEnterTransition=  TransitionInflater.from(activity).inflateTransition(R.transition.fragment_transition)
         this.searchViewmodel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(
-            this.requireContext()
+            this.requireContext(),
+            null
         )).get(SearchViewModel::class.java)
 
         // Inflate the layout for this fragment

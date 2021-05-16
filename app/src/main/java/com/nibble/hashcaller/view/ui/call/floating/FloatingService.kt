@@ -9,6 +9,8 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
@@ -16,6 +18,7 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callscreening.WindowObj
@@ -51,7 +54,12 @@ class FloatingService: Service() {
     private var onStartCalled = false
     private var mphoneNumberStr = ""
     private var countryCodeHelper: LibCoutryCodeHelper? = null
+    private  var rcfirebaseAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
+//    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
+
     /**
      * Remove the foreground notification and stop the service.
      */
@@ -67,15 +75,15 @@ class FloatingService: Service() {
      */
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG+"init", "onCreate: ")
-        countryCodeHelper = LibCoutryCodeHelper(PhoneNumberUtil.getInstance())
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        user = rcfirebaseAuth?.currentUser
+        tokenHelper = TokenHelper(user)
 
+        countryCodeHelper = LibCoutryCodeHelper(PhoneNumberUtil.getInstance())
 
         if(window == null){
             window = Window(this, countryCodeHelper)
             WindowObj.setWindow(window!!)
-
-
 //                    windowCompanion = window
         }
 
@@ -87,6 +95,7 @@ class FloatingService: Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
         super.onStartCommand(intent, flags, startId)
+
         val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
                 window?.close()
@@ -224,7 +233,7 @@ class FloatingService: Service() {
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
 
-        val searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+        val searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)), tokenHelper)
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
@@ -232,10 +241,12 @@ class FloatingService: Service() {
         return  InCommingCallManager(
             context,
             phoneNumber, context.isBlockNonContactsEnabled(),
-            null, searchRepository,
-            internetChecker, blockedListpatternDAO,
+            null,
+            searchRepository,
+            internetChecker,
+            blockedListpatternDAO,
             contactAdressesDAO,
-            callerInfoFromServerDAO
+            callerInfoFromServerDAO,
         )
     }
 

@@ -57,11 +57,15 @@ class CallScreeningServiceHelper(
                             WindowObj.getWindowObj()?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
                         if(isCurrentDateAndPrevDateisGreaterThanLimit(infoAvailableInDb.informationReceivedDate, DATE_THREASHOLD)){
-                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
+                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                                hashedNum
+                            ) }
                         }
 
                     }else{
-                         defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
+                         defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                             hashedNum
+                         ) }
                     }
                 }catch (e:Exception){
                     Log.d(TAG, "handleCall: $e")

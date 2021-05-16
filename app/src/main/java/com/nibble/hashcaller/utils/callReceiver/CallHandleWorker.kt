@@ -5,6 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -12,6 +14,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
@@ -28,11 +31,13 @@ class CallHandleWorker(private val context: Context, private val workerParameter
     private lateinit var notificationHelper: NotificationHelper
     private lateinit var inComingCallManager: InCommingCallManager
     private lateinit var phoneNumber: String
+    private  var rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
     override suspend fun doWork(): Result {
         try {
             Log.d(TAG, "doWork: ")
             setForeground(createForegroundInfo())
-
             val supervisorScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
             supervisorScope.launch {
 
@@ -42,7 +47,9 @@ class CallHandleWorker(private val context: Context, private val workerParameter
                 //46a418e15711ea36c113b2fb9a157ade7aea9dd453254952428e7a2117f119c0
                 //00c2551169dde5d78ee4c3424feef14e09a75d3b91d9e7e2f5878b370508dd65 worker
                 Log.d("__hashedNumInReceiver", "onReceive: $hasedNum")
-                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hasedNum) }
+                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
+                    hasedNum
+                ) }
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
                 //todo also search for infor from server in local db about callers or a better way is if
@@ -130,7 +137,10 @@ class CallHandleWorker(private val context: Context, private val workerParameter
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
 
-        searchRepository = SearchNetworkRepository(TokenManager(DataStoreRepository(context.tokeDataStore)))
+        searchRepository = SearchNetworkRepository(
+            TokenManager(DataStoreRepository(context.tokeDataStore)),
+            tokenHelper!!
+        )
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()

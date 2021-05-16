@@ -32,11 +32,12 @@ class FulllSearchResultsActivity : AppCompatActivity() {
 
 
     private fun initViewmodel() {
-        this.searchViewmodel = ViewModelProvider(
-            this, SearchInjectorUtil.provideUserInjectorUtil(
-                this
-            )
-        ).get(FullSearchViewModel::class.java)
+//        this.searchViewmodel = ViewModelProvider(
+//            this, SearchInjectorUtil.provideUserInjectorUtil(
+//                this,
+//                tokenHelper
+//            )
+//        ).get(FullSearchViewModel::class.java)
     }
 
     private fun initRecyclerview() {

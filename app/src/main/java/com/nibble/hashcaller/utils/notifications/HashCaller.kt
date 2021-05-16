@@ -24,6 +24,7 @@ class HashCaller : Application(){
     /**This will be called before any start of activity, right when our app will start.
      * This is the perfect place to setup our channels
      */
+
     companion object{
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
@@ -51,6 +52,7 @@ class HashCaller : Application(){
         createNotificationChannels()
         instantiateAllFragment()
     }
+
 
     private fun instantiateAllFragment() {
 

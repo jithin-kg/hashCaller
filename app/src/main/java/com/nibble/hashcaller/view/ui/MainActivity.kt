@@ -58,8 +58,6 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
-import com.nibble.hashcaller.utils.auth.Decryptor
-import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.ActivityVerifyOTP
@@ -104,7 +102,6 @@ import java.security.*
  */
 
 
-
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
 
@@ -132,7 +129,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //    var  searchFragment: SearchFragment? = null
 
 
-//    private lateinit var drawerLayout: DrawerLayout
+    //    private lateinit var drawerLayout: DrawerLayout
     //    private lateinit var navigationView:NavigationView
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -196,7 +193,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                initMainActivityComponents(savedState)
                 callback(true)
             }else{
-               callback(false)
+                callback(false)
             }
         })
     }
@@ -208,7 +205,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             READ_PHONE_STATE,
             RECEIVE_SMS,
 
-        )
+            )
     }
     private fun firebaseAuthListener() {
         _rcAuthStateListener =
@@ -305,10 +302,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initHeaderView() {
-         header = binding.navView.getHeaderView(0)
+        header = binding.navView.getHeaderView(0)
 
-         headerImgView =  header.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgViewAvatarDrawer)
-         firstLetterView = header.findViewById<TextView>(R.id.tvFirstLetterMain)
+        headerImgView =  header.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgViewAvatarDrawer)
+        firstLetterView = header.findViewById<TextView>(R.id.tvFirstLetterMain)
 
     }
 
@@ -317,7 +314,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         userInfoViewModel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-               val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
+                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
                 fullName.text = "${it.firstname} ${it.lastName}"
                 if(!it.photoURI.isNullOrEmpty()){
                     headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
@@ -553,11 +550,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-            Log.d(TAG, "onSaveInstanceState: ")
-            supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
-            supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
-            supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
-            supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
+        Log.d(TAG, "onSaveInstanceState: ")
+        supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
+        supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
+        supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
+        supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
 
 //        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
 //        if(this.searchFragment!=null)
@@ -645,10 +642,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     //called from dialerfragment, important call this function only from dialer fragment
     fun hideBottomNav(){
 //        Log.d(TAG, "hideBottomNav: saved instance state is $savedState")
-            if(savedState!=null && dialerFragment.isVisible){
-                Log.d(TAG, "hideBottomNav: dialer frargment is visible")
-                bottomNavigationView.beGone()
-            }
+        if(savedState!=null && dialerFragment.isVisible){
+            Log.d(TAG, "hideBottomNav: dialer frargment is visible")
+            bottomNavigationView.beGone()
+        }
 
     }
 
@@ -1060,7 +1057,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        startActivity(i)
     }
 
-//    private val phoneNumFromViewModel: String?
+    //    private val phoneNumFromViewModel: String?
 //        get() {
 //            val phoneNumberViewModel: PhoneNumber = ViewModelProvider(this).get(PhoneNumber::class.java)
 //            val no = phoneNumberViewModel.phoneNumber
@@ -1071,21 +1068,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         requestCode: Int, permissions: Array<String>,
         grantResults: IntArray
     ) {
-    Log.d(TAG, "onRequestPermissionsResult: ")
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    when(requestCode){
-        REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION ->{
-            callFragment.getDataDelayed()
-        }
-        REQUEST_CODE_READ_CONTACTS ->{
-            contactFragment.getData()
-        }
-        REQUEST_CODE_READ_SMS_CONTACTS ->{
-            messagesFragment.getDataDelayed()
-        }
+        Log.d(TAG, "onRequestPermissionsResult: ")
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION ->{
+                callFragment.getDataDelayed()
+            }
+            REQUEST_CODE_READ_CONTACTS ->{
+                contactFragment.getData()
+            }
+            REQUEST_CODE_READ_SMS_CONTACTS ->{
+                messagesFragment.getDataDelayed()
+            }
 
 
-    }
+        }
 //        if (requestCode == 100) {
 //            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 //                call()
@@ -1260,5 +1257,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 }
+
 
 
