@@ -17,6 +17,7 @@ data class CallersInfoResponseItem (
     var carier: String = "",
     var spamCount:Long = 0L,
     @SerializedName("isInfoFoundInDb")
-    val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER
+    val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
+    var imageThumbnail:String? = ""
 ){
 }

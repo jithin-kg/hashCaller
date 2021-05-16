@@ -63,7 +63,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 )
 
             val allcallsincontentProvider = callersLocalRepository.getCallLog()
-
             setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
 
 
@@ -88,7 +87,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                             firstName = cntct.firstName?:"",
                             informationReceivedDate =Date(),
                             spamReportCount =  cntct.spamCount,
-                            isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0
+                            isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+                            thumbnailImg = cntct.imageThumbnail?:""
                         )
 
                         callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

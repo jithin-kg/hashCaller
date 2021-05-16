@@ -61,6 +61,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private  var mMessageReceiver: BroadcastReceiver? = null
     private var previousCheckedRadioButton: RadioButton? = null
     private  var btnBlock: Button? = null
+
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
@@ -76,24 +77,19 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configurePopupActivity()
-        firebaseAuthListener()
-//        initViewmodel()
+        initViewmodel()
         setupBottomSheet()
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
         binding.tvPhoneNumIncomming.text = phoneNumber
         Log.d(TAG, "onCreate: $phoneNumber")
 
-//        getCallerInfo()
+        getCallerInfo()
 
 
     }
 
-    private fun firebaseAuthListener() {
-        rcfirebaseAuth = FirebaseAuth.getInstance()
-        user = rcfirebaseAuth?.currentUser
-        tokenHelper = TokenHelper(user)
-    }
+
     private fun getCallerInfo() {
         viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
             setViewElements(it)
@@ -149,7 +145,11 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 
     private fun initViewmodel() {
-        viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper!!)).get(
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        user = rcfirebaseAuth?.currentUser
+        tokenHelper = TokenHelper(user)
+
+        viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper)).get(
             SearchViewModel::class.java)
     }
 
