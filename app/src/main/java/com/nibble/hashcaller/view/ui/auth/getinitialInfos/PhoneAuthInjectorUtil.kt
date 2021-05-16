@@ -21,7 +21,8 @@ object PhoneAuthInjectorUtil {
             TokenManager( DataStoreRepository(context.tokeDataStore)),
             userInfoDAO,
             senderInfoFromServerDAO,
-            imageCompressor
+            imageCompressor,
+            null
         )
         val userHashedNumRepository = UserHasehdNumRepository(userHashedNumDAO, countryCodeHelper)
         return UserViewModelFactory(

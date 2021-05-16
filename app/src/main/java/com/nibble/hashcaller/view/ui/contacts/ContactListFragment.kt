@@ -17,8 +17,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
@@ -76,7 +78,8 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         contactsView = inflater.inflate(R.layout.fragment_contact_list, container, false)
             contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(
                 context,
-                lifecycleScope
+                lifecycleScope,
+               TokenHelper( FirebaseAuth.getInstance().currentUser)
             )).get(ContactsViewModel::class.java)
            if(checkContactPermission()){
                observerContactList()

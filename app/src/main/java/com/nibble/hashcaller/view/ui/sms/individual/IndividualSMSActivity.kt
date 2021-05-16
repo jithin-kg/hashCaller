@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
 
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
@@ -41,6 +42,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualSMSBinding
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -817,7 +819,11 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(applicationContext, lifecycleScope)).get(
+        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(
+            applicationContext,
+            lifecycleScope,
+            TokenHelper(FirebaseAuth.getInstance().currentUser)
+            )).get(
             SMSIndividualViewModel::class.java)
     }
 

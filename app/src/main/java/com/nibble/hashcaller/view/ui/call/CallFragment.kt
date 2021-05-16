@@ -5,12 +5,9 @@ import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.telephony.SubscriptionManager
-import android.text.SpannableStringBuilder
-import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -32,9 +29,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
@@ -50,8 +50,6 @@ import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.startActivityIncommingCallView
-import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -111,6 +109,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     /************/
     var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
 
 
     
@@ -123,7 +123,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     _binding = FragmentCallBinding.inflate(inflater, container, false)
 //        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
 //    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
-
+        user = FirebaseAuth.getInstance().currentUser
+       tokenHelper =  TokenHelper(user)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
         initRecyclerView()
@@ -377,9 +378,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun initViewModel() {
-        __viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope)).get(
+        __viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope, tokenHelper)).get(
             CallContainerViewModel::class.java)
-        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(requireContext())).get(
+        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(
+            requireContext(),
+            tokenHelper
+        )).get(
             UserInfoViewModel::class.java
         )
     }

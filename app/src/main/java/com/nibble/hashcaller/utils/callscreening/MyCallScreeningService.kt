@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -55,10 +56,13 @@ class MyCallScreeningService: CallScreeningService() {
     private lateinit var mCallDetails:Call.Details
     private lateinit var responseBuilder:CallResponse.Builder
     private lateinit var responseToCall:com.nibble.hashcaller.utils.callscreening.CallResponse
-    private  var rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
-    private lateinit var tokenHelper: TokenHelper
+    private  var rcfirebaseAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
     //    private  var _window:Window? = null
 //    private  val window:Window get() = _window!!
+
+
     /**
      * important to look into CallScreeningService source code to findout how to work with this class
      */
@@ -66,12 +70,10 @@ class MyCallScreeningService: CallScreeningService() {
 //    rivate val notificationManager = NotificationManagerImpl()
     @SuppressLint("LongLogTag")
     override fun onScreenCall(callDetails: Call.Details) {
-        rcAuthStateListener =
-            FirebaseAuth.AuthStateListener { firebaseAuth ->
-                val user = firebaseAuth.currentUser
-                tokenHelper = TokenHelper(user)
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        user = rcfirebaseAuth?.currentUser
+        tokenHelper = TokenHelper(user)
 
-            }
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
         val phoneNumber = getPhoneNumber(callDetails)
@@ -157,7 +159,8 @@ class MyCallScreeningService: CallScreeningService() {
             context,
             phoneNumber, context.isBlockNonContactsEnabled(),
             null, searchRepository,
-            internetChecker, blockedListpatternDAO,
+            internetChecker,
+            blockedListpatternDAO,
             contactAdressesDAO,
             callerInfoFromServerDAO
         )

@@ -5,6 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -12,6 +14,7 @@ import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -39,13 +42,16 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val blockedOrSpamSenders = HashCallerDatabase.getDatabaseInstance(context).blockedOrSpamSendersDAO()
     private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
     private val smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
+    private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+    private var tokenHelper: TokenHelper? = TokenHelper(user)
 
     private val repository: SMScontainerRepository = SMScontainerRepository(
         context,
         sMSSendersInfoFromServerDAO,
         mutedSendersDAO,
         blockedOrSpamSenders,
-        DataStoreRepository(context.tokeDataStore)
+        DataStoreRepository(context.tokeDataStore),
+        tokenHelper
     )
     private val smsTracker:NewSmsTrackerHelper = NewSmsTrackerHelper( repository, sMSSendersInfoFromServerDAO)
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
@@ -65,7 +71,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context.tokeDataStore)
+                DataStoreRepository(context.tokeDataStore),
+                TokenHelper( FirebaseAuth.getInstance().currentUser)
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
@@ -75,7 +82,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 blockedOrSpamSenders,
-                DataStoreRepository(context.tokeDataStore)
+                DataStoreRepository(context.tokeDataStore),
+                tokenHelper
             )
 
 
@@ -87,17 +95,19 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                     val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
 
-                    if(result.code() in (500..599)){
+                    if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
                     var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
 
-                    for(cntct in result.body()!!.contacts){
-                        val formatedNum = formatPhoneNumber(cntct.phoneNumber)
-                        val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(
-                            formatedNum, 0, cntct.name,
-                            Date(), cntct.spamCount)
-                        smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
+                    if(result?.body() != null){
+                        for(cntct in result?.body()!!.contacts){
+                            val formatedNum = formatPhoneNumber(cntct.phoneNumber)
+                            val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(
+                                formatedNum, 0, cntct.name,
+                                Date(), cntct.spamCount)
+                            smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
+                        }
                     }
 
                     smssendersInfoDAO.insert(smsSenderlistToBeSavedToLocalDb)

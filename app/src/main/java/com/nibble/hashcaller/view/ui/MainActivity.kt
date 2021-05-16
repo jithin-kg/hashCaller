@@ -17,7 +17,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
-import android.util.Base64
 import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
@@ -53,14 +52,13 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
-import com.nibble.hashcaller.repository.spam.SpamSyncRepository
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
-import com.nibble.hashcaller.view.ui.auth.ActivityVerifyOTP
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
@@ -81,7 +79,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
-import com.nibble.hashcaller.view.ui.splashactivity.SplashActivity
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -141,12 +138,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 
-    private  var _rcfirebaseAuth: FirebaseAuth? = null
-    private  val rcfirebaseAuth get() =  _rcfirebaseAuth!!
-    private  var _rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
-    private  val  rcAuthStateListener get() =  _rcAuthStateListener!!
+//    private  var _rcfirebaseAuth: FirebaseAuth? = null
+//    private  val rcfirebaseAuth get() =  _rcfirebaseAuth!!
+//    private  var _rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
+//    private  val  rcAuthStateListener get() =  _rcAuthStateListener!!
 
-    var user: FirebaseUser? = null
+    private  var rcfirebaseAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
 
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
@@ -158,10 +157,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
         savedState = savedInstanceState
+
         initDataStoreViewmodel()
 
-        _rcfirebaseAuth = FirebaseAuth.getInstance()
+        rcfirebaseAuth = FirebaseAuth.getInstance()
         if (checkPermission()) {
+            initViewModel()
             isUserInfoAvaialbleInDb{isUserInfoAvialble->
                 if(isUserInfoAvialble){
                     firebaseAuthListener()
@@ -188,14 +189,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun isUserInfoAvaialbleInDb(callback:(isUserInfoAvialble:Boolean)-> Unit){
-        dataStoreViewModel?.getToken()?.observe(this, Observer {
-            if(!it.isNullOrEmpty()){
-//                initMainActivityComponents(savedState)
+        userInfoViewModel.getUserInfoFromDb().observe(this, Observer {
+            if(it!=null){
                 callback(true)
             }else{
                 callback(false)
             }
-        })
+        } )
+//        dataStoreViewModel?.getToken()?.observe(this, Observer {
+//            if(!it.isNullOrEmpty()){
+////                initMainActivityComponents(savedState)
+//                callback(true)
+//            }else{
+//                callback(false)
+//            }
+//        })
     }
 
     private fun checkPermission(): Boolean {
@@ -208,39 +216,46 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             )
     }
     private fun firebaseAuthListener() {
-        _rcAuthStateListener =
-            FirebaseAuth.AuthStateListener { firebaseAuth ->
-                user = firebaseAuth.currentUser
-                //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
-                if (user != null) {
-                    //user is signed in
-                    checkUserInfoInDb()
-
-                } else {
-                    // user is signed out
-                    onSingnedOutcleanUp()
-
-                }
-            }
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        user = rcfirebaseAuth?.currentUser
+        if(user ==null){
+            onSingnedOutcleanUp()
+        }else{
+            tokenHelper = TokenHelper(user)
+        }
+//        _rcAuthStateListener =
+//            FirebaseAuth.AuthStateListener { firebaseAuth ->
+//                user = firebaseAuth.currentUser
+//                //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
+//                if (user != null) {
+//                    //user is signed in
+//                    checkUserInfoInDb()
+//
+//                } else {
+//                    // user is signed out
+//                    onSingnedOutcleanUp()
+//
+//                }
+//            }
     }
 
     private fun saveTokenIfConnected() {
-        user?.getIdToken(true)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    var token = task.result?.token
-                    // Send token to your backend via HTTPS
-                    if(!token.isNullOrEmpty()){
-                        dataStoreViewModel?.getEncryptedStr(token.toString())?.observe(this, Observer {encodeTokenString ->
-                            dataStoreViewModel?.saveTokenViewmodelScope(encodeTokenString)
-                        })
-
-                    }
-
-                }else{
-                    Log.d(ActivityVerifyOTP.TAG, "onSignedInInitialize:${task.exception}")
-                }
-            }
+//        user?.getIdToken(true)
+//            ?.addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    var token = task.result?.token
+//                    // Send token to your backend via HTTPS
+//                    if(!token.isNullOrEmpty()){
+//                        dataStoreViewModel?.getEncryptedStr(token.toString())?.observe(this, Observer {encodeTokenString ->
+//                            dataStoreViewModel?.saveTokenViewmodelScope(encodeTokenString)
+//                        })
+//
+//                    }
+//
+//                }else{
+//                    Log.d(ActivityVerifyOTP.TAG, "onSignedInInitialize:${task.exception}")
+//                }
+//            }
     }
 
     private fun onSingnedOutcleanUp() {
@@ -271,7 +286,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(applicationContext, R.color.textColor);
 
-        initViewModel()
+//        initViewModel()
         setupNavigationDrawer()
         initHeaderView()
 
@@ -339,11 +354,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onDestroy() {
         viewModelStore.clear()
-        if(_rcfirebaseAuth!=null && _rcAuthStateListener!=null){
-            _rcfirebaseAuth!!.removeAuthStateListener(_rcAuthStateListener!!)
-        }
-        _rcAuthStateListener = null
-        _rcfirebaseAuth = null
+//        if(_rcfirebaseAuth!=null && _rcAuthStateListener!=null){
+//            _rcfirebaseAuth!!.removeAuthStateListener(_rcAuthStateListener!!)
+//        }
+//        _rcAuthStateListener = null
+//        _rcfirebaseAuth = null
         dataStoreViewModel = null
 //        _userInfoViewModel = null
         super.onDestroy()
@@ -453,7 +468,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun initViewModel() {
         userInfoViewModel = ViewModelProvider(
             this, MainActivityInjectorUtil.provideUserInjectorUtil(
-                applicationContext
+                applicationContext,
+                tokenHelper
             )
         ).get(
             UserInfoViewModel::class.java
@@ -969,17 +985,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onPostResume() {
         super.onPostResume()
         Log.i(TAG, "Onresume")
-        saveTokenIfConnected()
+//        saveTokenIfConnected()
 
         //        checkPermission();
 
 //        if(getCurrentTheme() == 1){
 //            setcurrentThemeInSharedPref()
 //        }
-        if (checkPermission()) {
-            if(_rcAuthStateListener!=null && _rcAuthStateListener !=null)
-                _rcfirebaseAuth?.addAuthStateListener(_rcAuthStateListener!!)
-        }
+//        checkPermission()
+//        if (checkPermission()) {
+//            if(_rcAuthStateListener!=null && _rcAuthStateListener !=null)
+//                _rcfirebaseAuth?.addAuthStateListener(_rcAuthStateListener!!)
+//        }
         //        firebaseHelper.addFirebaseAuthListener();
     }
 

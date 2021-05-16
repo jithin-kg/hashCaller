@@ -13,8 +13,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -45,7 +47,11 @@ class ContactSelectorActivity : AppCompatActivity() {
     }
 
     private fun initViewmodel() {
-        contactViewModel = ViewModelProvider(this, ContactSelectorInjectorUtil.provideContactsViewModelFactory(this, lifecycleScope)).get(ContactsViewModel::class.java)
+        contactViewModel = ViewModelProvider(this, ContactSelectorInjectorUtil.provideContactsViewModelFactory(
+            applicationContext,
+            lifecycleScope,
+            TokenHelper(FirebaseAuth.getInstance().currentUser)
+        )).get(ContactsViewModel::class.java)
     }
 
     private fun initRecyclerView() {

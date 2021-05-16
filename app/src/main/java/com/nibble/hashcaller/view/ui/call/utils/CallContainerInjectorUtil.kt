@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
@@ -14,7 +15,11 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
  * Created by Jithin KG on 29,July,2020
  */
 object CallContainerInjectorUtil {
-    fun provideViewModelFactory(context: Context?, lifecycleScope: LifecycleCoroutineScope): CallContainerViewModelFactory {
+    fun provideViewModelFactory(
+        context: Context?,
+        lifecycleScope: LifecycleCoroutineScope,
+        tokenHelper: TokenHelper?
+    ): CallContainerViewModelFactory {
 
 
 
@@ -31,7 +36,8 @@ object CallContainerInjectorUtil {
                 callerInfoFromServerDAO!!,
                 mutedCallersDAO,
                 callLogDAO,
-                DataStoreRepository(context.tokeDataStore)
+                DataStoreRepository(context.tokeDataStore),
+                tokenHelper
             )
         }
 

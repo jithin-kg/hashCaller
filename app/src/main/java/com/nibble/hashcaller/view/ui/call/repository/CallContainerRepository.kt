@@ -13,6 +13,7 @@ import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.hashednums
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.pageCall
 import com.nibble.hashcaller.view.ui.call.db.*
@@ -39,7 +40,8 @@ class CallContainerRepository(
     val callerInfoFromServerDAO: CallersInfoFromServerDAO,
     val mutedCallersDAO: IMutedCallersDAO?,
     private val callLogDAO: ICallLogDAO?,
-    private val dataStoreRepository:DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val tokenHelper: TokenHelper?
 ) {
 
     private var retrofitService:ICallService? = null
@@ -58,12 +60,15 @@ class CallContainerRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownCallersInfoResponse>  = withContext(Dispatchers.IO){
+    suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownCallersInfoResponse>?  = withContext(Dispatchers.IO){
         retrofitService = RetrofitClient.createaService(ICallService::class.java)
-        val tokenManager = TokenManager(dataStoreRepository)
-        val token = tokenManager.getDecryptedToken()
+      val token = tokenHelper?.getToken()
 
-        val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
+       var response:Response<UnknownCallersInfoResponse>? = null
+        token?.let {
+             response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
+        }
+
         return@withContext response
     }
 

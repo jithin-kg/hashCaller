@@ -9,9 +9,9 @@ import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.contact.ContactsUploadResponse
 import com.nibble.hashcaller.utils.auth.Decryptor
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
-import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import retrofit2.Response
 
 import java.io.IOException
@@ -23,7 +23,8 @@ import javax.crypto.spec.SecretKeySpec
 /**
  * Created by Jithin KG on 25,July,2020
  */
-class ContactsNetworkRepository (private val context: Context){
+class ContactsNetworkRepository(private val context: Context,
+                                private val tokenHelper: TokenHelper?){
 
 //    private var retrofitService: IContactsService? = null
     private var keyStore: KeyStore? = null
@@ -51,11 +52,10 @@ class ContactsNetworkRepository (private val context: Context){
 //                ContactsListHelper(contacts)
 //            val list:MutableList<String> = ArrayList<String>()
 //            list.add("hi")
-        var token = ""
+        var token:String? = tokenHelper?.getToken()
         try {
 //            decryptor = Decryptor()
-            val tokenManager = TokenManager(DataStoreRepository(context.tokeDataStore))
-            token = tokenManager.getDecryptedToken()
+
 //            token = decryptor?.decryptData(
 //                SAMPLE_ALIAS,
 //                EncryptorObject.encryption,
@@ -67,7 +67,7 @@ class ContactsNetworkRepository (private val context: Context){
         }
 
 
-        return retrofitService?.uploadContacts(contacts, token)
+        return token?.let { retrofitService?.uploadContacts(contacts, it) }
 
 
 //        val decryptFromStringToke = decryptor.decryptFromStringToke(SAMPLE_ALIAS, tkn.toString())

@@ -9,9 +9,9 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.nibble.hashcaller.R
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.databinding.ActivitySearchBinding
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
@@ -118,7 +118,10 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
 
     private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, SmsSearchInjectorUtil.provideDialerViewModelFactory(applicationContext)).get(
+        viewmodel = ViewModelProvider(this, SmsSearchInjectorUtil.provideDialerViewModelFactory(
+            applicationContext,
+            TokenHelper( FirebaseAuth.getInstance().currentUser)
+            )).get(
             SMSSearchViewModel::class.java)
     }
 

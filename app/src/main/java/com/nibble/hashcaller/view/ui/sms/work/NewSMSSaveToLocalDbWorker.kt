@@ -5,10 +5,12 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import java.lang.Exception
@@ -37,7 +39,8 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context.tokeDataStore)
+                DataStoreRepository(context.tokeDataStore),
+                TokenHelper( FirebaseAuth.getInstance().currentUser)
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
             var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()

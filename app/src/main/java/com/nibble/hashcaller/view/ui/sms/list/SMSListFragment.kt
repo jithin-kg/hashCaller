@@ -26,7 +26,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
@@ -182,7 +184,8 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun initVieModel() {
         smsListVIewModel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(
             context,
-            lifecycleScope
+            lifecycleScope,
+            TokenHelper(FirebaseAuth.getInstance().currentUser)
         )).get(
             SMSViewModel::class.java)
     }

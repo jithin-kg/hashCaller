@@ -16,13 +16,15 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetInitialUserInfoBinding
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
@@ -33,7 +35,6 @@ import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.view.utils.validateInput
 import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
-import java.util.jar.Manifest
 
 class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
@@ -44,17 +45,23 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
 //    private var picturePath: String = ""
     private lateinit var imagePickerHelper : ImagePickerHelper
     var imgeMultipartBody:MultipartBody.Part? = null
+    private  var rcfirebaseAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGetInitialUserInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        rcfirebaseAuth = FirebaseAuth.getInstance()
+        tokenHelper = TokenHelper(rcfirebaseAuth?.currentUser)
         clearErrorMessageOnFocus()
         binding.btnUserContinue.setOnClickListener(this)
         imagePickerHelper = ImagePickerHelper()
         userInfoViewModel = ViewModelProvider(
             this, UserInfoInjectorUtil.provideUserInjectorUtil(
-                this
+                this,
+                tokenHelper
             )
         ).get(
             UserInfoViewModel::class.java

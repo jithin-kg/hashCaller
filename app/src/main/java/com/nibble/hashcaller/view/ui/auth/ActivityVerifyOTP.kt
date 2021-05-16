@@ -20,9 +20,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityTestauthBinding
-import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
-import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.utils.auth.EnCryptor
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
@@ -43,9 +42,11 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private lateinit var auth: FirebaseAuth
     private  var _userInfoViewModel: UserInfoViewModel? = null
     private val userInfoViewModel get() = _userInfoViewModel!!
-    private var _dataStoreViewmodel: DataStoreViewmodel? = null
-    private val dataStoreViewmodel get() = _dataStoreViewmodel!!
+//    private var _dataStoreViewmodel: DataStoreViewmodel? = null
+//    private val dataStoreViewmodel get() = _dataStoreViewmodel!!
     private lateinit var encryptor: EnCryptor
+
+    private var tokenHelper: TokenHelper? = null
 
 
     var code: String? = null
@@ -57,7 +58,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityTestauthBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initViewModel()
+
 
         phoneNumber = intent.getStringExtra("phoneNumber")
 
@@ -77,12 +78,14 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
 
     private fun initViewModel() {
-        _userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(applicationContext)).get(
-            UserInfoViewModel::class.java)
 
-        _dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
-            DataStoreViewmodel::class.java
-        )
+        tokenHelper = TokenHelper(FirebaseAuth.getInstance().currentUser)
+        _userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper)).get(
+            UserInfoViewModel::class.java)
+//
+//        _dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+//            DataStoreViewmodel::class.java
+//        )
     }
     private fun registerCallback() {
 
@@ -325,7 +328,9 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 //        val userTokenCallBack = user?.let { UserTokenCallBack(it) }
         user!!.getIdToken(true)
             .addOnCompleteListener { task ->
-               saveTokenInDataStore(task)
+//               saveTokenInDataStore(task)
+                initViewModel()
+                checkUserInfoInServer()
             }
 //        userTokenCallBack?.onSignedInInititalize { token, exception ->
 //            if(!token.isNullOrEmpty()){
@@ -378,13 +383,13 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                     encryptedText,
                     Base64.DEFAULT
                 )
-                dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
-                    if (it == OPERATION_COMPLETED) {
-                        //        setResult(1, i)
-                        //        finish()
-                        checkUserInfoInServer(encodeTokenString)
-                    }
-                })
+//                dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
+//                    if (it == OPERATION_COMPLETED) {
+//                        //        setResult(1, i)
+//                        //        finish()
+////                        checkUserInfoInServer(encodeTokenString)
+//                    }
+//                })
             }
 
         }else{
@@ -392,9 +397,10 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun checkUserInfoInServer(encodeTokenString: String) {
+    private fun checkUserInfoInServer() {
         lifecycleScope.launchWhenStarted {
-            userInfoViewModel.getUserInfoFromServer(encodeTokenString, phoneNumber, this@ActivityVerifyOTP).observe(this@ActivityVerifyOTP, Observer { userinfo ->
+
+            userInfoViewModel.getUserInfoFromServer( phoneNumber, this@ActivityVerifyOTP).observe(this@ActivityVerifyOTP, Observer { userinfo ->
                 if(userinfo!= null){
                     if(!userinfo.result.firstName.isNullOrEmpty()){
                         //user exists in server

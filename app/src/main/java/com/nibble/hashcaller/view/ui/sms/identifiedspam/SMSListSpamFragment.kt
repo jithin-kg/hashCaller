@@ -26,7 +26,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
@@ -34,7 +37,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSSpamListAdapter
-import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.*
 import kotlinx.android.synthetic.main.fragment_spam_messages.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
@@ -62,7 +64,8 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
     private lateinit var searchViewMessages: EditText
     private var isLoading = false
     var limit = 12
-
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cntx = this!!.requireContext()
@@ -179,9 +182,12 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
     }
 
     private fun initVieModel() {
+         user = FirebaseAuth.getInstance().currentUser
+        tokenHelper = TokenHelper(user)
         smsListVIewModel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(
             context,
-            lifecycleScope
+            lifecycleScope,
+            tokenHelper
         )).get(
             SMSSpamViewModel::class.java)
     }

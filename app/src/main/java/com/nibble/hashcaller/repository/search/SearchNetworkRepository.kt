@@ -30,7 +30,6 @@ class SearchNetworkRepository(private val tokenManager: TokenManager,
 //            val token = tokenManager.getDecryptedToken()
            val token =  tokenHelper?.getToken()
             if(!token.isNullOrEmpty()){
-
                     result =  retrofitService?.search(SearchDTO(phoneNum), token)
                     Log.d(TAG, "search: $result")
                 }
@@ -45,9 +44,10 @@ class SearchNetworkRepository(private val tokenManager: TokenManager,
 
     suspend fun incrementTotalSpamCount()  = withContext(Dispatchers.IO) {
        try {
-           val token = tokenManager.getDecryptedToken()
+           val token:String? = tokenHelper?.getToken()
 
-           retrofitService!!.incrementTotalSpamCount(token)
+
+           token?.let { retrofitService!!.incrementTotalSpamCount(it) }
        }catch (e:Exception){
            Log.d(TAG, "incrementTotalSpamCount: ")
        }

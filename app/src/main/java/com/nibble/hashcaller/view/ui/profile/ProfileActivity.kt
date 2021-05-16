@@ -14,15 +14,16 @@ import androidx.annotation.RequiresApi
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityProfileBinding
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.CheckNetwork
-import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.utils.internet.InternetChecker
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -47,12 +48,17 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     var imageMultipartBody: MultipartBody.Part? = null
     private lateinit var internetChecker:InternetChecker
     private lateinit var networkChecker:CheckNetwork
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         networkChecker = CheckNetwork(this)
         setContentView(binding.root)
+        user = FirebaseAuth.getInstance().currentUser
+        tokenHelper =  TokenHelper(user)
         initViewmodel()
         observeUserInfo()
         observeFormfields()
@@ -112,7 +118,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun initViewmodel() {
         viewModel = ViewModelProvider(
             this, UserInfoInjectorUtil.provideUserInjectorUtil(
-                applicationContext
+                applicationContext,
+                tokenHelper
             )
         ).get(
             UserInfoViewModel::class.java

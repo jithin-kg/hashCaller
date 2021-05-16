@@ -4,9 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
@@ -46,7 +48,8 @@ class SMSIndividualLiveData(
             smssendersInfoDAO,
             mutedSendersDAO,
             smsThreadsDAO,
-            DataStoreRepository(context.tokeDataStore)
+            DataStoreRepository(context.tokeDataStore),
+            TokenHelper( FirebaseAuth.getInstance().currentUser)
         )
         return@withContext repository.fetchIndividualSMS(contact)
 

@@ -29,7 +29,7 @@ class UserInfoViewModel(
     private val userNetworkRepository: UserNetworkRepository,
     private val userHashedNumRepository: UserHasehdNumRepository
 ) :ViewModel(){
-    var userInfoLivedata = userNetworkRepository.getUserInfo()
+    var userInfoLivedata = userNetworkRepository.getUserInfoLiveData()
 //    val userInfo  = userNetworkRepository.getUserInfo()
 
 
@@ -64,6 +64,10 @@ class UserInfoViewModel(
         return res
     }
 
+    fun getUserInfoFromDb():LiveData<UserInfo?> = liveData{
+        emit(userNetworkRepository?.getUserInfo())
+    }
+
     companion object{
         const val TAG = "__UserInfoViewModel"
     }
@@ -75,22 +79,23 @@ class UserInfoViewModel(
         super.onCleared()
     }
 
-    fun getUserInfoFromServer(encodeTokenString: String, phoneNumber: String?, context: Context): LiveData<SingupResponse> = liveData {
+    fun getUserInfoFromServer( phoneNumber: String?, context: Context): LiveData<SingupResponse> = liveData {
             try {
                 val formattedPhoneNum = formatPhoneNumber(phoneNumber!!)
                 val hashedNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
-                val response =  userNetworkRepository.getUserInfoFromServer(encodeTokenString, hashedNum, formattedPhoneNum)
+                val response =  userNetworkRepository.getUserInfoFromServer( hashedNum, formattedPhoneNum)
                 Log.d(TAG, "getUserInfoFromServer: response: $response")
-                Log.d(TAG, "getUserInfoFromServer: responsebody: ${response.body()}")
-                if(response.isSuccessful){
-                    if(response.body()!=null)
-                        emit(response.body()!!)
+                Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
+                response?.let {
+                    if(response?.isSuccessful){
+                        if(response.body()!=null)
+                            emit(response.body()!!)
 //                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
 //                        emit(response.body()!!)
 //                    }
-                }else{
-                    Log.d(TAG, "getUserInfoFromServer: ${response.errorBody()}")
+                    }
                 }
+
 
             }catch (e:Exception){
                 Log.d(TAG, "getUserInfoFromServer: exception $e")
@@ -137,8 +142,11 @@ class UserInfoViewModel(
                 val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
                 if(hashedNumResultFromDb!=null){
                     val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
-                    val response:Response<SingupResponse> = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
-                    emit(getGenericResponse(response))
+                    val response:Response<SingupResponse>? = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
+                    response?.let {
+                        emit(getGenericResponse(response))
+                    }
+
                 }
             }catch (e:Exception){
                 Log.d(TAG, "updateUserInfo: exception $e")
@@ -165,8 +173,11 @@ class UserInfoViewModel(
             if(hashedNumResultFromDb!=null){
                 var result:String? = ""
                 val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
-                val response:Response<SingupResponse> = userNetworkRepository.signup(info, body)
-               emit(getGenericResponse(response))
+                val response:Response<SingupResponse>? = userNetworkRepository.signup(info, body)
+                response?.let {
+                    emit(getGenericResponse(response))
+                }
+
             }
 
         }catch (e:Exception){

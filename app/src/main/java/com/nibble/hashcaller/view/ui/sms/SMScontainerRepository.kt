@@ -15,8 +15,7 @@ import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.spam.hashednums
-import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -32,7 +31,8 @@ class SMScontainerRepository(
     val smsSenderInfoDAO: SMSSendersInfoFromServerDAO,
     val mutedSendersDAO: IMutedSendersDAO?,
     val blockedOrSpamSenderDAO: IBlockedOrSpamSendersDAO?,
-    private val dataStoreRepostitory:DataStoreRepository
+    private val dataStoreRepostitory: DataStoreRepository,
+    private val tokenHelper: TokenHelper?
 ) {
 
     private var retrofitService:ISpamService? = null
@@ -51,12 +51,16 @@ class SMScontainerRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownSMSsendersInfoResponse> {
+    suspend fun uploadNumbersToGetInfo(phoneNumberListToBeUPloaded: hashednums): Response<UnknownSMSsendersInfoResponse>? {
          retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager( dataStoreRepostitory )
-        val token = tokenManager.getDecryptedToken()
+//        val tokenManager = TokenManager( dataStoreRepostitory )
+//        val token = tokenManager.getDecryptedToken()
+        val token:String? = tokenHelper?.getToken()
+        var response:Response<UnknownSMSsendersInfoResponse>?= null
+        token?.let {
+            response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
+        }
 
-        val response = retrofitService!!.getInfoForThesePhoneNumbers(phoneNumberListToBeUPloaded, token)
         Log.d(TAG, "uploadNumbersToGetInfo: response is ${response}")
         return response
     }
@@ -123,9 +127,10 @@ class SMScontainerRepository(
 
     suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager( dataStoreRepostitory)
-        val token = tokenManager.getDecryptedToken()
-        return retrofitService?.report(callerInfo, token)
+       val token:String?= tokenHelper?.getToken()
+        var respone:Response<NetWorkResponse>? = null
+        respone = token?.let { retrofitService?.report(callerInfo, it) }
+        return respone
     }
 
     companion object{

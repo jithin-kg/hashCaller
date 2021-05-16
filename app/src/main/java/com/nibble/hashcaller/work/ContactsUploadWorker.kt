@@ -6,6 +6,8 @@ import android.provider.ContactsContract
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.Secrets
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -18,6 +20,7 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import kotlinx.coroutines.*
 import retrofit2.HttpException
@@ -38,6 +41,11 @@ val countryCodeHelper = CountrycodeHelper(context)
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
     private var contactRepository:WorkerContactRepository? = null
+
+    private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+    private var tokenHelper: TokenHelper? = TokenHelper(user)
+
+
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
             val cursor = context!!.contentResolver.query(
@@ -58,7 +66,7 @@ val countryCodeHelper = CountrycodeHelper(context)
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
                     val countryCode = countryCodeHelper.getCountrycode()
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
-                    val contactsNetworkRepository = ContactsNetworkRepository(context)
+                    val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
 
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
                     if(result?.code() in (500..599)){

@@ -33,14 +33,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.Shimmer
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
-import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
-import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 
 import com.nibble.hashcaller.view.ui.contacts.utils.*
@@ -57,7 +56,6 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
-import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
@@ -332,7 +330,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         }
     }
     private fun initVieModel() {
-        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(context?.applicationContext, lifecycleScope)).get(
+        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(
+            context?.applicationContext,
+            lifecycleScope,
+            TokenHelper(FirebaseAuth.getInstance().currentUser)
+            )).get(
             SMSViewModel::class.java)
 
     }

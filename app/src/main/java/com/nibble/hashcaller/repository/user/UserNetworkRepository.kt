@@ -7,6 +7,7 @@ import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.user.GetUserInfoDTO
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.network.user.SingupResponse
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
@@ -26,7 +27,8 @@ class UserNetworkRepository(
     private val tokenManager: TokenManager,
     private val userInfoDAO: UserInfoDAO,
     private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO,
-    private val imageCompressor: ImageCompressor
+    private val imageCompressor: ImageCompressor,
+    private val tokenHelper: TokenHelper?
 ){
     private lateinit var firstName:RequestBody
     private lateinit var lastName :RequestBody
@@ -34,41 +36,52 @@ class UserNetworkRepository(
     private lateinit var phoneNumber :RequestBody
     private lateinit var countryCode :RequestBody
     private lateinit var countryISO :RequestBody
-    private var token = ""
+    private var token:String? = ""
 
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
 
-    suspend fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse> = withContext(Dispatchers.IO) {
+    suspend fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse>? = withContext(Dispatchers.IO) {
         prepareRquestBody(userInfo)
-        return@withContext retrofitService.updateUserInfo(
-            firstName,
-            lastName,
-            hashedNum,
-            phoneNumber,
-            countryCode,
-            countryISO,
-            imgMultipartBody,
-            token
-        )
+        token = tokenHelper?.getToken()
+        token?.let {
+            return@withContext retrofitService.updateUserInfo(
+                firstName,
+                lastName,
+                hashedNum,
+                phoneNumber,
+                countryCode,
+                countryISO,
+                imgMultipartBody,
+                it
+            )
+        }
+        return@withContext null
+
+
     }
-    suspend fun signup(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse>   = withContext(Dispatchers.IO) {
+    suspend fun signup(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<SingupResponse>?   = withContext(Dispatchers.IO) {
 //        retrofitService = RetrofitClient.createaService(IuserService::class.java)
         prepareRquestBody(userInfo)
         //        Log.d(TAG, "signup: ${response?.body()?.message}")
-        return@withContext retrofitService?.signup(
-            firstName,
-            lastName,
-            hashedNum,
-            phoneNumber,
-            countryCode,
-            countryISO,
-            imgMultipartBody,
-            token
-        )
+        token = tokenHelper?.getToken()
+        token?.let {
+            return@withContext retrofitService?.signup(
+                firstName,
+                lastName,
+                hashedNum,
+                phoneNumber,
+                countryCode,
+                countryISO,
+                imgMultipartBody,
+                it
+            )
+        }
+        return@withContext null
+
     }
 
     private suspend fun prepareRquestBody(userInfo: UserInfoDTO) {
-        token = tokenManager.getDecryptedToken()
+        token = tokenHelper?.getToken()
         firstName = createPartFromString(userInfo.firstName)
         lastName = createPartFromString(userInfo.lastName)
         hashedNum = createPartFromString(userInfo.hashedNum)
@@ -88,8 +101,11 @@ class UserNetworkRepository(
     /**
      * function to get user info from local db
      */
-     fun getUserInfo(): LiveData<UserInfo> {
+     fun getUserInfoLiveData(): LiveData<UserInfo> {
         return this.userInfoDAO.getUserInfoLiveData()
+    }
+    suspend fun getUserInfo():UserInfo? = withContext(Dispatchers.IO){
+        return@withContext userInfoDAO?.getUser()
     }
     suspend fun updateUserInfoInDb(firstName: String, lastName: String, imageUri: String) = withContext(Dispatchers.IO) {
         userInfoDAO?.updateUserInfo(firstName, lastName, imageUri)
@@ -100,12 +116,11 @@ class UserNetworkRepository(
     }
 
     suspend fun getUserInfoFromServer(
-        encodeTokenString: String,
         hashedNum: String,
         formattedPhoneNum: String
-    ): Response<SingupResponse> = withContext(Dispatchers.IO) {
-        val token = tokenManager.getDecryptedToken()
-        return@withContext retrofitService.getUserInfo(token, GetUserInfoDTO(hashedNum, formattedPhoneNum))
+    ): Response<SingupResponse>? = withContext(Dispatchers.IO) {
+        val token = tokenHelper?.getToken()
+        return@withContext token?.let { retrofitService.getUserInfo(it, GetUserInfoDTO(hashedNum, formattedPhoneNum)) }
     }
 
     suspend fun insertNewUserIntoDb(userInfo: UserInfo)  = withContext(Dispatchers.IO) {

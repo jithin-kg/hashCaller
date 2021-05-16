@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
 import kotlinx.android.synthetic.main.bottom_sheet_block.view.*
@@ -32,7 +34,8 @@ class BlockDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
         ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(
             context,
-            lifecycleScope
+            lifecycleScope,
+            TokenHelper( FirebaseAuth.getInstance().currentUser)
         )).get(
             ContactsViewModel::class.java)
 

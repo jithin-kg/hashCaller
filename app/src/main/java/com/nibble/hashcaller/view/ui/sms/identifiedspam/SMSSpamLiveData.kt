@@ -5,11 +5,13 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -54,7 +56,8 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context.tokeDataStore)
+                DataStoreRepository(context.tokeDataStore),
+                TokenHelper( FirebaseAuth.getInstance().currentUser)
             )
 //        val res =  repository.getSMSForViewModel(null, true)
             val res:MutableList<SMS> = mutableListOf()
@@ -152,7 +155,8 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 smssendersInfoDAO,
                 mutedSendersDAO,
                 smsThreadsDAO,
-                DataStoreRepository(context.tokeDataStore)
+                DataStoreRepository(context.tokeDataStore),
+                TokenHelper( FirebaseAuth.getInstance().currentUser)
             )
         repository.markSMSAsRead(address)
     }

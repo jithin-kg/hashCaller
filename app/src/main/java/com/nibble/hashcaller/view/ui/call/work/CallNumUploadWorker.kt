@@ -5,11 +5,14 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -17,7 +20,6 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallLocalRepository
-import com.nibble.hashcaller.view.ui.call.utils.CallersInfoResponseItem
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -43,18 +45,25 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
     val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
     val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
+
+    private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+    private var tokenHelper: TokenHelper? = TokenHelper(user)
+
     val callContainerRepository =
         CallContainerRepository(
             context,
             callersInfoFromServerDAO,
             mutedCallersDAO,
             callLogDAO,
-            DataStoreRepository(context.tokeDataStore)
+            DataStoreRepository(context.tokeDataStore),
+            tokenHelper
         )
 
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
+
+
             val networklivedta = ConnectionLiveData(context)
 
             val callersLocalRepository =
@@ -75,24 +84,26 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
 
-                    if(result.code() in (500..599)){
+                    if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
 
-                    for(cntct in result.body()!!.contacts){
+                   if(result!=null){
+                       for(cntct in result?.body()?.contacts!!){
 
-                        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                            contactAddress = formatPhoneNumber(cntct.phoneNumber),
-                            spammerType = 0,
-                            firstName = cntct.firstName?:"",
-                            informationReceivedDate =Date(),
-                            spamReportCount =  cntct.spamCount,
-                            isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
-                            thumbnailImg = cntct.imageThumbnail?:""
-                        )
+                           val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+                               contactAddress = formatPhoneNumber(cntct.phoneNumber),
+                               spammerType = 0,
+                               firstName = cntct.firstName?:"",
+                               informationReceivedDate =Date(),
+                               spamReportCount =  cntct.spamCount,
+                               isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+                               thumbnailImg = cntct.imageThumbnail?:""
+                           )
 
-                        callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
-                    }
+                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                       }
+                   }
                     callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                 }
             }else{

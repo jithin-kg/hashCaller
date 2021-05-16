@@ -24,6 +24,7 @@ import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.*
@@ -111,7 +112,8 @@ class SMSLocalRepository(
     val smssendersInfoDAO: SMSSendersInfoFromServerDAO?,
     private val mutedSendersDAO: IMutedSendersDAO?,
     private val smsThreadsDAO: ISMSThreadsDAO?,
-    private val dataStoreRepostiroy: DataStoreRepository
+    private val dataStoreRepostiroy: DataStoreRepository,
+    private val tokenHelper: TokenHelper?
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -1746,9 +1748,10 @@ class SMSLocalRepository(
         var retrofitService:ISpamService? = null
 
         retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        val tokenManager = TokenManager( dataStoreRepostiroy)
-        val token = tokenManager.getDecryptedToken()
-        return@withContext retrofitService?.report(callerInfo, token)
+        var result:Response<NetWorkResponse>? = null
+        val token = tokenHelper?.getToken()
+         result = token?.let { retrofitService?.report(callerInfo, it) }
+        return@withContext result
     }
 
 

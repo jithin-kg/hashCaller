@@ -18,11 +18,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -66,7 +69,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private var contactListFragment: ContactListFragment? = null
 
     private lateinit  var contactViewModel: ContactsViewModel
-
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     var contactsRecyclerAdapter: ContactAdapter? = null
 
@@ -104,6 +108,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         _binding = FragmentContactsContainerBinding.inflate(inflater, container, false)
 
         initListeners()
+        user = FirebaseAuth.getInstance().currentUser
+        tokenHelper =  TokenHelper(user)
 
         ViewCompat.setTransitionName(binding.searchViewContacts, binding.searchViewContacts.transitionName)
         val contextThemeWrapper: Context =
@@ -163,8 +169,15 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
 
     private fun initViewmodel() {
-        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(context?.applicationContext, lifecycleScope)).get(ContactsViewModel::class.java)
-        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(context?.applicationContext!!)).get(
+        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(
+            context?.applicationContext,
+            lifecycleScope,
+            TokenHelper( FirebaseAuth.getInstance().currentUser)
+        )).get(ContactsViewModel::class.java)
+        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(
+            context?.applicationContext!!,
+            tokenHelper
+        )).get(
             UserInfoViewModel::class.java
         )
 

@@ -4,10 +4,12 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
@@ -31,11 +33,10 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
         val report = ReportedUserDTo(num!!, "kerala", "0", "1")
 //        repository.report(report)
         try {
-            val tokenManager = TokenManager(dataStoreRepostory )
-            val token = tokenManager.getDecryptedToken()
-
-           val response =  retrofitService?.report(report, token)
-            if(response.code() in 500..599){
+            val tokenHelper = TokenHelper( FirebaseAuth.getInstance().currentUser)
+            val token = tokenHelper?.getToken()
+           val response = token?.let { retrofitService?.report(report, it) }
+            if(response?.code() in 500..599){
                 return@withContext Result.retry()
             }
         } catch (e: Exception) {

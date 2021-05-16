@@ -18,7 +18,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
@@ -333,7 +335,11 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initVieModel() {
-        viewmodel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(context, lifecycleScope)).get(
+        viewmodel = ViewModelProvider(this, SMSListSpamInjectorUtil.provideDialerViewModelFactory(
+            context,
+            lifecycleScope,
+            TokenHelper( FirebaseAuth.getInstance().currentUser)
+        )).get(
             SMSSpamViewModel::class.java)
     }
 

@@ -6,8 +6,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySettingsBinding
+import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
@@ -22,12 +25,17 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding:ActivitySettingsBinding
     private lateinit var viewmodel: SettingsViewModel
     private lateinit var sharedUserInfoViewmodel: UserInfoViewModel
+    private var user: FirebaseUser? = null
+    private var tokenHelper: TokenHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        user = FirebaseAuth.getInstance().currentUser
+        tokenHelper =  TokenHelper(user)
+
         initViewmodel()
         getUserInfo()
 
@@ -64,7 +72,8 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         )
         sharedUserInfoViewmodel = ViewModelProvider(
             this, MainActivityInjectorUtil.provideUserInjectorUtil(
-                this
+                this,
+                tokenHelper
             )
         ).get(
             UserInfoViewModel::class.java
