@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.network.user
 
-import com.nibble.hashcaller.repository.user.UserInfoDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -48,7 +47,8 @@ interface IuserService {
     @POST("user/getUserInfoForUid")
     suspend fun getUserInfo(
         @Header("Authorization")
-        token: String
+        token: String,
+        @Body userInfo:GetUserInfoDTO
     ) : Response<SingupResponse>
 
 

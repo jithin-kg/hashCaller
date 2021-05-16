@@ -10,9 +10,8 @@ import androidx.annotation.RequiresApi
 
 
 class CheckNetwork(private val context: Context){
-
     // Network Check
-    @RequiresApi(Build.VERSION_CODES.N)
+
     fun registerNetworkCallback() {
         try {
             val connectivityManager =
@@ -20,15 +19,15 @@ class CheckNetwork(private val context: Context){
             val builder = NetworkRequest.Builder()
             connectivityManager.registerDefaultNetworkCallback(object : NetworkCallback() {
                 override fun onAvailable(network: Network?) {
-                   isNetworkConnected = true // Global Static Variable
+                    isNetworkConnected = true // Global Static Variable
                 }
 
                 override fun onLost(network: Network?) {
-                   isNetworkConnected = false // Global Static Variable
+                    isNetworkConnected = false // Global Static Variable
                 }
             }
             )
-           isNetworkConnected = false
+            isNetworkConnected = false
         } catch (e: Exception) {
             isNetworkConnected = false
         }

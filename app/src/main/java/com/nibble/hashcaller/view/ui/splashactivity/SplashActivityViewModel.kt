@@ -75,7 +75,7 @@ class SplashActivityViewModel(
        viewModelScope.launch {
            try {
 
-                response =  repository?.getUserInfoFromServer()
+//                response =  repository?.getUserInfoFromServer()
 
 
 

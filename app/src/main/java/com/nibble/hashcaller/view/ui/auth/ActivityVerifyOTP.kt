@@ -394,7 +394,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
     private fun checkUserInfoInServer(encodeTokenString: String) {
         lifecycleScope.launchWhenStarted {
-            userInfoViewModel.getUserInfoFromServer(encodeTokenString).observe(this@ActivityVerifyOTP, Observer { userinfo ->
+            userInfoViewModel.getUserInfoFromServer(encodeTokenString, phoneNumber, this@ActivityVerifyOTP).observe(this@ActivityVerifyOTP, Observer { userinfo ->
                 if(userinfo!= null){
                     if(!userinfo.result.firstName.isNullOrEmpty()){
                         //user exists in server

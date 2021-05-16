@@ -50,8 +50,8 @@ class SplashActivityRepository(
     suspend fun getUserInfoFromServer(): Response<SingupResponse>?   = withContext(Dispatchers.IO){
         try {
             val token = tokenManager.getDecryptedToken()
-            val res =  retrofitService?.getUserInfo(token)
-            return@withContext res
+//            val res =  retrofitService?.getUserInfo(token, hashedNum, formattedPhoneNum)
+//            return@withContext res
         }catch (e:Exception){
             Log.d(TAG, "getUserInfoFromServer: $e")
         }

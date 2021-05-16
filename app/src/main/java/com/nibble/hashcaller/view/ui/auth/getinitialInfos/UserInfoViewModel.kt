@@ -75,9 +75,11 @@ class UserInfoViewModel(
         super.onCleared()
     }
 
-    fun getUserInfoFromServer(encodeTokenString: String): LiveData<SingupResponse> = liveData {
+    fun getUserInfoFromServer(encodeTokenString: String, phoneNumber: String?, context: Context): LiveData<SingupResponse> = liveData {
             try {
-                val response =  userNetworkRepository.getUserInfoFromServer(encodeTokenString)
+                val formattedPhoneNum = formatPhoneNumber(phoneNumber!!)
+                val hashedNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                val response =  userNetworkRepository.getUserInfoFromServer(encodeTokenString, hashedNum, formattedPhoneNum)
                 Log.d(TAG, "getUserInfoFromServer: response: $response")
                 Log.d(TAG, "getUserInfoFromServer: responsebody: ${response.body()}")
                 if(response.isSuccessful){

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.network.user.GetUserInfoDTO
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.utils.auth.TokenManager
@@ -98,9 +99,13 @@ class UserNetworkRepository(
 
     }
 
-    suspend fun getUserInfoFromServer(encodeTokenString: String): Response<SingupResponse> = withContext(Dispatchers.IO) {
+    suspend fun getUserInfoFromServer(
+        encodeTokenString: String,
+        hashedNum: String,
+        formattedPhoneNum: String
+    ): Response<SingupResponse> = withContext(Dispatchers.IO) {
         val token = tokenManager.getDecryptedToken()
-        return@withContext retrofitService.getUserInfo(token)
+        return@withContext retrofitService.getUserInfo(token, GetUserInfoDTO(hashedNum, formattedPhoneNum))
     }
 
     suspend fun insertNewUserIntoDb(userInfo: UserInfo)  = withContext(Dispatchers.IO) {
