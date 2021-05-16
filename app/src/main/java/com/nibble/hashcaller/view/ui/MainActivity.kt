@@ -137,9 +137,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var actionbarDrawertToggle: ActionBarDrawerToggle
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     private var savedState:Bundle? = null
-    private var metadata:FirebaseUserMetadata?= null;
-    private var _dataStoreViewModel: DataStoreViewmodel? = null
-    private val dataStoreViewModel  get() = _dataStoreViewModel!!
+    private var metadata:FirebaseUserMetadata?= null
+    private var dataStoreViewModel : DataStoreViewmodel? = null
     ///////////////////////////splash ////////////////////////////
     private val RC_SIGN_IN = 1
 
@@ -166,9 +165,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         _rcfirebaseAuth = FirebaseAuth.getInstance()
         if (checkPermission()) {
-            firebaseAuthListener()
-            initMainActivityComponents(savedState)
-
+            isUserInfoAvaialbleInDb{isUserInfoAvialble->
+                if(isUserInfoAvialble){
+                    firebaseAuthListener()
+                    initMainActivityComponents(savedState)
+                }else{
+                    onSingnedOutcleanUp()
+                }
+            }
 
         } else {
             val i = Intent(this, PermissionRequestActivity::class.java)
@@ -185,13 +189,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     }
+
+    private fun isUserInfoAvaialbleInDb(callback:(isUserInfoAvialble:Boolean)-> Unit){
+        dataStoreViewModel?.getToken()?.observe(this, Observer {
+            if(!it.isNullOrEmpty()){
+//                initMainActivityComponents(savedState)
+                callback(true)
+            }else{
+               callback(false)
+            }
+        })
+    }
+
     private fun checkPermission(): Boolean {
         return EasyPermissions.hasPermissions(this,
             Manifest.permission.READ_CONTACTS,
             CALL_PHONE,
             READ_PHONE_STATE,
             RECEIVE_SMS,
-
 
         )
     }
@@ -219,8 +234,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     var token = task.result?.token
                     // Send token to your backend via HTTPS
                     if(!token.isNullOrEmpty()){
-                        dataStoreViewModel.getEncryptedStr(token.toString()).observe(this, Observer {encodeTokenString ->
-                            dataStoreViewModel.saveTokenViewmodelScope(encodeTokenString)
+                        dataStoreViewModel?.getEncryptedStr(token.toString())?.observe(this, Observer {encodeTokenString ->
+                            dataStoreViewModel?.saveTokenViewmodelScope(encodeTokenString)
                         })
 
                     }
@@ -239,7 +254,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         finish()
     }
     private fun checkUserInfoInDb() {
-        dataStoreViewModel.getToken().observe(this, Observer {
+        dataStoreViewModel?.getToken()?.observe(this, Observer {
             if(!it.isNullOrEmpty()){
 //                initMainActivityComponents(savedState)
 
@@ -281,7 +296,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initDataStoreViewmodel() {
-        _dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+        dataStoreViewModel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
             DataStoreViewmodel::class.java)
     }
 
@@ -332,7 +347,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         _rcAuthStateListener = null
         _rcfirebaseAuth = null
-        _dataStoreViewModel = null
+        dataStoreViewModel = null
 //        _userInfoViewModel = null
         super.onDestroy()
 
