@@ -14,7 +14,7 @@ import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
 object MainActivityInjectorUtil {
     fun provideUserInjectorUtil(context: Context, tokenHelper: TokenHelper?) : MainActivityViewModelFactory {
         val userInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).userInfoDAo() }
-        val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+        val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val hasehdNumDAo = context?.let { HashCallerDatabase.getDatabaseInstance(it).userHashedNumDAO() }
 //        val contactsRepository = ContactRepositoryTwo(context)
         val imageCompressor: ImageCompressor = ImageCompressor(context)

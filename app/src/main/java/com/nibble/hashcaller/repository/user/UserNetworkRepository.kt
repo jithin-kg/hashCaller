@@ -2,7 +2,6 @@ package com.nibble.hashcaller.repository.user
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.user.GetUserInfoDTO
 import com.nibble.hashcaller.network.user.IuserService
@@ -11,6 +10,8 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ import java.io.File
 class UserNetworkRepository(
     private val tokenManager: TokenManager,
     private val userInfoDAO: UserInfoDAO,
-    private val senderInfoFromServerDAO: SMSSendersInfoFromServerDAO,
+    private val senderInfoFromServerDAO: CallersInfoFromServerDAO,
     private val imageCompressor: ImageCompressor,
     private val tokenHelper: TokenHelper?
 ){

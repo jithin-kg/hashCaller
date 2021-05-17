@@ -10,12 +10,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -37,11 +37,11 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         CoroutineWorker(context, params){
     val contacts = mutableListOf<ContactUploadDTO>()
 
-    private val sMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
+    private val sMSSendersInfoFromServerDAO: CallersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private val mutedSendersDAO = HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO()
     private val blockedOrSpamSenders = HashCallerDatabase.getDatabaseInstance(context).blockedOrSpamSendersDAO()
     private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
-    private val smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
+    private val smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
 
@@ -76,7 +76,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
-            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
             val smsContainerRepository = SMScontainerRepository(
                 context,
                 smssendersInfoDAO,
@@ -98,14 +98,14 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
-                    var smsSenderlistToBeSavedToLocalDb : MutableList<SMSSendersInfoFromServer> = mutableListOf()
+                    var smsSenderlistToBeSavedToLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
 
                     if(result?.body() != null){
                         for(cntct in result?.body()!!.contacts){
                             val formatedNum = formatPhoneNumber(cntct.phoneNumber)
-                            val smsSenderTobeSavedToDatabase = SMSSendersInfoFromServer(
+                            val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
                                 formatedNum, 0, cntct.name,
-                                Date(), cntct.spamCount)
+                               "", Date())
                             smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
                         }
                     }
@@ -131,7 +131,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     @SuppressLint("LongLogTag")
     private suspend fun setlistOfAllUnknownSenders(
         allsmsincontentProvider: MutableList<SMS>,
-        smssendersInfoDAO: SMSSendersInfoFromServerDAO
+        smssendersInfoDAO: CallersInfoFromServerDAO
     ) {
 
 

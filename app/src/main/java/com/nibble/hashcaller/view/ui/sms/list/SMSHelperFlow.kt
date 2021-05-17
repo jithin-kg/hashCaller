@@ -10,22 +10,17 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.sms.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.replaceSpecialChars
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class SMSHelperFlow(private val context: Context) {
-    val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+    val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
     suspend fun fetchFlowSMS(): MutableList<SMS>  {
         var item1 = SMS()
         item1.isDummy = true
@@ -119,10 +114,8 @@ class SMSHelperFlow(private val context: Context) {
 
                     getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS).apply {
                         if(this!=null){
-                            objSMS.name = this?.name
-                            if(!this.name.isNullOrEmpty()){
-                                objSMS.nameForDisplay = this.name
-                            }
+                            objSMS.firstNameFromServer = this.firstName
+                            objSMS.lastNameFromServer = this.lastName
                             objSMS.spamCount  = this.spamReportCount
                             objSMS.spammerType = this.spammerType
                             objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
@@ -225,8 +218,8 @@ class SMSHelperFlow(private val context: Context) {
     private suspend fun getDetailsFromDB(
         num: String,
         sms: SMS
-    ): SMSSendersInfoFromServer?  {
-        var r: SMSSendersInfoFromServer? = null
+    ): CallersInfoFromServer?  {
+        var r: CallersInfoFromServer? = null
 //        val frmtedNum = replaceSpecialChars(num)
         GlobalScope.launch {
             r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
@@ -241,7 +234,7 @@ class SMSHelperFlow(private val context: Context) {
                 var formattedNum = formatPhoneNumber(sms.addressString!!)
                     val name =   getConactInfoForNumber(formattedNum)
                     if (name != null){
-                        sms.name = name
+                        sms.firstName = name
                         sms.nameForDisplay = name
                         sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                     }

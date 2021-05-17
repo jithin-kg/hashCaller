@@ -5,8 +5,7 @@ import android.content.Context
 import android.provider.Telephony
 import android.util.Log
 import com.nibble.hashcaller.datastore.DataStoreRepository
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+
 import com.nibble.hashcaller.local.db.sms.block.IBlockedOrSpamSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
@@ -16,6 +15,8 @@ import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -28,7 +29,7 @@ import java.util.*
 
 class SMScontainerRepository(
     val context: Context,
-    val smsSenderInfoDAO: SMSSendersInfoFromServerDAO,
+    val smsSenderInfoDAO: CallersInfoFromServerDAO,
     val mutedSendersDAO: IMutedSendersDAO?,
     val blockedOrSpamSenderDAO: IBlockedOrSpamSendersDAO?,
     private val dataStoreRepostitory: DataStoreRepository,
@@ -45,7 +46,7 @@ class SMScontainerRepository(
      * 
      * this is the table schema
      */
-    suspend fun geSmsSendersStoredInLocalDB(): List<SMSSendersInfoFromServer> {
+    suspend fun geSmsSendersStoredInLocalDB(): List<CallersInfoFromServer> {
        val list =  smsSenderInfoDAO.getAll()
         return list
     }
@@ -110,13 +111,13 @@ class SMScontainerRepository(
         var spamCount = 0L
        smsSenderInfoDAO.find(formatPhoneNumber(contactAddress)).apply {
            if(this!=null){
-               name = this.name
+               name = this.firstName
                spamCount = this.spamReportCount
 
            }
            spamCount+=1
-           val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
-           val list = listOf<SMSSendersInfoFromServer>(info)
+           val info = CallersInfoFromServer(contactAddress, 0,name, "Date()", Date())
+           val list = listOf<CallersInfoFromServer>(info)
 
            smsSenderInfoDAO!!.insert(list)
            pageOb.page = 0

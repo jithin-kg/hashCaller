@@ -8,11 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
@@ -32,7 +32,7 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
     )  {
 
     private lateinit var spamListDAO:SpamListDAO
-    private lateinit var smssendersInfoDAO : SMSSendersInfoFromServerDAO
+    private lateinit var smssendersInfoDAO : CallersInfoFromServerDAO
     private lateinit var mutedSendersDAO:IMutedSendersDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -48,8 +48,7 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
 
         SMSViewModel.isLoading.postValue(true)
           spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
-         smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
-         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+         smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
           mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
          val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 

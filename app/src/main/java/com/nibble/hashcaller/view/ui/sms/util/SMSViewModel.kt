@@ -1,20 +1,19 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
-import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
+import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
-import com.nibble.hashcaller.work.replaceSpecialChars
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -45,7 +44,7 @@ class SMSViewModel(
 
 
 
-    fun getSmsSendersInfoFromServer(): LiveData<List<SMSSendersInfoFromServer>> {
+    fun getSmsSendersInfoFromServer(): LiveData<List<CallersInfoFromServer>> {
         return repository!!.getSmsSenderInforFromDB()
 //        return smsSenersInfoFromDB
     }
@@ -107,10 +106,11 @@ class SMSViewModel(
     /**
      * called when there is a change in table sender_infor_from_server changes
      */
-    fun updateWithNewSenderInfo(list: List<SMSSendersInfoFromServer>) = viewModelScope.launch {
-        for(item in list){
-            async { repository?.updateThreadsDBWithServerInfo(item) }.await()
-        }
+    fun updateWithNewSenderInfo(list: List<CallersInfoFromServer>) = viewModelScope.launch {
+        upadteThreadsWithInfoFromServer()
+//        for(item in list){
+//            async { repository?.updateThreadsDBWithServerInfo(item) }.await()
+//        }
     }
 
 //    private fun sortedSMSByTime(): MutableList<SMS> {
@@ -213,7 +213,7 @@ class SMSViewModel(
      * called when there is a change in sms data
      * to get information abount a sender
      */
-    fun getInformationForTheseNumbers() = viewModelScope.launch {
+    fun scheduleWorker() = viewModelScope.launch {
         val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java)
                                  .setConstraints(constraints)
@@ -249,49 +249,112 @@ class SMSViewModel(
 //        val as1 = async {
 //            sms?.let { repository?.updateThreadsDb(it) }
 //        }
+        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        supervisorScope.launch {
+            sms?.let{
+                val as1 =    async {  repository?.insertIntoThreadsDb(it) }
+                val as2 = async{repository?.updateThreadContent(it)}
+                val as3 = async { scheduleWorker()}
+                val as4 = async { repository?.deleteFromDb(it) }
 
-        sms?.let{
-         val as1 =    async {  repository?.insertIntoThreadsDb(it) }
-         val as2 = async{repository?.updateThreadContent(it)}
-         val as3 = async { getInformationForTheseNumbers()}
-         val as4 = async { repository?.deleteFromDb(it) }
-         val as5 = async { updateNameAndSpamCount(it) }
 
-            as1.await()
-            as2.await()
-            as3.await()
-            as4.await()
-            as5.await()
-        }
+
+                try {
+                    as1.await()
+                }catch (e:Exception){
+                    Log.d(TAG, "updateDatabase: $e")
+                }
+
+                try{
+                    as2.await()
+                }catch (e:Exception){
+                    Log.d(TAG, "updateDatabase:exception $e")
+                }
+
+                try{
+                    as3.await()
+                }catch (e:Exception){
+                    Log.d(TAG, "updateDatabase:exception $e")
+                }
+
+                try{
+                    as4.await()
+                }catch (e:Exception){
+                    Log.d(TAG, "updateDatabase:exception $e")
+                }
+
+
+
+
+//            as5.await()
+            }
+
+        }.join()
+        upadteThreadsWithInfoFromServer()
+
+//        updateWithServerInfo()
+
+
+
+
 
 
 
 //        as1.await()
     }
 
-    private fun updateNameAndSpamCount(threadsFromCprovider: MutableList<SmsThreadTable>) = viewModelScope.launch {
-        for (item in threadsFromCprovider){
-          updateDb(item)
-        }
+    private fun upadteThreadsWithInfoFromServer() = viewModelScope.launch {
+        val allThreads = repository?.getAllSmsThreads()
+            if(allThreads!=null)
+            for (threadItem in allThreads){
+               val infoFromServer = repository?.getServerInfoForNumber(threadItem.numFormated)
+                //todo update with contentprovider data from here
+                val infoFromCprovider = repository?.getInfoFromCproviderForNum(threadItem.numFormated)
+                if(infoFromServer!=null){
+                    if(threadItem.firstNameFromServer!= infoFromServer.firstName || threadItem.lastNameFromServer !=infoFromServer.lastName ||
+                            threadItem.spamCount < infoFromServer.spamReportCount ||threadItem.imageFromDb != infoFromServer.thumbnailImg){
+                        //if any of the info exists in threads table related to server info is diff from server ino , update it
+                        repository?.updateThreadsDBWithServerInfo(infoFromServer)
+                    }
+                }
+                if(infoFromCprovider!=null){
+                    if(threadItem.firstName!= infoFromCprovider.name || threadItem.thumbnailFromCp != infoFromCprovider.photoThumnail){
+                        withContext(Dispatchers.Default) {
+                            repository?.updateChatThreadWithContentProviderInfo(
+                                infoFromCprovider
+                            )
+                        }
+                    }
+                }
+            }
+
+
+    }
+
+    private fun updateWithServerInfo(threadsFromCprovider: MutableList<SmsThreadTable>) = viewModelScope.launch {
+//        for (item in threadsFromCprovider){
+//          updateDb(item)
+//        }
     }
 
     private fun updateDb(item: SmsThreadTable) {
         viewModelScope.launch {
             var isInfoTobBeUpdated = false
-            val nameAndThumbnailFromCp = async { repository?.getNameForAddressFromContentProvider(item.contactAddress) }.await()
-            if(nameAndThumbnailFromCp!=null){
-                if(item.name != nameAndThumbnailFromCp.name || item.thumbnailFromCp !=nameAndThumbnailFromCp.thumbnailUri){
-                    isInfoTobBeUpdated = true
-                    item.name = nameAndThumbnailFromCp.name
-                    item.thumbnailFromCp = nameAndThumbnailFromCp.thumbnailUri
-                }
-            }
+//            val nameAndThumbnailFromCp = async { repository?.getNameForAddressFromContentProvider(item.contactAddress) }.await()
+//            if(nameAndThumbnailFromCp!=null){
+//                if(item.firstName != nameAndThumbnailFromCp.name || item.thumbnailFromCp !=nameAndThumbnailFromCp.thumbnailUri){
+//                    isInfoTobBeUpdated = true
+//                    item.firstName = nameAndThumbnailFromCp.name
+//                    item.thumbnailFromCp = nameAndThumbnailFromCp.thumbnailUri
+//                }
+//            }
 
-            val infoFromServer:SMSSendersInfoFromServer? =  async { repository?.getSenderInfoFromServerForAddres(item.numFormated) }.await()
+            val infoFromServer:CallersInfoFromServer? =  async { repository?.getSenderInfoFromServerForAddres(item.numFormated) }.await()
             val threadInfoInDb = async { repository?.getThreadInfo(item.numFormated) }.await()
             if(infoFromServer!=null && threadInfoInDb !=null){
-                if(threadInfoInDb.nameFromServer != infoFromServer.name){
-                    item.nameFromServer = infoFromServer.name
+                if(threadInfoInDb.firstNameFromServer != infoFromServer.firstName){
+                    item.firstNameFromServer = infoFromServer.firstName
+                    item.lastNameFromServer = infoFromServer.lastName
                     isInfoTobBeUpdated = true
                 }
                 if(threadInfoInDb.spamCount < infoFromServer.spamReportCount){
@@ -320,7 +383,7 @@ class SMSViewModel(
         }
         for(item in threads){
             if(numberNamehashMap.containsKey(item.contactAddress)){
-                item.name = numberNamehashMap[item.contactAddress] ?: ""
+                item.firstName = numberNamehashMap[item.contactAddress] ?: ""
                 item.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
             }
         }

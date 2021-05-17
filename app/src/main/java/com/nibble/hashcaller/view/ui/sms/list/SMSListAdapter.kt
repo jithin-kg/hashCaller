@@ -128,18 +128,18 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             var nameStr = ""
             var firstLetter = ""
 
-                if(sms.name.isNotEmpty()){
-                    nameStr = sms.name!!
+                if(sms.firstName.isNotEmpty()){
+                    nameStr = sms.firstName!!
                     senderInforFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                }else if(sms.nameFromServer !=null ){
+                }else if(sms.firstNameFromServer !=null ){
                     senderInforFrom = SENDER_INFO_NOT_FOUND
-                    if(!sms.nameFromServer!!.isEmpty()){
-                        nameStr = sms.nameFromServer!!
+                    if(!sms.firstNameFromServer!!.isEmpty()){
+                        nameStr = sms.firstNameFromServer!!
                         senderInforFrom = SENDER_INFO_FROM_DB
 
                     }
                     //todo make info found from hash caller visible here
-                }else if(sms.nameFromServer==null){
+                }else if(sms.firstNameFromServer==null){
                     senderInforFrom = SENDER_INFO_SEARCHING
 
                 }

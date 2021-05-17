@@ -2,7 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.identifiedspam
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.contacts.utils.isSizeEqual
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -66,7 +66,7 @@ class SMSSpamViewModel(
     fun updateLiveData(sms: MutableList<SMS>?) {
         this.smsLiveDataSpam.value = sms
     }
-    fun getSmsSendersInfoFromServer(): LiveData<List<SMSSendersInfoFromServer>> {
+    fun getSmsSendersInfoFromServer(): LiveData<List<CallersInfoFromServer>> {
         return repository!!.getSmsSenderInforFromDB()
     }
 
@@ -74,7 +74,7 @@ class SMSSpamViewModel(
      * called when there is a change in table sender_infor_from_server changes
      */
     fun updateWithNewSenderInfo(
-        dataFromDB: List<SMSSendersInfoFromServer>?
+        dataFromDB: List<CallersInfoFromServer>?
     ) {
 
 

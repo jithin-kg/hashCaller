@@ -34,7 +34,7 @@ abstract class SMSContentProviderLiveData<T>(
             GlobalScope.launch {
                 postValue(getContentProviderValue(null)) // we are posting the initial value of the
             }
-            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
 
 //            smssendersInfoDAO.getAllLiveData().observe((context as AppCompatActivity)!!,  Observer {
 //                Log.d(TAG, "onChange: ")

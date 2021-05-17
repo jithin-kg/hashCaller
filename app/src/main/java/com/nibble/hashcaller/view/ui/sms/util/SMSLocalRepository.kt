@@ -14,8 +14,6 @@ import android.text.style.BackgroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.datastore.DataStoreRepository
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
@@ -25,7 +23,8 @@ import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.utils.auth.TokenManager
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
@@ -109,7 +108,7 @@ Constant Value: "seen"
 class SMSLocalRepository(
     private val context: Context,
     private val spamListDAO: SpamListDAO?,
-    val smssendersInfoDAO: SMSSendersInfoFromServerDAO?,
+    val callerInfoDAO: CallersInfoFromServerDAO?,
     private val mutedSendersDAO: IMutedSendersDAO?,
     private val smsThreadsDAO: ISMSThreadsDAO?,
     private val dataStoreRepostiroy: DataStoreRepository,
@@ -143,7 +142,6 @@ class SMSLocalRepository(
             )
             cnt = cursor?.count
 
-//            Log.d(TAG, "getUnreadMsgCount: count $cnt")
 
         }catch (e:Exception){
 
@@ -313,22 +311,17 @@ class SMSLocalRepository(
                             .contains("1")
                     ) {
                         objSMS.folderName = "inbox"
-                        Log.d(TAG, "fetch: inbox")
                     } else {
                         objSMS.folderName = "sent"
-                        Log.d(TAG, "fetch: sent")
 
                     }
 
                     getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
                         if(this!=null){
-                            objSMS.name = this?.name
-                            if(!this.name.isNullOrEmpty()){
-                                objSMS.nameForDisplay = this.name
-                            }
+                            objSMS.firstNameFromServer = this?.firstName
+                            objSMS.lastNameFromServer = this.lastName
                             objSMS.spamCount  = this.spamReportCount
                             objSMS.spammerType = this.spammerType
-                            objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                         }
                     }
 
@@ -359,7 +352,6 @@ class SMSLocalRepository(
     @SuppressLint("LongLogTag")
      suspend fun fetchSMSForLivedata(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): ArrayList<SmsThreadTable> = withContext(Dispatchers.IO) {
         var data = ArrayList<SmsThreadTable>()
-        Log.d(TAG, "fetch: called")
         var prevAddress = ""
         var prevTime = 0L
 //       val r1= GlobalScope.async {
@@ -383,20 +375,15 @@ class SMSLocalRepository(
                 do {
 
                     try {
-                        //TODO check if phone number exists in contact, if then add the contact information too
                         val objSMS = SmsThreadTable()
 //                        objSMS.id =
 //                            cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                         objSMS.threadId =
                             cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         var num =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
                         objSMS.numFormated = formatPhoneNumber(num)
                         objSMS.contactAddress = num
-
-                        //                    objSMS.address = num
-
                         objSMS.type =
                             cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
@@ -404,67 +391,22 @@ class SMSLocalRepository(
                             cursor.getString(cursor.getColumnIndexOrThrow("body"))
                         objSMS.body = msg
 
-//                        setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
-                        // spannable string builder function to setup spannable string builder
-//                        objSMS.addressString = formatPhoneNumber(num)
-//                        objSMS.nameForDisplay = objSMS.addressString!!
-
                         objSMS.readState =
                             cursor.getInt(cursor.getColumnIndex("read"))
 
                         val dateMilli =
                             cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-//                        if(prevAddress != objSMS.addressString){
-//                            prevAddress = objSMS.addressString!!
-//                        }else{
-//                            //equal
-//                            continue
-//                        }
                         objSMS.dateInMilliseconds = dateMilli
-//                        setRelativeTime(objSMS, dateMilli)
                         objSMS.spamCount = 0
-                        objSMS.name = ""
+
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
                         ) {
                             objSMS.folderName = "inbox"
-                            Log.d(TAG, "fetch: inbox")
                         } else {
                             objSMS.folderName = "sent"
-                            Log.d(TAG, "fetch: sent")
-
                         }
-
-//                          val r =  async {  getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS) }.await()
-//                                if(r!=null){
-//                                    objSMS.name = r?.name
-//                                    objSMS.spamCount  = r.spamReportCount
-//                                    objSMS.spammerType = r.spammerType
-//                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-//                                }
-//
-//                            getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
-//                                if(this!=null){
-//                                    objSMS.name = this?.name
-//                                    if(!this.name.isNullOrEmpty()){
-//                                        objSMS.nameForDisplay = this.name
-//                                    }
-//                                    objSMS.spamCount  = this.spamReportCount
-//                                    objSMS.spammerType = this.spammerType
-//                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-//                                }
-//                            }
-
-
-//                        if(!objSMS.msgString.isNullOrEmpty()){
-////                                setSMSHashMap(objSMS)
-//
-//                        }
-                            setOfAddress.add(objSMS.contactAddress)
-//                                if(markedThreadIds.contains(objSMS.threadID)){
-//                                    objSMS.isMarked = true
-//                                }
-
+                        setOfAddress.add(objSMS.contactAddress)
                         listOfMessages.add(objSMS)
 
                     } catch (e: Exception) {
@@ -472,27 +414,16 @@ class SMSLocalRepository(
                     }
 
                 } while (cursor.moveToNext())
-                //                            })
-                //                        }
-
 
             }
 
             data.addAll(listOfMessages)
-
-
-//                setNameIfExistInContactContentProvider(data)
-//                removeDeletedMSSFRomhashMap(setOfAddress)
-
-
 
         } catch (e: java.lang.Exception) {
             Log.d(TAG, "fetch: exception $e")
         }finally {
             cursor?.close()
         }
-//        }
-//        r1.await()
 
         return@withContext data
     }
@@ -501,7 +432,6 @@ class SMSLocalRepository(
         var data = ArrayList<SMS>()
         val listOfMessages = mutableListOf<SMS>()
 
-        Log.d(TAG, "fetch: called")
         var prevAddress = ""
         var prevTime = 0L
 //       val r1= GlobalScope.async {
@@ -568,10 +498,8 @@ class SMSLocalRepository(
                                     .contains("1")
                             ) {
                                 objSMS.folderName = "inbox"
-                                Log.d(TAG, "fetch: inbox")
                             } else {
                                 objSMS.folderName = "sent"
-                                Log.d(TAG, "fetch: sent")
 
                             }
 
@@ -674,8 +602,8 @@ class SMSLocalRepository(
         val lowerSearchQuery = searchQuery.toLowerCase()
         var startPos = 0
         var endPos = 0
-        if(objSMS.name!=null){
-            var lowerCaseName =objSMS.name!!.toLowerCase()
+        if(objSMS.firstName!=null){
+            var lowerCaseName =objSMS.firstName!!.toLowerCase()
 
             var spannableStringBuilder: SpannableStringBuilder = SpannableStringBuilder(lowerCaseName)
 
@@ -880,7 +808,7 @@ class SMSLocalRepository(
 //                if(isNumericOnlyString(formattedNum)){
                     val name =   getNameForNumberFromCprovider(formattedNum)
                     if (name != null){
-                        sms.name = name
+                        sms.firstName = name
                         sms.nameForDisplay = name
                         sms.senderInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
                     }
@@ -902,10 +830,10 @@ class SMSLocalRepository(
     private suspend fun getDetailsFromDB(
         num: String,
         sms: SMS
-    ): SMSSendersInfoFromServer?   = withContext(Dispatchers.IO) {
-        var r: SMSSendersInfoFromServer? = null
+    ): CallersInfoFromServer?   = withContext(Dispatchers.IO) {
+        var r: CallersInfoFromServer? = null
 
-        return@withContext smssendersInfoDAO!!.find(formatPhoneNumber(num))
+        return@withContext callerInfoDAO!!.find(formatPhoneNumber(num))
 //        GlobalScope.launch {
 //            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
 //        }.join()
@@ -965,7 +893,7 @@ class SMSLocalRepository(
 
 
                 }while (cursor.moveToNext())
-                sms.name = c.name
+                sms.firstName = c.name
                 sms.photoURI = c.photoURI
 
             }
@@ -1243,6 +1171,30 @@ class SMSLocalRepository(
         return name
     }
 
+    fun getInfoFromCproviderForNum(numFormated: String): Contact? {
+       var contact:Contact? = null
+        val phoneNum = formatPhoneNumber(numFormated)
+        var cursor2:Cursor? = null
+        try{
+            val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNum));
+             cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+            if(cursor2!=null && cursor2.moveToFirst()){
+//               val  name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+               contact = Contact( 0, "", photoThumnail = "" , phoneNumber =numFormated )
+            val name =
+                    cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                val photoURI =  cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
+                val times_used = cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+                contact?.name = name
+                contact?.photoThumnail = photoURI
+            }
+        }catch (e:Exception){
+            Log.d(TAG, "getConactInfoForNumber: exception $e")
+        }finally {
+            cursor2?.close()
+        }
+        return contact
+    }
     /**
      * get info of sms senders from contentprovider contacts
      * @param smslist list of sms from conentprovider
@@ -1262,7 +1214,7 @@ class SMSLocalRepository(
                 val name = getNameForNumberFromCprovider(sms.addressString!!)
                 Log.d(TAG, "getInfoFromContacts: name is $name")
 
-                sms.name = name
+                sms.firstName = name
             }
 
         }
@@ -1281,11 +1233,11 @@ class SMSLocalRepository(
             Log.d(TAG, "getInfoFromLocalDb: ")
             //replace all special character and search in db
             var num = sms.addressString
-            var res:SMSSendersInfoFromServer? = null
+            var res:CallersInfoFromServer? = null
             num = formatPhoneNumber(num!!)
-            res = smssendersInfoDAO!!.find(formatPhoneNumber(num)!!).apply {
-                if(sms.name.isNullOrEmpty()){
-                    sms.name = res?.name
+            res = callerInfoDAO!!.find(formatPhoneNumber(num)!!).apply {
+                if(sms.firstName.isNullOrEmpty()){
+                    sms.firstName = res?.firstName
                     Log.d(TAG, "getInfoFromLocalDb:  empty ")
 
                 }else{
@@ -1330,11 +1282,11 @@ class SMSLocalRepository(
     }
 
     private fun getSenderInfo(num: String) = CoroutineScope(Dispatchers.IO).async{
-        smssendersInfoDAO!!.find(formatPhoneNumber(num))
+        callerInfoDAO!!.find(formatPhoneNumber(num))
     }
 
-    fun getSmsSenderInforFromDB(): LiveData<List<SMSSendersInfoFromServer>>{
-        return smssendersInfoDAO!!.getAllLiveData()
+    fun getSmsSenderInforFromDB(): LiveData<List<CallersInfoFromServer>>{
+        return callerInfoDAO!!.getAllLiveData()
     }
 
     /**
@@ -1427,10 +1379,6 @@ class SMSLocalRepository(
         }
 
 
-
-        Log.d(TAG, "fetchSmsForWorker: size of list is ${data.size}")
-        if(data.size >= 1)
-            Log.d(TAG, "fetchSmsForWorker: first item msg is  ${data[0].msg}")
         return@withContext data
     }
 
@@ -1454,7 +1402,6 @@ class SMSLocalRepository(
 
                 //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
                 val cursor = createCursor(searchQuery)
-                Log.d(TAG, "fetch: page is   $page")
 
                 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
@@ -1468,7 +1415,6 @@ class SMSLocalRepository(
                                 cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                             objSMS.threadID =
                                 cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                             var num =
                                 cursor.getString(cursor.getColumnIndexOrThrow("address"))
                             num = num.replace("+", "")
@@ -1502,10 +1448,10 @@ class SMSLocalRepository(
                             }
                             getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
                                 if(this!=null){
-                                    objSMS.name = this?.name
+                                    objSMS.firstNameFromServer = this?.firstName
+                                    objSMS.lastNameFromServer = this.lastName
                                     objSMS.spamCount  = this.spamReportCount
                                     objSMS.spammerType = this.spammerType
-                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
 
                                 if (requestinfromSpamlistFragment!!) {
@@ -1574,7 +1520,6 @@ class SMSLocalRepository(
     suspend fun getSMSForViewModel(searchQuery: String?, requestinfromSpamlistFragment: Boolean?,
                                    isFullSmsNeeded :Boolean = false): MutableList<SMS> {
         var data = ArrayList<SMS>()
-        Log.d(TAG, "getSMSForSpammList: ")
         scope.launch {
             try {
 
@@ -1618,7 +1563,6 @@ class SMSLocalRepository(
                     )
                 }
 
-//                Log.d(TAG, "fetch: page is   $pageSpa")
 
                 //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
                 if (cursor != null && cursor.moveToFirst()) {
@@ -1632,7 +1576,6 @@ class SMSLocalRepository(
                                 cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                             objSMS.threadID =
                                 cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-                            Log.d(TAG, "getSMSForSpammList: threadid ${objSMS.threadID}")
                             var num =
                                 cursor.getString(cursor.getColumnIndexOrThrow("address"))
                             num = num.replace("+", "")
@@ -1670,11 +1613,10 @@ class SMSLocalRepository(
                             }
                           val r = async { getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS)  }.await()
                                 if(r!=null){
-                                    objSMS.name = r?.name
-                                    objSMS.nameForDisplay = r.name
+                                    objSMS.firstNameFromServer = r?.firstName
+                                    objSMS.lastNameFromServer = r?.lastName
                                     objSMS.spamCount  = r.spamReportCount
                                     objSMS.spammerType = r.spammerType
-                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
 
                             }
 //                            setSMSHashMap(objSMS)
@@ -1706,7 +1648,6 @@ class SMSLocalRepository(
 
             }
         }.join()
-        Log.d(TAG, "getSMSForSpammList: size is  ${data.size}")
 
 
 
@@ -1763,7 +1704,6 @@ class SMSLocalRepository(
 //        copy.addAll(markedThreadIds)
         try{
 //            for(id in copy) {
-                Log.d(TAG, "deleteSmsThread: threadid $id")
                 var uri = Telephony.Sms.CONTENT_URI
                 val selection = "${Telephony.Sms.THREAD_ID} = ?"
                 val selectionArgs = arrayOf(id.toString())
@@ -1773,7 +1713,6 @@ class SMSLocalRepository(
 
                 } finally { // this is to slow down deleting by 800mlseconds to see user deleting happening
                     numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
-                    Log.d(TAG, "deleteSmsThread: number  of  rows deleted $numRowsDeleted")
 
 
                 }
@@ -1806,7 +1745,7 @@ class SMSLocalRepository(
     }
 
     suspend fun deleteAllSMmsendersINo()  = withContext(Dispatchers.IO) {
-        smssendersInfoDAO!!.deleteAll()
+        callerInfoDAO!!.deleteAll()
         smsThreadsDAO?.deleteAll()
     }
 
@@ -1942,7 +1881,6 @@ class SMSLocalRepository(
                         cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
                     objSMS.threadID =
                         cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                     var num =
                         cursor.getString(cursor.getColumnIndexOrThrow("address"))
                     objSMS.addresStringNonFormated = num
@@ -1979,10 +1917,8 @@ class SMSLocalRepository(
                             .contains("1")
                     ) {
                         objSMS.folderName = "inbox"
-                        Log.d(TAG, "fetch: inbox")
                     } else {
                         objSMS.folderName = "sent"
-                        Log.d(TAG, "fetch: sent")
 
                     }
 
@@ -2003,7 +1939,7 @@ class SMSLocalRepository(
      */
     suspend fun getContactInfoFRomDB(pno: String): String?   = withContext(Dispatchers.IO){
 //        val numWithoutSpecialChars = replaceSpecialChars(pno)
-        var result : SMSSendersInfoFromServer? = null
+        var result : CallersInfoFromServer? = null
         var name :String ? = null
 //        if(isNumericOnlyString(numWithoutSpecialChars)){
 //            var formatednum = formatPhoneNumber(numWithoutSpecialChars)
@@ -2017,25 +1953,25 @@ class SMSLocalRepository(
 //            }
 //
 //        }
-        result = smssendersInfoDAO!!.find(formatPhoneNumber(pno))
+        result = callerInfoDAO!!.find(formatPhoneNumber(pno))
             if(result!=null){
-                name = result!!.name
+                name = result!!.firstName
             }
         return@withContext name
     }
 
     suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?, spammerCategory: Int)  = withContext(Dispatchers.IO) {
         val formatedAddress = formatPhoneNumber(contactAddress)
-        smssendersInfoDAO!!.find(formatedAddress).apply {
+        callerInfoDAO!!.find(formatedAddress).apply {
             if(this!=null){
                 //already infor exists
                     val spamcount = this.spamReportCount +1
-                smssendersInfoDAO!!.updateSpamCount(spamcount, true, this.contactAddress)
+                callerInfoDAO!!.update(spamcount, contactAddress, true)
             }else{
-                smssendersInfoDAO.insert(listOf(SMSSendersInfoFromServer(
+                callerInfoDAO.insert(listOf(CallersInfoFromServer(
                     formatedAddress,
                     spammerType!!,
-                    " ",Date(), 0, true )))
+                    " ","Date()", Date(), 1000 )))
             }
         }
     }
@@ -2056,7 +1992,6 @@ class SMSLocalRepository(
 
         val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
         if(cursor2!=null && cursor2.moveToFirst()){
-//                    Log.d(TAG, "getConactInfoForNumber: data exist")
             name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
             thumbnail = cursor2.getString(cursor2.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
             nameAndThumbnail = NameAndThumbnail(name?:"", thumbnail?:"")
@@ -2092,8 +2027,14 @@ class SMSLocalRepository(
 
     }
 
-    suspend fun updateThreadsDBWithServerInfo(item: SMSSendersInfoFromServer) = withContext(Dispatchers.IO) {
-        smsThreadsDAO?.updateWithServerInfo(item.contactAddress, item.spamReportCount, item.name)
+    suspend fun updateThreadsDBWithServerInfo(item: CallersInfoFromServer) = withContext(Dispatchers.IO) {
+        smsThreadsDAO?.updateWithServerInfo(
+            formatPhoneNumber(item.contactAddress),
+            item.spamReportCount,
+            item.firstName,
+            item.lastName,
+            item.thumbnailImg
+            )
     }
 
     /**
@@ -2105,14 +2046,15 @@ class SMSLocalRepository(
                 if(this!=null){
                     smsThreadsDAO?.updateBodyAndContents(item.numFormated,
                         item.body,  item.dateInMilliseconds )
+
                 }
             }
         }
     }
 
-    suspend fun getSenderInfoFromServerForAddres(contactAddress: String): SMSSendersInfoFromServer? = withContext(Dispatchers.IO) {
+    suspend fun getSenderInfoFromServerForAddres(contactAddress: String): CallersInfoFromServer? = withContext(Dispatchers.IO) {
         val num = formatPhoneNumber(contactAddress)
-         smssendersInfoDAO?.find(num).apply {
+         callerInfoDAO?.find(num).apply {
              return@withContext this
         }
     }
@@ -2129,7 +2071,7 @@ class SMSLocalRepository(
      * function to upate name, nameFrom server, spamcount
      */
     suspend fun updateThreadSpamCount(item: SmsThreadTable) = withContext(Dispatchers.IO) {
-        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCount, item.name, item.nameFromServer, item.thumbnailFromCp)
+        smsThreadsDAO?.updateInfos(item.numFormated, item.spamCount, item.firstName, item.firstNameFromServer, item.thumbnailFromCp)
     }
 
     /**
@@ -2137,7 +2079,6 @@ class SMSLocalRepository(
      */
     suspend fun searchForSMS(searchQuery: String?): MutableList<SMS> = withContext(Dispatchers.IO){
         var data = ArrayList<SMS>()
-        Log.d(TAG, "fetch: called")
         var prevAddress = ""
         var prevTime = 0L
 //       val r1= GlobalScope.async {
@@ -2153,7 +2094,6 @@ class SMSLocalRepository(
 
             //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
 
-//                Log.d(TAG, "fetch: page is   $page")
 
             //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
             if (cursor != null && cursor.moveToFirst()) {
@@ -2168,7 +2108,6 @@ class SMSLocalRepository(
                         objSMS.threadID =
                             cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
                         objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         objSMS.addressString =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
 
@@ -2200,16 +2139,13 @@ class SMSLocalRepository(
 
 //                        setRelativeTime(objSMS, dateMilli)
                         objSMS.spamCount = 0
-                        objSMS.name = ""
+                        objSMS.firstName = ""
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
                         ) {
                             objSMS.folderName = "inbox"
-                            Log.d(TAG, "fetch: inbox")
                         } else {
                             objSMS.folderName = "sent"
-                            Log.d(TAG, "fetch: sent")
-
                         }
 
 //                          val r =  async {  getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS) }.await()
@@ -2222,14 +2158,14 @@ class SMSLocalRepository(
 //
                             getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
                                 if(this!=null){
-                                    objSMS.nameFromServer = this?.name
+                                    objSMS.firstNameFromServer = this?.firstName
                                     objSMS.spamCount  = this.spamReportCount
                                     objSMS.spammerType = this.spammerType
                                     objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                                 }
                             }
 
-                        objSMS.name = getNameForNumberFromCprovider(objSMS.addressString!!)
+                        objSMS.firstName = getNameForNumberFromCprovider(objSMS.addressString!!)
 
                         setSpannableStringBuilder(objSMS, searchQuery, objSMS.body, objSMS.addressString!!)
 
@@ -2285,7 +2221,6 @@ class SMSLocalRepository(
     suspend fun getSMSForAddress(numForSearching: String, searchQuery: String): ArrayList<SMS>  = withContext(Dispatchers.IO) {
         //todo if found result set spannable string to address and if body also contains set it also
         var data = ArrayList<SMS>()
-        Log.d(TAG, "fetch: called")
         var prevAddress = ""
         var prevTime = 0L
 //       val r1= GlobalScope.async {
@@ -2301,7 +2236,6 @@ class SMSLocalRepository(
 
             //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
 
-//                Log.d(TAG, "fetch: page is   $page")
 
             //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
             if (cursor != null && cursor.moveToFirst()) {
@@ -2317,7 +2251,6 @@ class SMSLocalRepository(
                             cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
                         objSMS.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
 
-//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
                         objSMS.addressString =
                             cursor.getString(cursor.getColumnIndexOrThrow("address"))
 
@@ -2349,15 +2282,13 @@ class SMSLocalRepository(
 
 //                        setRelativeTime(objSMS, dateMilli)
                         objSMS.spamCount = 0
-                        objSMS.name = ""
+                        objSMS.firstName = ""
                         if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                 .contains("1")
                         ) {
                             objSMS.folderName = "inbox"
-                            Log.d(TAG, "fetch: inbox")
                         } else {
                             objSMS.folderName = "sent"
-                            Log.d(TAG, "fetch: sent")
 
                         }
 
@@ -2371,13 +2302,13 @@ class SMSLocalRepository(
 //
                         getDetailsFromDB(objSMS.addressString!!, objSMS).apply {
                             if(this!=null){
-                                objSMS.nameFromServer = this?.name
+                                objSMS.firstNameFromServer = this?.firstName
                                 objSMS.spamCount  = this.spamReportCount
                                 objSMS.spammerType = this.spammerType
                                 objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
                             }
                         }
-                        objSMS.name = getNameForNumberFromCprovider(objSMS.addressString!!)
+                        objSMS.firstName = getNameForNumberFromCprovider(objSMS.addressString!!)
                         setSpannableStringBuilder(objSMS, numForSearching, objSMS.body, objSMS.addressString!!)
                         setSpannableStrinForName(objSMS, searchQuery)
 
@@ -2423,6 +2354,19 @@ class SMSLocalRepository(
 
     suspend fun findOneThreadById(id: Long): SmsThreadTable?  = withContext(Dispatchers.IO) {
         return@withContext smsThreadsDAO?.findOneById(id)
+    }
+
+    suspend fun getAllSmsThreads(): List<SmsThreadTable>? = withContext(Dispatchers.IO) {
+
+        return@withContext smsThreadsDAO?.getAll()
+    }
+
+    suspend fun getServerInfoForNumber(numFormated: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
+        return@withContext callerInfoDAO?.find(formatPhoneNumber(numFormated))
+    }
+
+    suspend fun updateChatThreadWithContentProviderInfo(infoFromCprovider: Contact) = withContext(Dispatchers.IO) {
+        smsThreadsDAO!!.updateWithContentProviderInfo(infoFromCprovider.name, infoFromCprovider.photoURI, infoFromCprovider.phoneNumber)
     }
 
 

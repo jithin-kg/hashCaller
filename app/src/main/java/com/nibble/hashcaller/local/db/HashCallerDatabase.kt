@@ -42,7 +42,6 @@ import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
     ContactTable::class,
     SMSOutBox::class,
     SpammerInfo::class,
-    SMSSendersInfoFromServer::class,
     ContactLastSyncedDate::class,
     CallersInfoFromServer::class,
     UserInfo::class,
@@ -62,7 +61,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun contactInformationDAO() : IContactIformationDAO
         abstract fun smsDAO(): SmsOutboxListDAO
         abstract fun spamListDAO(): SpamListDAO
-        abstract fun smsSenderInfoFromServerDAO(): SMSSendersInfoFromServerDAO
+
         abstract fun callersInfoFromServerDAO(): CallersInfoFromServerDAO
         abstract fun  contactLastSyncedDateDAO():IContactLastSycnedDateDAO
         abstract fun userInfoDAo(): UserInfoDAO

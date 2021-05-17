@@ -150,12 +150,12 @@ class SMSSearchAdapter(private val context: Context,
             var nameStr = ""
             var firstLetter = ""
 
-            if(!sms.name.isNullOrEmpty()){
-                nameStr = sms.name!!
+            if(!sms.firstName.isNullOrEmpty()){
+                nameStr = sms.firstName!!
                 senderInforFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-            }else if(sms.nameFromServer!=null){
-                if(sms.nameFromServer!!.isNotEmpty()){
-                    nameStr = sms.nameFromServer!!
+            }else if(sms.firstNameFromServer!=null){
+                if(sms.firstNameFromServer!!.isNotEmpty()){
+                    nameStr = sms.firstNameFromServer!!
                     senderInforFrom = SENDER_INFO_FROM_DB
                 }else{
                     senderInforFrom = SENDER_INFO_NOT_FOUND
@@ -274,9 +274,9 @@ class SMSSearchAdapter(private val context: Context,
 
         private fun setSpanForNameSearch(sms: SMS) {
             var firstChar = ""
-            if(sms.spanEndPosNameCp!=0 && sms.name!=null ){
-                name.text = getSpannedString(sms.name!!, sms.spanStartPosNameCp, sms.spanEndPosNameCp)
-                firstChar = sms.name!![0].toString().toUpperCase()
+            if(sms.spanEndPosNameCp!=0 && sms.firstName!=null ){
+                name.text = getSpannedString(sms.firstName!!, sms.spanStartPosNameCp, sms.spanEndPosNameCp)
+                firstChar = sms.firstName!![0].toString().toUpperCase()
             }else if(sms.addressString!=null && sms.spanEndPos !=0){
                 name.text = getSpannedString(sms.addressString!!, sms.spanStartPos, sms.spanEndPos)
                 firstChar = formatPhoneNumber(sms.addressString!!).replace("+","")[0].toString().toUpperCase()
@@ -421,7 +421,7 @@ class SMSSearchAdapter(private val context: Context,
 //                Log.d(TAG, "areContentsTheSame: no")
 //            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
             Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
-            return  oldItem.name== newItem.name && oldItem.msg == newItem.msg && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
+            return  oldItem.firstName== newItem.firstName && oldItem.msg == newItem.msg && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
            //TODO compare both messages and if the addres is same and message
         }
 

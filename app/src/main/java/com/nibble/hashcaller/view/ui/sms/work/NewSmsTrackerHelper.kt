@@ -2,7 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.work
 
 import android.util.Log
 import com.nibble.hashcaller.Secrets
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import java.text.SimpleDateFormat
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  */
 class NewSmsTrackerHelper(
     val repository: SMScontainerRepository?,
-    val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
+    val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?
 ) {
     /**
      * @param smslist:list of all sms from content provider

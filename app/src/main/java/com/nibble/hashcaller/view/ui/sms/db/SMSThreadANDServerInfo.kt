@@ -3,7 +3,6 @@ package com.nibble.hashcaller.view.ui.sms.db
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.google.gson.Gson
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 

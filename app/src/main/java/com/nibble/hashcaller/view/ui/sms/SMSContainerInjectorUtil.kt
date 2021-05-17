@@ -15,7 +15,7 @@ object SMSContainerInjectorUtil {
     fun provideViewModelFactory(context: Context?, scope:LifecycleCoroutineScope): SMSCotainerViewModelFactory? {
 
 
-        val spammerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+        val spammerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val blockedOrSpamSenders = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
 //        val repository = context?.let { SMScontainerRepository(

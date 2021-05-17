@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData2
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class SmsContainerViewModel(
     val SMS: SMSLiveData2,
     val repository: SMScontainerRepository?,
-    val SMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO?
+    val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?
 
 ) :ViewModel(){
 

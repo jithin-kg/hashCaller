@@ -11,9 +11,11 @@ import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
 
 object PhoneAuthInjectorUtil {
+
     fun provideUserInjectorUtil(context:Context) : UserViewModelFactory {
+
         val userInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).userInfoDAo() }
-        val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+        val senderInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val userHashedNumDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).userHashedNumDAO() }
         val imageCompressor = ImageCompressor(context)
         val countryCodeHelper = CountrycodeHelper(context)

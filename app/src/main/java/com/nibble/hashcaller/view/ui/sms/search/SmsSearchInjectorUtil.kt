@@ -11,10 +11,11 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
  * Created by Jithin KG on 29,July,2020
  */
 object SmsSearchInjectorUtil {
+
     fun provideDialerViewModelFactory(context: Context?, tokenHelper: TokenHelper?):SmsSearchViewModelFactory{
 
         val spamListDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).spamListDAO() }
-        val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+        val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val smsSearchQueriesDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSearchQueriesDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }

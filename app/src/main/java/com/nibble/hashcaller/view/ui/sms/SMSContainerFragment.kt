@@ -343,7 +343,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private fun observeSendersInfoFromServer() {
         viewmodel?.getSmsSendersInfoFromServer()?.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
-
             viewmodel?.updateWithNewSenderInfo(it)
 
         })

@@ -12,7 +12,7 @@ import com.nibble.hashcaller.view.ui.call.dialer.util.normalizePhoneNumber
 @Keep
 data class Contact(
     val id: Long,
-    val name: String,
+    var name: String,
     var phoneNumber: String = "",
     var photoThumnail: String?,
     var photoURI: String = "",

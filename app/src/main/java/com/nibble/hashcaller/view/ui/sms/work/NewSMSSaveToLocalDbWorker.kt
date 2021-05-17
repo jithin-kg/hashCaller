@@ -8,10 +8,9 @@ import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServer
-import com.nibble.hashcaller.local.db.blocklist.SMSSendersInfoFromServerDAO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import java.lang.Exception
 
@@ -25,11 +24,11 @@ import java.lang.Exception
 class NewSMSSaveToLocalDbWorker (private val context: Context, private val params: WorkerParameters) :
     CoroutineWorker(context, params){
     private val spamListDAO = HashCallerDatabase.getDatabaseInstance(context).spamListDAO()
-    private val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSenderInfoFromServerDAO() }
+    private val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
     private val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
-    private val sMSSendersInfoFromServerDAO: SMSSendersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).smsSenderInfoFromServerDAO()
+    private val sMSSendersInfoFromServerDAO: CallersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result {
         try {
@@ -43,7 +42,7 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 TokenHelper( FirebaseAuth.getInstance().currentUser)
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
-            var sms : MutableList<SMSSendersInfoFromServer> = mutableListOf()
+            var sms : MutableList<CallersInfoFromServerDAO> = mutableListOf()
             return Result.success()
         }catch (e:Exception){
             return Result.retry()
