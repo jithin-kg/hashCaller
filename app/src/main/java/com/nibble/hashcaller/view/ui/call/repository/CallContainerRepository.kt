@@ -659,6 +659,10 @@ class CallContainerRepository(
         callLogDAO?.deleteBycontactAddress(formatPhoneNumber(item))
     }
 
+    suspend fun updateCallLogWithImgFromServer(item: CallersInfoFromServer) {
+        callLogDAO?.updateWithServerImage(item.thumbnailImg, formatPhoneNumber(item.contactAddress))
+    }
+
 
     companion object{
         const val TAG = "__CallContainerRepository"

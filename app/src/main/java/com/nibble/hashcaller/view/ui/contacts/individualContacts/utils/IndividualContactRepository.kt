@@ -262,13 +262,7 @@ class IndividualContactRepository(
            return@withContext photoUri
        }
 
-       /**
-        * function to get the image from db which received from server
-        */
-       suspend fun getClearImageFromDb(phoneNum: String): String? = withContext(Dispatchers.IO) {
-           var photoUri:String? = null
-           return@withContext photoUri
-       }
+
 
         fun getInfoFromServerForContact(): LiveData<ContactTable?>? {
            return phoneNum?.let { formatPhoneNumber(it) }?.let { dao?.findOne(it) }

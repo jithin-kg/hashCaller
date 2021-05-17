@@ -101,7 +101,6 @@ import java.security.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener {
-
     private lateinit var binding: ActivityMainBinding
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
     // via app settings page
@@ -207,13 +206,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun checkPermission(): Boolean {
-        return EasyPermissions.hasPermissions(this,
-            Manifest.permission.READ_CONTACTS,
+        return EasyPermissions.hasPermissions(
+            this,
+            READ_CONTACTS,
             CALL_PHONE,
             READ_PHONE_STATE,
-            RECEIVE_SMS,
-
-            )
+            READ_CALL_LOG,
+            WRITE_CALL_LOG,
+            READ_CONTACTS,
+            READ_PHONE_STATE )
     }
     private fun firebaseAuthListener() {
         rcfirebaseAuth = FirebaseAuth.getInstance()

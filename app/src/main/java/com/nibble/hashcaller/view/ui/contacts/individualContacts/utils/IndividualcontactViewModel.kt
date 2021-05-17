@@ -12,6 +12,9 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_BLOCKED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_UNBLOCKED
@@ -192,26 +195,36 @@ class IndividualcontactViewModel(
     }
 
     @SuppressLint("LongLogTag")
-    fun getClearImage(phoneNum: String):LiveData<String> = liveData {
-        kotlinx.coroutines.delay(1500L)
-        var imageUri = ""
-        viewModelScope.launch {
-            val defCproviderTask = async { repository.getClearImageFromCprovider(phoneNum) }
-            val defDbTask = async { repository.getClearImageFromDb(phoneNum) }
+    fun getClearImage(phoneNum: String):LiveData<ThumbnailImageData> = liveData {
+//        kotlinx.coroutines.delay(1500L)
+        try {
+            var imageUri = ""
+            val thumbnailImageData= ThumbnailImageData()
+            viewModelScope.launch {
+                val defCproviderTask = async { repository.getClearImageFromCprovider(phoneNum) }
+                val defDbTask = async { repository.getCallLogInfoForNum(phoneNum) }
 
-            try {
-                var imgFromCprovider: String? = defCproviderTask.await()
-                var imgFromDb: String? = defDbTask.await()
-                if (imgFromCprovider != null) {
-                    imageUri = imgFromCprovider
-                } else if (imgFromDb != null) {
-                    imageUri = imgFromDb
+                try {
+                    var imgFromCprovider: String? = defCproviderTask.await()
+                    var imgFromDb: String? = defDbTask.await()?.imageFromDb
+                    if (imgFromCprovider != null) {
+                        imageUri = imgFromCprovider
+                        thumbnailImageData.imageFoundFrom = IMAGE_FOUND_FROM_C_PROVIDER
+                        thumbnailImageData.imageStr = imageUri
+                    } else if (!imgFromDb.isNullOrEmpty()) {
+                        imageUri = imgFromDb
+                        thumbnailImageData.imageFoundFrom = IMAGE_FOUND_FROM_DB
+                        thumbnailImageData.imageStr = imageUri
+                    }
+                } catch (e: Exception) {
+                    Log.d(TAG, "getClearImage: exception $e")
                 }
-            } catch (e: Exception) {
-                Log.d(TAG, "getClearImage: exception $e")
-            }
-        }.join()
-        emit(imageUri)
+            }.join()
+            emit(thumbnailImageData)
+        }catch (e:Exception){
+            Log.d(TAG, "getClearImage:execption $e")
+        }
+
 
 
 

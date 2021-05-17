@@ -309,6 +309,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         if (EasyPermissions.hasPermissions(context, READ_CALL_LOG,
                 WRITE_CALL_LOG,  READ_CONTACTS, READ_PHONE_STATE)) {
 
+
             // Already have permission, do the thing
             Log.d(TAG, "methodRequiresTwoPermission: already permission")
         } else {

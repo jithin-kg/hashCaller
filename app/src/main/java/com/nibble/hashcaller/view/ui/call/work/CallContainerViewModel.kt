@@ -384,7 +384,10 @@ class CallContainerViewModel(
                       repository?.updateCallLogWithServerInfo(item)
                   }else if( res.spamCount < item.spamReportCount ){
                       repository?.updateCallLogWithSpamerDetails(item)
+                  }else if(res.imageFromDb!= item.thumbnailImg){
+                      repository?.updateCallLogWithImgFromServer(item)
                   }
+
               }
           }
     }

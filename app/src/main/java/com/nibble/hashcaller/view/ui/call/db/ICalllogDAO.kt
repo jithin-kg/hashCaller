@@ -71,5 +71,8 @@ interface ICallLogDAO {
     @Query("DELETE from call_log WHERE numberFormated=:numFormated")
     suspend fun deleteBycontactAddress(numFormated: String)
 
+    @Query("UPDATE  call_log  SET  imageUrlFromDb=:thumbnailImg  WHERE numberFormated =:formatPhoneNumber")
+    suspend fun updateWithServerImage(thumbnailImg: String, formatPhoneNumber: String)
+
 
 }

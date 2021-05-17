@@ -29,6 +29,7 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
 
@@ -153,6 +154,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 // by combining the code with a verification ID.
 
                 // Save verification ID and resending token so we can use them later
+                binding.pgBarOtpVerify.beGone()
                 storedVerificationId = verificationId
                 resendToken = token
                 binding.verifyManually.isEnabled = true
@@ -303,7 +305,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                     Log.d(TAG, "successfull: ")
                     onSignedInInitialize(code)
                     otpview.setText(code)
-                    Toast.makeText(this, "verified", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "verified", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.d(TAG, "something went wrong: ")
                     Toast.makeText(
@@ -398,6 +400,8 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkUserInfoInServer() {
+        binding.pgBarOtpVerify.beVisible()
+        binding.tvVerifying.beVisible()
         lifecycleScope.launchWhenStarted {
 
             userInfoViewModel.getUserInfoFromServer( phoneNumber, this@ActivityVerifyOTP).observe(this@ActivityVerifyOTP, Observer { userinfo ->

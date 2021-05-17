@@ -25,6 +25,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
+import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.getRelativeTime
 import kotlinx.android.synthetic.main.call_list.view.*
 
@@ -127,6 +128,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int) -> Int,
             networkHandler: SMSListAdapter.NetworkHandler
         ) {
+            var isImageThumbnailAvaialble = false
             Log.d(TAG, "bind: ")
             expandableView.setTag(callLog.dateInMilliseconds)
 
@@ -171,6 +173,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }else if(!callLog.nameFromServer.isNullOrEmpty()){
                     infoFoundFrom = SENDER_INFO_FROM_DB
                     nameStr = callLog.nameFromServer!!
+
                 }else if(callLog.nameFromServer== null){
                     infoFoundFrom = SENDER_INFO_SEARCHING
                     nameStr = callLog.numberFormated
@@ -182,6 +185,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             when (infoFoundFrom) {
                 SENDER_INFO_FROM_CONTENT_PROVIDER -> {
                     if(callLog.thumbnailFromCp.isNotEmpty()){
+                        isImageThumbnailAvaialble = true
                         showImageInCircle(logBinding, callLog.thumbnailFromCp)
                     }else{
                         logBinding.imgVThumbnail.beInvisible()
@@ -190,9 +194,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     }
 
                 }
+
                 SENDER_INFO_FROM_DB -> {
                     if(callLog.imageFromDb.isNotEmpty()){
-                        showImageInCircle(logBinding, callLog.imageFromDb)
+                        isImageThumbnailAvaialble = true
+                        logBinding.imgVThumbnail.setImageBitmap(getDecodedBytes(callLog.imageFromDb))
                     }else{
                         logBinding.imgVThumbnail.beInvisible()
                         circle.beVisible()
@@ -216,17 +222,22 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val firstLetterString = firstLetter.toString().toUpperCase()
 
                 if (callLog.spamCount > SPAM_THREASHOLD || callLog.isReportedByUser) {
-
-                    name.setColorForText(R.color.spamText)
+                    if(!isImageThumbnailAvaialble){
+                        name.setColorForText(R.color.spamText)
 //                    logBinding.imgViewCallSpamIcon.beVisible()
-                    circle.setRandomBackgroundCircle(TYPE_SPAM)
-                    circle.text = ""
+                        circle.setRandomBackgroundCircle(TYPE_SPAM)
+                        circle.text = ""
+                    }
+
 
                 } else {
-                    logBinding.imgViewCallSpamIcon.beInvisible()
-                    circle.setRandomBackgroundCircle(callLog.color)
-                    name.setColorForText(R.color.textColor)
-                    circle.text = firstLetterString
+                    if(!isImageThumbnailAvaialble){
+                        logBinding.imgViewCallSpamIcon.beInvisible()
+                        circle.setRandomBackgroundCircle(callLog.color)
+                        name.setColorForText(R.color.textColor)
+                        circle.text = firstLetterString
+                    }
+
 
                 }
             name.text = nameStr

@@ -24,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
 import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
@@ -35,6 +37,7 @@ import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 
 
@@ -47,6 +50,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var photoURI:String
     private  var color  = 1
     var phoneNum:String = ""
+    var name:String = ""
     var count  = 0
     private var isBlocked = false
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
@@ -60,6 +64,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var btnBlock:Button
     private lateinit var tvSpamfeedbackMsg : TextView
 
+
     @SuppressLint("LongLogTag")
 //    private  var contactId: Long? = null
 
@@ -69,34 +74,11 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding = ActivityIndividualCotactViewBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
-         phoneNum = intent.getStringExtra(CONTACT_ID)
-        val name = intent.getStringExtra("name")
-//        val id = intent.getLongExtra("id",0L)
-         photoURI = intent.getStringExtra("photo")
-        color = intent.getIntExtra("color", 1)
-//        getMoreInfoForNumber(phoneNum)
-        Log.d(TAG, "onCreate: photouri is $photoURI")
+        getIntentExtras()
         setupBottomSheet()
-
         initListeners()
-        Log.d(TAG, "onCreate: name $name")
-        IndividualContactInjectorUtil.phoneNumber = phoneNum
-            Log.d(TAG, "phone num is : $phoneNum")
-
-
-        viewModel =ViewModelProvider(
-            this, IndividualContactInjectorUtil.provideUserInjectorUtil(
-                applicationContext,phoneNum, lifecycleScope
-            )
-        ).get(
-            IndividualcontactViewModel::class.java
-        )
-        setDetailsInview(phoneNum, name)
-//        viewModel.photoUri.observe(this, Observer { photoUri->
-//            Log.d(TAG, "observer photo uri $photoUri")
-//
-//        })
-//        viewModel.getPhoto(id, phoneNum)
+        initViewmodel()
+//        setDetailsInview(phoneNum, name)
 
         viewModel.getContactsFromDb(phoneNum)
         getContactMutedInformation()
@@ -108,6 +90,28 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
 
 
+    }
+
+    private fun getIntentExtras() {
+        phoneNum = intent.getStringExtra(CONTACT_ID)?:""
+         name = intent.getStringExtra("name")?:""
+        if(name.isEmpty()){
+            name = phoneNum
+        }
+//        val id = intent.getLongExtra("id",0L)
+        photoURI = intent.getStringExtra("photo")?:""
+        color = intent.getIntExtra("color", 1)
+    }
+
+    private fun initViewmodel() {
+        IndividualContactInjectorUtil.phoneNumber = phoneNum
+        viewModel =ViewModelProvider(
+            this, IndividualContactInjectorUtil.provideUserInjectorUtil(
+                applicationContext,phoneNum, lifecycleScope
+            )
+        ).get(
+            IndividualcontactViewModel::class.java
+        )
     }
 
     private fun getinfoFromServer() {
@@ -128,18 +132,30 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         })
     }
 
+
     @SuppressLint("LongLogTag")
     private fun setClearImage(photoURI: String?) {
-        if(!photoURI.isNullOrEmpty()){
+        binding.tvName.text = name
+        binding.txtViewNumber.text = phoneNum
+
+//        if(!photoURI.isNullOrEmpty()){
             viewModel.getClearImage(phoneNum).observe(this, Observer {
-                if (it.isNotEmpty()) {
-                    Log.d(TAG, "setClearImage: image available $it")
-                    loadImage(this, binding.ivAvatar, it)
-                } else {
-                    Log.d(TAG, "setClearImage: image not available")
+                when(it.imageFoundFrom){
+                    IMAGE_FOUND_FROM_C_PROVIDER ->{
+                        loadImage(this, binding.ivAvatar, it.imageStr)
+                    }
+                    IMAGE_FOUND_FROM_DB ->{
+                        binding.ivAvatar.setImageBitmap(getDecodedBytes(it.imageStr))
+                    }
+                    else->{
+                        binding.tvFirstLetter.setRandomBackgroundCircle(color)
+                        binding.ivAvatar.beInvisible()
+                        binding.tvFirstLetter.text = name[0].toString()
+                    }
                 }
+
             })
-        }
+//        }
     }
 
     private fun setupBottomSheet() {
@@ -258,37 +274,12 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
             loadImage(this, binding.ivAvatar, photoUri)
             binding.tvFirstLetter.beInvisible()
         }else{
-            binding.ivAvatar.beInvisible()
+//            binding.ivAvatar.beInvisible()
             binding.tvFirstLetter.beVisible()
         }
     }
 
-    private fun setDetailsInview(phoneNum: String?, name: String?) {
-        if(photoURI.isEmpty()){
-            if(!name.isNullOrEmpty()){
 
-                if(color== TYPE_SPAM){
-                    binding.tvFirstLetter.text = ""
-
-                }else{
-                    binding.tvFirstLetter.text = name[0].toString()
-
-                }
-                binding.tvFirstLetter.setRandomBackgroundCircle(color)
-                binding.ivAvatar.beInvisible()
-            }
-        }else{
-            setImage(photoURI)
-
-        }
-        binding.tvName.text = name
-        binding.txtViewNumber.text = phoneNum
-
-
-
-
-
-    }
 
 
 
