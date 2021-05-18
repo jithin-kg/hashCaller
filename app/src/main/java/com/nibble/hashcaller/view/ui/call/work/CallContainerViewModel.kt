@@ -294,42 +294,43 @@ class CallContainerViewModel(
 
     }
 
-    fun blockThisAddress(spammerCategory: Int, spammerCategory1: Int) : LiveData<Int> = liveData {
+    fun blockThisAddress(spammerType: Int) : LiveData<Int> = liveData {
 //        threadID
-        viewModelScope.launch {
-            async {
+       contactAddress = markeditemsHelper.getmarkedAddresAt(0)?:""
+        if(contactAddress.isNotEmpty()){
+            viewModelScope.launch {
 
-                repository?.marAsReportedByUser(contactAddress)
+                async {
 
-                blockListPatternRepository.insert(
-                    BlockedListPattern(
-                        null,
-                        formatPhoneNumber(contactAddress),
-                        "",
-                        EXACT_NUMBER
+                    repository?.marAsReportedByUser(contactAddress)
+
+                    blockListPatternRepository.insert(
+                        BlockedListPattern(
+                            null,
+                            formatPhoneNumber(contactAddress),
+                            "",
+                            EXACT_NUMBER
+                        )
                     )
-                )
-            }
-            async {
-                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-                val data = Data.Builder()
-                data.putString(CONTACT_ADDRES, contactAddress)
+                }
+                async {
+                    val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                    val data = Data.Builder()
+                    data.putString(CONTACT_ADDRES, contactAddress)
+                    data.putInt(SPAMMER_TYPE, spammerType)
 
-                val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
-                    .setConstraints(constraints)
-                    .setInputData(data.build())
-                    .build()
-                WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+                    val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
+                        .setConstraints(constraints)
+                        .setInputData(data.build())
+                        .build()
+                    WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
-//            repository?.report(
-//                ReportedUserDTo(
-//                    formatPhoneNumber(contactAddress), " ",
-//                    spammerType.toString(), spammerCategory.toString()
-//                )
-//            )
-            }
 
-        }.join()
+                }
+
+            }.join()
+        }
+
         emit(ON_COMPLETED)
 
     }

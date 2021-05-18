@@ -77,14 +77,13 @@ class IndividualSMSActivity : AppCompatActivity(),
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private var threadID = -1L // sms thread id not java thread
     private  var menuSMS:Menu? = null
-    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
     private var isTheNumberBlocked:MutableLiveData<Boolean> = MutableLiveData(false)
     private  var spinnerSelected: MutableLiveData<Boolean> = MutableLiveData(false);
     private  var selectedRadioButton:RadioButton? = null
     private var isSmsChannelBusy = false // to know whether there is an sms is currently sending
     private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData(false)
     private var defaultSMSHandlerLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    private  var spammerType:Int = -1
+    private  var spammerType:Int = SPAMMER_TYPE_SCAM
     var spamTypes:MutableList<String> = ArrayList<String>()
     private var participants = ArrayList<SimpleContact>()
     private var address = ""
@@ -1079,12 +1078,7 @@ class IndividualSMSActivity : AppCompatActivity(),
                     val checked = v.isChecked
                     if(checked){
                         selectedRadioButton= bottomSheetDialog.radioScam
-                        Log.d(TAG, "radio button clicked")
-                        this.spammerType = SpamLocalListManager.SPAMM_TYPE_SCAM
-
-//                                spinnerSelected.value = false
-
-
+                        this.spammerType = SPAMMER_TYPE_SCAM
                     }
                 }
                 R.id.radioSales->{
@@ -1092,23 +1086,19 @@ class IndividualSMSActivity : AppCompatActivity(),
                     val checked = v.isChecked
                     if(checked){
                         selectedRadioButton= bottomSheetDialog.radioSales
-                        this.spammerType = SpamLocalListManager.SPAMM_TYPE_SALES
-                        Log.d(TAG, "onClick: radio scam")
-//                                spinnerSelected.value = false
-
+                        this.spammerType = SPAMMER_TYPE_SALES
                     }
                 }
                 R.id.radioBusiness->{
                     val checked = v.isChecked
                     if(checked){
-                        this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+                        spammerType = SPAMMER_TYPE_BUSINESS
                     }
                 }
                 R.id.radioPerson->{
                     val checked = v.isChecked
                     if(checked){
-                        this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_PEERSON
-
+                      spammerType= SPAMMER_TYPE_PEERSON
                     }
                 }
             }
@@ -1125,23 +1115,15 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     override fun onItemSelected(parent: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
         this.spammerType = position
-        Log.d(TAG, "onItemSelected: ")
         if(parent?.getItemAtPosition(position)?.equals("Spam type")!!){
-//            spinnerSelected.value = true
-
         }else{
-
             selectedRadioButton?.isChecked = false
         }
     }
     override fun onNothingSelected(p0: AdapterView<*>?) {
-//        selectedRadioButton?.isChecked = true
     }
     private fun addToBlockList(no: String) {
-
-
-
-        viewModel.blockThisAddress(no, this.threadID, this.spammerType, this.SPAMMER_CATEGORY )
+        viewModel.blockThisAddress(no, this.threadID, this.spammerType,)
         Toast.makeText(this, "Number added to spamlist", Toast.LENGTH_LONG)
         bottomSheetDialog.hide()
         bottomSheetDialog.dismiss()
@@ -1153,22 +1135,12 @@ class IndividualSMSActivity : AppCompatActivity(),
 
         val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
         sb.setSpan(bss, 0, contactAddress.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-//        sb.setSpan(normal, txt.length -1, normal.length-1,Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-
         bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
-
-
-
-
     }
 
 
     override fun onResume() {
         super.onResume()
-//            LocalBroadcastManager.getInstance(this).registerReceiver(
-//                messagesReceiver,
-//                IntentFilter("myhashcallersms")
-//            )
         registerReceiver(messagesReceiver, IntentFilter("myhashcallersms"))
         checkDefaultSettings()
 
@@ -1208,7 +1180,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
         Log.d(TAG, "onMenuItemClick:id ${menuItem!!.itemId}")
-           this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+//           this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
 
 
             return false

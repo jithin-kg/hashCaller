@@ -5,8 +5,7 @@ import androidx.annotation.Keep
 @Keep
 data class ReportedUserDTo(
     var phoneNumber: String = "",
-    var location: String = "",
+    var country: String = "",
     var spammerType: String = "",
-    var spammerCategory: String =""
 ) {
 }

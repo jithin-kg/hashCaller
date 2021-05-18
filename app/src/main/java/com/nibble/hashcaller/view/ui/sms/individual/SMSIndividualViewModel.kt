@@ -185,18 +185,17 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         fun blockThisAddress(
         contactAddress: String,
         threadID: Long,
-        spammerType: Int?,
-        spammerCategory: Int
+        spammerType: Int?
     )  = viewModelScope.launch {
 
         async {
 //            spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
-           smsLocalRepository.saveSpamReportedByUser(contactAddress, threadID, spammerType, spammerCategory)
+           smsLocalRepository.saveSpamReportedByUser(contactAddress, threadID, spammerType)
         }
        async {
            spamRepository?.report(ReportedUserDTo(
                formatPhoneNumber(contactAddress), " ",
-               spammerType.toString(), spammerCategory.toString()
+               spammerType.toString()
            ))
        }
 
@@ -228,15 +227,6 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         phoneNum: String?
     ) = viewModelScope.launch {
 
-//        try {
-//            send(individualSMSActivity, phoneNum, threadID)
-//        }catch (e: Exception){
-//            when(e){
-//                is IndexOutOfBoundsException ->{
-//                    throw IndexOutOfBoundsException()
-//                }
-//            }
-//        }
         try {
             smsQuee.add(smsObj)
             for (item in smsQuee){
@@ -253,7 +243,6 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
                 }
                 val transaction = Transaction(individualSMSActivity, settings)
                 val message = Message(msg, phoneNum)
-//        message.setImage(mBitmap);
                 val smsSentIntent = Intent(individualSMSActivity, SmsStatusSentReceiver::class.java)
                 val deliveredIntent = Intent(individualSMSActivity, SmsStatusDeliveredReceiver::class.java)
                 transaction.setExplicitBroadcastForSentSms(smsSentIntent)
@@ -372,8 +361,6 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         }
         if(mutableSMSLIst.isEmpty())
         Toast.makeText(this@SMSIndividualViewModel.applicationContext, "Not found", Toast.LENGTH_SHORT).show()
-
-//        smsLiveData.value = smsLiveData.value
     }
 
     fun markItem(
@@ -418,8 +405,6 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         repository?.marAsReadInDB(contactAddress)
         repository?.markSMSAsRead(contactAddress)
 
-
-
     }
 
 
@@ -427,9 +412,3 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
         private const val TAG ="__SMSIndividualViewModel"
     }
 }
-//class ContactsViewModel(application: Application): AndroidViewModel(application) {
-//
-//    val contacts =
-//        ContactLiveData(application.applicationContext)
-//
-//}

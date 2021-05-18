@@ -76,10 +76,10 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
-            val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
+            val callerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
             val smsContainerRepository = SMScontainerRepository(
                 context,
-                smssendersInfoDAO,
+                callerInfoFromServerDAO,
                 mutedSendersDAO,
                 blockedOrSpamSenders,
                 DataStoreRepository(context.tokeDataStore),
@@ -87,7 +87,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
             )
 
 
-            setlistOfAllUnknownSenders(allsmsincontentProvider, smssendersInfoDAO )
+            setlistOfAllUnknownSenders(allsmsincontentProvider, callerInfoFromServerDAO )
 
 
             if(senderListChuckOfSize12.isNotEmpty()){
@@ -110,7 +110,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                         }
                     }
 
-                    smssendersInfoDAO.insert(smsSenderlistToBeSavedToLocalDb)
+                    callerInfoFromServerDAO.insert(smsSenderlistToBeSavedToLocalDb)
                 }
             }else{
                 Log.d(TAG, "doWork: size less than 1")
@@ -131,7 +131,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     @SuppressLint("LongLogTag")
     private suspend fun setlistOfAllUnknownSenders(
         allsmsincontentProvider: MutableList<SMS>,
-        smssendersInfoDAO: CallersInfoFromServerDAO
+        callerInfoFromServerDAO: CallersInfoFromServerDAO
     ) {
 
 
@@ -143,7 +143,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                 queryNum = formatPhoneNumber(sms.addressString!!)
 
-             smssendersInfoDAO.find(queryNum).apply {
+             callerInfoFromServerDAO.find(queryNum).apply {
                  if(this == null){
                      Log.d(TAG, "doWork: no data recieved from server")
 
@@ -154,10 +154,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                  }else{
                      val today = Date()
-                     if(isCurrentDateAndPrevDateisGreaterThanLimit(this.informationReceivedDate, NUMBER_OF_DAYS)){
-                         //We need to check if new data information about the number is available server
-                         //todo uncomment this and run, because this is called always and need to check on that
-//                    Log.d(TAG, "doWork: outdated data")
+                     if(isCurrentDateAndPrevDateisGreaterThanLimit(this.informationReceivedDate, NUMBER_OF_DAYS)) {
                          val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
                          val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                          senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))

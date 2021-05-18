@@ -20,6 +20,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityTestauthBinding
+import com.nibble.hashcaller.utils.auth.CustometokenSigner
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivity
@@ -31,6 +32,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import kotlinx.android.synthetic.main.activity_testauth.*
+import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.TimeUnit
 
 
@@ -48,6 +50,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private lateinit var encryptor: EnCryptor
 
     private var tokenHelper: TokenHelper? = null
+    private lateinit var customTokenSigner: CustometokenSigner
 
 
     var code: String? = null
@@ -61,6 +64,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
 
 
+
         phoneNumber = intent.getStringExtra("phoneNumber")
 
         // Restore instance state
@@ -72,6 +76,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         // Initialize Firebase Auth
         auth = Firebase.auth
         registerCallback()
+        customTokenSigner = CustometokenSigner(auth, this)
         startPhoneNumberVerification("+$phoneNumber")
 
 
@@ -402,27 +407,32 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private fun checkUserInfoInServer() {
         binding.pgBarOtpVerify.beVisible()
         binding.tvVerifying.beVisible()
-        lifecycleScope.launchWhenStarted {
 
             userInfoViewModel.getUserInfoFromServer( phoneNumber, this@ActivityVerifyOTP).observe(this@ActivityVerifyOTP, Observer { userinfo ->
-                if(userinfo!= null){
-                    if(!userinfo.result.firstName.isNullOrEmpty()){
+                lifecycleScope.launchWhenStarted {
+                customTokenSigner.signInWithCustomToken(userinfo.result.customToken)
+                if (userinfo != null) {
+                    if (!userinfo.result.firstName.isNullOrEmpty()) {
                         //user exists in server
-                        userInfoViewModel.saveUserInfoInLocalDb(userinfo).observe(this@ActivityVerifyOTP, Observer { status ->
-                            when(status){
-                                OPERATION_COMPLETED -> {
-                                    binding. pgBarOtpVerify.beGone()
-                                    startMainActivity()
+                        userInfoViewModel.saveUserInfoInLocalDb(userinfo)
+                            .observe(this@ActivityVerifyOTP, Observer { status ->
+                                when (status) {
+                                    OPERATION_COMPLETED -> {
+
+
+                                        binding.pgBarOtpVerify.beGone()
+                                        startMainActivity()
+                                    }
                                 }
-                            }
-                        })
-                    }else{
+                            })
+                    } else {
                         //user info not exists in server
                         startGetUserInfoActivity()
                     }
                 }
+            }
             })
-        }
+
     }
 
     private fun startMainActivity() {

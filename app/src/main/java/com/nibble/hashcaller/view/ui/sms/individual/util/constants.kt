@@ -5,6 +5,15 @@ import android.os.Build
 import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 
+val SPAMMER_TYPE = "spammer_typ"
+val SPAMMER_TYPE_BUSINESS = 1
+val SPAMMER_TYPE_PEERSON= 2
+val SPAMMER_TYPE_SALES = 3
+val SPAMMER_TYPE_SCAM = 4
+
+
+
+
 
 const val INFO_FOUND_IN_SERVER = 1
 const val INFO_NOT_FOUND_IN_SERVER = 0

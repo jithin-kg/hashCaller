@@ -157,7 +157,8 @@ class IndividualcontactViewModel(
 //        emit(isBlocked)
     }
 
-    fun blockOrUnblockByAdderss(phoneNum: String, spammerType: Int, spammerCategory: Int):LiveData<Int> = liveData {
+    fun blockOrUnblockByAdderss(phoneNum: String, spammerType: Int):LiveData<Int> = liveData {
+
         val formatedPhoneNumber = formatPhoneNumber(phoneNum)
         callersInfoFromServer.find(formatedPhoneNumber).apply {
             if(this !=null){
@@ -174,10 +175,11 @@ class IndividualcontactViewModel(
                             emit(OPERATION_BLOCKED)
 
                         }
+                        //TODO USER WORKER FOR REPORTING SPAM HERE
                         //report to server
                         spamNetworkRepository.report(
-                            ReportedUserDTo(phoneNum, " ",
-                            spammerType.toString(), spammerCategory.toString()))
+                            ReportedUserDTo(phoneNum, "IN",
+                            spammerType.toString()))
                     }
             }else{
 

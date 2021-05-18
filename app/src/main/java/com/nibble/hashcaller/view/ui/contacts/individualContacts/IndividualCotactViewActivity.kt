@@ -31,12 +31,12 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.Individua
 import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 
@@ -56,8 +56,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
-    private  var spammerType:Int = -1
-    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+    private  var spammerType:Int = SPAMMER_TYPE_SCAM
 //    private lateinit var imgExpand:ImageView
     private lateinit var radioScam:RadioButton
     private lateinit var radioS:RadioButton
@@ -336,7 +335,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                     if (checked) {
                         selectedRadioButton = radioScam
                         Log.d(IndividualSMSActivity.TAG, "radio button clicked")
-                        this.spammerType = SpamLocalListManager.SPAMM_TYPE_SCAM
+                        this.spammerType = SPAMMER_TYPE_SCAM
 
 //                                spinnerSelected.value = false
 
@@ -348,7 +347,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                     val checked = v.isChecked
                     if (checked) {
                         selectedRadioButton = radioS
-                        this.spammerType = SpamLocalListManager.SPAMM_TYPE_SALES
+                        this.spammerType = SPAMMER_TYPE_SALES
                         Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
 //                                spinnerSelected.value = false
 
@@ -357,13 +356,13 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
                 R.id.radioBusiness -> {
                     val checked = v.isChecked
                     if (checked) {
-                        this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+                        spammerType = SPAMMER_TYPE_BUSINESS
                     }
                 }
                 R.id.radioPerson -> {
                     val checked = v.isChecked
                     if (checked) {
-                        this.SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_PEERSON
+                        spammerType = SPAMMER_TYPE_PEERSON
 
                     }
                 }
@@ -373,7 +372,7 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun blockOrUnBlock() {
 
-        viewModel.blockOrUnblockByAdderss(phoneNum, this.spammerType, this.SPAMMER_CATEGORY).observe(
+        viewModel.blockOrUnblockByAdderss(phoneNum, this.spammerType).observe(
             this,
             Observer {
                 when (it) {

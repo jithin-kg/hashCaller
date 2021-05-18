@@ -96,7 +96,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private  var spammerType:Int = -1
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
-    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+    private var SPAMMER_CATEGORY = SPAMMER_TYPE_SCAM
     private var isPaused = false
     private lateinit var toolbar : Toolbar
 
@@ -593,12 +593,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
          R.id.popupMarkAllAsRead->{
              viewmodel?.markSMSAsRead(null)
              return true
-         }else ->{
-            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
-            return true
+         }
+//            else ->{
+//            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+//            return true
+//        }
         }
-        }
-       
+       return true
     }
 
     private fun blockUser() {

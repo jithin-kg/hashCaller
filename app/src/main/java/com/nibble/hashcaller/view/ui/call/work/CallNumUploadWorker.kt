@@ -146,9 +146,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             }else{
                 val today = Date()
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
-                    //We need to check if new data information about the number is available server
-                    //todo this is getting called all the time, need to check on this
-
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                     callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))

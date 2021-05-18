@@ -11,6 +11,12 @@ class MarkeditemsHelper {
     var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
     var markedItemsPositions: HashSet<Int> = hashSetOf()
 
+    fun getmarkedAddresAt(index:Int): String? {
+         if(markedAddres.size>0){
+             return markedAddres.toList()[0]
+         }
+        return null
+    }
 
     fun getExpanedLayoutPosition(): Int? {
         return expandedLayoutPositin
@@ -63,4 +69,5 @@ class MarkeditemsHelper {
     fun getPrevExpandedPosition(): Int? {
         return expandedLayoutPositin
     }
+
 }

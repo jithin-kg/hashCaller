@@ -14,6 +14,9 @@ import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE
+import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE_SCAM
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.nibble.hashcaller.utils.SpamNetworkRepository as SpamNetworkRepository1
@@ -30,7 +33,8 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val num = inputData.getString(CONTACT_ADDRES)
-        val report = ReportedUserDTo(num!!, "kerala", "0", "1")
+        val spammerType = inputData.getInt(SPAMMER_TYPE, SPAMMER_TYPE_SCAM)
+        val report = ReportedUserDTo(num!!, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),)
 //        repository.report(report)
         try {
             val tokenHelper = TokenHelper( FirebaseAuth.getInstance().currentUser)

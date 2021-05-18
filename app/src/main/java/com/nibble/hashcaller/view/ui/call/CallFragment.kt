@@ -60,7 +60,6 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
-import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
@@ -92,6 +91,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //    private var toolbar: Toolbar? = null
 //    var callFragment: View? = null
 //    private lateinit var searchViewCall: EditText
+
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     var layoutBottomSheet: ConstraintLayout? = null
     private lateinit var dialerFragment: DialerFragment
@@ -102,10 +102,14 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
-    private  var spammerType:Int = -1
-    private var SPAMMER_CATEGORY = SpamLocalListManager.SPAMMER_BUISINESS
+    private  var spammerType:Int = SPAMMER_TYPE_SCAM
     private lateinit var recyclerV : RecyclerView
     private lateinit var layoutMngr: LinearLayoutManager
+
+    private  var radioSales:RadioButton?= null
+    private  var radioScam:RadioButton?= null
+    private  var radioBusiness:RadioButton?= null
+    private  var radioPerson:RadioButton?= null
     /************/
     var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -275,8 +279,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnHamBrgerCalls.setOnClickListener(this)
         binding.searchViewCall.setOnClickListener(this)
 
-        bottomSheetDialog.radioSales.setOnClickListener(this)
-        bottomSheetDialog.radioScam.setOnClickListener(this)
+        radioSales?.setOnClickListener(this)
+        radioScam?.setOnClickListener(this)
+        radioBusiness?.setOnClickListener(this)
+        radioPerson?.setOnClickListener(this)
 //        bottomSheetDialog.imgExpand.setOnClickListener(this)
         bottomSheetDialog.btnBlock.setOnClickListener(this)
         binding.btnCallFragmentPermission.setOnClickListener(this)
@@ -636,11 +642,33 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             R.id.btnBlock->{
                 blockMarkedCaller()
             }
+            R.id.radioSales, R.id.radioBusiness, R.id.radioScam,R.id.radioSales ->{
+                setSpammerTypeBasedOnRadio(v)
+            }
+
 
 
 
         }
 
+    }
+
+    private fun setSpammerTypeBasedOnRadio(v: View) {
+        when(v?.id){
+            R.id.radioSales-> {
+                this.spammerType = SPAMMER_TYPE_SALES
+            }
+            R.id.radioScam ->{
+                this.spammerType = SPAMMER_TYPE_SCAM
+            }
+            R.id.radioBusiness ->{
+                spammerType = SPAMMER_TYPE_BUSINESS
+            }
+            R.id.radioPerson ->{
+                spammerType  = SPAMMER_TYPE_PEERSON
+            }
+
+        }
     }
 
     private fun startSeaActivity() {
@@ -674,6 +702,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
         selectedRadioButton = bottomSheetDialog.radioScam
+        radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness)
+        radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson)
+        radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales)
+        radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam)
 //        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
         
@@ -682,6 +714,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
 
         }
+
+
     }
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
@@ -689,9 +723,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             R.id.itemMyBlockList ->{
                 val intent = Intent(activity, BlockListActivity::class.java)
                 startActivity(intent)
-            }else ->{
-            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
             }
+//            else ->{
+////            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
+//            }
         }
         return true
 
@@ -711,30 +746,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun blockMarkedCaller() {
-
         this.viewmodel.blockThisAddress(
-            this.spammerType,
-            this.SPAMMER_CATEGORY ).observe(viewLifecycleOwner, Observer {
+            this.spammerType).observe(viewLifecycleOwner, Observer {
                 when(it){
                     ON_COMPLETED -> {
                         viewmodel.clearMarkedItems()
                         bottomSheetDialog.hide()
                         bottomSheetDialog.dismiss()
                         bottomSheetDialogfeedback.show()
-//                        var txt = "${getMarkedContactAddress()} can no longer send SMS or call you."
-//                        val  sb =  SpannableStringBuilder(txt);
-//                        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
-                        // sb.setSpan(bss, 0, getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-//                        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
                         showSearchView()
                     }
                 }
         })
-
-//        Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
-
-//        resetMarkingOptions()
-
     }
     private fun muteMarkedCaller() {
 //        val dialog = ConfirmDialogFragment(this,  "Mut")

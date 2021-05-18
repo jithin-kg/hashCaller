@@ -1960,7 +1960,7 @@ class SMSLocalRepository(
         return@withContext name
     }
 
-    suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?, spammerCategory: Int)  = withContext(Dispatchers.IO) {
+    suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?)  = withContext(Dispatchers.IO) {
         val formatedAddress = formatPhoneNumber(contactAddress)
         callerInfoDAO!!.find(formatedAddress).apply {
             if(this!=null){

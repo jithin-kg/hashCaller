@@ -37,7 +37,6 @@ class IncommingCallViewModel(
                    res = spamNetworkRepository.report(ReportedUserDTo(
                        number,
                        "",
-                       "",
                        ""
                    ))
 

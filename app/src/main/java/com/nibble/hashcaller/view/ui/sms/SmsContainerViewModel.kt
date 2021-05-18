@@ -42,17 +42,16 @@ class SmsContainerViewModel(
         repository!!.muteSenders()
     }
 
-    fun blockThisAddress(contactAddress: String, threadID: Long, spammerType: Int, spammerCategory: Int) = viewModelScope.launch {
+    fun blockThisAddress(contactAddress: String, threadID: Long, spammerType: Int) = viewModelScope.launch {
 
         async {
-
             repository?.save(contactAddress, 1, "", "" )
         }
 
         async {
             repository?.report(
                 ReportedUserDTo(contactAddress, " ",
-                spammerType.toString(), spammerCategory.toString()
+                spammerType.toString()
             )
             )
         }

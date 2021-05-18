@@ -197,11 +197,11 @@ class UserInfoViewModel(
         }else {
             if(response.code() in (400 .. 599)){
                 return NetworkResponseBase(
-                    SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
+                    SingupResponse(Result("", "", "","")),SOMETHING_WRONG_HAPPEND )
             }
         }
         return NetworkResponseBase(
-            SingupResponse(Result("", "", "")),SOMETHING_WRONG_HAPPEND )
+            SingupResponse(Result("", "", "", "")),SOMETHING_WRONG_HAPPEND )
     }
 
     private fun gePreparedPhonenum(userInfo: UserInfoDTO, hashedNumResultFromDb: UserHashedNumber): UserInfoDTO {
