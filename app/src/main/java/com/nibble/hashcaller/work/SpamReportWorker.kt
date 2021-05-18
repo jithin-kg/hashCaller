@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
+import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.ISpamService
@@ -30,16 +31,17 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
     private val  dataStoreRepostory = DataStoreRepository(context.tokeDataStore)
     private val repository: SpamNetworkRepository1 = SpamNetworkRepository1(context, dataStoreRepostory)
 
-
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val num = inputData.getString(CONTACT_ADDRES)
+        val hasehdNum = num?.let { formatPhoneNumber(it) }?.let { Secrets().managecipher(context.packageName, it) }
+
         val spammerType = inputData.getInt(SPAMMER_TYPE, SPAMMER_TYPE_SCAM)
-        val report = ReportedUserDTo(num!!, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),)
+        val report = hasehdNum?.let { ReportedUserDTo(it, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),) }
 //        repository.report(report)
         try {
             val tokenHelper = TokenHelper( FirebaseAuth.getInstance().currentUser)
             val token = tokenHelper?.getToken()
-           val response = token?.let { retrofitService?.report(report, it) }
+           val response = token?.let { report?.let { it1 -> retrofitService?.report(it1, it) } }
             if(response?.code() in 500..599){
                 return@withContext Result.retry()
             }
