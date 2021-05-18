@@ -19,6 +19,7 @@ object SmsSearchInjectorUtil {
         val smsSearchQueriesDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsSearchQueriesDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
+        val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
 
         val repository = context?.let { SMSLocalRepository(
             it,
@@ -27,7 +28,8 @@ object SmsSearchInjectorUtil {
             mutedSendersDAO,
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
-            tokenHelper
+            tokenHelper,
+            callLogDAO
         ) }
         val smsSearchRepository =
             SMSSearchRepository(smsSearchQueriesDAO!!)

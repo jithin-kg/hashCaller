@@ -34,6 +34,7 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
     private lateinit var mutedSendersDAO: IMutedSendersDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
+    private val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
 
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
@@ -48,7 +49,6 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
          smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
          mutedSendersDAO = HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO()
          val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
-
         val repository =
             SMSLocalRepository(
                 context,
@@ -57,7 +57,9 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 mutedSendersDAO,
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser)
+                TokenHelper( FirebaseAuth.getInstance().currentUser),
+                callLogDAO
+
             )
 //        val res =  repository.getSMSForViewModel(null, true)
             val res:MutableList<SMS> = mutableListOf()
@@ -156,7 +158,8 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 mutedSendersDAO,
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser)
+                TokenHelper( FirebaseAuth.getInstance().currentUser),
+                callLogDAO
             )
         repository.markSMSAsRead(address)
     }

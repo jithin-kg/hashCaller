@@ -235,7 +235,7 @@
             <!-- </intent-filter> -->
         </activity>
         <activity
-            android:name=".view.ui.contacts.individualContacts.IndividualCotactViewActivity"
+            android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
             android:theme="@style/AppTheme" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"

@@ -25,6 +25,7 @@ object SMSIndividualInjectorUtil {
         val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
+        val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
 
         val repository = context?.let { SMSLocalRepository(
             it,
@@ -33,13 +34,16 @@ object SMSIndividualInjectorUtil {
             mutedSendersDAO,
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
-            tokenHelper
+            tokenHelper,
+            callLogDAO
+
         ) }
         val spamNetworkRepository = context?.let { SpamNetworkRepository(
             it,
             spamListDAO,
             DataStoreRepository(context.tokeDataStore)
         ) }
+
         val smsLocalRepository = SMSLocalRepository(
             context!!,
             spamListDAO,
@@ -47,13 +51,15 @@ object SMSIndividualInjectorUtil {
             mutedSendersDAO,
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
-            tokenHelper
+            tokenHelper,
+            callLogDAO
         )
 
         val messagesLiveData = context?.let {
             SMSIndividualLiveData(
                 it, IndividualSMSActivity.contact,
-                spamListDAO,lifecycleScope
+                spamListDAO,lifecycleScope,
+                callLogDAO
             )
         }
         return SMSIndividualViewModelFactory(messagesLiveData!!, repository,smsDAO, spamNetworkRepository, smsLocalRepository)

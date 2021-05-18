@@ -36,6 +36,7 @@ import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
+import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -141,10 +142,9 @@ class MyCallScreeningService: CallScreeningService() {
     fun respondeToTheCall(isEndCall:Boolean){
         supervisorScope.launch {
             withContext(Dispatchers.Main){
-                Log.d(TAG, "respondeToTheCall: ending call")
                 if(isEndCall){
-                    Log.d(TAG, "respondeToTheCall: ending call")
                     responseBuilder.setDisallowCall(true)
+                   stopFloatingService(true)
                 }
                 respondToCall(mCallDetails, responseBuilder.build())
             }

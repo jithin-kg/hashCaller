@@ -5,7 +5,6 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,7 +25,7 @@ import com.nibble.hashcaller.databinding.FragmentDialerBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
@@ -300,7 +299,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             }
             else ->{
                 Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
-                val intent = Intent(context, IndividualCotactViewActivity::class.java )
+                val intent = Intent(context, IndividualContactViewActivity::class.java )
                 intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
                 intent.putExtra("name", contactItem.name )
 //        intent.putExtra("id", contactItem.id)

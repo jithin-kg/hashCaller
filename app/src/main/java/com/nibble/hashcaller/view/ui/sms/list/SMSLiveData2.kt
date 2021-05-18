@@ -35,6 +35,9 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
     private lateinit var smssendersInfoDAO : CallersInfoFromServerDAO
     private lateinit var mutedSendersDAO:IMutedSendersDAO
     var isLoading:MutableLiveData<Boolean> = MutableLiveData(true)
+    private val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
+
+
 
     companion object {
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
@@ -60,7 +63,9 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 mutedSendersDAO,
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser)
+                TokenHelper( FirebaseAuth.getInstance().currentUser),
+                callLogDAO
+
             )
          repository.fetchSMSForLivedata(null, false).apply {
             return this
@@ -101,7 +106,8 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 mutedSendersDAO,
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser)
+                TokenHelper( FirebaseAuth.getInstance().currentUser),
+                callLogDAO
             )
         repository.markSMSAsRead(address)
     }

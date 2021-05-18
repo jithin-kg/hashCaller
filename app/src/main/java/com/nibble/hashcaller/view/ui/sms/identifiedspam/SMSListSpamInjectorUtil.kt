@@ -28,6 +28,7 @@ object SMSListSpamInjectorUtil {
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
+        val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
         val repository = context?.let { SMSLocalRepository(
             it,
             spamListDAO,
@@ -35,7 +36,8 @@ object SMSListSpamInjectorUtil {
             mutedSendersDAO,
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
-            tokenHelper
+            tokenHelper,
+            callLogDAO
         ) }
 
         return SMSListSpamViewModelFactory(smsSpamLiveData, repository)

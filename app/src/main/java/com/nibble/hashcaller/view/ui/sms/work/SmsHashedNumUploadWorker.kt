@@ -58,6 +58,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private lateinit var senderListChuckOfSize12: List<List<ContactAddressWithHashDTO>>
     private val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
+    private val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
 
 
     @SuppressLint("LongLogTag")
@@ -72,7 +73,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 mutedSendersDAO,
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser)
+                TokenHelper( FirebaseAuth.getInstance().currentUser),
+                callLogDAO
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()

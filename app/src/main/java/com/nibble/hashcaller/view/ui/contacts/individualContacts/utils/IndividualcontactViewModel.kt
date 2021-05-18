@@ -58,7 +58,6 @@ class IndividualcontactViewModel(
     @SuppressLint("LongLogTag")
     fun getContactsFromDb(phoneNumber: String)= viewModelScope.launch {
 
-
         if(phoneNumber.trim() != "") {
 
             var  num:String = phoneNumber
@@ -159,37 +158,41 @@ class IndividualcontactViewModel(
 
     fun blockOrUnblockByAdderss(phoneNum: String, spammerType: Int):LiveData<Int> = liveData {
 
+
         val formatedPhoneNumber = formatPhoneNumber(phoneNum)
-        callersInfoFromServer.find(formatedPhoneNumber).apply {
-            if(this !=null){
-                //number exist in db
-                    if(this.isBlockedByUser){
-                        //we need to unblock , no need of changing spam count
-                            val spamcount = this.spamReportCount -1
-                        callersInfoFromServer.unBlock(false, this.contactAddress, spamcount).apply {
-                            emit(OPERATION_UNBLOCKED)
-                        }
 
-                    }else{
-                        callersInfoFromServer.update(this.spamReportCount+1, this.contactAddress,true).apply {
-                            emit(OPERATION_BLOCKED)
 
-                        }
-                        //TODO USER WORKER FOR REPORTING SPAM HERE
-                        //report to server
-                        spamNetworkRepository.report(
-                            ReportedUserDTo(phoneNum, "IN",
-                            spammerType.toString()))
-                    }
-            }else{
 
-                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                    contactAddress= formatPhoneNumber(formatedPhoneNumber), spammerType=0,  firstName="",
-                    informationReceivedDate = Date(),spamReportCount =  1, isBlockedByUser = true)
-                callersInfoFromServer.insert(listOf(callerInfoTobeSavedInDatabase))
-                emit(OPERATION_BLOCKED)
-            }
-        }
+//        callersInfoFromServer.find(formatedPhoneNumber).apply {
+//            if(this !=null){
+//                //number exist in db
+//                    if(this.isBlockedByUser){
+//                        //we need to unblock , no need of changing spam count
+//                            val spamcount = this.spamReportCount -1
+//                        callersInfoFromServer.unBlock(false, this.contactAddress, spamcount).apply {
+//                            emit(OPERATION_UNBLOCKED)
+//                        }
+//
+//                    }else{
+//                        callersInfoFromServer.update(this.spamReportCount+1, this.contactAddress,true).apply {
+//                            emit(OPERATION_BLOCKED)
+//
+//                        }
+//                        //TODO USER WORKER FOR REPORTING SPAM HERE
+//                        //report to server
+//                        spamNetworkRepository.report(
+//                            ReportedUserDTo(phoneNum, "IN",
+//                            spammerType.toString()))
+//                    }
+//            }else{
+//
+//                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+//                    contactAddress= formatPhoneNumber(formatedPhoneNumber), spammerType=0,  firstName="",
+//                    informationReceivedDate = Date(),spamReportCount =  1, isBlockedByUser = true)
+//                callersInfoFromServer.insert(listOf(callerInfoTobeSavedInDatabase))
+//                emit(OPERATION_BLOCKED)
+//            }
+//        }
     }
 
     fun unmute(phoneNum: String) = viewModelScope.launch {

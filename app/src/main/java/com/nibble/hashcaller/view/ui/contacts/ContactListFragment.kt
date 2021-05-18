@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
@@ -190,7 +190,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         }
     private fun onContactItemClicked(contactItem: Contact){
         Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
-        val intent = Intent(context, IndividualCotactViewActivity::class.java )
+        val intent = Intent(context, IndividualContactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
         intent.putExtra("name", contactItem.name )
         intent.putExtra("id", contactItem.id)

@@ -45,6 +45,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
     val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
     val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
+    val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -56,7 +57,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             mutedCallersDAO,
             callLogDAO,
             DataStoreRepository(context.tokeDataStore),
-            tokenHelper
+            tokenHelper,
+            smsThreadsDAO
         )
 
     @SuppressLint("LongLogTag")

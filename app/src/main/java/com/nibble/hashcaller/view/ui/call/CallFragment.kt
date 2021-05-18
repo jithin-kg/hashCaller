@@ -50,7 +50,7 @@ import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogAct
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -744,6 +744,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun blockMarkedCaller() {
+
         this.viewmodel.blockThisAddress(
             this.spammerType).observe(viewLifecycleOwner, Observer {
                 when(it){
@@ -962,7 +963,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                  intent = Intent(context, IndividualCallLogActivity::class.java )
                 intent.putExtra(CONTACT_ADDRES, log.numberFormated)
             }else ->{
-             intent = Intent(context, IndividualCotactViewActivity::class.java )
+             intent = Intent(context, IndividualContactViewActivity::class.java )
         }
         }
         intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.numberFormated)

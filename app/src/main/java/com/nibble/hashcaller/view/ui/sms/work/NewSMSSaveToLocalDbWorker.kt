@@ -27,6 +27,7 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
     private val smssendersInfoDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
     private val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
+    private val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
 
     private val sMSSendersInfoFromServerDAO: CallersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     @SuppressLint("LongLogTag")
@@ -39,7 +40,8 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 mutedSendersDAO,
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser)
+                TokenHelper( FirebaseAuth.getInstance().currentUser),
+                callLogDAO
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
             var sms : MutableList<CallersInfoFromServerDAO> = mutableListOf()

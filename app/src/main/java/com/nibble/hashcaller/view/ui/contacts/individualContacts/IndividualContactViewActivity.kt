@@ -24,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
 import com.nibble.hashcaller.view.ui.MyUndoListener
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
@@ -41,17 +43,18 @@ import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 
 
-class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
+class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener, MyUndoListener.SnackBarListner,
     PopupMenu.OnMenuItemClickListener {
 
     private lateinit var binding:ActivityIndividualCotactViewBinding
     private lateinit var viewModel:IndividualcontactViewModel
+    private lateinit var generalBlockViewmodel: GeneralblockViewmodel
     private lateinit var photoURI:String
     private  var color  = 1
-    var phoneNum:String = ""
-    var name:String = ""
-    var count  = 0
+    private var phoneNum:String = ""
+    private var name:String = ""
+    private var count  = 0
     private var isBlocked = false
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private lateinit var bottomSheetDialog: BottomSheetDialog
@@ -106,11 +109,15 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
         IndividualContactInjectorUtil.phoneNumber = phoneNum
         viewModel =ViewModelProvider(
             this, IndividualContactInjectorUtil.provideUserInjectorUtil(
-                applicationContext,phoneNum, lifecycleScope
+                this,phoneNum, lifecycleScope
             )
         ).get(
             IndividualcontactViewModel::class.java
         )
+
+        generalBlockViewmodel = ViewModelProvider(this, GeneralBlockInjectorUtil.provideUserInjectorUtil(
+            this
+        )).get(GeneralblockViewmodel::class.java)
     }
 
     private fun getinfoFromServer() {
@@ -189,18 +196,18 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun observeBlockedDetails() {
 
 //        viewModel.callersinfoLivedata.observe(this, Observer { lst ->
-            viewModel.isThisAddressBlockedByUser(phoneNum,  isBlockTopSpammersAutomaticallyEnabled()).observe(this, Observer {
-                if (it == true) {
-                    binding.tvBlockBtnInfo.text = "Unblock"
-                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
-                    isBlocked = true
-                } else {
-                    binding.tvBlockBtnInfo.text = "Block"
-                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
-
-                    isBlocked = false
-                }
-            })
+//            viewModel.isThisAddressBlockedByUser(phoneNum,  isBlockTopSpammersAutomaticallyEnabled()).observe(this, Observer {
+//                if (it == true) {
+//                    binding.tvBlockBtnInfo.text = "Unblock"
+//                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
+//                    isBlocked = true
+//                } else {
+//                    binding.tvBlockBtnInfo.text = "Block"
+//                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
+//
+//                    isBlocked = false
+//                }
+//            })
 //        })
     }
 
@@ -287,12 +294,15 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         when(v?.id){
             R.id.imgBtnBlockIndividualContact -> {
-                if (!isBlocked) {
-                    showBottomSheetDialog()
 
-                } else {
-                    blockOrUnBlock()
-                }
+//                if (!isBlocked) {
+                    showBottomSheetDialog()
+//
+//                }
+
+//                else {
+//                    blockOrUnBlock()
+//                }
 
 
             }
@@ -315,8 +325,8 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
             R.id.btnBlock -> {
 
-                blockOrUnBlock()
-
+//                blockOrUnBlock()
+                blockThisAddress()
             }else ->{
             this.radioButtonClickPerformed(v)
             }
@@ -324,6 +334,18 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
 //               popupImage()
 //            }
         }
+    }
+
+    private fun blockThisAddress() {
+        generalBlockViewmodel.blockThisAddress(spammerType, phoneNum).observe(this, Observer {
+            when(it){
+                ON_COMPLETED -> {
+                    bottomSheetDialog.hide()
+                    bottomSheetDialog.dismiss()
+                    bottomSheetDialogfeedback.show()
+                }
+            }
+        })
     }
 
     private fun radioButtonClickPerformed(v: View?) {
@@ -371,7 +393,6 @@ class IndividualCotactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun blockOrUnBlock() {
-
         viewModel.blockOrUnblockByAdderss(phoneNum, this.spammerType).observe(
             this,
             Observer {

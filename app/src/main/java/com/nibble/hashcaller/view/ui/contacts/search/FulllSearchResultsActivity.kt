@@ -6,12 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
-import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.CONTACT_ID
 
 class FulllSearchResultsActivity : AppCompatActivity() {
@@ -53,7 +51,7 @@ class FulllSearchResultsActivity : AppCompatActivity() {
     @SuppressLint("LongLogTag")
     private fun onContactitemClicked(id: Long) {
         Log.d(TAG, "onContactItemClicked: $id")
-        val intent = Intent(this, IndividualCotactViewActivity::class.java )
+        val intent = Intent(this, IndividualContactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, id)
         startActivity(intent)
 

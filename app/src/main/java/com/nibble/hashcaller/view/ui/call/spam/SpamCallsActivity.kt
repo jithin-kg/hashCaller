@@ -21,7 +21,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -248,7 +248,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
                 intent = Intent(this, IndividualCallLogActivity::class.java)
                 intent.putExtra(CONTACT_ADDRES, log.number)
             }else ->{
-            intent = Intent(this, IndividualCotactViewActivity::class.java)
+            intent = Intent(this, IndividualContactViewActivity::class.java)
         }
         }
         intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)

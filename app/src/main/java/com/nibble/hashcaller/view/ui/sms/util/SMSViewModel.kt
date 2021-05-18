@@ -161,6 +161,7 @@ class SMSViewModel(
                         val id = items[0]
                         val thread = repository?.findOneThreadById(id)
                         if (thread != null) {
+
                              contactAddress = thread.numFormated
 //                            repository?.markAsSpam(contactAddress, 1, "", "")
 
@@ -178,8 +179,8 @@ class SMSViewModel(
                 }
 
             }
-            defLocal.await()
-            async {
+            val as2 = async { repository?.marAsReportedByUserInCall(contactAddress) }
+            val as3 = async {
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                 val data = Data.Builder()
                 data.putString(CONTACT_ADDRES, contactAddress)
@@ -192,7 +193,23 @@ class SMSViewModel(
                 WorkManager.getInstance().enqueue(oneTimeWorkRequest)
             }
 
+        try {
+            defLocal.await()
+        }catch (e:Exception){
+            Log.d(TAG, "blockThisAddress: $e")
+        }
 
+        try {
+            as3.await()
+        }catch (e:Exception){
+            Log.d(TAG, "blockThisAddress: $e")
+        }
+
+        try {
+            as2.await()
+        }catch (e:Exception){
+            Log.d(TAG, "blockThisAddress: $e")
+        }
         }.join()
 
         emit(ON_COMPLETED)

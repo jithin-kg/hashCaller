@@ -16,7 +16,7 @@ import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.ui.sms.individual.util.UNMARK_ITEM
@@ -124,7 +124,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
             name = log.number
         }
 
-        val intent = Intent(this, IndividualCotactViewActivity::class.java )
+        val intent = Intent(this, IndividualContactViewActivity::class.java )
         intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
         intent.putExtra("name", name )
         intent.putExtra("photo", log.thumbnailFromCp)

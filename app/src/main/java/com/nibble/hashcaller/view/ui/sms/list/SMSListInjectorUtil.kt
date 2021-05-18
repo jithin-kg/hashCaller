@@ -28,6 +28,7 @@ object SMSListInjectorUtil {
         val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
          val blockListPatternRepository: BlockListPatternRepository = BlockListPatternRepository(blockListDao, mutedCallersDao)
+        val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
 
         val repository = context?.let { SMSLocalRepository(
             it,
@@ -36,7 +37,8 @@ object SMSListInjectorUtil {
             mutedSendersDAO,
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
-            tokenHelper
+            tokenHelper,
+            callLogDAO
         ) }
         val messagesLiveData = context?.let {
             SMSLiveData(

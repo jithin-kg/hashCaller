@@ -297,7 +297,7 @@ class CallContainerViewModel(
     }
 
     fun blockThisAddress(spammerType: Int) : LiveData<Int> = liveData {
-//        threadID
+
         contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
         if (contactAddress.isNotEmpty()) {
             viewModelScope.launch {
@@ -312,6 +312,8 @@ class CallContainerViewModel(
                             )
                         )
                     }
+
+                    val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
                     val as3 = async {
                         val constraints =
                             Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
@@ -343,6 +345,11 @@ class CallContainerViewModel(
                         as3.await()
                     } catch (e: Exception) {
                         Log.d(TAG, "blockThisAddress: $e")
+                    }
+                    try{
+                        as4.await()
+                    }catch (e:Exception){
+
                     }
                 }
 

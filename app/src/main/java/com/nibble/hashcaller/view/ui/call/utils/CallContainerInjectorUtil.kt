@@ -9,6 +9,7 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
+import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 
 
 /**
@@ -29,6 +30,7 @@ object CallContainerInjectorUtil {
         val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
         val blockListPatternRepository = BlockListPatternRepository(blockListDao!!, mutedCallersDAO!!)
+        val smsThreadsDAO: ISMSThreadsDAO? = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository = context?.let {
             CallContainerRepository(
@@ -37,7 +39,9 @@ object CallContainerInjectorUtil {
                 mutedCallersDAO,
                 callLogDAO,
                 DataStoreRepository(context.tokeDataStore),
-                tokenHelper
+                tokenHelper,
+                smsThreadsDAO
+
             )
         }
 

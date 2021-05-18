@@ -24,6 +24,7 @@ import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
 import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
+import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.removeAllNonNumbericChars
@@ -41,8 +42,10 @@ class CallContainerRepository(
     val mutedCallersDAO: IMutedCallersDAO?,
     private val callLogDAO: ICallLogDAO?,
     private val dataStoreRepository: DataStoreRepository,
-    private val tokenHelper: TokenHelper?
-) {
+    private val tokenHelper: TokenHelper?,
+    private val smsThreadsDAO: ISMSThreadsDAO?
+
+    ) {
 
     private var retrofitService:ICallService? = null
 
@@ -661,6 +664,12 @@ class CallContainerRepository(
 
     suspend fun updateCallLogWithImgFromServer(item: CallersInfoFromServer) {
         callLogDAO?.updateWithServerImage(item.thumbnailImg, formatPhoneNumber(item.contactAddress))
+    }
+
+    suspend fun markAsSpamInSMS(contactAddress: String)  = withContext(Dispatchers.IO) {
+        val formatedAddress = formatPhoneNumber(contactAddress)
+        smsThreadsDAO?.updateSpamCount(formatedAddress,  true)
+
     }
 
 

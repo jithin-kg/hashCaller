@@ -17,7 +17,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
-import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualCotactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.search.utils.KeyboardUtils
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
@@ -100,7 +100,7 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 
     private fun onContactItemClicked(listBinding: ContactListBinding, contact: Contact) {
 
-        val intent = Intent(this, IndividualCotactViewActivity::class.java )
+        val intent = Intent(this, IndividualContactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, contact.phoneNumber)
         intent.putExtra("name", contact.name )
 //        intent.putExtra("id", contactItem.id)

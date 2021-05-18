@@ -25,6 +25,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
@@ -112,7 +113,8 @@ class SMSLocalRepository(
     private val mutedSendersDAO: IMutedSendersDAO?,
     private val smsThreadsDAO: ISMSThreadsDAO?,
     private val dataStoreRepostiroy: DataStoreRepository,
-    private val tokenHelper: TokenHelper?
+    private val tokenHelper: TokenHelper?,
+    private val callLogDAO:ICallLogDAO?
 ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -2365,6 +2367,16 @@ class SMSLocalRepository(
 
     suspend fun updateChatThreadWithContentProviderInfo(infoFromCprovider: Contact) = withContext(Dispatchers.IO) {
         smsThreadsDAO!!.updateWithContentProviderInfo(infoFromCprovider.name, infoFromCprovider.photoURI, infoFromCprovider.phoneNumber)
+    }
+
+    suspend fun marAsReportedByUserInCall(contactAddress: String)  = withContext(Dispatchers.IO){
+        val formatedAdders = formatPhoneNumber(contactAddress)
+        val log =  callLogDAO?.findOne(formatedAdders)
+        if(log!=null){
+            var spamCount = log.spamCount
+            spamCount += 1
+            callLogDAO?.markAsReportedByUser(formatedAdders, spamCount)
+        }
     }
 
 
