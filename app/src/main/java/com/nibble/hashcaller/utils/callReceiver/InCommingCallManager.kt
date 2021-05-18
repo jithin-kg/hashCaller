@@ -119,6 +119,7 @@ class InCommingCallManager(
 
     suspend fun isBlockedByPattern(): Boolean {
         var match = false
+
       for (item in blockedListpatternDAO.getAllBLockListPatternList()){
 
               if(item.type == NUMBER_STARTS_WITH){

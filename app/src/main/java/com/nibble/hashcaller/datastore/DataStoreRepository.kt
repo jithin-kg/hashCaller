@@ -1,13 +1,12 @@
 package com.nibble.hashcaller.datastore
 
-import android.content.Context
 import android.util.Base64
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.nibble.hashcaller.utils.auth.EnCryptor
-import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,13 +15,31 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 
-class DataStoreRepository(private val tokeDataStore: DataStore<Preferences>)  {
+class DataStoreRepository(private val dataStore: DataStore<Preferences>)  {
+
+
         suspend fun saveTken( key:String, value:String){
+
             val wrapedKey =  stringPreferencesKey(key)
-            tokeDataStore.edit {
+            dataStore.edit {
                 it[wrapedKey] = value
             }
         }
+
+    suspend fun savePreferencesBoolean(key: String, value: Boolean) = withContext(Dispatchers.IO){
+        val wrapedKey = booleanPreferencesKey(key)
+        dataStore.edit {
+            it[wrapedKey] = value
+        }
+    }
+    suspend fun getSharedPreferencesBoolean(key: String): Boolean {
+        val wrapedKey =  booleanPreferencesKey(key)
+        val tokenFlow:Flow<Boolean> = dataStore.data.map {
+            it[wrapedKey]?:false
+        }
+
+        return tokenFlow.first()
+    }
 
         suspend fun getToken(tokeDataStore: DataStore<Preferences>, key:String): String {
             val wrapedKey =  stringPreferencesKey(key)
@@ -32,13 +49,12 @@ class DataStoreRepository(private val tokeDataStore: DataStore<Preferences>)  {
             return tokenFlow.first()
         }
     suspend fun getToken(): String  = withContext(Dispatchers.IO){
-        return@withContext getToken(tokeDataStore,  PreferencesKeys.TOKEN)
-
+        return@withContext getToken(dataStore,  PreferencesKeys.TOKEN)
     }
-
-    suspend fun saveToken(encodeTokenString: String) = withContext(Dispatchers.IO) {
-       saveTken( PreferencesKeys.TOKEN, encodeTokenString)
-    }
+//
+//    suspend fun saveToken(encodeTokenString: String) = withContext(Dispatchers.IO) {
+////       saveTken( PreferencesKeys.TOKEN, encodeTokenString)
+//    }
 
     suspend fun getEncryptedStr(token: String): String = withContext(Dispatchers.IO){
         val encryptor = EnCryptor()

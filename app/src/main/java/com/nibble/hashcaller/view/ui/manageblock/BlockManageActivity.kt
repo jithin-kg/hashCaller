@@ -10,6 +10,8 @@ import android.widget.CompoundButton
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityBlockManageBinding
+import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
+import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlkForeignCallsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
@@ -17,7 +19,6 @@ import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEna
 import com.nibble.hashcaller.view.ui.contacts.writeBoolToSharedPref
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import kotlinx.android.synthetic.main.activity_block_manage.*
 
 
 class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
@@ -29,19 +30,25 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     private var isBlockForeignCallsEnabled = false
     private var isBlockNonContactCallsEnabled = false
     private lateinit var viewmodel : BlockSettingsViewModel
+    private lateinit var dataStoreViewmodel: DataStoreViewmodel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBlockManageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewmodel = ViewModelProvider(this, BlockSettingsInjectorUtil.provideContactsViewModelFactory(applicationContext)).get(
-            BlockSettingsViewModel::class.java)
+        initViewmodel()
         toggleRequestScreeningRoleBtn()
         initListeners()
         getSharedPrefValues()
         setToggleButtons()
 
 
+    }
+
+    private fun initViewmodel() {
+        viewmodel = ViewModelProvider(this, BlockSettingsInjectorUtil.provideContactsViewModelFactory(applicationContext)).get(
+            BlockSettingsViewModel::class.java)
+        dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(DataStoreViewmodel::class.java)
     }
 
     override fun onPostResume() {
@@ -90,13 +97,17 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         when(buttonView?.id){
             R.id.blockNotIncontacts -> {
-               writeBoolToSharedPref("isBlockNonContactCallsEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
+//               writeBoolToSharedPref("isBlockNonContactCallsEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
+
+
             }
             R.id.blockSpammersAuto ->{
-                writeBoolToSharedPref("isBlockTopSpamersAutomaticallyEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
+//                writeBoolToSharedPref("isBlockTopSpamersAutomaticallyEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
+                dataStoreViewmodel.enableBlockCommonSpammers(isChecked)
+
             }
             R.id.blockForeignCoutries ->{
-                writeBoolToSharedPref("isBlockForeignCallsEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
+//                writeBoolToSharedPref("isBlockForeignCallsEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
             }
         }
     }

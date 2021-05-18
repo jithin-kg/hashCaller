@@ -10,6 +10,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.datastore.DataStoreRepository
+import com.nibble.hashcaller.datastore.PreferencesKeys
+import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.KEY_BLOCK_COMMONG_SPAMMERS
 import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
@@ -26,22 +29,23 @@ class CallScreeningServiceHelper(
     private val supervisorScope: CoroutineScope,
     private val phoneNumber: String,
     private val context: Context,
-    private val resToCallCallBack: (Boolean) -> () -> Unit) {
+    private val dataStoreRepository: DataStoreRepository,
+    private val resToCallCallBack: (Boolean) -> Unit) {
+    var isSpam = false
     private var respondedToCall = false
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun  handleCall() = withContext(Dispatchers.IO){
         var isInfoFoundInCprovider = false
         supervisorScope.launch {
-                //start operations iff screening role not avaialble
-                Log.d(TAG, "onReceive: role not held")
-
-                var isSpam = false
-
+            val isBlockCommonSpammersEnabled =  dataStoreRepository.getSharedPreferencesBoolean(
+                KEY_BLOCK_COMMONG_SPAMMERS
+            )
                  WindowObj.getWindowObj()?.setPhoneNum(phoneNumber)
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
                 var defServerHandling:Deferred<CntctitemForView?>? = null
                 val definfoAvaialbleInDb = async { inComingCallManager.getAvailbleInfoInDb() }
+
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
                 try {
                     val contactInCprovider = defredInfoFromCprovider.await()
@@ -53,6 +57,9 @@ class CallScreeningServiceHelper(
                     }
                     val infoAvailableInDb = definfoAvaialbleInDb.await()
                     if(infoAvailableInDb!=null){
+                        if(infoAvailableInDb.spammCount?:0L > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                            respondToSpamCall()
+                        }
                         if(!isInfoFoundInCprovider){
                             WindowObj.getWindowObj()?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
@@ -74,12 +81,7 @@ class CallScreeningServiceHelper(
                     Log.d(TAG, "onReceive: firsttry")
                     val isBlockedByPattern  = defBlockedByPattern.await()
                     if(isBlockedByPattern){
-                        isSpam = true
-                        if(!respondedToCall){
-                            respondedToCall = true
-                            resToCallCallBack(true)
-                        }
-
+                        respondToSpamCall()
                     }
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
@@ -91,12 +93,9 @@ class CallScreeningServiceHelper(
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
                         WindowObj.getWindowObj()?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
-                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
-                        isSpam = true
-                        if(!respondedToCall){
-                            respondedToCall = true
-                            resToCallCallBack(true)
-                        }
+
+                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                        respondToSpamCall()
                     }
                     if(resFromServer!=null){
                         inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
@@ -109,11 +108,8 @@ class CallScreeningServiceHelper(
                     Log.d(TAG, "onReceive: third try ")
                     val r = defNonContactsBlocked.await()
                     if(r){
-                        if(!respondedToCall){
-                            respondedToCall = true
-                            resToCallCallBack(true)
+                        respondToSpamCall()
 
-                        }
                     }
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
@@ -135,6 +131,17 @@ class CallScreeningServiceHelper(
 //        context.stopFloatingService()
     }
 
+    private suspend fun respondToSpamCall() = withContext(Dispatchers.Main) {
+        Log.d(TAG, "respondToSpamCall: blocking call")
+        isSpam = true
+        if(!respondedToCall){
+
+            respondedToCall = true
+            //check in preferences store, block common spammers enabled
+
+            resToCallCallBack(true)
+        }
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.N)

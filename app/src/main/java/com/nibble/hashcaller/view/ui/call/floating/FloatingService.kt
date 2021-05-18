@@ -27,6 +27,7 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
 import com.nibble.hashcaller.utils.internet.InternetChecker
+import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
@@ -189,7 +190,8 @@ class FloatingService: Service() {
                 window,
                 phoneNumber,
                 this@FloatingService,
-                isCallScreeningRoleHeld()
+                isCallScreeningRoleHeld(),
+                DataStoreRepository(blockPreferencesDataStore)
             )
             floatinServiceHelper.handleCall()
         }

@@ -636,7 +636,7 @@ class CallContainerRepository(
         if(log!=null){
             var spamCount = log.spamCount
             spamCount += 1
-            callLogDAO?.markAsReportedByUser(contactAddress, spamCount)
+            callLogDAO?.markAsReportedByUser(formatedAdders, spamCount)
         }
     }
 

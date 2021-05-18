@@ -83,10 +83,14 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
         binding.tvPhoneNumIncomming.text = phoneNumber
         Log.d(TAG, "onCreate: $phoneNumber")
-
         getCallerInfo()
+        checkIfUserBlockedThisNumber()
 
 
+    }
+
+    private fun checkIfUserBlockedThisNumber() {
+        viewModel?.isthisNumberBlocked(phoneNumber)
     }
 
 

@@ -1658,10 +1658,8 @@ class SMSLocalRepository(
     /**
      * Adding a new sms sender info who is a spammer
      */
-    suspend fun markAsSpam(contactAddress: String, i: Int, s: String, s1: String)   = withContext(Dispatchers.IO){
+    suspend fun markAsSpam(contactAddress: String)   = withContext(Dispatchers.IO){
        val formatedAddress = formatPhoneNumber(contactAddress)
-        var name = ""
-        var spamCount = 0L
 
 //        smsThreadsDAO?.find(formatedAddress).apply {
 //            if(this!=null) {

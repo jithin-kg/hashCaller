@@ -12,6 +12,7 @@ import androidx.room.PrimaryKey
  *  1 -> contains
  *  2 -> ends with
  *  3 -> exact number , number that user reported from call log, sms, individual contact views
+ *  refer class BlockTypes for types
  */
 @Entity(tableName = "block_list_pattern", indices = [Index(value=["num_pattern", "num_pattern_regex"])])
 data class BlockedListPattern(

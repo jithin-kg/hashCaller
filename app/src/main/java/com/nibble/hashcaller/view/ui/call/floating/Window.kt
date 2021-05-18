@@ -266,6 +266,11 @@ fun setCallerInfoFoundFrom(foundFrom:Int){
         setCountryCode()
 
     }
+
+    fun setwindowSpamColor() {
+        layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
+    }
+
     companion object{
         const val TAG = "__Window"
         const val INFO_SEARCHING = 0

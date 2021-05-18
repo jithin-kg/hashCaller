@@ -3,6 +3,7 @@ package com.nibble.hashcaller.repository
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
@@ -50,7 +51,6 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao?,
         return blockedLIstDao?.getAllBLockListPattern()
 
 
-
     }
 
     suspend fun isCallerMuted(phoneNumber: String):kotlinx.coroutines.flow.Flow<Boolean> = flow {
@@ -71,6 +71,15 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao?,
     suspend fun clearAll() {
         blockedLIstDao?.deleteAll()
 
+    }
+
+    suspend fun fidOneLike(contactAddress:String){
+        val formated = formatPhoneNumber(contactAddress)
+        blockedLIstDao?.find(formated, BLOCK_TYPE_EXACT_NUMBER)
+    }
+
+    suspend fun getAll(): List<BlockedListPattern>? {
+        return blockedLIstDao?.getAllBLockListPatternList()
     }
 
 

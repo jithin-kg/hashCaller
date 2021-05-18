@@ -1,7 +1,6 @@
 package com.nibble.hashcaller.utils.notifications
 
 import android.app.Application
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -9,6 +8,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.preferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
+import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_BLOCK
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -19,6 +19,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
  * channel to take effect
  */
 val Context.tokeDataStore by preferencesDataStore(name = USER_PREFERENCES_NAME)
+val Context.blockPreferencesDataStore by preferencesDataStore(name = USER_PREFERENCES_BLOCK)
 
 class HashCaller : Application(){
     /**This will be called before any start of activity, right when our app will start.

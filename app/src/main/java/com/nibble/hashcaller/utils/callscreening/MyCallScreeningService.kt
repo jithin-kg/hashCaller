@@ -30,6 +30,7 @@ import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
+import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
@@ -73,11 +74,10 @@ class MyCallScreeningService: CallScreeningService() {
         rcfirebaseAuth = FirebaseAuth.getInstance()
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)
-
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
         val phoneNumber = getPhoneNumber(callDetails)
-//        responseBuilder = CallResponse.Builder()
+        responseBuilder = CallResponse.Builder()
 //        showNotification()
         startFloatingServiceFromScreeningService(phoneNumber)
 
@@ -93,13 +93,16 @@ class MyCallScreeningService: CallScreeningService() {
                 phoneNumber,
                 this@MyCallScreeningService
             )
+
             helper = CallScreeningServiceHelper(
                 getIncomminCallManager(phoneNumber, this@MyCallScreeningService),
                 hashedNum,
                 supervisorScope,
                 phoneNumber,
-                this@MyCallScreeningService
-            ) { resToCall: Boolean -> { respondeToTheCall(resToCall) } }
+                this@MyCallScreeningService,
+                DataStoreRepository(blockPreferencesDataStore)
+
+            ) { resToCall: Boolean -> run { respondeToTheCall(resToCall) } }
             helper.handleCall()
 
 //            stopForeground(true)
@@ -136,11 +139,17 @@ class MyCallScreeningService: CallScreeningService() {
     }
 
     fun respondeToTheCall(isEndCall:Boolean){
+        supervisorScope.launch {
+            withContext(Dispatchers.Main){
+                Log.d(TAG, "respondeToTheCall: ending call")
+                if(isEndCall){
+                    Log.d(TAG, "respondeToTheCall: ending call")
+                    responseBuilder.setDisallowCall(true)
+                }
+                respondToCall(mCallDetails, responseBuilder.build())
+            }
+        }
 
-//        if(isEndCall){
-//            responseBuilder.setDisallowCall(true)
-//        }
-//        respondToCall(mCallDetails, responseBuilder.build())
     }
 
 
@@ -166,65 +175,32 @@ class MyCallScreeningService: CallScreeningService() {
         )
     }
 
-    /**
-     * important to request this permission to show the alert on top of other apps / dialer
-     */
-    private fun startCallViewActivity() {
-//        https://stackoverflow.com/questions/63509860/how-to-start-activity-from-callscreeningservice-in-java
-
-//        val i = Intent(this, ActivityIncommingCallView::class.java)
-//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        i.putExtra("name", "sample")
-//        i.putExtra("phoneNumber", "808123")
-//        i.putExtra("spamcount",0)
-//        i.putExtra("carrier","sample")
-//        i.putExtra("location", "sample")
-//        startActivity(i)
-    }
 
 
 
-
-    /**
-     * funcftion to handle notificatoin, if call blocked and user preference is to
-     * to show notify for blocked calls , then show notification
-     */
-    @SuppressLint("LongLogTag")
-    private fun showNotificatification(isBlocked: Boolean, phoneNumber: String) {
-        var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(this)
-        if(isBlocked && isReceiveNotificationForSpamCallEnabled()){
-            //show notification
-            val resultIntent = Intent(this, MainActivity::class.java)
-//            resultIntent.putExtra(CONTACT_ADDRES, senderNo)
-
-// Create the TaskStackBuilder
-            val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
-                // Add the intent, which inflates the back stack
-                addNextIntentWithParentStack(resultIntent)
-                // Get the PendingIntent containing the entire back stack
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-
-            }
-            val notification = NotificationCompat
-                .Builder(this, HashCaller.CHANNEL_2_ID )
-                .setSmallIcon(R.drawable.ic_baseline_block_red)
-                .setContentTitle("Call Blocked")
-                .setContentText("Call from $phoneNumber is blocked")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_EVENT)
-                .setContentIntent(resultPendingIntent)
-                .setAutoCancel(true)
-                .build()
-
-            notificationManagerCmpt.notify(2, notification)
-
-        }
-    }
 
     private fun getPhoneNumber(callDetails: Call.Details): String {
 
         return callDetails.handle.toString().removeTelPrefix().parseCountryCode()
 
+    }
+
+
+    @SuppressLint("LongLogTag")
+    private   fun getHashedNum(phoneNumber: String, context: Context): String {
+        var hashed = ""
+        try {
+            Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
+            hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+            Log.d(TAG, "getHashedNum: $hashed")
+            return hashed
+        }catch (e:Exception){
+            Log.d(TAG, "getHashedNum: $e")
+        }
+        return hashed
+    }
+    companion object {
+        const val TAG = "__MyCallScreeningService"
     }
 
     private fun displayToast(message: String) {
@@ -256,7 +232,7 @@ class MyCallScreeningService: CallScreeningService() {
             try {
                 with(
                     NotificationChannel(
-                       NOTIFICATION_CHANNEL_GENERAL,
+                        NOTIFICATION_CHANNEL_GENERAL,
                         " getString(R.string.notification_channel_general)",
                         NotificationManager.IMPORTANCE_DEFAULT
                     )
@@ -304,22 +280,57 @@ class MyCallScreeningService: CallScreeningService() {
 
     }
 
+    /**
+     * funcftion to handle notificatoin, if call blocked and user preference is to
+     * to show notify for blocked calls , then show notification
+     */
     @SuppressLint("LongLogTag")
-    private   fun getHashedNum(phoneNumber: String, context: Context): String {
-        var hashed = ""
-        try {
-            Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
-            hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
-            Log.d(TAG, "getHashedNum: $hashed")
-            return hashed
-        }catch (e:Exception){
-            Log.d(TAG, "getHashedNum: $e")
+    private fun showNotificatification(isBlocked: Boolean, phoneNumber: String) {
+        var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(this)
+        if(isBlocked && isReceiveNotificationForSpamCallEnabled()){
+            //show notification
+            val resultIntent = Intent(this, MainActivity::class.java)
+//            resultIntent.putExtra(CONTACT_ADDRES, senderNo)
+
+// Create the TaskStackBuilder
+            val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
+                // Add the intent, which inflates the back stack
+                addNextIntentWithParentStack(resultIntent)
+                // Get the PendingIntent containing the entire back stack
+                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+            }
+            val notification = NotificationCompat
+                .Builder(this, HashCaller.CHANNEL_2_ID )
+                .setSmallIcon(R.drawable.ic_baseline_block_red)
+                .setContentTitle("Call Blocked")
+                .setContentText("Call from $phoneNumber is blocked")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_EVENT)
+                .setContentIntent(resultPendingIntent)
+                .setAutoCancel(true)
+                .build()
+
+            notificationManagerCmpt.notify(2, notification)
+
         }
-        return hashed
-    }
-    companion object {
-        const val TAG = "__MyCallScreeningService"
     }
 
+
+    /**
+     * important to request this permission to show the alert on top of other apps / dialer
+     */
+    private fun startCallViewActivity() {
+//        https://stackoverflow.com/questions/63509860/how-to-start-activity-from-callscreeningservice-in-java
+
+//        val i = Intent(this, ActivityIncommingCallView::class.java)
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//        i.putExtra("name", "sample")
+//        i.putExtra("phoneNumber", "808123")
+//        i.putExtra("spamcount",0)
+//        i.putExtra("carrier","sample")
+//        i.putExtra("location", "sample")
+//        startActivity(i)
+    }
 
 }

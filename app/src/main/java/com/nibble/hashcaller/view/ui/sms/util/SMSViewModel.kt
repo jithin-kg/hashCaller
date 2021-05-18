@@ -172,6 +172,7 @@ class SMSViewModel(
                                     EXACT_NUMBER
                                 )
                             )
+                            repository?.markAsSpam(contactAddress)
                         }
 //                    }
                 }

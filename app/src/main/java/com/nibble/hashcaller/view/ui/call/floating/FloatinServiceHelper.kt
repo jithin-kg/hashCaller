@@ -2,9 +2,10 @@ package com.nibble.hashcaller.view.ui.call.floating
 
 import android.content.Context
 import android.util.Log
+import com.nibble.hashcaller.datastore.DataStoreRepository
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
-import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
@@ -19,13 +20,13 @@ class FloatinServiceHelper(
     private val phoneNumber: String,
     private val context: Context,
     private val isCallScreeningRoleHeld: Boolean,
+    private val dataStoreRepository: DataStoreRepository,
 ) {
 
     suspend fun  handleCall(){
     var isInfoFoundInCprovider = false
         supervisorScope.launch {
-                //start operations iff screening role not avaialble
-                Log.d(TAG, "onReceive: role not held")
+            val isBlockCommonSpammersEnabled =  dataStoreRepository.getSharedPreferencesBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS)
 
                 var isSpam = false
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
@@ -40,15 +41,19 @@ class FloatinServiceHelper(
                         //the caller is in contact, so set information in db as caller information
                         isInfoFoundInCprovider = true
                         window?.updateWithcontentProviderInfo(contactInCprovider)
-
                     }
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
+                        if(infoAvailableInDb.spammCount?:0L > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                            isSpam = true
+                            endCall(inComingCallManager,
+                                phoneNumber)
+
+                        }
                         if(!isInfoFoundInCprovider){
                             window?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
-                        if(
-                            isCurrentDateAndPrevDateisGreaterThanLimit(infoAvailableInDb.informationReceivedDate, DATE_THREASHOLD)
+                        if(isCurrentDateAndPrevDateisGreaterThanLimit(infoAvailableInDb.informationReceivedDate, DATE_THREASHOLD)
                             && !isCallScreeningRoleHeld){
                                 //if data is out of date then get new updated data from server
                             defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
@@ -84,7 +89,9 @@ class FloatinServiceHelper(
                     if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
                         window?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
-                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD){
+
+                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+
                         isSpam = true
                         endCall(inComingCallManager,
                             phoneNumber)
@@ -135,6 +142,7 @@ class FloatinServiceHelper(
         inComingCallManager: InCommingCallManager,
         phoneNumber: String
     ) {
+        window?.setwindowSpamColor()
         inComingCallManager.endIncommingCall()
 //        notificationHelper.showNotificatification(true, phoneNumber)
     }

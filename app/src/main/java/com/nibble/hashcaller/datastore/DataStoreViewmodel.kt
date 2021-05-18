@@ -1,19 +1,11 @@
 package com.nibble.hashcaller.datastore
 
-import android.content.Context
-import android.util.Base64
 import android.util.Log
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import com.nibble.hashcaller.utils.auth.EnCryptor
-import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
-import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.KEY_BLOCK_COMMONG_SPAMMERS
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -22,12 +14,13 @@ class DataStoreViewmodel(private val repository: DataStoreRepository) : ViewMode
        emit(repository.getToken())
     }
 
-    fun saveToken(encodeTokenString: String) :LiveData<Int> = liveData {
-        repository.saveToken(  encodeTokenString)
-        emit(OPERATION_COMPLETED)
+    fun enableBlockCommonSpammers(isChecked: Boolean) = viewModelScope.launch{
+        repository?.savePreferencesBoolean(KEY_BLOCK_COMMONG_SPAMMERS, isChecked)
     }
+
+
     fun saveTokenViewmodelScope(encodeTokenString: String) = viewModelScope.launch {
-        repository.saveToken(encodeTokenString)
+//        repository.saveToken(encodeTokenString)
     }
 
     override fun onCleared() {

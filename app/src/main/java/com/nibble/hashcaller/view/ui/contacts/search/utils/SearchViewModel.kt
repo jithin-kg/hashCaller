@@ -1,13 +1,16 @@
 package com.nibble.hashcaller.view.ui.contacts.search.utils
 
+import android.os.Build
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.network.search.SearchResponse
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.network.search.model.SerachRes
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
@@ -37,7 +40,9 @@ class SearchViewModel(
     private val searchNetworkRepository: SearchNetworkRepository,
     private val contactLocalSyncRepository: ContactLocalSyncRepository,
     private val localDbSearchRepository: LocalDbSearchRepository,
-    private val libCoutryCodeHelper: LibCoutryCodeHelper
+    private val libCoutryCodeHelper: LibCoutryCodeHelper,
+    private val blockListPatternRepository: BlockListPatternRepository
+
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
     var hashedPhoneNum:MutableLiveData<String> = MutableLiveData()
@@ -189,6 +194,20 @@ class SearchViewModel(
         //todo add property doSearch in server in emiting object, if infoindb in null or (INFO_NOT_FOUND_IN_SERVER & days > 0)
         emit(info)
     }
+
+    fun isthisNumberBlocked(phoneNumber: String) :LiveData<Int> = liveData {
+        blockListPatternRepository?.fidOneLike(phoneNumber)
+        var  isSpam = false
+        val blockeList = blockListPatternRepository?.getAll()
+        if (blockeList != null) {
+            for (item in blockeList){
+//                if()
+            }
+        }
+
+
+    }
+
 
 
     /**

@@ -27,6 +27,8 @@ import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import java.lang.Exception
 
 class CallContainerViewModel(
     val callLogs: CallLogLiveData,
@@ -296,43 +298,61 @@ class CallContainerViewModel(
 
     fun blockThisAddress(spammerType: Int) : LiveData<Int> = liveData {
 //        threadID
-       contactAddress = markeditemsHelper.getmarkedAddresAt(0)?:""
-        if(contactAddress.isNotEmpty()){
+        contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
+        if (contactAddress.isNotEmpty()) {
             viewModelScope.launch {
+                supervisorScope {
+                    val as1 = async { repository?.marAsReportedByUser(contactAddress) }
 
-                async {
-
-                    repository?.marAsReportedByUser(contactAddress)
-
-                    blockListPatternRepository.insert(
-                        BlockedListPattern(
-                            null,
-                            formatPhoneNumber(contactAddress),
-                            "",
-                            EXACT_NUMBER
+                    val as2 = async {
+                        blockListPatternRepository.insert(
+                            BlockedListPattern(
+                                null, formatPhoneNumber(contactAddress),
+                                "", EXACT_NUMBER
+                            )
                         )
-                    )
+                    }
+                    val as3 = async {
+                        val constraints =
+                            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
+                                .build()
+                        val data = Data.Builder()
+                        data.putString(CONTACT_ADDRES, contactAddress)
+                        data.putInt(SPAMMER_TYPE, spammerType)
+
+                        val oneTimeWorkRequest =
+                            OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
+                                .setConstraints(constraints)
+                                .setInputData(data.build())
+                                .build()
+                        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+                    }
+
+
+                    try {
+                        as1.await()
+                    } catch (e: Exception) {
+                        Log.d(TAG, "blockThisAddress: $e")
+                    }
+                    try {
+                        as2.await()
+                    } catch (e: Exception) {
+                        Log.d(TAG, "blockThisAddress: $e")
+                    }
+                    try {
+                        as3.await()
+                    } catch (e: Exception) {
+                        Log.d(TAG, "blockThisAddress: $e")
+                    }
                 }
-                async {
-                    val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-                    val data = Data.Builder()
-                    data.putString(CONTACT_ADDRES, contactAddress)
-                    data.putInt(SPAMMER_TYPE, spammerType)
-
-                    val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
-                        .setConstraints(constraints)
-                        .setInputData(data.build())
-                        .build()
-                    WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
 
-                }
-
+//            }.join()
             }.join()
+
+            emit(ON_COMPLETED)
+
         }
-
-        emit(ON_COMPLETED)
-
     }
 
     fun getNextPage() = viewModelScope.launch {
@@ -402,8 +422,9 @@ class CallContainerViewModel(
     }
 
     fun clearMarkedItems() = viewModelScope.launch{
-        markeditemsHelper.markedItems.value?.clear()
-        markeditemsHelper.markedItems.value = markeditemsHelper.markedItems.value
+        markeditemsHelper.clearMarkeditems()
+        markeditemsHelper.clearMarkedItemPositions()
+
 //        markedItems.value?.clear()
 //        markedItems.value = markedItems.value
 //        var list = mutableListOf<CallLogAndInfoFromServer>()

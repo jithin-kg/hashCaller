@@ -11,6 +11,8 @@ import com.nibble.hashcaller.repository.search.ContactSearchRepository
  */
 object BlockSettingsInjectorUtil {
     fun provideContactsViewModelFactory(context: Context?):BlockSettingsViewModelFactory{
+
+
         return BlockSettingsViewModelFactory()
     }
 
