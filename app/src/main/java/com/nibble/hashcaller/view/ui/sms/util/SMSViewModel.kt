@@ -3,16 +3,20 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.*
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import androidx.work.*
+import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
+import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
+import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
+import com.nibble.hashcaller.work.SpamReportWorker
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
 /**
@@ -20,7 +24,8 @@ import kotlinx.coroutines.*
  */
 class SMSViewModel(
     val SMS: SMSLiveData,
-    val repository: SMSLocalRepository?
+    val repository: SMSLocalRepository?,
+    private val blockListPatternRepository: BlockListPatternRepository
 ): ViewModel() {
 
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(-1)
@@ -146,30 +151,44 @@ class SMSViewModel(
 
 
 
-    fun blockThisAddress(spammerType: Int,
-                         spammerCategory: Int): LiveData<Int> = liveData  {
+    fun blockThisAddress(spammerType: Int): LiveData<Int> = liveData  {
+      var contactAddress = ""
         viewModelScope.launch {
             val defLocal = async {
                 var items = markedItems.value?.toList()
                 if (!items.isNullOrEmpty()) {
-                    for (id in items) {
+//                    for (id in items) {
+                        val id = items[0]
                         val thread = repository?.findOneThreadById(id)
                         if (thread != null) {
-                            val address = thread.numFormated
-                            repository?.markAsSpam(address, 1, "", "")
+                             contactAddress = thread.numFormated
+//                            repository?.markAsSpam(contactAddress, 1, "", "")
+
+                            blockListPatternRepository.insert(
+                                BlockedListPattern(
+                                    null,
+                                    formatPhoneNumber(contactAddress),
+                                    "",
+                                    EXACT_NUMBER
+                                )
+                            )
                         }
-                    }
+//                    }
                 }
 
             }
             defLocal.await()
             async {
-//            repository?.report(
-//                ReportedUserDTo(
-//                    replaceSpecialChars(contactAddress), " ",
-//                    spammerType.toString(), spammerCategory.toString()
-//                )
-//            )
+                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                val data = Data.Builder()
+                data.putString(CONTACT_ADDRES, contactAddress)
+                data.putInt(SPAMMER_TYPE, spammerType)
+
+                val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
+                    .setConstraints(constraints)
+                    .setInputData(data.build())
+                    .build()
+                WorkManager.getInstance().enqueue(oneTimeWorkRequest)
             }
 
 

@@ -14,8 +14,8 @@ interface ISMSThreadsDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(smsThreads: List<SmsThreadTable>)
 
-    @Query("SELECT * FROM chat_threads WHERE isDeleted=:isDeleted  AND isReportedByUser=:isReportedByUser ORDER BY dateInMilliseconds DESC ")
-    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser:Boolean = false): LiveData<MutableList<SmsThreadTable>>
+    @Query("SELECT * FROM chat_threads WHERE (isDeleted=:isDeleted  AND isReportedByUser=:isReportedByUser) AND spamCount<=:spamlimit ORDER BY dateInMilliseconds DESC ")
+    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser:Boolean = false, spamlimit:Long=SPAM_THREASHOLD): LiveData<MutableList<SmsThreadTable>>
 
     @Query("SELECT * FROM chat_threads WHERE isDeleted=:isDeleted  AND isReportedByUser=:isReportedByUser OR spamCount > :spsmCountLimit ORDER BY dateInMilliseconds DESC ")
     fun getSpamSMSLogLivedata(isDeleted: Boolean=false, isReportedByUser: Boolean = true, spsmCountLimit: Long = SPAM_THREASHOLD): LiveData<MutableList<SmsThreadTable>>

@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.sms.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
 
@@ -10,11 +11,12 @@ import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
  */
 class SMSListViewModelFactory(
     private val SMSLiveData: SMSLiveData?,
-    private val repository: SMSLocalRepository?
+    private val repository: SMSLocalRepository?,
+    private val blockListPatternRepository: BlockListPatternRepository
 ) :
     ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         //preparing view model
-        return SMSViewModel(this!!.SMSLiveData!!, repository) as T
+        return SMSViewModel(this!!.SMSLiveData!!, repository, blockListPatternRepository) as T
     }
 }

@@ -107,7 +107,7 @@ class BlkListFragment : Fragment(),View.OnClickListener {
 //                //                Toast.makeText(MainActivity.this, "onChanged", Toast.LENGTH_SHORT).show();
 //            });
         blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
-        blockListViewModel.allblockedList.observe(viewLifecycleOwner,
+        blockListViewModel.allblockedList?.observe(viewLifecycleOwner,
             Observer<List<BlockedListPattern>> { blockedListPatterns ->
                 Log.d(TAG, "onViewCreated: " + blockedListPatterns?.size)
 //                adapter = BlockListAdapter(blockedListPatterns)

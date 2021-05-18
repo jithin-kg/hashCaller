@@ -60,7 +60,7 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun observeBlocklistLivedata() {
-        blockListViewModel.allblockedList.observe(this,
+        blockListViewModel.allblockedList?.observe(this,
             Observer<List<BlockedListPattern>> { blockedListPatterns ->
                 Log.d(TAG, "onViewCreated: " + blockedListPatterns?.size)
 

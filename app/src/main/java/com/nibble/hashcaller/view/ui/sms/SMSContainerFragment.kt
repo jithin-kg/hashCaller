@@ -93,13 +93,17 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     var limit = 12
     private var isDflt = false
     private lateinit var bottomSheetDialog: BottomSheetDialog
-    private  var spammerType:Int = -1
+    private  var spammerType:Int = SPAMMER_TYPE_SCAM
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
-    private  var selectedRadioButton: RadioButton? = null
-    private var SPAMMER_CATEGORY = SPAMMER_TYPE_SCAM
+//    private  var selectedRadioButton: RadioButton? = null
     private var isPaused = false
     private lateinit var toolbar : Toolbar
 
+    private  var radioSales:RadioButton?= null
+    private  var radioScam:RadioButton?= null
+    private  var radioBusiness:RadioButton?= null
+    private  var radioPerson:RadioButton?= null
+    private var btnBlock:Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -258,10 +262,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrDelete.setOnClickListener(this)
         binding.imgBtnAvatarMain.setOnClickListener(this)
         binding.fabSendNewSMS.setOnClickListener(this)
-        bottomSheetDialog.radioSales.setOnClickListener(this)
-        bottomSheetDialog.radioScam.setOnClickListener(this)
-//        bottomSheetDialog.imgExpand.setOnClickListener(this)
-        bottomSheetDialog.btnBlock.setOnClickListener(this)
+
+
+        radioSales?.setOnClickListener(this)
+        radioScam?.setOnClickListener(this)
+        radioBusiness?.setOnClickListener(this)
+        radioPerson?.setOnClickListener(this)
+        btnBlock?.setOnClickListener(this)
 
     }
 
@@ -286,7 +293,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      *
      */
     private fun addToBlockList() {
-        this.viewmodel?.blockThisAddress( this.spammerType, this.SPAMMER_CATEGORY )?.observe(viewLifecycleOwner, Observer {
+        this.viewmodel?.blockThisAddress( this.spammerType )?.observe(viewLifecycleOwner, Observer {
             when(it){
                 ON_COMPLETED ->{
                     Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
@@ -315,7 +322,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         bottomSheetDialog.setContentView(viewSheet)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
-        selectedRadioButton = bottomSheetDialog.radioScam
+//        selectedRadioButton = bottomSheetDialog.radioScam
+        radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness)
+        radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson)
+        radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales)
+        radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam)
+        btnBlock = bottomSheetDialog.findViewById(R.id.btnBlock)
+
 //        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
 
@@ -534,10 +547,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             R.id.imgBtnTbrMuteSender ->{
                 muteSender()
             }
-            R.id.btnBlock->{
-                Log.d(TAG, "onClick: ")
-                addToBlockList()
-            }
+//            R.id.btnBlock->{
+//                Log.d(TAG, "onClick: ")
+//                addToBlockList()
+//            }
             R.id.fabSendNewSMS -> {
                 Log.d(TAG, "onClick: fabSendNewSMS")
                 this.viewmodel?.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
@@ -553,10 +566,34 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 //               requireContext().startSettingsActivity(activity)
             }
+            R.id.radioSales, R.id.radioBusiness, R.id.radioScam,R.id.radioSales ->{
+                setSpammerTypeBasedOnRadio(v)
+            }
+            R.id.btnBlock->{
+                addToBlockList()
+            }
             else ->{
                 viewmodel?.getUnrealMsgCount()
 
             }
+        }
+    }
+
+    private fun setSpammerTypeBasedOnRadio(v: View) {
+        when(v?.id){
+            R.id.radioSales-> {
+                this.spammerType = SPAMMER_TYPE_SALES
+            }
+            R.id.radioScam ->{
+                this.spammerType = SPAMMER_TYPE_SCAM
+            }
+            R.id.radioBusiness ->{
+                spammerType = SPAMMER_TYPE_BUSINESS
+            }
+            R.id.radioPerson ->{
+                spammerType  = SPAMMER_TYPE_PEERSON
+            }
+
         }
     }
     @AfterPermissionGranted(REQUEST_CODE_READ_SMS_CONTACTS)
@@ -721,8 +758,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.searchViewSms.beInvisible()
         binding.imgBtnTbrDelete.beVisible()
         binding.imgBtnTbrMuteSender.beVisible()
-        binding.imgBtnTbrBlock.beVisible()
+
         binding.tvSelectedCount.beVisible()
+        if(size>1){
+            binding.imgBtnTbrBlock.beInvisible()
+        }else{
+            binding.imgBtnTbrBlock.beVisible()
+        }
     }
     fun isSearchViewVisible(): Boolean {
         if(binding.searchViewSms.visibility== View.VISIBLE)

@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
@@ -101,7 +102,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private  var lastOperationPerformed: Int ? = null
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
-    private  var selectedRadioButton: RadioButton? = null
+//    private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = SPAMMER_TYPE_SCAM
     private lateinit var recyclerV : RecyclerView
     private lateinit var layoutMngr: LinearLayoutManager
@@ -115,6 +116,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+    private var btnBlock:Button? = null
 
 
     
@@ -284,7 +286,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         radioBusiness?.setOnClickListener(this)
         radioPerson?.setOnClickListener(this)
 //        bottomSheetDialog.imgExpand.setOnClickListener(this)
-        bottomSheetDialog.btnBlock.setOnClickListener(this)
+        btnBlock?.setOnClickListener(this)
         binding.btnCallFragmentPermission.setOnClickListener(this)
     }
 
@@ -456,13 +458,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.rcrViewCallHistoryLogs.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as CustomLinearLayoutManager
-//            val topSpacingDecorator =
-//                TopSpacingItemDecoration(
-//                    30
-//                )
-//            addItemDecoration(topSpacingDecorator)
-            callLogAdapter = CallLogAdapter(context.applicationContext,this@CallFragment, this@CallFragment) {
 
+            callLogAdapter = CallLogAdapter(context.applicationContext,this@CallFragment, this@CallFragment) {
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
             adapter = callLogAdapter
             itemAnimator = null
@@ -701,11 +698,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         bottomSheetDialog.setContentView(viewSheet)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
-        selectedRadioButton = bottomSheetDialog.radioScam
+//        selectedRadioButton = bottomSheetDialog.radioScam
         radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness)
         radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson)
         radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales)
         radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam)
+        btnBlock = bottomSheetDialog.findViewById(R.id.btnBlock)
 //        bottomSheetDialog.imgExpand.setOnClickListener(this)
 
         

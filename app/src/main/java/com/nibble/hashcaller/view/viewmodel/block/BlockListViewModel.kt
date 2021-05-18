@@ -15,7 +15,7 @@ public class BlockListViewModel(application: Application) : AndroidViewModel(app
 
     private  val blockListPatternRepository: BlockListPatternRepository
 
-    val allblockedList: LiveData<List<BlockedListPattern>>
+    val allblockedList: LiveData<List<BlockedListPattern>>?
 
     init {
         val blockedLIstDao = HashCallerDatabase.getDatabaseInstance(application).blocklistDAO()

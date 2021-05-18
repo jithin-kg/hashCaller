@@ -17,17 +17,17 @@ import kotlinx.coroutines.withContext
 /**
  * Created by Jithin KG on 03,July,2020
  */
-class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
-                                private val mutedCallersDAO : IMutedCallersDAO ) {
+class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao?,
+                                private val mutedCallersDAO : IMutedCallersDAO? ) {
 
     //room executes all queries on a seperate thread
-    val allBlockedList:LiveData<List<BlockedListPattern>> = blockedLIstDao.getAllBLockListPattern()
+    val allBlockedList: LiveData<List<BlockedListPattern>>? = blockedLIstDao?.getAllBLockListPattern()
 
     @SuppressLint("LongLogTag")
     suspend fun insert(blockedListPattern: BlockedListPattern): Int  = withContext(Dispatchers.IO){
-       val res =  blockedLIstDao.find(formatPhoneNumber(blockedListPattern.numberPattern), blockedListPattern.type)
+       val res =  blockedLIstDao?.find(formatPhoneNumber(blockedListPattern.numberPattern), blockedListPattern.type)
             if(res==null){
-                blockedLIstDao.insert(blockedListPattern)
+                blockedLIstDao?.insert(blockedListPattern)
                 return@withContext OPERATION_COMPLETED
 
             }else{
@@ -37,17 +37,17 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
     }
     @SuppressLint("LongLogTag")
     suspend fun delete(blockedListPattern: String, type: Int) = withContext(Dispatchers.IO){
-        val insert = blockedLIstDao.delete(blockedListPattern, type)
+        val insert = blockedLIstDao?.delete(blockedListPattern, type)
         Log.d(TAG, "insert: $insert")
     }
     @SuppressLint("LongLogTag")
-    suspend fun getListOfdata():List<BlockedListPattern> = withContext(Dispatchers.IO){
-        return@withContext blockedLIstDao.getAllBLockListPatternList()
+    suspend fun getListOfdata():List<BlockedListPattern>? = withContext(Dispatchers.IO){
+        return@withContext blockedLIstDao?.getAllBLockListPatternList()
 
 
     }
-     fun getListLiveData(): LiveData<List<BlockedListPattern>> {
-        return blockedLIstDao.getAllBLockListPattern()
+     fun getListLiveData(): LiveData<List<BlockedListPattern>>? {
+        return blockedLIstDao?.getAllBLockListPattern()
 
 
 
@@ -60,7 +60,7 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
 //            res =  async { mutedCallersDAO.find(num) }.await()
 
 //        }.join()
-        res = mutedCallersDAO.find(num)
+        res = mutedCallersDAO?.find(num)
         if(res==null) {
             emit(false)
         }else{
@@ -69,7 +69,7 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao,
     }
 
     suspend fun clearAll() {
-        blockedLIstDao.deleteAll()
+        blockedLIstDao?.deleteAll()
 
     }
 

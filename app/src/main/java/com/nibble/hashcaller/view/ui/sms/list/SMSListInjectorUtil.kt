@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -24,6 +25,10 @@ object SMSListInjectorUtil {
         val mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
         val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
+        val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
+        val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
+         val blockListPatternRepository: BlockListPatternRepository = BlockListPatternRepository(blockListDao, mutedCallersDao)
+
         val repository = context?.let { SMSLocalRepository(
             it,
             spamListDAO,
@@ -39,7 +44,7 @@ object SMSListInjectorUtil {
             )
         }
 
-        return SMSListViewModelFactory(messagesLiveData, repository)
+        return SMSListViewModelFactory(messagesLiveData, repository, blockListPatternRepository)
     }
 
 }
