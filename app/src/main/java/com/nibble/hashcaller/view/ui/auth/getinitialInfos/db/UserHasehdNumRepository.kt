@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class UserHasehdNumRepository(
-    private val userHashedNumDAO: IHashedNumDao,
+    private val userUserHashedNumDAO: IUserHashedNumDao,
     private val countryCodeHelper: CountrycodeHelper
 ) {
 
@@ -15,12 +15,12 @@ class UserHasehdNumRepository(
      *
      */
     suspend fun saveUserPhoneHash(hashedPhoneNum: String, formattedPhoneNum: String) = withContext(Dispatchers.IO) {
-        userHashedNumDAO?.deleteAll()
-        userHashedNumDAO?.insert(UserHashedNumber(hashedPhoneNum, formattedPhoneNum))
+        userUserHashedNumDAO?.deleteAll()
+        userUserHashedNumDAO?.insert(UserHashedNumber(hashedPhoneNum, formattedPhoneNum))
     }
 
     suspend fun getHasehedNumOfuser(): UserHashedNumber?  = withContext(Dispatchers.IO){
-        return@withContext userHashedNumDAO?.getHash()
+        return@withContext userUserHashedNumDAO?.getHash()
     }
 
     fun getCoutryCode(): String {

@@ -84,6 +84,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     CallLogAdapter.ViewHandlerHelper, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
+
     private  var _binding: FragmentCallBinding? = null
     private val binding get() = _binding!!
     private var isDflt = false

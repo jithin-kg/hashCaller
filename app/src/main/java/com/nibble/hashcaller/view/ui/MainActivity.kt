@@ -65,10 +65,13 @@ import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
+import com.nibble.hashcaller.view.ui.call.work.CallNumUploadWorker
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
+import com.nibble.hashcaller.view.ui.hashworker.HashWorker
+import com.nibble.hashcaller.view.ui.hashworker.HasherViewmodel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
 import com.nibble.hashcaller.view.ui.profile.ProfileActivity
@@ -112,6 +115,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     var fab: FloatingActionButton? = null
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userInfoViewModel: UserInfoViewModel
+    private lateinit var hashedNumbersViewmodel : HasherViewmodel
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
     //    private lateinit var blockConfigFragment: BlockConfigFragment
@@ -161,7 +165,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         rcfirebaseAuth = FirebaseAuth.getInstance()
         if (checkPermission()) {
+            startHashWorker()
             initViewModel()
+
             isUserInfoAvaialbleInDb{isUserInfoAvialble->
                 if(isUserInfoAvialble){
                     firebaseAuthListener()
@@ -170,7 +176,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     onSingnedOutcleanUp()
                 }
             }
-
+            observeHashedNumbersTable()
         } else {
             val i = Intent(this, PermissionRequestActivity::class.java)
 //            startActivityForResult(i, PERMISSION_REQUEST_CODE)
@@ -185,6 +191,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 
+    }
+
+    private fun observeHashedNumbersTable() {
+        hashedNumbersViewmodel.hashedNumbersLiveData.observe(this, Observer {
+            hashedNumbersViewmodel.doWork()
+        })
+    }
+
+    private fun startHashWorker() {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(HashWorker::class.java)
+            .setConstraints(constraints)
+            .build()
+        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
     }
 
     private fun isUserInfoAvaialbleInDb(callback:(isUserInfoAvialble:Boolean)-> Unit){
@@ -302,7 +323,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         mangeCipherInSharedPref()
         observeUserInfoLiveData()
-        setupContactUploadWork()
+//        setupContactUploadWork()
         observeUserInfo()
         initListeners()
 
@@ -476,6 +497,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ).get(
             UserInfoViewModel::class.java
         )
+        hashedNumbersViewmodel = ViewModelProvider(this,
+            MainActivityInjectorUtil.provideHashINjectorUtil(applicationContext,
+                tokenHelper)).get(HasherViewmodel::class.java)
+
+
     }
 
 

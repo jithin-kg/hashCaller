@@ -181,16 +181,7 @@ class SMSViewModel(
             }
             val as2 = async { repository?.marAsReportedByUserInCall(contactAddress) }
             val as3 = async {
-                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-                val data = Data.Builder()
-                data.putString(CONTACT_ADDRES, contactAddress)
-                data.putInt(SPAMMER_TYPE, spammerType)
-
-                val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
-                    .setConstraints(constraints)
-                    .setInputData(data.build())
-                    .build()
-                WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+//               doWork(contactAddress, spammerType)
             }
 
         try {
@@ -216,6 +207,19 @@ class SMSViewModel(
 
 
 
+    }
+
+    private suspend fun doWork(contactAddress: String, spammerType: Int) {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val data = Data.Builder()
+        data.putString(CONTACT_ADDRES, contactAddress)
+        data.putInt(SPAMMER_TYPE, spammerType)
+
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
+            .setConstraints(constraints)
+            .setInputData(data.build())
+            .build()
+        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
     }
 
     fun muteMarkedSenders() = viewModelScope.launch {

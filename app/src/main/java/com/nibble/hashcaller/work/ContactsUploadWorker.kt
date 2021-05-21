@@ -55,7 +55,6 @@ val countryCodeHelper = CountrycodeHelper(context)
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
             )
              contactRepository = WorkerContactRepository( cursor)
-
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
 
             setNewlySavedContactsList()

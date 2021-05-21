@@ -451,13 +451,13 @@ class CallContainerViewModel(
            repository?.insertIntoCallLogDb(logs)
         }
         val as2 = async { updateCallLogIds(logs) }
-        val as3 = async { getInformationForTheseNumbers() }
+//        val as3 = async { getInformationForTheseNumbers() }
         val as5 = async { updateNameAndSpamCount(logs) }
         val as4 = async { repository?.deleteCallLogs(logs) }
 
         as2.await()
         as1.await()
-        as3.await()
+//        as3.await()
         as4.await()
 
     }

@@ -11,7 +11,7 @@ import androidx.room.Query
  * retrieved from database
  */
 @Dao
-interface IHashedNumDao {
+interface IUserHashedNumDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: UserHashedNumber)
 

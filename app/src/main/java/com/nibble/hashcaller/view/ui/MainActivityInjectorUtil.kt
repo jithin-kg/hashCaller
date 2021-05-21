@@ -8,6 +8,8 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHasehdNumRepository
+import com.nibble.hashcaller.view.ui.hashworker.HashViewmodelFactory
+import com.nibble.hashcaller.view.ui.hashworker.HashedDataRepository
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
 
@@ -35,6 +37,13 @@ object MainActivityInjectorUtil {
             userNetworkRepository,
             userHasehdNumRepository
         )
+    }
+
+    fun provideHashINjectorUtil(context: Context, tokenHelper: TokenHelper?): HashViewmodelFactory {
+        val hashedNumDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).hashedNumDAO() }
+
+        val repository = HashedDataRepository(hashedNumDao)
+        return HashViewmodelFactory(repository)
     }
 
 

@@ -1,10 +1,22 @@
 package com.nibble.hashcaller.work
 
 import android.database.Cursor
+import android.provider.CallLog
 import android.provider.ContactsContract
+import android.util.Log
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
+import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
+import com.nibble.hashcaller.view.ui.contacts.getRandomColor
+import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.view.utils.ContactGlobal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.HashMap
 import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -14,14 +26,13 @@ class WorkerContactRepository(private val cursor: Cursor?)  {
     var uniqueMobilePhones: List<ContactUploadDTO> = ArrayList()
     var lastNumber = "0"
 
-    fun fetchContacts(): MutableList<ContactUploadDTO> {
+    suspend fun fetchContacts(): MutableList<ContactUploadDTO> = withContext(Dispatchers.IO) {
 
         var hashSetOfAddress : HashSet<String> = HashSet()
 
 
         if (cursor?.count ?: 0 > 0) {
             while (cursor!!.moveToNext()) {
-
                 var contact = ContactUploadDTO()
                 val name =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
@@ -62,7 +73,7 @@ class WorkerContactRepository(private val cursor: Cursor?)  {
             cursor.close()
         }
 
-        return sortAndSet(contacts)
+        return@withContext sortAndSet(contacts)
     }
 
     private fun sortAndSet(contacts:  MutableList<ContactUploadDTO>): ArrayList<ContactUploadDTO> {
@@ -79,5 +90,8 @@ class WorkerContactRepository(private val cursor: Cursor?)  {
             contactWithMetaDataForSms.put(contact.phoneNumber, obj )
         }
     }
+
+
+
 
 }
