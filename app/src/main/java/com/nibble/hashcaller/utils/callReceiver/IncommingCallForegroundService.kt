@@ -158,6 +158,7 @@ class IncommingCallForegroundService : Service() {
         }
     }
     private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
+
     return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
 
     }

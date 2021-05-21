@@ -37,6 +37,7 @@ import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -54,7 +55,7 @@ private const val CODE_FOREGROUND_SERVICE = 1
 class MyCallScreeningService: CallScreeningService() {
 
     val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private  lateinit var helper: CallScreeningServiceHelper
+    private   var helper: CallScreeningServiceHelper? = null
     private lateinit var mCallDetails:Call.Details
     private lateinit var responseBuilder:CallResponse.Builder
     private lateinit var responseToCall:com.nibble.hashcaller.utils.callscreening.CallResponse
@@ -95,16 +96,18 @@ class MyCallScreeningService: CallScreeningService() {
                 this@MyCallScreeningService
             )
 
-            helper = CallScreeningServiceHelper(
-                getIncomminCallManager(phoneNumber, this@MyCallScreeningService),
-                hashedNum,
-                supervisorScope,
-                phoneNumber,
-                this@MyCallScreeningService,
-                DataStoreRepository(blockPreferencesDataStore)
+            helper = hashedNum?.let {
+                CallScreeningServiceHelper(
+                    getIncomminCallManager(phoneNumber, this@MyCallScreeningService),
+                    it,
+                    supervisorScope,
+                    phoneNumber,
+                    this@MyCallScreeningService,
+                    DataStoreRepository(blockPreferencesDataStore)
 
-            ) { resToCall: Boolean -> run { respondeToTheCall(resToCall) } }
-            helper.handleCall()
+                ) { resToCall: Boolean -> run { respondeToTheCall(resToCall) } }
+            }
+            helper?.handleCall()
 
 //            stopForeground(true)
 //            stopSelf()
@@ -187,11 +190,12 @@ class MyCallScreeningService: CallScreeningService() {
 
 
     @SuppressLint("LongLogTag")
-    private   fun getHashedNum(phoneNumber: String, context: Context): String {
-        var hashed = ""
+    private suspend fun getHashedNum(phoneNumber: String, context: Context): String? {
+        var hashed:String? = ""
         try {
             Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
             hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+            hashed = hashUsingArgon(hashed)
             Log.d(TAG, "getHashedNum: $hashed")
             return hashed
         }catch (e:Exception){

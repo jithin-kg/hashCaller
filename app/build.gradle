@@ -229,6 +229,7 @@ dependencies {
 
     // Preferences DataStore (SharedPreferences like APIs)
     implementation "androidx.datastore:datastore-preferences:1.0.0-beta01"
+    implementation 'org.signal:argon2:13.1@aar'
 
 
     

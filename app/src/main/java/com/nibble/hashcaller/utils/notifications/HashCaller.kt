@@ -9,6 +9,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.preferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_BLOCK
+import org.signal.argon2.Argon2
+import org.signal.argon2.MemoryCost
+import org.signal.argon2.Type
+import org.signal.argon2.Version
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -25,7 +29,6 @@ class HashCaller : Application(){
     /**This will be called before any start of activity, right when our app will start.
      * This is the perfect place to setup our channels
      */
-
     companion object{
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
@@ -34,6 +37,11 @@ class HashCaller : Application(){
         const val CHANNEL_3_CALL_SERVICE_ID ="chanel3"
         const val NOTIFICATION_CHANNEL_NAME = "callerId"
         const val NOTIFICATION_ID = 1
+        private lateinit var argon2:Argon2
+        fun getArgon2(): Argon2 {
+            return argon2
+        }
+
 
 //          var callFragment: CallFragment? = null
 //          var messagesFragment: SMSContainerFragment? = null
@@ -52,7 +60,18 @@ class HashCaller : Application(){
 
         createNotificationChannels()
         instantiateAllFragment()
+        buildArgon()
     }
+
+    private fun buildArgon() {
+         argon2 = Argon2.Builder(Version.V13)
+            .type(Type.Argon2id)
+            .memoryCost(MemoryCost.MiB(36))
+            .parallelism(1)
+            .iterations(3)
+            .build()
+    }
+
 
 
     private fun instantiateAllFragment() {

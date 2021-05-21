@@ -22,6 +22,7 @@ import com.nibble.hashcaller.utils.notifications.HashCaller.Companion.NOTIFICATI
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import java.lang.Exception
@@ -47,9 +48,14 @@ class CallHandleWorker(private val context: Context, private val workerParameter
                 //46a418e15711ea36c113b2fb9a157ade7aea9dd453254952428e7a2117f119c0
                 //00c2551169dde5d78ee4c3424feef14e09a75d3b91d9e7e2f5878b370508dd65 worker
                 Log.d("__hashedNumInReceiver", "onReceive: $hasedNum")
-                val defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                    hasedNum
-                ) }
+
+                val defServerHandling =  async {
+                    hasedNum?.let {
+                        inComingCallManager.searchInServerAndHandle(
+                            it
+                        )
+                    }
+                }
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
                 //todo also search for infor from server in local db about callers or a better way is if
@@ -155,8 +161,10 @@ class CallHandleWorker(private val context: Context, private val workerParameter
         )
     }
 
-    private suspend  fun getHashedNum(phoneNumber: String, context: Context): String {
-        return Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+    private suspend  fun getHashedNum(phoneNumber: String, context: Context): String? {
+        var hash:String? = Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+        hash = hashUsingArgon(hash)
+        return  hash
 
     }
     private fun endCall(

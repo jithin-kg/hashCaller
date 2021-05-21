@@ -17,6 +17,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.IncommingCall.LocalDbSearchRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
 import com.nibble.hashcaller.view.utils.hashPhoneNum
@@ -83,9 +84,15 @@ class SearchViewModel(
 //                 Log.d(TAG, "search: enc hi is $encPhone")
 //                 val encPhone = encryptPhoneNum(hashedPhone, key)
                  val num = formatPhoneNumber(phoneNumber)
-                 hashedPhoneNum.value = Secrets().managecipher(packageName, num)//encoding the number with my algorithm
-                 res = searchNetworkRepository.search(hashedPhoneNum.value!!)
-                 var result = res?.body()?.cntcts
+                  var hash:String? = Secrets().managecipher(packageName, num)//encoding the number with my algorithm
+                 hash = hashUsingArgon(hash)
+                 hash?.let{
+                     hashedPhoneNum.value =it
+                     res = searchNetworkRepository.search(hashedPhoneNum.value!!)
+                     var result = res?.body()?.cntcts
+                 }
+
+
 
 //                 searchResultLiveData.value = result
 

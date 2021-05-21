@@ -329,6 +329,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         userInfoViewModel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
+                //todo possibilityr of strinindexoutofbound exception
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
                 val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
                 fullName.text = "${it.firstname} ${it.lastName}"

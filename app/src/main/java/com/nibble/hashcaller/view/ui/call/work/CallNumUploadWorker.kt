@@ -20,6 +20,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallLocalRepository
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -142,15 +143,23 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                 //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927 ->123
                 //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927
-                val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))
+                var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
+                hashedAddress = hashUsingArgon(hashedAddress)
+                hashedAddress?.let {
+                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
+
+                }
 
             }else{
                 val today = Date()
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
-                    val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashedAddress))
+                    var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
+                    hashedAddress = hashUsingArgon(hashedAddress)
+                    hashedAddress?.let {
+                        callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
+
+                    }
                 }
 //                    if(sms.currentDate)
                 //Todo compare dates

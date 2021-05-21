@@ -7,6 +7,7 @@ import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.network.user.Resource
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 
@@ -32,16 +33,19 @@ class IncommingCallViewModel(
                 emit(Resource.loading(data=null))
         var res: Response<NetWorkResponse>? = null
              try {
-                    var number = formatPhoneNumber(phoneNumber)
-                    number = Secrets().managecipher(packageName, number)
-                   res = spamNetworkRepository.report(ReportedUserDTo(
-                       number,
-                       "",
-                       ""
-                   ))
+                    var number:String = formatPhoneNumber(phoneNumber)
+                    var hash:String? = Secrets().managecipher(packageName, number)
+                    hash = hashUsingArgon(hash)
+                    hash?.let {
+                        res = spamNetworkRepository.report(ReportedUserDTo(
+                            it,
+                            "",
+                            ""
+                        ))
 
-                 Log.d(TAG, "search: $res")
-                 emit(Resource.success(data = res?.body()));
+                        emit(Resource.success(data = res?.body()));
+                    }
+
 
              }catch (e:Exception){
                  Log.d(TAG, "response: $res");

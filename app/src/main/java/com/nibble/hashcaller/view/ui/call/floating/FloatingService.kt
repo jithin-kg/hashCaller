@@ -31,6 +31,7 @@ import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 
@@ -183,17 +184,20 @@ class FloatingService: Service() {
             val hashedNum =    getHashedNum(phoneNumber,
                 this@FloatingService
             )
-            floatinServiceHelper = FloatinServiceHelper(
-                getIncomminCallManager(phoneNumber, this@FloatingService),
-                hashedNum,
-                supervisorScope,
-                window,
-                phoneNumber,
-                this@FloatingService,
-                isCallScreeningRoleHeld(),
-                DataStoreRepository(blockPreferencesDataStore)
-            )
-            floatinServiceHelper.handleCall()
+            hashedNum?.let {
+                floatinServiceHelper = FloatinServiceHelper(
+                    getIncomminCallManager(phoneNumber, this@FloatingService),
+                    it,
+                    supervisorScope,
+                    window,
+                    phoneNumber,
+                    this@FloatingService,
+                    isCallScreeningRoleHeld(),
+                    DataStoreRepository(blockPreferencesDataStore)
+                )
+                floatinServiceHelper.handleCall()
+            }
+
         }
     }
 
@@ -255,11 +259,12 @@ class FloatingService: Service() {
 
 
 
-    private   fun getHashedNum(phoneNumber: String, context: Context): String {
-       var hashed = ""
+    private suspend fun getHashedNum(phoneNumber: String, context: Context): String? {
+       var hashed:String? = ""
         try {
             Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
              hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
+            hashed = hashUsingArgon(hashed)
             Log.d(TAG, "getHashedNum: $hashed")
             //2fde9f69809082858fa7a55d441fde7ab7beea302204a437a793d2545fc381a9 ->123123
             return hashed

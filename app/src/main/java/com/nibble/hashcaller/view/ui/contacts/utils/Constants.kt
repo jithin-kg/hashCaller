@@ -10,6 +10,7 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.showHideBlockButton
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
@@ -17,7 +18,14 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAd
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedViews
 import com.nibble.hashcaller.view.utils.ContactGlobal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.signal.argon2.Argon2
+import org.signal.argon2.MemoryCost
+import org.signal.argon2.Type
+import org.signal.argon2.Version
 import java.lang.Exception
+import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -71,6 +79,21 @@ var LAST_SMS_SENT = false
 var markingStarted = false // to use in recyclerview long press to mark item for deleting, blocking etc..
 
 var MESSAGE_STRING = ""
+
+suspend fun hashUsingArgon(textToHash: String?): String? = withContext(Dispatchers.Default) {
+    val argon2 = HashCaller.getArgon2()
+
+    val result = argon2.hash(  textToHash?.toByteArray(Charset.defaultCharset()),  "samplesdlfhksdlkfjhasdjklfhasdkfljhasdkjflhsadlkfjhasdlkjfhasdlkjfhsdlfjk".toByteArray(
+        Charset.defaultCharset()))
+    val hash = result.hash
+    val hashHex = result.hashHex
+    val encoded = result.encoded
+
+    return@withContext hashHex
+
+//32  Mib-> c8069e9734dbe10cad37e72876c7f37d753123d1dba2ba6cddb4386662f233ed
+
+}
 /**
  * unmark all recylcelerview list item
  */

@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
-
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
@@ -48,11 +47,14 @@ import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.HorizontalDottedProgress
-import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.coroutines.flow.collect
+import org.signal.argon2.Argon2
+import org.signal.argon2.MemoryCost
+import org.signal.argon2.Type
+import org.signal.argon2.Version
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
@@ -162,6 +164,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
         }
 
+
 //       GlobalScope.launch(Dispatchers.IO) {
 //          val time = measureTimeMillis {
 //              val res1 = async {suspendOne()  }
@@ -178,9 +181,10 @@ class IndividualSMSActivity : AppCompatActivity(),
         viewModel.markAsRead(contactAddress)
     }
 
+
     private fun observeNoSimCardException() {
         this.viewModel.noSimCardException.observe(this, Observer {
-            if(it == true){
+            if (it == true) {
                 toast("Please make sure sim card are inserted")
             }
         })
@@ -197,19 +201,18 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun observeDefaultSMSHandlerPermission() {
         this.defaultSMSHandlerLiveData.observe(this, Observer {
-            if(it==true){
+            if (it == true) {
                 binding.btnMakeDefaultSMS.beInvisible()
                 binding.layoutSend.beVisible()
-            }else{
-               binding. btnMakeDefaultSMS.beVisible()
-               binding. layoutSend.beInvisible()
+            } else {
+                binding.btnMakeDefaultSMS.beVisible()
+                binding.layoutSend.beInvisible()
             }
         })
     }
 
     private fun observerPermission() {
-        permissionGivenLiveDAta.observe(this, Observer {
-                it->
+        permissionGivenLiveDAta.observe(this, Observer { it ->
 //            run {
             if (it == true) {
 //                setSharedPref(true)
@@ -225,7 +228,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun observeMarkedViews() {
         this.viewModel.markedViewsLiveData.observe(this, Observer {
             Log.d(TAG, "observeMarkedViews: $it")
-            if(it !=null) {
+            if (it != null) {
                 val view = it.findViewById<ConstraintLayout>(R.id.layoutSMSReceivedItem)
                 view.setBackgroundColor(resources.getColor(R.color.numbersInnerTextColor))
             }
@@ -246,7 +249,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     private fun observeContactname() {
         this.viewModel.nameLiveData.observe(this, Observer {
-            if(!it.isNullOrBlank()){
+            if (!it.isNullOrBlank()) {
                 name = it
                 Log.d(TAG, "observeContactname: $it")
                 contactAddress = it
@@ -332,13 +335,13 @@ class IndividualSMSActivity : AppCompatActivity(),
     private fun isThisNumBlocked() {
         viewModel.getblockedStatusOfThenumber(contactAddress)
         viewModel.blockedStatusOfThenumber?.observe(this, Observer {
-            if(it!=null){
+            if (it != null) {
                 Log.d(TAG, "isThisNumBlocked: contact is $contact")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     isTheNumberBlocked.value = it.stream()
                         .anyMatch { t -> t.contactAddress.equals(contact) }
                     Log.d(TAG, "isThisNumBlocked: ")
-                    
+
                 }
 
             }
@@ -361,10 +364,10 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun observeIsContactBlocked() {
-        this.isTheNumberBlocked.observe(this, Observer {it->
-            if(it == true){
+        this.isTheNumberBlocked.observe(this, Observer { it ->
+            if (it == true) {
                 toggleBlockMenu(false)
-            }else if (it == false){
+            } else if (it == false) {
                 toggleBlockMenu(true)
             }
         })
@@ -384,13 +387,13 @@ class IndividualSMSActivity : AppCompatActivity(),
         Log.d(TAG, "onOptionsItemSelected: ")
         return when(item.itemId){
 
-            R.id.itemBlock->{
+            R.id.itemBlock -> {
                 Log.d(TAG, "onOptionsItemSelected: block")
                 showBlockBottomSheet()
                 true
 
             }
-            R.id.itemUnBlock->{
+            R.id.itemUnBlock -> {
                 viewModel.unblock(this.contactAddress)
                 true
             }
@@ -444,43 +447,41 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                sendSmsToClient(smsQueue.remove())
 //                isSmsChannelBusy = true
 //            }
-            if(chatId.isNotEmpty()){
+            if (chatId.isNotEmpty()) {
                 SCROLL_TO_POSITION = null
                 Log.d(TAG, "observeSmsLiveData:chat id  $chatId")
                 //intent from sms search activity
 //                recyclerView.scrollToPosition(chatScrollToPosition);
                 scrollTOPosition(chatScrollToPosition, layoutMngr)
-            }else if(SCROLL_TO_POSITION!=null){
+            } else if (SCROLL_TO_POSITION != null) {
 //                scrollTOPosition(null, layoutMngr)
-                    SearchUpAndDownHandler.scrollUp(layoutMngr)
+                SearchUpAndDownHandler.scrollUp(layoutMngr)
 
-            }
-
-            else{
-                if(firstime){
-                    scrollTOPosition(it.size - 1 , layoutMngr)
+            } else {
+                if (firstime) {
+                    scrollTOPosition(it.size - 1, layoutMngr)
 //                    recyclerView.scrollToPosition(it.size - 1);
                     firstime = false
                 }
             }
 
 
-            if(!recyclerViewAtEnd){
+            if (!recyclerViewAtEnd) {
                 countNewItem = it.size - oldLIstSize
                 binding.tvcountShow.text = countNewItem.toString()
-                if(countNewItem>0){
+                if (countNewItem > 0) {
                     binding.tvcountShow.beVisible()
-                }else{
-                   binding.tvcountShow.beInvisible()
+                } else {
+                    binding.tvcountShow.beInvisible()
                 }
-            }else{
+            } else {
                 clearNewMessageIndication()
                 oldLIstSize = it.size
             }
 
 //                recyclerView.scrollToPosition(adapter.itemCount -1)
             //  adapter.notifyItemRangeInserted(adapter.itemCount, it!!.size -1 )
-            if(recyclerViewAtEnd){
+            if (recyclerViewAtEnd) {
 //                    recyclerView.scrollToPosition(it.size-1)
 
             }
@@ -489,7 +490,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
 
     private fun observeViewmodelSms() {
-        viewModel.SMS.observe(this, Observer { sms->
+        viewModel.SMS.observe(this, Observer { sms ->
             sms.let {
 //                smsRecyclerAdapter?.setSMSList(it, searchQry)
 //                adapter.submitList(it)
@@ -507,8 +508,8 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                }
 //                this.allTypeOfSmsList.addAll(this.)
 
-                if(it.size>1)
-                this.threadID = it[it.size-1].threadID
+                if (it.size > 1)
+                    this.threadID = it[it.size - 1].threadID
 //                Log.d(TAG, "observeViewmodelSms: sms changed")
 //                Log.d(TAG, "observeViewmodelSms: last item sms  ${it[it.size-1].msgString} ")
 //                Log.d(TAG, "observeViewmodelSms: last item type  ${it[it.size-1].type} ")
@@ -574,7 +575,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 //
             }
 
-        }catch (e:Exception){
+        }catch (e: Exception){
             Log.d(TAG, "checkDefaultSettings: exception $e")
         }
 
@@ -657,15 +658,22 @@ class IndividualSMSActivity : AppCompatActivity(),
             this@IndividualSMSActivity.isSmsChannelBusy = true
             val settings = Settings()
             settings.useSystemSending = true;
-            settings.deliveryReports = true //it is importatnt to set this for the sms delivered status
+            settings.deliveryReports =
+                true //it is importatnt to set this for the sms delivered status
             val msg = sms!!.msgString
 
             val transaction = Transaction(this@IndividualSMSActivity, settings)
             val message = Message(msg, "919495617494")
 //        message.setImage(mBitmap);
 
-            val smsSentIntent = Intent(this@IndividualSMSActivity, SmsStatusSentReceiver::class.java)
-            val deliveredIntent = Intent(this@IndividualSMSActivity, SmsStatusDeliveredReceiver::class.java)
+            val smsSentIntent = Intent(
+                this@IndividualSMSActivity,
+                SmsStatusSentReceiver::class.java
+            )
+            val deliveredIntent = Intent(
+                this@IndividualSMSActivity,
+                SmsStatusDeliveredReceiver::class.java
+            )
             transaction.setExplicitBroadcastForSentSms(smsSentIntent)
             transaction.setExplicitBroadcastForDeliveredSms(deliveredIntent)
 
@@ -764,8 +772,8 @@ class IndividualSMSActivity : AppCompatActivity(),
                 this.viewModel.sendSmsToClient(smsObj, this, this.threadID, contact)
 //                viewModel.smsLiveData.value!!.add(smsObj)
 //                viewModel.smsLiveData.value = viewModel.smsLiveData.value
-            }catch (e:java.lang.Exception){
-                toast("No sim detected " )
+            }catch (e: java.lang.Exception){
+                toast("No sim detected ")
             }
 
         }else{
@@ -818,12 +826,15 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, SMSIndividualInjectorUtil.provideViewModelFactory(
-            applicationContext,
-            lifecycleScope,
-            TokenHelper(FirebaseAuth.getInstance().currentUser)
-            )).get(
-            SMSIndividualViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this, SMSIndividualInjectorUtil.provideViewModelFactory(
+                applicationContext,
+                lifecycleScope,
+                TokenHelper(FirebaseAuth.getInstance().currentUser)
+            )
+        ).get(
+            SMSIndividualViewModel::class.java
+        )
     }
 
     private fun registerAdapterListener() {
@@ -837,10 +848,11 @@ class IndividualSMSActivity : AppCompatActivity(),
                     layoutMngr.findLastCompletelyVisibleItemPosition()
 
                 if (lastVisiblePosition == -1 || positionStart >= msgCount - 1 &&
-                    lastVisiblePosition == positionStart - 1) {
-                   binding.recyclerViewSMSIndividual.scrollToPosition(positionStart)
+                    lastVisiblePosition == positionStart - 1
+                ) {
+                    binding.recyclerViewSMSIndividual.scrollToPosition(positionStart)
                 } else {
-                    if(recyclerViewAtEnd)
+                    if (recyclerViewAtEnd)
                         binding.recyclerViewSMSIndividual.scrollToPosition(adapter.getItemCount() - 1);
                 }
             }
@@ -852,7 +864,9 @@ class IndividualSMSActivity : AppCompatActivity(),
 //            findViewById<View>(R.id.recyclerViewSMSIndividual) as RecyclerView
 
 
-        adapter = SMSIndividualAdapter(this,this,  this, queryText , chatId){ id:String -> onContactitemClicked(id) }
+        adapter = SMSIndividualAdapter(this, this, this, queryText, chatId){ id: String -> onContactitemClicked(
+            id
+        ) }
 
         binding.recyclerViewSMSIndividual.setHasFixedSize(true)
         binding.recyclerViewSMSIndividual.layoutManager = LinearLayoutManager(this)
@@ -912,20 +926,21 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun onClick(v: View?) {
 
         when(v?.id){
-            
-            R.id.smsGoDownIndication->{
+
+            R.id.smsGoDownIndication -> {
                 binding.recyclerViewSMSIndividual.scrollToPosition(adapter.itemCount - 1)
                 clearNewMessageIndication()
                 binding.smsGoDownIndication.beGone()
 
-            }R.id.imgBtnSendSMS->{
-            Log.d(TAG, "onClick: ")
-                    sendSms()
             }
-            R.id.imgBtnBackSmsIndividual->{
+            R.id.imgBtnSendSMS -> {
+                Log.d(TAG, "onClick: ")
+                sendSms()
+            }
+            R.id.imgBtnBackSmsIndividual -> {
                 onBackPressedIn()
             }
-            R.id.btnBlock->{
+            R.id.btnBlock -> {
                 Log.d(TAG, "onClick: ")
                 addToBlockList(contact!!)
             }
@@ -937,22 +952,23 @@ class IndividualSMSActivity : AppCompatActivity(),
 //                popup.show()
 //
 //            }
-            R.id.imgViewCallBtn->{
+            R.id.imgViewCallBtn -> {
                 call(contactAddress)
             }
-            R.id.imgBtnSearchSMS->{
+            R.id.imgBtnSearchSMS -> {
                 Log.d(TAG, "onClick: imgBtnSearchSMS")
                 showSearchView()
             }
-            R.id.imgBtnSMSUp->{
+            R.id.imgBtnSMSUp -> {
                 scrollUp()
 
-            }R.id.imgBtnSMSDown->{
-            scrollDown()
+            }
+            R.id.imgBtnSMSDown -> {
+                scrollDown()
 
-             }
-            R.id.btnMakeDefaultSMS->{
-               requestDefaultSMSrole()
+            }
+            R.id.btnMakeDefaultSMS -> {
+                requestDefaultSMSrole()
             }
 //            R.id.btnUpdate->{
 //            viewModel.update()
@@ -995,7 +1011,7 @@ class IndividualSMSActivity : AppCompatActivity(),
                     intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
                     startActivityForResult(intent, requestCode)
                 }
-            }catch (e:Exception){
+            }catch (e: Exception){
                 Log.d(TAG, "checkDefaultSettings: exception $e")
             }
 //            return isDefault
@@ -1074,31 +1090,31 @@ class IndividualSMSActivity : AppCompatActivity(),
         if(v is RadioButton){
 
             when(v.id){
-                R.id.radioScam->{
+                R.id.radioScam -> {
                     val checked = v.isChecked
-                    if(checked){
-                        selectedRadioButton= bottomSheetDialog.radioScam
+                    if (checked) {
+                        selectedRadioButton = bottomSheetDialog.radioScam
                         this.spammerType = SPAMMER_TYPE_SCAM
                     }
                 }
-                R.id.radioSales->{
+                R.id.radioSales -> {
 
                     val checked = v.isChecked
-                    if(checked){
-                        selectedRadioButton= bottomSheetDialog.radioSales
+                    if (checked) {
+                        selectedRadioButton = bottomSheetDialog.radioSales
                         this.spammerType = SPAMMER_TYPE_SALES
                     }
                 }
-                R.id.radioBusiness->{
+                R.id.radioBusiness -> {
                     val checked = v.isChecked
-                    if(checked){
+                    if (checked) {
                         spammerType = SPAMMER_TYPE_BUSINESS
                     }
                 }
-                R.id.radioPerson->{
+                R.id.radioPerson -> {
                     val checked = v.isChecked
-                    if(checked){
-                      spammerType= SPAMMER_TYPE_PEERSON
+                    if (checked) {
+                        spammerType = SPAMMER_TYPE_PEERSON
                     }
                 }
             }
@@ -1106,8 +1122,8 @@ class IndividualSMSActivity : AppCompatActivity(),
     }
 
     private fun observeSpinnerSelected() {
-        this.spinnerSelected.observe(this, Observer {spinnerSelected->
-            if(spinnerSelected){
+        this.spinnerSelected.observe(this, Observer { spinnerSelected ->
+            if (spinnerSelected) {
 //                selectedRadioButton?.isChecked = false
             }
         })
@@ -1123,7 +1139,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun onNothingSelected(p0: AdapterView<*>?) {
     }
     private fun addToBlockList(no: String) {
-        viewModel.blockThisAddress(no, this.threadID, this.spammerType,)
+        viewModel.blockThisAddress(no, this.threadID, this.spammerType)
         Toast.makeText(this, "Number added to spamlist", Toast.LENGTH_LONG)
         bottomSheetDialog.hide()
         bottomSheetDialog.dismiss()
@@ -1204,7 +1220,12 @@ class IndividualSMSActivity : AppCompatActivity(),
             viewModel.markItem(id, view, pos).collect{
                 if(it!=null){
                     val view = it.findViewById<ConstraintLayout>(R.id.layoutSMSReceivedItem)
-                    view.setBackgroundColor(ContextCompat.getColor(this@IndividualSMSActivity, R.color.numbersInnerTextColor))
+                    view.setBackgroundColor(
+                        ContextCompat.getColor(
+                            this@IndividualSMSActivity,
+                            R.color.numbersInnerTextColor
+                        )
+                    )
                 }
             }
         }

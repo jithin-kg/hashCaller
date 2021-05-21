@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.sms.work
 import android.util.Log
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import java.text.SimpleDateFormat
@@ -40,7 +41,8 @@ class NewSmsTrackerHelper(
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
                     if(isCurrentDateAndPrevDateisGreaterThanLimit(smssender.informationReceivedDate, 3)){
-                        val secret = smssender.contactAddress?.let { Secrets().managecipher(packageName, it) }
+                        var secret:String?  = smssender.contactAddress?.let { Secrets().managecipher(packageName, it) }
+                        secret = hashUsingArgon(secret)
                         secret?.let { smWithoutSendersInformation.add(it) }
 
                     }

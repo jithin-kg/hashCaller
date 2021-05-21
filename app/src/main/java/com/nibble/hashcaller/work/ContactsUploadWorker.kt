@@ -21,6 +21,7 @@ import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import kotlinx.coroutines.*
 import retrofit2.HttpException
@@ -117,13 +118,15 @@ val countryCodeHelper = CountrycodeHelper(context)
 
                     val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
                     if(res==null){
-                        Log.d("__NOTINDB", "$formattedPhoneNum")
-                        val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                        Log.d(TAG , "not in db: $formattedPhoneNum")
+                        var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
                         Log.d("__hashedInContactUploadWorker", "setNewlySavedContactsList: hashed num is ${hashedPhoneNum}")
+                        hashedPhoneNum?.let {
+                            val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, it)
+                            contacts.add(cntctDtoObj)
+                        }
 
-                        val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, hashedPhoneNum)
-
-                        contacts.add(cntctDtoObj)
                     }
                 }
             }

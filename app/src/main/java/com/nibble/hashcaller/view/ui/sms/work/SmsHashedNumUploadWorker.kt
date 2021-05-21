@@ -16,6 +16,7 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
@@ -151,8 +152,12 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                      val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
 
-                     val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                     senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, hashedAddress))
+                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
+                     hashedAddress = hashUsingArgon(hashedAddress)
+                     hashedAddress?.let {
+                         senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, it))
+
+                     }
 
                  }else{
                      val today = Date()

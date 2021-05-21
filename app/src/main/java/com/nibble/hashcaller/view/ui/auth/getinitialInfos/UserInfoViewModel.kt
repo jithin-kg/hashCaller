@@ -17,6 +17,7 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHasehdNumReposi
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -82,19 +83,23 @@ class UserInfoViewModel(
     fun getUserInfoFromServer( phoneNumber: String?, context: Context): LiveData<SingupResponse> = liveData {
             try {
                 val formattedPhoneNum = formatPhoneNumber(phoneNumber!!)
-                val hashedNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
-                val response =  userNetworkRepository.getUserInfoFromServer( hashedNum, formattedPhoneNum)
-                Log.d(TAG, "getUserInfoFromServer: response: $response")
-                Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
-                response?.let {
-                    if(response?.isSuccessful){
-                        if(response.body()!=null)
-                            emit(response.body()!!)
+                var hashedNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                hashedNum = hashUsingArgon(hashedNum)
+                hashedNum?.let {
+                    val response =  userNetworkRepository.getUserInfoFromServer( it, formattedPhoneNum)
+                    Log.d(TAG, "getUserInfoFromServer: response: $response")
+                    Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
+                    response?.let {
+                        if(response?.isSuccessful){
+                            if(response.body()!=null)
+                                emit(response.body()!!)
 //                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
 //                        emit(response.body()!!)
 //                    }
+                        }
                     }
                 }
+
 
 
             }catch (e:Exception){
@@ -132,9 +137,12 @@ class UserInfoViewModel(
 
     fun saveUserPhoneHash(context: Context, phoneNumber: String):LiveData<Int> = liveData{
         val formattedPhoneNum = formatPhoneNumber(phoneNumber)
-        val hashedPhoneNum = Secrets().managecipher(context.packageName, formattedPhoneNum)
-        userHashedNumRepository.saveUserPhoneHash(hashedPhoneNum, formattedPhoneNum)
+        var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
+        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
+        hashedPhoneNum?.let {
+            userHashedNumRepository.saveUserPhoneHash(it, formattedPhoneNum) }
         emit(OPERATION_COMPLETED)
+
     }
 
     fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<NetworkResponseBase<SingupResponse>> = liveData{
