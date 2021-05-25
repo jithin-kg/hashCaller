@@ -255,11 +255,11 @@ class SMSViewModel(
      * to get information abount a sender
      */
     fun scheduleWorker() = viewModelScope.launch {
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java)
-                                 .setConstraints(constraints)
-                                .build()
-        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java)
+//                                 .setConstraints(constraints)
+//                                .build()
+//        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
     }
 

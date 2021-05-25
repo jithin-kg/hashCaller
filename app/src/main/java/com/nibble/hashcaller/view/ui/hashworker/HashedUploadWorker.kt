@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -35,6 +36,8 @@ class HashedUploadWorker(private val context: Context,
     private  var callersListTobeSendToServer: MutableList<ContactAddressWithHashDTO> = mutableListOf()
     private  var callersListChunkOfSize12:  List<List<ContactAddressWithHashDTO>> = mutableListOf()
     private val networkRepository = NumberUploaderRepository(TokenHelper(FirebaseAuth.getInstance().currentUser))
+    private val contactLisDAO: IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
+    private val hashedContactsDAO = HashCallerDatabase.getDatabaseInstance(context).hashedContactsDAO()
 
     override suspend fun doWork(): Result {
         try {
@@ -63,6 +66,7 @@ class HashedUploadWorker(private val context: Context,
                         /**
                          * send the list to server
                          */
+
                         val result = networkRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
 
                         var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()

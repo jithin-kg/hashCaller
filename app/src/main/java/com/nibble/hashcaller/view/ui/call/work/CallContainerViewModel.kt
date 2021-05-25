@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.work
 
+import android.content.Context
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
@@ -79,12 +80,12 @@ class CallContainerViewModel(
      * called when there is a change in call log in content provider
      */
     fun getInformationForTheseNumbers() = viewModelScope.launch {
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
-                                     .setConstraints(constraints)
-                                    .build()
-        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+//
+//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
+//                                     .setConstraints(constraints)
+//                                    .build()
+//        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
 //
     }
@@ -550,6 +551,11 @@ class CallContainerViewModel(
 
     fun getmarkeditemPositions(): Iterable<Int> {
         return markeditemsHelper.markedItemsPositions
+    }
+
+    fun startHashWorker(applicationContext: Context?) = viewModelScope.launch {
+
+        repository?.startHashWork(applicationContext)
     }
 
 

@@ -66,9 +66,9 @@ class HashCaller : Application(){
     private fun buildArgon() {
          argon2 = Argon2.Builder(Version.V13)
             .type(Type.Argon2id)
-            .memoryCost(MemoryCost.MiB(36))
+            .memoryCost(MemoryCost.MiB(32))
             .parallelism(1)
-            .iterations(3)
+            .iterations(2)
             .build()
     }
 

@@ -65,7 +65,6 @@ import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
-import com.nibble.hashcaller.view.ui.call.work.CallNumUploadWorker
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
@@ -165,7 +164,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         rcfirebaseAuth = FirebaseAuth.getInstance()
         if (checkPermission()) {
-            startHashWorker()
+//            startHashWorker()
             initViewModel()
 
             isUserInfoAvaialbleInDb{isUserInfoAvialble->
@@ -200,12 +199,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun startHashWorker() {
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(HashWorker::class.java)
-            .setConstraints(constraints)
-            .build()
-        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+//
+//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(HashWorker::class.java)
+//            .setConstraints(constraints)
+//            .build()
+//        WorkManager.getInstance(applicationContext).enqueue(oneTimeWorkRequest)
     }
 
     private fun isUserInfoAvaialbleInDb(callback:(isUserInfoAvialble:Boolean)-> Unit){
@@ -445,17 +444,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
     private fun setupContactUploadWork() {
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-
-        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
-            .build()
-        WorkManager.getInstance().enqueue(request2)
-
-        val request =
-            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-                .setConstraints(constraints)
-                .build()
-        WorkManager.getInstance().enqueue(request)
+//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+//
+//        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
+//            .build()
+//        WorkManager.getInstance().enqueue(request2)
+//
+//        val request =
+//            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+//                .setConstraints(constraints)
+//                .build()
+//        WorkManager.getInstance().enqueue(request)
 
     }
 

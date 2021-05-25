@@ -31,7 +31,9 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
+import com.nibble.hashcaller.view.ui.hashworker.HashedContacts
 import com.nibble.hashcaller.view.ui.hashworker.HashedNumber
+import com.nibble.hashcaller.view.ui.hashworker.IHashedContactsDAO
 import com.nibble.hashcaller.view.ui.hashworker.IHashedNumbersDAO
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
@@ -55,7 +57,8 @@ import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
     CallLogTable::class,
     SmsThreadTable::class,
     UserHashedNumber::class,
-    HashedNumber::class
+    HashedNumber::class,
+    HashedContacts::class
 
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
@@ -76,6 +79,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun smsThreadsDAO() : ISMSThreadsDAO
         abstract fun userHashedNumDAO() : IUserHashedNumDao
         abstract fun hashedNumDAO() : IHashedNumbersDAO
+        abstract fun hashedContactsDAO() : IHashedContactsDAO
 
 
     companion object{

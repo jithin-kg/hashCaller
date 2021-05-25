@@ -26,9 +26,9 @@ class SmsContainerViewModel(
         smslist: List<SMS>?,
         packageName: String
     ) = viewModelScope.launch {
-
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
-        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+//
+//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java).build()
+//        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
 
     }
 

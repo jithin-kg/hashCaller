@@ -11,17 +11,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
+import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
-import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
+import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
-import retrofit2.Response
 import java.lang.Exception
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.system.measureTimeMillis
 
 /**
@@ -39,63 +40,124 @@ class HashWorker (private val context: Context,
     )
 //    private var contactRepository: WorkerContactRepository = WorkerContactRepository(cursor)
 
-    private val projection = arrayOf(CallLog.Calls.NUMBER)
+
     private val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
-    private val callLogCursor: Cursor? = context.contentResolver.query(
-    CallLogLiveData.URI,
-    projection,
-    null,
-    null,
-    "${CallLog.Calls._ID} DESC"
-    )
+    private var callLogCursor: Cursor?= null
+    private var smsCurosor:Cursor? = null
     private val hashedNumDao = HashCallerDatabase.getDatabaseInstance(context).hashedNumDAO()
+    private val hashedContactsDAO = HashCallerDatabase.getDatabaseInstance(context).hashedContactsDAO()
     private val callerInfoFromSErverDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private val networkRepository = NumberUploaderRepository(TokenHelper(FirebaseAuth.getInstance().currentUser))
-    private val repository: HashRepository = HashRepository(callLogCursor,
-        contactsCursor,
-        hashedNumDao,
-        callerInfoFromSErverDAO
-        )
+    private var setOfContacts: HashSet<String> = hashSetOf()
+    private var setofHashedAddressInDb:HashSet<String> = hashSetOf()
+
+
+    private lateinit var repository: HashRepository
 
     override suspend fun doWork(): Result {
         try {
+            Log.d(TAG, "doWork: starting work")
+                initRepository()
+                //insert the unknown callers number into db(number, argonhashedNumber)
+                val listOfUnknownCallers =  repository?.getListOfUnkownCallers()
+                insertHashedNumsIntoDatabase(listOfUnknownCallers)
 
-            getUnknownNumbers()
+                //insert unknonw sms sender into db (number, argonahsednumber)
+                val listOfUnknownSMSSEnders =  repository?.getListOfAllUnkonSMSSenders()
+                insertHashedNumsIntoDatabase(listOfUnknownSMSSEnders)
+
+                //todo save the contacts to hashedContactsTable and observe it on call logs,
+                //and upload to server and save in server and get info for that
+////                //insert contacts into db (number, argonhashedNumber)
+                val listOfUnknownContacts = setOfContacts.toList()
+                insertIntoHashedContactsTable(listOfUnknownContacts)
+
+                Log.d(TAG, "getUnknownNumbers: all opearations completed")
+
+
             return Result.success()
         }catch (e:Exception){
+            Log.d(TAG, "doWork: $e")
             return Result.failure()
         }
     }
 
-    private suspend fun getUnknownNumbers()  = withContext(Dispatchers.IO){
-        var uploadOperationDefered : MutableList<Deferred<Unit>> = mutableListOf()
-       val time=  measureTimeMillis {
-            val defCallers =  async { getListOfAllUnkownCallers() }
-            val listOfUnknownCallers = defCallers.await()
-            var listOfHashedNumbers :MutableList<HashedNumber> = mutableListOf()
-            var callersListChunkOfSize12 = listOfUnknownCallers.chunked(12)
+    private suspend fun initRepository() = withContext(Dispatchers.IO) {
+        setOfContacts = getSetOfConatcts()
 
-               for (sublist in callersListChunkOfSize12){
-                   val listOfUploadDTO: MutableList<ContactAddressWithHashDTO> = mutableListOf()
-                   val timeInner = measureTimeMillis {
-                   for (item in sublist){
-                       var hashed:String?=  Secrets().managecipher(context.packageName, item)
-                       hashed =  hashUsingArgon(hashed)
-                       hashed?.let {
-                           val hashedNumber = HashedNumber(item, it )
-                           listOfHashedNumbers.add(hashedNumber)
-                       }
-                   }
-                       hashedNumDao?.insert(listOfHashedNumbers)
-               }
-           }
+        createCursors()
+        val hashedItemsInDb = hashedNumDao.getAll()
+        hashedItemsInDb.forEach {
+           setofHashedAddressInDb.add(it.number)
         }
-        Log.d(TAG, "getUnknownNumbers: time outer took $time")
+        repository=  HashRepository(callLogCursor,
+            contactsCursor,
+            hashedNumDao,
+            callerInfoFromSErverDAO,
+            setOfContacts,
+            smsCurosor,
+            setofHashedAddressInDb
+        )
+    }
+
+    private fun createCursors() {
+        val projectionCallLog = arrayOf(CallLog.Calls.NUMBER)
+        callLogCursor = context.contentResolver.query(
+            CallLogLiveData.URI,
+            projectionCallLog,
+            null,
+            null,
+            "${CallLog.Calls._ID} DESC"
+        )
+        smsCurosor = context.contentResolver.query(
+            SMSContract.ALL_SMS_URI,
+            null,
+            null,
+           null,
+            "_id DESC"
+        )
 
 
+    }
 
-//       val defContacts =  async { getListOfAllContacts() }
-//        async { getListOfUnknownSMSsenders() }
+
+    private suspend fun insertIntoHashedContactsTable(listOfUnknownCallers: List<String>) {
+        var listOfHashedNumbers :MutableList<HashedContacts> = mutableListOf()
+        var callersListChunkOfSize12 = listOfUnknownCallers.chunked(12)
+
+        for (sublist in callersListChunkOfSize12){
+            val listOfUploadDTO: MutableList<ContactAddressWithHashDTO> = mutableListOf()
+                for (item in sublist){
+                    val formtedNumber = formatPhoneNumber(item)
+                    var hashed:String?=  Secrets().managecipher(context.packageName, formtedNumber)
+                    hashed =  hashUsingArgon(hashed)
+                    hashed?.let {
+                        val hashedNumber = HashedContacts(formtedNumber, it )
+                        listOfHashedNumbers.add(hashedNumber)
+                    }
+                }
+                hashedContactsDAO?.insert(listOfHashedNumbers)
+        }
+    }
+    private suspend fun insertHashedNumsIntoDatabase(listOfUnknownCallers: List<String>) {
+        var listOfHashedNumbers :MutableList<HashedNumber> = mutableListOf()
+        var callersListChunkOfSize12 = listOfUnknownCallers.chunked(12)
+
+        for (sublist in callersListChunkOfSize12){
+            val listOfUploadDTO: MutableList<ContactAddressWithHashDTO> = mutableListOf()
+            val timeInner = measureTimeMillis {
+                for (item in sublist){
+                    val formtedNumber = formatPhoneNumber(item)
+                    var hashed:String?=  Secrets().managecipher(context.packageName, formtedNumber)
+                    hashed =  hashUsingArgon(hashed)
+                    hashed?.let {
+                        val hashedNumber = HashedNumber(formtedNumber, it )
+                        listOfHashedNumbers.add(hashedNumber)
+                    }
+                }
+                hashedNumDao?.insert(listOfHashedNumbers)
+            }
+        }
     }
 
     private suspend fun uploadToServer(listOfUploadDTO: MutableList<ContactAddressWithHashDTO>) {
@@ -135,9 +197,29 @@ class HashWorker (private val context: Context,
 //        return contactRepository.fetchContacts()
 //    }
 
-    private suspend fun getListOfAllUnkownCallers(): MutableList<String> {
-
-        return repository?.getListOfUnkownCallers()
+    private suspend fun getSetOfConatcts(): HashSet<String> {
+        var hashSetOfAddress : HashSet<String> = HashSet()
+        try {
+            if (contactsCursor?.count ?: 0 > 0) {
+                while (contactsCursor!!.moveToNext()) {
+                    var contact = ContactUploadDTO()
+                    val name =
+                        contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                    var phoneNo =
+                        contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                    phoneNo = formatPhoneNumber(phoneNo)
+                    if(!hashSetOfAddress.contains(phoneNo)){
+                        hashSetOfAddress.add(phoneNo)
+                    }else{
+                        continue
+                    }
+                }
+                contactsCursor.close()
+            }
+        }catch (e:Exception){
+            Log.d(HashRepository.TAG, "getListOfConatcts: $e")
+        }
+        return hashSetOfAddress
     }
     companion object{
         const val TAG ="__HashWorker"

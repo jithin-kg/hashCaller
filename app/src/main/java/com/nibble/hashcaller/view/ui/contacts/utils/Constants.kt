@@ -82,9 +82,8 @@ var MESSAGE_STRING = ""
 
 suspend fun hashUsingArgon(textToHash: String?): String? = withContext(Dispatchers.Default) {
     val argon2 = HashCaller.getArgon2()
-
-    val result = argon2.hash(  textToHash?.toByteArray(Charset.defaultCharset()),  "samplesdlfhksdlkfjhasdjklfhasdkfljhasdkjflhsadlkfjhasdlkjfhasdlkjfhsdlfjk".toByteArray(
-        Charset.defaultCharset()))
+    val result = argon2.hash(  textToHash?.toByteArray(Charset.defaultCharset()),
+        "samplesdlfhksdlkfjhasdjklfhasdkfljhasdkjflhsadlkfjhasdlkjfhasdlkjfhsdlfjk".toByteArray(Charset.defaultCharset()))
     val hash = result.hash
     val hashHex = result.hashHex
     val encoded = result.encoded

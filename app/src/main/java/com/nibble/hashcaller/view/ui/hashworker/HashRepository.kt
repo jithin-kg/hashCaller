@@ -10,10 +10,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGr
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.util.*
-import java.util.stream.Collector
-import java.util.stream.Collectors
+import kotlin.Exception
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
@@ -21,11 +19,13 @@ class HashRepository(
     private val callLogCursor: Cursor?,
     private val contactsCursor: Cursor?,
     private val hashedNumDao: IHashedNumbersDAO,
-    private val callerInfoFromServerDAO: CallersInfoFromServerDAO
+    private val callerInfoFromServerDAO: CallersInfoFromServerDAO,
+    private val setOfContacts: java.util.HashSet<String>,
+    private val smsCurosor: Cursor?,
+    private val setofAddressInDb: HashSet<String>
 ) {
 
     suspend fun getListOfUnkownCallers(): MutableList<String> = withContext(Dispatchers.IO) {
-        val setOfContacts = getSetOfConatcts()
         var listOfUnknwonCallers: MutableList<String> = mutableListOf()
          val callerInfoFromServerList = getCallerInfofromServer()
         try {
@@ -35,25 +35,28 @@ class HashRepository(
                     var i = 0
                     var number = callLogCursor.getString(0)
                     val formatedNum = formatPhoneNumber(number)
-                    if(!setOfContacts.contains(formatedNum)){
+                    if(!setofAddressInDb.contains(formatedNum)){
+                        if(!setOfContacts.contains(formatedNum)){
 
-                        val informationReceivedDate:Date?= callerInfoFromServerList.get(formatedNum)
-                         if(informationReceivedDate!=null) {
-                             //this number is already searched in server
-                             //check if that number info is outdated
-                             if(isCurrentDateAndPrevDateisGreaterThanLimit(informationReceivedDate, DATE_THREASHOLD)){
-                                 //this data is outdated
-                                 isTobeAddedToFinalList = true
-                             }
-                         }else{
-                             isTobeAddedToFinalList = true
-                         }
-                        if(isTobeAddedToFinalList){
-                            listOfUnknwonCallers.add(formatedNum)
+                            val informationReceivedDate:Date?= callerInfoFromServerList.get(formatedNum)
+                            if(informationReceivedDate!=null) {
+                                //this number is already searched in server
+                                //check if that number info is outdated
+                                if(isCurrentDateAndPrevDateisGreaterThanLimit(informationReceivedDate, DATE_THREASHOLD)){
+                                    //this data is outdated
+                                    isTobeAddedToFinalList = true
+                                }
+                            }else{
+                                isTobeAddedToFinalList = true
+                            }
+                            if(isTobeAddedToFinalList){
+                                listOfUnknwonCallers.add(formatedNum)
+                            }
+                        }else{
+                            continue
                         }
-                    }else{
-                        continue
                     }
+
 
                 }while (callLogCursor.moveToNext())
             }
@@ -105,6 +108,29 @@ class HashRepository(
            Log.d(TAG, "getListOfConatcts: $e")
        }
         return hashSetOfAddress
+    }
+
+    suspend fun getListOfAllUnkonSMSSenders(): MutableList<String> = withContext(Dispatchers.IO) {
+        var listOfUnknownSMSSenders:MutableList<String> = mutableListOf()
+
+        try {
+            if (smsCurosor != null && smsCurosor.moveToFirst()) {
+                do {
+                    var num =
+                        smsCurosor.getString(smsCurosor.getColumnIndexOrThrow("address"))
+                    val formatedNum = formatPhoneNumber(num)
+
+                    if(!setofAddressInDb.contains(formatedNum)){
+                        if(!setOfContacts.contains(formatedNum)){
+                            listOfUnknownSMSSenders.add(formatedNum)
+                        }
+                    }
+                }while (smsCurosor.moveToNext())
+            }
+            }catch (e:Exception){
+            Log.d(TAG, "getListOfAllUnkonSMSSenders: ")
+        }
+        return@withContext listOfUnknownSMSSenders
     }
 
     companion object {

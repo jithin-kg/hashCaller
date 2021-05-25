@@ -754,6 +754,7 @@ class SMSLocalRepository(
             "read",
             "date"
         )
+
         if(searchQuery == null){
             //from list sms fragment
             val cursor =  context.contentResolver.query(

@@ -8,6 +8,10 @@ import android.provider.CallLog
 import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
@@ -24,6 +28,7 @@ import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
 import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
+import com.nibble.hashcaller.view.ui.hashworker.HashWorker
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -670,6 +675,18 @@ class CallContainerRepository(
         val formatedAddress = formatPhoneNumber(contactAddress)
         smsThreadsDAO?.updateSpamCount(formatedAddress,  true)
 
+    }
+
+    suspend fun startHashWork(applicationContext: Context?) = withContext(Dispatchers.IO) {
+
+        applicationContext?.let {
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+            val oneTimeWorkRequest = OneTimeWorkRequest.Builder(HashWorker::class.java)
+                .setConstraints(constraints)
+                .build()
+            WorkManager.getInstance(it).enqueue(oneTimeWorkRequest)
+        }
     }
 
 
