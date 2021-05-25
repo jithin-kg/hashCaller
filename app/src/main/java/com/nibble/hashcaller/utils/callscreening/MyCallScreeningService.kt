@@ -195,7 +195,7 @@ class MyCallScreeningService: CallScreeningService() {
         try {
             Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
             hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
-            hashed = hashUsingArgon(hashed)
+//            hashed = hashUsingArgon(hashed)
             Log.d(TAG, "getHashedNum: $hashed")
             return hashed
         }catch (e:Exception){

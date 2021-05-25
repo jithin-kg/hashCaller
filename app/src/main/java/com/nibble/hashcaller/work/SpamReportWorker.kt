@@ -36,7 +36,7 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val num = inputData.getString(CONTACT_ADDRES)
         var hasehdNum:String? = num?.let { formatPhoneNumber(it) }?.let { Secrets().managecipher(context.packageName, it) }
-        hasehdNum = hashUsingArgon(hasehdNum)
+//        hasehdNum = hashUsingArgon(hasehdNum)
         val spammerType = inputData.getInt(SPAMMER_TYPE, SPAMMER_TYPE_SCAM)
         val report = hasehdNum?.let { ReportedUserDTo(it, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),) }
 //        repository.report(report)

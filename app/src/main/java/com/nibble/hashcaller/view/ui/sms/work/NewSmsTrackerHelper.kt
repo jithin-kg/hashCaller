@@ -42,7 +42,7 @@ class NewSmsTrackerHelper(
 
                     if(isCurrentDateAndPrevDateisGreaterThanLimit(smssender.informationReceivedDate, 3)){
                         var secret:String?  = smssender.contactAddress?.let { Secrets().managecipher(packageName, it) }
-                        secret = hashUsingArgon(secret)
+//                        secret = hashUsingArgon(secret)
                         secret?.let { smWithoutSendersInformation.add(it) }
 
                     }

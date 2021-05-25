@@ -55,7 +55,6 @@ import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
-import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
@@ -186,7 +185,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             sms.let {
 
-                viewmodel?.updateDatabase(it)
+                viewmodel?.updateDatabase(it, context?.applicationContext)
 
             }
         })

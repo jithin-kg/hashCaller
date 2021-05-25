@@ -178,13 +178,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      fun getDataDelayed() {
         showRecyclerView()
         initViewModel()
-         viewmodel?.startHashWorker(context?.applicationContext)
 
          getFirst10items()
 
         lifecycleScope.launchWhenStarted {
             delay(2000L)
-
             observeCallLog()
 //        addScrollListener()
             setupSimCardCount()
@@ -298,7 +296,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             logs.let {
 //                viewmodel.updateCAllLogLivedata(logs)
 //                viewmodel.setAdditionalInfo(logs)
-                viewmodel?.updateDatabase(logs)
+                viewmodel?.updateDatabase(logs, context?.applicationContext)
                 binding.shimmerViewContainerCall.stopShimmer()
                 binding.shimmerViewContainerCall.beGone()
             }

@@ -85,7 +85,7 @@ class SearchViewModel(
 //                 val encPhone = encryptPhoneNum(hashedPhone, key)
                  val num = formatPhoneNumber(phoneNumber)
                   var hash:String? = Secrets().managecipher(packageName, num)//encoding the number with my algorithm
-                 hash = hashUsingArgon(hash)
+//                 hash = hashUsingArgon(hash)
                  hash?.let{
                      hashedPhoneNum.value =it
                      res = searchNetworkRepository.search(hashedPhoneNum.value!!)

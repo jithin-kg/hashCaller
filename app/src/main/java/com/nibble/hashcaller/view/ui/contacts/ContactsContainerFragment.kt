@@ -241,7 +241,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                 contacts.let {
 //                    this.contactsView.pgBarCntcList.visibility = View.GONE
                     contactsRecyclerAdapter?.setContactList(it)
-                    contactViewModel.startWorker()
+                    contactViewModel.startWorker(context?.applicationContext)
                     ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
                 }
             })

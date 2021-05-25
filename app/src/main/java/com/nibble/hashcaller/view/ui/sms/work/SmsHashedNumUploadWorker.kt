@@ -153,7 +153,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                      val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
 
                      var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                     hashedAddress = hashUsingArgon(hashedAddress)
+//                     hashedAddress = hashUsingArgon(hashedAddress)
                      hashedAddress?.let {
                          senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, it))
 

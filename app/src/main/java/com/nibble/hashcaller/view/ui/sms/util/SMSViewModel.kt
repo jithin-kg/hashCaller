@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.*
@@ -254,12 +255,12 @@ class SMSViewModel(
      * called when there is a change in sms data
      * to get information abount a sender
      */
-    fun scheduleWorker() = viewModelScope.launch {
-//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java)
-//                                 .setConstraints(constraints)
-//                                .build()
-//        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+    fun scheduleWorker(applicationContext: Context) = viewModelScope.launch {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SmsHashedNumUploadWorker::class.java)
+                                 .setConstraints(constraints)
+                                .build()
+        WorkManager.getInstance(applicationContext).enqueue(oneTimeWorkRequest)
 
     }
 
@@ -285,7 +286,7 @@ class SMSViewModel(
         }.toMutableList()
     }
 
-    fun updateDatabase(sms: MutableList<SmsThreadTable>) = viewModelScope.launch {
+    fun updateDatabase(sms: MutableList<SmsThreadTable>, applicationContext: Context?) = viewModelScope.launch {
 
 //        val as1 = async {
 //            sms?.let { repository?.updateThreadsDb(it) }
@@ -295,10 +296,8 @@ class SMSViewModel(
             sms?.let{
                 val as1 =    async {  repository?.insertIntoThreadsDb(it) }
                 val as2 = async{repository?.updateThreadContent(it)}
-                val as3 = async { scheduleWorker()}
+                val as3 = async { applicationContext?.let { it1 -> scheduleWorker(it1) } }
                 val as4 = async { repository?.deleteFromDb(it) }
-
-
 
                 try {
                     as1.await()

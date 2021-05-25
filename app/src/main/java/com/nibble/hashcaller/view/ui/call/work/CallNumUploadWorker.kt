@@ -144,7 +144,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927 ->123
                 //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927
                 var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                hashedAddress = hashUsingArgon(hashedAddress)
+//                hashedAddress = hashUsingArgon(hashedAddress)
                 hashedAddress?.let {
                     callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
 
@@ -155,7 +155,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                    hashedAddress = hashUsingArgon(hashedAddress)
+//                    hashedAddress = hashUsingArgon(hashedAddress)
                     hashedAddress?.let {
                         callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
 

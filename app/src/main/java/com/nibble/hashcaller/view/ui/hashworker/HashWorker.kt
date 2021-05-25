@@ -130,7 +130,7 @@ class HashWorker (private val context: Context,
                 for (item in sublist){
                     val formtedNumber = formatPhoneNumber(item)
                     var hashed:String?=  Secrets().managecipher(context.packageName, formtedNumber)
-                    hashed =  hashUsingArgon(hashed)
+//                    hashed =  hashUsingArgon(hashed)
                     hashed?.let {
                         val hashedNumber = HashedContacts(formtedNumber, it )
                         listOfHashedNumbers.add(hashedNumber)
@@ -149,7 +149,7 @@ class HashWorker (private val context: Context,
                 for (item in sublist){
                     val formtedNumber = formatPhoneNumber(item)
                     var hashed:String?=  Secrets().managecipher(context.packageName, formtedNumber)
-                    hashed =  hashUsingArgon(hashed)
+//                    hashed =  hashUsingArgon(hashed)
                     hashed?.let {
                         val hashedNumber = HashedNumber(formtedNumber, it )
                         listOfHashedNumbers.add(hashedNumber)

@@ -1,8 +1,11 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
@@ -10,7 +13,6 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
-import com.nibble.hashcaller.work.ContactsAddressLocalWorker
 import com.nibble.hashcaller.work.ContactsUploadWorker
 import kotlinx.coroutines.launch
 
@@ -79,10 +81,14 @@ class ContactsViewModel(
        
     }
 
-    fun startWorker() = viewModelScope.launch {
-//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-//            .build()
-//        WorkManager.getInstance().enqueue(request)
+    fun startWorker(applicationContext: Context?) = viewModelScope.launch {
+        applicationContext?.let{
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                .build()
+            WorkManager.getInstance(it).enqueue(request)
+        }
+
 //
 //        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
 //            .build()

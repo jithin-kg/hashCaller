@@ -85,7 +85,7 @@ class UserInfoViewModel(
             try {
                 val formattedPhoneNum = formatPhoneNumber(phoneNumber!!)
                 var hashedNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
-                hashedNum = hashUsingArgon(hashedNum)
+//                hashedNum = hashUsingArgon(hashedNum)
                 hashedNum?.let {
                     val response =  userNetworkRepository.getUserInfoFromServer( it, formattedPhoneNum)
                     Log.d(TAG, "getUserInfoFromServer: response: $response")
@@ -139,7 +139,7 @@ class UserInfoViewModel(
     fun saveUserPhoneHash(context: Context, phoneNumber: String):LiveData<Int> = liveData{
         val formattedPhoneNum = formatPhoneNumber(phoneNumber)
         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
-        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
+//        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
         hashedPhoneNum?.let {
             userHashedNumRepository.saveUserPhoneHash(it, formattedPhoneNum) }
         emit(OPERATION_COMPLETED)

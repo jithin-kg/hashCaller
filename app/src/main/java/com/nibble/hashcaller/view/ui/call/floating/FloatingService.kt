@@ -264,7 +264,7 @@ class FloatingService: Service() {
         try {
             Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
              hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
-            hashed = hashUsingArgon(hashed)
+//            hashed = hashUsingArgon(hashed)
             Log.d(TAG, "getHashedNum: $hashed")
             //2fde9f69809082858fa7a55d441fde7ab7beea302204a437a793d2545fc381a9 ->123123
             return hashed

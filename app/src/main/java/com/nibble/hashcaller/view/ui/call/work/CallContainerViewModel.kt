@@ -21,7 +21,6 @@ import com.nibble.hashcaller.view.ui.call.spam.MarkeditemsHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
-import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.SpamReportWorker
@@ -79,15 +78,15 @@ class CallContainerViewModel(
     /**
      * called when there is a change in call log in content provider
      */
-    fun getInformationForTheseNumbers() = viewModelScope.launch {
-//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-//
-//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
-//                                     .setConstraints(constraints)
-//                                    .build()
-//        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
+    fun getInformationForTheseNumbers(applicationContext: Context?) = viewModelScope.launch {
+        applicationContext?.let{
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-//
+            val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
+                .setConstraints(constraints)
+                .build()
+            WorkManager.getInstance(it).enqueue(oneTimeWorkRequest)
+        }
     }
 
 
@@ -447,18 +446,19 @@ class CallContainerViewModel(
 
     }
 
-    fun updateDatabase(logs: MutableList<CallLogTable>) = viewModelScope.launch {
+    fun updateDatabase(logs: MutableList<CallLogTable>, applicationContext: Context?) = viewModelScope.launch {
         val as1 = async {
            repository?.insertIntoCallLogDb(logs)
         }
         val as2 = async { updateCallLogIds(logs) }
-//        val as3 = async { getInformationForTheseNumbers() }
+
+        val as3 = async { getInformationForTheseNumbers(applicationContext) }
         val as5 = async { updateNameAndSpamCount(logs) }
         val as4 = async { repository?.deleteCallLogs(logs) }
 
         as2.await()
         as1.await()
-//        as3.await()
+        as3.await()
         as4.await()
 
     }
@@ -555,7 +555,7 @@ class CallContainerViewModel(
 
     fun startHashWorker(applicationContext: Context?) = viewModelScope.launch {
 
-        repository?.startHashWork(applicationContext)
+//        repository?.startHashWork(applicationContext)
     }
 
 

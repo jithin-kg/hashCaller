@@ -163,7 +163,7 @@ class CallHandleWorker(private val context: Context, private val workerParameter
 
     private suspend  fun getHashedNum(phoneNumber: String, context: Context): String? {
         var hash:String? = Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
-        hash = hashUsingArgon(hash)
+//        hash = hashUsingArgon(hash)
         return  hash
 
     }

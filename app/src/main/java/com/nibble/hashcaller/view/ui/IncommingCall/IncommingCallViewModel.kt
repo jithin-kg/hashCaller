@@ -35,7 +35,7 @@ class IncommingCallViewModel(
              try {
                     var number:String = formatPhoneNumber(phoneNumber)
                     var hash:String? = Secrets().managecipher(packageName, number)
-                    hash = hashUsingArgon(hash)
+//                    hash = hashUsingArgon(hash)
                     hash?.let {
                         res = spamNetworkRepository.report(ReportedUserDTo(
                             it,

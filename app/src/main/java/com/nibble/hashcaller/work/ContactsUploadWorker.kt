@@ -119,7 +119,7 @@ val countryCodeHelper = CountrycodeHelper(context)
                     if(res==null){
                         Log.d(TAG , "not in db: $formattedPhoneNum")
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
-                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
+//                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
                         Log.d("__hashedInContactUploadWorker", "setNewlySavedContactsList: hashed num is ${hashedPhoneNum}")
                         hashedPhoneNum?.let {
                             val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, it)
