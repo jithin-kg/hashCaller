@@ -307,7 +307,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
             //if the view is already marked, then uncheck it
             val imgVSmsMarked = view.findViewById<ImageView>(R.id.smsMarked)
             if(imgVSmsMarked.visibility == View.VISIBLE){
-                unMarkItem(imgVSmsMarked, threadId, address)
+//                unMarkItem(imgVSmsMarked, threadId, address)
 
             }else{
                 markItem(view, threadId, address)
@@ -377,9 +377,9 @@ class SMSListFragment : Fragment(), View.OnClickListener,
     private fun markItem(v: View, id: Long, address: String) {
 
         v.smsMarked.visibility = View.VISIBLE
-        MarkedItemsHandler.markedItems.add(id)
+//        MarkedItemsHandler.markedItems.add(id)
 //        MarkedItemsHandler.markedViews.add(v)
-        markedContactAddress.add(address)
+//        markedContactAddress.add(address)
 //        SMSContainerFragment.showHideBlockButton()
 //        SMSContainerFragment.updateSelectedItemCount(MarkedItemsHandler.markedItems.size)
 //

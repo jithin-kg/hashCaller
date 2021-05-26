@@ -640,12 +640,12 @@ class CallContainerRepository(
 
     suspend fun marAsReportedByUser(contactAddress: String) {
         val formatedAdders = formatPhoneNumber(contactAddress)
-       val log =  callLogDAO?.findOne(formatedAdders)
-        if(log!=null){
-            var spamCount = log.spamCount
-            spamCount += 1
-            callLogDAO?.markAsReportedByUser(formatedAdders, spamCount)
-        }
+//       val log =  callLogDAO?.findOne(formatedAdders)
+//        if(log!=null){
+//            var spamCount = log.spamCount
+//            spamCount += 1
+            callLogDAO?.markAsReportedByUser(formatedAdders, 1)
+//        }
     }
 
     suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO){
@@ -673,7 +673,14 @@ class CallContainerRepository(
 
     suspend fun markAsSpamInSMS(contactAddress: String)  = withContext(Dispatchers.IO) {
         val formatedAddress = formatPhoneNumber(contactAddress)
-        smsThreadsDAO?.updateSpamCount(formatedAddress,  true)
+        val res  = smsThreadsDAO?.find(formatedAddress)
+        if(res!=null){
+            var spamCount = res.spamCount
+            spamCount+=1
+            smsThreadsDAO?.updateSpamCount(formatedAddress, spamCount = spamCount )
+
+
+        }
 
     }
 

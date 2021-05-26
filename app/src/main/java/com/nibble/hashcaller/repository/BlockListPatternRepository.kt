@@ -8,8 +8,10 @@ import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
+import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.ALREADY_EXISTS_IN_DB
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -19,7 +21,7 @@ import kotlinx.coroutines.withContext
  * Created by Jithin KG on 03,July,2020
  */
 class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao?,
-                                private val mutedCallersDAO : IMutedCallersDAO? ) {
+                                 private val mutedCallersDAO : IMutedCallersDAO?) {
 
     //room executes all queries on a seperate thread
     val allBlockedList: LiveData<List<BlockedListPattern>>? = blockedLIstDao?.getAllBLockListPattern()
@@ -81,6 +83,17 @@ class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao?,
     suspend fun getAll(): List<BlockedListPattern>? {
         return blockedLIstDao?.getAllBLockListPatternList()
     }
+
+    fun markAsSpam(contactAddress: String) {
+
+    }
+
+    /**
+     * Update chat threads with block list pattern
+     * mark as reported by user if the number is present in blocklistpattern
+     *
+     */
+
 
 
     companion object{

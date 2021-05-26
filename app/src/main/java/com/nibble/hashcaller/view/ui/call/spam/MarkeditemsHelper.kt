@@ -31,6 +31,7 @@ class MarkeditemsHelper {
 
     fun clearMarkeditems(){
         markedItems.value?.clear()
+        markedItems.value = markedItems.value
         markedAddres.clear()
     }
     fun addTomarkeditems(id: Long, position: Int, number: String){

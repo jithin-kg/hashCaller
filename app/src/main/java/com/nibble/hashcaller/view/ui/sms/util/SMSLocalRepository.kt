@@ -1667,7 +1667,14 @@ class SMSLocalRepository(
 //        smsThreadsDAO?.find(formatedAddress).apply {
 //            if(this!=null) {
 
-                smsThreadsDAO?.updateSpamCount(formatedAddress,  true)
+        val res  = smsThreadsDAO?.find(formatedAddress)
+        if(res!=null){
+            var spamCount = res.spamCount
+            spamCount+=1
+            smsThreadsDAO?.updateSpamCount(formatedAddress, spamCount = spamCount )
+
+
+        }
 //            }
 //        }
 //        smssendersInfoDAO!!.find(formatPhoneNumber(contactAddress)).apply {
@@ -1738,10 +1745,10 @@ class SMSLocalRepository(
      */
     suspend fun muteSenders()   = withContext(Dispatchers.IO){
         var addressList: MutableList<MutedSenders> = mutableListOf()
-        for (address in MarkedItemsHandler.markedContactAddress){
-            val mutedSender = MutedSenders(formatPhoneNumber(address))
-            addressList.add(mutedSender)
-        }
+//        for (address in MarkedItemsHandler.markedContactAddress){
+//            val mutedSender = MutedSenders(formatPhoneNumber(address))
+//            addressList.add(mutedSender)
+//        }
         mutedSendersDAO!!.insert(addressList)
     }
 
@@ -2372,12 +2379,12 @@ class SMSLocalRepository(
 
     suspend fun marAsReportedByUserInCall(contactAddress: String)  = withContext(Dispatchers.IO){
         val formatedAdders = formatPhoneNumber(contactAddress)
-        val log =  callLogDAO?.findOne(formatedAdders)
-        if(log!=null){
-            var spamCount = log.spamCount
-            spamCount += 1
-            callLogDAO?.markAsReportedByUser(formatedAdders, spamCount)
-        }
+//        val log =  callLogDAO?.findOne(formatedAdders)
+//        if(log!=null){
+//            var spamCount = log.spamCount
+//            spamCount += 1
+            callLogDAO?.markAsReportedByUser(formatedAdders, 1)
+//        }
     }
 
 

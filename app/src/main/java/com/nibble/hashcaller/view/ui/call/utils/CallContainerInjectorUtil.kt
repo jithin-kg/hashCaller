@@ -7,6 +7,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
@@ -49,7 +50,15 @@ object CallContainerInjectorUtil {
         val callLogLiveData =
             CallLogLiveData(context!!, repository, lifecycleScope)
 
-        return CallContainerViewModelFactory(callLogLiveData!!, repository,callerInfoFromServerDAO, blockListPatternRepository)
+        val generalBlockRepository = GeneralBlockRepository(callLogDAO, smsThreadsDAO, blockListDao)
+
+        return CallContainerViewModelFactory(
+            callLogLiveData!!,
+            repository,
+            callerInfoFromServerDAO,
+            blockListPatternRepository,
+            generalBlockRepository
+            )
     }
 
 }

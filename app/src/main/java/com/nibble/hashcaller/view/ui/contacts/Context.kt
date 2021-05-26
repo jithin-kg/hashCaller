@@ -12,6 +12,7 @@ import android.telephony.SubscriptionManager
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.work.*
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
@@ -33,11 +34,9 @@ import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.call.floating.FloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
-import com.nibble.hashcaller.view.ui.sms.individual.util.IS_CALL_BLOCK_NOTIFICATION_ENABLED
-import com.nibble.hashcaller.view.ui.sms.individual.util.IS_SMS_BLOCK_NOTIFICATION_ENABLED
-import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_BLOCK_CONFIGURATIONS
-import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.utils.SIMAccount
+import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.*
 
@@ -52,6 +51,22 @@ fun Context.startFloatingService() {
             this.startService(intent)
         }
 
+}
+
+fun Context.startSpamReportWorker(contactAddress: String, spammerType: Int) {
+    val constraints =
+        Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+    val data = Data.Builder()
+    data.putString(CONTACT_ADDRES, contactAddress)
+    data.putInt(SPAMMER_TYPE, spammerType)
+
+    val oneTimeWorkRequest =
+        OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
+            .setConstraints(constraints)
+            .setInputData(data.build())
+            .build()
+    WorkManager.getInstance(this).enqueue(oneTimeWorkRequest)
 }
 
 fun Context.startFloatingServiceFromScreeningService(phoneNumber: String) {

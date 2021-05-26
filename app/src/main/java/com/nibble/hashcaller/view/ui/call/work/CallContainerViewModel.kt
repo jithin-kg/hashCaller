@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import androidx.work.*
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -18,6 +19,7 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Com
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.deletedIds
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.markedIds
 import com.nibble.hashcaller.view.ui.call.spam.MarkeditemsHelper
+import com.nibble.hashcaller.view.ui.contacts.startSpamReportWorker
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
@@ -34,7 +36,8 @@ class CallContainerViewModel(
     val callLogs: CallLogLiveData,
     val repository: CallContainerRepository?,
     val SMSSendersInfoFromServerDAO: CallersInfoFromServerDAO?,
-    private val blockListPatternRepository: BlockListPatternRepository
+    private val blockListPatternRepository: BlockListPatternRepository,
+    private val generalBlockRepository: GeneralBlockRepository
 ) :ViewModel(){
     var contactAddress = ""
      var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
@@ -296,7 +299,7 @@ class CallContainerViewModel(
 
     }
 
-    fun blockThisAddress(spammerType: Int) : LiveData<Int> = liveData {
+    fun blockThisAddress(spammerType: Int, applicationContext: Context?) : LiveData<Int> = liveData {
 
         contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
         if (contactAddress.isNotEmpty()) {
@@ -311,24 +314,11 @@ class CallContainerViewModel(
                                 "", EXACT_NUMBER
                             )
                         )
+
                     }
 
                     val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
-                    val as3 = async {
-                        val constraints =
-                            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
-                                .build()
-                        val data = Data.Builder()
-                        data.putString(CONTACT_ADDRES, contactAddress)
-                        data.putInt(SPAMMER_TYPE, spammerType)
-
-                        val oneTimeWorkRequest =
-                            OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
-                                .setConstraints(constraints)
-                                .setInputData(data.build())
-                                .build()
-                        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
-                    }
+                    val as3 = async { applicationContext?.startSpamReportWorker(contactAddress, spammerType) }
 
 
                     try {
@@ -349,8 +339,11 @@ class CallContainerViewModel(
                     try{
                         as4.await()
                     }catch (e:Exception){
-
+                        Log.d(TAG, "blockThisAddress: $e")
                     }
+
+                    generalBlockRepository.marAsReportedByUserInCall(contactAddress)
+                    generalBlockRepository.marAsReportedByUserInSMS(contactAddress)
                 }
 
 
@@ -456,10 +449,13 @@ class CallContainerViewModel(
         val as5 = async { updateNameAndSpamCount(logs) }
         val as4 = async { repository?.deleteCallLogs(logs) }
 
+        val as6 = async { generalBlockRepository.updateCallLogsWithblockListpatterns(logs) }
         as2.await()
         as1.await()
         as3.await()
         as4.await()
+        as5.await()
+        as6.await()
 
     }
 

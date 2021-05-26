@@ -7,6 +7,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 
 /**
@@ -46,7 +47,9 @@ object SMSListInjectorUtil {
             )
         }
 
-        return SMSListViewModelFactory(messagesLiveData, repository, blockListPatternRepository)
+        val generalBlockRepository = GeneralBlockRepository(callLogDAO, smsThreadsDAO, blockListDao)
+
+        return SMSListViewModelFactory(messagesLiveData, repository, blockListPatternRepository, generalBlockRepository)
     }
 
 }

@@ -7,7 +7,10 @@ import androidx.lifecycle.*
 import androidx.work.*
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.spam.MarkeditemsHelper
+import com.nibble.hashcaller.view.ui.contacts.startSpamReportWorker
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
@@ -26,21 +29,20 @@ import kotlinx.coroutines.*
 class SMSViewModel(
     val SMS: SMSLiveData,
     val repository: SMSLocalRepository?,
-    private val blockListPatternRepository: BlockListPatternRepository
+    private val blockListPatternRepository: BlockListPatternRepository,
+    private val generalBlockRepository: GeneralBlockRepository
 ): ViewModel() {
 
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(-1)
     var smsThreadsLivedata: LiveData<MutableList<SmsThreadTable>>? = repository?.getSMSThreadsLivedata()
-    var mapofAddressAndPos: HashMap<String, Long> = hashMapOf() // for findin duplicate sms in list
-//    private  var smsSenersInfoFromDB : LiveData<List<SMSSendersInfoFromServer>> = repository!!.getSmsSenderInforFromDB()
+
 
 //    var smsLive:SMSLiveData = SMS //assigning SMS live data to smslive
     var smsLiveData:MutableLiveData<MutableList<SMS>> = MutableLiveData()
      var smsLIst:MutableList<SMS>? = mutableListOf()
 
-    var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
-    var markedNumbers: MutableSet<String> = mutableSetOf()
-    var markedItemsPositions: HashSet<Int> = hashSetOf()
+//    var markedItems: MutableLiveData<MutableSet<Long>> = MutableLiveData(mutableSetOf())
+    var markeditemsHelper = MarkeditemsHelper()
 
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -56,21 +58,15 @@ class SMSViewModel(
     }
 
     fun getmarkedItemSize(): Int {
+        return markeditemsHelper.getmarkedItemSize()
 
-        var size = markedItems.value?.size
-        return size ?: 0
     }
     fun addTomarkeditems(id: Long, position: Int, address: String){
-        markedItems.value!!.add(id)
-        markedItemsPositions.add(position)
-        markedItems.value = markedItems.value
+        markeditemsHelper.addTomarkeditems(id, position, address)
 
-        markedNumbers.add(address)
     }
-    fun removeMarkeditemById(id: Long, position: Int){
-        markedItems.value!!.remove(id)
-        markedItemsPositions.remove(position)
-        markedItems.value = markedItems.value
+    fun removeMarkeditemById(id: Long, position: Int, address: String){
+        markeditemsHelper.removeMarkeditemById(id, position, address)
     }
     var unreadMSCount:MutableLiveData<Int>? = null
      var filteredSms: MutableLiveData<String>? = null
@@ -152,18 +148,18 @@ class SMSViewModel(
 
 
 
-    fun blockThisAddress(spammerType: Int): LiveData<Int> = liveData  {
-      var contactAddress = ""
+    fun blockThisAddress(spammerType: Int, applicationContext: Context?): LiveData<Int> = liveData  {
+        var contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
+
         viewModelScope.launch {
             val defLocal = async {
-                var items = markedItems.value?.toList()
-                if (!items.isNullOrEmpty()) {
+                if (!contactAddress.isNullOrEmpty()) {
 //                    for (id in items) {
-                        val id = items[0]
-                        val thread = repository?.findOneThreadById(id)
-                        if (thread != null) {
+//                        val id = items[0]
+//                        val thread = repository?.findOneThreadById(id)
+//                        if (thread != null) {
 
-                             contactAddress = thread.numFormated
+//                             contactAddress = thread.numFormated
 //                            repository?.markAsSpam(contactAddress, 1, "", "")
 
                             blockListPatternRepository.insert(
@@ -174,15 +170,13 @@ class SMSViewModel(
                                     EXACT_NUMBER
                                 )
                             )
-                            repository?.markAsSpam(contactAddress)
-                        }
-//                    }
-                }
+                    blockListPatternRepository?.markAsSpam(contactAddress)
+                 }
 
             }
             val as2 = async { repository?.marAsReportedByUserInCall(contactAddress) }
             val as3 = async {
-//               doWork(contactAddress, spammerType)
+                applicationContext?.startSpamReportWorker(contactAddress, spammerType)
             }
 
         try {
@@ -204,24 +198,14 @@ class SMSViewModel(
         }
         }.join()
 
+        generalBlockRepository.marAsReportedByUserInSMS(contactAddress)
+        generalBlockRepository.marAsReportedByUserInCall(contactAddress)
         emit(ON_COMPLETED)
 
 
 
     }
 
-    private suspend fun doWork(contactAddress: String, spammerType: Int) {
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val data = Data.Builder()
-        data.putString(CONTACT_ADDRES, contactAddress)
-        data.putInt(SPAMMER_TYPE, spammerType)
-
-        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
-            .setConstraints(constraints)
-            .setInputData(data.build())
-            .build()
-        WorkManager.getInstance().enqueue(oneTimeWorkRequest)
-    }
 
     fun muteMarkedSenders() = viewModelScope.launch {
         repository!!.muteSenders()
@@ -231,8 +215,7 @@ class SMSViewModel(
         emit(ON_PROGRESS)
         viewModelScope.launch {
         var set: HashSet<Long> = hashSetOf()
-
-        markedItems.value?.let {
+            markeditemsHelper.markedItems.value?.let {
             set.addAll(it)
         }
         for (threadId in set) {
@@ -248,7 +231,9 @@ class SMSViewModel(
 
     }
     fun clearMarkeditems(){
-        markedItems.value?.clear()
+        markeditemsHelper.clearMarkeditems()
+//        markeditemsHelper
+//        markedItems.value?.clear()
     }
 
     /**
@@ -298,6 +283,7 @@ class SMSViewModel(
                 val as2 = async{repository?.updateThreadContent(it)}
                 val as3 = async { applicationContext?.let { it1 -> scheduleWorker(it1) } }
                 val as4 = async { repository?.deleteFromDb(it) }
+                val as5 = async { generalBlockRepository.updateSMSWithBlockListPattern(sms) }
 
                 try {
                     as1.await()
@@ -322,7 +308,11 @@ class SMSViewModel(
                 }catch (e:Exception){
                     Log.d(TAG, "updateDatabase:exception $e")
                 }
-
+            try{
+                as5.await()
+            }catch (e:Exception){
+                Log.d(TAG, "updateDatabase: $e")
+            }
 
 
 
@@ -430,8 +420,24 @@ class SMSViewModel(
     }
 
     fun clearMarkedPositions() {
-        markedItemsPositions.clear()
+        markeditemsHelper.clearMarkedItemPositions()
     }
+
+    fun getmarkeditemPositions() : Iterable<Int> {
+        return markeditemsHelper.markedItemsPositions
+    }
+
+    fun clearMarkedItems() = viewModelScope.launch {
+        markeditemsHelper.clearMarkeditems()
+        markeditemsHelper.clearMarkedItemPositions()
+
+    }
+
+    fun clearMarkedItemPositions() = viewModelScope.launch{
+        markeditemsHelper.clearMarkedItemPositions()
+//        markedItemsPositions.clear()
+    }
+
 
     companion object
     {

@@ -71,8 +71,8 @@ interface ISMSThreadsDAO {
     @Query("SELECT * FROM chat_threads WHERE firstName like :searchQuery")
     suspend fun findNameLike(searchQuery: String?): List<SmsThreadTable>?
 
-    @Query("UPDATE  chat_threads  SET spamCount =1+spamCount, isReportedByUser =:reportedByUser WHERE numFormated =:contactAddress")
-    suspend fun updateSpamCount(contactAddress: String, reportedByUser: Boolean=true)
+    @Query("UPDATE  chat_threads  SET spamCount =:spamCount, isReportedByUser =:reportedByUser WHERE numFormated =:contactAddress")
+    suspend fun updateSpamCount(contactAddress: String, reportedByUser: Boolean=true, spamCount:Long)
 
 
     @Query("UPDATE chat_threads SET firstName=:nameFromcprovider, thumbnailFromCp=:imageFromCprovider WHERE numFormated=:number")

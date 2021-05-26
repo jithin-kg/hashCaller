@@ -661,12 +661,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
 //        // Hide fragment call
         if (callFragment.isAdded) {
+            callFragment.clearMarkeditems()
             ft.hide(callFragment)
         }
 //        if(blockConfigFragment.isAdded){
 //            ft.hide(blockConfigFragment)
 //        }
         if (messagesFragment.isAdded) {
+            messagesFragment.clearMarkeditems()
             ft.hide(messagesFragment)
         }
 
@@ -820,12 +822,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.hide(dialerFragment)
         }
         if (messagesFragment.isAdded) {
+            messagesFragment.clearMarkeditems()
             ft.hide(messagesFragment)
+
         }
 
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
-            unMarkItems()
+//            unMarkItems()
             messagesFragment.showSearchView()
         }
 //         if(searchFragment!=null)
@@ -848,8 +852,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     fun showCallFragment() {
         val ft = supportFragmentManager.beginTransaction()
         if (messagesFragment.isAdded) { // if the fragment is already in container(callFragment)
-            unMarkItems()
-            messagesFragment.showSearchView()
+//            unMarkItems()
+            messagesFragment.clearMarkeditems()
+            ft.hide(contactFragment)
 
         }
         // Hide fragment B
@@ -865,6 +870,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         if (messagesFragment.isAdded) {
             ft.hide(messagesFragment)
+            messagesFragment.clearMarkeditems()
         }
         if(callFragment.isAdded){
 //            fabBtnShowDialpad.visibility = View.VISIBLE
@@ -942,11 +948,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
         }else if(messagesFragment.isVisible){
-            if(markedItems.size > 0){
-                unMarkItems()
-                markingStarted = false
+            if(messagesFragment.getMarkedItemsSize() > 0){
+//                unMarkItems()
+                lifecycleScope.launchWhenCreated {
+                    messagesFragment.clearMarkeditems()
+                }
+//                markingStarted = false
             }
-
             else{
                 super.onBackPressed()
             }

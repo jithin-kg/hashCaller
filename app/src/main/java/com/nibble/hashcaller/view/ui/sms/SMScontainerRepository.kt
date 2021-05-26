@@ -69,24 +69,24 @@ class SMScontainerRepository(
     @SuppressLint("LongLogTag")
     suspend fun deleteSmsThread(): Int {
         var numRowsDeleted = 0
-        for(id in markedItems) {
-            Log.d(TAG, "deleteSmsThread: threadid $id")
-            var uri = Telephony.Sms.CONTENT_URI
-            val selection = "${Telephony.Sms.THREAD_ID} = ?"
-            val selectionArgs = arrayOf(id.toString())
-            try {
-                numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
-            } catch (e: Exception) {
-                Log.d(TAG, "deleteSmsThread: exception $e")
-            }
-        }
+//        for(id in markedItems) {
+//            Log.d(TAG, "deleteSmsThread: threadid $id")
+//            var uri = Telephony.Sms.CONTENT_URI
+//            val selection = "${Telephony.Sms.THREAD_ID} = ?"
+//            val selectionArgs = arrayOf(id.toString())
+//            try {
+//                numRowsDeleted = context.contentResolver.delete(uri, selection, selectionArgs)
+//            } catch (e: Exception) {
+//                Log.d(TAG, "deleteSmsThread: exception $e")
+//            }
+//        }
         deleteList()
         return numRowsDeleted
     }
 
     private fun deleteList() {
-        markedItems.clear()
-        markedContactAddress.clear()
+//        markedItems.clear()
+//        markedContactAddress.clear()
         markingStarted = false
     }
 
@@ -96,10 +96,10 @@ class SMScontainerRepository(
      */
     suspend fun muteSenders() {
         var addressList: MutableList<MutedSenders> = mutableListOf()
-        for (address in MarkedItemsHandler.markedContactAddress){
-            val mutedSender = MutedSenders(formatPhoneNumber(address))
-            addressList.add(mutedSender)
-        }
+//        for (address in MarkedItemsHandler.markedContactAddress){
+//            val mutedSender = MutedSenders(formatPhoneNumber(address))
+//            addressList.add(mutedSender)
+//        }
         mutedSendersDAO!!.insert(addressList)
     }
 

@@ -621,7 +621,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 viewmodel?.clearCallLogDB()
 //                context?.startActivityIncommingCallView( "100101")
 
-//                (activity as MainActivity).showDialerFragment()
+                (activity as MainActivity).showDialerFragment()
             }
             R.id.imgBtnCallTbrMore ->{
                 val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
@@ -745,7 +745,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     private fun blockMarkedCaller() {
 
         this.viewmodel?.blockThisAddress(
-            this.spammerType)?.observe(viewLifecycleOwner, Observer {
+            this.spammerType, context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
                 when(it){
                     ON_COMPLETED -> {
                         viewmodel?.clearMarkedItems()
@@ -1149,12 +1149,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     fun clearMarkeditems() {
         if(checkContactPermission()){
             if(viewmodel!=null){
-                viewmodel?.clearMarkedItems()
+
                 lifecycleScope.launchWhenStarted {
                     for(position in viewmodel?.getmarkeditemPositions()!!){
                         callLogAdapter?.notifyItemChanged(position)
-                    }
 
+                    }
+                    viewmodel?.clearMarkedItems()
                     viewmodel?.clearMarkedItemPositions()
                 }
             }

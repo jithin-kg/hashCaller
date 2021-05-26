@@ -59,7 +59,7 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log WHERE numberFormated LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
     suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
 
-    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount, color =:color WHERE numberFormated =:contactAddress")
+    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount + spamCount, color =:color WHERE numberFormated =:contactAddress")
     suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true, color:Int = TYPE_SPAM)
 
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser OR spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.SmsListViewBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
+import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.contacts.utils.loadImage
 import com.nibble.hashcaller.view.ui.extensions.setColorForText
@@ -143,7 +144,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                     senderInforFrom = SENDER_INFO_SEARCHING
 
                 }
-                    isSpam = sms.spamCount!! > 0
+                    isSpam = sms.spamCount!! > SPAM_THREASHOLD || sms.isReportedByUser
             if(nameStr.isEmpty()){
                 //name is not found in server on content provider so, set name as number
                 nameStr = formatPhoneNumber(sms.contactAddress)

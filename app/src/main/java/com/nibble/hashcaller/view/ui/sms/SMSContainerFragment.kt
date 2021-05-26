@@ -51,7 +51,6 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.list.SMSListInjectorUtil
 import com.nibble.hashcaller.view.ui.sms.search.SearchSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.*
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -147,8 +146,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             observeSendersInfoFromServer()
             observeMarkedItems()
             observeInternetLivedata()
+
         }
     }
+
+
 
     private fun showRecyclerView() {
         binding.recyclreviewSMSContainer.beVisible()
@@ -189,6 +191,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             }
         })
+    }
+
+    fun getMarkedItemsSize(): Int {
+        return  viewmodel?.markeditemsHelper?.getmarkedItemSize()?:0
     }
 
 
@@ -277,7 +283,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      */
     private fun resetMarkingOptions() {
         markingStarted = false
-        unMarkItems()
+//        unMarkItems()
         binding.searchViewSms.visibility = View.VISIBLE
         binding.imgBtnTbrMuteSender.visibility = View.INVISIBLE
         binding.imgBtnTbrBlock.visibility = View.INVISIBLE
@@ -292,7 +298,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      *
      */
     private fun addToBlockList() {
-        this.viewmodel?.blockThisAddress( this.spammerType )?.observe(viewLifecycleOwner, Observer {
+        this.viewmodel?.blockThisAddress( this.spammerType, context?.applicationContext )?.observe(viewLifecycleOwner, Observer {
             when(it){
                 ON_COMPLETED ->{
                     Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
@@ -304,12 +310,24 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                     val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
 //        sb.setSpan(bss, 0, .length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
 //        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
-                    resetMarkingOptions()
-                    viewmodel?.clearMarkeditems()
+//                    resetMarkingOptions()
+                    clearMarkeditems()
                 }
             }
         })
 
+    }
+
+    fun clearMarkeditems(){
+        if(viewmodel!=null){
+            lifecycleScope.launchWhenStarted {
+                for(position in viewmodel?.getmarkeditemPositions()!!){
+                    smsRecyclerAdapter?.notifyItemChanged(position)
+                }
+                viewmodel?.clearMarkedItems()
+                viewmodel?.clearMarkedItemPositions()
+            }
+        }
 
     }
     private fun setupBottomSheet() {
@@ -534,7 +552,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 startSearchActivity()
             }
             R.id.imgBtnTbrBlock->{
-                blockUser()
+//                blockUser()
+                bottomSheetDialog.show()
+
             }
 //            R.id.imgExpand->{
 //                showPopupMenu(R.menu.image_chooser_popup, bottomSheetDialog.viewPopup)
@@ -569,6 +589,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 setSpammerTypeBasedOnRadio(v)
             }
             R.id.btnBlock->{
+
                 addToBlockList()
             }
             else ->{
@@ -639,27 +660,21 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun blockUser() {
-        if(markedItems.size>1){
-            val dialog = ConfirmDialogFragment(this,
-                getSpannableString("Please block one contact address at a time"),
-                getSpannableString("whaterver"),
-                1)
-            dialog.show(childFragmentManager,"block")
-        }else{
+
             //set threadId and contact Address
             var num = ""
             var tId = 0L
-            for (item in MarkedItemsHandler.markedContactAddress){
-                num = item
-            }
-            for (item in MarkedItemsHandler.markedItems){
-                tId = item
-            }
+//            for (item in MarkedItemsHandler.markedContactAddress){
+//                num = item
+//            }
+//            for (item in MarkedItemsHandler.markedItems){
+//                tId = item
+//            }
 
-            MarkedItemsHandler.markedContactAddressForBlocking = num
-            MarkedItemsHandler.markedTheadIdForBlocking = tId
-            bottomSheetDialog.show()
-        }
+//            MarkedItemsHandler.markedContactAddressForBlocking = num
+//            MarkedItemsHandler.markedTheadIdForBlocking = tId
+//            bottomSheetDialog.show()
+
     }
 
     private fun startSearchActivity() {
@@ -749,7 +764,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.pgBarSMSDeleting.beInvisible()
 
 
-        unMarkItems()
+//        unMarkItems()
 
     }
     fun showToolbarButtons(size: Int) {
@@ -772,7 +787,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun observeMarkedItems() {
-        viewmodel?.markedItems?.observe(viewLifecycleOwner, Observer {
+        viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
             when(it.size){
                 0 ->{
                     showSearchView()
@@ -789,23 +804,23 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      * mark for deletion or archival or block of sms list
      */
     private fun markItem(id: Long, clickType: Int, position: Int, address: String): Int {
-        if(viewmodel?.markedItems?.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
+        if(viewmodel?.markeditemsHelper?.markedItems?.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
             //if is empty and click type is long then start marking
             viewmodel?.addTomarkeditems(id, position, address)
             return MARK_ITEM
-        }else if(clickType == TYPE_LONG_PRESS && viewmodel?.markedItems?.value!!.isNotEmpty()){
+        }else if(clickType == TYPE_LONG_PRESS && viewmodel?.markeditemsHelper?.markedItems?.value!!.isNotEmpty()){
             //already some items are marked
-            if(viewmodel?.markedItems?.value!!.contains(id)){
-                viewmodel?.removeMarkeditemById(id, position)
+            if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
+                viewmodel?.removeMarkeditemById(id, position, address)
                 return UNMARK_ITEM
             }else{
                 viewmodel?.addTomarkeditems(id, position, address)
                 return MARK_ITEM
             }
-        }else if(clickType == TYPE_CLICK && viewmodel?.markedItems?.value!!.isNotEmpty()){
+        }else if(clickType == TYPE_CLICK && viewmodel?.markeditemsHelper?.markedItems?.value!!.isNotEmpty()){
             //already markig started , mark on unamrk new item
-            if(viewmodel?.markedItems?.value!!.contains(id)){
-                viewmodel?.removeMarkeditemById(id, position)
+            if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
+                viewmodel?.removeMarkeditemById(id, position, address)
                 return UNMARK_ITEM
             }else{
                 viewmodel?.addTomarkeditems(id, position, address)
@@ -837,7 +852,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 }
                 ON_COMPLETED -> {
                     showSearchView()
-                    viewmodel?.clearMarkedPositions()
+                    clearMarkeditems()
                 }
             }
         })
@@ -906,8 +921,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      */
     override fun isMarked(id: Long): Boolean {
         var isMrked = false
-        if(viewmodel?.markedItems?.value !=null){
-            if(viewmodel?.markedItems?.value!!.contains(id)){
+        if(viewmodel?.markeditemsHelper?.markedItems?.value !=null){
+            if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
                 isMrked = true
             }
         }

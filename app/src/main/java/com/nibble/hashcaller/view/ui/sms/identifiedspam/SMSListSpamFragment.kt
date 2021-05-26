@@ -285,7 +285,7 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
             //if the view is already marked, then uncheck it
             val imgVSmsMarked = view.findViewById<ImageView>(R.id.smsMarked)
             if(imgVSmsMarked.visibility == View.VISIBLE){
-                unMarkItem(imgVSmsMarked, threadId, address)
+//                unMarkItem(imgVSmsMarked, threadId, address)
 
             }else{
                 markItem(view, threadId, address)

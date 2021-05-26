@@ -97,23 +97,23 @@ suspend fun hashUsingArgon(textToHash: String?): String? = withContext(Dispatche
  * unmark all recylcelerview list item
  */
 fun unMarkItems(){
-    for(view in MarkedItemsHandler.markedViews){
-        view.findViewById<ImageView>(R.id.smsMarked).visibility = View.INVISIBLE
-    }
-    markedViews.clear()
-    markedItems.clear()
-    markedContactAddress.clear()
-    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
+//    for(view in MarkedItemsHandler.markedViews){
+//        view.findViewById<ImageView>(R.id.smsMarked).visibility = View.INVISIBLE
+//    }
+//    markedViews.clear()
+//    markedItems.clear()
+//    markedContactAddress.clear()
+//    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
 
 }
 
 fun unMarkItem(view:View, threadId:Long, address:String){
-    view.visibility = View.INVISIBLE
-    markedViews.remove(view)
-    markedItems.remove(threadId)
-    markedContactAddress.remove(address)
-    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
-    showHideBlockButton()
+//    view.visibility = View.INVISIBLE
+//    markedViews.remove(view)
+//    markedItems.remove(threadId)
+//    markedContactAddress.remove(address)
+//    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
+//    showHideBlockButton()
 
 }
 
