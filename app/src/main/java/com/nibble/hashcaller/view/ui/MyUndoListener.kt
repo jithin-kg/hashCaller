@@ -6,7 +6,7 @@ import android.view.View
 /**
  * class to call back undo clicked in snackbar
  */
-class MyUndoListener(private val listener: SnackBarListner) : View.OnClickListener {
+class MyUndoListener (private val listener: SnackBarListner) : View.OnClickListener {
 
     override fun onClick(v: View) {
         listener.onUndoClicked()

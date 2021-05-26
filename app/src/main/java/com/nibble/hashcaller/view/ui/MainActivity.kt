@@ -26,6 +26,7 @@ import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -1306,6 +1307,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
+    fun getBottomNavView(): BottomNavigationView {
+        return binding.bottomNavigationView
+    }
+
+    fun getCorinateLayout(): CoordinatorLayout {
+        return binding.cordinateLyoutMainActivity
+    }
 
 
 }

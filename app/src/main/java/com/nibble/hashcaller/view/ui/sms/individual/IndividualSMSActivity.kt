@@ -51,10 +51,6 @@ import kotlinx.android.synthetic.main.activity_individual_s_m_s.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.coroutines.flow.collect
-import org.signal.argon2.Argon2
-import org.signal.argon2.MemoryCost
-import org.signal.argon2.Type
-import org.signal.argon2.Version
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timerTask
@@ -145,7 +141,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             initViewModel()
             initAdapter()
             initListners()
-            checkDefaultSettings()
+            checkDefaultSMSHandlerSettings()
             setupClickListerner()
             registerAdapterListener()
             observeViewmodelSms()
@@ -520,7 +516,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     }
 
-    private fun checkDefaultSettings(): Boolean {
+    private fun checkDefaultSMSHandlerSettings(): Boolean {
         var requestCode=  222
         var resultCode = 232
         var isDefault = false
@@ -551,17 +547,6 @@ class IndividualSMSActivity : AppCompatActivity(),
                 }
             } else {
 
-                //there is no role manager under andorid Q, so check if sms write/send permission available
-//                if(isSMSSendPermissionAvailable()){
-//                    Log.d(TAG, "checkDefaultSettings: sendPermission available")
-//                    layoutSend.beVisible()
-//                    btnMakeDefaultSMS.beVisible()
-//                }else{
-//                    layoutSend.beInvisible()
-//                    btnMakeDefaultSMS.beVisible()
-//
-//
-//                }
                 var isDefault = this.getPackageName() == Telephony.Sms.getDefaultSmsPackage(this)
                 Log.d(TAG, "checkDefaultSettings: isDefault $isDefault")
                 if(isDefault){
@@ -1158,7 +1143,7 @@ class IndividualSMSActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         registerReceiver(messagesReceiver, IntentFilter("myhashcallersms"))
-        checkDefaultSettings()
+        checkDefaultSMSHandlerSettings()
 
     }
 

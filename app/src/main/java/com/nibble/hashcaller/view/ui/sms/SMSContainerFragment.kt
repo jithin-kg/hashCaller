@@ -56,6 +56,7 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
 import kotlinx.android.synthetic.main.fragment_message_container.*
@@ -70,7 +71,8 @@ import kotlinx.coroutines.delay
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
 SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, ConfirmationClickListener,
-    android.widget.PopupMenu.OnMenuItemClickListener, SMSListAdapter.ViewMarkHandler, SMSListAdapter.NetworkHandler {
+    android.widget.PopupMenu.OnMenuItemClickListener, SMSListAdapter.ViewMarkHandler, SMSListAdapter.NetworkHandler,
+    SetAsDefaultSMSSnackbarListener.SnackBarListner{
 
     private var _binding: FragmentMessageContainerBinding? =null
     private val binding get() = _binding!!
@@ -488,9 +490,20 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun deleteMarkedSMSThreads() {
-        deleteSms()
+        if(checkDefaultSMSHandlerSettings()){
+            deleteSms()
+        }else {
+
+            val sbar = Snackbar.make((activity as MainActivity).getCorinateLayout(), getString(R.string.enable_hash_caller_for_sms), Snackbar.LENGTH_SHORT)
+            sbar.setAction(getString(R.string.enable_hash_caller_sms_action), SetAsDefaultSMSSnackbarListener(this))
+            sbar.anchorView = (activity as MainActivity).getBottomNavView()
+            sbar.show()
+//            context?.toast("Not defaul sms handler")
+        }
+
     }
     private fun deleteSms() {
+
         val dialog = ConfirmDialogFragment(this,
             getSpannableString("This is permenant and cant be undone"),
 
@@ -561,7 +574,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //
 //            }
             R.id.imgBtnTbrDelete ->{
-                deleteMarkedSMSThreads()
+                    deleteMarkedSMSThreads()
+
             }
             R.id.imgBtnTbrMuteSender ->{
                 muteSender()
@@ -838,6 +852,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
      */
 
     override fun onYesConfirmationDelete() {
+
         Log.d(TAG, "deleteSms: called")
 //        for(id in markedItems){
         this.viewmodel?.deleteMarkedSMSThreads()?.observe(viewLifecycleOwner, Observer {
@@ -933,4 +948,79 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         return isInternetAvailable
     }
+
+    private fun checkDefaultSMSHandlerSettings(): Boolean {
+        var requestCode=  222
+        var resultCode = 232
+        var isDefaultSMSHandler = false
+        try{
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val roleManager: RoleManager? = context?.getSystemService(RoleManager::class.java)
+                // check if the app is having permission to be as default SMS app
+                val isRoleAvailable =
+                    roleManager?.isRoleAvailable(RoleManager.ROLE_SMS)
+                if (isRoleAvailable == true) {
+                    // check whether your app is already holding the default SMS app role.
+                    val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
+                    isDefaultSMSHandler = isRoleHeld
+                }
+            } else {
+
+               isDefaultSMSHandler= context?.getPackageName() == Telephony.Sms.getDefaultSmsPackage(context)
+            }
+
+        }catch (e: Exception){
+            Log.d(IndividualSMSActivity.TAG, "checkDefaultSettings: exception $e")
+        }
+
+        return isDefaultSMSHandler
+    }
+
+    override fun onSetAsDefaultSMSHandlerClicked() {
+
+        Log.d(TAG, "onSetAsDefaultSMSHandlerClicked: ")
+        requestDefaultSMSrole()
+        
+    }
+
+    private fun requestDefaultSMSrole() {
+        var requestCode=  222
+        var resultCode = 232
+        var isDefault = false
+        try{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val roleManager: RoleManager? = context?.getSystemService(RoleManager::class.java)
+                // check if the app is having permission to be as default SMS app
+                val isRoleAvailable =
+                    roleManager?.isRoleAvailable(RoleManager.ROLE_SMS)
+                if (isRoleAvailable == true) {
+                    // check whether your app is already holding the default SMS app role.
+                    val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
+                    if (!isRoleHeld) {
+//                        is not defauls sms app, so show request button
+                        val roleRequestIntent =
+                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                        startActivityForResult(roleRequestIntent, requestCode)
+//                            layoutSend.beInvisible()
+//                            btnMakeDefaultSMS.beVisible()
+                    }
+//                    else{
+////                            layoutSend.beInvisible()
+////                            btnMakeDefaultSMS.beVisible()
+//                        requesetPermission()
+//                    }
+                }
+            } else {
+                val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, context?.packageName)
+                startActivityForResult(intent, requestCode)
+            }
+        }catch (e: Exception){
+            Log.d(IndividualSMSActivity.TAG, "checkDefaultSettings: exception $e")
+        }
+//            return isDefault
+    }
+
+
 }
