@@ -147,4 +147,8 @@ class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
     companion object{
         const val TAG = "__SpamSMSActivity"
     }
+    override fun onBackPressed() {
+        finishAfterTransition()
+        super.onBackPressed()
+    }
 }

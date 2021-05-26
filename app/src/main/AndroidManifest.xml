@@ -51,15 +51,19 @@
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
 
-        <activity android:name=".view.ui.call.floating.SampleActivityStartnotification"></activity>
+        <activity
+            android:name=".view.ui.call.floating.SampleActivityStartnotification"
+            android:launchMode="singleTop"
+            />
 
         <activity android:name=".view.ui.IncommingCall.ModelActivity"
+
             android:theme="@style/AppTheme"
             />
         <activity android:name=".view.ui.IncommingCall.DragabbleActivity" />
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
@@ -97,46 +101,61 @@
 
         <activity
             android:name=".view.ui.profile.ProfileActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.spam.SpamSMSActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.call.spam.SpamCallsActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.call.history.CallhistoryActivity"
+            android:launchMode="singleTop"
+
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.call.search.CallLogSearchActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.notifications.ManageNotificationsActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.blockConfig.blockList.BlockListActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.manageblock.BlockManageActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.settings.SettingsActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.call.individualCallLog.IndividualCallLogActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.contacts.search.FulllSearchResultsActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.search.SearchSMSActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".view.ui.contactSelector.ContactSelectorActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.send.SendTestActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -180,17 +199,21 @@
 
         <activity
             android:name=".view.ui.auth.ActivityVerifyOTP"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.schedule.ScheduleActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.sms.individual.SampleActivity"
             android:label="@string/title_activity_sample"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <category android:name="android.app.role.SMS" />
@@ -198,18 +221,21 @@
         </activity>
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:theme="@style/PopupTheme" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->
         <!-- important adjust resize ensure that view that all of your layout content is accessible -->
         <activity
             android:name=".view.ui.contacts.search.ActivitySerchContacts"
             android:theme="@style/AppTheme"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.ui.auth.ActivityEnterOTP"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
@@ -217,10 +243,11 @@
         </activity>
         <activity
             android:name=".view.ui.auth.ActivityPhoneAuth"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.splashactivity.SplashActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTop">
 
             <!-- <meta-data -->
             <!-- android:name="com.google.android.safetynet.ATTEST_API_KEY" -->
@@ -236,11 +263,14 @@
         </activity>
         <activity
             android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
+            android:launchMode="singleTop"
+
             android:theme="@style/AppTheme" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
             android:parentActivityName=".view.ui.MainActivity"
             android:theme="@style/AppTheme"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -276,6 +306,7 @@
         </activity>
         <activity
             android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
         <!--
 @style/Theme.MaterialComponents.DayNight set for Error inflating class material.bottomnavigation.BottomNavigationView
@@ -284,6 +315,7 @@
         <activity
             android:name=".view.ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTop"
             android:theme="@style/splashScreenTheme"
             android:windowSoftInputMode="adjustPan"> <!-- Service that delivers messages from the phone "quick response" -->
             <meta-data

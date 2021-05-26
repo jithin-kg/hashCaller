@@ -627,6 +627,7 @@ class IndividualSMSActivity : AppCompatActivity(),
          * is -1
          * else the result is 0
          */
+
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode== -1 && requestCode == 222){
             permissionGivenLiveDAta.value  = true
@@ -1244,6 +1245,9 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     }
 
-
+    override fun onBackPressed() {
+        finishAfterTransition()
+        super.onBackPressed()
+    }
 }
 
