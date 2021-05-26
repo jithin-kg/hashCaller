@@ -41,7 +41,7 @@ class CallContainerViewModel(
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
 //    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
     var callLogTableData: LiveData<MutableList<CallLogTable>>? = repository!!.getAllCallLogLivedata()
-
+    var callersInfoFromDBLivedta:LiveData<List<CallersInfoFromServer>>  = repository!!.getCallLogLiveDAtaFromDB()
     var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
     var expandedLayoutId: Long? = null
 //    var expandedLayoutPositin:Int? = null
@@ -396,10 +396,10 @@ class CallContainerViewModel(
 //        }
     }
 
-    fun getCallLogFromServer() : LiveData<List<CallersInfoFromServer>>  {
-
-        return  repository!!.getCallLogLiveDAtaFromDB()
-    }
+//    fun getCallLogFromServer() : LiveData<List<CallersInfoFromServer>>  {
+//
+//        return  repository!!.getCallLogLiveDAtaFromDB()
+//    }
 
     /**
      * called when info about a caller comes from server, or db changes
