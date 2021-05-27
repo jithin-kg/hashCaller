@@ -55,7 +55,6 @@
             android:name=".view.ui.call.floating.SampleActivityStartnotification"
             android:launchMode="singleTop"
             />
-
         <activity android:name=".view.ui.IncommingCall.ModelActivity"
 
             android:theme="@style/AppTheme"
