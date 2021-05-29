@@ -35,7 +35,7 @@ class AllSearchRepository(
         var contactsListOfSize3:MutableList<Contact> = mutableListOf()
         for (contact in listofContacts){
             if( contact.name.toLowerCase().contains(searchTerm) ||
-                contact.phoneNumber.contains(searchTerm)
+                contact.phoneNumber.contains(searchTerm, true)
             ){
                 if(contactsListOfSize3.size >=3){
                     break
@@ -49,12 +49,14 @@ class AllSearchRepository(
 
     suspend fun searchInSMS(searchTerm: String): MutableList<SMS>  = withContext(Dispatchers.IO){
         var smsListOfSize3:MutableList<SMS> = mutableListOf()
-        var isTobeAdded = false
         for(sms in listOfSMS){
+            smsRepositoryHelper.emptySpanPositions(sms)
+            var isTobeAdded = false
+
             if(smsListOfSize3.size >=3 ){
                 break
             }
-            val formatedNum = sms.addressString?.let { formatPhoneNumber(it) }?.toLowerCase()
+            val formatedNum = sms.addressString?.let { formatPhoneNumber(it) }
             if(!formatedNum.isNullOrEmpty()){
                val contact =  mapofContacts[formatedNum]
                 if(contact !=null){
@@ -62,29 +64,31 @@ class AllSearchRepository(
                     sms.photoURI = contact.photoURI
                 }
                 if(sms.firstName != null) {
-                  if(sms.firstName!!.toLowerCase().contains(searchTerm) ){
-                    if(formatedNum.contains(searchTerm)){
-                        setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
-                        smsListOfSize3.add(sms)
+                  if(sms.firstName!!.toLowerCase().contains(searchTerm, true) ){
+                    if(formatedNum.contains(searchTerm,true)){
+//                        setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
+                       isTobeAdded = true
                     } else{
-                        setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
-                        smsListOfSize3.add(sms)
+//                        setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
+//                        smsListOfSize3.add(sms)
+                        isTobeAdded = true
                     }
                   }
-                }else {
-                    if(sms.addressString!!.contains(searchTerm)){
-                        setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
+                } else {
+                    if(sms.addressString!!.contains(searchTerm, true)){
+//                        setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
                         isTobeAdded = true
                     }
                     if(sms.msgString!=null){
-                        if (sms.msgString!!.toLowerCase().contains(searchTerm)){
-                            setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
+                        if (sms.msgString!!.contains(searchTerm, true)){
+//                            setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
                             isTobeAdded = true
                         }
                     }
-                    if(isTobeAdded){
-                        smsListOfSize3.add(sms)
-                    }
+                }
+                if(isTobeAdded){
+                    setSpannableStringBuilder(sms, searchTerm, sms.msgString, sms.addressString!!)
+                    smsListOfSize3.add(sms)
                 }
             }
 
@@ -115,14 +119,14 @@ class AllSearchRepository(
             objSMS.address = SpannableStringBuilder(num)
             objSMS.msg = SpannableStringBuilder(msg)
 
-            if (lowercaseMsg.contains(lowerSearchQuery) && searchQuery.isNotEmpty()) {
+            if (lowercaseMsg.contains(lowerSearchQuery, true) && searchQuery.isNotEmpty()) {
                 //search query pressent in sms body
                 var startPos =
                     lowercaseMsg.indexOf(lowerSearchQuery) //getting the index of search query in msg body
                 var endPos = 0
                 if(startPos > 50){
                     msg = "... " + msg?.substring(startPos)
-                    startPos = 4
+                    startPos = 4 // after ... three dots and one white space
                 }
                 if (msg != null) {
                     objSMS.body = msg
@@ -131,7 +135,7 @@ class AllSearchRepository(
                 objSMS.spanStartPosMsgPeek = startPos
                 objSMS.spanEndPosMsgPeek = endPos
             }
-            if (lowercaseNum.contains(searchQuery) && searchQuery.isNotEmpty()) {
+            if (lowercaseNum.contains(searchQuery, true) && searchQuery.isNotEmpty()) {
                 val startPos = lowercaseNum.indexOf(searchQuery)
                 val endPos = startPos + searchQuery.length
                 val yellow = BackgroundColorSpan(Color.YELLOW)

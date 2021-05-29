@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.sms.util.SMS
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.Exception
@@ -14,19 +15,24 @@ class AllSearchViewmodel(private val allSearchRepository: AllSearchRepository) :
 
     var contactsListOfLivedata:MutableLiveData<List<Contact>> = MutableLiveData()
     var smsListOfLivedata:MutableLiveData<List<SMS>> = MutableLiveData()
-
+    private  var defContacts:Deferred<MutableList<Contact>>? = null
+    private  var defSMS:Deferred<MutableList<SMS>>? = null
     fun onQueryTextChanged(searchTerm:String) = viewModelScope.launch {
-        val defContacts = async { allSearchRepository.searchInContacts(searchTerm)}
-        val defSMS = async {  allSearchRepository.searchInSMS(searchTerm) }
+        defContacts?.cancel()
+        defSMS?.cancel()
 
+        emptyAllLists()
+
+        defContacts = async { allSearchRepository.searchInContacts(searchTerm)}
+        defSMS = async {  allSearchRepository.searchInSMS(searchTerm) }
         try {
-            contactsListOfLivedata.value =  defContacts.await()
+            contactsListOfLivedata.value =  defContacts?.await()
         }catch (e:Exception){
             Log.d(TAG, "onQueryTextChanged: $e")
         }
 
         try {
-            smsListOfLivedata.value = defSMS.await()
+            smsListOfLivedata.value = defSMS?.await()
         }catch (e:Exception){
             Log.d(TAG, "onQueryTextChanged: $e")
         }

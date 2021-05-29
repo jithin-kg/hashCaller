@@ -58,18 +58,19 @@ class SmsRepositoryHelper(private val cursor: Cursor?) {
                         objSMS.body = msg
                         objSMS.addressString = formatPhoneNumber(num)
                         objSMS.nameForDisplay = objSMS.addressString!!
+//                        emptySpanPositions(objSMS)
 
                         objSMS.readState =
                             cursor.getInt(cursor.getColumnIndex("read"))
 
                         val dateMilli =
                             cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-                        if(prevAddress != objSMS.addressString){
-                            prevAddress = objSMS.addressString!!
-                        }else{
-                            //equal
-                            continue
-                        }
+//                        if(prevAddress != objSMS.addressString){
+//                            prevAddress = objSMS.addressString!!
+//                        }else{
+//                            //equal
+//                            continue
+//                        }
                         objSMS.time = dateMilli
                         setRelativeTime(objSMS, dateMilli)
 
@@ -102,6 +103,16 @@ class SmsRepositoryHelper(private val cursor: Cursor?) {
 
         return@withContext listOfMessages
     }
+
+     fun emptySpanPositions(objSMS: SMS) {
+        objSMS.spanStartPos = 0
+        objSMS.spanEndPos = 0
+        objSMS.spanStartPosNameCp = 0
+        objSMS.spanEndPosNameCp = 0
+        objSMS.spanStartPosMsgPeek = 0
+        objSMS.spanEndPosMsgPeek = 0
+    }
+
     companion object {
         const val TAG = "__SearchHelper"
     }
