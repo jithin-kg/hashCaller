@@ -6,7 +6,9 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 
 /**
  * Created by Jithin KG on 29,July,2020
@@ -37,7 +39,8 @@ object SMSListSpamInjectorUtil {
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
             tokenHelper,
-            callLogDAO
+            callLogDAO,
+            SmsRepositoryHelper(context.getAllSMSCursor())
         ) }
 
         return SMSListSpamViewModelFactory(smsSpamLiveData, repository)

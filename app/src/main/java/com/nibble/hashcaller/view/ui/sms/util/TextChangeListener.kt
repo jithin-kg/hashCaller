@@ -29,7 +29,7 @@ class TextChangeListener(private val iListener:ITextChangeListener) {
             }
 
             override fun afterTextChanged(s: Editable) {
-
+                iListener.afterTextChanged(s)
             }
         })
     }

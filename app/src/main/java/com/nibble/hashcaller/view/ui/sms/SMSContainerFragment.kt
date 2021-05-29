@@ -41,6 +41,7 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.nibble.hashcaller.view.ui.contacts.hasSMSReadPermission
 
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -252,9 +253,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun checkContactPermission(): Boolean {
-        return EasyPermissions.hasPermissions(context, Manifest.permission.READ_CONTACTS,
-            READ_SMS
-        )
+
+        return context?.hasSMSReadPermission()?:false
     }
 
 

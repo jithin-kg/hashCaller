@@ -1,6 +1,5 @@
 package com.nibble.hashcaller.view.ui.sms.search
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -13,10 +12,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.databinding.ActivitySearchBinding
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
+import com.nibble.hashcaller.view.ui.contacts.onSMSItemItemClicked
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
-import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
-import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -87,25 +84,16 @@ class SearchSMSActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAda
 
         this@SearchSMSActivity.searchAdapter = SMSSearchAdapter(this, this@SearchSMSActivity, this)
         { view: View, threadId:Long, pos:Int,
-          pno:String, id:Long?->onContactItemClicked(view,threadId, pos, pno,id )  }
+          pno:String, id:Long?->onItemItemClicked(view,threadId, pos, pno,id )  }
 
         binding.reclrSmsSearchResult.layoutManager = LinearLayoutManager(this@SearchSMSActivity)
         binding.reclrSmsSearchResult.adapter = this@SearchSMSActivity.searchAdapter
     }
 
-    private fun onContactItemClicked(view: View, threadId: Long, pos: Int, pno: String, id:Long?) {
+    private fun onItemItemClicked(view: View, threadId: Long, pos: Int, pno: String, id:Long?) {
+        onSMSItemItemClicked(view, threadId, pos, pno, id, queryText)
         saveSearchQueryToLocalDB()
-        val intent = Intent(this, IndividualSMSActivity::class.java )
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        var bundle = Bundle()
-        Log.d(TAG, "onContactItemClicked: chatId is $id")
-        bundle.putString(CONTACT_ADDRES, pno)
-        bundle.putString(SMS_CHAT_ID, id.toString())
-        bundle.putString(QUERY_STRING,queryText)
 
-        intent.putExtras(bundle)
-
-        startActivity(intent)
     }
 
     private fun saveSearchQueryToLocalDB() {

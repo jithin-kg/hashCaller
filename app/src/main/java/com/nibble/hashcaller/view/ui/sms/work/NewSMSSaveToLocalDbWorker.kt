@@ -11,7 +11,9 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 import java.lang.Exception
 
 /**
@@ -41,7 +43,8 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
-                callLogDAO
+                callLogDAO,
+                SmsRepositoryHelper(context.getAllSMSCursor())
             ) // to get content provided sms
             val allsmsincontentProvider = smsrepoLocal.fetchSMSForLivedata(null, false)
             var sms : MutableList<CallersInfoFromServerDAO> = mutableListOf()

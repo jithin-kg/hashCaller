@@ -28,7 +28,6 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.*
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
@@ -114,8 +113,12 @@ class SMSLocalRepository(
     private val smsThreadsDAO: ISMSThreadsDAO?,
     private val dataStoreRepostiroy: DataStoreRepository,
     private val tokenHelper: TokenHelper?,
-    private val callLogDAO:ICallLogDAO?
-){
+    private val callLogDAO: ICallLogDAO?,
+    private val smsRepositoryHelper: SmsRepositoryHelper,
+
+
+
+    ){
     private var smsListHashMap:HashMap<String?, String?> = HashMap<String?, String?>()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     var markedThreadIds:MutableSet<Long> = mutableSetOf()
@@ -163,7 +166,7 @@ class SMSLocalRepository(
     //this function fetches sms while searching
     suspend fun getSms(searchQuery: String?): MutableList<SMS>   = withContext(Dispatchers.IO){
 
-        return@withContext fetchWithRawData(searchQuery, false)
+        return@withContext smsRepositoryHelper.fetchWithRawData()
     }
 
 
@@ -429,143 +432,7 @@ class SMSLocalRepository(
 
         return@withContext data
     }
-    @SuppressLint("LongLogTag")
-    private suspend fun fetchWithRawData(searchQuery: String?, requestinfromSpamlistFragment: Boolean?): MutableList<SMS>  = withContext(Dispatchers.IO) {
-        var data = ArrayList<SMS>()
-        val listOfMessages = mutableListOf<SMS>()
 
-        var prevAddress = ""
-        var prevTime = 0L
-//       val r1= GlobalScope.async {
-            val cursor = createCursor(searchQuery)
-            try {
-
-
-                var deleteViewAdded = false
-                var setOfAddress:MutableSet<String> = mutableSetOf()
-                var count = 0
-                var map: HashMap<String?, String?> = HashMap()
-                smsListHashMap = map
-
-                //        SELECT _id, DISTINCT thread_id, address, type, body, read, date FROM sms WHERE (thread_id IS NOT NULL) GROUP BY (thread_id ) ORDER BY date DESC
-
-//                Log.d(TAG, "fetch: page is   $page")
-
-                //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
-                if (cursor != null && cursor.moveToFirst()) {
-                    //                    val spammersList = spamListDAO?.getAll()
-                    do {
-
-                        try {
-                            //TODO check if phone number exists in contact, if then add the contact information too
-                            val objSMS = SMS()
-                            objSMS.id =
-                                cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
-                            objSMS.threadID =
-                                cursor.getLong(cursor.getColumnIndexOrThrow("thread_id"))
-//                            Log.d(TAG, "fetch: threadid ${objSMS.threadID}")
-                            var num =
-                                cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                            objSMS.addresStringNonFormated = num
-                            num = num.replace("+", "")
-                            //                    objSMS.address = num
-
-                            objSMS.type =
-                                cursor.getInt(cursor.getColumnIndexOrThrow("type"))
-
-                            var msg =
-                                cursor.getString(cursor.getColumnIndexOrThrow("body"))
-                            objSMS.msgString = msg
-
-                            //setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
-                            // spannable string builder function to setup spannable string builder
-                            objSMS.addressString = formatPhoneNumber(num)
-                            objSMS.nameForDisplay = objSMS.addressString!!
-
-                            objSMS.readState =
-                                cursor.getInt(cursor.getColumnIndex("read"))
-
-                            val dateMilli =
-                                cursor.getLong(cursor.getColumnIndexOrThrow("date"))
-                            if(prevAddress != objSMS.addressString){
-                                prevAddress = objSMS.addressString!!
-                            }else{
-                                //equal
-                                continue
-                            }
-                            objSMS.time = dateMilli
-                            setRelativeTime(objSMS, dateMilli)
-
-                            if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
-                                    .contains("1")
-                            ) {
-                                objSMS.folderName = "inbox"
-                            } else {
-                                objSMS.folderName = "sent"
-
-                            }
-
-//                          val r =  async {  getDetailsFromDB(replaceSpecialChars(objSMS.addressString!!), objSMS) }.await()
-//                                if(r!=null){
-//                                    objSMS.name = r?.name
-//                                    objSMS.spamCount  = r.spamReportCount
-//                                    objSMS.spammerType = r.spammerType
-//                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-//                                }
-//
-//                            getDetailsFromDB(formatPhoneNumber(objSMS.addressString!!), objSMS).apply {
-//                                if(this!=null){
-//                                    objSMS.name = this?.name
-//                                    if(!this.name.isNullOrEmpty()){
-//                                        objSMS.nameForDisplay = this.name
-//                                    }
-//                                    objSMS.spamCount  = this.spamReportCount
-//                                    objSMS.spammerType = this.spammerType
-//                                    objSMS.senderInfoFoundFrom = SENDER_INFO_FROM_DB
-//                                }
-//                            }
-                            Log.d(TAG, "fetch: message is   ${objSMS.msgString}")
-
-                            if(!objSMS.msgString.isNullOrEmpty()){
-//                                setSMSHashMap(objSMS)
-
-                            }
-//                            setOfAddress.add(objSMS.nameForDisplay)
-//                                if(markedThreadIds.contains(objSMS.threadID)){
-//                                    objSMS.isMarked = true
-//                                }
-
-                                listOfMessages.add(objSMS)
-
-                        } catch (e: Exception) {
-                            Log.d(TAG, "getMessages: exception $e")
-                        }
-
-                    } while (cursor.moveToNext())
-                    //                            })
-                    //                        }
-
-
-                }
-
-//                data.addAll(listOfMessages)
-//                setSMSReadStatus(data)
-
-//                setNameIfExistInContactContentProvider(data)
-//                removeDeletedMSSFRomhashMap(setOfAddress)
-
-
-
-            } catch (e: java.lang.Exception) {
-                Log.d(TAG, "fetch: exception $e")
-            }finally {
-                cursor?.close()
-            }
-//        }
-//        r1.await()
-
-        return@withContext listOfMessages
-    }
 
     private fun removeDeletedMSSFRomhashMap(setOfAdderss: MutableSet<String>) {
 
@@ -677,58 +544,10 @@ class SMSLocalRepository(
 
     }
 
-    private fun setRelativeTime(objSMS: SMS, dateMilli: Long) {
-        val days = getDaysDifference(dateMilli)
-        if(days == 0L ){
-
-//                 val time = String.format("%02d" , c.get(Calendar.HOUR))+":"+
-//                     String.format("%02d" , c.get(Calendar.MINUTE))
-//                 val ftime = SimpleDateFormat("hh:mm:ss" ).format(time * 1000L)
-            setHourAndMinute(objSMS, dateMilli)
-
-
-        }else if(days == 1L){
-
-            objSMS.relativeTime = "Yesterday"
-        }else{
-//                 view.tvSMSTime.text = "prev days"
-
-            val date = SimpleDateFormat("dd/MM/yyyy").format(Date(dateMilli))
-            objSMS.relativeTime = date
-        }
-    }
-
-    private fun setHourAndMinute(objSMS: SMS, dateMilli: Long): String {
-        val cc =  Calendar.getInstance()
-        cc.timeInMillis = dateMilli
-        val formatter: DateFormat = SimpleDateFormat("hh:mm")
-        val formattedIn24Hr: DateFormat = SimpleDateFormat("HH")
 
 
 
-        objSMS.relativeTime =  formatter.format(cc.time)
-        val time24HrFormat = formattedIn24Hr.format(cc.time)
-        if(time24HrFormat.toInt()>12){
-            objSMS.relativeTime = objSMS.relativeTime + " pm"
-        }else{
-            objSMS.relativeTime = objSMS.relativeTime + " am"
 
-        }
-        return objSMS.relativeTime
-    }
-
-    /**
-     * function to return difference between today and passed date in milli secods
-     */
-    private fun getDaysDifference(dateMilli: Long): Long {
-        val today = Date()
-        val miliSeconds: Long = today.time - dateMilli!!
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds)
-        val minute = seconds / 60
-        val hour = minute / 60
-        val days = hour / 24
-        return days
-    }
 
     /**
      * function to create cursor
@@ -1012,7 +831,7 @@ class SMSLocalRepository(
                     val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                     var currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
 
-                    val days = getDaysDifference(t)
+                    val days = smsRepositoryHelper.getDaysDifference(t)
                     if(days == 0L){
                         currentDate = "Today"
                     }else if(days == 1L){
@@ -1028,7 +847,7 @@ class SMSLocalRepository(
                     }
                     val sms = SMS()
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
-                    sms.timeString = setHourAndMinute(sms, sms.time!!)
+                    sms.timeString = smsRepositoryHelper.setHourAndMinute(sms, sms.time!!)
                     sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body")).trim()
                     val mgsStr = sms.msgString
                     sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
@@ -1440,7 +1259,7 @@ class SMSLocalRepository(
                                 cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 
                             objSMS.time = dateMilli
-                            setRelativeTime(objSMS, dateMilli)
+                          smsRepositoryHelper.setRelativeTime(objSMS, dateMilli)
 
                             if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                     .contains("1")
@@ -1605,7 +1424,7 @@ class SMSLocalRepository(
                                 cursor.getLong(cursor.getColumnIndexOrThrow("date"))
 
                             objSMS.time = dateMilli
-                            setRelativeTime(objSMS, dateMilli)
+                            smsRepositoryHelper.setRelativeTime(objSMS, dateMilli)
 
                             if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                                     .contains("1")
@@ -1796,7 +1615,7 @@ class SMSLocalRepository(
                     val t = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
                     var currentDate = SimpleDateFormat("dd/MM/yyyy").format(Date(t))
 
-                    val days = getDaysDifference(t)
+                    val days = smsRepositoryHelper.getDaysDifference(t)
                     if(days == 0L){
                         currentDate = "Today"
                     }else if(days == 1L){
@@ -1805,7 +1624,7 @@ class SMSLocalRepository(
 
                     val sms = SMS()
                     sms.time = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("date"))
-                    sms.timeString = setHourAndMinute(sms, sms.time!!)
+                    sms.timeString = smsRepositoryHelper.setHourAndMinute(sms, sms.time!!)
                     sms.msgString = cursor!!.getString(cursor!!.getColumnIndexOrThrow("body"))
                     val mgsStr = sms.msgString
                     sms.id = cursor!!.getLong(cursor!!.getColumnIndexOrThrow("_id"))
@@ -1919,7 +1738,7 @@ class SMSLocalRepository(
 //                        continue
 //                    }
                     objSMS.time = dateMilli
-                    setRelativeTime(objSMS, dateMilli)
+                    smsRepositoryHelper.setRelativeTime(objSMS, dateMilli)
 
                     if (cursor.getString(cursor.getColumnIndexOrThrow("type"))
                             .contains("1")

@@ -13,13 +13,11 @@ import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
-import com.nibble.hashcaller.view.ui.sms.util.SMS
-import com.nibble.hashcaller.view.ui.sms.util.SMSContract
-import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
-import com.nibble.hashcaller.view.ui.sms.util.SMSViewModel
+import com.nibble.hashcaller.view.ui.sms.util.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -64,7 +62,8 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
-                callLogDAO
+                callLogDAO,
+                SmsRepositoryHelper(context.getAllSMSCursor())
 
             )
          repository.fetchSMSForLivedata(null, false).apply {
@@ -107,7 +106,8 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
-                callLogDAO
+                callLogDAO,
+                SmsRepositoryHelper(context.getAllSMSCursor())
             )
         repository.markSMSAsRead(address)
     }

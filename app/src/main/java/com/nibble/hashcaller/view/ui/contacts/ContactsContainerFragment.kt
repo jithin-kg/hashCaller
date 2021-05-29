@@ -115,7 +115,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         val contextThemeWrapper: Context =
             ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
 
-        if(checkContactPermission()){
+        if(context?.hasReadContactsPermission() == true){
             initRecyclerView()
             getData()
         }else{
@@ -183,12 +183,6 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     }
 
-    private fun checkContactPermission(): Boolean {
-        return EasyPermissions.hasPermissions(context,
-            Manifest.permission.READ_CONTACTS
-        )
-
-    }
     private fun initRecyclerView() {
 
        binding.rcrViewContactsList?.apply {
@@ -198,33 +192,34 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                     30
                 )
 //                addItemDecoration(topSpacingDecorator)
-            contactsRecyclerAdapter = ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->onContactItemClicked(binding, contact)}
+            contactsRecyclerAdapter = ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->context.onContactItemClicked(binding, contact, activity)}
             adapter = contactsRecyclerAdapter
 
         }
 
     }
-    private fun onContactItemClicked(binding: ContactListBinding, contactItem: Contact){
-        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
-        val intent = Intent(context, IndividualContactViewActivity::class.java )
-        intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
-        intent.putExtra("name", contactItem.name )
-//        intent.putExtra("id", contactItem.id)
-        intent.putExtra("photo", contactItem.photoURI)
-        intent.putExtra("color", contactItem.drawable)
-        Log.d(TAG, "onContactItemClicked: ${contactItem.photoURI}")
-        val pairList = ArrayList<android.util.Pair<View, String>>()
-//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
-        var pair:android.util.Pair<View, String>? = null
-        if(contactItem.photoURI.isEmpty()){
-            pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
-        }else{
-            pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
-        }
-        pairList.add(pair)
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
-        startActivity(intent, options.toBundle())
-    }
+//     fun onContactItemClicked(binding: ContactListBinding, contactItem: Contact){
+//        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
+//        val intent = Intent(context, IndividualContactViewActivity::class.java )
+//        intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
+//        intent.putExtra("name", contactItem.name )
+////        intent.putExtra("id", contactItem.id)
+//        intent.putExtra("photo", contactItem.photoURI)
+//        intent.putExtra("color", contactItem.drawable)
+//        Log.d(TAG, "onContactItemClicked: ${contactItem.photoURI}")
+//        val pairList = ArrayList<android.util.Pair<View, String>>()
+////        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+//        var pair:android.util.Pair<View, String>? = null
+//        if(contactItem.photoURI.isEmpty()){
+//            pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
+//        }else{
+//            pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
+//        }
+//        pairList.add(pair)
+//
+//        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
+//        startActivity(intent, options.toBundle())
+//    }
 
     private fun initListeners() {
         binding.btnGivecontactPermission.setOnClickListener(this)

@@ -53,6 +53,7 @@
         <activity
             android:name=".view.ui.search.SearchActivity"
             android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop" />
         <activity
             android:name=".view.ui.call.floating.SampleActivityStartnotification"

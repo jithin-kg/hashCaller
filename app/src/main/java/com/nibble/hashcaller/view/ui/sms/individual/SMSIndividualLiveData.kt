@@ -11,10 +11,12 @@ import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
+import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -53,7 +55,8 @@ class SMSIndividualLiveData(
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
             TokenHelper( FirebaseAuth.getInstance().currentUser),
-            callLogDAO
+            callLogDAO,
+            SmsRepositoryHelper(context.getAllSMSCursor())
         )
         return@withContext repository.fetchIndividualSMS(contact)
 

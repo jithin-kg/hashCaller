@@ -7,6 +7,8 @@ import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.view.ui.contacts.ContactsQueryHelper
+import com.nibble.hashcaller.view.ui.contacts.getAllContactsCursor
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModelFactory
 
@@ -20,7 +22,8 @@ object ContactSelectorInjectorUtil {
         tokenHelper: TokenHelper?
     ): ContactsViewModelFactory {
 
-        val contactsLiveData = context?.let { ContactLiveData(it, lifecycleScope) }
+        val contactQueryHelper = ContactsQueryHelper(context?.getAllContactsCursor())
+        val contactsLiveData = context?.let { ContactLiveData(it, lifecycleScope, contactQueryHelper) }
         val contactLisDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO() }
 
         //passing necessory elements ( dao, since we are

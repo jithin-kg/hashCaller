@@ -11,6 +11,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentSearch2Binding
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
+import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 
 
@@ -31,12 +32,22 @@ class SearchFragment : Fragment(), IDefaultFragmentSelection, View.OnClickListen
         // Inflate the layout for this fragment
         _binding = FragmentSearch2Binding.inflate(layoutInflater, container, false)
         initListeners()
-
+        configureAnimImage()
         return binding.root
+    }
+
+    private fun configureAnimImage() {
+        if(context?.isDarkThemeOn() == true){
+            binding.gifImageView.setImageResource(R.drawable.lantern_anim_black)
+        }else{
+            binding.gifImageView.setImageResource(R.drawable.lantern_anim)
+
+        }
     }
 
     private fun initListeners() {
         binding.searchViewMain.setOnClickListener(this)
+
     }
 
 

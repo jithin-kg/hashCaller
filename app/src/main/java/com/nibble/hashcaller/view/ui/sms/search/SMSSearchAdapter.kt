@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -59,7 +60,8 @@ class SMSSearchAdapter(private val context: Context,
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_spam_delete_item, parent, false)
             return DeleteViewHolder(view)
 
-        }else{
+        }else {
+
             val view = LayoutInflater.from(parent.context).inflate(R.layout.sms_list_view, parent, false)
             return SmsViewHolder(view)
         }
@@ -129,7 +131,8 @@ class SMSSearchAdapter(private val context: Context,
     inner class SmsViewHolder(private val view: View) : RecyclerView.ViewHolder(view),View.OnCreateContextMenuListener {
          var layoutExpandable: ConstraintLayout = view.layoutExpandable
          private val name = view.textVSMSCntctName
-         private val circle = view.textViewSMScontactCrclr;
+//         private val circle = view.textViewSMScontactCrclr;
+
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
@@ -208,12 +211,13 @@ class SMSSearchAdapter(private val context: Context,
 //            val pNo = sms.address.toString()
 //            Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
-                generateCircleView(context);
+//                generateCircleView(context);
 
 
             view.setOnLongClickListener(OnLongClickListener { v ->
 //                listener.onLongItemClick(v, viewHolder.getAdapterPosition())
                 Log.d(TAG, "bind: threadID ${sms.threadID}")
+                //todo deprecated
                     longPresHandler.onLongPressed(v, this.adapterPosition, sms.threadID,
                         sms.addressString!!
                     )
@@ -261,7 +265,7 @@ class SMSSearchAdapter(private val context: Context,
 
         private fun getSpannedString(str: String, startPos: Int, endPos: Int): SpannableStringBuilder {
             val yellow =
-                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary))
             val span =  SpannableStringBuilder(str)
             span.setSpan(
                 yellow,
@@ -347,25 +351,9 @@ class SMSSearchAdapter(private val context: Context,
          }
 
          private fun setNameFirstChar(firstLetterString:String) {
-             circle.text = firstLetterString
-         }
-
-         private fun generateCircleView(context: Context) {
-             val rand = Random()
-             when (rand.nextInt(5 - 1) + 1) {
-                 1 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background)
-                 }
-                 2 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background2)
-                 }
-                 3 -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background3)
-                 }
-                 else -> {
-                     circle.background = ContextCompat.getDrawable(context, R.drawable.contact_circular_background4)
-                 }
-             }
+             view.textViewSMScontactCrclr.text = firstLetterString
+             view.textViewSMScontactCrclr.setTextColor(ContextCompat.getColor(view.context, R.color.colorWhite))
+             view.textViewSMScontactCrclr.setRandomBackgroundCircle()
          }
 
 //        https://stackoverflow.com/questions/26466877/how-to-create-context-menu-for-recyclerview

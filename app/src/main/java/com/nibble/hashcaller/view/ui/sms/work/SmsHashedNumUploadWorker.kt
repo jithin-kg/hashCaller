@@ -16,10 +16,11 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +76,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                 smsThreadsDAO,
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
-                callLogDAO
+                callLogDAO,
+                SmsRepositoryHelper(context.getAllSMSCursor())
             ) // to get content provided sms
 
             val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()

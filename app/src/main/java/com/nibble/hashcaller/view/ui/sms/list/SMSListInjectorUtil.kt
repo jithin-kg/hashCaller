@@ -8,7 +8,9 @@ import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
+import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 
 /**
  * Created by Jithin KG on 29,July,2020
@@ -39,7 +41,8 @@ object SMSListInjectorUtil {
             smsThreadsDAO,
             DataStoreRepository(context.tokeDataStore),
             tokenHelper,
-            callLogDAO
+            callLogDAO,
+            SmsRepositoryHelper(context.getAllSMSCursor())
         ) }
         val messagesLiveData = context?.let {
             SMSLiveData(

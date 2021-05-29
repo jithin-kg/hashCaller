@@ -1,20 +1,32 @@
 package com.nibble.hashcaller.view.ui.contacts
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.ActivityOptions
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.database.Cursor
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.provider.CallLog
+import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.work.*
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.COUNTRY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
@@ -31,15 +43,117 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.floating.FloatingService
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
+import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
+import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.search.SearchSMSActivity
+import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.utils.SIMAccount
 import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.vmadalin.easypermissions.EasyPermissions
 import java.util.*
 
+
+fun Context.isDarkThemeOn(): Boolean {
+    return resources.configuration.uiMode and
+            UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
+}
+
+fun Context.hasSMSReadPermission():Boolean{
+    return EasyPermissions.hasPermissions(this, Manifest.permission.READ_CONTACTS,
+        Manifest.permission.READ_SMS
+    )
+}
+
+fun Context.hasReadContactsPermission(): Boolean {
+    return EasyPermissions.hasPermissions(this,
+        Manifest.permission.READ_CONTACTS
+    )
+}
+
+fun Context.hasReadCallLogPermission(): Boolean {
+   return EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALL_LOG,
+        Manifest.permission.READ_CONTACTS)
+}
+
+fun Context.getAllCallLogsCursor(): Cursor? {
+    var cursor:Cursor? = null
+
+    val projection = arrayOf(
+        CallLog.Calls.NUMBER,  //0
+        CallLog.Calls.TYPE,    //1
+        CallLog.Calls.DURATION,  //2
+        CallLog.Calls.CACHED_NAME, //3
+        CallLog.Calls._ID,         //4
+        CallLog.Calls.DATE,        //5
+        "subscription_id"
+    )
+
+    if(hasReadCallLogPermission()){
+        cursor = contentResolver.query(
+            CallLogLiveData.URI,
+            projection,
+            null,
+            null,
+            "${CallLog.Calls._ID} DESC"
+        )
+    }
+    return cursor
+}
+fun Context.getAllContactsCursor(): Cursor? {
+    var cursor:Cursor? = null
+
+    if(hasReadContactsPermission()){
+        val projection = arrayOf(
+            ContactsContract.Contacts.NAME_RAW_CONTACT_ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.CommonDataKinds.Phone.NUMBER,
+            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
+            ContactsContract.Contacts.PHOTO_URI
+        )
+        cursor =  contentResolver.query(
+            ContactLiveData.URI,
+            projection,
+            null,
+            null,
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " COLLATE NOCASE ASC"
+        )
+    }
+    return  cursor
+
+}
+fun Context.getAllSMSCursor(): Cursor? {
+        var  cursor:Cursor? = null
+    if(hasSMSReadPermission()){
+        val projection = arrayOf(
+            "thread_id",
+            "_id",
+            "address",
+            "type",
+            "body",
+            "read",
+            "date"
+        )
+
+       cursor =  contentResolver?.query(
+            SMSContract.ALL_SMS_URI,
+            projection,
+            "address IS NOT NULL) GROUP BY (address",
+            null,
+            "_id DESC"
+        )
+    }
+
+     return cursor
+}
 
 fun Context.startFloatingService() {
 
@@ -292,4 +406,46 @@ fun Context.generateCircleView(num:Int?=null): Drawable? {
         }
     }
     return background
+}
+
+
+fun Context.onContactItemClicked(binding: ContactListBinding, contactItem: Contact,activity:Activity? ){
+    val intent = Intent(this, IndividualContactViewActivity::class.java )
+    intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, contactItem.phoneNumber)
+    intent.putExtra("name", contactItem.name )
+//        intent.putExtra("id", contactItem.id)
+    intent.putExtra("photo", contactItem.photoURI)
+    intent.putExtra("color", contactItem.drawable)
+    val pairList = ArrayList<android.util.Pair<View, String>>()
+//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+    var pair:android.util.Pair<View, String>? = null
+    if(contactItem.photoURI.isEmpty()){
+        pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
+    }else{
+        pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
+    }
+    pairList.add(pair)
+    val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
+    startActivity(intent, options.toBundle())
+}
+
+fun Context.onSMSItemItemClicked(
+    view: View,
+    threadId: Long,
+    pos: Int,
+    pno: String,
+    id: Long?,
+    queryText: String
+) {
+    val intent = Intent(this, IndividualSMSActivity::class.java )
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+    var bundle = Bundle()
+    Log.d(SearchSMSActivity.TAG, "onContactItemClicked: chatId is $id")
+    bundle.putString(CONTACT_ADDRES, pno)
+    bundle.putString(SMS_CHAT_ID, id.toString())
+    bundle.putString(QUERY_STRING,queryText)
+
+    intent.putExtras(bundle)
+
+    startActivity(intent)
 }

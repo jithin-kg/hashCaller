@@ -315,7 +315,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     fun methodRequiresTwoPermission() {
         Log.d(TAG, "methodRequiresTwoPermission: ")
         if (EasyPermissions.hasPermissions(context, READ_CALL_LOG,
-                WRITE_CALL_LOG,  READ_CONTACTS, READ_PHONE_STATE)) {
+                WRITE_CALL_LOG,  READ_CONTACTS, READ_PHONE_STATE))
+
+                {
 
 
             // Already have permission, do the thing

@@ -116,14 +116,6 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             position: Int,
             networkHandler: NetworkHandler
         ) {
-
-//            if(sms.smsThreadTable.isMarked==true){
-//                Log.d(TAG, "bind: making visible ")
-//                binding.smsMarked.beVisible()
-//            }else{
-//                Log.d(TAG, "bind: making invisible")
-//                binding.smsMarked.beInvisible()
-//            }
             var isSpam = false
             var senderInforFrom = SENDER_INFO_SEARCHING
             var nameStr = ""
@@ -137,30 +129,25 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                     if(!sms.firstNameFromServer!!.isEmpty()){
                         nameStr = sms.firstNameFromServer!!
                         senderInforFrom = SENDER_INFO_FROM_DB
-
                     }
                     //todo make info found from hash caller visible here
                 }else if(sms.firstNameFromServer==null){
                     senderInforFrom = SENDER_INFO_SEARCHING
-
                 }
-                    isSpam = sms.spamCount!! > SPAM_THREASHOLD || sms.isReportedByUser
+                isSpam = sms.spamCount!! > SPAM_THREASHOLD || sms.isReportedByUser
             if(nameStr.isEmpty()){
                 //name is not found in server on content provider so, set name as number
                 nameStr = formatPhoneNumber(sms.contactAddress)
             }
-
             if(senderInforFrom == SENDER_INFO_FROM_DB){
                 binding.tvIdentifiedByhash.beVisible()
                 binding.imgvIdentifiedByHash.beVisible()
                 binding.pgBarSmsListItem.beInvisible()
-
-
             }else if(senderInforFrom == SENDER_INFO_SEARCHING){
                 binding.pgBarSmsListItem.beVisible()
                 binding.tvIdentifiedByhash.beInvisible()
             }
-            else{
+            else {
                 binding.pgBarSmsListItem.beInvisible()
                 binding.tvIdentifiedByhash.beInvisible()
                 binding.imgvIdentifiedByHash.beInvisible()

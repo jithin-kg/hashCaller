@@ -349,7 +349,6 @@ class CallContainerRepository(
             CallLog.Calls._ID,         //4
             CallLog.Calls.DATE,        //5
             "subscription_id"
-
         )
         var cursor:Cursor? = null
         val numberToSimIDMap = HashMap<String, Int>()
