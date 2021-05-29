@@ -16,6 +16,10 @@ class DialerRepository(private val context: Context, private val callLogDAO: ICa
 
     suspend fun getFilteredlist(text: String, allContacts: MutableList<Contact>?) = withContext(Dispatchers.IO) {
         var filtered = allContacts?.filter {
+            it.spanStartPosName = 0
+            it.spanEndPosName = 0
+            it.spanStartPosNum = 0
+            it.spanEndPosNum = 0
             //converting name to digits, "1-800-GOOG-411" will return "1-800-4664-411"
             val convertedName = PhoneNumberUtils.convertKeypadLettersToDigits(it.name.normalizeString())
             //check if converted name contains search text

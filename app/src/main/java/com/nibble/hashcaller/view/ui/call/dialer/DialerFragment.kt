@@ -137,10 +137,10 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     private fun observeContacts() {
         viewmodel.searchResultLivedata.observe(viewLifecycleOwner, Observer {
+            callLogAdapter?.setQuery(searchQueryPhone)
             callLogAdapter?.setList(it)
 //            (activity as MainActivity).hideBottomNav()
 
-            callLogAdapter?.setQuery(searchQueryPhone)
         })
     }
 
@@ -184,6 +184,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
         viewmodel.getPhoneNumber()?.observe(viewLifecycleOwner, Observer { phoneNumber ->
             if(phoneNumber.isNotEmpty()){
+                callLogAdapter?.submitList(emptyList())
                 lifecycleScope.launchWhenStarted {
                     job?.cancel()
                     DialerViewModel.cancelJob = false
