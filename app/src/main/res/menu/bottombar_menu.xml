@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    https://www.flaticon.com/packs/multimedia-collection?k=1622288085585-->
     <item
         android:id="@+id/bottombaritem_messages"
-        android:icon="@drawable/ic_baseline_message_24"
+        android:icon="@drawable/ic_home_4_line"
         android:title="Messages"
-
         app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/bottombaritem_contacts"
-        android:icon="@drawable/ic_baseline_perm_contact_calendar_24"
+        android:icon="@drawable/ic_contacts_book_line"
         android:title="Contacts"
         app:showAsAction="ifRoom|withText"
      />
     <item
         android:id="@+id/bottombaritem_calls"
-        android:icon="@drawable/ic_baseline_call_24"
+        android:icon="@drawable/ic_phone_line"
         android:title="Calls"
         app:showAsAction="ifRoom|withText"
         />
 
     <item
         android:id="@+id/bottombaritem_search"
-        android:icon="@drawable/ic_baseline_search"
+        android:icon="@drawable/ic_search_line"
         android:title="Lookup"
         app:showAsAction="ifRoom|withText"
       />

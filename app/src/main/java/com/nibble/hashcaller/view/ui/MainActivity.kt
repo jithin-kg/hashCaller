@@ -19,6 +19,7 @@ import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
 import android.util.Log
 import android.view.Gravity
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -36,10 +37,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -70,7 +67,6 @@ import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
-import com.nibble.hashcaller.view.ui.hashworker.HashWorker
 import com.nibble.hashcaller.view.ui.hashworker.HasherViewmodel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
@@ -82,13 +78,10 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.getDecodedBytes
-import com.nibble.hashcaller.work.ContactsAddressLocalWorker
-import com.nibble.hashcaller.work.ContactsUploadWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.activity_main.*
@@ -127,6 +120,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var header:View
     private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
     private lateinit var firstLetterView:TextView
+    private lateinit var menu:Menu
+    private lateinit var  menuMessage:MenuItem
+    private lateinit var  menuContacts:MenuItem
+    private lateinit var  menuCalls:MenuItem
+    private lateinit var  menuSearch:MenuItem
 
 //    var  searchFragment: SearchFragment? = null
 
@@ -745,6 +743,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
     fun addAllFragments() {
+        menu = binding.bottomNavigationView.menu
+
+        setAllMenuItems()
+
         ft = supportFragmentManager.beginTransaction()
 
         setDefaultFragment(DefaultFragmentManager.id)
@@ -772,6 +774,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        fabBtnShowDialpad.visibility = View.VISIBLE
 
         ft.commit()
+
+    }
+
+    private fun setAllMenuItems() {
+        menuMessage = menu.findItem(R.id.bottombaritem_messages)
+        menuContacts = menu.findItem(R.id.bottombaritem_contacts)
+        menuCalls = menu.findItem( R.id.bottombaritem_calls )
+        menuSearch = menu.findItem(R.id.bottombaritem_search)
+
+
+//        menuMessage = menu.findItem(R.id.bottombaritem_messages)
+
     }
 
     /**
@@ -824,6 +838,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     fun showContactsFragment() {
+        toggleBottomMenuIcons(showContactsFragment = true)
+
+        menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
 
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
@@ -871,7 +888,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.commit()
     }
     fun showSearchFragment() {
-
+        toggleBottomMenuIcons(showSearchFragment = true)
         val ft = supportFragmentManager.beginTransaction()
 
         if (callFragment.isAdded) {
@@ -912,6 +929,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     fun showCallFragment() {
+        toggleBottomMenuIcons(showCallsFragment = true)
+
         val ft = supportFragmentManager.beginTransaction()
         if (messagesFragment.isAdded) { // if the fragment is already in container(callFragment)
 //            unMarkItems()
@@ -955,6 +974,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun showMessagesFragment() {
+        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
 
         // Hide fragment B
@@ -965,6 +985,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //
 //        }
         // Hide fragment C
+
         if (contactFragment.isAdded) {
             ft.hide(contactFragment)
         }
@@ -994,6 +1015,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         // Commit changes
         ft.commit()
+    }
+
+    private fun toggleBottomMenuIcons(
+        showMessageFragment: Boolean=false,
+        showContactsFragment: Boolean=false,
+        showCallsFragment: Boolean=false,
+        showSearchFragment: Boolean=false ) {
+        if(showMessageFragment){
+            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_fill)
+        }else{
+            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
+
+        }
+
+        if(showContactsFragment){
+            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill)
+        }else{
+            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
+        }
+
+        if(showCallsFragment){
+            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_fill)
+        }else{
+            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
+        }
+        if(showSearchFragment){
+            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_fill)
+        }else {
+            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+        }
     }
 
 
