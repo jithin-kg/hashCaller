@@ -943,11 +943,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            fabBtnShowDialpad.visibility = View.VISIBLE
 
             ft.show(callFragment)
-
-            if(dialerFragment.isHidden){
-
-                binding.bottomNavigationView.beVisible()
-            }
+            binding.bottomNavigationView.beVisible()
+//            if(dialerFragment.isHidden){
+//
+//                binding.bottomNavigationView.beVisible()
+//            }
         }
 
         // Commit changes

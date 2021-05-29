@@ -33,6 +33,7 @@
     <color name="windowBackground">#ffff</color>
     <!--   cololr of statusBar is determined by the  colorPrimaryDark attribute   -->
     <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBackgroundAppBar">#FFFFFF</color>
     <color name="colorNavItemsLight">#2B80D7</color>
     <color name="test_color">#f44336</color>
 <!--    color of bottom nav item default -->

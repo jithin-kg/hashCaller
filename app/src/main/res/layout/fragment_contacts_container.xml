@@ -52,6 +52,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tvHashCaller"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/roboto"
+                android:gravity="left|center_vertical"
+                android:layout_marginStart="16sp"
+                android:text="Contacts"
+                android:textStyle="bold"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBergerCntct"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <EditText
                 android:id="@+id/searchViewContacts"
                 android:layout_width="0dp"
@@ -64,8 +80,8 @@
                 android:cursorVisible="false"
                 android:drawablePadding="16dp"
                 android:focusable="false"
+                android:visibility="invisible"
                 android:focusedByDefault="false"
-                android:hint="Search in contacts"
                 android:iconifiedByDefault="false"
                 android:queryHint="Search numbers, names"
                 android:transitionName="@string/search_view_transition"

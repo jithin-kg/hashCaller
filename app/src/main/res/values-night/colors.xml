@@ -24,6 +24,8 @@
 
     <!--    <color name="colorBackgroundDark">#000000</color>-->
     <color name="colorBackground">#111112</color>
+    <color name="colorBackgroundAppBar">#000000</color>
+
     <color name="bottom_nav_color">#030304</color>
 
     <color name="colorWhite">#FFFFFF</color>

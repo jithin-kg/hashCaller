@@ -65,6 +65,21 @@
                     app:layout_constraintEnd_toStartOf="@+id/searchViewSms"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tvHashCaller"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/roboto"
+                    android:gravity="left|center_vertical"
+                    android:layout_marginStart="16sp"
+                    android:text="Messages"
+                    android:textStyle="bold"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMain"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnTbrMore"
                     android:layout_width="16dp"
@@ -150,7 +165,7 @@
                     android:focusable="false"
                     android:layout_marginStart="24dp"
                     android:focusedByDefault="false"
-                    android:hint="Search in sms"
+                    android:visibility="invisible"
                     android:iconifiedByDefault="false"
                     android:queryBackground="@android:color/transparent"
                     app:layout_constraintBottom_toBottomOf="parent"
