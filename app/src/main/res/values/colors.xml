@@ -57,6 +57,7 @@
     <color name="numbersTextColor">#1B6EAC</color>
 
     <color name="textColor">#000000</color>
+    <color name="bottomNavIconColor">@color/colorPrimary</color>
     <color name="textColorBlack">#000000</color>
     <color name="textColorSecondary">#2E2D2D</color>
     <color name="lineColor">#101126</color>

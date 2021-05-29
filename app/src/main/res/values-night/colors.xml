@@ -47,6 +47,7 @@
     <color name="numbersTextColor">#1B6EAC</color>
 
     <color name="textColor">#FFFFFF</color>
+    <color name="bottomNavIconColor">@color/textColor</color>
     <color name="textColorSecondary">#7E7B7B</color>
     <color name="lineColor">#dcddf2</color>
     <color name="edtxt_phone_auth_bg">#0F1B27</color>

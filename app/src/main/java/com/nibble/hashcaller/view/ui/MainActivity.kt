@@ -149,6 +149,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+    private var isDarkThemeOn = false
 
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
@@ -157,8 +158,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
-
-
+        isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
 
         initDataStoreViewmodel()
@@ -303,6 +303,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        setStatusBarColor(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setAllMenuItems()
+
+
 //        listenUiEvents()
         requestAlertWindowPermission()
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
@@ -326,6 +330,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        setupContactUploadWork()
         observeUserInfo()
         initListeners()
+
+        setupBottomMenuIconsBasedOnTheme()
 
     }
 
@@ -743,9 +749,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
     fun addAllFragments() {
-        menu = binding.bottomNavigationView.menu
 
-        setAllMenuItems()
 
         ft = supportFragmentManager.beginTransaction()
 
@@ -778,6 +782,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setAllMenuItems() {
+        menu = binding.bottomNavigationView.menu
         menuMessage = menu.findItem(R.id.bottombaritem_messages)
         menuContacts = menu.findItem(R.id.bottombaritem_contacts)
         menuCalls = menu.findItem( R.id.bottombaritem_calls )
@@ -840,7 +845,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     fun showContactsFragment() {
         toggleBottomMenuIcons(showContactsFragment = true)
 
-        menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
 
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
@@ -992,6 +996,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (searchFragment.isAdded) {
             ft.hide(searchFragment)
         }
+
         if (callFragment.isAdded) {
             callFragment.clearMarkeditems()
             ft.hide(callFragment)
@@ -1016,35 +1021,81 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         // Commit changes
         ft.commit()
     }
-
+    private fun setupBottomMenuIconsBasedOnTheme() {
+//        if (isDarkThemeOn) {
+////            Log.d(TAG, "setupBottomMenuIconsBasedOnTheme: isDarkThemeOn:true")
+////            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
+////            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
+////            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
+////            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+//
+//
+//        }else {
+//            Log.d(TAG, "setupBottomMenuIconsBasedOnTheme: isDarkThemeOn:false")
+//            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line_primary)
+//            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line_primary)
+//            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line_primary)
+//            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line_primary)
+//
+//        }
+    }
     private fun toggleBottomMenuIcons(
         showMessageFragment: Boolean=false,
         showContactsFragment: Boolean=false,
         showCallsFragment: Boolean=false,
         showSearchFragment: Boolean=false ) {
-        if(showMessageFragment){
-            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_fill)
-        }else{
-            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
+//        if(isDarkThemeOn){
 
-        }
+            if(showMessageFragment){
+                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_fill)
+            }else{
+                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
 
-        if(showContactsFragment){
-            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill)
-        }else{
-            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
-        }
+            }
 
-        if(showCallsFragment){
-            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_fill)
-        }else{
-            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
-        }
-        if(showSearchFragment){
-            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_fill)
-        }else {
-            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
-        }
+            if(showContactsFragment){
+                menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill)
+            }else{
+                menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
+            }
+
+            if(showCallsFragment){
+                menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_fill)
+            }else{
+                menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
+            }
+            if(showSearchFragment){
+                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_fill)
+            }else {
+                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+            }
+//        }
+//        else {
+//            if(showMessageFragment){
+//                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_fill_primary)
+//            }else{
+//                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line_primary)
+//
+//            }
+//
+//            if(showContactsFragment){
+//                menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill_primary)
+//            }else{
+//                menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line_primary)
+//            }
+//
+//            if(showCallsFragment){
+//                menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_fill_primary)
+//            }else{
+//                menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line_primary)
+//            }
+//            if(showSearchFragment){
+//                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_fill_primary)
+//            }else {
+//                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line_primary)
+//            }
+//        }
+
     }
 
 
