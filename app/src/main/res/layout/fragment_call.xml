@@ -30,8 +30,7 @@
         android:id="@+id/appbarCallContainer"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:elevation="2dp"
-        android:elevation="2dp"
+        android:elevation="4dp"
         app:layout_scrollFlags="scroll|enterAlways"
         android:background="@color/colorBackgroundAppBar"
         >
@@ -53,11 +52,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginStart="0dp"
-                android:elevation="4dp"
                 app:layout_scrollFlags="scroll|enterAlways"
-                android:background="@drawable/toolbar_background_round_border"
-                android:backgroundTint="@color/colorBackgroundAppBar" >
-
+                >
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnHamBrgerCalls"
                     android:layout_width="35dp"
@@ -66,7 +62,7 @@
                     android:layout_marginEnd="4dp"
                     android:padding="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_baseline_menu_24"
+                    android:src="@drawable/ic_menu_line"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
                     app:layout_constraintStart_toStartOf="parent"

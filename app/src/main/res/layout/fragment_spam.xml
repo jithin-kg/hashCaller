@@ -43,7 +43,7 @@ android:id="@+id/MessagesFragment">
         app:contentInsetRight="0dp"
         style="@style/toolbarStyle"
         app:contentInsetStartWithNavigation="0dp"
-        app:navigationIcon="@drawable/ic_baseline_menu_24"
+        app:navigationIcon="@drawable/ic_menu_line"
         app:layout_scrollFlags="scroll|enterAlways">
 
         <androidx.constraintlayout.widget.ConstraintLayout
