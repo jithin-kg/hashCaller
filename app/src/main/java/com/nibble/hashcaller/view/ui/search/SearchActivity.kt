@@ -1,6 +1,8 @@
 package com.nibble.hashcaller.view.ui.search
 
+import android.app.ActivityOptions
 import android.content.DialogInterface
+import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.text.Editable
@@ -18,13 +20,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySearchMainBinding
 import com.nibble.hashcaller.databinding.ContactListBinding
+import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.databinding.SearchFilterAlertCheckBoxBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.*
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -43,7 +50,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private lateinit var alertBuilder: AlertDialog.Builder
 
     private var queryStr = ""
-    var contactsRecyclerAdapter: ContactAdapter? = null
+    var contactsRecyclerAdapter: DialerAdapter? = null
     private  var smsAdapter: SMSSearchAdapter? = null
     private lateinit var searchFilterView:SearchFilterAlertCheckBoxBinding
     private lateinit var checkBoxIncludeSMS:CheckBox
@@ -74,8 +81,11 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         dataStoreViewmodel.searchFilterLiveData.asLiveData().observe(this, Observer { isshowSMSResult ->
           if(isshowSMSResult)  {
               binding.recyclerViewSMS.beVisible()
+              binding.tvSMS.beVisible()
           }else {
               binding.recyclerViewSMS.beGone()
+            binding.tvSMS.beGone()
+
           }
         })
     }
@@ -84,12 +94,27 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private fun observeSMSList() {
         searchViewmodel.smsListOfLivedata.observe(this, Observer {
             this.smsAdapter?.setList(it)
+           if(it.isNotEmpty()){
+                binding.recyclerViewSMS.beVisible()
+                binding.tvSMS.beVisible()
+           }else {
+                binding.recyclerViewSMS.beGone()
+               binding.tvSMS.beGone()
+           }
         })
     }
 
     private fun observeContactsList() {
         searchViewmodel.contactsListOfLivedata.observe(this, Observer {
-            contactsRecyclerAdapter?.setContactList(it)
+            contactsRecyclerAdapter?.setList(it)
+            if(it.isNotEmpty()) {
+                  binding.recyclerViewContacts.beVisible()
+                  binding.tvContacts.beVisible()
+            }else {
+                binding.recyclerViewContacts.beGone()
+                binding.tvContacts.beGone()
+            }
+
         })
     }
 
@@ -155,13 +180,44 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
                 TopSpacingItemDecoration(
                     30
                 )
-//                addItemDecoration(topSpacingDecorator)
-            contactsRecyclerAdapter = ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->onContactItemClicked(
-                binding,
-                contact,
-                this@SearchActivity
-            )}
+            addItemDecoration(topSpacingDecorator)
+            contactsRecyclerAdapter = DialerAdapter(context) { binding: ContactSearchResultItemBinding, contact: Contact, clickType:Int ->onContactItemClicked(binding, contact, clickType)}
             adapter = contactsRecyclerAdapter
+            itemAnimator = null
+        }
+
+    }
+
+    private fun onContactItemClicked(
+        binding: ContactSearchResultItemBinding,
+        contactItem: Contact,
+        clickType: Int
+    ){
+        when(clickType){
+            TYPE_MAKE_CALL ->{
+                makeCall(contactItem.phoneNumber)
+            }
+            else ->{
+                Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
+                val intent = Intent(this, IndividualContactViewActivity::class.java )
+                intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
+                intent.putExtra("name", contactItem.name )
+//        intent.putExtra("id", contactItem.id)
+                intent.putExtra("photo", contactItem.photoURI)
+                intent.putExtra("color", contactItem.drawable)
+                Log.d(TAG, "onContactItemClicked: ${contactItem.photoURI}")
+                val pairList = ArrayList<android.util.Pair<View, String>>()
+//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+                var pair:android.util.Pair<View, String>? = null
+                if(contactItem.photoURI.isEmpty()){
+                    pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
+                }else{
+                    pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
+                }
+                pairList.add(pair)
+                val options = ActivityOptions.makeSceneTransitionAnimation(this,pairList[0])
+                startActivity(intent, options.toBundle())
+            }
         }
 
     }

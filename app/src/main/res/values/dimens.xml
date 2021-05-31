@@ -51,4 +51,5 @@
     <dimen name="margin_top_dial_char">4dp</dimen>
     <dimen name="avatar_side_drawer">140dp</dimen>
     <dimen name="incomming_call_view_avatar_width">48dp</dimen>
+    <dimen name="margin_start_search_result_info">16dp</dimen>
 </resources>

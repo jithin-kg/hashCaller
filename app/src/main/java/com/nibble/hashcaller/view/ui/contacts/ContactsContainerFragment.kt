@@ -246,6 +246,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         binding.searchViewContacts.setOnClickListener(this)
         binding.imgBtnHamBergerCntct.setOnClickListener(this)
         binding.fabBtn.setOnClickListener(this)
+        binding.tvContacts.setOnClickListener(this)
 
     }
 
@@ -293,7 +294,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                 Log.d(TAG, "onClick: delete")
                 contactViewModel.delteContactsInformation()
             }
-            R.id.searchViewContacts -> {
+            R.id.tvContacts -> {
                 startSearchActivity()
             }
             R.id.imgBtnHamBergerCntct -> {

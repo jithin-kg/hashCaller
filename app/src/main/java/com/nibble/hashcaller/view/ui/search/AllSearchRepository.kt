@@ -34,12 +34,34 @@ class AllSearchRepository(
     suspend fun searchInContacts(searchTerm: String): MutableList<Contact>  = withContext(Dispatchers.IO){
         var contactsListOfSize3:MutableList<Contact> = mutableListOf()
         for (contact in listofContacts){
-            if( contact.name.toLowerCase().contains(searchTerm) ||
-                contact.phoneNumber.contains(searchTerm, true)
+
+            contact.spanStartPosNum = 0
+            contact.spanEndPosNum = 0
+            contact.spanStartPosName = 0
+            contact.spanEndPosName = 0
+            val lowercaseName = contact.name.toLowerCase()
+            var isTobeAddedToList = false
+            if( lowercaseName.contains(searchTerm, true)
+
             ){
                 if(contactsListOfSize3.size >=3){
                     break
                 }
+                isTobeAddedToList = true
+                contact.spanStartPosName = lowercaseName.indexOf(searchTerm)
+                contact.spanEndPosName = contact.spanStartPosName + searchTerm.length
+            }
+
+            if(contact.phoneNumber.contains(searchTerm, true)){
+                if(contactsListOfSize3.size >=3){
+                    break
+                }
+                isTobeAddedToList = true
+
+                contact.spanStartPosNum = contact.phoneNumber.indexOf(searchTerm)
+                contact.spanEndPosNum = contact.spanStartPosNum + searchTerm.length
+            }
+            if(isTobeAddedToList){
                 contactsListOfSize3.add(contact)
             }
         }

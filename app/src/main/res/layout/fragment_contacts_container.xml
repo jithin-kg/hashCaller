@@ -51,7 +51,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvHashCaller"
+                android:id="@+id/tvContacts"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:fontFamily="@font/roboto"
