@@ -4,7 +4,7 @@
 <!--    https://www.flaticon.com/packs/multimedia-collection?k=1622288085585-->
     <item
         android:id="@+id/bottombaritem_messages"
-        android:icon="@drawable/ic_home_4_line"
+        android:icon="@drawable/ic_message_3_line"
         android:title="Messages"
         app:showAsAction="ifRoom|withText" />
 

@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.search
 
 import android.database.Cursor
+import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.view.ui.contacts.ContactsQueryHelper
 import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 
@@ -14,7 +15,8 @@ object AllSearchInjectorUtil {
         val allSearchRepository = AllSearchRepository(smsCursor, contactsCursor,
             allCallLogsCursor,
             ContactsQueryHelper(contactsCursor),
-            SmsRepositoryHelper(smsCursor)
+            SmsRepositoryHelper(smsCursor),
+
         )
         return AllSearchViewmodelFactory(allSearchRepository)
     }

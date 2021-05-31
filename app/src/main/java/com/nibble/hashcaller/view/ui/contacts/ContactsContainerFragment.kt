@@ -29,6 +29,7 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.search.ActivitySerchContacts
@@ -68,7 +69,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private var toolbar: Toolbar? = null
     private var contactListFragment: ContactListFragment? = null
 
-    private lateinit  var contactViewModel: ContactsViewModel
+    private lateinit var contactViewModel: ContactsViewModel
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -84,14 +85,17 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         super.onCreate(savedInstanceState)
 
     }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
     }
+
     /**
      * important to prevent memory leak
      */
@@ -99,6 +103,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         super.onDestroyView()
         _binding = null
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -109,42 +114,46 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
         initListeners()
         user = FirebaseAuth.getInstance().currentUser
-        tokenHelper =  TokenHelper(user)
+        tokenHelper = TokenHelper(user)
 
-        ViewCompat.setTransitionName(binding.searchViewContacts, binding.searchViewContacts.transitionName)
+        ViewCompat.setTransitionName(
+            binding.searchViewContacts,
+            binding.searchViewContacts.transitionName
+        )
         val contextThemeWrapper: Context =
             ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
 
-        if(context?.hasReadContactsPermission() == true){
+        if (context?.hasReadContactsPermission() == true) {
             initRecyclerView()
             getData()
-        }else{
+        } else {
             hideRecyevlerView()
         }
 
-        binding.searchViewContacts.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
+        binding.searchViewContacts.onFocusChangeListener =
+            View.OnFocusChangeListener { view, hasFocus ->
 
-            if (hasFocus) {
+                if (hasFocus) {
 //                if((activity as MainActivity).searchFragment!=null)
 //                    startSearchActivity()
+                }
             }
-        }
         binding.searchViewContacts.setOnClickListener(this)
 
-    return binding.root
+        return binding.root
     }
 
 
     private fun observeUserInfo() {
         sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
+            if (it != null) {
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
 //                binding.tvCntctPermissionInfo.text = fLetter
             }
         })
     }
 
-     fun getData() {
+    fun getData() {
         showRecyclerView()
         lifecycleScope.launchWhenStarted {
             delay(2000L)
@@ -169,15 +178,19 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
 
     private fun initViewmodel() {
-        contactViewModel = ViewModelProvider(this, ContacInjectorUtil.provideContactsViewModelFactory(
-            context?.applicationContext,
-            lifecycleScope,
-            TokenHelper( FirebaseAuth.getInstance().currentUser)
-        )).get(ContactsViewModel::class.java)
-        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(
-            context?.applicationContext!!,
-            tokenHelper
-        )).get(
+        contactViewModel = ViewModelProvider(
+            this, ContacInjectorUtil.provideContactsViewModelFactory(
+                context?.applicationContext,
+                lifecycleScope,
+                TokenHelper(FirebaseAuth.getInstance().currentUser)
+            )
+        ).get(ContactsViewModel::class.java)
+        sharedUserInfoViewmodel = ViewModelProvider(
+            this, MainActivityInjectorUtil.provideUserInjectorUtil(
+                context?.applicationContext!!,
+                tokenHelper
+            )
+        ).get(
             UserInfoViewModel::class.java
         )
 
@@ -185,14 +198,21 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     private fun initRecyclerView() {
 
-       binding.rcrViewContactsList?.apply {
+        binding.rcrViewContactsList?.apply {
             layoutManager = CustomLinearLayoutManager(context)
             val topSpacingDecorator =
                 TopSpacingItemDecoration(
                     30
                 )
 //                addItemDecoration(topSpacingDecorator)
-            contactsRecyclerAdapter = ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->context.onContactItemClicked(binding, contact, activity)}
+            contactsRecyclerAdapter =
+                ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->
+                    context.onContactItemClicked(
+                        binding,
+                        contact,
+                        activity
+                    )
+                }
             adapter = contactsRecyclerAdapter
 
         }
@@ -232,34 +252,37 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     private fun observerContactList() {
         try {
-            contactViewModel.contacts?.observe(viewLifecycleOwner, Observer{contacts->
+            contactViewModel.contacts?.observe(viewLifecycleOwner, Observer { contacts ->
                 contacts.let {
 //                    this.contactsView.pgBarCntcList.visibility = View.GONE
                     contactsRecyclerAdapter?.setContactList(it)
                     contactViewModel.startWorker(context?.applicationContext)
-                    ContactGlobalHelper.size = contacts.size // setting the size in ContactsGlobalHelper
+                    ContactGlobalHelper.size =
+                        contacts.size // setting the size in ContactsGlobalHelper
                 }
             })
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Log.d(TAG, "observerContactList: exception $e")
         }
 
     }
+
     private fun startSearchActivity() {
 
         val intent = Intent(activity, ActivitySerchContacts::class.java)
         intent.putExtra("animation", "explode")
         Log.d(TAG, "startSearchActivity: $btnSampleTransition")
-        val p1 = android.util.Pair(binding.searchViewContacts as View,"editTextTransition")
+        val p1 = android.util.Pair(binding.searchViewContacts as View, "editTextTransition")
 
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity,p1 )
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity, p1)
         startActivity(intent, options.toBundle())
 
 
     }
+
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: searchview")
-        when(v?.id){
+        when (v?.id) {
             R.id.btnGivecontactPermission -> {
                 requestCntcPermissions()
                 Log.d(TAG, "onClick: request permission")
@@ -270,14 +293,14 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                 Log.d(TAG, "onClick: delete")
                 contactViewModel.delteContactsInformation()
             }
-            R.id.searchViewContacts->{
+            R.id.searchViewContacts -> {
                 startSearchActivity()
             }
-            R.id.imgBtnHamBergerCntct ->{
+            R.id.imgBtnHamBergerCntct -> {
                 (activity as MainActivity).showDrawer()
             }
 
-            else->{
+            else -> {
 
 //            if((activity as MainActivity).searchFragment!=null){
 //                startSearchActivity()
@@ -332,11 +355,15 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 //                }
             }
     }
+
     override fun onResume() {
         super.onResume()
 //        checkContactPermission()
 
     }
+    override fun onPause() {
+        super.onPause()
+        }
 
     override var isDefaultFgmnt: Boolean
         get() = isDflt

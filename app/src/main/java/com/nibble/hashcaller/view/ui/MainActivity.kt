@@ -1047,9 +1047,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        if(isDarkThemeOn){
 
             if(showMessageFragment){
-                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_fill)
+                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
             }else{
-                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
+                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
 
             }
 
@@ -1065,7 +1065,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
             }
             if(showSearchFragment){
-                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_fill)
+                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
             }else {
                 menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
             }

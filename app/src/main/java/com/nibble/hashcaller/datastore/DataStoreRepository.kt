@@ -65,6 +65,29 @@ class DataStoreRepository(private val dataStore: DataStore<Preferences>)  {
         )
         return@withContext encodeTokenString?:""
     }
+
+    suspend fun setBoolean(value: Boolean, key: String)  = withContext(Dispatchers.IO) {
+        val wrapedKey = booleanPreferencesKey(key)
+        dataStore.edit {
+            it[wrapedKey] = value
+        }
+    }
+
+    suspend fun getBoolean(key: String): Boolean = withContext(Dispatchers.IO) {
+        val wrapedKey =  booleanPreferencesKey(key)
+        val tokenFlow:Flow<Boolean> = dataStore.data.map {
+            it[wrapedKey]?:false
+        }
+        return@withContext tokenFlow.first()
+    }
+
+     fun getBooleanFlow(key: String): Flow<Boolean> {
+        val wrapedKey =  booleanPreferencesKey(key)
+        val tokenFlow:Flow<Boolean> = dataStore.data.map {
+            it[wrapedKey]?:false
+        }
+        return tokenFlow
+    }
 //    suspend fun saveToken( key:String, value:String){
 //        val wrapedKey =  stringPreferencesKey(key)
 //        context.tokeDataStore.edit {

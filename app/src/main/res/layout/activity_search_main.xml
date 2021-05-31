@@ -53,7 +53,18 @@
             <requestFocus />
         </EditText>
 
-
+        <ImageButton
+            android:id="@+id/imgBtnSearchFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_filter_3_line"
+            app:layout_constraintTop_toTopOf="@+id/searchVCallSearch"
+            app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
+            app:layout_constraintEnd_toEndOf="@+id/searchVCallSearch"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView

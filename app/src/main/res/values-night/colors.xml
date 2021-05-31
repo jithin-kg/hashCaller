@@ -23,7 +23,8 @@
     <color name="circular_color4">#EE77AA</color>
 
     <!--    <color name="colorBackgroundDark">#000000</color>-->
-    <color name="colorBackground">#111112</color>
+<!--    <color name="colorBackground">#111112</color>181a39-->
+    <color name="colorBackground">#080913</color>
     <color name="colorBackgroundAppBar">#000000</color>
 
     <color name="bottom_nav_color">#030304</color>
@@ -45,6 +46,7 @@
 
     <color name="numbersSelectorColor">#11AA4E</color>
     <color name="numbersTextColor">#1B6EAC</color>
+    <color name="color_menu">@color/colorWhite</color>
 
     <color name="textColor">#FFFFFF</color>
     <color name="bottomNavIconColor">@color/textColor</color>

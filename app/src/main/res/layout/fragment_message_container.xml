@@ -24,10 +24,9 @@
         android:id="@+id/appbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:elevation="2dp"
-        android:elevation="2dp"
+        android:elevation="4dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:background="@color/colorBackground"
+        android:background="@color/colorBackgroundAppBar"
 
         >
         <!--!! important to five elecation, elevation give shadow-->
@@ -49,8 +48,7 @@
                 android:layout_height="70dp"
                 android:layout_marginStart="0dp"
                 app:layout_scrollFlags="scroll|enterAlways"
-                android:background="@drawable/toolbar_background_round_border"
-                android:backgroundTint="@color/colorBackground">
+                >
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnAvatarMain"
