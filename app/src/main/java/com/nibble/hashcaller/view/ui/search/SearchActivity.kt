@@ -33,6 +33,7 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.search.SMSSearchAdapter
@@ -48,6 +49,9 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private lateinit  var searchViewmodel: AllSearchViewmodel
     private lateinit var editTextListener: TextChangeListener
     private lateinit var alertBuilder: AlertDialog.Builder
+    private var showSMSEnabled = false
+    private var isFoundInSMS = false
+
 
     private var queryStr = ""
     var contactsRecyclerAdapter: DialerAdapter? = null
@@ -76,31 +80,23 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
 
 
-    private fun getUserPreferences() {
 
-        dataStoreViewmodel.searchFilterLiveData.asLiveData().observe(this, Observer { isshowSMSResult ->
-          if(isshowSMSResult)  {
-              binding.recyclerViewSMS.beVisible()
-              binding.tvSMS.beVisible()
-          }else {
-              binding.recyclerViewSMS.beGone()
-            binding.tvSMS.beGone()
-
-          }
-        })
-    }
 
 
     private fun observeSMSList() {
         searchViewmodel.smsListOfLivedata.observe(this, Observer {
             this.smsAdapter?.setList(it)
-           if(it.isNotEmpty()){
+            if (showSMSEnabled && it.size > 0) {
+                isFoundInSMS = true
                 binding.recyclerViewSMS.beVisible()
                 binding.tvSMS.beVisible()
-           }else {
-                binding.recyclerViewSMS.beGone()
-               binding.tvSMS.beGone()
-           }
+                binding.tvNotInSMS.beInvisible()
+            } else {
+                isFoundInSMS = false
+                binding.recyclerViewSMS.beInvisible()
+                binding.tvSMS.beVisible()
+                binding.tvNotInSMS.beVisible()
+            }
         })
     }
 
@@ -110,11 +106,28 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
             if(it.isNotEmpty()) {
                   binding.recyclerViewContacts.beVisible()
                   binding.tvContacts.beVisible()
+                  binding.tvNotContacts.beInvisible()
             }else {
-                binding.recyclerViewContacts.beGone()
-                binding.tvContacts.beGone()
+                binding.recyclerViewContacts.beInvisible()
+                binding.tvContacts.beVisible()
+                binding.tvNotContacts.beVisible()
             }
 
+        })
+    }
+
+    private fun getUserPreferences() {
+
+        dataStoreViewmodel.searchFilterLiveData.asLiveData().observe(this, Observer { isshowSMSResult ->
+            showSMSEnabled = isshowSMSResult
+            if(isshowSMSResult && isFoundInSMS)  {
+                binding.recyclerViewSMS.beVisible()
+                binding.tvSMS.beVisible()
+            }else {
+                binding.recyclerViewSMS.beInvisible()
+                binding.tvSMS.beInvisible()
+
+            }
         })
     }
 
@@ -159,13 +172,15 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     }
 
     override fun onTextChanged(newText: String) {
-        binding.tvQueryItem.text = ""
+//        binding.tvQueryItem.text = ""
             queryStr = newText
 //            this.searchViewmodel.searc
             if(queryStr.isNotEmpty()){
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase())
+                binding.linearLayoutSearch.beVisible()
             }else {
                 searchViewmodel.emptyAllLists()
+                binding.linearLayoutSearch.beGone()
             }
     }
 

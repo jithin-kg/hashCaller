@@ -7,12 +7,15 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
+import android.view.View.ALPHA
 import android.view.View.OnLongClickListener
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.text.bold
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
@@ -266,6 +269,7 @@ class SMSSearchAdapter(private val context: Context,
         private fun getSpannedString(str: String, startPos: Int, endPos: Int): SpannableStringBuilder {
             val yellow =
                 ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary))
+            StyleSpan(R.style.TextStyle)
             val span =  SpannableStringBuilder(str)
             span.setSpan(
                 yellow,
@@ -273,6 +277,11 @@ class SMSSearchAdapter(private val context: Context,
                 endPos,
                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE
             )
+
+            span.setSpan(StyleSpan(android.graphics.Typeface.BOLD), startPos,
+                endPos,
+                Spanned.SPAN_EXCLUSIVE_INCLUSIVE )
+
             return span
         }
 

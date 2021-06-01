@@ -61,6 +61,6 @@
     <color name="search_background_color">#2D2D2D</color>
     <color name="avatar_circle_bg_color">#dddd</color>
     <color name="icon_color_drawer">#A3FFFFFF</color>
-
+    <color name="icon_filter">#dddd</color>
 
 </resources>

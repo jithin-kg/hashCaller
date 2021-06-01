@@ -47,162 +47,164 @@
 <!--            app:layout_scrollFlags="scroll|enterAlways"-->
 <!--            >-->
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/callToolbarLayoutItems"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_marginStart="0dp"
-                app:layout_scrollFlags="scroll|enterAlways"
-                >
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnHamBrgerCalls"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="4dp"
-                    android:padding="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_menu_line"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/callToolbarLayoutItems"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="0dp"
+            app:layout_scrollFlags="scroll|enterAlways">
 
-                <!--                <TextView-->
-<!--                    android:id="@+id/tvCircularAvatar"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="0dp"-->
-<!--                    android:text="H"-->
-<!--                    android:gravity="center"-->
-<!--                    android:textColor="@color/colorWhite"-->
-<!--                    app:layout_constraintTop_toTopOf="@+id/imgBtnAvatarMainCalls"-->
-<!--                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnAvatarMainCalls"-->
-<!--                    app:layout_constraintStart_toStartOf="@+id/imgBtnAvatarMainCalls"-->
-<!--                    app:layout_constraintEnd_toEndOf="@+id/imgBtnAvatarMainCalls"-->
-<!--                    />-->
-                <TextView
-                    android:id="@+id/imgVHashcaller"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:fontFamily="@font/roboto"
-                    android:gravity="center"
-                    android:text="HashCaller"
-                    android:textStyle="bold"
-                    android:textColor="@color/textColor"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMuteCaller"
-                    app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnHamBrgerCalls"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu_line"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnCallTbrMore"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:visibility="invisible"
-                    android:background="?android:selectableItemBackground"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_baseline_more_vert" />
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tvCircularAvatar"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="0dp"-->
+            <!--                    android:text="H"-->
+            <!--                    android:gravity="center"-->
+            <!--                    android:textColor="@color/colorWhite"-->
+            <!--                    app:layout_constraintTop_toTopOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    app:layout_constraintStart_toStartOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    app:layout_constraintEnd_toEndOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    />-->
+            <TextView
+                android:id="@+id/tvVHashcaller"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:gravity="start"
+                android:text="@string/hashcaller_name"
+                android:textColor="@color/textColor"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnCallTbrDelete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:visibility="invisible"
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrMore"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="?android:selectableItemBackground"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_more_vert" />
 
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_delete_blue_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrMore"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrMore" />
-                <ProgressBar
-                    android:id="@+id/pgBarDeleting"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:visibility="invisible"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_delete_blue_24"
-                    app:layout_constraintEnd_toEndOf="@+id/imgBtnCallTbrDelete"
-                    app:layout_constraintStart_toStartOf="@+id/imgBtnCallTbrDelete"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
-                    />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnCallTbrMuteCaller"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:visibility="invisible"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_baseline_notifications_off"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnCallUnMuteCaller"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:visibility="invisible"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_baseline_notifications_active_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
+                android:src="@drawable/ic_delete_blue_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrMore"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrMore" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnCallTbrBlock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_marginEnd="32dp"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_baseline_block_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrDelete"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
+            <ProgressBar
+                android:id="@+id/pgBarDeleting"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_delete_blue_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintEnd_toEndOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintStart_toStartOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
 
-                <TextView
-                    android:id="@+id/tvCallSelectedCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="selected "
-                    android:textColor="@color/textColor"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/searchViewCall"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrMuteCaller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_notifications_off"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
 
-                <EditText
-                    android:id="@+id/searchViewCall"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="24dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:backgroundTint="@color/colorBackground"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusedByDefault="false"
-                    android:iconifiedByDefault="false"
-                    android:queryBackground="@android:color/transparent"
-                    android:queryHint="Search numbers, names"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallUnMuteCaller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_notifications_active_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_block_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
+
+            <TextView
+                android:id="@+id/tvCallSelectedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="selected "
+                android:textColor="@color/textColor"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/searchViewCall"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/searchViewCall"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="24dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:backgroundTint="@color/colorBackground"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusedByDefault="false"
+                android:iconifiedByDefault="false"
+                android:queryBackground="@android:color/transparent"
+                android:queryHint="Search numbers, names"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 <!--        </androidx.appcompat.widget.Toolbar>-->
     </com.google.android.material.appbar.AppBarLayout>
 

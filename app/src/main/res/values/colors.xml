@@ -76,6 +76,7 @@
     <color name="avatar_circle_bg_color">#DD939090</color>
     <color name="icon_color_drawer">#A3000000</color>
     <color name="color_menu">#FF000000</color>
+    <color name="icon_filter">#FF000000</color>
 
 
 </resources>

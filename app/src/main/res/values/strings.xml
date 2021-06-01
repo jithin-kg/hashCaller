@@ -26,6 +26,8 @@
     <string name="hashcaller_name">HashCaller</string>
     <string name="contacts">Contacts</string>
     <string name="messages">Messages</string>
+    <string name="not_result_in_contacts">No result in contacts</string>
+    <string name="no_result_in_messages">No result in messages</string>
 
     <string-array name="custom_block_type">
         <item> Number starts with</item>

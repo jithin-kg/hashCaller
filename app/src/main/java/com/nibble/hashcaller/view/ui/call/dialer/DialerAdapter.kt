@@ -1,10 +1,12 @@
 package com.nibble.hashcaller.view.ui.call.dialer
 
 import android.content.Context
+import android.graphics.Typeface
 import android.net.Uri
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -151,7 +153,7 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
 
         private fun getSpannedString(str: String, startPos: Int, endPos: Int, context: Context): SpannableStringBuilder {
             val yellow =
-                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimaryLight))
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.colorPrimary))
             val span =  SpannableStringBuilder(str)
             if(startPos in 0 until endPos){
                 span.setSpan(
@@ -160,6 +162,10 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
                     endPos,
                     Spanned.SPAN_EXCLUSIVE_INCLUSIVE
                 )
+                span.setSpan(
+                    StyleSpan(Typeface.BOLD), startPos,
+                    endPos,
+                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE )
             }
 
             return span

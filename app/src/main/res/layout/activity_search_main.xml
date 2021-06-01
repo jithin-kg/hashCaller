@@ -66,99 +66,136 @@
             android:padding="8dp"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/tvQueryItem"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:text=""
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.048"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutSearchMain" />
-
-    <ImageView
-        android:id="@+id/imgVDividerSearchMain"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0.12"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvQueryItem" />
-
-
-    <TextView
-        android:id="@+id/tvHashCaller"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/hashcaller_name"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/imgVDividerSearchMain"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/margin_start_search_result_info"
-        />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewServerResult"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHashCaller" />
-
-    <TextView
-        android:id="@+id/tvContacts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/contacts"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerViewServerResult"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/margin_start_search_result_info"
-
-        />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewContacts"
+    <LinearLayout
+        android:id="@+id/linearLayoutSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteY="123dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/tvContacts"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearchMain"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        >
 
-    <TextView
-        android:id="@+id/tvSMS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/messages"
-        android:visibility="gone"
+<!--        <TextView-->
+<!--            android:id="@+id/tvQueryItem"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:text=""-->
+<!--            android:textSize="14sp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.048"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/layoutSearchMain" />-->
 
-        app:layout_constraintTop_toBottomOf="@+id/recyclerViewContacts"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/margin_start_search_result_info"
+        <ImageView
+            android:id="@+id/imgVDividerSearchMain"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvQueryItem" />
 
-        />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewSMS"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:layout_editor_absoluteY="123dp"
-        app:layout_constraintTop_toBottomOf="@+id/tvSMS"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        <TextView
+            android:id="@+id/tvHashCaller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/hashcaller_name"
+            app:layout_constraintTop_toBottomOf="@+id/imgVDividerSearchMain"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/margin_start_search_result_info"
+            />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewServerResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <ImageView
+            android:id="@+id/dividerSearch1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.04"
+            app:srcCompat="@drawable/horizontal_line" />
+        <TextView
+            android:id="@+id/tvContacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/contacts"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewServerResult"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/margin_start_search_result_info"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewContacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteY="123dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvContacts"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+        <TextView
+            android:id="@+id/tvNotContacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/textColor"
+            android:alpha="0.74"
+            android:text="@string/not_result_in_contacts"
+            android:layout_marginStart="@dimen/margin_start_search_result_info"
+            />
+
+        <ImageView
+            android:id="@+id/dividerSearch2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:alpha="0.04"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvNotContacts"
+            app:srcCompat="@drawable/horizontal_line" />
+        <TextView
+            android:id="@+id/tvSMS"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/messages"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewContacts"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/margin_start_search_result_info"
+
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewSMS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tvSMS"
+            />
+        <TextView
+            android:id="@+id/tvNotInSMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/textColor"
+            android:alpha="0.74"
+            android:text="@string/no_result_in_messages"
+            android:layout_marginStart="@dimen/margin_start_search_result_info"
+            />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

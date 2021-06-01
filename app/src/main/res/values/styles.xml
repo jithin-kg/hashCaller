@@ -109,6 +109,7 @@
     </style>
 
 
+
     <style name="ProgressBarTheme">
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
@@ -135,6 +136,10 @@
     </style>
 <!--Spinner-->
     <style name="SpinnerTheme" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/ic_baseline_expand_more_24</item>
+    </style>
+
+    <style name="spanStyle" >
         <item name="android:background">@drawable/ic_baseline_expand_more_24</item>
     </style>
 
