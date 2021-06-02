@@ -35,7 +35,4 @@ data class Cntct(
     val thumbnailImg:String = ""
 
 
-
-
-
 ):Serializable // it it important to extent serializable

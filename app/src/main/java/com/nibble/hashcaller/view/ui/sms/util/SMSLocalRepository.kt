@@ -38,10 +38,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
@@ -715,7 +713,7 @@ class SMSLocalRepository(
 
 
                 }while (cursor.moveToNext())
-                sms.firstName = c.name
+                sms.firstName = c.firstName
                 sms.photoURI = c.photoURI
 
             }
@@ -1002,13 +1000,13 @@ class SMSLocalRepository(
              cursor2 = context.contentResolver.query(uri, null,  null, null, null )
             if(cursor2!=null && cursor2.moveToFirst()){
 //               val  name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
-               contact = Contact( 0, "", photoThumnail = "" , phoneNumber =numFormated )
+               contact = Contact( 0, "", photoThumnailServer = "" , phoneNumber =numFormated )
             val name =
                     cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                 val photoURI =  cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
                 val times_used = cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
-                contact?.name = name
-                contact?.photoThumnail = photoURI
+                contact?.firstName = name
+                contact?.photoThumnailServer = photoURI
             }
         }catch (e:Exception){
             Log.d(TAG, "getConactInfoForNumber: exception $e")
@@ -2193,7 +2191,7 @@ class SMSLocalRepository(
     }
 
     suspend fun updateChatThreadWithContentProviderInfo(infoFromCprovider: Contact) = withContext(Dispatchers.IO) {
-        smsThreadsDAO!!.updateWithContentProviderInfo(infoFromCprovider.name, infoFromCprovider.photoURI, infoFromCprovider.phoneNumber)
+        smsThreadsDAO!!.updateWithContentProviderInfo(infoFromCprovider.firstName, infoFromCprovider.photoURI, infoFromCprovider.phoneNumber)
     }
 
     suspend fun marAsReportedByUserInCall(contactAddress: String)  = withContext(Dispatchers.IO){

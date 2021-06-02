@@ -39,7 +39,7 @@ class AllSearchRepository(
             contact.spanEndPosNum = 0
             contact.spanStartPosName = 0
             contact.spanEndPosName = 0
-            val lowercaseName = contact.name.toLowerCase()
+            val lowercaseName = contact.firstName.toLowerCase()
             var isTobeAddedToList = false
             if( lowercaseName.contains(searchTerm, true)
 
@@ -82,7 +82,7 @@ class AllSearchRepository(
             if(!formatedNum.isNullOrEmpty()){
                val contact =  mapofContacts[formatedNum]
                 if(contact !=null){
-                    sms.firstName = contact.name
+                    sms.firstName = contact.firstName
                     sms.photoURI = contact.photoURI
                 }
                 if(sms.firstName != null) {

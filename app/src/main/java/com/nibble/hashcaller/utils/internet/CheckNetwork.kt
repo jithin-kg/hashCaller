@@ -9,6 +9,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 
+/**
+ * This is the class that is used
+ */
 class CheckNetwork(private val context: Context){
     // Network Check
 

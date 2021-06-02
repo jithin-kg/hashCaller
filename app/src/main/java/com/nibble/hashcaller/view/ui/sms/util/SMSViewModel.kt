@@ -11,15 +11,12 @@ import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.spam.MarkeditemsHelper
 import com.nibble.hashcaller.view.ui.contacts.startSpamReportWorker
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
-import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
-import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -348,7 +345,7 @@ class SMSViewModel(
                     }
                 }
                 if(infoFromCprovider!=null){
-                    if(threadItem.firstName!= infoFromCprovider.name || threadItem.thumbnailFromCp != infoFromCprovider.photoThumnail){
+                    if(threadItem.firstName!= infoFromCprovider.firstName || threadItem.thumbnailFromCp != infoFromCprovider.photoThumnailServer){
                         withContext(Dispatchers.Default) {
                             repository?.updateChatThreadWithContentProviderInfo(
                                 infoFromCprovider

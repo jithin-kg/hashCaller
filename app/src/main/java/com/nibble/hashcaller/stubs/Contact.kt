@@ -5,6 +5,7 @@ import android.telephony.PhoneNumberUtils
 import android.text.SpannableStringBuilder
 import androidx.annotation.Keep
 import com.nibble.hashcaller.view.ui.call.dialer.util.normalizePhoneNumber
+import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 
 /**
  * Created by Jithin KG on 21,July,2020
@@ -12,9 +13,9 @@ import com.nibble.hashcaller.view.ui.call.dialer.util.normalizePhoneNumber
 @Keep
 data class Contact(
     val id: Long,
-    var name: String,
+    var firstName: String,
     var phoneNumber: String = "",
-    var photoThumnail: String?,
+    var photoThumnailServer: String?,
     var photoURI: String = "",
     var drawable: Int = 1,
     var nameSpann: SpannableStringBuilder? = null,
@@ -23,13 +24,15 @@ data class Contact(
     var spanStartPosName: Int = 0,
     var spanEndPosName: Int = 0,
     var spanStartPosNum: Int = 0,
-    var spanEndPosNum: Int = 0
+    var spanEndPosNum: Int = 0,
+    var country:String = "",
+    var location:String = "",
+    var carrier:String = "",
+    var spamCount:Long = 0L,
+    var isInfoFoundInServer:Int = INFO_NOT_FOUND_IN_SERVER,
+    var lastName: String = "",
 
-
-
-
-
-)  {
+    )  {
 
     fun doesContainPhoneNumber(text: String): Boolean {
         return if (text.isNotEmpty()) {

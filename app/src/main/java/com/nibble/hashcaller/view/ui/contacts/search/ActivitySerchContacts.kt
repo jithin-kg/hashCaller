@@ -102,7 +102,7 @@ class ActivitySerchContacts : AppCompatActivity(), View.OnClickListener ,
 
         val intent = Intent(this, IndividualContactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, contact.phoneNumber)
-        intent.putExtra("name", contact.name )
+        intent.putExtra("name", contact.firstName )
 //        intent.putExtra("id", contactItem.id)
         intent.putExtra("photo", contact.photoURI)
         intent.putExtra("color", contact.drawable)

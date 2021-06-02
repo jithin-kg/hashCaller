@@ -52,7 +52,7 @@ class ContactSearchRepository(private val context: Context) {
                             }
                             var contact = Contact(id, name, phoneNo, photoThumnail,
                                 photoURI, 1, firstletter =  firstLetter)
-                            setSpannableStringBuilder(contact, queryItem, contact.name,  contact.phoneNumber)
+                            setSpannableStringBuilder(contact, queryItem, contact.firstName,  contact.phoneNumber)
                             listOfContacts.add(contact)
                             lastNumber = phoneNo
                             prevName = name

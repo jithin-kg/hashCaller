@@ -42,13 +42,13 @@ class SearchContact(private val context: Context, private val scope: LifecycleCo
                         listOfContacts.add(Contact(
                             id,
                             name,
-                            photoThumnail = "photoThumnail",
+                            photoThumnailServer = "photoThumnail",
                             photoURI = "photoURI"
                         ))
                         val c = Contact(
                             id,
                             name,
-                            photoThumnail = "photoThumnail",
+                            photoThumnailServer = "photoThumnail",
                             photoURI = "photoURI"
                         )
 

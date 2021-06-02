@@ -152,6 +152,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:alpha="0.04"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textVcallerName"
             app:layout_constraintTop_toBottomOf="@+id/imgVCallType"

@@ -16,7 +16,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.constants.IntentKeys
-import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
@@ -241,12 +240,12 @@ class Window(
         var firstLetter:String?   = ""
         var photoThumbnailUri:String? = ""
 //        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
-        if(!contactInfoInCprovider.name.isNullOrEmpty()){
-            firstName = contactInfoInCprovider.name
+        if(!contactInfoInCprovider.firstName.isNullOrEmpty()){
+            firstName = contactInfoInCprovider.firstName
         }
 
-        if(!contactInfoInCprovider.photoThumnail.isNullOrEmpty()){
-            photoThumbnailUri = contactInfoInCprovider.photoThumnail
+        if(!contactInfoInCprovider.photoThumnailServer.isNullOrEmpty()){
+            photoThumbnailUri = contactInfoInCprovider.photoThumnailServer
         }
         if(!firstName.isNullOrEmpty()){
             tvName.text = firstName

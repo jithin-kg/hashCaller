@@ -3,13 +3,11 @@ package com.nibble.hashcaller.view.ui.contacts.search
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.databinding.SearchResultLayoutBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.extensions.setRandomBackgroundCircle
-import kotlinx.android.synthetic.main.search_result_layout.view.*
 
 class SearchAdapterLocal (private val context: Context, private val onContactItemClickListener: (binding:SearchResultLayoutBinding, contact:Contact)->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -53,7 +51,7 @@ class SearchAdapterLocal (private val context: Context, private val onContactIte
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(contact: Contact, context: Context, onContactItemClickListener :(binding:SearchResultLayoutBinding, contact:Contact)->Unit ) {
-            name.text = contact.name
+            name.text = contact.firstName
             binding.textViewSearchCrclr.text = contact.firstletter
             binding.textViewSearchCrclr.setRandomBackgroundCircle()
 

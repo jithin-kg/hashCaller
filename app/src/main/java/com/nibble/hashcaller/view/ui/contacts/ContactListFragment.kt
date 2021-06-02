@@ -192,7 +192,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
         Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
         val intent = Intent(context, IndividualContactViewActivity::class.java )
         intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
-        intent.putExtra("name", contactItem.name )
+        intent.putExtra("name", contactItem.firstName )
         intent.putExtra("id", contactItem.id)
         intent.putExtra("photo", contactItem.photoURI)
 

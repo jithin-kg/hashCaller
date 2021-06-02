@@ -21,7 +21,7 @@ class DialerRepository(private val context: Context, private val callLogDAO: ICa
             it.spanStartPosNum = 0
             it.spanEndPosNum = 0
             //converting name to digits, "1-800-GOOG-411" will return "1-800-4664-411"
-            val convertedName = PhoneNumberUtils.convertKeypadLettersToDigits(it.name.normalizeString())
+            val convertedName = PhoneNumberUtils.convertKeypadLettersToDigits(it.firstName.normalizeString())
             //check if converted name contains search text
             if(it.doesContainPhoneNumber(text)){
                 //phone number contains

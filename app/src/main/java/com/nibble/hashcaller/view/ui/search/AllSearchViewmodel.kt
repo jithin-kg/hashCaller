@@ -59,6 +59,7 @@ class AllSearchViewmodel(
     fun emptyAllLists() = viewModelScope.launch{
         contactsListOfLivedata.value = emptyList()
         smsListOfLivedata.value = emptyList()
+
     }
 
     companion object {

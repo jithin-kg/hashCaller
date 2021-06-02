@@ -13,10 +13,8 @@ import com.nibble.hashcaller.view.ui.IncommingCall.LocalDbSearchRepository
 
 object SearchInjectorUtil {
     fun provideUserInjectorUtil(context: Context, tokenHelper: TokenHelper?) : SearchViewModelFactory {
-        val searchNetworkRepository = SearchNetworkRepository(
-            TokenManager( DataStoreRepository(context.tokeDataStore)),
-            tokenHelper
-        )
+        val callersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
+        val searchNetworkRepository = SearchNetworkRepository(tokenHelper, callersInfoFromServerDAO)
 
         val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
@@ -24,7 +22,6 @@ object SearchInjectorUtil {
 
         val contactsListDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
         val contactLocalSyncRepository = ContactLocalSyncRepository(contactsListDAO, context)
-        val callersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
         val localDbSearchRepository = LocalDbSearchRepository(callersInfoFromServerDAO)
         return SearchViewModelFactory(searchNetworkRepository, contactLocalSyncRepository, localDbSearchRepository, blockListPatternRepository)
     }

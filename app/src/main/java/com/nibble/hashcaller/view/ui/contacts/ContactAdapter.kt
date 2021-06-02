@@ -68,16 +68,16 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             contact: Contact, context: Context,
             onContactItemClickListener: (binding: ContactListBinding, contactItem: Contact) -> Unit
         ) {
-            name.text = contact.name
+            name.text = contact.firstName
 //           if(contact.photoThumnail !=null){
 //               view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
 //           }
             //        Log.i(TAG, String.valueOf(no));
-            if(contact.photoThumnail !=null){
+            if(contact.photoThumnailServer !=null){
                 binding.textViewcontactCrclr.visibility = View.INVISIBLE
                 binding.imgViewCntct.visibility = View.VISIBLE
                 binding.contactCard.visibility = View.VISIBLE
-                loadImage(context, binding.imgViewCntct, contact.photoThumnail)
+                loadImage(context, binding.imgViewCntct, contact.photoThumnailServer)
 
 
             }else{
@@ -102,7 +102,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         }
 
          private fun setNameFirstChar(contact: Contact) {
-             val name: String = contact.name!!
+             val name: String = contact.firstName!!
              val firstLetter = name[0]
              val firstLetterString = firstLetter.toString().toUpperCase()
              circle.text = firstLetterString

@@ -19,7 +19,6 @@
         android:elevation="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -111,6 +110,19 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/margin_start_search_result_info"
             />
+
+        <TextView
+            android:id="@+id/tvNoResultshashCaller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textColor"
+            android:text="@string/no_results"
+            app:layout_constraintTop_toBottomOf="@+id/tvHashCaller"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewServerResult"

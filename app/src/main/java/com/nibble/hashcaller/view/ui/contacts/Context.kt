@@ -412,7 +412,7 @@ fun Context.generateCircleView(num:Int?=null): Drawable? {
 fun Context.onContactItemClicked(binding: ContactListBinding, contactItem: Contact,activity:Activity? ){
     val intent = Intent(this, IndividualContactViewActivity::class.java )
     intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, contactItem.phoneNumber)
-    intent.putExtra("name", contactItem.name )
+    intent.putExtra("name", contactItem.firstName )
 //        intent.putExtra("id", contactItem.id)
     intent.putExtra("photo", contactItem.photoURI)
     intent.putExtra("color", contactItem.drawable)

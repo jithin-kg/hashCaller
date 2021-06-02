@@ -81,7 +81,7 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
             contact: Contact, context: Context,
             onContactItemClickListener: (binding: ContactSearchResultItemBinding, contactItem: Contact, clickType:Int) -> Unit
         ) {
-            name.text = contact.name
+            name.text = contact.firstName
 
 //            binding.tvNumber.text = contact.phoneNumber
             setSpanForNameSearch(contact, context)
@@ -89,11 +89,11 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
 //               view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
 //           }
             //        Log.i(TAG, String.valueOf(no));
-            if(!contact.photoThumnail.isNullOrEmpty()){
+            if(!contact.photoThumnailServer.isNullOrEmpty()){
                 binding.textViewcontactCrclr.visibility = View.INVISIBLE
                 binding.imgViewCntct.visibility = View.VISIBLE
                 binding.contactCard.visibility = View.VISIBLE
-                loadImage(context, binding.imgViewCntct, contact.photoThumnail)
+                loadImage(context, binding.imgViewCntct, contact.photoThumnailServer)
 
 
             }else{
@@ -121,11 +121,11 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
 
         private fun setSpanForNameSearch(contact: Contact, context: Context) {
             var firstChar = ""
-            if(contact.spanEndPosName!=0 && contact.name!=null ){
-                binding .textVContactName.text = getSpannedString(contact.name!!, contact.spanStartPosName, contact.spanEndPosName, context)
-                firstChar = contact.name!![0].toString().toUpperCase()
+            if(contact.spanEndPosName!=0 && contact.firstName!=null ){
+                binding .textVContactName.text = getSpannedString(contact.firstName!!, contact.spanStartPosName, contact.spanEndPosName, context)
+                firstChar = contact.firstName!![0].toString().toUpperCase()
             }else{
-                binding.textVContactName.text = contact.name
+                binding.textVContactName.text = contact.firstName
             }
             if(contact.phoneNumber!=null && contact.spanEndPosNum !=0){
 
@@ -172,7 +172,7 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
         }
 
         private fun setNameFirstChar(contact: Contact) {
-            val name: String = contact.name
+            val name: String = contact.firstName
             var firstLetter = ""
                 val formatedNum = formatPhoneNumber(contact.phoneNumber)
             if(name.isNullOrEmpty() ){

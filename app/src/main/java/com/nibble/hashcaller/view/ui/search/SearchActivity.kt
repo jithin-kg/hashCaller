@@ -17,30 +17,27 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySearchMainBinding
-import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.databinding.SearchFilterAlertCheckBoxBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.internet.CheckNetwork
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
-import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
-import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.search.SMSSearchAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
-import kotlinx.android.synthetic.main.layout_blog_list_item.*
 
 
 class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler,
@@ -51,36 +48,53 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private lateinit var alertBuilder: AlertDialog.Builder
     private var showSMSEnabled = false
     private var isFoundInSMS = false
+    private lateinit var internetChecker:CheckNetwork
 
 
     private var queryStr = ""
     var contactsRecyclerAdapter: DialerAdapter? = null
+    var serverSearchResultAdapter: DialerAdapter? = null
     private  var smsAdapter: SMSSearchAdapter? = null
-    private lateinit var searchFilterView:SearchFilterAlertCheckBoxBinding
+    private lateinit var searchFilterViewBinding:SearchFilterAlertCheckBoxBinding
     private lateinit var checkBoxIncludeSMS:CheckBox
     private lateinit var dataStoreViewmodel: DataStoreViewmodel
+    private lateinit var serverSearchViewmodel: ServerSearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initViews()
+        internetChecker = CheckNetwork(this)
+        internetChecker.registerNetworkCallback()
         initAlertView()
         initListeners()
         initContactsRecyclerView()
+        initServerResultAdapter()
         initSMSRecyclerView()
         initViewmodel()
         getUserPreferences()
         initAllLists()
         observeContactsList()
         observeSMSList()
+        observeSererSearchResult()
 
 
     }
 
-
-
-
+    private fun observeSererSearchResult() {
+        serverSearchViewmodel.serverSearchResultLiveData.observe(this, Observer {
+            if(it!=null){
+                serverSearchResultAdapter?.setList(it)
+                if(it.isNotEmpty()){
+                    binding.tvNoResultshashCaller.beGone()
+                }else {
+                    binding.tvNoResultshashCaller.beVisible()
+                    binding.tvNoResultshashCaller.text = getString(R.string.no_results)
+                }
+            }
+        })
+    }
 
 
     private fun observeSMSList() {
@@ -116,10 +130,12 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         })
     }
 
+
     private fun getUserPreferences() {
 
         dataStoreViewmodel.searchFilterLiveData.asLiveData().observe(this, Observer { isshowSMSResult ->
             showSMSEnabled = isshowSMSResult
+            searchFilterViewBinding.checkboxIncludeSMS.isChecked = isshowSMSResult
             if(isshowSMSResult && isFoundInSMS)  {
                 binding.recyclerViewSMS.beVisible()
                 binding.tvSMS.beVisible()
@@ -140,13 +156,14 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         editTextListener = TextChangeListener(this)
         editTextListener.addListener(binding.searchVCallSearch)
         binding.imgBtnSearchFilter.setOnClickListener(this)
-        searchFilterView.checkboxIncludeSMS.setOnCheckedChangeListener(this)
+        searchFilterViewBinding.checkboxIncludeSMS.setOnCheckedChangeListener(this)
+
 
     }
     private fun initViews() {
 
 //        searchFilterView = View.inflate(this, R.layout.search_filter_alert_check_box, null)
-        searchFilterView =SearchFilterAlertCheckBoxBinding.inflate(layoutInflater, null, false)
+        searchFilterViewBinding =SearchFilterAlertCheckBoxBinding.inflate(layoutInflater, null, false)
 //        checkBoxIncludeSMS = searchFilterView.findViewById(R.id.checkboxIncludeSMS)
     }
     private fun initViewmodel() {
@@ -161,6 +178,10 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(this))
             .get(DataStoreViewmodel::class.java)
 
+        serverSearchViewmodel = ViewModelProvider(this, ServerSearchInjectorUtil.provideViewModelFactory(
+            FirebaseAuth.getInstance().currentUser, this))
+            .get(ServerSearchViewModel::class.java)
+
     }
 
 
@@ -173,13 +194,21 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
     override fun onTextChanged(newText: String) {
 //        binding.tvQueryItem.text = ""
+        if(!CheckNetwork.isetworkConnected()){
+            toast("No internet")
+        }else {
+            binding.tvNoResultshashCaller.text = "Searching..."
+        }
             queryStr = newText
 //            this.searchViewmodel.searc
             if(queryStr.isNotEmpty()){
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase())
                 binding.linearLayoutSearch.beVisible()
+
+                serverSearchViewmodel.searchInServer(newText,packageName)
             }else {
                 searchViewmodel.emptyAllLists()
+                serverSearchViewmodel.clearResult()
                 binding.linearLayoutSearch.beGone()
             }
     }
@@ -201,6 +230,23 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
             itemAnimator = null
         }
 
+
+    }
+    private fun initServerResultAdapter() {
+
+        binding.recyclerViewServerResult?.apply {
+            layoutManager = CustomLinearLayoutManager(context)
+            val topSpacingDecorator =
+                TopSpacingItemDecoration(
+                    30
+                )
+            addItemDecoration(topSpacingDecorator)
+            serverSearchResultAdapter = DialerAdapter(context) { binding: ContactSearchResultItemBinding, contact: Contact, clickType:Int ->onContactItemClicked(binding, contact, clickType)}
+            adapter = serverSearchResultAdapter
+            itemAnimator = null
+        }
+
+
     }
 
     private fun onContactItemClicked(
@@ -216,7 +262,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
                 Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
                 val intent = Intent(this, IndividualContactViewActivity::class.java )
                 intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
-                intent.putExtra("name", contactItem.name )
+                intent.putExtra("name", contactItem.firstName )
 //        intent.putExtra("id", contactItem.id)
                 intent.putExtra("photo", contactItem.photoURI)
                 intent.putExtra("color", contactItem.drawable)
@@ -272,7 +318,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
          alertBuilder = AlertDialog.Builder(this)
          alertBuilder.setTitle("Search filter")
               //        builder.setMessage(" MY_TEXT ")
-                     .setView(searchFilterView.root)
+                     .setView(searchFilterViewBinding.root)
                     .setCancelable(true)
 //                    .setPositiveButton("", DialogInterface.OnClickListener { dialog, id ->
 //                         Log.d(TAG, "showSearchFilterAlert: onyes clicked")
@@ -282,11 +328,12 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
              DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
     }
     private fun showSearchFilterAlert() {
-        if(searchFilterView.root.parent!=null) {
-               (searchFilterView.root.parent as ViewGroup).removeView(searchFilterView.root)
+        if(searchFilterViewBinding.root.parent!=null) {
+               (searchFilterViewBinding.root.parent as ViewGroup).removeView(searchFilterViewBinding.root)
         }
-        alertBuilder.setView(searchFilterView.root)
+        alertBuilder.setView(searchFilterViewBinding.root)
         alertBuilder.show()
+
     }
 
 

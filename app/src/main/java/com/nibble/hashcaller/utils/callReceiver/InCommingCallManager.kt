@@ -195,7 +195,7 @@ class InCommingCallManager(
                     val id = cursor.getStringValue(ContactsContract.PhoneLookup.CONTACT_ID)
                     name=  cursor.getStringValue(ContactsContract.PhoneLookup.DISPLAY_NAME)
                     val thumbnail = cursor.getStringValue(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI)
-                   contact =  Contact(id.toLong(), name = name, photoThumnail =thumbnail)
+                   contact =  Contact(id.toLong(), firstName = name, photoThumnailServer =thumbnail)
                 }
             }
         } catch (e: Exception) {
