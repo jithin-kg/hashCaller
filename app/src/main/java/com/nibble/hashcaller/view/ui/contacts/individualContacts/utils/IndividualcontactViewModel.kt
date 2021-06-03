@@ -6,24 +6,19 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
-import com.nibble.hashcaller.network.spam.ReportedUserDTo
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
-import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_BLOCKED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_UNBLOCKED
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.util.*
 
 /**
  * Created by Jithin KG on 23,July,2020

@@ -20,12 +20,10 @@ import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Com
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository.Companion.markedIds
 import com.nibble.hashcaller.view.ui.call.spam.MarkeditemsHelper
 import com.nibble.hashcaller.view.ui.contacts.startSpamReportWorker
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

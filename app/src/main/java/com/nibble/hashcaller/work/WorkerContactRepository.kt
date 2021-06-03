@@ -1,22 +1,12 @@
 package com.nibble.hashcaller.work
 
 import android.database.Cursor
-import android.provider.CallLog
 import android.provider.ContactsContract
-import android.util.Log
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
-import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
-import com.nibble.hashcaller.view.ui.contacts.getAvailableSIMCardLabels
-import com.nibble.hashcaller.view.ui.contacts.getRandomColor
-import com.nibble.hashcaller.view.ui.contacts.getSimIndexForSubscriptionId
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.view.utils.ContactGlobal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.HashMap
 import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
 

@@ -3,10 +3,7 @@ package com.nibble.hashcaller.view.ui.contacts
 import android.database.Cursor
 import android.util.Log
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class ContactsQueryHelper(private val cursor: Cursor?) {
 

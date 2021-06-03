@@ -10,13 +10,10 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.RetrofitClient
 import com.nibble.hashcaller.network.spam.ISpamService
 import com.nibble.hashcaller.network.spam.ReportedUserDTo
-import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE
 import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE_SCAM
 import com.nibble.hashcaller.view.utils.CountrycodeHelper

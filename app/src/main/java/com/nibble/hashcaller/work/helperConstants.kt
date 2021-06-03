@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.work
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.isNumericOnlyString
 
 fun removeAllNonNumbericChars(str:String): String {
@@ -12,6 +13,7 @@ fun removeAllNonNumbericChars(str:String): String {
  * @return formatted number without special symbols
  */
 fun formatPhoneNumber(number:String): String {
+
     var numberCopy:String = ""
     numberCopy = number
     var fNum = ""

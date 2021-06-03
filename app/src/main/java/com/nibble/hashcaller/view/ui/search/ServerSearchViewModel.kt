@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.search
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.network.StatusCodes.Companion.NO_CONTENT
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
@@ -13,6 +14,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -28,15 +30,20 @@ class ServerSearchViewModel(private val searchNetworkRepository: SearchNetworkRe
     private var defServerSearch: Deferred<Response<SerachRes>?>? = null
     private var defServerinfoAvialableInDb: Deferred<CallersInfoFromServer?>? = null
 
-    fun searchInServer(phoneNumber:String, packageName:String) =  viewModelScope.launch {
-        val formatedNum = formatPhoneNumber(phoneNumber)
+    fun searchInServer(
+        phoneNumber: String,
+        packageName: String,
+        countryCode: String,
+        countryIso: String
+    ) =  viewModelScope.launch {
+        var formatedNum = formatPhoneNumber(phoneNumber)
         defServerSearch?.cancel()
         defServerinfoAvialableInDb?.cancel()
         defServerSearch = null
         defServerinfoAvialableInDb = null
         defServerinfoAvialableInDb = async { getServerinfoAvailableInDb(formatedNum) }
-        
-
+        val countryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+        formatedNum =  countryCodeHelper.getES164Formatednumber(formatedNum, countryIso)
        val hashed =  Secrets().managecipher(packageName,formatedNum)
        var infoAvialbleInDb:CallersInfoFromServer? = null
        try {
@@ -46,7 +53,7 @@ class ServerSearchViewModel(private val searchNetworkRepository: SearchNetworkRe
        }
         var isPerformServerSearchInServer = shouldPerformServerSearch(infoAvialbleInDb)
        if(isPerformServerSearchInServer){
-           defServerSearch = async { searchNetworkRepository.search(hashed) }
+           defServerSearch = async { searchNetworkRepository.manualSearch(hashed, countryCode, countryIso) }
        }else {
            val searchResult = Contact(-1,
                firstName = infoAvialbleInDb?.firstName?:"",

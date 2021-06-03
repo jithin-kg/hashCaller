@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
-import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers

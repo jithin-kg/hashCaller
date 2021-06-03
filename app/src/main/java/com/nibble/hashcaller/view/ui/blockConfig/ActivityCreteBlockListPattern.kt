@@ -1,26 +1,17 @@
 package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.ThemeUtils
 import androidx.lifecycle.*
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityCreteBlockListPatternBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
@@ -28,9 +19,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.android.synthetic.main.activity_add_new_pattern.*
-import kotlinx.android.synthetic.main.activity_add_new_pattern.editTextNewPattern
-import kotlinx.android.synthetic.main.activity_crete_block_list_pattern.*
 
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,LifecycleObserver,

@@ -7,7 +7,7 @@ import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.view.ui.IncommingCall.LocalDbSearchRepository
-import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 
 class SearchViewModelFactory(
     private val searchNetworkRepository: SearchNetworkRepository,
@@ -21,7 +21,7 @@ class SearchViewModelFactory(
         return SearchViewModel(searchNetworkRepository,
             contactLocalSyncRepository,
             localDbSearchRepository,
-            LibCoutryCodeHelper(PhoneNumberUtil.getInstance()),
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
             blockListPatternRepository
                      ) as T
     }

@@ -8,6 +8,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -21,8 +22,8 @@ import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.util.*
@@ -42,6 +43,7 @@ val countryCodeHelper = CountrycodeHelper(context)
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
     private var contactRepository:WorkerContactRepository? = null
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -62,9 +64,12 @@ val countryCodeHelper = CountrycodeHelper(context)
                 for (contactSublist in contactsListOf12){
                     Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
 //                    val countryCode =   "91" //for emulator country code should be 91
-                    val countryISO = countryCodeHelper.getCountryISO()
+                    var countryISO = countryCodeHelper.getCountryISO()
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
-                    val countryCode = countryCodeHelper.getCountrycode()
+                    var countryCode = countryCodeHelper.getCountrycode()
+
+
+
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                     val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
 
@@ -113,11 +118,13 @@ val countryCodeHelper = CountrycodeHelper(context)
             for(contact in allcontactsInContentProvider){
 
                 if(!contact.phoneNumber.isNullOrEmpty()){
-                    val formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
-
+                    var formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
+//                    formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
                     val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
                     if(res==null){
                         Log.d(TAG , "not in db: $formattedPhoneNum")
+                        formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
+
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
 //                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
                         Log.d("__hashedInContactUploadWorker", "setNewlySavedContactsList: hashed num is ${hashedPhoneNum}")

@@ -17,9 +17,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.getStringValue
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**

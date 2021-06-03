@@ -1,18 +1,12 @@
 package com.nibble.hashcaller.view.ui.sms.spam
 
 import android.content.Context
-import android.provider.CallLog
 import android.provider.Telephony
 import android.util.Log
 import androidx.lifecycle.LiveData
-import com.nibble.hashcaller.view.ui.call.db.CallLogTable
-import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
-import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
-import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class SpamSMSRepository(private val threadsDAO: ISMSThreadsDAO, private val context: Context) {

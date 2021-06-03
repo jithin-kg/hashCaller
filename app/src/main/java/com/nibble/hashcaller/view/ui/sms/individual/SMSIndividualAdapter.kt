@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.sms_indiivdual_date.view.*
 import kotlinx.android.synthetic.main.sms_individual_outbox_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_recived_item.view.*
 import kotlinx.android.synthetic.main.sms_individual_sent_item.view.*
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime

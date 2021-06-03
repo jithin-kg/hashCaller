@@ -1,9 +1,7 @@
 package com.nibble.hashcaller.view.ui.contacts.search.utils
 
-import android.os.Build
 import android.util.Base64
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
@@ -14,12 +12,10 @@ import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.IncommingCall.LocalDbSearchRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
-import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.view.utils.hashPhoneNum
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Deferred
@@ -41,7 +37,7 @@ class SearchViewModel(
     private val searchNetworkRepository: SearchNetworkRepository,
     private val contactLocalSyncRepository: ContactLocalSyncRepository,
     private val localDbSearchRepository: LocalDbSearchRepository,
-    private val libCoutryCodeHelper: LibCoutryCodeHelper,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
     private val blockListPatternRepository: BlockListPatternRepository
 
 ): ViewModel() {
@@ -88,7 +84,7 @@ class SearchViewModel(
 //                 hash = hashUsingArgon(hash)
                  hash?.let{
                      hashedPhoneNum.value =it
-                     res = searchNetworkRepository.search(hashedPhoneNum.value!!)
+//                     res = searchNetworkRepository.manualSearch(hashedPhoneNum.value!!)
                      var result = res?.body()?.cntcts
                  }
 
@@ -139,7 +135,7 @@ class SearchViewModel(
     }
 
     fun getCountryForNumber(phoneNumber: String) :LiveData<String> = liveData {
-       emit( libCoutryCodeHelper.getCountryCode(phoneNumber))
+       emit( libPhoneCodeHelper.getCountryCode(phoneNumber))
     }
 
     fun getCallerInfo(phoneNumber: String): LiveData<CntctitemForView> = liveData {
@@ -173,7 +169,7 @@ class SearchViewModel(
             Log.d(TAG, "getCallerInfo: $e")
         }
         try {
-           country =  libCoutryCodeHelper.getCountryCode(phoneNumber)
+           country =  libPhoneCodeHelper.getCountryCode(phoneNumber)
         }catch (e:java.lang.Exception){
             Log.d(TAG, "getCallerInfo: $e")
         }

@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.sms
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.provider.Telephony
 import android.util.Log
 import com.nibble.hashcaller.datastore.DataStoreRepository
 
@@ -19,9 +18,6 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.markingStarted
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
 import com.nibble.hashcaller.view.ui.sms.work.UnknownSMSsendersInfoResponse
 import com.nibble.hashcaller.work.formatPhoneNumber
 import retrofit2.Response

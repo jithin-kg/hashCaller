@@ -20,7 +20,7 @@ import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
-import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.formatPhoneNumber
 import de.hdodenhof.circleimageview.CircleImageView
@@ -28,7 +28,7 @@ import kotlinx.coroutines.*
 
 class Window(
     private val context: Context,
-    private val countryCodeHelper: LibCoutryCodeHelper?
+    private val countryCodeHelper: LibPhoneCodeHelper?
 ) {
     private var phoneNumber:String = ""
     private var callerInfoFoundFrom = INFO_SEARCHING

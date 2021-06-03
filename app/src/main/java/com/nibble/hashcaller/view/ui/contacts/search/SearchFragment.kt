@@ -209,7 +209,10 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
         tvSearchIndicator.text = ""
         if(!newText.isNullOrEmpty()){
 //            layoutSearchResult.visibility = View.GONE
-            this.searchViewmodel.search(newText!!, key, requireActivity().packageName)
+//            this.searchViewmodel.search(newText!!,
+//                key,
+//                requireActivity().packageName,
+//                )
         }else{
             edtTextPhoneSearch.setText("")
             tvSearchIndicator.text = ""

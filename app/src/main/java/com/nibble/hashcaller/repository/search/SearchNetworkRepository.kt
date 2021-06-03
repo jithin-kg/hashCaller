@@ -9,6 +9,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.search.ManualSearchDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,6 +37,27 @@ class SearchNetworkRepository(
                     result =  retrofitService?.search(SearchDTO(phoneNum), token)
                     Log.d(TAG, "search: $result")
                 }
+
+
+        }catch (e:Exception){
+            Log.d(TAG, "search:exception $e")
+        }
+
+        return@withContext result
+    }
+
+    /**
+     * function to call when user perform searching from view
+     */
+    suspend fun manualSearch(phoneNum: String, countryCode: String, countryIso: String): Response<SerachRes>?  = withContext(Dispatchers.IO){
+        var result : Response<SerachRes>? = null
+        try {
+//            val token = tokenManager.getDecryptedToken()
+            val token =  tokenHelper?.getToken()
+            if(!token.isNullOrEmpty()){
+                result =  retrofitService?.searchManual(ManualSearchDTO(phoneNum,countryCode= countryCode,countryIso= countryIso), token)
+                Log.d(TAG, "search: $result")
+            }
 
 
         }catch (e:Exception){

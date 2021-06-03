@@ -5,6 +5,7 @@ import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.IuserService
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.search.SearchDTO
+import com.nibble.hashcaller.view.ui.search.ManualSearchDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -25,6 +26,12 @@ suspend fun search(
     @Body phoneNumber:SearchDTO,
     @Header("Authorization") token:String
 ):Response<SerachRes>
+
+    @POST("find/manualSearch")
+    suspend fun searchManual(
+        @Body searchBody:ManualSearchDTO,
+        @Header("Authorization") token:String
+    ):Response<SerachRes>
 
     @POST("spam/incrementTotalSpamCount")
     suspend fun incrementTotalSpamCount( @Header("Authorization")token: String)

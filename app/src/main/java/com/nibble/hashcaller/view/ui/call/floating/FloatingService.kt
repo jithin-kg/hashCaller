@@ -19,7 +19,6 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callscreening.WindowObj
 import com.nibble.hashcaller.utils.constants.IntentKeys
@@ -28,11 +27,9 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
-import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
-import com.nibble.hashcaller.view.utils.LibCoutryCodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +52,7 @@ class FloatingService: Service() {
 
     private var onStartCalled = false
     private var mphoneNumberStr = ""
-    private var countryCodeHelper: LibCoutryCodeHelper? = null
+    private var countryCodeHelper: LibPhoneCodeHelper? = null
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
@@ -81,7 +78,7 @@ class FloatingService: Service() {
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)
 
-        countryCodeHelper = LibCoutryCodeHelper(PhoneNumberUtil.getInstance())
+        countryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
 
         if(window == null){
             window = Window(this, countryCodeHelper)

@@ -3,32 +3,18 @@ package com.nibble.hashcaller.view.ui.sms.individual.util
 import android.Manifest
 import android.app.Activity
 import android.app.SearchManager
-import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.datastore.dataStore
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import com.nibble.hashcaller.R
 
-import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import java.util.*
 
 val Context.config: Config get() = Config.newInstance(applicationContext)
 

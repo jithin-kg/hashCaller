@@ -37,6 +37,7 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.search.SMSSearchAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 
 
@@ -49,6 +50,8 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private var showSMSEnabled = false
     private var isFoundInSMS = false
     private lateinit var internetChecker:CheckNetwork
+    private lateinit var countryCodeHelper: CountrycodeHelper
+    private var countryCodeIso:String = ""
 
 
     private var queryStr = ""
@@ -65,8 +68,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         binding = ActivitySearchMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initViews()
-        internetChecker = CheckNetwork(this)
-        internetChecker.registerNetworkCallback()
+        initMembers()
         initAlertView()
         initListeners()
         initContactsRecyclerView()
@@ -80,6 +82,19 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         observeSererSearchResult()
 
 
+    }
+
+    private fun initMembers() {
+        internetChecker = CheckNetwork(this)
+        internetChecker.registerNetworkCallback()
+        countryCodeHelper = CountrycodeHelper(this)
+
+        countryCodeIso = countryCodeHelper.getCountryISO()
+        if(countryCodeIso.isNullOrEmpty()) {
+            countryCodeIso = "IN"
+        }
+
+        binding.coutryCodePicker.setDefaultCountryUsingNameCode(countryCodeIso)
     }
 
     private fun observeSererSearchResult() {
@@ -204,8 +219,16 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
             if(queryStr.isNotEmpty()){
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase())
                 binding.linearLayoutSearch.beVisible()
+                Log.d(TAG, "onTextChanged: ${binding.coutryCodePicker.selectedCountryCode}")
+                Log.d(TAG, "onTextChanged: ${binding.coutryCodePicker.selectedCountryNameCode}")
 
-                serverSearchViewmodel.searchInServer(newText,packageName)
+                serverSearchViewmodel.searchInServer(
+                    newText,
+                    packageName,
+                    binding.coutryCodePicker.selectedCountryCode,
+                    binding.coutryCodePicker.selectedCountryNameCode
+
+                    )
             }else {
                 searchViewmodel.emptyAllLists()
                 serverSearchViewmodel.clearResult()

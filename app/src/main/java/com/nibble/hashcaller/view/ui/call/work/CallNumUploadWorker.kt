@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -20,7 +21,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallLocalRepository
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +49,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
     val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    val countryCodeHelper = CountrycodeHelper(context)
+
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -93,9 +98,10 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
                    if(result!=null){
                        for(cntct in result?.body()?.contacts!!){
-
+                           var formated = formatPhoneNumber(cntct.phoneNumber)
+                           formated = libCountryHelper.getES164Formatednumber(formated,countryCodeHelper.getCountryISO() )
                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                               contactAddress = formatPhoneNumber(cntct.phoneNumber),
+                               contactAddress = formated,
                                spammerType = 0,
                                firstName = cntct.firstName?:"",
                                informationReceivedDate =Date(),

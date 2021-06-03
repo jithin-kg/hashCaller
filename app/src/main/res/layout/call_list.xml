@@ -8,6 +8,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
+    android:paddingTop="8dp"
     android:clickable="true"
     android:background="@color/colorBackground"
     android:foreground="?android:attr/selectableItemBackground"
@@ -128,21 +129,33 @@
             android:id="@+id/imgVCallType"
             android:layout_width="18dp"
             android:layout_height="18dp"
+            android:alpha=".74"
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/textViewTime"
             app:layout_constraintStart_toEndOf="@+id/textViewCrclr"
             app:layout_constraintTop_toTopOf="@+id/textViewTime"
             app:srcCompat="@drawable/ic_baseline_call_received_24" />
-
+        <ImageView
+            android:id="@+id/imgVSimIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="4dp"
+            android:alpha=".60"
+            android:src="@drawable/ic_sim_1_line"
+            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
+            app:layout_constraintTop_toTopOf="@+id/imgVCallType"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVCallType"
+            />
         <TextView
             android:id="@+id/textViewTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
-            android:alpha=".60"
+            android:alpha=".70"
+            android:textColor="@color/textColor"
             android:text="TextView"
-            app:layout_constraintStart_toEndOf="@+id/imgVCallType"
+            app:layout_constraintStart_toEndOf="@+id/imgVSimIcon"
             app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
 
         <ImageView
@@ -179,18 +192,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textVcallerName"
             app:srcCompat="@drawable/ic_baseline_call_white" />
-
-        <TextView
-            android:id="@+id/tvSim"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            app:layout_constraintBottom_toBottomOf="@+id/textVcallerName"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
-            app:layout_constraintHorizontal_bias="0.886"
-            app:layout_constraintStart_toEndOf="@+id/textVcallerName"
-            app:layout_constraintTop_toTopOf="@+id/textVcallerName"
-            app:layout_constraintVertical_bias="0.666" />
 
         <!--        <TextView-->
         <!--            android:id="@+id/textVCallDirection"-->

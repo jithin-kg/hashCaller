@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
@@ -147,7 +148,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
-            logBinding.tvSim.text = (sim + 1).toString()
+            if(sim == 0){
+                logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_1_line)
+            }else if(sim == 1) {
+                logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_2_line)
+            }
 
 
 //            if (prevTime != null)
@@ -349,7 +354,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             logBinding.imgVThumbnail.setOnClickListener{
 
                 val visibility =  logBinding.layoutExpandableCall.visibility
-
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,

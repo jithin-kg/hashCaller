@@ -5,29 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.nibble.hashcaller.R
-import com.nibble.hashcaller.Secrets
-import com.nibble.hashcaller.datastore.DataStoreRepository
-import com.nibble.hashcaller.local.db.HashCallerDatabase
-import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
-import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
-import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
-import com.nibble.hashcaller.utils.internet.InternetChecker
-import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.floating.Window
-import com.nibble.hashcaller.view.ui.contacts.*
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
-import com.nibble.hashcaller.view.ui.sms.individual.util.call
-import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.*
 
 //const val INTENT_COMMAND = "com.localazy.quicknote.COMMAND"
 const val INTENT_COMMAND_EXIT = "EXIT"
