@@ -1,12 +1,11 @@
 package com.nibble.hashcaller.view.ui.search
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.sms.util.SMS
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -60,6 +59,10 @@ class AllSearchViewmodel(
         contactsListOfLivedata.value = emptyList()
         smsListOfLivedata.value = emptyList()
 
+    }
+
+    fun getDefaultCountry(countryCodeHelper: CountrycodeHelper):LiveData<String> = liveData {
+        emit(countryCodeHelper.getCountryISO())
     }
 
     companion object {

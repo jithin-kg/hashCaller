@@ -44,6 +44,7 @@
             app:ccp_showArrow="false"
             app:ccp_showFlag="false"
             app:ccp_showPhoneCode="false"
+            app:ccp_autoDetectCountry="true"
             />
         <EditText
             android:id="@+id/searchVCallSearch"

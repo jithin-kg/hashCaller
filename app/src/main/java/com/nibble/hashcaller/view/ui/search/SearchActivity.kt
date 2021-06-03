@@ -39,6 +39,7 @@ import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import kotlinx.coroutines.Job
 
 
 class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler,
@@ -62,6 +63,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
     private lateinit var checkBoxIncludeSMS:CheckBox
     private lateinit var dataStoreViewmodel: DataStoreViewmodel
     private lateinit var serverSearchViewmodel: ServerSearchViewModel
+    private var searchJob:Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +82,23 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         observeContactsList()
         observeSMSList()
         observeSererSearchResult()
+        getDefaultContry()
 
 
+
+    }
+
+    private fun getDefaultContry() {
+        searchViewmodel.getDefaultCountry(countryCodeHelper).observe(this, Observer {
+            countryCodeIso = it
+//            if(countryCodeIso.isNullOrEmpty()) {
+//                countryCodeIso = "IN"
+//            }
+            runOnUiThread {
+                binding.coutryCodePicker.setDefaultCountryUsingNameCode(countryCodeIso)
+            }
+
+        })
     }
 
     private fun initMembers() {
@@ -89,12 +106,8 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
         internetChecker.registerNetworkCallback()
         countryCodeHelper = CountrycodeHelper(this)
 
-        countryCodeIso = countryCodeHelper.getCountryISO()
-        if(countryCodeIso.isNullOrEmpty()) {
-            countryCodeIso = "IN"
-        }
 
-        binding.coutryCodePicker.setDefaultCountryUsingNameCode(countryCodeIso)
+
     }
 
     private fun observeSererSearchResult() {
@@ -219,10 +232,12 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
             if(queryStr.isNotEmpty()){
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase())
                 binding.linearLayoutSearch.beVisible()
-                Log.d(TAG, "onTextChanged: ${binding.coutryCodePicker.selectedCountryCode}")
-                Log.d(TAG, "onTextChanged: ${binding.coutryCodePicker.selectedCountryNameCode}")
+                //this is important to cancel job, or request will be made frequently
+                try {
+                    searchJob?.cancel()
+                }catch (e:Exception){}
 
-                serverSearchViewmodel.searchInServer(
+                searchJob = serverSearchViewmodel.searchInServer(
                     newText,
                     packageName,
                     binding.coutryCodePicker.selectedCountryCode,

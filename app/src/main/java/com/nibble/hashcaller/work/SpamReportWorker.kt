@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.RetrofitClient
@@ -17,6 +18,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
 import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE
 import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE_SCAM
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.nibble.hashcaller.utils.SpamNetworkRepository as SpamNetworkRepository1
@@ -29,10 +31,12 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
         context.getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
     private val  dataStoreRepostory = DataStoreRepository(context.tokeDataStore)
     private val repository: SpamNetworkRepository1 = SpamNetworkRepository1(context, dataStoreRepostory)
-
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private val countryCodeHelper = CountrycodeHelper(context)
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val num = inputData.getString(CONTACT_ADDRES)
-        var hasehdNum:String? = num?.let { formatPhoneNumber(it) }?.let { Secrets().managecipher(context.packageName, it) }
+        val countryIso = countryCodeHelper.getCountryISO()
+        var hasehdNum:String? = num?.let { libCountryHelper.getES164Formatednumber(formatPhoneNumber(it), countryIso) }?.let { Secrets().managecipher(context.packageName, it) }
 //        hasehdNum = hashUsingArgon(hasehdNum)
         val spammerType = inputData.getInt(SPAMMER_TYPE, SPAMMER_TYPE_SCAM)
         val report = hasehdNum?.let { ReportedUserDTo(it, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),) }

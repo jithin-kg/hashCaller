@@ -58,8 +58,6 @@ class SearchNetworkRepository(
                 result =  retrofitService?.search(SearchDTO(phoneNum), token)
                 Log.d(TAG, "search: $result")
             }
-
-
         }catch (e:Exception){
             Log.d(TAG, "search:exception $e")
         }
