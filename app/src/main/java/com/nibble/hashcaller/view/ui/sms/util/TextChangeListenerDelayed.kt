@@ -3,12 +3,13 @@ package com.nibble.hashcaller.view.ui.sms.util
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-/**
- * Class to handle editText text change events
- */
-class TextChangeListener (private val iListener:ITextChangeListener) {
-    fun addListener(view:EditText){
+class TextChangeListenerDelayed(private val iListener:ITextChangeListenerDelayed) {
+    fun addListener(view: EditText){
         view.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence,
@@ -25,7 +26,11 @@ class TextChangeListener (private val iListener:ITextChangeListener) {
                 before: Int,
                 count: Int
             ) {
-                   iListener.onTextChanged(view.text.toString())
+                GlobalScope.launch {
+                    delay(300L)
+                    iListener.onTextChanged(view.text.toString())
+                }
+
             }
 
             override fun afterTextChanged(s: Editable) {
@@ -35,8 +40,8 @@ class TextChangeListener (private val iListener:ITextChangeListener) {
     }
 }
 
-interface ITextChangeListener {
+interface ITextChangeListenerDelayed {
 
     fun onTextChanged(text:String)
-    fun afterTextChanged(s:Editable)
+    fun afterTextChanged(s: Editable)
 }

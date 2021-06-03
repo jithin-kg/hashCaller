@@ -37,17 +37,19 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.search.SMSSearchAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
+import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListenerDelayed
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
+import com.nibble.hashcaller.view.ui.sms.util.TextChangeListenerDelayed
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import kotlinx.coroutines.Job
 
 
-class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapter.LongPressHandler,
+class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearchAdapter.LongPressHandler,
     SMSListAdapter.NetworkHandler, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private lateinit var binding:ActivitySearchMainBinding
     private lateinit  var searchViewmodel: AllSearchViewmodel
-    private lateinit var editTextListener: TextChangeListener
+    private lateinit var editTextListener: TextChangeListenerDelayed
     private lateinit var alertBuilder: AlertDialog.Builder
     private var showSMSEnabled = false
     private var isFoundInSMS = false
@@ -182,7 +184,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
     private fun initListeners() {
 
-        editTextListener = TextChangeListener(this)
+        editTextListener = TextChangeListenerDelayed(this)
         editTextListener.addListener(binding.searchVCallSearch)
         binding.imgBtnSearchFilter.setOnClickListener(this)
         searchFilterViewBinding.checkboxIncludeSMS.setOnCheckedChangeListener(this)
@@ -223,34 +225,34 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
 
     override fun onTextChanged(newText: String) {
 //        binding.tvQueryItem.text = ""
-        if(!CheckNetwork.isetworkConnected()){
-            toast("No internet")
-        }else {
-            binding.tvNoResultshashCaller.text = "Searching..."
-        }
+        runOnUiThread {
+            if(!CheckNetwork.isetworkConnected()){
+                toast("No internet")
+            }else {
+                binding.tvNoResultshashCaller.text = "Searching..."
+            }
             queryStr = newText
 //            this.searchViewmodel.searc
             if(queryStr.isNotEmpty()){
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase())
                 binding.linearLayoutSearch.beVisible()
                 //this is important to cancel job, or request will be made frequently
-                searchViewmodel.cancelPrevJob(searchJob).observe(this, Observer {
-                    Log.d(TAG, "onTextChanged: $it")
+//                searchViewmodel.cancelPrevJob(searchJob).observe(this, Observer {
 
-                    searchJob = serverSearchViewmodel.searchInServer(
-                        newText,
-                        packageName,
-                        binding.coutryCodePicker.selectedCountryCode,
-                        binding.coutryCodePicker.selectedCountryNameCode
-
-                    )
-                })
+                searchJob = serverSearchViewmodel.searchInServer(
+                    newText,
+                    packageName,
+                    binding.coutryCodePicker.selectedCountryCode,
+                    binding.coutryCodePicker.selectedCountryNameCode)
+//                })
 
             }else {
                 searchViewmodel.emptyAllLists()
                 serverSearchViewmodel.clearResult()
                 binding.linearLayoutSearch.beGone()
             }
+        }
+
     }
 
     override fun afterTextChanged(s: Editable) {

@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.search
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.network.StatusCodes.Companion.NO_CONTENT
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
@@ -25,10 +24,14 @@ import java.lang.Exception
 /**
  * ViewModel to only perform  search in server
  */
-class ServerSearchViewModel(private val searchNetworkRepository: SearchNetworkRepository) : ViewModel() {
+class ServerSearchViewModel(
+    private val searchNetworkRepository: SearchNetworkRepository,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper
+) : ViewModel() {
     val serverSearchResultLiveData: MutableLiveData<List<Contact>?> = MutableLiveData(null)
     private var defServerSearch: Deferred<Response<SerachRes>?>? = null
     private var defServerinfoAvialableInDb: Deferred<CallersInfoFromServer?>? = null
+
 
     fun searchInServer(
         phoneNumber: String,
@@ -36,15 +39,17 @@ class ServerSearchViewModel(private val searchNetworkRepository: SearchNetworkRe
         countryCode: String,
         countryIso: String
     ) =  viewModelScope.launch {
-        searchNetworkRepository.makeDelay()
+//        searchNetworkRepository.makeDelay()
         var formatedNum = formatPhoneNumber(phoneNumber)
+        formatedNum =  libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
+
         defServerSearch?.cancel()
         defServerinfoAvialableInDb?.cancel()
         defServerSearch = null
         defServerinfoAvialableInDb = null
         defServerinfoAvialableInDb = async { getServerinfoAvailableInDb(formatedNum) }
-        val countryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
-        formatedNum =  countryCodeHelper.getES164Formatednumber(formatedNum, countryIso)
+
+
        val hashed =  Secrets().managecipher(packageName,formatedNum)
        var infoAvialbleInDb:CallersInfoFromServer? = null
        try {

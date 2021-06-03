@@ -2,19 +2,18 @@ package com.nibble.hashcaller.view.ui.search
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.Exception
 
 class AllSearchViewmodel(
     private val allSearchRepository: AllSearchRepository,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
 ) :ViewModel() {
 
     var contactsListOfLivedata:MutableLiveData<List<Contact>> = MutableLiveData()
@@ -67,15 +66,15 @@ class AllSearchViewmodel(
         emit(countryCodeHelper.getCountryISO())
     }
 
-    fun cancelPrevJob(searchJob: Job?) :LiveData<Int> = liveData{
-        try {
-           searchJob?.cancel() 
-        }catch (e:Exception){
-            Log.d(TAG, "cancelPrevJob: $e") 
-        }
-//        allSearchRepository.doSomeDelay()
-        emit(OPERATION_COMPLETED)
-    }
+//    fun cancelPrevJob(searchJob: Job?) :LiveData<Int> = liveData{
+//        try {
+//           searchJob?.cancel()
+//        }catch (e:Exception){
+//            Log.d(TAG, "cancelPrevJob: $e")
+//        }
+////        allSearchRepository.doSomeDelay()
+//        emit(OPERATION_COMPLETED)
+//    }
 
     companion object {
         const val TAG = "__AllSearchViewmodel"
