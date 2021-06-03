@@ -5,12 +5,17 @@ import android.provider.ContactsContract
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.view.utils.ContactGlobal
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.LinkedHashSet
 import java.util.concurrent.atomic.AtomicBoolean
 
-class WorkerContactRepository(private val cursor: Cursor?)  {
+class WorkerContactRepository(
+    private val cursor: Cursor?,
+    private val countryISO: String,
+    private val libCountryHelper: LibPhoneCodeHelper
+)  {
 
     private var contacts: MutableList<ContactUploadDTO> = ArrayList()
     var uniqueMobilePhones: List<ContactUploadDTO> = ArrayList()
@@ -29,6 +34,8 @@ class WorkerContactRepository(private val cursor: Cursor?)  {
                 var phoneNo =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 phoneNo = formatPhoneNumber(phoneNo)
+
+                phoneNo = libCountryHelper.getES164Formatednumber(phoneNo, countryISO)
                 if(!hashSetOfAddress.contains(phoneNo)){
                     hashSetOfAddress.add(phoneNo)
                 }else{
@@ -63,7 +70,7 @@ class WorkerContactRepository(private val cursor: Cursor?)  {
             cursor.close()
         }
 
-        return@withContext sortAndSet(contacts)
+        return@withContext contacts
     }
 
     private fun sortAndSet(contacts:  MutableList<ContactUploadDTO>): ArrayList<ContactUploadDTO> {

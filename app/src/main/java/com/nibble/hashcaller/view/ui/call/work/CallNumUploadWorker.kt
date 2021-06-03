@@ -50,8 +50,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
-    val countryCodeHelper = CountrycodeHelper(context)
-
+    private val countryCodeHelper = CountrycodeHelper(context)
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -76,7 +75,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
             val callersLocalRepository =
                 CallLocalRepository(
-                    context
+                    context,
+                    countryCodeHelper.getCountryISO(),
+                    libCountryHelper
                 )
 
             val allcallsincontentProvider = callersLocalRepository.getCallLog()

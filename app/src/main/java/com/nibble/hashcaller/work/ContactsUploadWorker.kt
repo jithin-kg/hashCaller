@@ -37,13 +37,13 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     val contacts = mutableListOf<ContactUploadDTO>()
     private  var contactsListOf12: List<List<ContactUploadDTO>> = mutableListOf()
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
-val countryCodeHelper = CountrycodeHelper(context)
 
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
     private var contactRepository:WorkerContactRepository? = null
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private val countryCodeHelper = CountrycodeHelper(context)
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -56,7 +56,11 @@ val countryCodeHelper = CountrycodeHelper(context)
                 null, null, null,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
             )
-             contactRepository = WorkerContactRepository( cursor)
+             contactRepository = WorkerContactRepository(
+                 cursor,
+                 countryCodeHelper.getCountryISO(),
+                 libCountryHelper
+                 )
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
 
             setNewlySavedContactsList()
@@ -123,7 +127,7 @@ val countryCodeHelper = CountrycodeHelper(context)
                     val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
                     if(res==null){
                         Log.d(TAG , "not in db: $formattedPhoneNum")
-                        formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
+//                        formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
 
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
 //                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)

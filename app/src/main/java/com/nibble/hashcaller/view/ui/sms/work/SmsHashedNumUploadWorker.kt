@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -16,11 +17,10 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
-import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
-import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +46,9 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
-
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private val countryCodeHelper = CountrycodeHelper(context)
+    private val smsRepository:SMSWorkerRepository = SMSWorkerRepository(context, libCountryHelper,countryCodeHelper )
     private val repository: SMScontainerRepository = SMScontainerRepository(
         context,
         sMSSendersInfoFromServerDAO,
@@ -59,8 +61,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
     private lateinit var senderListChuckOfSize12: List<List<ContactAddressWithHashDTO>>
     private val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
-
     private val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
+
 
 
     @SuppressLint("LongLogTag")
@@ -68,19 +70,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         try {
             Log.d(TAG, "doWork: ")
 
-            val smsrepoLocalRepository = SMSLocalRepository(
-                context,
-                spamListDAO,
-                smssendersInfoDAO,
-                mutedSendersDAO,
-                smsThreadsDAO,
-                DataStoreRepository(context.tokeDataStore),
-                TokenHelper( FirebaseAuth.getInstance().currentUser),
-                callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor())
-            ) // to get content provided sms
 
-            val allsmsincontentProvider = smsrepoLocalRepository.fetchSmsForWorker()
+            val allsmsincontentProvider = smsRepository.fetchSmsForWorker()
             val callerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
             val smsContainerRepository = SMScontainerRepository(
                 context,

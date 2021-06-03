@@ -6,12 +6,17 @@ import android.net.Uri
 import android.provider.CallLog
 import android.util.Log
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
-class CallLocalRepository(private val context: Context) {
+class CallLocalRepository(
+    private val context: Context,
+    private val countryISO: String,
+    private val libCountryHelper: LibPhoneCodeHelper
+    ) {
     companion object{
         //        val URI: Uri = ContactsContract.Contacts.CONTENT_URI
         val URI: Uri = CallLog.Calls.CONTENT_URI
@@ -46,7 +51,8 @@ class CallLocalRepository(private val context: Context) {
                 do{
 
                     val number = cursor.getString(0)
-                    val formatedNum = formatPhoneNumber(number)
+                    var formatedNum = formatPhoneNumber(number)
+                    formatedNum = libCountryHelper.getES164Formatednumber(formatedNum, countryISO)
                     if(!hashSetOfNumber.contains(formatedNum)){
                         hashSetOfNumber.add(formatedNum)
                     }else{

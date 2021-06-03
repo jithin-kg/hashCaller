@@ -11,6 +11,7 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.stubs.Contact
@@ -217,6 +218,8 @@ class ContactLocalSyncRepository(
 
     suspend fun deleteAllitems()   = withContext(Dispatchers.IO){
         contactLisDAO?.delete()
+        HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO().deleteAll()
+
     }
 
     @SuppressLint("LongLogTag")

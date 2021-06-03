@@ -28,13 +28,16 @@ class ContactsAddressLocalWorker(private val context: Context, private val param
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
             )
 
-            val contactRepository = WorkerContactRepository( cursor)
-            allcontactsInContentProvider.addAll( contactRepository.fetchContacts())
+//            val contactRepository = WorkerContactRepository(
+//                cursor,
+//                countryCodeHelper.getCountryISO(),
+//                libCountryHelper
+//            )
+//            allcontactsInContentProvider.addAll( contactRepository.fetchContacts())
             for (ct in allcontactsInContentProvider){
                 contactAddressDAO.find(ct.phoneNumber).apply {
                     if(this == null){
                         contactAddressDAO.insert(ContactAddresses(ct.phoneNumber)).apply {
-
                         }
                     }
                 }

@@ -55,7 +55,7 @@ class SearchNetworkRepository(
 //            val token = tokenManager.getDecryptedToken()
             val token =  tokenHelper?.getToken()
             if(!token.isNullOrEmpty()){
-                result =  retrofitService?.searchManual(ManualSearchDTO(phoneNum,countryCode= countryCode,countryIso= countryIso), token)
+                result =  retrofitService?.search(SearchDTO(phoneNum), token)
                 Log.d(TAG, "search: $result")
             }
 

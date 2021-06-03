@@ -22,7 +22,6 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
             countryCodeIso= geocoder.getDescriptionForNumber(numberProto, Locale.ENGLISH)
             Log.d(TAG, "getCountryCode: $countryCodeIso")
 
-
         }catch (e:Exception){
             Log.d(TAG, "getCountryCode: exception $phoneNum  $e")
         }
@@ -41,11 +40,11 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
 
        try {
            val numProto = phoneUtil.parseAndKeepRawInput(phoneNum, countryIso)
-           val formated = phoneUtil.format(numProto, PhoneNumberUtil.PhoneNumberFormat.E164)
-           val formatedNumProto = phoneUtil.parse(formated, countryIso)
+           val e164Formated = phoneUtil.format(numProto, PhoneNumberUtil.PhoneNumberFormat.E164)
+           val formatedNumProto = phoneUtil.parse(e164Formated, countryIso)
            val isValidNumberForRegion = phoneUtil.isValidNumberForRegion(formatedNumProto, countryIso)
            if(isValidNumberForRegion){
-               formatedNumber = formated
+               formatedNumber = e164Formated
            }
 //           val numProto = phoneUtil.parse("+$phoneNum", "91")
 

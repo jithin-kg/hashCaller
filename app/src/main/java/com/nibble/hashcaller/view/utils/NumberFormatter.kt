@@ -7,7 +7,6 @@ import java.lang.Exception
 
 class NumberFormatter {
     private val phoneUtil = PhoneNumberUtil.getInstance()
-
     fun getES164Formatednumber(phoneNum: String, countryIso:String): String {
         var formatedNumber = phoneNum
         try {
