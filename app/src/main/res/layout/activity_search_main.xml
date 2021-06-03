@@ -46,6 +46,7 @@
             app:ccp_showPhoneCode="false"
             app:ccp_autoDetectCountry="true"
             />
+
         <EditText
             android:id="@+id/searchVCallSearch"
             android:layout_width="0dp"
@@ -54,27 +55,26 @@
             android:background="#00000000"
             android:backgroundTint="@color/colorBackground"
             android:hint="  Search "
+            android:maxLines="1"
             android:queryBackground="@android:color/transparent"
             android:queryHint="Search numbers, names"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSearchFilter"
             app:layout_constraintStart_toEndOf="@+id/coutryCodePicker"
             app:layout_constraintTop_toTopOf="parent">
             <!--important to give request focus to show softInput on activity loads           -->
             <requestFocus />
         </EditText>
-
         <ImageButton
             android:id="@+id/imgBtnSearchFilter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_filter_3_line"
-            app:layout_constraintTop_toTopOf="@+id/searchVCallSearch"
-            app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
-            app:layout_constraintEnd_toEndOf="@+id/searchVCallSearch"
+            android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginEnd="8dp"
             android:padding="8dp"
-            />
+            android:src="@drawable/ic_filter_3_line"
+            app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/searchVCallSearch" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

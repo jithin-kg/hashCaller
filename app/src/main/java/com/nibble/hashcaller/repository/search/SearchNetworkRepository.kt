@@ -12,6 +12,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.search.ManualSearchDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.Exception
@@ -110,6 +111,10 @@ class SearchNetworkRepository(
 
     suspend fun findOneInDb(formatedNum: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
         return@withContext callersInfoFromServerDAO?.find(formatedNum)
+    }
+
+    suspend fun makeDelay() = withContext(Dispatchers.IO) {
+        delay(100)
     }
 
 

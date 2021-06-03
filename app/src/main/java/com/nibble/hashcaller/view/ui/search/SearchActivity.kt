@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
@@ -233,17 +234,18 @@ class SearchActivity : AppCompatActivity(), ITextChangeListener, SMSSearchAdapte
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase())
                 binding.linearLayoutSearch.beVisible()
                 //this is important to cancel job, or request will be made frequently
-                try {
-                    searchJob?.cancel()
-                }catch (e:Exception){}
+                searchViewmodel.cancelPrevJob(searchJob).observe(this, Observer {
+                    Log.d(TAG, "onTextChanged: $it")
 
-                searchJob = serverSearchViewmodel.searchInServer(
-                    newText,
-                    packageName,
-                    binding.coutryCodePicker.selectedCountryCode,
-                    binding.coutryCodePicker.selectedCountryNameCode
+                    searchJob = serverSearchViewmodel.searchInServer(
+                        newText,
+                        packageName,
+                        binding.coutryCodePicker.selectedCountryCode,
+                        binding.coutryCodePicker.selectedCountryNameCode
 
                     )
+                })
+
             }else {
                 searchViewmodel.emptyAllLists()
                 serverSearchViewmodel.clearResult()

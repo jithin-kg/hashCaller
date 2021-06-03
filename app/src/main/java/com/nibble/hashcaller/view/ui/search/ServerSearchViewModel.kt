@@ -36,6 +36,7 @@ class ServerSearchViewModel(private val searchNetworkRepository: SearchNetworkRe
         countryCode: String,
         countryIso: String
     ) =  viewModelScope.launch {
+        searchNetworkRepository.makeDelay()
         var formatedNum = formatPhoneNumber(phoneNumber)
         defServerSearch?.cancel()
         defServerinfoAvialableInDb?.cancel()

@@ -10,6 +10,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class AllSearchRepository(
@@ -173,5 +174,9 @@ class AllSearchRepository(
 //            objSMS.address = SpannableStringBuilder(num)
 //        }
 
+    }
+
+    suspend fun doSomeDelay() = withContext(Dispatchers.IO) {
+        delay(100)
     }
 }
