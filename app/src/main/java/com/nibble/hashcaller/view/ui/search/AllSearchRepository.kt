@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.search
 
+import android.content.Context
 import android.database.Cursor
 import android.graphics.Color
 import android.text.SpannableStringBuilder
@@ -15,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 class AllSearchRepository(
     private val smsCursor: Cursor?,
-    private val contactsCursor: Cursor?,
+    private val context: Context,
     private val allCallLogsCursor: Cursor?,
     private val contactQueryHelper: ContactsQueryHelper,
     private val smsRepositoryHelper: SmsRepositoryHelper ) {

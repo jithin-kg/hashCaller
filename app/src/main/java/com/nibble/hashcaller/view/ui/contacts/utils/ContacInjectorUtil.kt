@@ -20,7 +20,7 @@ object ContacInjectorUtil {
         tokenHelper: TokenHelper
     ):ContactsViewModelFactory{
 
-        val contactQueryHelper = ContactsQueryHelper(context?.getAllContactsCursor())
+        val contactQueryHelper = ContactsQueryHelper(context)
         val contactsLiveData = context?.let { ContactLiveData(
             it,
             lifecycleScope,

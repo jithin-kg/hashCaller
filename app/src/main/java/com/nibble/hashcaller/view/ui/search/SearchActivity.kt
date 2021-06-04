@@ -198,10 +198,11 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
 //        checkBoxIncludeSMS = searchFilterView.findViewById(R.id.checkboxIncludeSMS)
     }
     private fun initViewmodel() {
+        //todo pass only context, then create cursor from that funnction, because cursor is always closer after each function call
         this.searchViewmodel = ViewModelProvider(
             this, AllSearchInjectorUtil.provideViewModelFactory(
                 getAllSMSCursor(),
-                getAllContactsCursor(),
+                this,
                 getAllCallLogsCursor()
             )
         ).get(AllSearchViewmodel::class.java)

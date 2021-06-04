@@ -177,7 +177,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private fun initViewmodel() {
         contactViewModel = ViewModelProvider(
             this, ContacInjectorUtil.provideContactsViewModelFactory(
-                context?.applicationContext,
+                context,
                 lifecycleScope,
                 TokenHelper(FirebaseAuth.getInstance().currentUser)
             )
@@ -359,6 +359,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 //        checkContactPermission()
 
     }
+
     override fun onPause() {
         super.onPause()
         }

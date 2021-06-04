@@ -1,15 +1,16 @@
 package com.nibble.hashcaller.view.ui.contacts
 
-import android.database.Cursor
+import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.work.formatPhoneNumber
 
-class ContactsQueryHelper(private val cursor: Cursor?) {
+class ContactsQueryHelper(private val context: Context?) {
 
     suspend fun getAllContacts(): MutableList<Contact> {
         val listOfContacts = mutableListOf<Contact>()
         val setOfContacts = mutableSetOf<String>()
+        val cursor =  context?.getAllContactsCursor()
         try {
 
             if(cursor != null && cursor.moveToFirst()){
