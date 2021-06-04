@@ -167,11 +167,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (checkPermission()) {
 //            startHashWorker()
             initViewModel()
-
+            initMainActivityComponents(savedInstanceState)
             isUserInfoAvaialbleInDb{isUserInfoAvialble->
                 if(isUserInfoAvialble){
                     firebaseAuthListener()
-                    initMainActivityComponents(savedState)
+//                    initMainActivityComponents(savedState)
                 }else{
                     onSingnedOutcleanUp()
                 }
