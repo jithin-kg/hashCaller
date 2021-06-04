@@ -33,6 +33,7 @@ import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -113,6 +114,8 @@ class SMSLocalRepository(
     private val tokenHelper: TokenHelper?,
     private val callLogDAO: ICallLogDAO?,
     private val smsRepositoryHelper: SmsRepositoryHelper,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
+    private val countryISO: String,
 
 
 
@@ -653,7 +656,7 @@ class SMSLocalRepository(
     ): CallersInfoFromServer?   = withContext(Dispatchers.IO) {
         var r: CallersInfoFromServer? = null
 
-        return@withContext callerInfoDAO!!.find(formatPhoneNumber(num))
+        return@withContext callerInfoDAO!!.find(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(num), countryISO))
 //        GlobalScope.launch {
 //            r = async {  smssendersInfoDAO!!.find(formatPhoneNumber(num)) }.await()
 //        }.join()
@@ -1055,7 +1058,7 @@ class SMSLocalRepository(
             var num = sms.addressString
             var res:CallersInfoFromServer? = null
             num = formatPhoneNumber(num!!)
-            res = callerInfoDAO!!.find(formatPhoneNumber(num)!!).apply {
+            res = callerInfoDAO!!.find(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(num)!!, countryISO)).apply {
                 if(sms.firstName.isNullOrEmpty()){
                     sms.firstName = res?.firstName
                     Log.d(TAG, "getInfoFromLocalDb:  empty ")
@@ -1102,7 +1105,7 @@ class SMSLocalRepository(
     }
 
     private fun getSenderInfo(num: String) = CoroutineScope(Dispatchers.IO).async{
-        callerInfoDAO!!.find(formatPhoneNumber(num))
+        callerInfoDAO!!.find(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(num), countryISO))
     }
 
     fun getSmsSenderInforFromDB(): LiveData<List<CallersInfoFromServer>>{
@@ -1778,7 +1781,7 @@ class SMSLocalRepository(
 //            }
 //
 //        }
-        result = callerInfoDAO!!.find(formatPhoneNumber(pno))
+        result = callerInfoDAO!!.find(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(pno), countryISO))
             if(result!=null){
                 name = result!!.firstName
             }
@@ -1786,12 +1789,12 @@ class SMSLocalRepository(
     }
 
     suspend fun saveSpamReportedByUser(contactAddress: String, threadID: Long, spammerType: Int?)  = withContext(Dispatchers.IO) {
-        val formatedAddress = formatPhoneNumber(contactAddress)
+        val formatedAddress = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
         callerInfoDAO!!.find(formatedAddress).apply {
             if(this!=null){
                 //already infor exists
                     val spamcount = this.spamReportCount +1
-                callerInfoDAO!!.update(spamcount, contactAddress, true)
+                callerInfoDAO!!.update(spamcount, formatedAddress, true)
             }else{
                 callerInfoDAO.insert(listOf(CallersInfoFromServer(
                     formatedAddress,
@@ -1879,7 +1882,7 @@ class SMSLocalRepository(
 
     suspend fun getSenderInfoFromServerForAddres(contactAddress: String): CallersInfoFromServer? = withContext(Dispatchers.IO) {
         val num = formatPhoneNumber(contactAddress)
-         callerInfoDAO?.find(num).apply {
+         callerInfoDAO?.find(libPhoneCodeHelper.getES164Formatednumber(num, countryISO)).apply {
              return@withContext this
         }
     }
@@ -2187,7 +2190,7 @@ class SMSLocalRepository(
     }
 
     suspend fun getServerInfoForNumber(numFormated: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
-        return@withContext callerInfoDAO?.find(formatPhoneNumber(numFormated))
+        return@withContext callerInfoDAO?.find(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(numFormated), countryISO))
     }
 
     suspend fun updateChatThreadWithContentProviderInfo(infoFromCprovider: Contact) = withContext(Dispatchers.IO) {

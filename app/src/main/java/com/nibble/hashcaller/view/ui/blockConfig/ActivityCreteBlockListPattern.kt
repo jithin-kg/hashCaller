@@ -39,11 +39,17 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         binding = ActivityCreteBlockListPatternBinding.inflate(layoutInflater)
         patterntype = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_STARTS_WITH)
         setContentView(binding.root)
-        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
+        initViewmodel()
         Log.d(TAG, "onCreate: intent value is $patterntype")
         intiListeners()
         setDropDownList()
 
+
+    }
+
+    private fun initViewmodel() {
+        //todo create viewmodelinjector util
+        blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
 
     }
 

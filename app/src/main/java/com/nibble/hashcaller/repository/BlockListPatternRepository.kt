@@ -10,6 +10,7 @@ import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.view.ui.contacts.utils.ALREADY_EXISTS_IN_DB
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -18,15 +19,20 @@ import kotlinx.coroutines.withContext
 /**
  * Created by Jithin KG on 03,July,2020
  */
-class BlockListPatternRepository(private val blockedLIstDao: BlockedLIstDao?,
-                                 private val mutedCallersDAO : IMutedCallersDAO?) {
+class BlockListPatternRepository(
+    private val blockedLIstDao: BlockedLIstDao?,
+    private val mutedCallersDAO: IMutedCallersDAO?,
+    private val libCountryHelper: LibPhoneCodeHelper,
+    private val countryCodeIso: String
+
+) {
 
     //room executes all queries on a seperate thread
     val allBlockedList: LiveData<List<BlockedListPattern>>? = blockedLIstDao?.getAllBLockListPattern()
 
     @SuppressLint("LongLogTag")
     suspend fun insert(blockedListPattern: BlockedListPattern): Int  = withContext(Dispatchers.IO){
-       val res =  blockedLIstDao?.find(formatPhoneNumber(blockedListPattern.numberPattern), blockedListPattern.type)
+       val res =  blockedLIstDao?.find(libCountryHelper.getES164Formatednumber(formatPhoneNumber(blockedListPattern.numberPattern), countryCodeIso), blockedListPattern.type)
             if(res==null){
                 blockedLIstDao?.insert(blockedListPattern)
                 return@withContext OPERATION_COMPLETED

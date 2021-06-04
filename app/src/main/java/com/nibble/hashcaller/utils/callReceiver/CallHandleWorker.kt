@@ -7,6 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.work.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
@@ -19,6 +20,8 @@ import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.HashCaller.Companion.NOTIFICATION_ID
 import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import java.lang.Exception
@@ -141,7 +144,9 @@ class CallHandleWorker(private val context: Context, private val workerParameter
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
         searchRepository = SearchNetworkRepository(
             tokenHelper!!,
-            callerInfoFromServerDAO
+            callerInfoFromServerDAO,
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+            CountrycodeHelper(context).getCountryISO()
         )
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()

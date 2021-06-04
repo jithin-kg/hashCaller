@@ -50,7 +50,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
-    private val countryCodeHelper = CountrycodeHelper(context)
+    private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -63,7 +63,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             callLogDAO,
             DataStoreRepository(context.tokeDataStore),
             tokenHelper,
-            smsThreadsDAO
+            smsThreadsDAO,
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+            CountrycodeHelper(context).getCountryISO()
         )
 
     @SuppressLint("LongLogTag")
@@ -76,7 +78,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             val callersLocalRepository =
                 CallLocalRepository(
                     context,
-                    countryCodeHelper.getCountryISO(),
+                    countryCodeIso,
                     libCountryHelper
                 )
 
@@ -100,7 +102,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                    if(result!=null){
                        for(cntct in result?.body()?.contacts!!){
                            var formated = formatPhoneNumber(cntct.phoneNumber)
-                           formated = libCountryHelper.getES164Formatednumber(formated,countryCodeHelper.getCountryISO() )
+
+                           formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
                                contactAddress = formated,
                                spammerType = 0,
@@ -143,7 +146,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
         for (caller in allcallsInContentProvider){
 
 
-            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(formatPhoneNumber(caller.number))
+            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(libCountryHelper.getES164Formatednumber(formatPhoneNumber(caller.number), countryCodeIso))
 
             if(callersInfoAvailableInLocalDb == null){
 

@@ -30,6 +30,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
 import com.nibble.hashcaller.view.ui.hashworker.HashWorker
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.nibble.hashcaller.work.removeAllNonNumbericChars
 import kotlinx.coroutines.*
@@ -47,9 +48,11 @@ class CallContainerRepository(
     private val callLogDAO: ICallLogDAO?,
     private val dataStoreRepository: DataStoreRepository,
     private val tokenHelper: TokenHelper?,
-    private val smsThreadsDAO: ISMSThreadsDAO?
+    private val smsThreadsDAO: ISMSThreadsDAO?,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
+    private val countryISO: String
 
-    ) {
+) {
 
     private var retrofitService:ICallService? = null
 
@@ -80,14 +83,17 @@ class CallContainerRepository(
     }
 
     suspend fun getCallerInfoForAddressFromDB(number: String): CallersInfoFromServer?   = withContext(Dispatchers.IO){
-        val numWithoutSpecialChars = formatPhoneNumber(number)
+        val numWithoutSpecialChars = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(number), countryISO)
 //        var numberForQuery =numWithoutSpecialChars
 //        if(isNumericOnlyString(numWithoutSpecialChars)){
 //            numberForQuery = formatPhoneNumber(numWithoutSpecialChars)
 //        }
         var result: CallersInfoFromServer? = null
         CoroutineScope(Dispatchers.IO).launch {
+
             result= async { callerInfoFromServerDAO.find(numWithoutSpecialChars) }.await()
+
+
         }.join()
 
         return@withContext result
@@ -166,21 +172,21 @@ class CallContainerRepository(
     }
 
     suspend fun markCallerAsSpamer(formatPhoneNumber: String, spammerType: Int, s: String, s1: String) {
-        callerInfoFromServerDAO.find(formatPhoneNumber).apply {
-            if(this !=null){
-                //number exist in db
-                callerInfoFromServerDAO.update(this.spamReportCount+1, this.contactAddress, true)
-            }else{
-
-                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                    contactAddress= formatPhoneNumber(formatPhoneNumber),
-                    spammerType= spammerType,
-                    firstName="",
-                    informationReceivedDate =Date(),
-                    spamReportCount = 1L)
-                callerInfoFromServerDAO.insert(listOf(callerInfoTobeSavedInDatabase))
-            }
-        }
+//        callerInfoFromServerDAO.find(formatPhoneNumber).apply {
+//            if(this !=null){
+//                //number exist in db
+//                callerInfoFromServerDAO.update(this.spamReportCount+1, this.contactAddress, true)
+//            }else{
+//
+//                val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+//                    contactAddress= formatPhoneNumber(formatPhoneNumber),
+//                    spammerType= spammerType,
+//                    firstName="",
+//                    informationReceivedDate =Date(),
+//                    spamReportCount = 1L)
+//                callerInfoFromServerDAO.insert(listOf(callerInfoTobeSavedInDatabase))
+//            }
+//        }
     }
 
     @SuppressLint("LongLogTag")
@@ -450,18 +456,18 @@ class CallContainerRepository(
     }
 
     private suspend fun setInfoFromServer(log: CallLogTable) {
-        callerInfoFromServerDAO.find(formatPhoneNumber(log.number)).apply {
-            if(this !=null){
-                if(log.name.isNullOrEmpty()){
-                    log.name = this.firstName
-//                    log.callerInfoFoundFrom = SENDER_INFO_FROM_DB
-                }else{
-                    //if there is name already in the log then it would be got from content provider
-//                    log.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                }
-//                log.spamReportCount = this.spamReportCount
-            }
-        }
+//        callerInfoFromServerDAO.find(formatPhoneNumber(log.number)).apply {
+//            if(this !=null){
+//                if(log.name.isNullOrEmpty()){
+//                    log.name = this.firstName
+////                    log.callerInfoFoundFrom = SENDER_INFO_FROM_DB
+//                }else{
+//                    //if there is name already in the log then it would be got from content provider
+////                    log.callerInfoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+//                }
+////                log.spamReportCount = this.spamReportCount
+//            }
+//        }
     }
 
     @SuppressLint("LongLogTag")

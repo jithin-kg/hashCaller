@@ -17,6 +17,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -35,6 +36,8 @@ import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -59,6 +62,8 @@ class MyCallScreeningService: CallScreeningService() {
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private val countryCodeIso  =  CountrycodeHelper(this).getCountryISO()
     //    private  var _window:Window? = null
 //    private  val window:Window get() = _window!!
 
@@ -75,11 +80,12 @@ class MyCallScreeningService: CallScreeningService() {
         tokenHelper = TokenHelper(user)
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
-        val phoneNumber = getPhoneNumber(callDetails)
+        var phoneNumber = getPhoneNumber(callDetails)
+        phoneNumber = formatPhoneNumber(phoneNumber)
+        phoneNumber = libCountryHelper.getES164Formatednumber(phoneNumber, countryCodeIso)
         responseBuilder = CallResponse.Builder()
 //        showNotification()
         startFloatingServiceFromScreeningService(phoneNumber)
-
 
 //        _window = Window(this, phoneNumber)
 //        window.open()
@@ -159,7 +165,9 @@ class MyCallScreeningService: CallScreeningService() {
 
         val searchRepository = SearchNetworkRepository(
             tokenHelper,
-            callerInfoFromServerDAO
+            callerInfoFromServerDAO,
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+            CountrycodeHelper(context).getCountryISO()
         )
 
         val internetChecker = InternetChecker(context)

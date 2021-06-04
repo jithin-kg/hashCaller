@@ -29,6 +29,7 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 
@@ -52,10 +53,11 @@ class FloatingService: Service() {
 
     private var onStartCalled = false
     private var mphoneNumberStr = ""
-    private var countryCodeHelper: LibPhoneCodeHelper? = null
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+    private var countryCodeIso =  CountrycodeHelper(this).getCountryISO()
+    private val libPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
 //    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -78,10 +80,9 @@ class FloatingService: Service() {
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)
 
-        countryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
 
         if(window == null){
-            window = Window(this, countryCodeHelper)
+            window = Window(this, libPhoneCodeHelper)
             WindowObj.setWindow(window!!)
 //                    windowCompanion = window
         }
@@ -178,16 +179,17 @@ class FloatingService: Service() {
         val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         supervisorScope.launch {
             window?.setPhoneNum(phoneNumber)
-            val hashedNum =    getHashedNum(phoneNumber,
+            val formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(phoneNumber), countryCodeIso)
+            val hashedNum =    getHashedNum(formatedNum,
                 this@FloatingService
             )
             hashedNum?.let {
                 floatinServiceHelper = FloatinServiceHelper(
-                    getIncomminCallManager(phoneNumber, this@FloatingService),
+                    getIncomminCallManager(formatedNum, this@FloatingService),
                     it,
                     supervisorScope,
                     window,
-                    phoneNumber,
+                    formatedNum,
                     this@FloatingService,
                     isCallScreeningRoleHeld(),
                     DataStoreRepository(blockPreferencesDataStore)
@@ -237,7 +239,13 @@ class FloatingService: Service() {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
 
-        val searchRepository = SearchNetworkRepository( tokenHelper,callerInfoFromServerDAO )
+        val searchRepository = SearchNetworkRepository(
+            tokenHelper,
+            callerInfoFromServerDAO,
+            libPhoneCodeHelper,
+            countryCodeIso
+        )
+
         val internetChecker = InternetChecker(context)
         val contactAdressesDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
 

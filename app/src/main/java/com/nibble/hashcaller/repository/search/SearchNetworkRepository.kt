@@ -9,7 +9,8 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.search.ManualSearchDTO
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,8 +21,10 @@ import java.util.*
 
 class SearchNetworkRepository(
     private val tokenHelper: TokenHelper?,
-    private val callersInfoFromServerDAO: CallersInfoFromServerDAO?
-    ){
+    private val callersInfoFromServerDAO: CallersInfoFromServerDAO?,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
+    private val countryIso: String
+){
 
     private var retrofitService:ISearchService?  = RetrofitClient.createaService(ISearchService::class.java)
     @SuppressLint("LongLogTag")
@@ -78,8 +81,10 @@ class SearchNetworkRepository(
     }
 
     suspend fun saveServerInfoIntoDB(contact: Contact) = withContext(Dispatchers.IO){
-        val formatedNum = formatPhoneNumber(contact.phoneNumber)
+        var formatedNum = formatPhoneNumber(contact.phoneNumber)
+        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso )
         val res = callersInfoFromServerDAO?.find(formatedNum)
+
         if(res== null){
             val info = CallersInfoFromServer(
                 contactAddress = formatedNum,
@@ -109,7 +114,10 @@ class SearchNetworkRepository(
         }
     }
 
-    suspend fun findOneInDb(formatedNum: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
+    suspend fun findOneInDb(fno: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
+        var formatedNum = formatPhoneNumber(fno)
+
+        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
         return@withContext callersInfoFromServerDAO?.find(formatedNum)
     }
 

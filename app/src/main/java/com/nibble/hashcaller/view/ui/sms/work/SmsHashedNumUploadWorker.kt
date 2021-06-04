@@ -46,8 +46,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val smssendersInfoDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
-    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryCodeHelper = CountrycodeHelper(context)
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val smsRepository:SMSWorkerRepository = SMSWorkerRepository(context, libCountryHelper,countryCodeHelper )
     private val repository: SMScontainerRepository = SMScontainerRepository(
         context,
@@ -57,6 +57,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         DataStoreRepository(context.tokeDataStore),
         tokenHelper
     )
+    private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
     private val smsTracker:NewSmsTrackerHelper = NewSmsTrackerHelper( repository, sMSSendersInfoFromServerDAO)
     private lateinit var senderListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
     private lateinit var senderListChuckOfSize12: List<List<ContactAddressWithHashDTO>>
@@ -98,7 +99,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                     if(result?.body() != null){
                         for(cntct in result?.body()!!.contacts){
-                            val formatedNum = formatPhoneNumber(cntct.phoneNumber)
+                            val formatedNum = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countryCodeIso)
                             val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
                                 formatedNum, 0, cntct.name,
                                "", Date())
@@ -139,7 +140,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                 queryNum = formatPhoneNumber(sms.addressString!!)
 
-             callerInfoFromServerDAO.find(queryNum).apply {
+             callerInfoFromServerDAO.find(libCountryHelper.getES164Formatednumber(queryNum, countryCodeIso)).apply {
                  if(this == null){
                      Log.d(TAG, "doWork: no data recieved from server")
 

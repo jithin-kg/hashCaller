@@ -35,7 +35,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
      *
      * formats a phone number to ES164 standard
      */
-    suspend fun getES164Formatednumber(phoneNum: String, countryIso:String): String {
+     fun getES164Formatednumber(phoneNum: String, countryIso:String): String {
         var formatedNumber = phoneNum
 
        try {

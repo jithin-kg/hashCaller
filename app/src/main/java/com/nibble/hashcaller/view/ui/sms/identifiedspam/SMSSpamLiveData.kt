@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
@@ -19,6 +20,8 @@ import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
 import com.nibble.hashcaller.view.ui.sms.util.SMSLocalRepository
 import com.nibble.hashcaller.view.ui.sms.util.SmsRepositoryHelper
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -61,7 +64,9 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor())
+                SmsRepositoryHelper(context.getAllSMSCursor()),
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO()
 
             )
 //        val res =  repository.getSMSForViewModel(null, true)
@@ -163,7 +168,9 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor())
+                SmsRepositoryHelper(context.getAllSMSCursor()),
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO()
             )
         repository.markSMSAsRead(address)
     }

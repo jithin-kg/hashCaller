@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.network.spam.hashednums
@@ -12,6 +13,8 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +41,8 @@ class HashedUploadWorker(private val context: Context,
     private val networkRepository = NumberUploaderRepository(TokenHelper(FirebaseAuth.getInstance().currentUser))
     private val contactLisDAO: IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val hashedContactsDAO = HashCallerDatabase.getDatabaseInstance(context).hashedContactsDAO()
-
+    private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private val countrIso = CountrycodeHelper(context).getCountryISO()
     override suspend fun doWork(): Result {
         try {
             val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -80,7 +84,7 @@ class HashedUploadWorker(private val context: Context,
                             for(cntct in result?.body()?.contacts!!){
 
                                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                                    contactAddress = formatPhoneNumber(cntct.phoneNumber),
+                                    contactAddress = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countrIso),
                                     spammerType = 0,
                                     firstName = cntct.firstName?:"",
                                     informationReceivedDate = Date(),

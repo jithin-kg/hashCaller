@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
@@ -19,6 +20,8 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -40,7 +43,8 @@ class InCommingCallManager(
     private val callerInfoFromServerDAO: CallersInfoFromServerDAO
 )  {
     private val phoneNumber = formatPhoneNumber(num)
-
+    private val libPhoneCodeHelper =  LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private val countryIso = CountrycodeHelper(context).getCountryISO()
 
     suspend fun searchInServerAndHandle(hasedNum: String): CntctitemForView? {
         var searchResult:CntctitemForView? = null
@@ -158,6 +162,8 @@ class InCommingCallManager(
 
     suspend fun getAvailbleInfoInDb(): CntctitemForView? = withContext(Dispatchers.IO) {
         var contactitemForView : CntctitemForView? = null
+        var formatedNum  =formatPhoneNumber(phoneNumber)
+
         val res = callerInfoFromServerDAO.find(formatPhoneNumber(phoneNumber))
         if(res!=null){
             contactitemForView = CntctitemForView(
@@ -209,8 +215,8 @@ class InCommingCallManager(
     }
 
     suspend fun saveInfoFromServer(resFromServer: CntctitemForView?, phoneNumber: String) = withContext(Dispatchers.IO) {
-        val formatedNum = formatPhoneNumber(phoneNumber)
-
+        var formatedNum = formatPhoneNumber(phoneNumber)
+        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
         val res = callerInfoFromServerDAO.find(formatedNum)
         if(res== null){
             val info = CallersInfoFromServer(

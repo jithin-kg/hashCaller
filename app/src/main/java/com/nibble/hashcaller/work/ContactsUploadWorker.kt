@@ -43,7 +43,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
     private var contactRepository:WorkerContactRepository? = null
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
-    private val countryCodeHelper = CountrycodeHelper(context)
+    private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -58,7 +58,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             )
              contactRepository = WorkerContactRepository(
                  cursor,
-                 countryCodeHelper.getCountryISO(),
+                 countryCodeIso,
                  libCountryHelper
                  )
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
@@ -68,9 +68,9 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                 for (contactSublist in contactsListOf12){
                     Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
 //                    val countryCode =   "91" //for emulator country code should be 91
-                    var countryISO = countryCodeHelper.getCountryISO()
+                    var countryISO = countryCodeIso
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
-                    var countryCode = countryCodeHelper.getCountrycode()
+                    var countryCode = countryCodeIso
 
 
 

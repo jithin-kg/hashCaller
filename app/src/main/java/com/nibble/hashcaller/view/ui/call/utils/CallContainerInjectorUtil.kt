@@ -2,6 +2,7 @@ package com.nibble.hashcaller.view.ui.call.utils
 
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.repository.BlockListPatternRepository
@@ -11,6 +12,8 @@ import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 
 
 /**
@@ -30,7 +33,14 @@ object CallContainerInjectorUtil {
         val callLogDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callLogDAO() }
         val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
-        val blockListPatternRepository = BlockListPatternRepository(blockListDao!!, mutedCallersDAO!!)
+         val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+         val countryCodeIso = CountrycodeHelper(context!!).getCountryISO()
+        val blockListPatternRepository = BlockListPatternRepository(
+            blockListDao!!,
+            mutedCallersDAO!!,
+            libCountryHelper,
+            countryCodeIso
+        )
         val smsThreadsDAO: ISMSThreadsDAO? = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
 
         val repository = context?.let {
@@ -41,7 +51,9 @@ object CallContainerInjectorUtil {
                 callLogDAO,
                 DataStoreRepository(context.tokeDataStore),
                 tokenHelper,
-                smsThreadsDAO
+                smsThreadsDAO,
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO()
 
             )
         }

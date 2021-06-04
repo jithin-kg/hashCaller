@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.SpamListDAO
@@ -18,6 +19,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.ContentProviderLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.pageOb
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.util.*
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -63,7 +66,9 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor())
+                SmsRepositoryHelper(context.getAllSMSCursor()),
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO()
 
             )
          repository.fetchSMSForLivedata(null, false).apply {
@@ -107,7 +112,9 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor())
+                SmsRepositoryHelper(context.getAllSMSCursor()),
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO()
             )
         repository.markSMSAsRead(address)
     }
