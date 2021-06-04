@@ -45,6 +45,9 @@
             app:ccp_showFlag="false"
             app:ccp_showPhoneCode="false"
             app:ccp_autoDetectCountry="true"
+            app:ccp_contentColor="@color/textColor"
+            app:ccpDialog_textColor="@color/textColor"
+            app:ccpDialog_searchEditTextTint="@color/textColor"
             />
 
         <EditText
