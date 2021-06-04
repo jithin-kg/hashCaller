@@ -66,7 +66,7 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor()),
+                SmsRepositoryHelper(context),
                 LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
                 CountrycodeHelper(context).getCountryISO()
 
@@ -112,7 +112,7 @@ class SMSLiveData2(private val context: Context, private val scope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor()),
+                SmsRepositoryHelper(context),
                 LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
                 CountrycodeHelper(context).getCountryISO()
             )

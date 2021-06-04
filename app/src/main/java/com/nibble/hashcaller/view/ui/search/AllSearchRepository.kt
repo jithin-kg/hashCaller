@@ -15,9 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class AllSearchRepository(
-    private val smsCursor: Cursor?,
     private val context: Context,
-    private val allCallLogsCursor: Cursor?,
     private val contactQueryHelper: ContactsQueryHelper,
     private val smsRepositoryHelper: SmsRepositoryHelper ) {
 

@@ -47,7 +47,7 @@ class NewSMSSaveToLocalDbWorker (private val context: Context, private val param
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor()),
+                SmsRepositoryHelper(context),
                 LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
                 CountrycodeHelper(context).getCountryISO()
             ) // to get content provided sms

@@ -35,7 +35,7 @@ object SmsSearchInjectorUtil {
             DataStoreRepository(context.tokeDataStore),
             tokenHelper,
             callLogDAO,
-            SmsRepositoryHelper(context.getAllSMSCursor()),
+            SmsRepositoryHelper(context),
             LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
             CountrycodeHelper(context).getCountryISO()
         ) }

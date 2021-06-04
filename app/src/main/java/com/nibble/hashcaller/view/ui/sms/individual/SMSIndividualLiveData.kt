@@ -59,7 +59,7 @@ class SMSIndividualLiveData(
             DataStoreRepository(context.tokeDataStore),
             TokenHelper( FirebaseAuth.getInstance().currentUser),
             callLogDAO,
-            SmsRepositoryHelper(context.getAllSMSCursor()),
+            SmsRepositoryHelper(context),
             LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
             CountrycodeHelper(context).getCountryISO()
         )

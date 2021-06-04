@@ -1,8 +1,10 @@
 package com.nibble.hashcaller.view.ui.sms.util
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.database.Cursor
 import android.util.Log
+import com.nibble.hashcaller.view.ui.contacts.getAllSMSCursor
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,10 +15,11 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class SmsRepositoryHelper(private val cursor: Cursor?) {
+class SmsRepositoryHelper(private val context: Context?) {
     @SuppressLint("LongLogTag")
     suspend fun fetchWithRawData(): MutableList<SMS>  = withContext(
         Dispatchers.IO) {
+        var cursor:Cursor? = null
         var data = ArrayList<SMS>()
         val listOfMessages = mutableListOf<SMS>()
 
@@ -31,7 +34,7 @@ class SmsRepositoryHelper(private val cursor: Cursor?) {
             var count = 0
             var map: HashMap<String?, String?> = HashMap()
 
-
+             cursor = context?.getAllSMSCursor()
             //https://stackoverflow.com/questions/2315203/android-distinct-and-groupby-in-contentresolver
             if (cursor != null && cursor.moveToFirst()) {
                 //                    val spammersList = spamListDAO?.getAll()

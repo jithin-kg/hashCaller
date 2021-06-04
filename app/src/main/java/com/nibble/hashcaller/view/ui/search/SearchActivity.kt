@@ -201,10 +201,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
         //todo pass only context, then create cursor from that funnction, because cursor is always closer after each function call
         this.searchViewmodel = ViewModelProvider(
             this, AllSearchInjectorUtil.provideViewModelFactory(
-                getAllSMSCursor(),
-                this,
-                getAllCallLogsCursor()
-            )
+                this)
         ).get(AllSearchViewmodel::class.java)
 
         dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(this))

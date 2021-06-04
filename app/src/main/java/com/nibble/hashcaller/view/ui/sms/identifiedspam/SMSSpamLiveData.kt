@@ -64,7 +64,7 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor()),
+                SmsRepositoryHelper(context),
                 LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
                 CountrycodeHelper(context).getCountryISO()
 
@@ -168,7 +168,7 @@ class SMSSpamLiveData(private val context: Context, lifecycleScope: LifecycleCor
                 DataStoreRepository(context.tokeDataStore),
                 TokenHelper( FirebaseAuth.getInstance().currentUser),
                 callLogDAO,
-                SmsRepositoryHelper(context.getAllSMSCursor()),
+                SmsRepositoryHelper(context),
                 LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
                 CountrycodeHelper(context).getCountryISO()
             )

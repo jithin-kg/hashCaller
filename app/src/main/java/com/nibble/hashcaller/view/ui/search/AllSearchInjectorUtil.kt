@@ -9,15 +9,12 @@ import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 
 object AllSearchInjectorUtil {
     fun provideViewModelFactory(
-        smsCursor: Cursor?,
         context: Context,
-        allCallLogsCursor: Cursor?
     ): AllSearchViewmodelFactory {
 
-        val allSearchRepository = AllSearchRepository(smsCursor, context,
-            allCallLogsCursor,
+        val allSearchRepository = AllSearchRepository( context,
             ContactsQueryHelper(context),
-            SmsRepositoryHelper(smsCursor)
+            SmsRepositoryHelper(context)
         )
         return AllSearchViewmodelFactory(allSearchRepository, LibPhoneCodeHelper(PhoneNumberUtil.getInstance()))
     }
