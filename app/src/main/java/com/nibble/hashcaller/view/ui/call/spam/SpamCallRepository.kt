@@ -10,7 +10,9 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class SpamCallRepository(private val callLogDao: ICallLogDAO, private val context: Context) {
+class SpamCallRepository(
+    private val callLogDao: ICallLogDAO,
+    private val context: Context) {
     fun getSpamCallLogLivedata(): LiveData<MutableList<CallLogTable>> {
        return callLogDao.getSpamCallLogLivedata()
     }

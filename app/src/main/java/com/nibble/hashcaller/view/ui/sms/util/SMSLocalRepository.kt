@@ -2198,7 +2198,7 @@ class SMSLocalRepository(
     }
 
     suspend fun marAsReportedByUserInCall(contactAddress: String)  = withContext(Dispatchers.IO){
-        val formatedAdders = formatPhoneNumber(contactAddress)
+        val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
 //        val log =  callLogDAO?.findOne(formatedAdders)
 //        if(log!=null){
 //            var spamCount = log.spamCount

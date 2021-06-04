@@ -63,7 +63,7 @@ class MyCallScreeningService: CallScreeningService() {
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
-    private val countryCodeIso  =  CountrycodeHelper(this).getCountryISO()
+    private lateinit var countryCodeIso :String
     //    private  var _window:Window? = null
 //    private  val window:Window get() = _window!!
 
@@ -75,6 +75,8 @@ class MyCallScreeningService: CallScreeningService() {
 //    rivate val notificationManager = NotificationManagerImpl()
     @SuppressLint("LongLogTag")
     override fun onScreenCall(callDetails: Call.Details) {
+
+        countryCodeIso = CountrycodeHelper(this.applicationContext).getCountryISO()
         rcfirebaseAuth = FirebaseAuth.getInstance()
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)

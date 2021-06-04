@@ -62,7 +62,13 @@ object SMSListInjectorUtil {
             )
         }
 
-        val generalBlockRepository = GeneralBlockRepository(callLogDAO, smsThreadsDAO, blockListDao)
+        val generalBlockRepository = GeneralBlockRepository(
+            callLogDAO,
+            smsThreadsDAO,
+            blockListDao,
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+            CountrycodeHelper(context).getCountryISO()
+        )
 
         return SMSListViewModelFactory(messagesLiveData, repository, blockListPatternRepository, generalBlockRepository)
     }

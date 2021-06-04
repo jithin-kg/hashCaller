@@ -92,7 +92,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                      * send the list to server
                      */
                     val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
-
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
 
                     if(result?.code() in (500..599)){

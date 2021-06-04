@@ -105,7 +105,7 @@ class CallContainerRepository(
      */
     suspend fun deleteCallLogsFromDBByid(address: String) = withContext(Dispatchers.IO) {
 //            callLogDAO?.delete(id)
-            callLogDAO?.markAsDeleted(formatPhoneNumber(address), true)
+            callLogDAO?.markAsDeleted(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(address), countryISO), true)
         delay(400L)
     }
 
@@ -378,7 +378,7 @@ class CallContainerRepository(
 //                        i++
 //                    }
                     var number = cursor.getString(0)
-                    val formatedNum = formatPhoneNumber(number)
+                    val formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(number), countryISO)
                     if(!setOfAddres.contains(formatedNum)){
                         setOfAddres.add(formatedNum)
                     }else{
@@ -420,7 +420,7 @@ class CallContainerRepository(
                     val log = CallLogTable(id = id, name = name,
                         number = number, type = type, duration = duration,
                         dateInMilliseconds = dateInMilliseconds,
-                        simId = simID, color =color, numberFormated = formatPhoneNumber(number) )
+                        simId = simID, color =color, numberFormated = formatedNum)
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
@@ -563,7 +563,6 @@ class CallContainerRepository(
     }
 
     suspend fun insertIntoCallLogDb(logsFromContentProvider: MutableList<CallLogTable>) = withContext(Dispatchers.IO) {
-
         callLogDAO?.insert(logsFromContentProvider)
 
     }
@@ -624,7 +623,7 @@ class CallContainerRepository(
      * searach in calllog db
      */
     suspend fun findFromCallLogTable(contactAddress: String): CallLogTable?  = withContext(Dispatchers.IO){
-        return@withContext callLogDAO?.find(formatPhoneNumber(contactAddress))
+        return@withContext callLogDAO?.find(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO))
 
     }
     /**
@@ -639,11 +638,11 @@ class CallContainerRepository(
     }
 
    suspend fun updateWithCproviderInfo(number: String, nameAndThumbnailFromCp: NameAndThumbnail)  = withContext(Dispatchers.IO){
-        callLogDAO?.updateWitCproviderInfo(formatPhoneNumber(number), nameAndThumbnailFromCp.name, nameAndThumbnailFromCp.thumbnailUri )
+        callLogDAO?.updateWitCproviderInfo(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(number), countryISO), nameAndThumbnailFromCp.name, nameAndThumbnailFromCp.thumbnailUri )
     }
 
     suspend fun marAsReportedByUser(contactAddress: String) {
-        val formatedAdders = formatPhoneNumber(contactAddress)
+        val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
 //       val log =  callLogDAO?.findOne(formatedAdders)
 //        if(log!=null){
 //            var spamCount = log.spamCount
@@ -672,7 +671,7 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithImgFromServer(item: CallersInfoFromServer) {
-        callLogDAO?.updateWithServerImage(item.thumbnailImg, formatPhoneNumber(item.contactAddress))
+        callLogDAO?.updateWithServerImage(item.thumbnailImg, libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(item.contactAddress), countryISO))
     }
 
     suspend fun markAsSpamInSMS(contactAddress: String)  = withContext(Dispatchers.IO) {

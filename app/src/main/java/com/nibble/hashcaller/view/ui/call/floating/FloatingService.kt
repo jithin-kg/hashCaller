@@ -56,7 +56,7 @@ class FloatingService: Service() {
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
-    private var countryCodeIso =  CountrycodeHelper(this).getCountryISO()
+    private lateinit var countryCodeIso:String
     private val libPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
 //    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
@@ -79,7 +79,7 @@ class FloatingService: Service() {
         rcfirebaseAuth = FirebaseAuth.getInstance()
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)
-
+        countryCodeIso = CountrycodeHelper(this.applicationContext).getCountryISO()
 
         if(window == null){
             window = Window(this, libPhoneCodeHelper)

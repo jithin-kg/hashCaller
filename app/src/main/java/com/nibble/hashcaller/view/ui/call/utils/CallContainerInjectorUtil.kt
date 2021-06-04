@@ -62,7 +62,13 @@ object CallContainerInjectorUtil {
         val callLogLiveData =
             CallLogLiveData(context!!, repository, lifecycleScope)
 
-        val generalBlockRepository = GeneralBlockRepository(callLogDAO, smsThreadsDAO, blockListDao)
+        val generalBlockRepository = GeneralBlockRepository(
+            callLogDAO,
+            smsThreadsDAO,
+            blockListDao,
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+            CountrycodeHelper(context).getCountryISO()
+        )
 
         return CallContainerViewModelFactory(
             callLogLiveData!!,

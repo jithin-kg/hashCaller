@@ -20,7 +20,7 @@ import com.vmadalin.easypermissions.EasyPermissions
 /**
  * helper class to get sim operator name and country code
  */
-class CountrycodeHelper(val context: Context) {
+class CountrycodeHelper(private val context: Context) {
 
 
      fun getCountrycode(): String {
@@ -74,6 +74,7 @@ class CountrycodeHelper(val context: Context) {
     }
 
     private fun isPhoneReadStatePermissionGiven(): Boolean {
+
        return  EasyPermissions.hasPermissions(context, READ_PHONE_STATE)
 //        if (ActivityCompat.checkSelfPermission(
 //                context,

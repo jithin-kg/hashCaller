@@ -17,6 +17,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,7 +41,9 @@ class IndividualContactRepository(
     private val context: Context,
     private val callersInfoFromServer: CallersInfoFromServerDAO,
     private val phoneNum: String?,
-    private val callLogDAO: ICallLogDAO
+    private val callLogDAO: ICallLogDAO,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
+    private val countryISO: String
 )
    {
        lateinit var cursor:Cursor
@@ -269,7 +272,7 @@ class IndividualContactRepository(
        }
 
        suspend fun getCallLogInfoForNum(phoneNum: String): CallLogTable?  = withContext(Dispatchers.IO){
-        val formatedNum = formatPhoneNumber(phoneNum)
+        val formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(phoneNum), countryISO)
            return@withContext callLogDAO.find(formatedNum)
        }
 

@@ -9,6 +9,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.view.ui.sms.db.ISMSThreadsDAO
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
+import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,13 +17,15 @@ import kotlinx.coroutines.withContext
 class GeneralBlockRepository(
     private val callLogDAO: ICallLogDAO?,
     private val smsThreadsDAO: ISMSThreadsDAO?,
-    private val blockedLIstDao: BlockedLIstDao?
+    private val blockedLIstDao: BlockedLIstDao?,
+    private val libPhoneCodeHelper: LibPhoneCodeHelper,
+    private val countryISO: String
 
-    ) {
+) {
 
 
     suspend fun marAsReportedByUserInCall(contactAddress: String) = withContext(Dispatchers.IO) {
-        val formatedAdders = formatPhoneNumber(contactAddress)
+        val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
 //        val log =  callLogDAO?.findOne(formatedAdders)
 //        if(log!=null){
 //            var spamCount = log.spamCount
