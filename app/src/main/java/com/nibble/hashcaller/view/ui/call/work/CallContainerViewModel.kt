@@ -306,11 +306,9 @@ class CallContainerViewModel(
                     val as1 = async { repository?.marAsReportedByUser(contactAddress) }
 
                     val as2 = async {
-                        blockListPatternRepository.insert(
-                            BlockedListPattern(
-                                null, formatPhoneNumber(contactAddress),
-                                "", EXACT_NUMBER
-                            )
+                        blockListPatternRepository.insertPattern(
+                           contactAddress,
+                            EXACT_NUMBER
                         )
 
                     }

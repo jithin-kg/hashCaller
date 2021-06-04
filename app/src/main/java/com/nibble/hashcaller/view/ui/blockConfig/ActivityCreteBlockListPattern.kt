@@ -98,14 +98,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
                     patternRegex = "([0-9]*$newPattern[0-9]*)"
                 }
             }
-            val blockListPattern =
-                BlockedListPattern(
-                    null,
-                    newPattern!!,
-                    patternRegex,
-                    patterntype
-                )
-            blockListViewModel.insert(blockListPattern).observe(this, Observer {
+            blockListViewModel.insert(newPattern, patterntype).observe(this, Observer {
                 if(it == OPERATION_COMPLETED){
                     finish()
                 }

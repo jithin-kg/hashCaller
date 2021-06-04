@@ -10,6 +10,7 @@ import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.view.ui.contacts.utils.ALREADY_EXISTS_IN_DB
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,25 @@ class BlockListPatternRepository(
             }else{
                 return@withContext ALREADY_EXISTS_IN_DB
             }
+
+    }
+
+    @SuppressLint("LongLogTag")
+    suspend fun insertPattern(numberPattern: String, type:Int): Int  = withContext(Dispatchers.IO){
+       val formatedNumPattern = libCountryHelper.getES164Formatednumber(formatPhoneNumber(numberPattern), countryCodeIso)
+       val  blockedListPattern =  BlockedListPattern(
+            null, formatedNumPattern,
+            "", EXACT_NUMBER
+        )
+
+        val res =  blockedLIstDao?.find(formatedNumPattern, blockedListPattern.type)
+        if(res==null){
+            blockedLIstDao?.insert(blockedListPattern)
+            return@withContext OPERATION_COMPLETED
+
+        }else{
+            return@withContext ALREADY_EXISTS_IN_DB
+        }
 
     }
     @SuppressLint("LongLogTag")
@@ -80,7 +100,7 @@ class BlockListPatternRepository(
     }
 
     suspend fun fidOneLike(contactAddress:String){
-        val formated = formatPhoneNumber(contactAddress)
+        val formated = libCountryHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryCodeIso)
         blockedLIstDao?.find(formated, BLOCK_TYPE_EXACT_NUMBER)
     }
 

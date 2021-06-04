@@ -1049,8 +1049,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if(showMessageFragment){
                 menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
             }else{
-                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
-
+                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_line)
             }
 
             if(showContactsFragment){

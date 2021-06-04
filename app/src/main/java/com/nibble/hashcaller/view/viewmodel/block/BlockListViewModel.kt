@@ -41,6 +41,6 @@ public class BlockListViewModel(application: Application) : AndroidViewModel(app
     //creating a coroutine to call suspending function
     //view models have their on scope we are launching coroutine on the viewmodelScope
     fun insert(blockedListPattern: BlockedListPattern) = viewModelScope.launch(Dispatchers.IO){
-        blockListPatternRepository.insert(blockedListPattern)
+//        blockListPatternRepository.insert(blockedListPattern)
     }
 }

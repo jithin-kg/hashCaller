@@ -159,13 +159,9 @@ class SMSViewModel(
 //                             contactAddress = thread.numFormated
 //                            repository?.markAsSpam(contactAddress, 1, "", "")
 
-                            blockListPatternRepository.insert(
-                                BlockedListPattern(
-                                    null,
-                                    formatPhoneNumber(contactAddress),
-                                    "",
+                            blockListPatternRepository.insertPattern(
+                                    contactAddress,
                                     EXACT_NUMBER
-                                )
                             )
                     blockListPatternRepository?.markAsSpam(contactAddress)
                  }

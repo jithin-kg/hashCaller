@@ -11,7 +11,6 @@ import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
-import kotlinx.coroutines.*
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -42,8 +41,8 @@ class BlockListViewModel(application: Application) : AndroidViewModel(applicatio
 
     //creating a coroutine to call suspending function
     //view models have their on scope we are launching coroutine on the viewmodelScope
-    fun insert(blockedListPattern: BlockedListPattern):  LiveData<Int> = liveData{
-        blockListPatternRepository.insert(blockedListPattern).apply {
+    fun insert(newPattern: String, patterntype: Int):  LiveData<Int> = liveData{
+        blockListPatternRepository.insertPattern(newPattern, patterntype).apply {
             emit( OPERATION_COMPLETED)
         }
 

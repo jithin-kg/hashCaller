@@ -40,12 +40,7 @@ class GeneralblockViewmodel(
                     val as1 = async { repository?.marAsReportedByUserInCall(contactAddress) }
 
                     val as2 = async {
-                        blockListPatternRepository.insert(
-                            BlockedListPattern(
-                                null, formatPhoneNumber(contactAddress),
-                                "", EXACT_NUMBER
-                            )
-                        )
+                        blockListPatternRepository.insertPattern(contactAddress,EXACT_NUMBER )
                     }
 
                     val as3 = async {
