@@ -11,22 +11,34 @@ import java.util.*
 
 class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
 
-    suspend fun getCountryCode(phoneNum:String): String = withContext(Dispatchers.IO) {
-        var countryCodeIso = ""
+    suspend fun getCountryIso(phoneNum: String, countryIso: String){
         try {
-            val numberProto =phoneUtil.parse(phoneNum, "")
+            val numberProto =phoneUtil.parse(phoneNum, countryIso)
+            val regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
+            Log.d(TAG+"iso", "getCopuntryIso: regionCode:$regionCode")
+        }catch (e:Exception){
+            Log.d(TAG+"iso", "getCopuntryIso: $e")
+        }
+    }
+    suspend fun getCountryName(phoneNum:String): String = withContext(Dispatchers.IO) {
+        var countryName = ""
+        try {
+            val numberProto =phoneUtil.parse(phoneNum, "IN")
+
 //             countryCode = numberProto.countryCode.toString()
 //            PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY
 //            PhoneNumberOfflineGeocoder
            val geocoder =  PhoneNumberOfflineGeocoder.getInstance()
-            countryCodeIso= geocoder.getDescriptionForNumber(numberProto, Locale.ENGLISH)
-            Log.d(TAG, "getCountryCode: $countryCodeIso")
+            countryName= geocoder.getDescriptionForNumber(numberProto, Locale.ENGLISH)
+            val regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
+
+            Log.d(TAG, "getCountryCode: $countryName")
 
         }catch (e:Exception){
             Log.d(TAG, "getCountryCode: exception $phoneNum  $e")
         }
-        Log.d(TAG, "getCountryCode: returning $countryCodeIso")
-        return@withContext countryCodeIso
+        Log.d(TAG, "getCountryCode: returning $countryName")
+        return@withContext countryName
     }
 
     /**
@@ -43,6 +55,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
            val e164Formated = phoneUtil.format(numProto, PhoneNumberUtil.PhoneNumberFormat.E164)
            val formatedNumProto = phoneUtil.parse(e164Formated, countryIso)
            val isValidNumberForRegion = phoneUtil.isValidNumberForRegion(formatedNumProto, countryIso)
+
            if(isValidNumberForRegion){
                formatedNumber = e164Formated
            }

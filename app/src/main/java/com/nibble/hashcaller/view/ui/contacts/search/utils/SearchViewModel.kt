@@ -135,7 +135,7 @@ class SearchViewModel(
     }
 
     fun getCountryForNumber(phoneNumber: String) :LiveData<String> = liveData {
-       emit( libPhoneCodeHelper.getCountryCode(phoneNumber))
+       emit( libPhoneCodeHelper.getCountryName(phoneNumber))
     }
 
     fun getCallerInfo(phoneNumber: String): LiveData<CntctitemForView> = liveData {
@@ -169,7 +169,7 @@ class SearchViewModel(
             Log.d(TAG, "getCallerInfo: $e")
         }
         try {
-           country =  libPhoneCodeHelper.getCountryCode(phoneNumber)
+           country =  libPhoneCodeHelper.getCountryName(phoneNumber)
         }catch (e:java.lang.Exception){
             Log.d(TAG, "getCallerInfo: $e")
         }

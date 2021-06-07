@@ -82,7 +82,7 @@ class CallLocalRepository(
                      */
                     dateInMilliseconds += name + id + Math.random().toString();
 
-                    val log = CallLogData(id, formatedNum, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
+                    val log = CallLogData(id, number = formatedNum, callType, duration, name, dateString,dateInMilliseconds = dateInMilliseconds)
                     listOfCallLogs.add(log)
                 }while (cursor.moveToNext())
 

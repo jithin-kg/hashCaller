@@ -100,6 +100,8 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/callToolbarLayoutItems" />-->
 <!--    https://storyset.com/illustration/lantern/rafiki/animate-->
+<!--    https://generated.photos/face-generator for face generation-->
+<!--    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView"
         android:layout_width="0dp"

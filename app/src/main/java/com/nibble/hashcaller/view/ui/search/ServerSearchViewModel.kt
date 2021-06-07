@@ -47,7 +47,7 @@ class ServerSearchViewModel(
         defServerinfoAvialableInDb?.cancel()
         defServerSearch = null
         defServerinfoAvialableInDb = null
-        defServerinfoAvialableInDb = async { getServerinfoAvailableInDb(formatedNum) }
+        defServerinfoAvialableInDb = async { getServerinfoAvailableInDb(formatedNum, countryIso) }
 
 
        val hashed =  Secrets().managecipher(packageName,formatedNum)
@@ -136,8 +136,8 @@ class ServerSearchViewModel(
         searchNetworkRepository.saveServerInfoIntoDB(contact)
     }
 
-    suspend fun getServerinfoAvailableInDb(formatedNum: String): CallersInfoFromServer? {
-        return searchNetworkRepository.findOneInDb(formatedNum)
+    suspend fun getServerinfoAvailableInDb(formatedNum: String, countryIso: String): CallersInfoFromServer? {
+        return searchNetworkRepository.findOneInDb(formatedNum, countryIso)
 
 
     }

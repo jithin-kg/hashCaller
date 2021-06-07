@@ -44,19 +44,19 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
 
     }
     private fun observeUserInfo() {
-        sharedUserInfoViewmodel.userInfoLivedata.observe(this, Observer {
-            if (it != null) {
-                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-                binding.tvFirstLetterMain.text = fLetter
-                binding.tvFullNameMain.text = "${it.firstname} ${it.lastName}"
-                if(!it.photoURI.isNullOrEmpty()){
-                    binding.imgViewAvatarMain.setImageBitmap(getDecodedBytes(it.photoURI))
-                    binding.tvFirstLetterMain.beInvisible()
-                }else{
-                    binding.tvFirstLetterMain.beVisible()
-                }
-            }
-        })
+//        sharedUserInfoViewmodel.userInfoLivedata.observe(this, Observer {
+//            if (it != null) {
+//                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+//                binding.tvFirstLetterMain.text = fLetter
+//                binding.tvFullNameMain.text = "${it.firstname} ${it.lastName}"
+//                if(!it.photoURI.isNullOrEmpty()){
+//                    binding.imgViewAvatarMain.setImageBitmap(getDecodedBytes(it.photoURI))
+//                    binding.tvFirstLetterMain.beInvisible()
+//                }else{
+//                    binding.tvFirstLetterMain.beVisible()
+//                }
+//            }
+//        })
     }
     private fun getUserInfo() {
         viewmodel.getUserInfo()

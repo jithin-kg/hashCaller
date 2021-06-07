@@ -126,11 +126,11 @@ class InCommingCallManager(
 
       for (item in blockedListpatternDAO.getAllBLockListPatternList()){
 
-              if(item.type == NUMBER_STARTS_WITH){
+              if(item.type == NUMBER_STARTS_WITH) {
                   match =   phoneNumber.startsWith(item.numberPattern)
               }else if(item.type == NUMBER_CONTAINING ){
                   match =  phoneNumber.contains(item.numberPattern)
-              }else{
+              }else {
                   match = phoneNumber.endsWith(item.numberPattern)
               }
               if(match){

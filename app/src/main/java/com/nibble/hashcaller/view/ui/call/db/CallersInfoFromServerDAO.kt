@@ -14,7 +14,9 @@ import java.util.*
  */
 @Dao
 interface CallersInfoFromServerDAO {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    //important to make OnConflictStrategy to REAPLACE , otherwise when new data are inserted for outdated number infos,
+    //insert wont happen
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(callersList: List<CallersInfoFromServer>)
 
     @Query("DELETE from callers_info_from_server WHERE contact_address=:address")

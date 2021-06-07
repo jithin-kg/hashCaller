@@ -89,24 +89,27 @@
                 android:text="@string/hashcaller_name"
                 android:textColor="@color/textColor"
                 android:textSize="24sp"
+                android:layout_marginStart="16dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
                 app:layout_constraintTop_toTopOf="parent" />
+<!--https://www.flaticon.com/free-icon/shield_786447?term=shield&page=1&position=35&page=1&position=35&related_id=786447&origin=search-->
+<!--          attribution <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <ImageView
                 android:id="@+id/imgBtnCallTbrMore"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:background="?android:selectableItemBackground"
-                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_more_vert" />
+                android:src="@drawable/ic_shield"
+                />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/imgBtnCallTbrDelete"

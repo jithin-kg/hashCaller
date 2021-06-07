@@ -132,7 +132,7 @@ class Window(
 
     private  suspend fun setCountryCode() = withContext(Dispatchers.IO)  {
         if(phoneNumber.isNotEmpty()){
-            val country = countryCodeHelper?.getCountryCode(phoneNumber)
+            val country = countryCodeHelper?.getCountryName(phoneNumber)
             setcountry(country)
         }
 

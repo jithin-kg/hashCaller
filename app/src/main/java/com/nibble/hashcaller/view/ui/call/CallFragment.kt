@@ -85,8 +85,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
 
-    private  var _binding: FragmentCallBinding? = null
-    private val binding get() = _binding!!
+    private  lateinit var binding: FragmentCallBinding
     private var isDflt = false
     private var isInternetAvailable = false
     private var isScreeningApp = false
@@ -115,7 +114,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     /************/
     var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
     private var btnBlock:Button? = null
 
@@ -126,12 +124,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-    _binding = FragmentCallBinding.inflate(inflater, container, false)
+    binding = FragmentCallBinding.inflate(inflater, container, false)
 //        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
 //    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
-        user = FirebaseAuth.getInstance().currentUser
-       tokenHelper =  TokenHelper(user)
+       tokenHelper =  TokenHelper(FirebaseAuth.getInstance().currentUser)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
         initRecyclerView()
@@ -449,7 +445,6 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         super.onDestroyView()
         Log.d(TAG, "onDestroyView: ")
 //        viewmodel.callLogTableData?.removeObserver(this)
-        _binding = null
         viewmodel = null
     }
 
@@ -1080,7 +1075,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         binding.imgBtnCallTbrBlock.beInvisible()
         binding. imgBtnCallTbrMuteCaller.beInvisible()
         binding.imgBtnCallTbrDelete.beInvisible()
-        binding.imgBtnCallTbrMore.beInvisible()
+//        binding.imgBtnCallTbrMore.beInvisible()
         binding.tvCallSelectedCount.beInvisible()
         binding.imgBtnCallUnMuteCaller.beInvisible()
         binding.pgBarDeleting.beInvisible()

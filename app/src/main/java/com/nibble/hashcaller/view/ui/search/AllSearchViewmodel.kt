@@ -21,6 +21,8 @@ class AllSearchViewmodel(
     private  var defContacts:Deferred<MutableList<Contact>>? = null
     private  var defSMS:Deferred<MutableList<SMS>>? = null
     fun onQueryTextChanged(searchTerm:String) = viewModelScope.launch {
+
+//        libPhoneCodeHelper.getCountryIso( libPhoneCodeHelper.getES164Formatednumber(searchTerm, countryIso = "IN"))
         defContacts?.cancel()
         defSMS?.cancel()
 

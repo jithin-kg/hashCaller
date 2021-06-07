@@ -9,7 +9,6 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
-import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -114,10 +113,14 @@ class SearchNetworkRepository(
         }
     }
 
-    suspend fun findOneInDb(fno: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
+    suspend fun findOneInDb(fno: String, userSelectedCountryIso: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
+
+
         var formatedNum = formatPhoneNumber(fno)
 
-        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
+        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum,
+            this@SearchNetworkRepository.countryIso
+        )
         return@withContext callersInfoFromServerDAO?.find(formatedNum)
     }
 
