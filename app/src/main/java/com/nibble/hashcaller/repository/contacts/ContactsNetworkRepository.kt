@@ -12,6 +12,7 @@ import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.auth.TokenManager
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
+import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import retrofit2.Response
 
 import java.io.IOException
@@ -43,7 +44,7 @@ class ContactsNetworkRepository(private val context: Context,
     suspend fun
             uploadContacts(
         contacts: ContactsSyncDTO
-    ): Response<ContactsUploadResponse>? {
+    ): Response<UnknownCallersInfoResponse>? {
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 

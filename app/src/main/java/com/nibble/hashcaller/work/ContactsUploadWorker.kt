@@ -22,6 +22,8 @@ import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.*
@@ -44,6 +46,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private var contactRepository:WorkerContactRepository? = null
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
+    val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -76,17 +79,32 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                     val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
-
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
 
-                    Log.d(TAG, "result:$result")
-                    Log.d(TAG, "body:${result?.body()}")
-                    val cntcts = result?.body()?.cntcts
-                    Log.d("__size", "doWork: result list size is ${cntcts!!.size}")
-                    saveContactsToLocalDB(cntcts)
+                    if(result!=null){
+                        for(cntct in result?.body()?.contacts!!){
+                            var formated = formatPhoneNumber(cntct.phoneNumber)
+
+                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+                                contactAddress = formated,
+                                spammerType = 0,
+                                firstName = cntct.firstName?:"",
+                                informationReceivedDate =Date(),
+                                spamReportCount =  cntct.spamCount,
+                                isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+                                thumbnailImg = cntct.imageThumbnail?:""
+                            )
+
+                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                        }
+                    }
+                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                     saveDateInContactLastSycnDate()
                 }
             }
@@ -122,14 +140,12 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             for(contact in allcontactsInContentProvider){
 
                 if(!contact.phoneNumber.isNullOrEmpty()){
-                    var formattedPhoneNum = formatPhoneNumber(contact.phoneNumber)
 //                    formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
-                    val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
+//                    val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
+                    val res = callersInfoFromServerDAO.find(contact.phoneNumber)
                     if(res==null){
-                        Log.d(TAG , "not in db: $formattedPhoneNum")
-//                        formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
-
-                        var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
+                        Log.d(TAG , "not in db: ${contact.phoneNumber}")
+                        var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, contact.phoneNumber)
 //                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
                         Log.d("__hashedInContactUploadWorker", "setNewlySavedContactsList: hashed num is ${hashedPhoneNum}")
                         hashedPhoneNum?.let {
@@ -145,22 +161,24 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     }
 
     
-    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<ContactUploadResponseItem>?) {
-        Log.d(TAG, "saveContactsToLocalDB:  ")
-        var cts:MutableList<ContactTable>? = mutableListOf();
-        if (cntactsFromServer != null) {
-            for(item in cntactsFromServer){
-                Log.d(TAG, "saveContactsToLocalDB: inserting ${item}")
-                val c = ContactTable(null, formatPhoneNumber(item.phoneNumber), item.name,
-                    item.carrier,item.location, "india", item.spamCount)
-                contactLocalSyncRepository.insertSingleContactItem(c)
-                cts?.add(c)
-            }
-        }
-        Log.d(TAG, "saveContactsToLocalDB: inserting ${cts}")
-        Log.d(TAG, "saveContactsToLocalDB: inserting size is  ${cts!!.size}")
-        contactLocalSyncRepository.insertContacts(cts!!)
-    }
+//    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<UnknownCallersInfoResponse>?) {
+//        Log.d(TAG, "saveContactsToLocalDB:  ")
+//        var cts:MutableList<CallersInfoFromServer>? = mutableListOf();
+//        if (cntactsFromServer != null) {
+//            for(item in cntactsFromServer){
+////                Log.d(TAG, "saveContactsToLocalDB: inserting ${item}")
+////                val c = ContactTable(null, formatPhoneNumber(item.phoneNumber), item.name,
+////                    item.carrier,item.location, "india", item.spamCount)
+////                contactLocalSyncRepository.insertSingleContactItem(c)
+////                cts?.add(c)
+//                val callerInfo = CallersInfoFromServer(contact)
+//
+//            }
+//        }
+//        Log.d(TAG, "saveContactsToLocalDB: inserting ${cts}")
+//        Log.d(TAG, "saveContactsToLocalDB: inserting size is  ${cts!!.size}")
+////        contactLocalSyncRepository.insertContacts(cts!!)
+//    }
 
     private suspend fun saveDateInContactLastSycnDate() {
         this.contactsLastSyncedDateDAO.delteAll()

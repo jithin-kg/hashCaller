@@ -46,7 +46,7 @@ import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener, MyUndoListener.SnackBarListner,
     PopupMenu.OnMenuItemClickListener {
-
+    //devhashcaller@gmail.com : newDevHashCaller@535
     private lateinit var binding:ActivityIndividualCotactViewBinding
     private lateinit var viewModel:IndividualcontactViewModel
     private lateinit var generalBlockViewmodel: GeneralblockViewmodel
@@ -142,7 +142,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     @SuppressLint("LongLogTag")
     private fun setClearImage(photoURI: String?) {
         binding.tvName.text = name
-        binding.txtViewNumber.text = phoneNum
+        binding.tvNameSmall.text = name
+
+//        binding.txtViewNumber.text = phoneNum
 
 //        if(!photoURI.isNullOrEmpty()){
             viewModel.getClearImage(phoneNum).observe(this, Observer {
@@ -194,20 +196,22 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun observeBlockedDetails() {
-
+        
 //        viewModel.callersinfoLivedata.observe(this, Observer { lst ->
-//            viewModel.isThisAddressBlockedByUser(phoneNum,  isBlockTopSpammersAutomaticallyEnabled()).observe(this, Observer {
-//                if (it == true) {
-//                    binding.tvBlockBtnInfo.text = "Unblock"
-//                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
-//                    isBlocked = true
-//                } else {
-//                    binding.tvBlockBtnInfo.text = "Block"
-//                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
-//
-//                    isBlocked = false
-//                }
-//            })
+//            Log.d(TAG, "observeBlockedDetails: ")
+////            viewModel.updateCallerInfo(lst)
+////            viewModel.isThisAddressBlockedByUser(phoneNum,  isBlockTopSpammersAutomaticallyEnabled()).observe(this, Observer {
+////                if (it == true) {
+////                    binding.tvBlockBtnInfo.text = "Unblock"
+////                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
+////                    isBlocked = true
+////                } else {
+////                    binding.tvBlockBtnInfo.text = "Block"
+////                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
+////
+////                    isBlocked = false
+////                }
+////            })
 //        })
     }
 
@@ -260,11 +264,13 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //        imgViewAvatar.setOnClickListener(this)
 //        switchIndividualContact.setOnCheckedChangeListener(this)
         binding.switchIndividualContact.setOnClickListener(this)
-        binding.imgBtnBlockIndividualContact.setOnClickListener(this)
+        binding.btnBlockIndividualContact.setOnClickListener(this)
+//        binding.imgBtnBlockIndividualContact.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
         binding.imgBtnCallindividual.setOnClickListener(this)
         binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
+
 
         radioS.setOnClickListener(this)
         radioScam.setOnClickListener(this)
@@ -293,16 +299,16 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     override fun onClick(v: View?) {
 
         when(v?.id){
-            R.id.imgBtnBlockIndividualContact -> {
+            R.id.btnBlockIndividualContact -> {
 
-//                if (!isBlocked) {
+                if (!isBlocked) {
                     showBottomSheetDialog()
 //
-//                }
+                }
 
-//                else {
-//                    blockOrUnBlock()
-//                }
+                else {
+                    blockOrUnBlock()
+                }
 
 
             }

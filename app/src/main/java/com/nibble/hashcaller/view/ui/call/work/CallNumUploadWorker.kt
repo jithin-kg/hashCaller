@@ -116,7 +116,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                        }
                    }
-
                     callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                 }
             }else{

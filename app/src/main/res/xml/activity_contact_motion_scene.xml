@@ -13,19 +13,17 @@
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
+
         <Constraint
             android:id="@+id/tvName"
             motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             motion:layout_constraintTop_toBottomOf="@+id/ivAvatar"
             motion:layout_goneMarginBottom="40dp"
-            motion:layout_editor_absoluteX="254dp"
             android:gravity="center"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+            motion:layout_constraintStart_toStartOf="parent" />
         <Constraint
             android:id="@+id/imgBtnBack"
             android:layout_width="wrap_content"
@@ -35,61 +33,52 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp" />
         <Constraint
-            android:id="@+id/textViewPhoneNum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            motion:layout_constraintTop_toBottomOf="@+id/tvName"
-            android:layout_marginTop="32dp"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
-
-            />
-        <Constraint
-            android:id="@+id/txtViewNumber"
-            android:layout_height="wrap_content"
-            motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="24dp"
-            motion:layout_constraintHorizontal_bias="0.498"
-            motion:layout_constraintEnd_toEndOf="parent"
-            android:layout_width="wrap_content"
-            motion:layout_constraintTop_toBottomOf="@+id/tvName"
-             />
-        <Constraint
+            android:id="@+id/ivAvatar"
             motion:layout_constraintWidth_percent=".28"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="150dp"
             android:layout_height="150dp"
             motion:layout_constraintDimensionRatio="1"
             motion:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/ivAvatar"
             motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp"
             android:visibility="visible" />
         <Constraint
+            android:id="@+id/tvFirstLetter"
             motion:layout_constraintWidth_percent=".28"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="150dp"
             android:layout_height="150dp"
             motion:layout_constraintDimensionRatio="1"
             motion:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/tvFirstLetter"
             android:textSize="56sp"
             motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp" />
         <Constraint
+            android:id="@+id/tvSimCardInfo"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             motion:layout_constraintTop_toBottomOf="@+id/tvisInContact"
-            android:id="@+id/tvSimCardInfo"
             motion:layout_constraintBottom_toBottomOf="parent" />
 
         <Constraint
+            android:id="@+id/tvSimCardInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvSimCardInfo"
             motion:layout_constraintTop_toBottomOf="@+id/tvisInContact"
             motion:layout_constraintBottom_toBottomOf="parent" />
-<!--        <Constraint-->
+
+        <Constraint
+            android:layout_height="@dimen/divider_with_settings"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:id="@+id/imgViewdividerIndvdlCntct"
+            motion:layout_constraintTop_toBottomOf="@+id/tvCallBtnInfo"
+            android:layout_marginTop="28dp"
+            motion:layout_constraintHorizontal_bias="0.0" />
+
+        <!--        <Constraint-->
 <!--            motion:layout_constraintStart_toStartOf="@+id/imgBtnCallIndividualContact"-->
 <!--            android:id="@+id/tvCallBtnInfo" />-->
     </ConstraintSet>
@@ -130,35 +119,23 @@
             motion:layout_constraintVertical_bias="0.656"
             motion:layout_constraintHorizontal_bias="0.04"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp"
+            android:visibility="visible" />
         <Constraint
             android:id="@+id/tvName"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toEndOf="@+id/ivAvatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
-            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
             android:gravity="left"
             android:layout_marginStart="16dp"
-            motion:layout_goneMarginBottom="40dp"
             motion:layout_constraintHorizontal_bias="0.0"
-            motion:layout_constraintVertical_bias="0.4" />
-        <Constraint
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            motion:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="18dp"
-            motion:layout_constraintTop_toBottomOf="@+id/ivAvatar"
-            android:layout_marginTop="16dp"
-            android:id="@+id/scrollView" />
-        <Constraint
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
+            android:layout_marginTop="8dp"
             android:visibility="invisible"
-            motion:layout_editor_absoluteX="138dp"
-            android:id="@+id/txtViewNumber"
-            motion:layout_constraintTop_toTopOf="parent" />
+            motion:layout_editor_absoluteY="6dp"
+            />
+
         <Constraint
             android:id="@+id/imgVAvatarInitial"
             android:layout_width="wrap_content"
@@ -168,30 +145,7 @@
             motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp" />
 
-        <Constraint
-            android:id="@+id/imgBtnBlockIndividualContact"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            motion:layout_editor_absoluteX="189dp"
-            motion:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp" />
-        <Constraint
-            android:id="@+id/imgBtnUnblockICntct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            motion:layout_editor_absoluteX="189dp"
-            motion:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp" />
-        <Constraint
-            android:id="@+id/tvBlockBtnInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            motion:layout_editor_absoluteX="189dp"
-            motion:layout_constraintTop_toTopOf="@+id/imgBtnBlockIndividualContact"
-            android:layout_marginTop="16dp" />
+
         <Constraint
             android:id="@+id/tvCallBtnInfo"
             android:layout_width="wrap_content"
@@ -201,29 +155,65 @@
             motion:layout_constraintTop_toTopOf="@+id/imgVAvatarInitial"
             android:layout_marginTop="16dp" />
         <Constraint
-            android:id="@+id/tvSMSBtnInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            motion:layout_editor_absoluteX="189dp"
-            motion:layout_constraintTop_toTopOf="@+id/imgBtnSMS"
-            android:layout_marginTop="16dp" />
+            android:id="@+id/scrollView"
+            android:layout_height="0dp"
+            android:layout_marginBottom="18dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            motion:layout_constraintTop_toBottomOf="@+id/imgBtnBack"
+            android:layout_marginTop="32dp"
+            />
         <Constraint
-            android:layout_width="wrap_content"
+            android:id="@+id/tvNameSmall"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            motion:layout_editor_absoluteX="104dp"
-            android:id="@+id/imgBtnSMS"
-            motion:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp" />
+            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toEndOf="@+id/ivAvatar"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="visible"
+            />
         <Constraint
+            android:id="@+id/tvNameSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            motion:layout_editor_absoluteX="104dp"
-            android:id="@+id/imgBtnCallindividual"
-            motion:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp" />
+            android:visibility="visible"
+            android:layout_marginStart="8dp"
+            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toEndOf="@+id/ivAvatar"
+            motion:transitionEasing="cubic(0.52,0.53,0.8,0.8)" />
+        <Constraint
+            android:id="@+id/tvNameSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginStart="8dp"
+            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toEndOf="@+id/ivAvatar"
+            motion:transitionEasing="cubic(0.79,0.13,0.8,0.8)" />
+        <Constraint
+            android:id="@+id/tvNameSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginStart="8dp"
+            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toEndOf="@+id/ivAvatar"
+            motion:transitionEasing="cubic(0.91,0,0.8,0.8)" />
+        <Constraint
+            android:id="@+id/tvNameSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginStart="8dp"
+            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toEndOf="@+id/ivAvatar"
+            motion:transitionEasing="cubic(0.88,0,0.8,0.8)" />
+
     </ConstraintSet>
     <!--    <Transition-->
     <!--        motion:constraintSetEnd="@+id/end"-->

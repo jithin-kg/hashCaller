@@ -34,7 +34,7 @@ class IndividualcontactViewModel(
 
     var contactId = 0L
     val mutedContacts = mutedContactsDAO.get().asLiveData()
-    val callersinfoLivedata = callersInfoFromServer.getFlow().asLiveData()
+//    val callersinfoLivedata = callersInfoFromServer.getFlow().asLiveData()
 
     var mt: MutableLiveData<ContactTable>
     var photoUri:MutableLiveData<String>

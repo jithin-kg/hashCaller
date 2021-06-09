@@ -705,7 +705,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         
 
         bottomSheetDialog.setOnDismissListener {
-            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+            Log.d(TAG, "bottomSheetDialogDismissed")
 
         }
 
