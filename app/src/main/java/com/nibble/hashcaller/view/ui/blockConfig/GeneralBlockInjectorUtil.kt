@@ -9,7 +9,9 @@ import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 
 object GeneralBlockInjectorUtil {
-    fun provideUserInjectorUtil(context:Context) : GeneralBlockViewModelFactory {
+    fun provideUserInjectorUtil(
+                                context: Context,
+                                phoneNum: String) : GeneralBlockViewModelFactory {
 
         val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
@@ -32,6 +34,8 @@ object GeneralBlockInjectorUtil {
             CountrycodeHelper(context).getCountryISO()
             )
 
-            return GeneralBlockViewModelFactory(blockListPatternRepository, generalBlockRepository  )
+            return GeneralBlockViewModelFactory(
+                blockListPatternRepository,
+                generalBlockRepository )
     }
 }

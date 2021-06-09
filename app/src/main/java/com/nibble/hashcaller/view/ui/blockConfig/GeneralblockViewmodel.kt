@@ -1,10 +1,7 @@
 package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.work.*
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
@@ -25,12 +22,13 @@ import java.lang.Exception
  * and make as blocked in calllog,smsthread and report to server
  */
 class GeneralblockViewmodel(
-    val repository: GeneralBlockRepository?,
+    val repository: GeneralBlockRepository?, // general block repository to mark as blocked in sms,calllog
     private val blockListPatternRepository: BlockListPatternRepository,
 
+    ):ViewModel() {
 
-):ViewModel() {
-
+    val allBlockListLivedata: LiveData<List<BlockedListPattern>>? =  blockListPatternRepository.getListLiveData()
+    val isThisNumberBlocked : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun blockThisAddress(spammerType: Int, contactAddress:String) : LiveData<Int> = liveData {
 //        contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
@@ -38,6 +36,7 @@ class GeneralblockViewmodel(
             viewModelScope.launch {
                 supervisorScope {
                     val as1 = async { repository?.marAsReportedByUserInCall(contactAddress) }
+                    val as4 = async { repository?.marAsReportedByUserInSMS(contactAddress) }
 
                     val as2 = async {
                         blockListPatternRepository.insertPattern(contactAddress,EXACT_NUMBER )
@@ -58,7 +57,6 @@ class GeneralblockViewmodel(
                                 .build()
                         WorkManager.getInstance().enqueue(oneTimeWorkRequest)
                     }
-                    val as4 = async { repository?.marAsReportedByUserInSMS(contactAddress) }
 
                     try {
                         as1.await()
@@ -98,6 +96,44 @@ class GeneralblockViewmodel(
 
     override fun onCleared() {
         super.onCleared()
+    }
+
+    fun updateBlockListOfIndividual(it: List<BlockedListPattern>?, phoneNum: String) = viewModelScope.launch {
+        //todo replace this with contains method in list
+        if(allBlockListLivedata?.value!=null){
+            for (pattern in allBlockListLivedata.value!!){
+                if(pattern.numberPattern == formatPhoneNumber(phoneNum) && pattern.type == EXACT_NUMBER ){
+                    isThisNumberBlocked.value = true
+                }
+            }
+        }
+    }
+
+    /**
+     * @param numberType :  BlockTypes.BLOCK_TYPE_EXACT_NUMBER, ...
+     */
+    fun removeFromBlockList(phoneNum: String, numberType: Int, randomColor: Int)  = viewModelScope.launch{
+        val defPattern = async { blockListPatternRepository.delete(phoneNum, numberType) }
+        val defCall = async { repository?.markAsNotSpamInCalls(phoneNum, randomColor) }
+        val defSMS = async { repository?.markAsNotSpamInSMS(phoneNum, randomColor) }
+        try{
+            defPattern.await()
+
+        }catch (e:Exception){
+            Log.d(TAG, "removeFromBlockList: $e")
+        }
+        try{
+            defCall.await()
+
+        }catch (e:Exception){
+            Log.d(TAG, "removeFromBlockList: $e")
+        }
+        try{
+            defSMS.await()
+
+        }catch (e:Exception){
+            Log.d(TAG, "removeFromBlockList: $e")
+        }
     }
 
     companion object{

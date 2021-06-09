@@ -308,11 +308,8 @@ class CallContainerViewModel(
                     val as2 = async {
                         blockListPatternRepository.insertPattern(
                            contactAddress,
-                            EXACT_NUMBER
-                        )
-
+                            EXACT_NUMBER )
                     }
-
                     val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
                     val as3 = async { applicationContext?.startSpamReportWorker(contactAddress, spammerType) }
 

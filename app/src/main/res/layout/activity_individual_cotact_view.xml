@@ -92,7 +92,7 @@
         android:tag="name"
         android:text="Test"
         android:textColor="@color/textColor"
-        android:textSize="32sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -183,7 +183,49 @@
                     app:layout_constraintStart_toStartOf="@+id/imgBtnSMS"
                     app:layout_constraintTop_toBottomOf="@+id/imgBtnSMS" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
 
+                >
+
+                <ImageView
+                    android:id="@+id/imgVNumber"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
+                    android:alpha="0.74"
+                    android:src="@drawable/ic_baseline_location_on_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvNumberValue"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvNumberValue" />
+
+                <TextView
+                    android:id="@+id/tvNumberValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:background="@color/colorBackground"
+                    android:padding="20dp"
+                    android:text="number"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_list_item"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imgVNumber"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/imgVDivider1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_with_settings"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutCntct"
                 android:layout_width="match_parent"
@@ -206,17 +248,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_start_info_individual_contact"
-
                     android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
                     android:background="@color/colorBackground"
                     android:padding="20dp"
-                    android:text="Sample "
+                    android:text="@string/this_persons_is_in_your_contact"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_list_item"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imgVCntcInfo"
                     app:layout_constraintTop_toTopOf="parent"
-
                     />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -294,67 +334,12 @@
                 android:layout_marginTop="8dp">
 
                 <ImageView
-                    android:id="@+id/imgVSpamCount"
+                    android:id="@+id/imgViewLocation"
                     android:layout_width="@dimen/settings_icons_width"
                     android:layout_height="@dimen/settings_icons_width"
                     android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
                     android:alpha="0.74"
                     android:src="@drawable/ic_baseline_location_on_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvSpamCountInfo"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tvSpamCountInfo" />
-
-                <TextView
-                    android:id="@+id/tvSpamCountInfo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
-                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
-                    android:alpha="0.70"
-                    android:background="@color/colorBackground"
-                    android:padding="20dp"
-                    android:text="Location"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_list_item"
-                    app:layout_constraintEnd_toEndOf="@+id/tvLocationValues"
-                    app:layout_constraintStart_toEndOf="@+id/imgVSpamCount"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvLocationValues"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_end_cntc_value"
-                    android:alpha="0.84"
-                    android:text=""
-                    android:textColor="@color/textColor"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvSpamCountInfo"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tvSpamCountInfo"
-                    app:layout_goneMarginEnd="16dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ImageView
-                android:id="@+id/imgViewIndvdlCntct5"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_with_settings"
-                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
-                android:alpha="0.12"
-                app:srcCompat="@drawable/horizontal_line_settings" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-
-                <ImageView
-                    android:id="@+id/imgVLocation"
-                    android:layout_width="@dimen/settings_icons_width"
-                    android:layout_height="@dimen/settings_icons_width"
-                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
-                    android:alpha="0.74"
-                    android:src="@drawable/ic_baseline_bug_report_24"
                     app:layout_constraintBottom_toBottomOf="@+id/tvLocationInfo"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tvLocationInfo" />
@@ -368,11 +353,66 @@
                     android:alpha="0.70"
                     android:background="@color/colorBackground"
                     android:padding="20dp"
+                    android:text="Location"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_list_item"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocationValues"
+                    app:layout_constraintStart_toEndOf="@+id/imgViewLocation"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvLocationValues"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_end_cntc_value"
+                    android:alpha="0.84"
+                    android:text=""
+                    android:textColor="@color/textColor"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvLocationInfo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvLocationInfo"
+                    app:layout_goneMarginEnd="16dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                android:id="@+id/imgViewIndvdlCntct5"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_with_settings"
+                android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+                android:alpha="0.12"
+                app:srcCompat="@drawable/horizontal_line_settings" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutSpamCountt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:id="@+id/imgVSpamCountt"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:layout_marginStart="@dimen/margin_start_icon_individual_contact"
+                    android:alpha="0.74"
+                    android:src="@drawable/ic_baseline_bug_report_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSpamCount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvSpamCount" />
+
+                <TextView
+                    android:id="@+id/tvSpamCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:alpha="0.70"
+                    android:background="@color/colorBackground"
+                    android:padding="20dp"
                     android:text="Spam report count"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_list_item"
                     app:layout_constraintEnd_toEndOf="@+id/tvSpamCountValue"
-                    app:layout_constraintStart_toEndOf="@+id/imgVLocation"
+                    app:layout_constraintStart_toEndOf="@+id/imgVSpamCountt"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -383,9 +423,9 @@
                     android:alpha="0.84"
                     android:text=""
                     android:textColor="@color/textColor"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvLocationInfo"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSpamCount"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tvLocationInfo"
+                    app:layout_constraintTop_toTopOf="@+id/tvSpamCount"
                     app:layout_goneMarginEnd="16dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -422,7 +462,7 @@
                 android:layout_height="wrap_content"
                 android:text="Block This number"
                 android:textColor="@android:color/holo_red_light"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 app:icon="@drawable/ic_baseline_block_red"
                 app:iconSize="32dp"
                 android:gravity="start|center_vertical"

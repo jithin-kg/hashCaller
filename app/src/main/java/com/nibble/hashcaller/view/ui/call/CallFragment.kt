@@ -962,7 +962,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
              intent = Intent(context, IndividualContactViewActivity::class.java )
         }
         }
-        intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.numberFormated)
+        intent.putExtra(com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID, log.number)
         intent.putExtra("name", name )
         intent.putExtra("photo", log.thumbnailFromCp)
         intent.putExtra("color", log.color)

@@ -133,6 +133,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     @SuppressLint("LongLogTag")
     private suspend fun setNewlySavedContactsList() {
         val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
+
+        /**
+         * All numbers are formatted to  ES164 standard
+         */
        val  allcontactsInContentProvider =  contactRepository?.fetchContacts()
 
         if (allcontactsInContentProvider != null) {

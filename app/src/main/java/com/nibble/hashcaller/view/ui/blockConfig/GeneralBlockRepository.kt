@@ -26,16 +26,18 @@ class GeneralBlockRepository(
 
     suspend fun marAsReportedByUserInCall(contactAddress: String) = withContext(Dispatchers.IO) {
         val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
-//        val log =  callLogDAO?.findOne(formatedAdders)
-//        if(log!=null){
-//            var spamCount = log.spamCount
-//            spamCount += 1
             callLogDAO?.markAsReportedByUser(formatedAdders, 1)
 //        }
     }
+    suspend fun markAsNotSpamInCalls(contactAddress: String, color:Int) = withContext(Dispatchers.IO) {
+        val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
+        callLogDAO?.removeFromBlockList(formatedAdders, color = color)
+    }
+
 
     suspend fun marAsReportedByUserInSMS(contactAddress: String) = withContext(Dispatchers.IO){
-        val formatedAddress = formatPhoneNumber(contactAddress)
+        var formatedAddress = formatPhoneNumber(contactAddress)
+        formatedAddress = libPhoneCodeHelper.getES164Formatednumber(formatedAddress, countryISO)
         val res  = smsThreadsDAO?.find(formatedAddress)
         if(res!=null){
             var spamCount = res.spamCount
@@ -44,6 +46,10 @@ class GeneralBlockRepository(
 
 
         }
+    }
+    suspend fun markAsNotSpamInSMS(phoneNum: String, randomColor: Int) = withContext(Dispatchers.IO) {
+        val formatedAddress = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(phoneNum), countryISO)
+        smsThreadsDAO?.markAsNotSpam(formatedAddress )
     }
 
     suspend fun updateCallLogsWithblockListpatterns(logs: MutableList<CallLogTable>) = withContext(Dispatchers.IO) {
@@ -104,6 +110,8 @@ class GeneralBlockRepository(
             }
         }
     }
+
+
 
     companion object{
         const val TAG = "__GeneralBlockRepository"

@@ -19,7 +19,7 @@
     <dimen name="selected_text_size">80sp</dimen>
     <dimen name="bottom_fab_margin">32dp</dimen>
     <dimen name="margin_start_individual_contact_items">0dp</dimen>
-    <dimen name="individual_contact_avatar">150dp</dimen>
+    <dimen name="individual_contact_avatar">120dp</dimen>
     <dimen name="text_size_list_item">16sp</dimen>
     <dimen name="list_item_margin_start">16dp</dimen>
     <dimen name="margin_individual_contact_item_list">8dp</dimen>

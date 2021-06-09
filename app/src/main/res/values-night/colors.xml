@@ -11,16 +11,17 @@
     <color name="chat_background_color">#3B3B3B</color>
     <color name="color_round_btn">#303030</color>
 
+
 <!--    <color name="circular_color1">#4FBFB7</color>-->
 <!--    <color name="circular_color2">#7F4FBF</color>-->
 <!--    <color name="circular_color3">#BF4F57</color>-->
 <!--    <color name="circular_color4">#8FBF4F</color>-->
 
 <!--    <color name="circular_color4">#BF4F8F</color>-->
-    <color name="circular_color1">#9DDF85</color>
-    <color name="circular_color2">#259CD2</color>
-    <color name="circular_color3">#7997EB</color>
-    <color name="circular_color4">#EE77AA</color>
+    <color name="circular_color1">#059DC0</color>
+    <color name="circular_color2">#6AF2F0</color>
+    <color name="circular_color3">#A4E8E0</color>
+    <color name="circular_color4">#04ECF0</color>
 
     <!--    <color name="colorBackgroundDark">#000000</color>-->
 <!--    <color name="colorBackground">#111112</color>181a39-->

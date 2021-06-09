@@ -23,14 +23,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
+import com.nibble.hashcaller.local.db.blocklist.BlockTypes
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
+import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
-import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
@@ -40,7 +41,6 @@ import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.utils.getDecodedBytes
-import com.nibble.hashcaller.view.utils.spam.SpamLocalListManager
 
 
 class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
@@ -65,8 +65,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var radioS:RadioButton
     private lateinit var btnBlock:Button
     private lateinit var tvSpamfeedbackMsg : TextView
-
-
+    private var  popup: PopupMenu? = null
     @SuppressLint("LongLogTag")
 //    private  var contactId: Long? = null
 
@@ -74,7 +73,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         binding = ActivityIndividualCotactViewBinding.inflate(layoutInflater)
-
+        //todo if number not in contact dont show edit option/ instead show create contact option
         setContentView(binding.root)
         getIntentExtras()
         setupBottomSheet()
@@ -84,14 +83,58 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         viewModel.getContactsFromDb(phoneNum)
         getContactMutedInformation()
-        getContactFromContentProvider(phoneNum)
-        observeContactMoreInfo()
-        observeBlockedDetails()
-        getinfoFromServer()
         setClearImage(photoURI)
+        getAggregatedContactInfo()
+        obseveContactForView()
+        observeAllBlockedList()
+        observeIsthisNumberBlocked()
 
 
 
+
+    }
+
+    private fun observeIsthisNumberBlocked() {
+        generalBlockViewmodel.isThisNumberBlocked.observe(this, Observer { isNumberBlocked->
+            if(isNumberBlocked){
+                binding.btnBlockIndividualContact.beGone()
+                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
+
+            } else {
+                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = false
+                binding.btnBlockIndividualContact.beVisible()
+            }
+        })
+
+    }
+
+    private fun observeAllBlockedList() {
+        generalBlockViewmodel.allBlockListLivedata?.observe(this, Observer {
+            generalBlockViewmodel.updateBlockListOfIndividual(it, phoneNum)
+        })
+    }
+
+
+
+    private fun getAggregatedContactInfo() {
+        viewModel.getAgregatedContactInformation(phoneNum)
+    }
+
+    private fun obseveContactForView() {
+        viewModel.contactForViewLivedata.observe(this, Observer {
+            if(it.isInInContacts){
+                binding.tvisInContact.text = "This person is in your contact"
+            }else {
+                binding.tvisInContact.text = "This person is not in your contact"
+            }
+            binding.tvFirstLetter.text = it.firstName[0].toString()
+            binding.tvName.text = it.firstName + it.lastName
+            binding.tvLocationValues.text = it.country + " " + it.location
+            binding.tvLocationValues.text = it.spammCount.toString()
+            if(it.firstName==phoneNum){
+                binding.layoutNumber.beGone()
+            }
+        })
     }
 
     private fun getIntentExtras() {
@@ -103,6 +146,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //        val id = intent.getLongExtra("id",0L)
         photoURI = intent.getStringExtra("photo")?:""
         color = intent.getIntExtra("color", 1)
+        binding.tvNumberValue.text = phoneNum
     }
 
     private fun initViewmodel() {
@@ -116,26 +160,27 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         )
 
         generalBlockViewmodel = ViewModelProvider(this, GeneralBlockInjectorUtil.provideUserInjectorUtil(
-            this
-        )).get(GeneralblockViewmodel::class.java)
+            this,
+            phoneNum
+         )).get(GeneralblockViewmodel::class.java)
     }
 
     private fun getinfoFromServer() {
 //        viewModel.getInfoFromServer(phoneNum).observe(this, Observer {
 //            binding.tvSimValue.text = it.carrier
 //        })
-        viewModel.infoFromServer?.observe(this, Observer {
-            it.let {
-                if(it!=null){
-                    binding.tvSimCardValue.text = it.carrier
-                    binding.tvLocationValues.text = it.location
-                    binding.tvSpamCountValue.text = it.spamCount.toString()
-                   // binding.tvSimValue.text = it.carrier
-                    //binding.tvLocationValue.text = "large location value foferdsjshdfkljhsdflksjdfh skjdfh"
-                    //binding.tvIndividualCntSpamCount.text = it.spamCount.toString()
-                }
-            }
-        })
+//        viewModel.infoFromServer?.observe(this, Observer {
+//            it.let {
+//                if(it!=null){
+//                    binding.tvSimCardValue.text = it.carrier
+//                    binding.tvLocationValues.text = it.location
+//                    binding.tvSpamCountValue.text = it.spamCount.toString()
+//                   // binding.tvSimValue.text = it.carrier
+//                    //binding.tvLocationValue.text = "large location value foferdsjshdfkljhsdflksjdfh skjdfh"
+//                    //binding.tvIndividualCntSpamCount.text = it.spamCount.toString()
+//                }
+//            }
+//        })
     }
 
 
@@ -195,25 +240,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-    private fun observeBlockedDetails() {
-        
-//        viewModel.callersinfoLivedata.observe(this, Observer { lst ->
-//            Log.d(TAG, "observeBlockedDetails: ")
-////            viewModel.updateCallerInfo(lst)
-////            viewModel.isThisAddressBlockedByUser(phoneNum,  isBlockTopSpammersAutomaticallyEnabled()).observe(this, Observer {
-////                if (it == true) {
-////                    binding.tvBlockBtnInfo.text = "Unblock"
-////                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_unblock)
-////                    isBlocked = true
-////                } else {
-////                    binding.tvBlockBtnInfo.text = "Block"
-////                    binding.imgBtnBlockIndividualContact.setBackgroundResource(R.drawable.circular_button_block)
-////
-////                    isBlocked = false
-////                }
-////            })
-//        })
-    }
+
 
     private fun getContactMutedInformation() {
 
@@ -221,17 +248,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             viewModel.isThisAddressMuted(phoneNum, lst).observe(this, Observer {
                 binding.switchIndividualContact.isChecked = it
             })
-        })
-    }
-
-    private fun getContactFromContentProvider(phoneNum: String?) {
-        viewModel.getContactFromContentProvider(phoneNum).observe(this, Observer {
-            if (it != null) {
-                binding.tvisInContact.text = "This person is in your contacts"
-            } else {
-                binding.tvisInContact.text = "This person is not in your contacts"
-
-            }
         })
     }
 
@@ -243,39 +259,22 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         finish()
     }
 
-    @SuppressLint("LongLogTag")
-    private fun observeContactMoreInfo() {
-        this.viewModel.mt.observe(this, Observer {
-            if (it != null) {
-                Log.d(TAG, "observeContactMoreInfo:  $it")
-//                textViewLocation.text = it?.location
-//                textViewCarrier.text = it?.carrier
-//            textViewLineType.text = it.
-            }
 
-        })
-    }
 
 //    private fun getMoreInfoForNumber(phoneNum: String?) {
 //        viewModel.getMoreInfoforNumber(phoneNum)
 //    }
 
     private fun initListeners() {
-//        imgViewAvatar.setOnClickListener(this)
-//        switchIndividualContact.setOnCheckedChangeListener(this)
         binding.switchIndividualContact.setOnClickListener(this)
         binding.btnBlockIndividualContact.setOnClickListener(this)
-//        binding.imgBtnBlockIndividualContact.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
         binding.imgBtnCallindividual.setOnClickListener(this)
         binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
-
-
         radioS.setOnClickListener(this)
         radioScam.setOnClickListener(this)
-//        imgExpand.setOnClickListener(this)
-       btnBlock.setOnClickListener(this)
+        btnBlock.setOnClickListener(this)
     }
 
     private fun setImage(photoUri: String?) {
@@ -313,9 +312,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
             }
             R.id.imgBtnMoreIndividualCntct -> {
-                val popup =  getMyPopupMenu(R.menu.individual_contact_popup_menu,binding.imgBtnMoreIndividualCntct)
-                popup.setOnMenuItemClickListener(this)
-                popup.show()
+                popup =  getMyPopupMenu(R.menu.individual_contact_popup_menu,binding.imgBtnMoreIndividualCntct)
+                popup?.setOnMenuItemClickListener(this)
+                popup?.show()
+
             }
             R.id.imgBtnBack -> {
                 finish()
@@ -330,10 +330,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 muteOrUnmute()
             }
             R.id.btnBlock -> {
-
-//                blockOrUnBlock()
+                Log.d(TAG, "onClick: clicked block")
                 blockThisAddress()
-            }else ->{
+            }
+            else -> {
             this.radioButtonClickPerformed(v)
             }
 //            R.id.imgViewAvatar->{
@@ -343,7 +343,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun blockThisAddress() {
-        generalBlockViewmodel.blockThisAddress(spammerType, phoneNum).observe(this, Observer {
+        //todo, while saving spam count in chat threads the spam count is having large number, fix it
+        generalBlockViewmodel.blockThisAddress(
+            spammerType,
+            phoneNum
+        ).observe(this, Observer {
             when(it){
                 ON_COMPLETED -> {
                     bottomSheetDialog.hide()
@@ -353,10 +357,8 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
         })
     }
-
     private fun radioButtonClickPerformed(v: View?) {
         if(v is RadioButton){
-
             when(v.id){
                 R.id.radioScam -> {
                     val checked = v.isChecked
@@ -541,6 +543,14 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             R.id.itemEditContact -> {
                 startContactEditActivity(viewModel.contactId)
             }
+            R.id.itemUnblockNumber -> {
+                Log.d(TAG, "onMenuItemClick: unblock")
+                generalBlockViewmodel.removeFromBlockList(phoneNum,
+                    BlockTypes.BLOCK_TYPE_EXACT_NUMBER,
+                 getRandomColor()
+                )
+            }
+
         }
         return true
     }

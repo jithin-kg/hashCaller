@@ -18,6 +18,7 @@ import com.nibble.hashcaller.utils.getStringValue
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
@@ -60,7 +61,7 @@ class InCommingCallManager(
                             spammCount = result.spammCount?:0L,
                                 thumbnailImg = result.thumbnailImg?:"",
                                     statusCode = response.body()?.status?:0,
-                                        isInfoFoundInServer = result.isInfoFoundInDb?:0,
+                                        isInfoFoundInServer = result.isInfoFoundInDb?:INFO_NOT_FOUND_IN_SERVER,
                                     informationReceivedDate = Date()
 
                         )
@@ -230,7 +231,7 @@ class InCommingCallManager(
                 country = resFromServer?.country?:"",
                 carrier = resFromServer?.carrier?:"",
                 isBlockedByUser = false,
-            isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?:0,
+            isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?:INFO_NOT_FOUND_IN_SERVER,
                 thumbnailImg = resFromServer?.thumbnailImg?:""
                 )
 

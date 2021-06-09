@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.call.utils
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.datastore.DataStoreRepository
@@ -20,6 +21,7 @@ import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
  * Created by Jithin KG on 29,July,2020
  */
 object CallContainerInjectorUtil {
+    private const val TAG = "__CallContainerInjectorUtil"
     fun provideViewModelFactory(
         context: Context?,
         lifecycleScope: LifecycleCoroutineScope,
@@ -35,6 +37,9 @@ object CallContainerInjectorUtil {
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
          val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
          val countryCodeIso = CountrycodeHelper(context!!).getCountryISO()
+
+        Log.d(TAG, "provideViewModelFactory countryIso: $countryCodeIso")
+
         val blockListPatternRepository = BlockListPatternRepository(
             blockListDao!!,
             mutedCallersDAO!!,

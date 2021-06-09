@@ -74,6 +74,9 @@ interface ISMSThreadsDAO {
     @Query("UPDATE  chat_threads  SET spamCount =:spamCount, isReportedByUser =:reportedByUser WHERE numFormated =:contactAddress")
     suspend fun updateSpamCount(contactAddress: String, reportedByUser: Boolean=true, spamCount:Long)
 
+    @Query("UPDATE  chat_threads  SET spamCount = spamCount - :spamCount, isReportedByUser =:reportedByUser WHERE numFormated =:contactAddress")
+    suspend fun markAsNotSpam(contactAddress: String, reportedByUser: Boolean=false, spamCount:Long = 1)
+
 
     @Query("UPDATE chat_threads SET firstName=:nameFromcprovider, thumbnailFromCp=:imageFromCprovider WHERE numFormated=:number")
     suspend fun updateWithContentProviderInfo(nameFromcprovider:String, imageFromCprovider:String, number:String)

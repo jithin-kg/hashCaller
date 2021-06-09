@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
+import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -16,10 +17,13 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageD
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.nibble.hashcaller.work.formatPhoneNumber
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.util.*
 
 /**
  * Created by Jithin KG on 23,July,2020
@@ -38,6 +42,7 @@ class IndividualcontactViewModel(
 //    val callersinfoLivedata = callersInfoFromServer.getFlow().asLiveData()
 
     var mt: MutableLiveData<CallersInfoFromServer>
+    var contactForViewLivedata: MutableLiveData<CntctitemForView> = MutableLiveData()
     var photoUri:MutableLiveData<String>
     init{
 
@@ -61,7 +66,7 @@ class IndividualcontactViewModel(
 //            num =  num.replace(Regex("[^A-Za-z0-9]"), "")
             Log.d(TAG, "getContactsFromDb: num is $num")
 
-            val c = repository.getIndividualContact(num)
+            val c = repository.getIndividualContactFromDb(num)
             Log.d(TAG, "size is $c ")
             if(c!=null ){
                 mt.value = c
@@ -86,7 +91,7 @@ class IndividualcontactViewModel(
     }
 
     fun getContactFromContentProvider(phoneNum: String?): LiveData<Contact?> = liveData {
-        val res = repository.getContactDetailForNumber(phoneNum!!)
+        val res = repository.getContactDetailForNumberFromCp(phoneNum!!)
         if (res != null) {
             contactId = res.id
             emit(res)
@@ -236,6 +241,50 @@ class IndividualcontactViewModel(
 //            infoFromServer = repository?.getInfoFromServerForContact(phoneNum)
 //          infoFromServer?.let { emit(it) }
 
+    }
+
+    fun getAgregatedContactInformation(phoneNum: String) = viewModelScope.launch {
+        //get details from content provider
+        var defCp:Deferred<Contact?> = async { repository.getContactDetailForNumberFromCp(phoneNum) }
+        var contactForview:CntctitemForView = CntctitemForView(informationReceivedDate = Date())
+        //get details from databse
+        var defDb:Deferred<CallersInfoFromServer?> =  async { repository.getIndividualContactFromDb(phoneNum) }
+
+
+        try {
+            val infoInCprovider = defCp.await()
+            val infoInDb = defDb.await()
+             contactForview.firstName =  getStrinProp(infoInCprovider?.firstName, infoInDb?.firstName)
+             contactForview.lastName = getStrinProp(infoInCprovider?.lastName, infoInDb?.lastName)
+             contactForview.carrier = getStrinProp(infoInCprovider?.carrier, infoInDb?.carrier)
+             contactForview.country = getStrinProp(infoInCprovider?.country, infoInDb?.country)
+//             contactForview.lineType = getStrinProp(infoInCprovider?.lineType, infoInDb?.lineType)
+             contactForview.location = getStrinProp(infoInCprovider?.location, infoInDb?.city)
+            if(infoInCprovider?.firstName.isNullOrEmpty()){
+                contactForview.isInfoFoundInServer = infoInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER
+            }else {
+                contactForview.isInInContacts = true
+            }
+            if(contactForview.firstName.isNullOrEmpty()){
+                contactForview.firstName = formatPhoneNumber( phoneNum)
+            }
+            contactForview.spammCount = infoInDb?.spamReportCount?:0
+            contactForViewLivedata.value  = contactForview
+        }catch (e:Exception){
+            Log.d(TAG, "getAgregatedContactInformation: exception $e")
+        }
+    }
+
+    private fun getStrinProp(
+        stringPropInCprovider: String?,
+        stringPropInDB: String?
+    ): String {
+        if(stringPropInCprovider.isNullOrEmpty()){
+            //return  info from db
+            return stringPropInDB?:""
+        }else {
+           return  stringPropInCprovider?:""
+        }
     }
 
 

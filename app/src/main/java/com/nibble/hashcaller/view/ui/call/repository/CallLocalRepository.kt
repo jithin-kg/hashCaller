@@ -53,6 +53,7 @@ class CallLocalRepository(
                     val number = cursor.getString(0)
                     var formatedNum = formatPhoneNumber(number)
                     formatedNum = libCountryHelper.getES164Formatednumber(formatedNum, countryISO)
+
                     if(!hashSetOfNumber.contains(formatedNum)){
                         hashSetOfNumber.add(formatedNum)
                     }else{

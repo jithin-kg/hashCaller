@@ -62,6 +62,9 @@ interface ICallLogDAO {
     @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount + spamCount, color =:color WHERE numberFormated =:contactAddress")
     suspend fun markAsReportedByUser(contactAddress: String, spamCount: Long, isReportedByUser:Boolean = true, color:Int = TYPE_SPAM)
 
+    @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =spamCount - :spamCount, color =:color WHERE numberFormated =:formatedAddres")
+    suspend fun removeFromBlockList(formatedAddres: String, isReportedByUser: Boolean = false, spamCount: Long = 1, color: Int)
+
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser OR spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")
     fun getSpamCallLogLivedata(isDeleted: Boolean = false, isReportedByUser: Boolean = true, spamLimit: Long = SPAM_THREASHOLD):LiveData<MutableList<CallLogTable>>
 
@@ -73,6 +76,8 @@ interface ICallLogDAO {
 
     @Query("UPDATE  call_log  SET  imageUrlFromDb=:thumbnailImg  WHERE numberFormated =:formatPhoneNumber")
     suspend fun updateWithServerImage(thumbnailImg: String, formatPhoneNumber: String)
+
+
 
 
 }

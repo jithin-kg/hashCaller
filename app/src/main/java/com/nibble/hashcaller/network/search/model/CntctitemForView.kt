@@ -8,29 +8,29 @@ import java.util.*
 
 @Keep
 data class CntctitemForView(
-    val firstName: String = "",
+    var firstName: String = "",
 
-    val lastName: String = "",
+    var lastName: String = "",
 
-    val carrier: String ="",
+    var carrier: String ="",
 
-    val location: String ="",
+    var location: String ="",
 
-    val lineType: String ="",
+    var lineType: String ="",
 
-    val country: String="",
-    val informationReceivedDate:Date,
-    val spammCount : Long = 0L,
-    val thumbnailImg:String = "",
-    val statusCode:Int = STATUS_SEARHING_IN_PROGRESS,
+    var country: String="",
+    var informationReceivedDate:Date,
+    var spammCount : Long = 0L,
+    var thumbnailImg:String = "",
+    var statusCode:Int = STATUS_SEARHING_IN_PROGRESS,
 
-    val isInfoFoundInServer:Int = INFO_NOT_FOUND_IN_SERVER, // to indicate whether this caller info is available in server
+    var isInfoFoundInServer:Int = INFO_NOT_FOUND_IN_SERVER, // to indicate whether this caller info is available in server
     //if the caller information is not available in
     // server then we don't have to query again if  Date () - inforeceivedDate <=0
 
-
-
     // when an incomming call comes there is a condition in which sometimes network connection avialble sometimes not
     //if network avaialble and got a reponse for the incomming caller this should be true
-    val isSearchedForCallerInserver:Boolean = false
+    var isSearchedForCallerInserver:Boolean = false,
+    var isInInContacts:Boolean = false
+
 )

@@ -82,7 +82,11 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     libCountryHelper
                 )
 
+            /**
+             * The returned numbers are formated to ES16 standard
+             */
             val allcallsincontentProvider = callersLocalRepository.getCallLog()
+
             setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
 
 
@@ -151,10 +155,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(libCountryHelper.getES164Formatednumber(formatPhoneNumber(caller.number), countryCodeIso))
 
             if(callersInfoAvailableInLocalDb == null){
-
                 val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
-                //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927 ->123
-                //a528b3e17220deeaa1f31cb0e95bccf482e92c46ca56810a01508dd34890b927
+
                 var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                hashedAddress = hashUsingArgon(hashedAddress)
                 hashedAddress?.let {
@@ -163,7 +165,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 }
 
             }else{
-                val today = Date()
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)

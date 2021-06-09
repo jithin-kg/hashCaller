@@ -59,9 +59,10 @@ class IndividualContactRepository(
      * Returns the contact information for the IndividualcontactViewactivity
      * from the local db with additional contact information succh as location, carrier..
      */
-    suspend fun getIndividualContact(phoneNum: String): CallersInfoFromServer? = withContext(Dispatchers.IO){
-        val res = callersInfoFromServer.find(phoneNum)
-        return@withContext res
+    suspend fun getIndividualContactFromDb(phoneNum: String): CallersInfoFromServer? = withContext(Dispatchers.IO) {
+        val formatedNum =
+            libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(phoneNum), countryISO)
+        return@withContext callersInfoFromServer.find(formatedNum)
     }
     suspend fun getPhoto(id: Long, phoneNum: String?): String {
         retrieveContactPhoto(id)
@@ -227,7 +228,7 @@ class IndividualContactRepository(
         * function to get contact details for a number
         */
        @SuppressLint("LongLogTag")
-       suspend fun getContactDetailForNumber(phoneNumber: String): Contact?  = withContext(Dispatchers.IO) {
+       suspend fun getContactDetailForNumberFromCp(phoneNumber: String): Contact?  = withContext(Dispatchers.IO) {
            var cursor:Cursor? = null
            val phoneNum = phoneNumber.replace("+", "").trim()
            val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));

@@ -30,6 +30,7 @@
     <string name="no_result_in_messages">No result in messages</string>
     <string name="no_results">No Results</string>
     <string name="country">Country</string>
+    <string name="this_persons_is_in_your_contact">This persons is in your contact</string>
 
     <string-array name="custom_block_type">
         <item> Number starts with</item>

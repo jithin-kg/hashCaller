@@ -64,8 +64,13 @@ class BlockListPatternRepository(
     }
     @SuppressLint("LongLogTag")
     suspend fun delete(blockedListPattern: String, type: Int) = withContext(Dispatchers.IO){
-        val insert = blockedLIstDao?.delete(blockedListPattern, type)
-        Log.d(TAG, "insert: $insert")
+        var blockPattern = blockedListPattern
+        when(type){
+            BLOCK_TYPE_EXACT_NUMBER -> {
+                blockPattern = libCountryHelper.getES164Formatednumber(formatPhoneNumber(blockPattern), countryCodeIso)
+            }
+        }
+        blockedLIstDao?.delete(blockPattern, type)
     }
     @SuppressLint("LongLogTag")
     suspend fun getListOfdata():List<BlockedListPattern>? = withContext(Dispatchers.IO){

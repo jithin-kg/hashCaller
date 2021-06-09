@@ -15,6 +15,8 @@ interface BlockedLIstDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(blockPattern: BlockedListPattern)
+
+
     @Query("DELETE from block_list_pattern WHERE num_pattern=:blockPattern AND type=:type")
     suspend fun delete(blockPattern: String, type:Int)
     
