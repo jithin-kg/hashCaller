@@ -100,9 +100,13 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                     if(result?.body() != null){
                         for(cntct in result?.body()!!.contacts){
                             val formatedNum = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countryCodeIso)
+
+                            //todo add carrier information and geolocation info for number
                             val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
                                 formatedNum, 0, cntct.name,
-                               "", Date())
+                               "", Date(),
+
+                                )
                             smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
                         }
                     }

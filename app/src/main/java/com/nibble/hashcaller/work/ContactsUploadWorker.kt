@@ -13,17 +13,14 @@ import com.nibble.hashcaller.Secrets
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
-import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
-import com.nibble.hashcaller.network.contact.ContactUploadResponseItem
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
 import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
-import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.*
@@ -81,7 +78,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
@@ -98,7 +94,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                                 informationReceivedDate =Date(),
                                 spamReportCount =  cntct.spamCount,
                                 isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
-                                thumbnailImg = cntct.imageThumbnail?:""
+                                thumbnailImg = cntct.imageThumbnail?:"",
+                                carrier = cntct.carrier,
+                                country = cntct.country,
+                                city =cntct.location
                             )
 
                             callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

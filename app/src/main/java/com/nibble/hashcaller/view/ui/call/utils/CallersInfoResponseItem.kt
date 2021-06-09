@@ -12,9 +12,9 @@ data class CallersInfoResponseItem (
     val firstName: String = "",
     @SerializedName("lastName")
     val lastName: String = "",
-    var city: String = "",
+    var location: String = "",
     var country:String = "",
-    var carier: String = "",
+    var carrier: String = "",
     var spamCount:Long = 0L,
     @SerializedName("isInfoFoundInDb")
     val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,

@@ -15,6 +15,7 @@ import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.db.ICallLogDAO
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
@@ -58,8 +59,8 @@ class IndividualContactRepository(
      * Returns the contact information for the IndividualcontactViewactivity
      * from the local db with additional contact information succh as location, carrier..
      */
-    suspend fun getIndividualContact(phoneNum: String): ContactTable  = withContext(Dispatchers.IO){
-        val res = dao.search(phoneNum)
+    suspend fun getIndividualContact(phoneNum: String): CallersInfoFromServer? = withContext(Dispatchers.IO){
+        val res = callersInfoFromServer.find(phoneNum)
         return@withContext res
     }
     suspend fun getPhoto(id: Long, phoneNum: String?): String {

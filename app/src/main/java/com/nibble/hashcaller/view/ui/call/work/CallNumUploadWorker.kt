@@ -110,7 +110,10 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                informationReceivedDate =Date(),
                                spamReportCount =  cntct.spamCount,
                                isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
-                               thumbnailImg = cntct.imageThumbnail?:""
+                               thumbnailImg = cntct.imageThumbnail?:"",
+                               carrier = cntct.carrier,
+                               country = cntct.country,
+                               city =cntct.location
                            )
 
                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

@@ -8,6 +8,7 @@ import com.nibble.hashcaller.local.db.blocklist.mutedCallers.MutedCallers
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.spam.SpamNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData
@@ -36,14 +37,14 @@ class IndividualcontactViewModel(
     val mutedContacts = mutedContactsDAO.get().asLiveData()
 //    val callersinfoLivedata = callersInfoFromServer.getFlow().asLiveData()
 
-    var mt: MutableLiveData<ContactTable>
+    var mt: MutableLiveData<CallersInfoFromServer>
     var photoUri:MutableLiveData<String>
     init{
 
 
-        var contactsFromLocalDb : LiveData<ContactTable>? = MutableLiveData<ContactTable>()
+        var contactsFromLocalDb : LiveData<CallersInfoFromServer>? = MutableLiveData<CallersInfoFromServer>()
         photoUri = MutableLiveData<String>("")
-        mt = MutableLiveData<ContactTable>(contactsFromLocalDb?.value)
+        mt = MutableLiveData<CallersInfoFromServer>(contactsFromLocalDb?.value)
 //         mt = contactLocalSyncRepository.getContacts("")!!
     }
     var infoFromServer:LiveData<ContactTable?>? = repository.getInfoFromServerForContact()
@@ -67,8 +68,8 @@ class IndividualcontactViewModel(
             }
 
         }else{
-            mt.value = ContactTable(0, "", "","", "",
-                "",0)
+//            mt.value = ContactTable(0, "", "","", "",
+//                "",0)
         }
 
 
