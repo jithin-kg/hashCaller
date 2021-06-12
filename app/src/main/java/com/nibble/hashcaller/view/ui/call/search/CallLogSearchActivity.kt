@@ -17,6 +17,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.ui.sms.individual.util.UNMARK_ITEM
@@ -84,7 +85,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
     private fun initRecyclerView() {
 
 
-        searchAdapter = CallLogAdapter(this,this,this ) {
+        searchAdapter = CallLogAdapter(this,this,this, isDarkThemeOn() ) {
 
                 id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)};
 

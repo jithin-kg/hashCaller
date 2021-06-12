@@ -22,6 +22,7 @@ import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
@@ -88,7 +89,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
 
             layoutMngr = layoutManager as CustomLinearLayoutManager
 
-            callLogAdapter = CallLogAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity) {
+            callLogAdapter = CallLogAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity, isDarkThemeOn()) {
 
                     id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ->onCallItemClicked(
                 id,

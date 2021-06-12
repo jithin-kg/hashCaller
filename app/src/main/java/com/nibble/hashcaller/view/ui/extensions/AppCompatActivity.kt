@@ -7,12 +7,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.ContactsContract
+import android.util.DisplayMetrics
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 
+fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
+    val dm = DisplayMetrics()
+    windowManager.defaultDisplay.getMetrics(dm)
+    return dm
+}
 fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
 
     val popup = PopupMenu(this, anchorView )

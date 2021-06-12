@@ -1,5 +1,5 @@
-<vector android:height="8dp"
-    android:width="8dp"
+<vector android:height="48dp"
+    android:width="48dp"
     android:tint="@color/spamText"
     android:viewportHeight="24"
     android:viewportWidth="24"

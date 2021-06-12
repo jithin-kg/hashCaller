@@ -1,32 +1,34 @@
 package com.nibble.hashcaller.view.ui.auth
 
-import android.Manifest
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
-import android.app.role.RoleManager
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
-import android.provider.Telephony
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import androidx.annotation.RequiresApi
+import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.ActivityPermissionRequestBinding
+import com.nibble.hashcaller.databinding.ContactPermissionAlertBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.utils.PERMISSION_RESULT_CODE
+import com.nibble.hashcaller.view.ui.extensions.getCurrentDisplayMetrics
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.activity_permission_request.*
 
 
 class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, EasyPermissions.PermissionCallbacks {
     private lateinit var sharedPreferences: SharedPreferences
-        private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
+    private lateinit var binding: ActivityPermissionRequestBinding
+    private var permissionGivenLiveDAta: MutableLiveData<Boolean> = MutableLiveData()
+    private lateinit var alertBuilder: AlertDialog.Builder
+    private lateinit var alertBinding:ContactPermissionAlertBinding
 
     companion object{
         private const val TAG = "__PermissionRequestActivity"
@@ -34,19 +36,38 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_permission_request)
+        binding = ActivityPermissionRequestBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         this.permissionGivenLiveDAta.value = false
-
+        initAlertView()
         initListeners()
 
 
     }
 
+    private fun initAlertView() {
+        alertBinding = ContactPermissionAlertBinding.inflate(layoutInflater, null, false)
+
+        alertBuilder = AlertDialog.Builder(this)
+//        alertBuilder.setTitle("Search filter")
+            //        builder.setMessage(" MY_TEXT ")
+            .setView(alertBinding.root)
+            .setCancelable(true)
+//                    .setPositiveButton("", DialogInterface.OnClickListener { dialog, id ->
+//                         Log.d(TAG, "showSearchFilterAlert: onyes clicked")
+//                     })
+//
+//            .setNegativeButton("Cancel",
+//                DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+//        alertBinding.root.maxWidth = 32
+
+
+    }
 
 
     private fun initListeners() {
-        btnRequestPermission.setOnClickListener(this)
-
+        binding.btnRequestPermission.setOnClickListener(this)
+        binding.tvTermsAgree.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -55,10 +76,36 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
 //                val isPermissionGiven = requesetPermission()
 //                if(isPermissionGiven){
 
-                requestPermission()
+//                requestPermission()
+                showAlert()
 
             }
+            R.id.tvTermsAgree ->{
+                startPrivacyIntent()
+            }
         }
+    }
+
+    private fun showAlert() {
+        if(alertBinding.root.parent!=null) {
+            (alertBinding.root.parent as ViewGroup).removeView(alertBinding.root)
+        }
+
+        alertBuilder.setView(alertBinding.root)
+
+
+//        alertBuilder.show()
+        val alert: AlertDialog = alertBuilder.create()
+        alert.show()
+        val dm = getCurrentDisplayMetrics()
+        alert.window?.setLayout( dm.widthPixels - 160, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+
+
+    private fun startPrivacyIntent() {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hashcaller.com/privacy"))
+        startActivity(browserIntent)
     }
 
 

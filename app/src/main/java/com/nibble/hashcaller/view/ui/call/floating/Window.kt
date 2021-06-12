@@ -228,9 +228,9 @@ class Window(
 //            tvLocation.text = location
         }
         if(resFromServer.spammCount> SPAM_THREASHOLD){
-         layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
+            layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
         }else{
-          layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background )
+            layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background )
         }
 
     }
@@ -256,11 +256,11 @@ class Window(
 
     }
 
-fun setCallerInfoFoundFrom(foundFrom:Int){
-    callerInfoFoundFrom = foundFrom
-}
+    fun setCallerInfoFoundFrom(foundFrom:Int){
+        callerInfoFoundFrom = foundFrom
+    }
 
-     suspend fun setPhoneNum(num:String) = withContext(Dispatchers.IO) {
+    suspend fun setPhoneNum(num:String) = withContext(Dispatchers.IO) {
         phoneNumber = num
         setCountryCode()
 

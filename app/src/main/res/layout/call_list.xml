@@ -177,6 +177,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="H"
+            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
             app:layout_constraintStart_toEndOf="@+id/textViewTime"
             app:layout_constraintTop_toTopOf="@+id/textViewTime" />

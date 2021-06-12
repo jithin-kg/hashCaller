@@ -607,13 +607,23 @@ class CallContainerRepository(
          var name:String?
          var thumbnail:String?
          var nameAndThumbnail: NameAndThumbnail? = null
+//        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
+//
+//        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+//        if(cursor2!=null && cursor2.moveToFirst()){
+////                    Log.d(TAG, "getConactInfoForNumber: data exist")
+//            name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+//            thumbnail = cursor2.getString(cursor2.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+//            nameAndThumbnail = NameAndThumbnail(name?:"", thumbnail?:"")
+//        }
+//        var photoUri:String? = null
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(contactAddress));
-
-        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
-        if(cursor2!=null && cursor2.moveToFirst()){
+        val cursor = context.contentResolver.query(uri, null,  null, null, null )
+        if(cursor!=null && cursor.moveToFirst()){
 //                    Log.d(TAG, "getConactInfoForNumber: data exist")
-            name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
-            thumbnail = cursor2.getString(cursor2.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+            thumbnail = cursor.getString(cursor.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+
+            name = cursor.getString(cursor.getColumnIndexOrThrow( ContactsContract.Contacts.DISPLAY_NAME))
             nameAndThumbnail = NameAndThumbnail(name?:"", thumbnail?:"")
         }
         return@withContext nameAndThumbnail

@@ -1364,6 +1364,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             Log.d("ContactObserver", "ContactObserver constructor ")
         }
     }
+
     fun isDarkThemeOn(): Boolean {
         return resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES

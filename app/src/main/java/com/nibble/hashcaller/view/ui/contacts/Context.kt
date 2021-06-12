@@ -18,8 +18,10 @@ import android.provider.CallLog
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.work.*
@@ -66,6 +68,9 @@ fun Context.isDarkThemeOn(): Boolean {
     return resources.configuration.uiMode and
             UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
 }
+
+
+
 
 fun Context.hasSMSReadPermission():Boolean{
     return EasyPermissions.hasPermissions(this, Manifest.permission.READ_CONTACTS,

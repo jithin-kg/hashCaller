@@ -35,7 +35,9 @@ import kotlinx.android.synthetic.main.call_list.view.*
  */
 
 class CallLogAdapter(private val context: Context,
-                     private val viewMarkingHandlerHelper: ViewHandlerHelper, private val  networkHandler: SMSListAdapter.NetworkHandler,
+                     private val viewMarkingHandlerHelper: ViewHandlerHelper,
+                     private val  networkHandler: SMSListAdapter.NetworkHandler,
+                     private val isDarkThemOn:Boolean,
                      private val onContactItemClickListener:
                     (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int)->Int
                    ) :
@@ -149,11 +151,19 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
             if(sim == 0){
-                logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_1_line)
-            }else if(sim == 1) {
-                logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_2_line)
-            }
+                if(isDarkThemOn){
+                    logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_1_line_white)
+                }else {
+                    logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_1_line)
+                }
 
+            }else if(sim == 1) {
+                if(isDarkThemOn){
+                    logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_2_line_white)
+                }else {
+                    logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_2_line)
+                }
+            }
 
 //            if (prevTime != null)
 //                if(prevTime == callLog.dateInMilliseconds){

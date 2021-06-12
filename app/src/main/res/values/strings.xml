@@ -31,6 +31,7 @@
     <string name="no_results">No Results</string>
     <string name="country">Country</string>
     <string name="this_persons_is_in_your_contact">This persons is in your contact</string>
+    <string name="terms_and_conditions_agree">By continuing, you agree to <u>Terms &amp; privacy notice</u></string>
 
     <string-array name="custom_block_type">
         <item> Number starts with</item>

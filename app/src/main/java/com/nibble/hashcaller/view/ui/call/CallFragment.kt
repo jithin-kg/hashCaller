@@ -51,6 +51,7 @@ import com.nibble.hashcaller.view.ui.call.search.CallLogSearchActivity
 import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -455,7 +456,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as CustomLinearLayoutManager
 
-            callLogAdapter = CallLogAdapter(context.applicationContext,this@CallFragment, this@CallFragment) {
+            callLogAdapter = CallLogAdapter(context.applicationContext,
+                this@CallFragment,
+                this@CallFragment,
+                context.isDarkThemeOn()
+
+                ) {
                     id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
             adapter = callLogAdapter
             itemAnimator = null
