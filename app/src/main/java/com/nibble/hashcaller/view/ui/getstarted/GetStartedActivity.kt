@@ -14,10 +14,11 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetStartedBinding
 import com.nibble.hashcaller.databinding.ContactPermissionAlertBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.extensions.getCurrentDisplayMetrics
 import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.models.PermissionRequest
+
 
 class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermissions.PermissionCallbacks  {
     private lateinit var binding: ActivityGetStartedBinding
@@ -64,8 +65,8 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
 
 //                requestPermission()
 //                showAlert()
-                if(checkPermission()){
-                    showAlert()
+                if(!isPermissionGiven()){
+                    requestPermission()
                 }else {
                     startPhoneAuthActivity()
                 }
@@ -80,7 +81,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
             }
         }
     }
-    private fun checkPermission(): Boolean {
+    private fun isPermissionGiven(): Boolean {
         return EasyPermissions.hasPermissions(
             this,
             Manifest.permission.READ_CONTACTS,
@@ -111,21 +112,18 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
         startActivity(browserIntent)
     }
     private fun requestPermission() {
-        EasyPermissions.requestPermissions(
-            host = this,
-            "read contacts ",
-            requestCode = PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS,
-            perms = arrayOf(
-                Manifest.permission.READ_CONTACTS,
-//                CALL_PHONE,
-                Manifest.permission.READ_PHONE_STATE,
-//                READ_CALL_LOG,
-//                WRITE_CALL_LOG,
-//                READ_CONTACTS,
-//                READ_PHONE_STATE
-
-            )
+        val perms = arrayOf(Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_SMS
         )
+       val permissionRequest =  PermissionRequest.Builder(this)
+            .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)
+            .perms(perms)
+           .rationale(getString(R.string.contact_and_phone_state_rational))
+            .build()
+
+        EasyPermissions.requestPermissions(this, permissionRequest )
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

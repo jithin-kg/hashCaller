@@ -38,6 +38,7 @@
     <string name="rational_contacts">Allow access to contacts to prevent blocking your contacts and enable searching.</string>
     <string name="rational_phone_state">Allow phone access to block spam calls and identify incoming calls.</string>
     <string name="rational_contact_and_phone_state">Allow contacts access and phone access to caller Id and spam detection to work properly.</string>
+    <string name="contact_and_phone_state_rational">HashCaller needs access to your contacts and phone call state for caller Id to work and enable searching</string>
 
     <string-array name="custom_block_type">
         <item> Number starts with</item>
