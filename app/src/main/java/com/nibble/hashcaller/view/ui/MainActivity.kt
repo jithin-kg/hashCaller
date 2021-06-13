@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
-        setTheme(R.style.splashScreenTheme)
+//        setTheme(R.style.splashScreenTheme)
         initDataStoreViewmodel()
 
         rcfirebaseAuth = FirebaseAuth.getInstance()
