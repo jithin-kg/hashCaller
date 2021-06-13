@@ -20,6 +20,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityTestauthBinding
+import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
+import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.utils.auth.CustometokenSigner
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.auth.TokenHelper
@@ -32,7 +34,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import kotlinx.android.synthetic.main.activity_testauth.*
-import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.TimeUnit
 
 
@@ -45,6 +46,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private lateinit var auth: FirebaseAuth
     private  var _userInfoViewModel: UserInfoViewModel? = null
     private val userInfoViewModel get() = _userInfoViewModel!!
+    private lateinit var dataStoreViewmodel:DataStoreViewmodel
 //    private var _dataStoreViewmodel: DataStoreViewmodel? = null
 //    private val dataStoreViewmodel get() = _dataStoreViewmodel!!
     private lateinit var encryptor: EnCryptor
@@ -89,9 +91,9 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         _userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper)).get(
             UserInfoViewModel::class.java)
 //
-//        _dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
-//            DataStoreViewmodel::class.java
-//        )
+        dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+            DataStoreViewmodel::class.java
+        )
     }
     private fun registerCallback() {
 
@@ -414,7 +416,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 if (userinfo != null) {
                     if (!userinfo.result.firstName.isNullOrEmpty()) {
                         //user exists in server
-                        userInfoViewModel.saveUserInfoInLocalDb(userinfo)
+                        userInfoViewModel.saveUserInfoInLocalDb(userinfo, dataStoreViewmodel)
                             .observe(this@ActivityVerifyOTP, Observer { status ->
                                 when (status) {
                                     OPERATION_COMPLETED -> {

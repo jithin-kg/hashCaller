@@ -84,6 +84,12 @@ fun Context.hasReadContactsPermission(): Boolean {
     )
 }
 
+fun Context.hasReadPhoneStatePermission():Boolean {
+    return EasyPermissions.hasPermissions(this,
+        Manifest.permission.READ_PHONE_STATE
+        )
+}
+
 fun Context.hasReadCallLogPermission(): Boolean {
    return EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALL_LOG,
         Manifest.permission.READ_CONTACTS)

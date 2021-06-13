@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetInitialUserInfoBinding
+import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
+import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
@@ -40,6 +42,8 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
     private lateinit var userInfoViewModel: UserInfoViewModel
+    private lateinit var dataStoreViewmodel: DataStoreViewmodel
+
     private lateinit var binding:ActivityGetInitialUserInfoBinding
 //    private var imgFile: File? = null
 //    private var picturePath: String = ""
@@ -58,6 +62,14 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         clearErrorMessageOnFocus()
         binding.btnUserContinue.setOnClickListener(this)
         imagePickerHelper = ImagePickerHelper()
+        initViewmodels()
+        initListeners()
+
+//        loadImage(this, binding.imgVAvatarInitial, "@drawable/contact_circular_background_grey")
+
+    }
+
+    private fun initViewmodels() {
         userInfoViewModel = ViewModelProvider(
             this, UserInfoInjectorUtil.provideUserInjectorUtil(
                 this,
@@ -66,10 +78,9 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         ).get(
             UserInfoViewModel::class.java
         )
-        initListeners()
-
-//        loadImage(this, binding.imgVAvatarInitial, "@drawable/contact_circular_background_grey")
-
+        dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+            DataStoreViewmodel::class.java
+        )
     }
 
     private fun initListeners() {
@@ -210,7 +221,7 @@ private fun sendUserInfo() {
 
                     binding.pgBarInfo.beInvisible()
                     it.result?.let { it1 ->
-                        userInfoViewModel.saveUserInfoInLocalDb(it1).observe(this, Observer {
+                        userInfoViewModel.saveUserInfoInLocalDb(it1, dataStoreViewmodel).observe(this, Observer {
                             when (it) {
                                 OPERATION_COMPLETED -> {
 

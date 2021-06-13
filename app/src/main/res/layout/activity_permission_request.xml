@@ -1,89 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".view.ui.auth.PermissionRequestActivity">
 
     <!--    https://storyset.com/illustration/solidarity/rafiki-->
     <!--<a href="https://storyset.com/work">Work illustrations by Storyset</a>-->
 <!--  important android:adjustViewBounds="true" removes padding in svg/ image-->
-    <ImageView
-        android:id="@+id/imageView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:src="@drawable/ic_solidarity_rafiki"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
 
-        app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Welcome to Hashcaller"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="24sp"
-        android:alpha="0.84"
-        android:textColor="@color/textColor"
-        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+         android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvAllowPermissionFirst"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="56dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="56dp"
+            android:gravity="center"
+            android:text="Let's Allow Permissions"
+            android:textColor="@color/textColor"
+            android:textSize="21sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView19"
-        android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvPermissionDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/hashcaller_needs_your_permission"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvAllowPermissionFirst"
+            android:layout_marginTop="32dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/textColor"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutPhoneAcccess"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:text="Caller Id That doesn't \n save your phone number"
-        android:textColor="@color/textColor"
-        android:textSize="32sp"
-        android:textStyle="bold"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvWelcome"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/imgvCirclePhoneBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/contact_circular_background_primary"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_phone_line_white"
+                app:layout_constraintTop_toTopOf="@+id/imgvCirclePhoneBackground"
+                app:layout_constraintStart_toStartOf="@+id/imgvCirclePhoneBackground"
+                app:layout_constraintBottom_toBottomOf="@+id/imgvCirclePhoneBackground"
+                app:layout_constraintEnd_toEndOf="@+id/imgvCirclePhoneBackground"
+                android:padding="10dp"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        />
+        <TextView
+            android:id="@+id/tvPhoneStateHead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="Phone Access"
+            android:textStyle="bold"
+            android:textColor="@color/textColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/imgvCirclePhoneBackground"
+            app:layout_constraintTop_toTopOf="@+id/imgvCirclePhoneBackground" />
 
-    <TextView
-        android:id="@+id/tvTermsAgree"
+        <TextView
+            android:id="@+id/tvPhonestateDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="@string/to_identify_and_block"
+            android:textColor="@color/textColor"
+            android:alpha="0.74"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvPhoneStateHead"
+            app:layout_constraintTop_toBottomOf="@+id/tvPhoneStateHead" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    End of phone state-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/layoutContact"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/imgvCircleContactBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:alpha="0.64"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/terms_and_conditions_agree"
-        android:textColor="@color/textColor"
-        app:layout_constraintBottom_toTopOf="@+id/btnRequestPermission"
-        app:layout_constraintEnd_toEndOf="@+id/textView19"
-        app:layout_constraintStart_toStartOf="@+id/textView19" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/contact_circular_background_primary"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_contacts_book_2_line_white"
+            app:layout_constraintTop_toTopOf="@+id/imgvCircleContactBackground"
+            app:layout_constraintStart_toStartOf="@+id/imgvCircleContactBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/imgvCircleContactBackground"
+            app:layout_constraintEnd_toEndOf="@+id/imgvCircleContactBackground"
+            android:padding="10dp"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/btnRequestPermission"
-        android:layout_width="0dp"
+
+    <TextView
+        android:id="@+id/tvContactHead"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:text="Continue"
-        android:textAllCaps="false"
-        android:textColor="@color/colorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Contacts Access"
+        android:textStyle="bold"
+        android:textColor="@color/textColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/imgvCircleContactBackground"
+        app:layout_constraintTop_toTopOf="@+id/imgvCircleContactBackground" />
 
-
+    <TextView
+        android:id="@+id/tvContactDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="@string/to_prevent_blocking_your"
+        android:textColor="@color/textColor"
+        android:alpha="0.74"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvContactHead"
+        app:layout_constraintTop_toBottomOf="@+id/tvContactHead" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <Button
+            android:id="@+id/btnRequestPermission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Continue"
+            android:paddingTop="@dimen/primary_button_vertical_padding"
+            android:paddingBottom="@dimen/primary_button_vertical_padding"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="@dimen/btn_lower_margin"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</LinearLayout>

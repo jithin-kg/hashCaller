@@ -32,6 +32,12 @@
     <string name="country">Country</string>
     <string name="this_persons_is_in_your_contact">This persons is in your contact</string>
     <string name="terms_and_conditions_agree">By continuing, you agree to <u>Terms &amp; privacy notice</u></string>
+    <string name="to_identify_and_block">To identify and block incoming phone calls HashCaller need access to your phone state</string>
+    <string name="to_prevent_blocking_your">To prevent Blocking your contacts and enable searching.</string>
+    <string name="hashcaller_needs_your_permission">HashCaller needs your permissions for caller ID, spam detection and call blocking to work.</string>
+    <string name="rational_contacts">Allow access to contacts to prevent blocking your contacts and enable searching.</string>
+    <string name="rational_phone_state">Allow phone access to block spam calls and identify incoming calls.</string>
+    <string name="rational_contact_and_phone_state">Allow contacts access and phone access to caller Id and spam detection to work properly.</string>
 
     <string-array name="custom_block_type">
         <item> Number starts with</item>

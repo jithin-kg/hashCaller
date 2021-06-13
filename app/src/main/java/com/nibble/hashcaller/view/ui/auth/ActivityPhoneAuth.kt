@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityPhoneAuthBinding
+import com.nibble.hashcaller.utils.constants.IntentKeys
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.PhoneAuthInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -24,6 +26,7 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding:ActivityPhoneAuthBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityPhoneAuthBinding.inflate(layoutInflater)
 
         setContentView(binding.root)

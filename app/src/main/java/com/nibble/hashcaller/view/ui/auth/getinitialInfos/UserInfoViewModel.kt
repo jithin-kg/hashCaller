@@ -5,6 +5,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
+import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.NetworkResponseBase
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.SOMETHING_WRONG_HAPPEND
@@ -35,7 +37,10 @@ class UserInfoViewModel(
 
 
 
-    fun saveUserInfoInLocalDb(singupResponse: SingupResponse):LiveData<Int> = liveData {
+    fun saveUserInfoInLocalDb(
+        singupResponse: SingupResponse,
+        dataStoreViewmodel: DataStoreViewmodel
+    ):LiveData<Int> = liveData {
         try {
             val user = UserInfo(null)
             val result = singupResponse.result
@@ -45,7 +50,10 @@ class UserInfoViewModel(
             user.phoneNumber = "2"
             user.photoURI = result.image?:""
             userNetworkRepository.saveUserInfoInLocalDb(user)
+            dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, true)
             emit(OPERATION_COMPLETED)
+
+
         }catch (e:Exception){
 
             Log.d(TAG, "saveUserInfoInLocalDb: $e")

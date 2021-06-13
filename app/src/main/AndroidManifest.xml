@@ -51,22 +51,20 @@
         android:supportsRtl="true"
         android:theme="@style/splashScreenTheme">
         <activity
+            android:name=".view.ui.getstarted.GetStartedActivity"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".view.ui.search.SearchActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTop" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.ui.call.floating.SampleActivityStartnotification"
-            android:launchMode="singleTop"
-
-            />
+            android:launchMode="singleTop" />
         <activity
             android:name=".view.ui.IncommingCall.ModelActivity"
-            android:theme="@style/AppTheme"
             android:launchMode="singleTop"
-
-
-            />
+            android:theme="@style/AppTheme" />
         <activity android:name=".view.ui.IncommingCall.DragabbleActivity" />
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallFeedback"

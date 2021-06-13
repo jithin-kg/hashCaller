@@ -4,9 +4,7 @@ import android.Manifest
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -15,7 +13,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
 import android.util.Log
 import android.view.Gravity
@@ -56,7 +53,6 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.crypto.KeyManager
-import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
@@ -66,7 +62,7 @@ import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
-import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
+import com.nibble.hashcaller.view.ui.getstarted.GetStartedActivity
 import com.nibble.hashcaller.view.ui.hashworker.HasherViewmodel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
@@ -157,45 +153,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme)
+
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
-
+        setTheme(R.style.splashScreenTheme)
         initDataStoreViewmodel()
 
         rcfirebaseAuth = FirebaseAuth.getInstance()
-        if (checkPermission()) {
-//            startHashWorker()
-            initViewModel()
-            initMainActivityComponents(savedInstanceState)
-            isUserInfoAvaialbleInDb{isUserInfoAvialble->
-                if(isUserInfoAvialble){
-                    firebaseAuthListener()
-//                    initMainActivityComponents(savedState)
-                }else{
-                    onSingnedOutcleanUp()
-                }
-            }
-            observeHashedNumbersTable()
-        } else {
-            val i = Intent(this, PermissionRequestActivity::class.java)
-//            startActivityForResult(i, PERMISSION_REQUEST_CODE)
-            startActivity(i)
-            finish()
-        }
+        initViewModel()
+        checkUserInfoAvaialbleInDb(savedInstanceState)
 
-
-        //Start home activity
-//         close splash activity
-
-
+//        observeHashedNumbersTable()
 
 
     }
 
     private fun observeHashedNumbersTable() {
         hashedNumbersViewmodel.hashedNumbersLiveData.observe(this, Observer {
-            hashedNumbersViewmodel.doWork()
+//            hashedNumbersViewmodel.doWork()
         })
     }
 
@@ -208,12 +183,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        WorkManager.getInstance(applicationContext).enqueue(oneTimeWorkRequest)
     }
 
-    private fun isUserInfoAvaialbleInDb(callback:(isUserInfoAvialble:Boolean)-> Unit){
+    private fun checkUserInfoAvaialbleInDb(savedInstanceState: Bundle?) {
         userInfoViewModel.getUserInfoFromDb().observe(this, Observer {
             if(it!=null){
-                callback(true)
+                /**
+                 * important set theme only after user info is avialable in db, (so then only the view will show)
+                 */
+
+                if(!checkPermission()){
+                    val i = Intent(this, PermissionRequestActivity::class.java)
+//            startActivityForResult(i, PERMISSION_REQUEST_CODE)
+                    startActivity(i)
+                    finish()
+                }else {
+
+                    initMainActivityComponents(savedInstanceState)
+//                    setTheme(R.style.AppTheme)
+                    firebaseAuthListener()
+                }
+
             }else{
-                callback(false)
+                onSingnedOutcleanUp()
             }
         } )
 //        dataStoreViewModel?.getToken()?.observe(this, Observer {
@@ -230,12 +220,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return EasyPermissions.hasPermissions(
             this,
             READ_CONTACTS,
-            CALL_PHONE,
             READ_PHONE_STATE,
-            READ_CALL_LOG,
-            WRITE_CALL_LOG,
-            READ_CONTACTS,
-            READ_PHONE_STATE )
+//            READ_CALL_LOG,
+//            WRITE_CALL_LOG,
+//            READ_CONTACTS,
+//            READ_PHONE_STATE
+
+        )
     }
     private fun firebaseAuthListener() {
         rcfirebaseAuth = FirebaseAuth.getInstance()
@@ -281,8 +272,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun onSingnedOutcleanUp() {
-
-        val i = Intent(this, ActivityPhoneAuth::class.java)
+        
+        val i = Intent(this, GetStartedActivity::class.java)
 //        startActivityForResult(i, RC_SIGN_IN)
         startActivity(i)
         finish()
@@ -319,7 +310,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if(!this. isScreeningRoleHeld()){
-                requestScreeningRole()
+//                requestScreeningRole()
 
             }
         }
@@ -373,10 +364,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun requestAlertWindowPermission() {
         // Show alert dialog to the user saying a separate permission is needed
-        // Show alert dialog to the user saying a separate permission is needed
         if(!canDrawOverlays(applicationContext)){
-            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
-            startActivity(myIntent)
+//            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
+//            startActivity(myIntent)
         }
 
     }
@@ -1046,28 +1036,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         showSearchFragment: Boolean=false ) {
 //        if(isDarkThemeOn){
 
-            if(showMessageFragment){
-                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
-            }else{
-                menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_line)
-            }
+        if(showMessageFragment){
+            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
+        }else{
+            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_line)
+        }
 
-            if(showContactsFragment){
-                menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill)
-            }else{
-                menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
-            }
+        if(showContactsFragment){
+            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill)
+        }else{
+            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
+        }
 
-            if(showCallsFragment){
-                menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_fill)
-            }else{
-                menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
-            }
-            if(showSearchFragment){
-                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
-            }else {
-                menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
-            }
+        if(showCallsFragment){
+            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_fill)
+        }else{
+            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
+        }
+        if(showSearchFragment){
+            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+        }else {
+            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+        }
 //        }
 //        else {
 //            if(showMessageFragment){
@@ -1488,6 +1478,4 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 }
-
-
 
