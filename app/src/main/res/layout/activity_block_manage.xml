@@ -136,6 +136,8 @@
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
                    android:elevation="4dp"
+                   android:paddingTop="@dimen/primary_button_vertical_padding"
+                   android:paddingBottom="@dimen/primary_button_vertical_padding"
                    android:textAllCaps="false"
                    android:layout_marginTop="@dimen/list_item_margin_start"
                    android:text="Enable HashCaller for caller ID and spam block"
@@ -176,7 +178,7 @@
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    android:layout_marginTop="@dimen/margin_start_imgv_block_settings"
                    android:text="General"
-                   android:textColor="@color/colorPrimaryLight"
+                   android:textColor="@color/colorPrimary"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlockUnderBtn" />

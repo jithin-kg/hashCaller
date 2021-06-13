@@ -8,7 +8,26 @@
 <!--Ripple animation on button click is controlled by colorControlHighlight-->
 <!--    <color name="colorPrimary">#4B53BC</color>-->
 <!--    https://www.canva.com/colors/color-wheel/-->
-    <color name="colorPrimary">#4F57BF</color>
+
+
+<!--    colors from https://www.wix.com/blog/2020/01/brand-colors/-->
+<!--    03121B dark black, blue colors from darkest to lightest-->
+<!--    145191  dark blue1-->
+<!--    2D83C4 light blue2-->
+<!--    40ABEE light blue3-->
+<!--    E2ECFD blue 4-->
+
+<!--    <color name="colorPrimary">#145291</color>-->
+    <color name="colorPrimary">#2D83C4</color>
+    <color name="colorBackgroundAppBar">#145291</color>
+    <color name="statusBarColor">#FA145291</color>
+
+    <!--    <color name="colorBackgroundAppBar">#2D83C4</color>-->
+
+    <color name="colorSplash">#145291</color>
+    <color name="bottom_nav_color">#E2ECFD</color>
+    <color name="colorBackground">#FFFFFF</color>
+
     <color name="primary_analogus_one">#4F8FBF</color>
     <color name="primary_analogus_two">#7F4FBF</color>
 
@@ -19,10 +38,10 @@
     <color name="colorPrimaryDark">#ffff</color>
     <color name="colorPrimaryDarkest">#082d8e</color>
 
-    <color name="circular_color1">#059DC0</color>
-    <color name="circular_color2">#6AF2F0</color>
-    <color name="circular_color3">#A4E8E0</color>
-    <color name="circular_color4">#04ECF0</color>
+    <color name="circular_color1">#2D83C4</color>
+    <color name="circular_color2">#40ABEE</color>
+    <color name="circular_color3">#40ABEE</color>
+    <color name="circular_color4">#2D83C4</color>
 <!--    Tetradic colors from canva color wheen based on primary colors color variation from color wheel-->
 <!--    <color name="circular_color1">#4FBFB7</color>-->
 <!--    <color name="circular_color2">#7F4FBF</color>-->
@@ -32,8 +51,6 @@
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
     <!--   cololr of statusBar is determined by the  colorPrimaryDark attribute   -->
-    <color name="colorBackground">#FFFFFF</color>
-    <color name="colorBackgroundAppBar">#FFFFFF</color>
     <color name="colorNavItemsLight">#2B80D7</color>
     <color name="test_color">#f44336</color>
 <!--    color of bottom nav item default -->
@@ -41,7 +58,7 @@
 
     <color name="colorWhite">#FFFFFF</color>
     <color name="spamText">#ED4133</color>
-    <color name="statusBar">#FFFFFF</color>
+    <color name="statusBar">#E2ECFD</color>
     <color name="colorlightBlueviking">#79BEDB</color>
     <color name="colorbrightTurquoiseLightBlue">#10C8CD</color>
     <color name="lightGray">#E8EAEA</color>
@@ -71,7 +88,6 @@
     <color name="textcolor_recieved_sms">#000000</color>
     <color name="color_round_btn">#F6F6F6</color>
     <color name="divider_color">#000000</color>
-    <color name="bottom_nav_color">#ffff</color>
     <color name="search_background_color">#E6E6E6</color>
     <color name="avatar_circle_bg_color">#DD939090</color>
     <color name="icon_color_drawer">#A3000000</color>

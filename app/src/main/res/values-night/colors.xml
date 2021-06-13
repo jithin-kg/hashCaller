@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4B53BC</color>
+    <color name="colorPrimary">#40ABEE</color>
+    <color name="colorBackground">#03141B</color>
+    <color name="statusBarColor">#9A03141B</color>
+
+
     <color name="primary_analogus_one">#4F8FBF</color>
     <color name="primary_analogus_two">#7F4FBF</color>
     <color name="colorIncommingBackground">#4B53BC</color>
@@ -17,14 +21,15 @@
 <!--    <color name="circular_color4">#8FBF4F</color>-->
 
 <!--    <color name="circular_color4">#BF4F8F</color>-->
-    <color name="circular_color1">#059DC0</color>
-    <color name="circular_color2">#6AF2F0</color>
-    <color name="circular_color3">#A4E8E0</color>
-    <color name="circular_color4">#04ECF0</color>
+    <color name="circular_color1">#2D83C4</color>
+    <color name="circular_color2">#40ABEE</color>
+    <color name="circular_color3">#40ABEE</color>
+    <color name="circular_color4">#2D83C4</color>
+
+    <!--1DB954 spotify green #191414 black-->
 
     <!--    <color name="colorBackgroundDark">#000000</color>-->
 <!--    <color name="colorBackground">#111112</color>181a39-->
-    <color name="colorBackground">#080913</color>
     <color name="colorBackgroundAppBar">#000000</color>
 
     <color name="bottom_nav_color">#030304</color>

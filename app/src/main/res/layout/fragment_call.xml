@@ -87,7 +87,7 @@
                 android:fontFamily="@font/roboto"
                 android:gravity="start"
                 android:text="@string/hashcaller_name"
-                android:textColor="@color/textColor"
+                android:textColor="@color/colorWhite"
                 android:textSize="24sp"
                 android:layout_marginStart="16dp"
                 android:textStyle="bold"

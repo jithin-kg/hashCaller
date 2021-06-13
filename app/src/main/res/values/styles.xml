@@ -189,8 +189,11 @@
 
 <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     <item name="android:windowBackground">@drawable/splash_background</item>
-    <item name="android:statusBarColor">@color/statusBar</item>
+<!--    <item name="android:statusBarColor">@color/statusBar</item>-->
+<!--    <item name="statusBarForeground">#000000</item>-->
     <item name="backgroundColor">@color/colorPrimary</item>
+    <item name="android:statusBarColor">@color/statusBarColor</item>
+
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="android:windowSoftInputMode">stateHidden</item>
