@@ -245,4 +245,44 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutRequestUserInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings">
+
+        <ImageView
+            android:id="@+id/imgVRequest"
+            android:layout_width="@dimen/settings_icons_width"
+            android:layout_height="@dimen/settings_icons_width"
+            android:layout_marginStart="@dimen/margin_start_setting_img"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="@dimen/margin_img_settings_img"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_person_add_24" />
+
+        <TextView
+            android:id="@+id/tvRequestUserinfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:letterSpacing="0.1"
+            android:text="Request User Info"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/settings_text_size"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVRequest"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgVRequest"
+            app:layout_constraintTop_toTopOf="@+id/imgVRequest" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>

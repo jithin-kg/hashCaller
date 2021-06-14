@@ -6,5 +6,6 @@ package com.nibble.hashcaller.network
          const val NO_CONTENT = 204
          const val STATUS_OK = 200
          const val STATUS_SEARHING_IN_PROGRESS = 900
+         const val FORBIDDEN = 403
      }
 }

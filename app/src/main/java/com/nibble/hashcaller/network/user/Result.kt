@@ -6,5 +6,7 @@ data class Result(
 //    val gender: String,
     val lastName: String,
     val image: String?,
-    val customToken:String?
+    val customToken:String?,
+    val isBlockedByAdmin:Int = 0
+
 )

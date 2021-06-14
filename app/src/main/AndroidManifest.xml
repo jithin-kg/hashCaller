@@ -50,6 +50,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SplashTheme">
+        <activity android:name=".view.ui.userdata.GetUserDataActiivty"
+            android:theme="@style/AppTheme"
+            />
         <activity
             android:name=".view.ui.getstarted.GetStartedActivity"
             android:theme="@style/AppTheme" />

@@ -12,6 +12,7 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.profile.RequestUserInfoDTO
 import com.nibble.hashcaller.view.utils.imageProcess.ImageCompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -133,7 +134,10 @@ class UserNetworkRepository(
 
     }
 
-
+    suspend fun requestForUserInfoInserver(email:String)  = withContext(Dispatchers.IO){
+        token = tokenHelper?.getToken()
+        token?.let { retrofitService.requestUserInfoInServer(it, RequestUserInfoDTO(email)) }
+    }
 
 
     companion object{

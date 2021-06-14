@@ -17,6 +17,7 @@ import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.userdata.GetUserDataActiivty
 import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.work.formatPhoneNumber
 
@@ -85,6 +86,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         binding.imgBtnBackMain.setOnClickListener(this)
         binding.layoutManageBlocking.setOnClickListener(this)
         binding.layoutNotifications.setOnClickListener(this)
+        binding.layoutRequestUserInfo.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -97,6 +99,10 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.layoutNotifications -> {
                 val intent = Intent(this, ManageNotificationsActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.layoutRequestUserInfo -> {
+                val intent = Intent(this, GetUserDataActiivty::class.java)
                 startActivity(intent)
             }
         }

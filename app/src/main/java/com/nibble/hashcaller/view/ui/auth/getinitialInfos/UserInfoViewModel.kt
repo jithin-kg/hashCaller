@@ -3,6 +3,7 @@ package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
@@ -10,6 +11,7 @@ import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.NetworkResponseBase
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.SOMETHING_WRONG_HAPPEND
+import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.user.GetUserInfoResponse
 import com.nibble.hashcaller.network.user.Result
 import com.nibble.hashcaller.network.user.SingupResponse
@@ -19,6 +21,7 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHasehdNumReposi
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -94,10 +97,14 @@ class UserInfoViewModel(
 //                hashedNum = hashUsingArgon(hashedNum)
                 hashedNum?.let {
                     val response =  userNetworkRepository.getUserInfoFromServer( it, formattedPhoneNum)
+
                     Log.d(TAG, "getUserInfoFromServer: response: $response")
                     Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
                     response?.let {
-                        if(response?.isSuccessful){
+                        if(response.code() == StatusCodes.FORBIDDEN){
+                            context.toast("Your account is blocked for violating our terms.", Toast.LENGTH_LONG)
+                        }else if(response?.isSuccessful){
+
                             if(response.body()!=null)
                                 emit(response.body()!!)
 //                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
@@ -246,5 +253,9 @@ class UserInfoViewModel(
             Log.d(TAG, "updateUserInfoInDb: $e")
         }
 
+    }
+
+    fun requestForUserInfoStoredInServer(email:String) = viewModelScope.launch {
+        userNetworkRepository.requestForUserInfoInserver(email)
     }
 }
