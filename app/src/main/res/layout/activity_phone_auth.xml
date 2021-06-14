@@ -6,118 +6,108 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     tools:context="com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth">
-
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView"
-        android:layout_width="0dp"
-        android:layout_height="309dp"
-        android:src="@drawable/vault"
-        app:layout_constraintBottom_toTopOf="@+id/textViewInstruction"
-        app:layout_constraintEnd_toStartOf="@+id/guideline10"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline9"
-        app:layout_constraintTop_toTopOf="@+id/guideline8"
-        tools:ignore="MissingClass" />
-
-    <EditText
-        android:id="@+id/editTextPhone"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/edit_text_phone_num"
-        android:ems="10"
-        android:textColor="@color/textColor"
-        android:text="916605551234"
-        android:inputType="phone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonGo"
-        app:layout_constraintEnd_toStartOf="@+id/guideline10"
-        app:layout_constraintStart_toStartOf="@+id/guideline9"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+   <TextView
+       android:id="@+id/tvHead"
+       android:layout_width="0dp"
+       android:layout_height="wrap_content"
+       android:text="Enter your phone number"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toTopOf="parent"
+       android:layout_marginTop="@dimen/standard_touch_size"
+       android:textSize="28sp"
+       android:gravity="center"
+       android:textColor="@color/textColor"
+       android:alpha="1"
+       />
 
     <TextView
-        android:id="@+id/textViewInstruction"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvSubHead"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="We need to verify your phone number to get started"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/tvHead"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:textSize="21sp"
+        android:layout_marginTop="32dp"
         android:textColor="@color/textColor"
-        app:layout_constraintBottom_toTopOf="@+id/textViewHashValue"
-        app:layout_constraintEnd_toEndOf="@+id/buttonGo"
-        app:layout_constraintHorizontal_bias="0.488"
-        app:layout_constraintStart_toStartOf="@+id/buttonGo"
-        app:layout_constraintTop_toBottomOf="@+id/gifImageView" />
+        android:alpha="0.84"
+        />
+<!--    important android:adjustViewBounds="true" reduces image padding-->
+
+<!--   https://material.io/design/layout/understanding-layout.html#composition-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:paddingTop="@dimen/margin_padding_size_small"
+        android:paddingBottom="@dimen/margin_padding_size_small"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSubHead"
+        android:background="@drawable/edit_text_full_border"
+        android:layout_marginStart="@dimen/margin_padding_size_xlarge"
+        android:layout_marginEnd="@dimen/margin_padding_size_xlarge"
+        >
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/coutryCodePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:ccpDialog_searchEditTextTint="@color/textColor"
+            app:ccpDialog_textColor="@color/textColor"
+            app:ccp_autoDetectCountry="true"
+            app:ccp_contentColor="@color/textColor"
+            app:ccp_showArrow="true"
+            app:ccp_showFlag="true"
+            app:ccp_showNameCode="false"
+            app:ccp_showPhoneCode="true"
+            app:layout_constraintBottom_toBottomOf="@+id/edtTextPhone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/edtTextPhone"
+            tools:layout_editor_absoluteY="198dp"
+
+            />
+
+        <EditText
+            android:id="@+id/edtTextPhone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="@null"
+            android:paddingTop="8dp"
+            android:maxLines="1"
+            android:inputType="phone"
+            android:paddingBottom="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/coutryCodePicker"
+            app:layout_constraintTop_toTopOf="parent"
+
+            />
 
 
-    <TextView
-        android:id="@+id/textViewHashValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text=""
-        android:textStyle="bold"
-        android:textColor="@color/textColor"
-        android:textFontWeight="700"
-        android:fontFamily="@font/roboto"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="@+id/buttonGo"
-        app:layout_constraintStart_toStartOf="@+id/buttonGo"
-        app:layout_constraintTop_toBottomOf="@+id/textViewInstruction" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <Button
-        android:id="@+id/buttonGo"
+        android:id="@+id/btnGo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/btn_go"
-        android:elevation="6dp"
-
-        android:minHeight="56dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:text="Go"
-        android:textColor="#ffff"
-        android:textFontWeight="2"
-        app:layout_constraintBottom_toTopOf="@+id/guideline11"
-        app:layout_constraintEnd_toStartOf="@+id/guideline10"
-        app:layout_constraintStart_toStartOf="@+id/guideline9"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:textColor="@color/textColor"
-        android:text="Enter Mobile Number"
-        app:layout_constraintBottom_toTopOf="@+id/editTextPhone"
-        app:layout_constraintEnd_toEndOf="@+id/buttonGo"
-        app:layout_constraintStart_toStartOf="@+id/buttonGo"
-        app:layout_constraintTop_toBottomOf="@+id/textViewHashValue" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.1" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.9" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
+        android:paddingTop="@dimen/margin_padding_size_small"
+        android:paddingBottom="@dimen/margin_padding_size_small"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+        android:layout_marginTop="@dimen/standard_touch_size"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

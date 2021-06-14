@@ -11,11 +11,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityPhoneAuthBinding
-import com.nibble.hashcaller.utils.constants.IntentKeys
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.PhoneAuthInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_phone_auth.*
 
 
@@ -32,7 +31,7 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         initListeners()
         initViewModel()
-        binding.editTextPhone?.addTextChangedListener(object : TextWatcher {
+        binding.edtTextPhone?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence,
                 start: Int,
@@ -47,18 +46,18 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
                 before: Int,
                 count: Int
             ) {
-                if(binding.editTextPhone.text.isEmpty()){
-                    binding.textViewHashValue.text = ""
-                    binding.textViewInstruction?.text = ""
+                if(binding.edtTextPhone.text.isNullOrEmpty()){
+//                    binding.textViewHashValue.text = ""
+//                    binding.textViewInstruction?.text = ""
                 }else{
                     val hashGenerator = HasValueGenerator()
                     val hashValue: String? =
-                        hashGenerator.generateHash(binding.editTextPhone?.text.toString())
+                        hashGenerator.generateHash(binding.edtTextPhone?.text.toString())
                     if (!displayedInstruction) {
-                       binding.textViewInstruction?.text = "Take a look at how we save your phone number"
-                        displayedInstruction = true
+//                       binding.textViewInstruction?.text = "Take a look at how we save your phone number"
+//                        displayedInstruction = true
                     }
-                    binding.textViewHashValue?.text = hashValue
+//                    binding.textViewHashValue?.text = hashValue
                 }
 
             }
@@ -80,13 +79,13 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initListeners() {
-        binding.buttonGo.setOnClickListener(this)
+        binding.btnGo.setOnClickListener(this)
     }
 
     fun passPhoneNumber() {
 
-        val phoneNumber =
-            binding.editTextPhone?.text.toString().trim { it <= ' ' }
+        var phoneNumber = formatPhoneNumber(binding.coutryCodePicker.selectedCountryCode +
+                binding.edtTextPhone?.text.toString())
         userInfoViewModel.saveUserPhoneHash(this, phoneNumber).observe(this, Observer {
             when(it){
                 OPERATION_COMPLETED ->{
@@ -104,8 +103,8 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.buttonGo ->{
-                binding.buttonGo.isEnabled = false
+            R.id.btnGo ->{
+                binding.btnGo.isEnabled = false
                 passPhoneNumber()
             }
         }

@@ -97,7 +97,7 @@ class UserInfoViewModel(
 //                hashedNum = hashUsingArgon(hashedNum)
                 hashedNum?.let {
                     val response =  userNetworkRepository.getUserInfoFromServer( it, formattedPhoneNum)
-
+                    //todo update with status codes, in all api,
                     Log.d(TAG, "getUserInfoFromServer: response: $response")
                     Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
                     response?.let {

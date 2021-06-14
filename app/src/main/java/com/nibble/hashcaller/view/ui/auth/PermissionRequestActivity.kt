@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.auth
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
@@ -100,7 +101,8 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
     private fun requestPermission() {
         val perms = arrayOf(
             android.Manifest.permission.READ_CONTACTS,
-            android.Manifest.permission.READ_PHONE_STATE
+            android.Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CALL_LOG,
         )
         val permissionRequest =  PermissionRequest.Builder(this)
             .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)

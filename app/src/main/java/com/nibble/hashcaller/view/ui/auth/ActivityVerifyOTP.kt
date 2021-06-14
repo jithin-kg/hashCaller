@@ -33,6 +33,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import kotlinx.android.synthetic.main.activity_testauth.*
 import java.util.concurrent.TimeUnit
 
@@ -137,6 +138,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                     Log.d(TAG, "onVerificationFailed: ")
 //                    binding.fieldPhoneNumber.error = "Invalid phone number."
                     // [END_EXCLUDE]
+                    toast("Invalid phone number", Toast.LENGTH_LONG)
                 } else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
                     // [START_EXCLUDE]

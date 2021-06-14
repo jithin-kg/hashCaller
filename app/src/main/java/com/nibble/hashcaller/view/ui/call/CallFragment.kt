@@ -164,12 +164,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
     private fun observeUserInfo() {
-        sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
-                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-//                binding.tvCircularAvatar.text = fLetter
-            }
-        })
+//        sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
+//            if(it!=null){
+//                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+////                binding.tvCircularAvatar.text = fLetter
+//            }
+//        })
     }
 
      fun getDataDelayed() {

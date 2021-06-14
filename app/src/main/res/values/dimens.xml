@@ -56,4 +56,14 @@
     <dimen name="margin_horizontal_rational">80dp</dimen>
     <dimen name="primary_button_vertical_padding">16dp</dimen>
     <dimen name="btn_lower_margin">32dp</dimen>
+
+    <!-- Margin & Padding, 8 dp baseline, https://material.io/design/layout/understanding-layout.html -->
+    <dimen name="margin_padding_size_small">8dp</dimen>
+    <dimen name="margin_padding_size_medium">16dp</dimen>
+    <dimen name="margin_padding_size_large">24dp</dimen>
+    <dimen name="margin_padding_size_xlarge">32dp</dimen>
+    <dimen name="margin_padding_size_xxlarge">40dp</dimen>
+    <!-- Touch Target Size, https://material.io/design/usability/accessibility.html#layout-and-typography -->
+    <dimen name="standard_touch_size">48dp</dimen>
+
 </resources>

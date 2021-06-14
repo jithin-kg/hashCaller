@@ -7,7 +7,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="4">
-
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_left_s_line"
+        android:padding="@dimen/margin_padding_size_small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        />
     <com.chaos.view.PinView
         android:id="@+id/otpview"
         style="@style/PinWidget.PinView"

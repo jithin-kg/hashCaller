@@ -73,6 +73,7 @@ import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -221,7 +222,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this,
             READ_CONTACTS,
             READ_PHONE_STATE,
-//            READ_CALL_LOG,
+            READ_CALL_LOG,
 //            WRITE_CALL_LOG,
 //            READ_CONTACTS,
 //            READ_PHONE_STATE
@@ -348,7 +349,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         userInfoViewModel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
                 //todo possibilityr of strinindexoutofbound exception
-                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+                    try {
+                         val fLetter = formatPhoneNumber(it.firstname)[0].toString()
                 val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
                 fullName.text = "${it.firstname} ${it.lastName}"
                 if(!it.photoURI.isNullOrEmpty()){
@@ -357,6 +359,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 }else{
                     firstLetterView.beVisible()
                 }
+                    }catch (e:Exception){
+                        Log.d(TAG, "observeUserInfo: $e")
+                        toast("Unable to get user name")
+                    }
+
             }
         })
     }
