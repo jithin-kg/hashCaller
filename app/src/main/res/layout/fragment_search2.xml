@@ -61,7 +61,7 @@
             android:id="@+id/searchViewMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="@color/colorBackground"
             android:cursorVisible="false"
             android:focusable="false"
             android:drawableLeft="@drawable/ic_baseline_search"
@@ -102,17 +102,18 @@
 <!--    https://storyset.com/illustration/lantern/rafiki/animate-->
 <!--    https://generated.photos/face-generator for face generation-->
 <!--    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
-    <pl.droidsonroids.gif.GifImageView
+    <ImageView
         android:id="@+id/gifImageView"
         android:layout_width="0dp"
-        android:layout_height="309dp"
-        android:src="@drawable/lantern_anim_black"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_lantern_rafiki"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/callToolbarLayoutItems"
-
         tools:ignore="MissingClass" />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -132,7 +133,7 @@
         android:alpha="0.74"
         android:text="Search securely for unknown numbers in hashcaller"
         android:textColor="@color/textColor"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

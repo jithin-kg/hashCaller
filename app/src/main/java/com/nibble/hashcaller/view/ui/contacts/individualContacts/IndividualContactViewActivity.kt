@@ -62,7 +62,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private  var spammerType:Int = SPAMMER_TYPE_SCAM
 //    private lateinit var imgExpand:ImageView
     private lateinit var radioScam:RadioButton
-    private lateinit var radioS:RadioButton
+    private lateinit var radioSales:RadioButton
     private lateinit var btnBlock:Button
     private lateinit var tvSpamfeedbackMsg : TextView
     private var  popup: PopupMenu? = null
@@ -159,7 +159,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             IndividualcontactViewModel::class.java
         )
 
-        generalBlockViewmodel = ViewModelProvider(this, GeneralBlockInjectorUtil.provideUserInjectorUtil(
+        generalBlockViewmodel = ViewModelProvider(this, GeneralBlockInjectorUtil.provideViewModel(
             this,
             phoneNum
          )).get(GeneralblockViewmodel::class.java)
@@ -223,7 +223,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
 //        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
         radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
-        radioS = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales) as RadioButton
+        radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales) as RadioButton
         btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock) as Button
         selectedRadioButton = radioScam
 //        imgExpand.setOnClickListener(this)
@@ -272,7 +272,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.imgBtnCallindividual.setOnClickListener(this)
         binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
-        radioS.setOnClickListener(this)
+        radioSales.setOnClickListener(this)
         radioScam.setOnClickListener(this)
         btnBlock.setOnClickListener(this)
     }
@@ -376,7 +376,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
                     val checked = v.isChecked
                     if (checked) {
-                        selectedRadioButton = radioS
+                        selectedRadioButton = radioSales
                         this.spammerType = SPAMMER_TYPE_SALES
                         Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
 //                                spinnerSelected.value = false

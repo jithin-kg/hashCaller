@@ -10,6 +10,7 @@ import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.android.internal.telephony.ITelephony;
@@ -19,7 +20,9 @@ import java.lang.reflect.Method;
 /**
  * Created by Jithin KG on 21,July,2020
  */
+@Keep
 public class CallEnder implements ITelephony {
+    @Keep
     private Context context;
     private String TAG = "__CallEnder";
 
@@ -32,6 +35,7 @@ public class CallEnder implements ITelephony {
 
             boolean callEnded =false;
         try {
+
             TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 telecomManager.endCall();
@@ -86,7 +90,6 @@ public class CallEnder implements ITelephony {
     }
     private void  endIncommingCall(Context context) {
         try {
-
 
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 

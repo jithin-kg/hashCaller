@@ -52,6 +52,7 @@ import com.nibble.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
+import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -627,9 +628,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 (activity as MainActivity).showDialerFragment()
             }
             R.id.imgBtnCallTbrMore ->{
-                val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
-                popup.setOnMenuItemClickListener(this)
-                popup.show()
+                val intent = Intent(activity, BlockListActivity::class.java)
+                startActivity(intent)
+//                val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
+//                popup.setOnMenuItemClickListener(this)
+//                popup.show()
             }
             R.id.imgBtnHamBrgerCalls ->{
                 (activity as MainActivity).showDrawer()
@@ -721,6 +724,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
         when(menuItem?.itemId){
             R.id.itemMyBlockList ->{
+
                 val intent = Intent(activity, BlockListActivity::class.java)
                 startActivity(intent)
             }
@@ -881,6 +885,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
                 }else{
                     return  markItem(id, TYPE_CLICK, position,callLog.number) // mark item
                 }
+            }
+            TYPE_MAKE_CALL ->{
+             context?.makeCall(callLog.numberFormated)
             }
 
             else ->{

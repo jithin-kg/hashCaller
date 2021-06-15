@@ -15,28 +15,37 @@
         android:src="@drawable/ic_solidarity_rafiki"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
+
     <TextView
         android:id="@+id/tvWelcome"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Welcome to Hashcaller"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="24sp"
+        android:layout_width="424dp"
+        android:layout_height="37dp"
         android:alpha="0.84"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="Welcome to Hashcaller"
         android:textColor="@color/textColor"
-        />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline6" />
 
     <TextView
         android:id="@+id/textView19"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="28dp"
         android:gravity="center"
         android:text="Caller Id That doesn't \n save your phone number"
         android:textColor="@color/textColor"
@@ -80,4 +89,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

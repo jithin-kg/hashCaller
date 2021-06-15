@@ -49,7 +49,7 @@ class BlockListPatternRepository(
        val formatedNumPattern = libCountryHelper.getES164Formatednumber(formatPhoneNumber(numberPattern), countryCodeIso)
        val  blockedListPattern =  BlockedListPattern(
             null, formatedNumPattern,
-            "", EXACT_NUMBER
+            "", type
         )
 
         val res =  blockedLIstDao?.find(formatedNumPattern, blockedListPattern.type)

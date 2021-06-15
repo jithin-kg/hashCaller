@@ -54,6 +54,16 @@ android {
     buildFeatures {
         viewBinding = true
     }
+//   This is added for signin
+    signingConfigs{
+        debug {
+            keyAlias 'Key0'
+            keyPassword 'newmoto@535'
+            storeFile file('/Users/jithin/Desktop/hashcallerKey')
+            storePassword 'newmoto@535'
+        }
+//        84:3b:42:94:37:e0:d0:3e:b1:89:44:a8:39:6f:9d:90:76:ee:1a:85 removed from firebase recently
+    }
     buildTypes {
         release {
             minifyEnabled true
@@ -68,10 +78,17 @@ android {
         //up to this
 
         debug {
-            minifyEnabled false
-            shrinkResources false
-//            zipAlignEnabled true
-            useProguard false
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            //below line is added by me for generating signed apk
+            signingConfig signingConfigs.debug
+//            minifyEnabled false
+//            shrinkResources false
+////            zipAlignEnabled true
+//            useProguard false
 
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

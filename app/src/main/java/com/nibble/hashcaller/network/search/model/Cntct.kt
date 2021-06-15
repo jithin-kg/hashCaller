@@ -1,10 +1,12 @@
 package com.nibble.hashcaller.network.search.model
 
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import java.io.Serializable
 
+@Keep
 data class Cntct(
 
     @SerializedName("firstName")

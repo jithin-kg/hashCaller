@@ -313,7 +313,6 @@ class CallContainerViewModel(
                     val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
                     val as3 = async { applicationContext?.startSpamReportWorker(contactAddress, spammerType) }
 
-
                     try {
                         as1.await()
                     } catch (e: Exception) {

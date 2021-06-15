@@ -42,6 +42,7 @@ class FloatinServiceHelper(
                         isInfoFoundInCprovider = true
                         window?.updateWithcontentProviderInfo(contactInCprovider)
                     }
+
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
                         if(infoAvailableInDb.spammCount?:0L > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){

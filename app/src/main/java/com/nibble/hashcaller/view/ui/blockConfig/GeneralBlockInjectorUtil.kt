@@ -9,7 +9,7 @@ import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 
 object GeneralBlockInjectorUtil {
-    fun provideUserInjectorUtil(
+    fun provideViewModel(
                                 context: Context,
                                 phoneNum: String) : GeneralBlockViewModelFactory {
 

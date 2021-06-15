@@ -223,6 +223,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             READ_CONTACTS,
             READ_PHONE_STATE,
             READ_CALL_LOG,
+            CALL_PHONE
 //            WRITE_CALL_LOG,
 //            READ_CONTACTS,
 //            READ_PHONE_STATE
@@ -317,7 +318,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         setBottomSheetListener()
 
-        mangeCipherInSharedPref()
+//        mangeCipherInSharedPref()
         observeUserInfoLiveData()
 //        setupContactUploadWork()
         observeUserInfo()
@@ -522,9 +523,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun mangeCipherInSharedPref() {
-        if(!isCipherInSharedPreferences()){
-//            KeyManager.setCipherInSharedPreferences(this)
-        }
+//        if(!isCipherInSharedPreferences()){
+////            KeyManager.setCipherInSharedPreferences(this)
+//        }
     }
 
 

@@ -1,9 +1,11 @@
 package com.nibble.hashcaller.network.contact
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.nibble.hashcaller.network.search.model.SpammerStatus
 import java.io.Serializable
 
+@Keep
 data class ContactUploadResponseItem(
     @SerializedName("phoneNumber")
     val phoneNumber: String,

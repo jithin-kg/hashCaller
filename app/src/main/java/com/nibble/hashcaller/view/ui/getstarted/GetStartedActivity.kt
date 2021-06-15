@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.getstarted
 
 import android.Manifest
+import android.Manifest.permission.CALL_PHONE
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
@@ -115,7 +116,8 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
         val perms = arrayOf(Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.READ_SMS
+            Manifest.permission.READ_SMS,
+                    CALL_PHONE
         )
        val permissionRequest =  PermissionRequest.Builder(this)
             .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)

@@ -29,10 +29,13 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
+import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
@@ -65,6 +68,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private  var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+    private lateinit var generalBlockViewmodel: GeneralblockViewmodel
+    private  var spammerType:Int = SPAMMER_TYPE_SCAM
+
 
     //    private var country = ""
     @SuppressLint("LongLogTag")
@@ -155,6 +161,11 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
         viewModel = ViewModelProvider(this, SearchInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper)).get(
             SearchViewModel::class.java)
+
+        generalBlockViewmodel = ViewModelProvider(this,
+            GeneralBlockInjectorUtil.provideViewModel(this, phoneNumber)).get(
+                GeneralblockViewmodel::class.java
+            )
     }
 
     private fun getIntentxras(intent: Intent) {
@@ -228,18 +239,65 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 //                toast("radio scan clicked")
                 radioClicked(v as RadioButton)
             }
+            R.id.btnBlock -> {
+                blockThisAddress()
+            }
         }
     }
 
+    private fun blockThisAddress() {
+        generalBlockViewmodel.blockThisAddress(spammerType = spammerType, phoneNumber)
+            .observe(this, Observer {
+                when(it){
+                    ON_COMPLETED -> {
+                        bottomSheetDialog.hide()
+                        bottomSheetDialog.dismiss()
+                        bottomSheetDialogfeedback.show()
+                    }
+                }
+            })
+    }
+
     private fun radioClicked(v: RadioButton) {
-       if(previousCheckedRadioButton?.id != v.id){
-           previousCheckedRadioButton?.isChecked = false
-           v.isChecked = true
-           previousCheckedRadioButton = v
-       }else{
-           v.isChecked = false
-           previousCheckedRadioButton = null
-       }
+        if(v is RadioButton){
+            when(v.id){
+                R.id.radioScam -> {
+                    val checked = v.isChecked
+                    if (checked) {
+                        selectedRadioButton = radioScam
+                        Log.d(IndividualSMSActivity.TAG, "radio button clicked")
+                        this.spammerType = SPAMMER_TYPE_SCAM
+
+//                                spinnerSelected.value = fals
+
+                    }
+                }
+                R.id.radioSales -> {
+
+                    val checked = v.isChecked
+                    if (checked) {
+                        selectedRadioButton = radioSales
+                        this.spammerType = SPAMMER_TYPE_SALES
+                        Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
+//                                spinnerSelected.value = false
+
+                    }
+                }
+                R.id.radioBusiness -> {
+                    val checked = v.isChecked
+                    if (checked) {
+                        spammerType = SPAMMER_TYPE_BUSINESS
+                    }
+                }
+                R.id.radioPerson -> {
+                    val checked = v.isChecked
+                    if (checked) {
+                        spammerType = SPAMMER_TYPE_PEERSON
+
+                    }
+                }
+            }
+        }
     }
 
     private fun showBottomSheetDialog() {

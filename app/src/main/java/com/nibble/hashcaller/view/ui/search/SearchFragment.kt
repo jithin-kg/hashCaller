@@ -38,9 +38,9 @@ class SearchFragment : Fragment(), IDefaultFragmentSelection, View.OnClickListen
 
     private fun configureAnimImage() {
         if(context?.isDarkThemeOn() == true){
-            binding.gifImageView.setImageResource(R.drawable.lantern_anim_black)
+//            binding.gifImageView.setImageResource(R.drawable.lantern_anim_black)
         }else{
-            binding.gifImageView.setImageResource(R.drawable.lantern_anim)
+//            binding.gifImageView.setImageResource(R.drawable.lantern_anim)
 
         }
     }

@@ -290,7 +290,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         private fun setClickListener(view: View, callLog: CallLogTable) {
             view.imgBtnCall.setOnClickListener{
-                val visibility =  it.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
+//                val visibility = logBinding.layoutExpandableCall.visibility
+
+                val visibility =  view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
 
                 onContactItemClickListener(
                     callLog.id!!,
@@ -303,7 +305,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 )
             }
             view.setOnLongClickListener { v ->
-                val visibility =  v.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
+
+                val visibility =  view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
 
                 var isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
