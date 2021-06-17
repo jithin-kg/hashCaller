@@ -25,8 +25,8 @@ fun getDecodedBytes(photoUri:String): Bitmap? {
                           textFieldOne: TextInputLayout, outlineField2: TextInputLayout
 ): Boolean {
     var isValid = true;
-    if( firstName.isEmpty() || firstName.length < 3 || firstName.length > 25){
-        textFieldOne.error = "First name should contain at least 3 characters"
+    if( firstName.isEmpty() || firstName.length < 2 || firstName.length > 25){
+        textFieldOne.error = "First name should contain at least 2 characters"
         isValid = false;
     }
     if(firstName.length> 25){
@@ -38,8 +38,8 @@ fun getDecodedBytes(photoUri:String): Bitmap? {
         isValid = false;
 
     }
-    if( lastName.isEmpty() || lastName.length < 2 ){
-        outlineField2.error = "Last name should contain at least 3 characters"
+    if( lastName.isEmpty() || lastName.length < 1 ){
+        outlineField2.error = "Last name should contain at least 1 characters"
         isValid = false;
     }
 

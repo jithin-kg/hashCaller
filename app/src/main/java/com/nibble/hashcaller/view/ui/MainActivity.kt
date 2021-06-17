@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
 import android.util.Log
 import android.view.Gravity
@@ -62,6 +63,7 @@ import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
+import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.getstarted.GetStartedActivity
 import com.nibble.hashcaller.view.ui.hashworker.HasherViewmodel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
@@ -312,7 +314,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if(!this. isScreeningRoleHeld()){
-//                requestScreeningRole()
+                requestScreeningRole()
 
             }
         }
@@ -373,8 +375,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun requestAlertWindowPermission() {
         // Show alert dialog to the user saying a separate permission is needed
         if(!canDrawOverlays(applicationContext)){
-//            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
-//            startActivity(myIntent)
+            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
+            startActivity(myIntent)
         }
 
     }

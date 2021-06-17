@@ -117,7 +117,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_CALL_LOG,
             Manifest.permission.READ_SMS,
-                    CALL_PHONE
+                    CALL_PHONE // this permission is required make phone call intent
         )
        val permissionRequest =  PermissionRequest.Builder(this)
             .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)
