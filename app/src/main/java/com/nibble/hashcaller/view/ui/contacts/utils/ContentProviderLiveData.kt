@@ -39,7 +39,6 @@ abstract class ContentProviderLiveData<T>(
                     scope.launch {
                         postValue(getContentProviderValue(null))
                     }
-
                 }
             }
             context.contentResolver.registerContentObserver(uri, true, observer)

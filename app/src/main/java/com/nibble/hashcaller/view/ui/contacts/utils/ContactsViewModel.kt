@@ -14,7 +14,9 @@ import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
 import com.nibble.hashcaller.work.ContactsUploadWorker
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -81,12 +83,15 @@ class ContactsViewModel(
     }
 
     fun startWorker(applicationContext: Context?) = viewModelScope.launch {
-        applicationContext?.let{
-            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-            val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-                .build()
-            WorkManager.getInstance(it).enqueue(request)
+        withContext(Dispatchers.IO){
+            applicationContext?.let{ appContext ->
+                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                    .build()
+                WorkManager.getInstance(appContext).enqueue(request)
+            }
         }
+
 
 //
 //        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)

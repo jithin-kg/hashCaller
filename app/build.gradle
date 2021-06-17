@@ -78,17 +78,24 @@ android {
         //up to this
 
         debug {
-            minifyEnabled true
-            shrinkResources true
-            zipAlignEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            //below line is added by me for generating signed apk
-            signingConfig signingConfigs.debug
-//            minifyEnabled false
-//            shrinkResources false
-////            zipAlignEnabled true
-//            useProguard false
+            /**
+             * Debug with obfuscation
+             */
+//            minifyEnabled true
+//            shrinkResources true
+//            zipAlignEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//
+//            //below line is added by me for generating signed apk
+//            signingConfig signingConfigs.debug
+/**
+ * normal debug
+  */
+//
+            minifyEnabled false
+            shrinkResources false
+//            zipAlignEnabled true
+            useProguard false
 
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

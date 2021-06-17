@@ -121,8 +121,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         if(checkCallPermission()){
             Log.d(TAG, "onCreateView: ")
             observeEditTextnum()
-            getFirst10items()
-            observeContacts()
+//            getFirst10items()
+//            observeContacts()
 
         }
 

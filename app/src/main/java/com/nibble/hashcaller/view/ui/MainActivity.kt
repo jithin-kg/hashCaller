@@ -980,7 +980,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun showMessagesFragment() {
         toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
+        if (messagesFragment.isAdded) { // if the fragment is already in container
+//            ft.addToBackStack(messagesFragment.javaClass.name)
+            ft.show(messagesFragment)
 
+
+//            setDefaultFragment(R.id.bottombaritem_messages)
+
+        }
         // Hide fragment B
 //        if (blockConfigFragment.isAdded) {
 //            ft.hide(blockConfigFragment)
@@ -1007,16 +1014,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(dialerFragment.isAdded){
             ft.hide(dialerFragment)
         }
-        if (messagesFragment.isAdded) { // if the fragment is already in container
-//            ft.addToBackStack(messagesFragment.javaClass.name)
-            ft.show(messagesFragment)
 
-
-//            setDefaultFragment(R.id.bottombaritem_messages)
-
-        }else{
-            Log.d(TAG, "showMessagesFragment:messagesFragment not added")
-        }
 
         // Commit changes
         ft.commit()

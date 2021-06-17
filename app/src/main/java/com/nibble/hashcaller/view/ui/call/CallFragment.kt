@@ -127,7 +127,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         savedInstanceState: Bundle?
     ): View? {
     binding = FragmentCallBinding.inflate(inflater, container, false)
-//        callFragment =  inflater.inflate(R.layout.fragment_call, container, false)
+//        callFragment =  inflatebtnCallFragmentPermissionr.inflate(R.layout.fragment_call, container, false)
 //    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
        tokenHelper =  TokenHelper(FirebaseAuth.getInstance().currentUser)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
@@ -180,7 +180,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
          getFirst10items()
 
         lifecycleScope.launchWhenStarted {
-            delay(2000L)
+
             observeCallLog()
 //        addScrollListener()
             setupSimCardCount()
@@ -195,10 +195,10 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
     private fun observeInternetLivedata() {
-        val cl = context?.let { ConnectionLiveData(it) }
-        cl?.observe(viewLifecycleOwner, Observer {
-            isInternetAvailable = it
-        })
+//        val cl = context?.let { ConnectionLiveData(it) }
+//        cl?.observe(viewLifecycleOwner, Observer {
+//            isInternetAvailable = it
+//        })
     }
 
 
@@ -245,27 +245,27 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
     private fun observePermissionLiveData() {
-        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
-            if(it == true){
-                Log.d(TAG, "observePermissionLiveData: permission given")
-                if(this.viewmodel?.callLogs != null){
-                    if(!this.viewmodel!!.callLogs?.hasObservers()){
-                        observeCallLog()
-                        binding.btnCallhistoryPermission.visibility = View.GONE
-                    }
-                }
-
-            }else{
-                binding.btnCallhistoryPermission.visibility =View.VISIBLE
-                Log.d(TAG, "observePermissionLiveData: permission not given")
-                if (this.viewmodel != null  ) {
-
-                    if(this.viewmodel?.callLogs != null)
-                        if(this.viewmodel!!.callLogs?.hasObservers())
-                            this.viewmodel?.callLogs?.removeObservers(this);
-                }
-            }
-        })
+//        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
+//            if(it == true){
+//                Log.d(TAG, "observePermissionLiveData: permission given")
+//                if(this.viewmodel?.callLogs != null){
+//                    if(!this.viewmodel!!.callLogs?.hasObservers()){
+//                        observeCallLog()
+//                        binding.btnCallhistoryPermission.visibility = View.GONE
+//                    }
+//                }
+//
+//            }else{
+//                binding.btnCallhistoryPermission.visibility =View.VISIBLE
+//                Log.d(TAG, "observePermissionLiveData: permission not given")
+//                if (this.viewmodel != null  ) {
+//
+//                    if(this.viewmodel?.callLogs != null)
+//                        if(this.viewmodel!!.callLogs?.hasObservers())
+//                            this.viewmodel?.callLogs?.removeObservers(this);
+//                }
+//            }
+//        })
     }
     private fun initListeners() {
 
@@ -312,8 +312,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     @AfterPermissionGranted(REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION)
     fun methodRequiresTwoPermission() {
         Log.d(TAG, "methodRequiresTwoPermission: ")
-        if (EasyPermissions.hasPermissions(context, READ_CALL_LOG,
-                WRITE_CALL_LOG,  READ_CONTACTS, READ_PHONE_STATE))
+        if (EasyPermissions.hasPermissions(context,
+                READ_CALL_LOG,
+                WRITE_CALL_LOG,
+                READ_CONTACTS,
+                READ_PHONE_STATE))
 
                 {
 
@@ -420,18 +423,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
     @SuppressLint("MissingPermission  Manifest.permission.READ_PHONE_STATE", "MissingPermission")
     private fun setupSimCardCount() {
-        val subscriptionManager = requireContext(). getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
-        val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
-        if(availableSIMs.size >0){
-
-        }
+//        val subscriptionManager = requireContext(). getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+//        val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
+//        if(availableSIMs.size >0){
+//
+//        }
 
     }
 
     private fun observeCallLogInfoFromServer() {
         lifecycleScope.launchWhenStarted {
             //important not to remove the delay here, becase this is getting called before calllog table data is triggered
-            delay(2000L)
+//            delay(2000L)
            viewmodel?.callersInfoFromDBLivedta?.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observeCallLogInfoFromServer: ")
                 viewmodel?.updateWithNewInfoFromServer(it)

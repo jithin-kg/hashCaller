@@ -153,7 +153,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     fun getData() {
         showRecyclerView()
         lifecycleScope.launchWhenStarted {
-            delay(2000L)
+//            delay(2000L)
             initViewmodel()
             observerContactList()
             observeUserInfo()

@@ -12,6 +12,7 @@ import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -66,8 +67,15 @@ import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 import kotlinx.android.synthetic.main.fragment_test.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.concurrent.schedule
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
@@ -131,7 +139,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         if(checkContactPermission())
         {
 //            getFirstPageOfSMS()
-           getDataDelayed()
+        getDataDelayed()
+
         }else{
             hideRecyclerView()
         }
@@ -140,25 +149,67 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
      fun getDataDelayed() {
-         showRecyclerView()
-        lifecycleScope.launchWhenStarted {
-            delay(2000L)
-            initVieModel()
-            observeSMSList()
-            observeSMSThreadsLivedata()
-            observeSendersInfoFromServer()
-            observeMarkedItems()
-            observeInternetLivedata()
+         Handler().postDelayed({
+             //doSomethingHere()
+             lifecycleScope.launchWhenStarted {
+                 showRecyclerView()
+                 initVieModel()
+//                    }
 
-        }
+                 observeSMSList()
+                 observeSMSThreadsLivedata()
+                 observeSendersInfoFromServer()
+                 observeMarkedItems()
+                 observeInternetLivedata()
+             }
+
+         }, 4000)
+//         Timer().schedule(3000L){
+////          lifecycleScope.launchWhenStarted {
+//              //do something
+//              showRecyclerView()
+////                    lifecycleScope.launchWhenCreated {
+//              initVieModel()
+////                    }
+//
+//              observeSMSList()
+//              observeSMSThreadsLivedata()
+////            observeSendersInfoFromServer()
+//              observeMarkedItems()
+////          }
+//         }
+//         lifecycleScope.launchWhenStarted {
+//             withContext(Dispatchers.IO){
+//
+//                 delay(4000L)
+////                 withContext(Dispatchers.Main){
+//                     showRecyclerView()
+////                    lifecycleScope.launchWhenCreated {
+//                        initVieModel()
+////                    }
+//
+//                     observeSMSList()
+//                     observeSMSThreadsLivedata()
+////            observeSendersInfoFromServer()
+//                     observeMarkedItems()
+////                     observeInternetLivedata()
+////                 }
+//             }
+//         }
+
+
+
     }
 
 
 
-    private fun showRecyclerView() {
-        binding.recyclreviewSMSContainer.beVisible()
-        binding.shimmerViewContainer.beVisible()
-        binding.btnRequestSMSPermisssion.beInvisible()
+    private  fun showRecyclerView() {
+//        withContext(Dispatchers.Main){
+            binding.recyclreviewSMSContainer.beVisible()
+            binding.shimmerViewContainer.beVisible()
+            binding.btnRequestSMSPermisssion.beInvisible()
+//        }
+
     }
     private fun hideRecyclerView(){
         binding.recyclreviewSMSContainer.beInvisible()
@@ -169,7 +220,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
 
-    private fun observeInternetLivedata() {
+    private suspend fun observeInternetLivedata() {
         val cl = context?.let { ConnectionLiveData(it) }
         cl?.observe(viewLifecycleOwner, Observer {
             isInternetAvailable = it
@@ -177,23 +228,29 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
 
-    private fun observeSMSThreadsLivedata() {
-        viewmodel?.smsThreadsLivedata?.observe(viewLifecycleOwner, Observer {
-            it.let {
+    private  suspend fun observeSMSThreadsLivedata() {
+//        withContext(Dispatchers.Main){
+            viewmodel?.smsThreadsLivedata?.observe(viewLifecycleOwner, Observer {
+                it.let {
 //                viewmodel.updateLiveData(it)
-                smsRecyclerAdapter?.setList(it)
-            }
-        })
+                    binding.pgbarSMSContainer.beGone()
+                    smsRecyclerAdapter?.setList(it)
+                }
+            })
+//        }
     }
-    private fun observeSMSList() {
-        viewmodel?.SMS?.observe(viewLifecycleOwner, Observer { sms ->
+    private suspend fun observeSMSList() {
+//        withContext(Dispatchers.Main){
+            viewmodel?.SMS?.observe(viewLifecycleOwner, Observer { sms ->
 
-            sms.let {
+                sms.let {
 
-                viewmodel?.updateDatabase(it, context?.applicationContext)
+                    viewmodel?.updateDatabase(it, context?.applicationContext)
 
-            }
-        })
+                }
+            })
+//        }
+
     }
 
     fun getMarkedItemsSize(): Int {
@@ -253,8 +310,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun checkContactPermission(): Boolean {
-
-        return context?.hasSMSReadPermission()?:false
+        return true
+//        return context?.hasSMSReadPermission()?:false
     }
 
 
@@ -361,18 +418,31 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         }
     }
-    private fun initVieModel() {
-        viewmodel = ViewModelProvider(this, SMSListInjectorUtil.provideDialerViewModelFactory(
-            context?.applicationContext,
-            lifecycleScope,
-            TokenHelper(FirebaseAuth.getInstance().currentUser)
-            )).get(
-            SMSViewModel::class.java)
+    private  fun initVieModel() {
+            val factory =  SMSListInjectorUtil.provideDialerViewModelFactory(
+                context?.applicationContext,
+                lifecycleScope,
+                TokenHelper(FirebaseAuth.getInstance().currentUser)
+            )
 
-    }
+//        lifecycleScope.launchWhenStarted {
+            viewmodel = ViewModelProvider(
+                this@SMSContainerFragment,
+                factory
+
+            ).get(
+                SMSViewModel::class.java
+            )
+
+//        }
 
 
-    private fun observeSendersInfoFromServer() {
+
+}
+
+
+    private suspend fun observeSendersInfoFromServer() {
+        //todo convert this to livedata, because this calling is does not observe livedata properly
         viewmodel?.getSmsSendersInfoFromServer()?.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observeSendersInfoFromServer: $it")
             viewmodel?.updateWithNewSenderInfo(it)
@@ -633,7 +703,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     @AfterPermissionGranted(REQUEST_CODE_READ_SMS_CONTACTS)
     private fun requestSMSPermissions() {
         if (EasyPermissions.hasPermissions(context, READ_SMS, READ_CONTACTS)) {
-           showRecyclerView()
+            lifecycleScope.launchWhenStarted {
+                showRecyclerView()
+            }
+
         } else {
             // Do not have permissions, request them now
                 hideRecyclerView()
@@ -800,18 +873,20 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         return false
     }
 
-    private fun observeMarkedItems() {
-        viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
-            when(it.size){
-                0 ->{
-                    showSearchView()
-                }
+    private  suspend fun observeMarkedItems() {
+//       withContext(Dispatchers.Main){
+           viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
+               when(it.size){
+                   0 ->{
+                       showSearchView()
+                   }
 
-                else ->{
-                    showToolbarButtons(it.size)
-                }
-            }
-        })
+                   else ->{
+                       showToolbarButtons(it.size)
+                   }
+               }
+           })
+//       }
     }
 
     /**

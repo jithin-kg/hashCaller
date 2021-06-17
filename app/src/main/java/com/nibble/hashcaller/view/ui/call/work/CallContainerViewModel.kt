@@ -25,9 +25,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.*
 import java.lang.Exception
 
 class CallContainerViewModel(
@@ -432,22 +430,26 @@ class CallContainerViewModel(
     }
 
     fun updateDatabase(logs: MutableList<CallLogTable>, applicationContext: Context?) = viewModelScope.launch {
-        val as1 = async {
-           repository?.insertIntoCallLogDb(logs)
+
+        withContext(Dispatchers.IO){
+            val as1 = async {
+                repository?.insertIntoCallLogDb(logs)
+            }
+            val as2 = async { updateCallLogIds(logs) }
+
+            val as3 = async { getInformationForTheseNumbers(applicationContext) }
+            val as5 = async { updateNameAndSpamCount(logs) }
+            val as4 = async { repository?.deleteCallLogs(logs) }
+
+            val as6 = async { generalBlockRepository.updateCallLogsWithblockListpatterns(logs) }
+            as2.await()
+            as1.await()
+            as3.await()
+            as4.await()
+            as5.await()
+            as6.await()
         }
-        val as2 = async { updateCallLogIds(logs) }
 
-        val as3 = async { getInformationForTheseNumbers(applicationContext) }
-        val as5 = async { updateNameAndSpamCount(logs) }
-        val as4 = async { repository?.deleteCallLogs(logs) }
-
-        val as6 = async { generalBlockRepository.updateCallLogsWithblockListpatterns(logs) }
-        as2.await()
-        as1.await()
-        as3.await()
-        as4.await()
-        as5.await()
-        as6.await()
 
     }
 

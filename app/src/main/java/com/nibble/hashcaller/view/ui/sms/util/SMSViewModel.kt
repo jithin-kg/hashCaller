@@ -266,11 +266,8 @@ class SMSViewModel(
 
     fun updateDatabase(sms: MutableList<SmsThreadTable>, applicationContext: Context?) = viewModelScope.launch {
 
-//        val as1 = async {
-//            sms?.let { repository?.updateThreadsDb(it) }
-//        }
-        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        supervisorScope.launch {
+//        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        withContext(Dispatchers.IO){
             sms?.let{
                 val as1 =    async {  repository?.insertIntoThreadsDb(it) }
                 val as2 = async{repository?.updateThreadContent(it)}
@@ -312,7 +309,7 @@ class SMSViewModel(
 //            as5.await()
             }
 
-        }.join()
+        }
         upadteThreadsWithInfoFromServer()
 
 //        updateWithServerInfo()
@@ -327,29 +324,31 @@ class SMSViewModel(
     }
 
     private fun upadteThreadsWithInfoFromServer() = viewModelScope.launch {
-        val allThreads = repository?.getAllSmsThreads()
-            if(allThreads!=null)
-            for (threadItem in allThreads){
-               val infoFromServer = repository?.getServerInfoForNumber(threadItem.numFormated)
-                //todo update with contentprovider data from here
-                val infoFromCprovider = repository?.getInfoFromCproviderForNum(threadItem.numFormated)
-                if(infoFromServer!=null){
-                    if(threadItem.firstNameFromServer!= infoFromServer.firstName || threadItem.lastNameFromServer !=infoFromServer.lastName ||
-                            threadItem.spamCount < infoFromServer.spamReportCount ||threadItem.imageFromDb != infoFromServer.thumbnailImg){
-                        //if any of the info exists in threads table related to server info is diff from server ino , update it
-                        repository?.updateThreadsDBWithServerInfo(infoFromServer)
-                    }
-                }
-                if(infoFromCprovider!=null){
-                    if(threadItem.firstName!= infoFromCprovider.firstName || threadItem.thumbnailFromCp != infoFromCprovider.photoThumnailServer){
-                        withContext(Dispatchers.Default) {
-                            repository?.updateChatThreadWithContentProviderInfo(
-                                infoFromCprovider
-                            )
-                        }
-                    }
-                }
-            }
+      withContext(Dispatchers.IO){
+          val allThreads = repository?.getAllSmsThreads()
+          if(allThreads!=null)
+              for (threadItem in allThreads){
+                  val infoFromServer = repository?.getServerInfoForNumber(threadItem.numFormated)
+                  //todo update with contentprovider data from here
+                  val infoFromCprovider = repository?.getInfoFromCproviderForNum(threadItem.numFormated)
+                  if(infoFromServer!=null){
+                      if(threadItem.firstNameFromServer!= infoFromServer.firstName || threadItem.lastNameFromServer !=infoFromServer.lastName ||
+                          threadItem.spamCount < infoFromServer.spamReportCount ||threadItem.imageFromDb != infoFromServer.thumbnailImg){
+                          //if any of the info exists in threads table related to server info is diff from server ino , update it
+                          repository?.updateThreadsDBWithServerInfo(infoFromServer)
+                      }
+                  }
+                  if(infoFromCprovider!=null){
+                      if(threadItem.firstName!= infoFromCprovider.firstName || threadItem.thumbnailFromCp != infoFromCprovider.photoThumnailServer){
+                          withContext(Dispatchers.Default) {
+                              repository?.updateChatThreadWithContentProviderInfo(
+                                  infoFromCprovider
+                              )
+                          }
+                      }
+                  }
+              }
+      }
 
 
     }

@@ -291,6 +291,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
             R.id.verifyManually ->{
                 binding.verifyManually.isEnabled = false
+                binding.pgBarOtpVerify.beVisible()
                 verifycode(otpview.text.toString())
             }
         }
