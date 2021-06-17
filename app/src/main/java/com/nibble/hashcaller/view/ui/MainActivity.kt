@@ -54,6 +54,7 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.crypto.KeyManager
+import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var  menuContacts:MenuItem
     private lateinit var  menuCalls:MenuItem
     private lateinit var  menuSearch:MenuItem
-    private lateinit var activeFragment:Fragment
+//    private lateinit var activeFragment:Fragment
 
 //    var  searchFragment: SearchFragment? = null
 
@@ -162,10 +163,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         savedState = savedInstanceState
 //        setTheme(R.style.splashScreenTheme)
         initDataStoreViewmodel()
-
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        manageSavedInstanceState(savedInstanceState)
         rcfirebaseAuth = FirebaseAuth.getInstance()
         initViewModel()
-        checkUserInfoAvaialbleInDb(savedInstanceState)
+        checkUserInfoAvaialbleInDb()
 
 //        observeHashedNumbersTable()
 
@@ -187,7 +190,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        WorkManager.getInstance(applicationContext).enqueue(oneTimeWorkRequest)
     }
 
-    private fun checkUserInfoAvaialbleInDb(savedInstanceState: Bundle?) {
+    private fun checkUserInfoAvaialbleInDb() {
         userInfoViewModel.getUserInfoFromDb().observe(this, Observer {
             if(it!=null){
                 /**
@@ -201,7 +204,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     finish()
                 }else {
 
-                    initMainActivityComponents(savedInstanceState)
+                    initMainActivityComponents()
 //                    setTheme(R.style.AppTheme)
                     firebaseAuthListener()
                 }
@@ -293,12 +296,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
         })
     }
-    private fun initMainActivityComponents(savedInstanceState: Bundle?) {
+    private fun initMainActivityComponents() {
 
         hideKeyboard(this)
 //        setStatusBarColor(this)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivityMainBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
         setAllMenuItems()
 
@@ -312,7 +315,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         setupNavigationDrawer()
         initHeaderView()
 
-        manageSavedInstanceState(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if(!this. isScreeningRoleHeld()){
                 requestScreeningRole()
@@ -542,6 +544,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
+
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
         this.messagesFragment = supportFragmentManager.getFragment(
@@ -616,6 +619,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
 
 
+
 //        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
 //        if(this.searchFragment!=null)
 //            if(this.searchFragment?.isAdded!!)
@@ -675,11 +679,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         callFragment.clearMarkeditems()
         messagesFragment.clearMarkeditems()
 
-        ft.hide(activeFragment)
+        ft.hide(HashCaller.getActiveFragment())
         if (dialerFragment.isAdded) { // if the fragment is already in container
 
             ft.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
-            activeFragment = dialerFragment
+            HashCaller.setActiveFragment(dialerFragment)
             ft.show(dialerFragment)
             dialerFragment.showDialPad()
             bottomNavigationView.beGone()
@@ -723,9 +727,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      * adds fragment to frame layout after search fragment closes
      */
     fun addFragmentsAgain(){
-        setTheDefaultFragment()
+//        setTheDefaultFragment()
 //        DefaultFragmentManager.defaultFragmentToShow = 2
-        addAllFragments()
+//        addAllFragments()
 //        val actionRestart =
 //            findViewById<View>(R.id.bottombaritem_calls)
 
@@ -789,7 +793,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(!fmnt.isDefaultFgmnt){
             ft.hide(fragment)
         }else {
-            activeFragment = fragment
+           HashCaller.setActiveFragment(fragment)
         }
 
     }
@@ -835,10 +839,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
-        ft.hide(activeFragment)
+
+        ft.hide(HashCaller.getActiveFragment())
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
-            activeFragment = contactFragment
+            HashCaller.setActiveFragment(contactFragment)
 //            unMarkItems()
             messagesFragment.showSearchView()
         }
@@ -862,11 +867,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showSearchFragment = true)
         val ft = supportFragmentManager.beginTransaction()
 
-       ft.hide(activeFragment)
+       ft.hide(HashCaller.getActiveFragment())
 
         if (searchFragment.isAdded) { // if the fragment is already in container
             ft.show(searchFragment)
-            activeFragment = searchFragment
+            HashCaller.setActiveFragment(searchFragment)
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -889,12 +894,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showCallsFragment = true)
 
         val ft = supportFragmentManager.beginTransaction()
-        ft.hide(activeFragment)
+        ft.hide(HashCaller.getActiveFragment())
         if(callFragment.isAdded){
 //            fabBtnShowDialpad.visibility = View.VISIBLE
 
             ft.show(callFragment)
-            activeFragment = callFragment
+            HashCaller.setActiveFragment(callFragment)
             binding.bottomNavigationView.beVisible()
         }
 
@@ -906,11 +911,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
-        ft.hide(activeFragment)
+        ft.hide(HashCaller.getActiveFragment())
         if (messagesFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(messagesFragment)
-            activeFragment = messagesFragment
+            HashCaller.setActiveFragment(messagesFragment)
 
 
 //            setDefaultFragment(R.id.bottombaritem_messages)
@@ -1412,7 +1417,5 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     fun getCorinateLayout(): CoordinatorLayout {
         return binding.cordinateLyoutMainActivity
     }
-
-
 }
 

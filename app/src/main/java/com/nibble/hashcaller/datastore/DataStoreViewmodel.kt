@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.datastore
 
 import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.KEY_BLOCK_COMMONG_SPAMMERS
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
@@ -9,7 +10,6 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class DataStoreViewmodel(private val repository: DataStoreRepository) : ViewModel() {
-
     val searchFilterLiveData: Flow<Boolean> = repository.getBooleanFlow(SHOW_SMS_IN_SEARCH_RESULT)
 
     fun getToken():LiveData<String> = liveData {

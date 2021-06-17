@@ -312,8 +312,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             binding.searchViewContacts,
             binding.searchViewContacts.transitionName
         )
-        val contextThemeWrapper: Context =
-            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
+//        val contextThemeWrapper: Context =
+//            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
 
 
 

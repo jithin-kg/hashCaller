@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.fragment.app.Fragment
 import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
@@ -38,7 +39,16 @@ class HashCaller : Application(){
     /**This will be called before any start of activity, right when our app will start.
      * This is the perfect place to setup our channels
      */
+
     companion object{
+        private lateinit var activeFragment:Fragment
+
+        fun setActiveFragment(fragment: Fragment){
+            activeFragment = fragment
+        }
+        fun getActiveFragment(): Fragment {
+            return activeFragment
+        }
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
 
