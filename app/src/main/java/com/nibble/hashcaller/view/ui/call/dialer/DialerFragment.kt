@@ -107,8 +107,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         // Inflate the layout for this fragment
         _binding = FragmentDialerBinding.inflate(inflater, container, false)
 
-        viewmodel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context?.applicationContext, lifecycleScope)).get(
-            DialerViewModel::class.java)
+
         initRecyclerView()
         setupBottomSheet()
         initListeners()
@@ -117,22 +116,32 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
          * and updates the Edittext
          */
         
-        initEditTextPhoneNumberObserver()
-        if(checkCallPermission()){
-            Log.d(TAG, "onCreateView: ")
-            observeEditTextnum()
-//            getFirst10items()
-//            observeContacts()
 
-        }
 
-        observePermissionLiveData()
+//        observePermissionLiveData()
         return binding.root
     }
 
+
+
     override fun onHiddenChanged(hidden: Boolean) {
-        Log.d(TAG+"vis", "onHiddenChanged: $hidden")
         super.onHiddenChanged(hidden)
+        if(!hidden &&  !this::viewmodel.isInitialized ){
+            initEditTextPhoneNumberObserver()
+            if(checkCallPermission()){
+                initViewModel()
+                Log.d(TAG, "onCreateView: ")
+                observeEditTextnum()
+                getFirst10items()
+                observeContacts()
+
+            }
+        }
+    }
+
+    private fun initViewModel() {
+        viewmodel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context?.applicationContext, lifecycleScope)).get(
+            DialerViewModel::class.java )
     }
 
     private fun observeContacts() {
@@ -148,23 +157,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         viewmodel.getFirst10Logs()
     }
 
-    private fun observePermissionLiveData() {
-        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
-            if(it){
-                Log.d(TAG, "observePermissionLiveData: permission given")
-                observeEditTextnum()
-//                binding.btnDialerPermission.visibility = View.GONE
-            }else{
-//                binding.btnDialerPermission.visibility = View.VISIBLE
-                Log.d(TAG, "observePermissionLiveData: permission not given")
-                if (this.viewmodel!! != null  ) {
-                    if(this.viewmodel?.searchResultLivedata != null)
-                        if(this.viewmodel.searchResultLivedata!!.hasObservers())
-                            this.viewmodel?.searchResultLivedata?.removeObservers(this);
-                }
-            }
-        })
-    }
+
 
     private fun checkCallPermission(): Boolean {
         val permissionSms =
@@ -535,6 +528,24 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     override fun isViewExpanded(id: Long): Boolean {
         return false
+    }
+
+    private fun observePermissionLiveData() {
+//        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
+//            if(it){
+//                Log.d(TAG, "observePermissionLiveData: permission given")
+//                observeEditTextnum()
+////                binding.btnDialerPermission.visibility = View.GONE
+//            }else{
+////                binding.btnDialerPermission.visibility = View.VISIBLE
+//                Log.d(TAG, "observePermissionLiveData: permission not given")
+//                if (this.viewmodel!! != null  ) {
+//                    if(this.viewmodel?.searchResultLivedata != null)
+//                        if(this.viewmodel.searchResultLivedata!!.hasObservers())
+//                            this.viewmodel?.searchResultLivedata?.removeObservers(this);
+//                }
+//            }
+//        })
     }
 
 

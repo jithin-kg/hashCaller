@@ -117,7 +117,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        pageOb.page = 0
+//        pageOb.page = 0
 
     }
 
@@ -130,40 +130,62 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         // Inflate the layout for this fragment
         _binding = FragmentMessageContainerBinding.inflate(inflater, container, false)
-//        viewMesagesRef = binding.root
-        registerForContextMenu( binding.recyclreviewSMSContainer ) // context menu registering
-        setupBottomSheet()
-        initListeners()
-        initRecyclerView()
-
-        if(checkContactPermission())
-        {
-//            getFirstPageOfSMS()
-        getDataDelayed()
-
-        }else{
-            hideRecyclerView()
-        }
-
         return  binding.root
+    }
+    @InternalCoroutinesApi
+    @SuppressLint("WrongViewCast", "LongLogTag")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+//        Handler().postDelayed({
+//            getDataDelayed()
+        registerForContextMenu( binding.recyclreviewSMSContainer )
+
+    lifecycleScope.launchWhenResumed {
+//        setupBottomSheet()
+//        initListeners()
+//        initRecyclerView()
+//        Log.d(TAG, "onViewCreated: after 3 secs")
+//        initVieModel()
+//        showRecyclerView()
+//        observeSMSList()
+//        observeSMSThreadsLivedata()
+//        observeSendersInfoFromServer()
+//        observeMarkedItems()
+//        observeInternetLivedata()
+    }
+//        }, 3000)
     }
 
      fun getDataDelayed() {
-         Handler().postDelayed({
-             //doSomethingHere()
-             lifecycleScope.launchWhenStarted {
-                 showRecyclerView()
-                 initVieModel()
+         lifecycleScope.launchWhenStarted {
+
+
+//             viewmodel?.afterDelay()?.observe(viewLifecycleOwner, Observer {
+
 //                    }
 
-                 observeSMSList()
-                 observeSMSThreadsLivedata()
-                 observeSendersInfoFromServer()
-                 observeMarkedItems()
-                 observeInternetLivedata()
-             }
+//                lifecycleScope.launchWhenStarted {
 
-         }, 4000)
+//                }
+
+//             })
+         }
+//         Handler().postDelayed({
+//             //doSomethingHere()
+//             lifecycleScope.launchWhenStarted {
+//                 showRecyclerView()
+//                 initVieModel()
+////                    }
+//
+//                 observeSMSList()
+//                 observeSMSThreadsLivedata()
+//                 observeSendersInfoFromServer()
+//                 observeMarkedItems()
+//                 observeInternetLivedata()
+//             }
+//
+//         }, 4000)
 //         Timer().schedule(3000L){
 ////          lifecycleScope.launchWhenStarted {
 //              //do something
@@ -209,7 +231,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             binding.shimmerViewContainer.beVisible()
             binding.btnRequestSMSPermisssion.beInvisible()
 //        }
-
     }
     private fun hideRecyclerView(){
         binding.recyclreviewSMSContainer.beInvisible()
@@ -218,7 +239,26 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
 
-
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if(!hidden){
+            if(viewmodel==null){
+                lifecycleScope.launchWhenResumed {
+        setupBottomSheet()
+        initListeners()
+        initRecyclerView()
+        Log.d(TAG, "onViewCreated: after 3 secs")
+        initVieModel()
+        showRecyclerView()
+        observeSMSList()
+        observeSMSThreadsLivedata()
+        observeSendersInfoFromServer()
+        observeMarkedItems()
+        observeInternetLivedata()
+                }
+            }
+        }
+    }
 
     private suspend fun observeInternetLivedata() {
         val cl = context?.let { ConnectionLiveData(it) }
@@ -235,6 +275,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                viewmodel.updateLiveData(it)
                     binding.pgbarSMSContainer.beGone()
                     smsRecyclerAdapter?.setList(it)
+
                 }
             })
 //        }
@@ -418,7 +459,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         }
     }
-    private  fun initVieModel() {
+    private  suspend fun initVieModel() {
             val factory =  SMSListInjectorUtil.provideDialerViewModelFactory(
                 context?.applicationContext,
                 lifecycleScope,
@@ -473,12 +514,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.recyclreviewSMSContainer.adapter  = null
     }
 
-    @InternalCoroutinesApi
-    @SuppressLint("WrongViewCast", "LongLogTag")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-    }
 
     private fun getFirstPageOfSMS() {
         viewmodel?.getFirstPageOfSMS()
@@ -580,6 +616,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             getSpannableString("Delete conversation?"), TYPE_DELETE)
         dialog.show(childFragmentManager, "sample")
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart: ")
     }
 
     companion object {

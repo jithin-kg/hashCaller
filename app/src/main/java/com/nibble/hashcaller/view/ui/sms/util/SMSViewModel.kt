@@ -31,6 +31,7 @@ class SMSViewModel(
 ): ViewModel() {
 
     var numRowsDeletedLiveData: MutableLiveData<Int> = MutableLiveData(-1)
+
     var smsThreadsLivedata: LiveData<MutableList<SmsThreadTable>>? = repository?.getSMSThreadsLivedata()
 
 
@@ -50,6 +51,8 @@ class SMSViewModel(
 
 
     fun getSmsSendersInfoFromServer(): LiveData<List<CallersInfoFromServer>> {
+
+
         return repository!!.getSmsSenderInforFromDB()
 //        return smsSenersInfoFromDB
     }
@@ -94,6 +97,8 @@ class SMSViewModel(
      */
     fun markSMSAsRead(address: String?)  = viewModelScope.launch{
      repository!!.markSMSAsRead(address)
+
+
     }
 
 
@@ -428,6 +433,11 @@ class SMSViewModel(
     fun clearMarkedItemPositions() = viewModelScope.launch{
         markeditemsHelper.clearMarkedItemPositions()
 //        markedItemsPositions.clear()
+    }
+
+    fun afterDelay():LiveData<Int> = liveData  {
+        delay(4000L)
+
     }
 
 

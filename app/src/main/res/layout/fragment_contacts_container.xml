@@ -91,38 +91,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerViewContainer"
-        android:visibility="visible"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:shimmer_duration="800">
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-
-            <include layout="@layout/skeleton_shimmer_layout" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </com.facebook.shimmer.ShimmerFrameLayout>
     <!--important, android:overScrollMode="never" to remove shadows-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewContactsList"
@@ -166,7 +134,12 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         />
-
+    <ProgressBar
+        android:id="@+id/pgBarContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        />
     <!--    <Button-->
     <!--        android:id="@+id/btnTest"-->
     <!--        android:layout_width="wrap_content"-->

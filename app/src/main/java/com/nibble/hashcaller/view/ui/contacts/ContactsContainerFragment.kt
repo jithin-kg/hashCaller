@@ -34,6 +34,7 @@ import com.nibble.hashcaller.view.ui.contacts.search.ActivitySerchContacts
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
+import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -108,35 +109,6 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
         // Inflate the layout for this fragment
         _binding = FragmentContactsContainerBinding.inflate(inflater, container, false)
-
-        initListeners()
-        user = FirebaseAuth.getInstance().currentUser
-        tokenHelper = TokenHelper(user)
-
-        ViewCompat.setTransitionName(
-            binding.searchViewContacts,
-            binding.searchViewContacts.transitionName
-        )
-        val contextThemeWrapper: Context =
-            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
-
-        if (context?.hasReadContactsPermission() == true) {
-            initRecyclerView()
-            getData()
-        } else {
-            hideRecyevlerView()
-        }
-
-        binding.searchViewContacts.onFocusChangeListener =
-            View.OnFocusChangeListener { view, hasFocus ->
-
-                if (hasFocus) {
-//                if((activity as MainActivity).searchFragment!=null)
-//                    startSearchActivity()
-                }
-            }
-        binding.searchViewContacts.setOnClickListener(this)
-
         return binding.root
     }
 
@@ -164,12 +136,10 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     private fun showRecyclerView() {
         binding.btnGivecontactPermission.beInvisible()
         binding.rcrViewContactsList.beVisible()
-        binding.shimmerViewContainer.beInvisible()
     }
 
     private fun hideRecyevlerView() {
         binding.rcrViewContactsList.beInvisible()
-        binding.shimmerViewContainer.beInvisible()
         binding.btnGivecontactPermission.beVisible()
     }
 
@@ -253,6 +223,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             contactViewModel.contacts?.observe(viewLifecycleOwner, Observer { contacts ->
                 contacts.let {
 //                    this.contactsView.pgBarCntcList.visibility = View.GONE
+                    binding.pgBarContacts.beGone()
                     contactsRecyclerAdapter?.setContactList(it)
                     contactViewModel.startWorker(context?.applicationContext)
                     ContactGlobalHelper.size =
@@ -333,6 +304,41 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initListeners()
+        user = FirebaseAuth.getInstance().currentUser
+        tokenHelper = TokenHelper(user)
+
+        ViewCompat.setTransitionName(
+            binding.searchViewContacts,
+            binding.searchViewContacts.transitionName
+        )
+        val contextThemeWrapper: Context =
+            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
+
+
+
+        binding.searchViewContacts.onFocusChangeListener =
+            View.OnFocusChangeListener { view, hasFocus ->
+
+                if (hasFocus) {
+//                if((activity as MainActivity).searchFragment!=null)
+//                    startSearchActivity()
+                }
+            }
+        binding.searchViewContacts.setOnClickListener(this)
+
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if(!hidden && !this::contactViewModel.isInitialized){
+            if (context?.hasReadContactsPermission() == true) {
+                initRecyclerView()
+                getData()
+            } else {
+                hideRecyevlerView()
+            }
+        }
     }
 
     companion object {

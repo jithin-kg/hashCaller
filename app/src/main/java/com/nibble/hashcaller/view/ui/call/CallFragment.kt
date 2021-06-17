@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.telephony.SubscriptionManager
 import android.util.Log
 import android.view.LayoutInflater
@@ -74,7 +75,9 @@ import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -132,15 +135,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
        tokenHelper =  TokenHelper(FirebaseAuth.getInstance().currentUser)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
     // Inflate the layout for this fragment
-        initRecyclerView()
-        if(checkContactPermission()){
-        getDataDelayed()
-         }else{
-             hideRecyclerView()
-        }
+//        if(checkContactPermission()){
+//        getDataDelayed()
+//         }else{
+//             hideRecyclerView()
+//        }
 
-    setupBottomSheet()
-    initListeners()
+
 
 //    observeUserInfo()
 
@@ -150,18 +151,36 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated: ")
+        super.onViewCreated(view, savedInstanceState)
+        initRecyclerView()
+
+        setupBottomSheet()
+        initListeners()
+        if(checkContactPermission()){
+            showRecyclerView()
+            getDataDelayed()
+        }else{
+            hideRecyclerView()
+        }
+
+    }
+
     private fun hideRecyclerView() {
 
         binding.btnCallFragmentPermission.beVisible()
         binding.rcrViewCallHistoryLogs.beInvisible()
-        binding.shimmerViewContainerCall.beInvisible()
+//        binding.shimmerViewContainerCall.beInvisible()
+        binding.pgBarCall.beVisible()
     }
 
     private fun showRecyclerView() {
 
         binding.btnCallFragmentPermission.beInvisible()
         binding.rcrViewCallHistoryLogs.beVisible()
-        binding.shimmerViewContainerCall.beVisible()
+//        binding.shimmerViewContainerCall.beVisible()
+        binding.pgBarCall.beVisible()
     }
 
     private fun observeUserInfo() {
@@ -174,52 +193,54 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
      fun getDataDelayed() {
-        showRecyclerView()
-        initViewModel()
+//         Handler().postDelayed({
 
-         getFirst10items()
-
-        lifecycleScope.launchWhenStarted {
-
-            observeCallLog()
+             lifecycleScope.launchWhenStarted {
+                 initViewModel()
+                 getFirst10items()
+                 observeCallLog()
 //        addScrollListener()
-            setupSimCardCount()
-            observeMarkedItems()
-            observeCallLogFromDb()
-            observePermissionLiveData()
-            observeCallLogInfoFromServer()
-            observeInternetLivedata()
-        }
+                 setupSimCardCount()
+                 observeMarkedItems()
+                 observeCallLogFromDb()
+                 observePermissionLiveData()
+                 observeCallLogInfoFromServer()
+                 observeInternetLivedata()
+             }
+//         }, 2000)
+
 
     }
 
 
-    private fun observeInternetLivedata() {
-//        val cl = context?.let { ConnectionLiveData(it) }
-//        cl?.observe(viewLifecycleOwner, Observer {
-//            isInternetAvailable = it
-//        })
+    private suspend fun observeInternetLivedata() {
+        val cl = context?.let { ConnectionLiveData(it) }
+        cl?.observe(viewLifecycleOwner, Observer {
+            isInternetAvailable = it
+        })
     }
 
 
 
-    private fun getFirst10items() {
+    private suspend fun getFirst10items() {
         viewmodel?.getFirst10Logs()?.observe(viewLifecycleOwner, Observer {
             callLogAdapter?.itemCount.let { count ->
                 if(count!=null && count < it.size ){
+                    binding.pgBarCall.beGone()
                     callLogAdapter?.submitCallLogs(it)
 
                 }
             }
             Log.d(TAG, "getFirst10items: ")
             if (it.size > 1) {
-                binding.shimmerViewContainerCall.stopShimmer()
-                binding.shimmerViewContainerCall.beGone()
+//                binding.shimmerViewContainerCall.stopShimmer()
+//                binding.shimmerViewContainerCall.beGone()
+                binding.pgBarCall.beGone()
             }
         })
     }
 
-    private fun observeMarkedItems() {
+    private suspend fun observeMarkedItems() {
         viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
             when(it.size){
                 0 ->{
@@ -234,8 +255,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
 
-    private fun observeCallLogFromDb() {
+    private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
+
             callLogAdapter?.submitCallLogs(it)
         })
 
@@ -244,7 +266,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
 
-    private fun observePermissionLiveData() {
+    private suspend fun observePermissionLiveData() {
 //        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
 //            if(it == true){
 //                Log.d(TAG, "observePermissionLiveData: permission given")
@@ -289,14 +311,15 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
 
-    private fun observeCallLog() {
+    private  suspend fun observeCallLog() {
         viewmodel?.callLogs?.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
 //                viewmodel.updateCAllLogLivedata(logs)
 //                viewmodel.setAdditionalInfo(logs)
                 viewmodel?.updateDatabase(logs, context?.applicationContext)
-                binding.shimmerViewContainerCall.stopShimmer()
-                binding.shimmerViewContainerCall.beGone()
+//                binding.shimmerViewContainerCall.stopShimmer()
+//                binding.shimmerViewContainerCall.beGone()
+                binding.pgBarCall.beGone()
             }
         })
     }
@@ -389,15 +412,18 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //        this.permissionGivenLiveData.value  = checkContactPermission()
     }
 
-    private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope, tokenHelper)).get(
-            CallContainerViewModel::class.java)
-        sharedUserInfoViewmodel = ViewModelProvider(this, MainActivityInjectorUtil.provideUserInjectorUtil(
-            requireContext(),
-            tokenHelper
-        )).get(
-            UserInfoViewModel::class.java
-        )
+    private suspend fun initViewModel() {
+        withContext(Dispatchers.IO){
+            viewmodel = ViewModelProvider(this@CallFragment, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope, tokenHelper)).get(
+                CallContainerViewModel::class.java)
+            sharedUserInfoViewmodel = ViewModelProvider(this@CallFragment, MainActivityInjectorUtil.provideUserInjectorUtil(
+                requireContext(),
+                tokenHelper
+            )).get(
+                UserInfoViewModel::class.java
+            )
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -408,21 +434,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
 
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated: ")
-        super.onViewCreated(view, savedInstanceState)
 
-
-//        intialize()
-
-
-
-
-
-
-    }
     @SuppressLint("MissingPermission  Manifest.permission.READ_PHONE_STATE", "MissingPermission")
-    private fun setupSimCardCount() {
+    private suspend fun setupSimCardCount() {
 //        val subscriptionManager = requireContext(). getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
 //        val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
 //        if(availableSIMs.size >0){
@@ -431,15 +445,13 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     }
 
-    private fun observeCallLogInfoFromServer() {
-        lifecycleScope.launchWhenStarted {
+    private suspend fun observeCallLogInfoFromServer() {
             //important not to remove the delay here, becase this is getting called before calllog table data is triggered
 //            delay(2000L)
            viewmodel?.callersInfoFromDBLivedta?.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observeCallLogInfoFromServer: ")
                 viewmodel?.updateWithNewInfoFromServer(it)
             })
-        }
 
     }
 

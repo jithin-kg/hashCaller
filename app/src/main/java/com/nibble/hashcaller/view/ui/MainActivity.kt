@@ -124,6 +124,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var  menuContacts:MenuItem
     private lateinit var  menuCalls:MenuItem
     private lateinit var  menuSearch:MenuItem
+    private lateinit var activeFragment:Fragment
 
 //    var  searchFragment: SearchFragment? = null
 
@@ -668,33 +669,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-
     fun showDialerFragment() {
 
         val ft = supportFragmentManager.beginTransaction()
+        callFragment.clearMarkeditems()
+        messagesFragment.clearMarkeditems()
 
-        // Hide fragment contact
-        if (contactFragment.isAdded) {
-
-            ft.hide(contactFragment)
-        }
-//        // Hide fragment call
-        if (callFragment.isAdded) {
-            callFragment.clearMarkeditems()
-            ft.hide(callFragment)
-        }
-//        if(blockConfigFragment.isAdded){
-//            ft.hide(blockConfigFragment)
-//        }
-        if (messagesFragment.isAdded) {
-            messagesFragment.clearMarkeditems()
-            ft.hide(messagesFragment)
-        }
-
+        ft.hide(activeFragment)
         if (dialerFragment.isAdded) { // if the fragment is already in container
 
             ft.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
-
+            activeFragment = dialerFragment
             ft.show(dialerFragment)
             dialerFragment.showDialPad()
             bottomNavigationView.beGone()
@@ -803,6 +788,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     ) {
         if(!fmnt.isDefaultFgmnt){
             ft.hide(fragment)
+        }else {
+            activeFragment = fragment
         }
 
     }
@@ -848,30 +835,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
-
-//        // Hide fragment B
-//        if (blockConfigFragment.isAdded) {
-//            ft.hide(blockConfigFragment)
-//        }
-//        // Hide fragment C
-        if (callFragment.isAdded) {
-            callFragment.clearMarkeditems()
-            ft.hide(callFragment)
-        }
-        if (searchFragment.isAdded) {
-            ft.hide(searchFragment)
-        }
-        if(dialerFragment.isAdded){
-            ft.hide(dialerFragment)
-        }
-        if (messagesFragment.isAdded) {
-            messagesFragment.clearMarkeditems()
-            ft.hide(messagesFragment)
-
-        }
-
+        ft.hide(activeFragment)
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
+            activeFragment = contactFragment
 //            unMarkItems()
             messagesFragment.showSearchView()
         }
@@ -895,25 +862,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showSearchFragment = true)
         val ft = supportFragmentManager.beginTransaction()
 
-        if (callFragment.isAdded) {
-            callFragment.clearMarkeditems()
-            ft.hide(callFragment)
-        }
-        if(dialerFragment.isAdded){
-            ft.hide(dialerFragment)
-        }
-        if (messagesFragment.isAdded) {
-            messagesFragment.clearMarkeditems()
-            ft.hide(messagesFragment)
-
-        }
-        if (contactFragment.isAdded) {
-            ft.hide(contactFragment)
-
-        }
+       ft.hide(activeFragment)
 
         if (searchFragment.isAdded) { // if the fragment is already in container
             ft.show(searchFragment)
+            activeFragment = searchFragment
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -936,41 +889,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showCallsFragment = true)
 
         val ft = supportFragmentManager.beginTransaction()
-        if (messagesFragment.isAdded) { // if the fragment is already in container(callFragment)
-//            unMarkItems()
-            messagesFragment.clearMarkeditems()
-            ft.hide(contactFragment)
-
-        }
-        if (searchFragment.isAdded) { // if the fragment is already in container(callFragment)
-//            unMarkItems()
-            ft.hide(searchFragment)
-
-        }
-        // Hide fragment B
-//        if (blockConfigFragment.isAdded) {
-//            ft.hide(blockConfigFragment)
-//        }
-        // Hide fragment C
-        if (contactFragment.isAdded) {
-            ft.hide(contactFragment)
-        }
-        if (dialerFragment.isAdded) {
-            ft.hide(dialerFragment)
-        }
-        if (messagesFragment.isAdded) {
-            ft.hide(messagesFragment)
-            messagesFragment.clearMarkeditems()
-        }
+        ft.hide(activeFragment)
         if(callFragment.isAdded){
 //            fabBtnShowDialpad.visibility = View.VISIBLE
 
             ft.show(callFragment)
+            activeFragment = callFragment
             binding.bottomNavigationView.beVisible()
-//            if(dialerFragment.isHidden){
-//
-//                binding.bottomNavigationView.beVisible()
-//            }
         }
 
         // Commit changes
@@ -978,11 +903,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun showMessagesFragment() {
-        toggleBottomMenuIcons(showMessageFragment = true)
+
+//        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
+        ft.hide(activeFragment)
         if (messagesFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(messagesFragment)
+            activeFragment = messagesFragment
 
 
 //            setDefaultFragment(R.id.bottombaritem_messages)
@@ -997,23 +925,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        }
         // Hide fragment C
 
-        if (contactFragment.isAdded) {
-            ft.hide(contactFragment)
-        }
-        if (searchFragment.isAdded) {
-            ft.hide(searchFragment)
-        }
+//        if (contactFragment.isAdded) {
+//            ft.hide(contactFragment)
+//        }
+//        if (searchFragment.isAdded) {
+//            ft.hide(searchFragment)
+//        }
 
-        if (callFragment.isAdded) {
-            callFragment.clearMarkeditems()
-            ft.hide(callFragment)
-        }
+//        if (callFragment.isAdded) {
+////            callFragment.clearMarkeditems()
+//            ft.hide(callFragment)
+//        }
+
 //        if (callFragment.isAdded) {
 //            ft.hide(callFragment)
 //        }
-        if(dialerFragment.isAdded){
-            ft.hide(dialerFragment)
-        }
+//        if(dialerFragment.isAdded){
+//            ft.hide(dialerFragment)
+//        }
 
 
         // Commit changes

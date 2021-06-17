@@ -258,6 +258,7 @@ class SMSLocalRepository(
             "read",
             "date"
         )
+
         var cursor:Cursor? = null
         try {
             cursor =  context.contentResolver.query(
