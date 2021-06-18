@@ -12,7 +12,6 @@ import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.provider.Telephony
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -37,7 +36,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
-import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
@@ -58,6 +57,7 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
+import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
@@ -69,13 +69,10 @@ import kotlinx.android.synthetic.main.fragment_test.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.concurrent.schedule
-import java.util.*
-import kotlin.concurrent.schedule
 
 
 class SMSContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
@@ -136,92 +133,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     @SuppressLint("WrongViewCast", "LongLogTag")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-//        Handler().postDelayed({
-//            getDataDelayed()
+        initListeners()
         registerForContextMenu( binding.recyclreviewSMSContainer )
-
-    lifecycleScope.launchWhenResumed {
-//        setupBottomSheet()
-//        initListeners()
-//        initRecyclerView()
-//        Log.d(TAG, "onViewCreated: after 3 secs")
-//        initVieModel()
-//        showRecyclerView()
-//        observeSMSList()
-//        observeSMSThreadsLivedata()
-//        observeSendersInfoFromServer()
-//        observeMarkedItems()
-//        observeInternetLivedata()
-    }
-//        }, 3000)
+        if(MainActivity.fetchSMSOnCreate){
+            getData()
+        }
     }
 
-     fun getDataDelayed() {
-         lifecycleScope.launchWhenStarted {
-
-
-//             viewmodel?.afterDelay()?.observe(viewLifecycleOwner, Observer {
-
-//                    }
-
-//                lifecycleScope.launchWhenStarted {
-
-//                }
-
-//             })
-         }
-//         Handler().postDelayed({
-//             //doSomethingHere()
-//             lifecycleScope.launchWhenStarted {
-//                 showRecyclerView()
-//                 initVieModel()
-////                    }
-//
-//                 observeSMSList()
-//                 observeSMSThreadsLivedata()
-//                 observeSendersInfoFromServer()
-//                 observeMarkedItems()
-//                 observeInternetLivedata()
-//             }
-//
-//         }, 4000)
-//         Timer().schedule(3000L){
-////          lifecycleScope.launchWhenStarted {
-//              //do something
-//              showRecyclerView()
-////                    lifecycleScope.launchWhenCreated {
-//              initVieModel()
-////                    }
-//
-//              observeSMSList()
-//              observeSMSThreadsLivedata()
-////            observeSendersInfoFromServer()
-//              observeMarkedItems()
-////          }
-//         }
-//         lifecycleScope.launchWhenStarted {
-//             withContext(Dispatchers.IO){
-//
-//                 delay(4000L)
-////                 withContext(Dispatchers.Main){
-//                     showRecyclerView()
-////                    lifecycleScope.launchWhenCreated {
-//                        initVieModel()
-////                    }
-//
-//                     observeSMSList()
-//                     observeSMSThreadsLivedata()
-////            observeSendersInfoFromServer()
-//                     observeMarkedItems()
-////                     observeInternetLivedata()
-////                 }
-//             }
-//         }
-
-
-
-    }
 
 
 
@@ -229,13 +147,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        withContext(Dispatchers.Main){
             binding.recyclreviewSMSContainer.beVisible()
             binding.shimmerViewContainer.beVisible()
-            binding.btnRequestSMSPermisssion.beInvisible()
+            binding.btnSMSPermsions.beInvisible()
 //        }
     }
     private fun hideRecyclerView(){
         binding.recyclreviewSMSContainer.beInvisible()
         binding.shimmerViewContainer.beInvisible()
-        binding.btnRequestSMSPermisssion.beVisible()
+        binding.btnSMSPermsions.beVisible()
     }
 
 
@@ -243,25 +161,32 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         super.onHiddenChanged(hidden)
         if(!hidden){
             if(viewmodel==null){
-                lifecycleScope.launchWhenResumed {
-                    if(checkContactPermission()){
-                        setupBottomSheet()
-                        initListeners()
-                        initRecyclerView()
-                        Log.d(TAG, "onViewCreated: after 3 secs")
-                        initVieModel()
-                        showRecyclerView()
-                        observeSMSList()
-                        observeSMSThreadsLivedata()
-                        observeSendersInfoFromServer()
-                        observeMarkedItems()
-                        observeInternetLivedata()
-                    }else {
-                        binding.btnRequestSMSPermisssion.beVisible()
-                    }
-
-                }
+                getData()
             }
+        }
+    }
+
+    private fun getData() {
+        lifecycleScope.launchWhenResumed {
+            if(checkRequiredPermissions()){
+               withContext(Dispatchers.Main){
+                   binding.pgbarSMSContainer.beVisible()
+                   binding.btnSMSPermsions.beGone()
+               }
+                setupBottomSheet()
+                initRecyclerView()
+                initVieModel()
+                showRecyclerView()
+                observeSMSList()
+                observeSMSThreadsLivedata()
+                observeSendersInfoFromServer()
+                observeMarkedItems()
+                observeInternetLivedata()
+            }else {
+                binding.pgbarSMSContainer.beGone()
+                binding.btnSMSPermsions.beVisible()
+            }
+
         }
     }
 
@@ -355,7 +280,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
 
-    private fun checkContactPermission(): Boolean {
+    private fun checkRequiredPermissions(): Boolean {
         return context?.hasSMSReadPermission()?:false
     }
 
@@ -363,7 +288,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun initListeners() {
-        binding.btnRequestSMSPermisssion.setOnClickListener(this)
+        binding.btnSMSPermsions.setOnClickListener(this)
         binding.searchViewSms.setOnClickListener(this)
         binding.imgBtnTbrMuteSender.setOnClickListener(this)
         binding.imgBtnTbrBlock.setOnClickListener(this)
@@ -673,7 +598,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
         when(v?.id){
-            R.id.btnRequestSMSPermisssion ->{
+            R.id.btnSMSPermsions ->{
                 requestSMSPermissions()
             }
             R.id.searchViewSms->{
@@ -745,27 +670,21 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
         }
     }
-    @AfterPermissionGranted(REQUEST_CODE_READ_SMS_CONTACTS)
     private fun requestSMSPermissions() {
-        if (EasyPermissions.hasPermissions(context, READ_SMS, READ_CONTACTS)) {
-            lifecycleScope.launchWhenStarted {
-                showRecyclerView()
-            }
+        Timber.d("requestSMSPermissions: ")
+        val request = PermissionRequest.Builder(this.context)
+            .code(PermisssionRequestCodes.REQUEST_CODE_READ_SMS)
 
-        } else {
-            // Do not have permissions, request them now
-                hideRecyclerView()
-
-            EasyPermissions.requestPermissions(
-                host = this,
-                "read contacts ",
-                requestCode = REQUEST_CODE_READ_SMS_CONTACTS,
-                perms = arrayOf(
+            .perms(
+                arrayOf(
                     READ_SMS,
-                    READ_CONTACTS
                 )
             )
-        }
+            .rationale("HashCaller needs access to sms  to identify unknown senders in sms.")
+            .positiveButtonText("Continue")
+            .negativeButtonText("Cancel")
+            .build()
+        EasyPermissions.requestPermissions(this, request)
     }
 
     private fun showPopupMenu(menu: Int, anchorView: View) {
@@ -1103,6 +1022,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         requestDefaultSMSrole()
         
     }
+
 
     private fun requestDefaultSMSrole() {
         var requestCode=  222

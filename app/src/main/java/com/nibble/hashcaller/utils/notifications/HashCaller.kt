@@ -19,10 +19,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.signal.argon2.Argon2
-import org.signal.argon2.MemoryCost
-import org.signal.argon2.Type
-import org.signal.argon2.Version
+import org.signal.argon2.*
+import timber.log.Timber
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -76,26 +74,19 @@ class HashCaller : Application(){
         super.onCreate()
         AppCompatDelegate.setDefaultNightMode(
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-
         createNotificationChannels()
-        instantiateAllFragment()
-        buildArgon()
-    }
-
-    private fun buildArgon() {
-         argon2 = Argon2.Builder(Version.V13)
-            .type(Type.Argon2id)
-            .memoryCost(MemoryCost.MiB(32))
-            .parallelism(1)
-            .iterations(2)
-            .build()
+//        https://www.freecodecamp.org/news/how-to-log-more-efficiently-with-timber-a3f41b193940/
+        if(BuildConfig.DEBUG){
+            //timber only works in debug build
+            Timber.plant(Timber.DebugTree())
+        }
     }
 
 
 
-    private fun instantiateAllFragment() {
 
-    }
+
+
 
     private fun createNotificationChannels() {
 

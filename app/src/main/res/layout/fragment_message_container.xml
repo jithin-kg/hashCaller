@@ -12,12 +12,14 @@
 
 
     <Button
-        android:id="@+id/btnRequestSMSPermisssion"
-        android:visibility="invisible"
+        android:id="@+id/btnSMSPermsions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Give Permissions"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/colorWhite"
         android:layout_gravity="center"
+        android:text="Give permission"
         />
 
 
@@ -275,6 +277,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:progressDrawable="@drawable/progress_background"
 
         />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

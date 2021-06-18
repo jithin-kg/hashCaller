@@ -51,7 +51,7 @@ import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
-import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.crypto.KeyManager
@@ -99,7 +99,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
     // via app settings page
     private var checkCapabilitiesOnResume = false
-
     private lateinit var toolbar: Toolbar
     private lateinit var  tabLayout: TabLayout
     private val viewPager: ViewPager? = null
@@ -108,7 +107,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var hashedNumbersViewmodel : HasherViewmodel
     private lateinit var callFragment: CallFragment
-    private lateinit var messagesFragment: SMSContainerFragment
+    private lateinit var smsFragment: SMSContainerFragment
     private lateinit var fullScreenFragment: FullscreenFragment
     //    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsContainerFragment
@@ -478,7 +477,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
 
-            this.messagesFragment = SMSContainerFragment()
+            this.smsFragment = SMSContainerFragment()
 //            this.blockConfigFragment = BlockConfigFragment()
             this.contactFragment = ContactsContainerFragment()
             this.callFragment = CallFragment()
@@ -554,7 +553,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
 //        this.fullScreenFragment = supportFragmentManager.getFragment(savedInstanceState, "fullScreenFragment") as FullscreenFragment
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
-        this.messagesFragment = supportFragmentManager.getFragment(
+        this.smsFragment = supportFragmentManager.getFragment(
             savedInstanceState,
             "messagesFragment"
         ) as SMSContainerFragment
@@ -624,7 +623,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        supportFragmentManager.putFragment(outState, "fullScreenFragment", this.fullScreenFragment)
         supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
         supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
-        supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
+        supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
         supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
 
 
@@ -666,7 +665,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             callFragment.isDefaultFgmnt = true
         }
         else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
-            messagesFragment.isDefaultFgmnt = true
+            smsFragment.isDefaultFgmnt = true
         }
         else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CONTACT_FRAGMENT){
             contactFragment.isDefaultFgmnt = true
@@ -688,7 +687,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         val ft = supportFragmentManager.beginTransaction()
         callFragment.clearMarkeditems()
-        messagesFragment.clearMarkeditems()
+        smsFragment.clearMarkeditems()
 
         HashCaller.getActiveFragment()?.let { ft.hide(it) }
 
@@ -765,8 +764,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.add(R.id.frame_fragmentholder, dialerFragment)
         hideThisFragment(ft, dialerFragment, dialerFragment)
 
-        ft.add(R.id.frame_fragmentholder, messagesFragment)
-        hideThisFragment(ft, messagesFragment, messagesFragment)
+        ft.add(R.id.frame_fragmentholder, smsFragment)
+        hideThisFragment(ft, smsFragment, smsFragment)
 
 
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
@@ -837,8 +836,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(dialerFragment.isAdded){
             ft.hide(dialerFragment)
         }
-        if (messagesFragment.isAdded) {
-            ft.hide(messagesFragment)
+        if (smsFragment.isAdded) {
+            ft.hide(smsFragment)
         }
 //        if(searchFragment!=null)
 //        if(searchFragment!!.isAdded){
@@ -860,7 +859,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.show(contactFragment)
             HashCaller.setActiveFragment(contactFragment)
 //            unMarkItems()
-            messagesFragment.showSearchView()
+            smsFragment.showSearchView()
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -927,10 +926,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
         HashCaller.getActiveFragment()?.let { ft.hide(it) }
-        if (messagesFragment.isAdded) { // if the fragment is already in container
+        if (smsFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
-            ft.show(messagesFragment)
-            HashCaller.setActiveFragment(messagesFragment)
+            ft.show(smsFragment)
+            HashCaller.setActiveFragment(smsFragment)
 
 
 //            setDefaultFragment(R.id.bottombaritem_messages)
@@ -1065,11 +1064,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //            fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
-        }else if(messagesFragment.isVisible){
-            if(messagesFragment.getMarkedItemsSize() > 0){
+        }else if(smsFragment.isVisible){
+            if(smsFragment.getMarkedItemsSize() > 0){
 //                unMarkItems()
                 lifecycleScope.launchWhenCreated {
-                    messagesFragment.clearMarkeditems()
+                    smsFragment.clearMarkeditems()
                 }
 //                markingStarted = false
             }
@@ -1244,14 +1243,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             PermisssionRequestCodes.REQUEST_CODE_CALL_LOG ->{
                 detachAndAttachFragment(callFragment)
             }
-            REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION ->{
-                callFragment.getDataDelayed()
-            }
+
             REQUEST_CODE_READ_CONTACTS ->{
-                contactFragment.getData()
+
             }
-            REQUEST_CODE_READ_SMS_CONTACTS ->{
-                messagesFragment.getDataDelayed()
+            REQUEST_CODE_READ_SMS ->{
+                fetchSMSOnCreate = true
+                detachAndAttachFragment(smsFragment)
             }
 
 
@@ -1339,6 +1337,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     companion object {
         private const val TAG = "__MainActivity"
+
+        var fetchSMSOnCreate = false
 
         private const val KEY_ALIAS = "MYKeyAlias"
         private const val KEY_STORE = "AndroidKeyStore"
