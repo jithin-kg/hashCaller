@@ -38,18 +38,23 @@
 <!--        <item name="fontFamily">sans-serif</item>-->
          <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:windowSoftInputMode">stateHidden</item>
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
-        <item name="fontFamily">@font/roboto</item>
+<!--        <item name="android:windowSoftInputMode">stateHidden</item>-->
+<!--        <item name="colorAccent">@color/colorPrimary</item>-->
+<!--        <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>-->
+<!--        <item name="fontFamily">@font/roboto</item>-->
         <!--        For enabling window activity transition-->
-        <item name="android:windowActivityTransitions">true</item>
-        <item name="android:windowIsTranslucent">true</item>
+<!--        <item name="android:windowActivityTransitions">true</item>-->
+<!--        <item name="android:windowIsTranslucent">true</item>-->
         <!-- android:windowLightStatusBar is important, this makes status bar item colors dark
                so that it is visible when layout colorPrimaryDark is white-->
-        <item name="android:windowLightStatusBar">true</item>
+<!--        <item name="android:windowLightStatusBar">true</item>-->
         <!--        end -->
-        <item name="android:windowContentTransitions">true</item>
+<!--        <item name="android:windowContentTransitions">true</item>-->
+
+        <!--    <item name="android:statusBarColor">@color/statusBar</item>-->
+        <!--    <item name="statusBarForeground">#000000</item>-->
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+
     </style>
 
 
