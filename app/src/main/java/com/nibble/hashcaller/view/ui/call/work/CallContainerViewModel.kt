@@ -454,6 +454,7 @@ class CallContainerViewModel(
     }
 
     private suspend fun updateCallLogIds(logs: MutableList<CallLogTable>) {
+
         for (item in logs){
             val res = repository?.findOneFromCallLogTable(item.numberFormated)
             if (res!=null){

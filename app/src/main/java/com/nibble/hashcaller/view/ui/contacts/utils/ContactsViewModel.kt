@@ -37,24 +37,24 @@ class ContactsViewModel(
 
     }
 
-     fun syncContactsWithLocalDb() = viewModelScope.launch {
-
-         val vowels: List<String> = ArrayList()
-
-         val contactsListfromContentProvider: List<ContactUploadDTO>? = contactsRepository?.fetchContacts() as ArrayList<ContactUploadDTO>?
-          var cts:MutableList<ContactTable>? = mutableListOf();
-         for(item in contactsListfromContentProvider!!){
-             if (cts != null) {
-//                 cts.add(ContactTable(null, item?.phoneNumber, item?.name))
-             }
-           }
-         contactLocalSyncRepository.insertContacts(cts!!)
-
-//         val contactsListFromLocalDb = contactLocalSyncRepository.getContactsFromLocalDB()
-         val contactHelper = ContactsSyncHelper(contactLocalSyncRepository, contactNetworkRepository)
-//         contactHelper.syncContacts(contactsListfromContentProvider, contactsListFromLocalDb)
-
-    }
+//     fun syncContactsWithLocalDb() = viewModelScope.launch {
+//
+//         val vowels: List<String> = ArrayList()
+//
+//         val contactsListfromContentProvider: List<ContactUploadDTO>? = contactsRepository?.fetchContacts() as ArrayList<ContactUploadDTO>?
+//          var cts:MutableList<ContactTable>? = mutableListOf();
+//         for(item in contactsListfromContentProvider!!){
+//             if (cts != null) {
+////                 cts.add(ContactTable(null, item?.phoneNumber, item?.name))
+//             }
+//           }
+//         contactLocalSyncRepository.insertContacts(cts!!)
+//
+////         val contactsListFromLocalDb = contactLocalSyncRepository.getContactsFromLocalDB()
+//         val contactHelper = ContactsSyncHelper(contactLocalSyncRepository, contactNetworkRepository)
+////         contactHelper.syncContacts(contactsListfromContentProvider, contactsListFromLocalDb)
+//
+//    }
 
 
 
