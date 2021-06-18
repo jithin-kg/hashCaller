@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorBackground"
+    android:theme="@style/AppTheme"
     android:layout_marginBottom="?attr/actionBarSize"
     android:id="@+id/cordinateLyoutCall">
 

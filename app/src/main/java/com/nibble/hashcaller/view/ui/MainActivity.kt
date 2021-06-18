@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var hashedNumbersViewmodel : HasherViewmodel
     private lateinit var callFragment: CallFragment
     private lateinit var messagesFragment: SMSContainerFragment
+    private lateinit var fullScreenFragment: FullscreenFragment
     //    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsContainerFragment
     private lateinit var searchFragment: SearchFragment
@@ -158,13 +159,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
 //        setTheme(R.style.splashScreenTheme)
         initDataStoreViewmodel()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initMainActivityComponents()
+
         manageSavedInstanceState(savedInstanceState)
         rcfirebaseAuth = FirebaseAuth.getInstance()
         initViewModel()
@@ -204,9 +206,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     finish()
                 }else {
 
-                    initMainActivityComponents()
+//                    initMainActivityComponents()
 //                    setTheme(R.style.AppTheme)
                     firebaseAuthListener()
+                    val ft = supportFragmentManager.beginTransaction()
+//                    ft.hide(fullScreenFragment)
+                    ft.remove(fullScreenFragment)
+                    ft.show(callFragment)
+                    ft.commit()
+                    binding.bottomNavigationView.beVisible()
                 }
 
             }else{
@@ -352,26 +360,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun observeUserInfo() {
 
-        userInfoViewModel.userInfoLivedata.observe(this, Observer {
-            if (it != null) {
-                //todo possibilityr of strinindexoutofbound exception
-                    try {
-                         val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
-                fullName.text = "${it.firstname} ${it.lastName}"
-                if(!it.photoURI.isNullOrEmpty()){
-                    headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
-                    firstLetterView.beInvisible()
-                }else{
-                    firstLetterView.beVisible()
-                }
-                    }catch (e:Exception){
-                        Log.d(TAG, "observeUserInfo: $e")
-                        toast("Unable to get user name")
-                    }
-
-            }
-        })
+//        userInfoViewModel.userInfoLivedata.observe(this, Observer {
+//            if (it != null) {
+//                //todo possibilityr of strinindexoutofbound exception
+//                    try {
+//                         val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+//                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
+//                fullName.text = "${it.firstname} ${it.lastName}"
+//                if(!it.photoURI.isNullOrEmpty()){
+//                    headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
+//                    firstLetterView.beInvisible()
+//                }else{
+//                    firstLetterView.beVisible()
+//                }
+//                    }catch (e:Exception){
+//                        Log.d(TAG, "observeUserInfo: $e")
+//                        toast("Unable to get user name")
+//                    }
+//
+//            }
+//        })
     }
 
 
@@ -469,14 +477,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun manageSavedInstanceState(savedInstanceState: Bundle?) {
-
+        this.fullScreenFragment = FullscreenFragment()
         if (savedInstanceState == null) {
             Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
+
             this.messagesFragment = SMSContainerFragment()
 //            this.blockConfigFragment = BlockConfigFragment()
             this.contactFragment = ContactsContainerFragment()
             this.callFragment = CallFragment()
+
             this.dialerFragment = DialerFragment()
             this.searchFragment = SearchFragment()
 //            this.searchFragment =  SearchFragment.newInstance()
@@ -546,6 +556,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
 
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
+//        this.fullScreenFragment = supportFragmentManager.getFragment(savedInstanceState, "fullScreenFragment") as FullscreenFragment
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
         this.messagesFragment = supportFragmentManager.getFragment(
             savedInstanceState,
@@ -612,7 +623,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d(TAG, "onSaveInstanceState: ")
+
         supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
+//        supportFragmentManager.putFragment(outState, "fullScreenFragment", this.fullScreenFragment)
         supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
         supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState, "messagesFragment", this.messagesFragment)
@@ -651,10 +664,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      */
     private fun setTheDefaultFragment() {
 //        contactFragment.isDefaultFgmnt = true
-
-        if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
+        if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_FULL_FRAGMENT){
+            fullScreenFragment.isDefaultFgmnt = true
+        }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
             callFragment.isDefaultFgmnt = true
-        }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
+        }
+        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
             messagesFragment.isDefaultFgmnt = true
         }
         else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CONTACT_FRAGMENT){
@@ -679,7 +694,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         callFragment.clearMarkeditems()
         messagesFragment.clearMarkeditems()
 
-        ft.hide(HashCaller.getActiveFragment())
+        HashCaller.getActiveFragment()?.let { ft.hide(it) }
+
         if (dialerFragment.isAdded) { // if the fragment is already in container
 
             ft.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
@@ -743,6 +759,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft = supportFragmentManager.beginTransaction()
 
         setDefaultFragment(DefaultFragmentManager.id)
+
+        ft.add(R.id.frame_fragmentholder, fullScreenFragment)
+        hideThisFragment(ft, callFragment, fullScreenFragment)
 
         ft.add(R.id.frame_fragmentholder, callFragment)
         hideThisFragment(ft, callFragment, callFragment)
@@ -840,7 +859,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
 
-        ft.hide(HashCaller.getActiveFragment())
+        HashCaller.getActiveFragment()?.let { ft.hide(it) }
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
             HashCaller.setActiveFragment(contactFragment)
@@ -867,7 +886,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showSearchFragment = true)
         val ft = supportFragmentManager.beginTransaction()
 
-       ft.hide(HashCaller.getActiveFragment())
+        HashCaller.getActiveFragment()?.let { ft.hide(it) }
 
         if (searchFragment.isAdded) { // if the fragment is already in container
             ft.show(searchFragment)
@@ -894,7 +913,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showCallsFragment = true)
 
         val ft = supportFragmentManager.beginTransaction()
-        ft.hide(HashCaller.getActiveFragment())
+        HashCaller.getActiveFragment()?.let { ft.hide(it) }
         if(callFragment.isAdded){
 //            fabBtnShowDialpad.visibility = View.VISIBLE
 
@@ -911,7 +930,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
-        ft.hide(HashCaller.getActiveFragment())
+        HashCaller.getActiveFragment()?.let { ft.hide(it) }
         if (messagesFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(messagesFragment)

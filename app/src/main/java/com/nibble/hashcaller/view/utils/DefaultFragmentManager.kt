@@ -10,6 +10,7 @@ class DefaultFragmentManager {
         const val SHOW_MESSAGES_FRAGMENT = 1
         const val SHOW_CONTACT_FRAGMENT = 2
         const val SHOW_CALL_FRAGMENT = 0
+        const val SHOW_FULL_FRAGMENT = 5
         const val SHOW_BLOCK_FRAGMENT = 3
         const val SHOW_DIALER_FRAGMENT = 4
 

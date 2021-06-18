@@ -41,12 +41,12 @@ class HashCaller : Application(){
      */
 
     companion object{
-        private lateinit var activeFragment:Fragment
+        private  var activeFragment:Fragment? = null
 
         fun setActiveFragment(fragment: Fragment){
             activeFragment = fragment
         }
-        fun getActiveFragment(): Fragment {
+        fun getActiveFragment(): Fragment? {
             return activeFragment
         }
         const val CHANNEL_1_ID = "channel1";

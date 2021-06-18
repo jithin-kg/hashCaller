@@ -244,17 +244,22 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         if(!hidden){
             if(viewmodel==null){
                 lifecycleScope.launchWhenResumed {
-        setupBottomSheet()
-        initListeners()
-        initRecyclerView()
-        Log.d(TAG, "onViewCreated: after 3 secs")
-        initVieModel()
-        showRecyclerView()
-        observeSMSList()
-        observeSMSThreadsLivedata()
-        observeSendersInfoFromServer()
-        observeMarkedItems()
-        observeInternetLivedata()
+                    if(checkContactPermission()){
+                        setupBottomSheet()
+                        initListeners()
+                        initRecyclerView()
+                        Log.d(TAG, "onViewCreated: after 3 secs")
+                        initVieModel()
+                        showRecyclerView()
+                        observeSMSList()
+                        observeSMSThreadsLivedata()
+                        observeSendersInfoFromServer()
+                        observeMarkedItems()
+                        observeInternetLivedata()
+                    }else {
+                        binding.btnRequestSMSPermisssion.beVisible()
+                    }
+
                 }
             }
         }
@@ -351,8 +356,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun checkContactPermission(): Boolean {
-        return true
-//        return context?.hasSMSReadPermission()?:false
+        return context?.hasSMSReadPermission()?:false
     }
 
 

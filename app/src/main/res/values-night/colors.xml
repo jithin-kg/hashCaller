@@ -2,9 +2,7 @@
 <resources>
     <color name="colorPrimary">#40ABEE</color>
     <color name="colorBackground">#03141B</color>
-    <color name="statusBarColor">#9A03141B</color>
-
-
+    <color name="statusBarColor">#AB000000</color>
     <color name="primary_analogus_one">#4F8FBF</color>
     <color name="primary_analogus_two">#7F4FBF</color>
     <color name="colorIncommingBackground">#4B53BC</color>

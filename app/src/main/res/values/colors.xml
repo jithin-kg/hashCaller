@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    <color name="colorPrimary">#3399FF</color> from kaizala microsoft-->
-<!--    Color of toolbar is determined by colorPrimary attribute-->
-<!--    Text color of tittle in toolbar is determnied by textColorPrimary-->
-<!--    Color of navigation icon and overflow icon is determined by textColorSecondary-->
-<!--    colorAceent attribute is responsible for tint of editTex,checkbox,radiobutton,fab-->
-<!--Ripple animation on button click is controlled by colorControlHighlight-->
-<!--    <color name="colorPrimary">#4B53BC</color>-->
-<!--    https://www.canva.com/colors/color-wheel/-->
+    <!--    <color name="colorPrimary">#3399FF</color> from kaizala microsoft-->
+    <!--    Color of toolbar is determined by colorPrimary attribute-->
+    <!--    Text color of tittle in toolbar is determnied by textColorPrimary-->
+    <!--    Color of navigation icon and overflow icon is determined by textColorSecondary-->
+    <!--    colorAceent attribute is responsible for tint of editTex,checkbox,radiobutton,fab-->
+    <!--Ripple animation on button click is controlled by colorControlHighlight-->
+    <!--    <color name="colorPrimary">#4B53BC</color>-->
+    <!--    https://www.canva.com/colors/color-wheel/-->
 
 
-<!--    colors from https://www.wix.com/blog/2020/01/brand-colors/-->
-<!--    03121B dark black, blue colors from darkest to lightest-->
-<!--    145191  dark blue1-->
-<!--    2D83C4 light blue2-->
-<!--    40ABEE light blue3-->
-<!--    E2ECFD blue 4-->
+    <!--    colors from https://www.wix.com/blog/2020/01/brand-colors/-->
+    <!--    03121B dark black, blue colors from darkest to lightest-->
+    <!--    145191  dark blue1-->
+    <!--    2D83C4 light blue2-->
+    <!--    40ABEE light blue3-->
+    <!--    E2ECFD blue 4-->
 
-<!--    <color name="colorPrimary">#145291</color>-->
+    <!--    <color name="colorPrimary">#145291</color>-->
     <color name="colorPrimary">#2D83C4</color>
     <color name="colorBackgroundAppBar">#145291</color>
     <color name="statusBarColor">#FA145291</color>
@@ -34,7 +34,7 @@
     <color name="colorIncommingBackground">#4B53BC</color>
     <color name="colorPrimaryLowOpacity">#944F57BF</color>
     <color name="colorPrimaryLight">#8383f2</color>
-<!--    <color name="colorPrimaryDark">#6264AA</color>-->
+    <!--    <color name="colorPrimaryDark">#6264AA</color>-->
     <color name="colorPrimaryDark">#ffff</color>
     <color name="colorPrimaryDarkest">#082d8e</color>
 
@@ -42,18 +42,18 @@
     <color name="circular_color2">#40ABEE</color>
     <color name="circular_color3">#40ABEE</color>
     <color name="circular_color4">#2D83C4</color>
-<!--    Tetradic colors from canva color wheen based on primary colors color variation from color wheel-->
-<!--    <color name="circular_color1">#4FBFB7</color>-->
-<!--    <color name="circular_color2">#7F4FBF</color>-->
-<!--    <color name="circular_color3">#BF4F57</color>-->
-<!--    <color name="circular_color4">#8FBF4F</color>-->
+    <!--    Tetradic colors from canva color wheen based on primary colors color variation from color wheel-->
+    <!--    <color name="circular_color1">#4FBFB7</color>-->
+    <!--    <color name="circular_color2">#7F4FBF</color>-->
+    <!--    <color name="circular_color3">#BF4F57</color>-->
+    <!--    <color name="circular_color4">#8FBF4F</color>-->
 
     <color name="colorPrimaryLightPressed">#2178D4</color>
     <color name="windowBackground">#ffff</color>
     <!--   cololr of statusBar is determined by the  colorPrimaryDark attribute   -->
     <color name="colorNavItemsLight">#2B80D7</color>
     <color name="test_color">#f44336</color>
-<!--    color of bottom nav item default -->
+    <!--    color of bottom nav item default -->
     <color name="colorControlNormal">#CCCCCC</color>
 
     <color name="colorWhite">#FFFFFF</color>
@@ -94,6 +94,11 @@
     <color name="color_menu">#FF000000</color>
     <color name="icon_filter">#FF000000</color>
     <color name="green_badge">#13C37B</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
 
 
 </resources>

@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -51,9 +51,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SplashTheme">
-        <activity android:name=".view.ui.userdata.GetUserDataActiivty"
-            android:theme="@style/AppTheme"
-            />
+        <activity
+            android:name=".view.ui.FullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/SplashTheme">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+
+        <activity
+            android:name=".view.ui.userdata.GetUserDataActiivty"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.getstarted.GetStartedActivity"
             android:theme="@style/AppTheme" />
@@ -259,13 +269,11 @@
             <!-- android:name="com.google.android.safetynet.ATTEST_API_KEY" -->
             <!-- android:value="@string/safety_net_api_key" /> -->
 
+           <!-- <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
@@ -320,7 +328,6 @@
         <activity
             android:name=".view.ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTop"
             android:hardwareAccelerated="true"
             android:theme="@style/SplashTheme"
             android:windowSoftInputMode="adjustPan"> <!-- Service that delivers messages from the phone "quick response" -->
@@ -328,11 +335,10 @@
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
                 android:value="@string/safety_net_api_key" />
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
 
         <service
