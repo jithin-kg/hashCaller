@@ -22,7 +22,7 @@
     <color name="colorBackgroundAppBar">#145291</color>
     <color name="statusBarColor">#FA145291</color>
     <color name="colorPrimaryDark">#145291</color>
-
+    <color name="primaryText"> #145191</color>
     <!--    <color name="colorBackgroundAppBar">#2D83C4</color>-->
 
     <color name="colorSplash">#145291</color>
@@ -99,6 +99,7 @@
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
     <color name="black_overlay">#66000000</color>
+    <color name="color_icon_line">#FF000000</color>
 
 
 </resources>

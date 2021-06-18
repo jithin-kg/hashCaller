@@ -48,6 +48,10 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.PERMISSION__ONLY_GIVEN
+import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_AND_PERMISSION_GIVEN
+import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_ONLY_GIVEN
+import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.USER_INFO_AVIALABLE_IN_DB
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
@@ -189,34 +193,80 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun checkUserInfoAvaialbleInDb() {
-        userInfoViewModel.getUserInfoFromDb().observe(this, Observer {
-            if(it!=null){
-                /**
-                 * important set theme only after user info is avialable in db, (so then only the view will show)
-                 */
-
-                if(!checkPermission()){
-                    val i = Intent(this, PermissionRequestActivity::class.java)
-//            startActivityForResult(i, PERMISSION_REQUEST_CODE)
-                    startActivity(i)
-                    finish()
-                }else {
-
-//                    initMainActivityComponents()
-//                    setTheme(R.style.AppTheme)
-                    firebaseAuthListener()
-                    val ft = supportFragmentManager.beginTransaction()
+        dataStoreViewModel?.getPermissionAndUserInfo(USER_INFO_AVIALABLE_IN_DB, this)?.observe(this, Observer {
+           when(it){
+               USER_INFO_AND_PERMISSION_GIVEN ->{
+                   firebaseAuthListener()
+                   val ft = supportFragmentManager.beginTransaction()
 //                    ft.hide(fullScreenFragment)
-                    ft.remove(fullScreenFragment)
-                    ft.show(callFragment)
-                    ft.commit()
-                    binding.bottomNavigationView.beVisible()
-                }
+                   ft.remove(fullScreenFragment)
+                   ft.show(callFragment)
+                   ft.commit()
+                   binding.bottomNavigationView.beVisible()
+               }
+               PERMISSION__ONLY_GIVEN -> {
+                   onSingnedOutcleanUp()
+               }
+               USER_INFO_ONLY_GIVEN -> {
+                   val i = Intent(this, PermissionRequestActivity::class.java)
+                   startActivity(i)
+                   finish()
+               }
+               else -> {
+                   onSingnedOutcleanUp()
+               }
+           }
 
-            }else{
-                onSingnedOutcleanUp()
-            }
-        } )
+//            if(it){
+//                if(!checkPermission()){
+//                    val i = Intent(this, PermissionRequestActivity::class.java)
+////            startActivityForResult(i, PERMISSION_REQUEST_CODE)
+//                    startActivity(i)
+//                    finish()
+//                }else {
+//
+////                    initMainActivityComponents()
+////                    setTheme(R.style.AppTheme)
+//                    firebaseAuthListener()
+//                    val ft = supportFragmentManager.beginTransaction()
+////                    ft.hide(fullScreenFragment)
+//                    ft.remove(fullScreenFragment)
+//                    ft.show(callFragment)
+//                    ft.commit()
+//                    binding.bottomNavigationView.beVisible()
+//                }
+//            }else{
+//                onSingnedOutcleanUp()
+//            }
+        })
+//        userInfoViewModel.getUserInfoFromDb().observe(this, Observer {
+//            if(it!=null){
+//                /**
+//                 * important set theme only after user info is avialable in db, (so then only the view will show)
+//                 */
+//
+//                if(!checkPermission()){
+//                    val i = Intent(this, PermissionRequestActivity::class.java)
+////            startActivityForResult(i, PERMISSION_REQUEST_CODE)
+//                    startActivity(i)
+//                    finish()
+//                }else {
+//
+////                    initMainActivityComponents()
+////                    setTheme(R.style.AppTheme)
+//                    firebaseAuthListener()
+//                    val ft = supportFragmentManager.beginTransaction()
+////                    ft.hide(fullScreenFragment)
+//                    ft.remove(fullScreenFragment)
+//                    ft.show(callFragment)
+//                    ft.commit()
+//                    binding.bottomNavigationView.beVisible()
+//                }
+//
+//            }else{
+//                onSingnedOutcleanUp()
+//            }
+//        } )
 //        dataStoreViewModel?.getToken()?.observe(this, Observer {
 //            if(!it.isNullOrEmpty()){
 ////                initMainActivityComponents(savedState)

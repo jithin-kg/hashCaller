@@ -88,6 +88,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
                 android:gravity="start"
+
                 android:text="@string/hashcaller_name"
                 android:textColor="@color/colorWhite"
                 android:textSize="24sp"
@@ -119,7 +120,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
                 android:background="?android:selectableItemBackground"
-
                 android:src="@drawable/ic_delete_blue_24"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrMore"
@@ -130,6 +130,7 @@
                 android:id="@+id/pgBarDeleting"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:indeterminateTint="@color/colorPrimary"
                 android:background="?android:selectableItemBackground"
                 android:src="@drawable/ic_delete_blue_24"
                 android:visibility="invisible"

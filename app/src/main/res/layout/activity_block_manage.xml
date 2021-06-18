@@ -5,6 +5,8 @@
     android:id="@+id/tvBlockSmall"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/AppTheme"
+    android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_block_manage_scene"
     tools:context=".view.ui.manageblock.BlockManageActivity">
 
@@ -102,7 +104,7 @@
                    app:layout_constraintTop_toTopOf="parent"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    app:layout_constraintStart_toStartOf="parent"
-                   android:src="@drawable/ic_baseline_security_24"
+                   android:src="@drawable/ic_shield_line"
                    />
 
                <TextView
@@ -177,8 +179,8 @@
                    android:layout_height="wrap_content"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    android:layout_marginTop="@dimen/margin_start_imgv_block_settings"
-                   android:text="General"
-                   android:textColor="@color/colorPrimary"
+                   android:text="@string/general"
+                   android:textColor="@color/primaryText"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlockUnderBtn" />
@@ -203,7 +205,7 @@
                    android:alpha=".80"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:src="@drawable/ic_baseline_block_24"
+                   android:src="@drawable/ic_spam_3_line"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@+id/textViewGeneralBlock"
 
@@ -256,7 +258,7 @@
                    android:alpha="0.8"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:src="@drawable/ic_baseline_emoji_flags_24"
+                   android:src="@drawable/ic_flag_line"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock2" />
 
@@ -305,7 +307,7 @@
                    android:layout_height="wrap_content"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:src="@drawable/ic_baseline_contacts_24"
+                   android:src="@drawable/ic_contacts_book_2_line"
                    android:alpha="0.80"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock3" />
@@ -362,8 +364,8 @@
                    android:layout_height="wrap_content"
                    android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                    android:layout_marginTop="@dimen/img_btn_back_margin"
-                   android:text="Create pattern"
-                   android:textColor="@color/colorPrimaryLight"
+                   android:text="@string/create_pattern"
+                   android:textColor="@color/primaryText"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock4"

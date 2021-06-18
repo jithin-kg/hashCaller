@@ -1016,6 +1016,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         }
         binding.imgBtnCallTbrDelete.beVisible()
         binding.imgBtnCallTbrMore.beVisible()
+        binding.tvVHashcaller.beInvisible()
+        binding.imgBtnHamBrgerCalls.beInvisible()
 
     }
 
@@ -1037,6 +1039,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         binding.tvCallSelectedCount.beInvisible()
         binding.imgBtnCallUnMuteCaller.beInvisible()
         binding.pgBarDeleting.beInvisible()
+        binding.tvVHashcaller.beVisible()
+        binding.imgBtnHamBrgerCalls.beVisible()
     }
 
     fun updateSelectedItemCount(count: Int) {

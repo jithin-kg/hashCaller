@@ -4,6 +4,7 @@
     <color name="colorBackground">#03141B</color>
     <color name="statusBarColor">#AB000000</color>
     <color name="colorPrimaryDark">#AB000000</color>
+    <color name="primaryText"> #40ABEE</color>
 
     <color name="primary_analogus_one">#4F8FBF</color>
     <color name="primary_analogus_two">#7F4FBF</color>
@@ -66,5 +67,7 @@
     <color name="avatar_circle_bg_color">#dddd</color>
     <color name="icon_color_drawer">#A3FFFFFF</color>
     <color name="icon_filter">#dddd</color>
+    <color name="color_icon_line">#E6E1E1</color>
+
 
 </resources>
