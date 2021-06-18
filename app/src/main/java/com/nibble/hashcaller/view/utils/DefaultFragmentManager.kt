@@ -7,6 +7,7 @@ class DefaultFragmentManager {
     companion object{
 //        var id:Int = R.id.bottombaritem_contacts
         var id:Int = R.id.bottombaritem_calls
+
         const val SHOW_MESSAGES_FRAGMENT = 1
         const val SHOW_CONTACT_FRAGMENT = 2
         const val SHOW_CALL_FRAGMENT = 0

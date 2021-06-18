@@ -39,14 +39,8 @@ class HashCaller : Application(){
      */
 
     companion object{
-        private  var activeFragment:Fragment? = null
 
-        fun setActiveFragment(fragment: Fragment){
-            activeFragment = fragment
-        }
-        fun getActiveFragment(): Fragment? {
-            return activeFragment
-        }
+
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
 

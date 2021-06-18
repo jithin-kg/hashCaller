@@ -53,7 +53,6 @@ import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_AN
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_ONLY_GIVEN
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.USER_INFO_AVIALABLE_IN_DB
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
-import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
@@ -152,6 +151,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
     private var isDarkThemeOn = false
+    private lateinit var mainViewmodel: MainViewmodel
 
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
@@ -159,18 +159,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainViewmodel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewmodel::class.java)
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
 //        setTheme(R.style.splashScreenTheme)
         initDataStoreViewmodel()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        initMainActivityComponents()
+//        binding = ActivityMainBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
+//        initMainActivityComponents()
 
         manageSavedInstanceState(savedInstanceState)
-        rcfirebaseAuth = FirebaseAuth.getInstance()
-        initViewModel()
-        checkUserInfoAvaialbleInDb()
+        if(savedInstanceState!= null){
+//            addAllFragments()
+            setFragmentsFromSavedInstanceState(savedInstanceState)
+        }else {
+//            setFragmentsFromSavedInstanceState(savedInstanceState)
+        }
+//
+//        rcfirebaseAuth = FirebaseAuth.getInstance()
+//        initViewModel()
+        checkUserInfoAvaialbleInDb(savedInstanceState)
 
 //        observeHashedNumbersTable()
 
@@ -192,17 +200,40 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        WorkManager.getInstance(applicationContext).enqueue(oneTimeWorkRequest)
     }
 
-    private fun checkUserInfoAvaialbleInDb() {
+    private fun checkUserInfoAvaialbleInDb(savedInstanceState: Bundle?) {
         dataStoreViewModel?.getPermissionAndUserInfo(USER_INFO_AVIALABLE_IN_DB, this)?.observe(this, Observer {
            when(it){
                USER_INFO_AND_PERMISSION_GIVEN ->{
+
                    firebaseAuthListener()
-                   val ft = supportFragmentManager.beginTransaction()
-//                    ft.hide(fullScreenFragment)
-                   ft.remove(fullScreenFragment)
-                   ft.show(callFragment)
-                   ft.commit()
-                   binding.bottomNavigationView.beVisible()
+//                   val ft = supportFragmentManager.beginTransaction()
+////                    ft.hide(fullScreenFragment)
+//                   ft.remove(fullScreenFragment)
+//                   ft.show(callFragment)
+//                   ft.commit()
+                   binding = ActivityMainBinding.inflate(layoutInflater)
+                    setContentView(binding.root)
+                   initMainActivityComponents()
+
+                   if(savedInstanceState==null){
+                       addAllFragments()
+                   }else{
+                       val ft = supportFragmentManager.beginTransaction()
+                       setDefaultFragment(DefaultFragmentManager.id)
+                       ft.detach(callFragment)
+                       ft.attach(callFragment)
+                       ft.detach(smsFragment)
+                       ft.attach(smsFragment)
+                       ft.detach(contactFragment)
+                       ft.attach(contactFragment)
+                       ft.detach(searchFragment)
+                       ft.attach(searchFragment)
+                       ft.commit()
+//                       setFragmentsFromSavedInstanceState(savedInstanceState)
+//                       addAllFragments()
+
+                   }
+//                   binding.bottomNavigationView.beVisible()
                }
                PERMISSION__ONLY_GIVEN -> {
                    onSingnedOutcleanUp()
@@ -522,7 +553,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun manageSavedInstanceState(savedInstanceState: Bundle?) {
-        this.fullScreenFragment = FullscreenFragment()
+//        this.fullScreenFragment = FullscreenFragment()
         if (savedInstanceState == null) {
             Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
@@ -538,16 +569,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            setInstancesInApp()
 
 //            fabBtnShowDialpad.visibility = View.GONE
-            syncSpamList()
+//            syncSpamList()
 
 
             //set the default fragment
             setTheDefaultFragment()
-            addAllFragments()
+//            addAllFragments()
 
         }else{
 
-            setFragmentsFromSavedInstanceState(savedInstanceState)
+//            setFragmentsFromSavedInstanceState(savedInstanceState)
 //            this.ft = supportFragmentManager.beginTransaction()
 
         }
@@ -709,9 +740,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      */
     private fun setTheDefaultFragment() {
 //        contactFragment.isDefaultFgmnt = true
-        if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_FULL_FRAGMENT){
-            fullScreenFragment.isDefaultFgmnt = true
-        }else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
+//        if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_FULL_FRAGMENT){
+//            fullScreenFragment.isDefaultFgmnt = true
+//        }else
+
+            if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
             callFragment.isDefaultFgmnt = true
         }
         else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
@@ -739,12 +772,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         callFragment.clearMarkeditems()
         smsFragment.clearMarkeditems()
 
-        HashCaller.getActiveFragment()?.let { ft.hide(it) }
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
 
         if (dialerFragment.isAdded) { // if the fragment is already in container
 
             ft.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_bottom)
-            HashCaller.setActiveFragment(dialerFragment)
+            mainViewmodel.setActiveFragment(dialerFragment)
             ft.show(dialerFragment)
             dialerFragment.showDialPad()
             bottomNavigationView.beGone()
@@ -805,8 +838,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         setDefaultFragment(DefaultFragmentManager.id)
 
-        ft.add(R.id.frame_fragmentholder, fullScreenFragment)
-        hideThisFragment(ft, callFragment, fullScreenFragment)
+//        ft.add(R.id.frame_fragmentholder, fullScreenFragment)
+//        hideThisFragment(ft, callFragment, fullScreenFragment)
 
         ft.add(R.id.frame_fragmentholder, callFragment)
         hideThisFragment(ft, callFragment, callFragment)
@@ -857,7 +890,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(!fmnt.isDefaultFgmnt){
             ft.hide(fragment)
         }else {
-           HashCaller.setActiveFragment(fragment)
+           mainViewmodel.setActiveFragment(fragment)
         }
 
     }
@@ -904,10 +937,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
 
-        HashCaller.getActiveFragment()?.let { ft.hide(it) }
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
-            HashCaller.setActiveFragment(contactFragment)
+            mainViewmodel.setActiveFragment(contactFragment)
 //            unMarkItems()
             smsFragment.showSearchView()
         }
@@ -931,11 +964,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showSearchFragment = true)
         val ft = supportFragmentManager.beginTransaction()
 
-        HashCaller.getActiveFragment()?.let { ft.hide(it) }
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
 
         if (searchFragment.isAdded) { // if the fragment is already in container
             ft.show(searchFragment)
-            HashCaller.setActiveFragment(searchFragment)
+            mainViewmodel.setActiveFragment(searchFragment)
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -958,12 +991,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         toggleBottomMenuIcons(showCallsFragment = true)
 
         val ft = supportFragmentManager.beginTransaction()
-        HashCaller.getActiveFragment()?.let { ft.hide(it) }
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
         if(callFragment.isAdded){
 //            fabBtnShowDialpad.visibility = View.VISIBLE
 
             ft.show(callFragment)
-            HashCaller.setActiveFragment(callFragment)
+            mainViewmodel.setActiveFragment(callFragment)
             binding.bottomNavigationView.beVisible()
         }
 
@@ -975,11 +1008,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
-        HashCaller.getActiveFragment()?.let { ft.hide(it) }
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
         if (smsFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
             ft.show(smsFragment)
-            HashCaller.setActiveFragment(smsFragment)
+            mainViewmodel.setActiveFragment(smsFragment)
 
 
 //            setDefaultFragment(R.id.bottombaritem_messages)
@@ -1251,7 +1284,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onStart() {
         Log.i(TAG, "OnStart")
         super.onStart()
-        this.user = rcfirebaseAuth!!.currentUser
+//        this.user = rcfirebaseAuth!!.currentUser
 
         //        checkPermission();
     }
