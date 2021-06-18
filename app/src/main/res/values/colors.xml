@@ -21,6 +21,7 @@
     <color name="colorPrimary">#2D83C4</color>
     <color name="colorBackgroundAppBar">#145291</color>
     <color name="statusBarColor">#FA145291</color>
+    <color name="colorPrimaryDark">#145291</color>
 
     <!--    <color name="colorBackgroundAppBar">#2D83C4</color>-->
 
@@ -35,7 +36,6 @@
     <color name="colorPrimaryLowOpacity">#944F57BF</color>
     <color name="colorPrimaryLight">#8383f2</color>
     <!--    <color name="colorPrimaryDark">#6264AA</color>-->
-    <color name="colorPrimaryDark">#ffff</color>
     <color name="colorPrimaryDarkest">#082d8e</color>
 
     <color name="circular_color1">#2D83C4</color>
