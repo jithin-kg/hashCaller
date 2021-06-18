@@ -3,12 +3,9 @@ package com.nibble.hashcaller.view.ui.call
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.telephony.SubscriptionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -32,9 +29,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
+import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
@@ -55,18 +52,16 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
-import com.nibble.hashcaller.view.ui.extensions.getMyPopupMenu
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
-import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
-import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
+import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
@@ -76,7 +71,6 @@ import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 
@@ -85,7 +79,7 @@ import kotlinx.coroutines.withContext
  * Use the [CallFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection,
+class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelection,
     CallLogAdapter.ViewHandlerHelper, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
@@ -130,23 +124,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         savedInstanceState: Bundle?
     ): View? {
     binding = FragmentCallBinding.inflate(inflater, container, false)
-//        callFragment =  inflatebtnCallFragmentPermissionr.inflate(R.layout.fragment_call, container, false)
-//    recyclerV = callFragment!!.findViewById(R.id.rcrViewCallHistoryLogs)
        tokenHelper =  TokenHelper(FirebaseAuth.getInstance().currentUser)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
-    // Inflate the layout for this fragment
-//        if(checkContactPermission()){
-//        getDataDelayed()
-//         }else{
-//             hideRecyclerView()
-//        }
 
-
-
-//    observeUserInfo()
-
-
-//        addFragmentDialer()
         return binding.root
 
     }
@@ -158,10 +138,12 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
         setupBottomSheet()
         initListeners()
-        if(checkContactPermission()){
+        if(checkRequiredPermission()){
             showRecyclerView()
             getDataDelayed()
         }else{
+            binding.btnCallFragmentPermission.beVisible()
+            binding.pgBarCall.beGone()
             hideRecyclerView()
         }
 
@@ -169,17 +151,15 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
     private fun hideRecyclerView() {
 
-        binding.btnCallFragmentPermission.beVisible()
+//        binding.btnCallFragmentPermission.beVisible()
         binding.rcrViewCallHistoryLogs.beInvisible()
 //        binding.shimmerViewContainerCall.beInvisible()
-        binding.pgBarCall.beVisible()
     }
 
     private fun showRecyclerView() {
 
         binding.btnCallFragmentPermission.beInvisible()
         binding.rcrViewCallHistoryLogs.beVisible()
-//        binding.shimmerViewContainerCall.beVisible()
         binding.pgBarCall.beVisible()
     }
 
@@ -193,23 +173,17 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
     }
 
      fun getDataDelayed() {
-//         Handler().postDelayed({
 
              lifecycleScope.launchWhenStarted {
                  initViewModel()
                  getFirst10items()
                  observeCallLog()
-//        addScrollListener()
                  setupSimCardCount()
                  observeMarkedItems()
                  observeCallLogFromDb()
-                 observePermissionLiveData()
                  observeCallLogInfoFromServer()
                  observeInternetLivedata()
              }
-//         }, 2000)
-
-
     }
 
 
@@ -231,10 +205,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
                 }
             }
-            Log.d(TAG, "getFirst10items: ")
             if (it.size > 1) {
-//                binding.shimmerViewContainerCall.stopShimmer()
-//                binding.shimmerViewContainerCall.beGone()
                 binding.pgBarCall.beGone()
             }
         })
@@ -266,32 +237,9 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 
 
 
-    private suspend fun observePermissionLiveData() {
-//        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
-//            if(it == true){
-//                Log.d(TAG, "observePermissionLiveData: permission given")
-//                if(this.viewmodel?.callLogs != null){
-//                    if(!this.viewmodel!!.callLogs?.hasObservers()){
-//                        observeCallLog()
-//                        binding.btnCallhistoryPermission.visibility = View.GONE
-//                    }
-//                }
-//
-//            }else{
-//                binding.btnCallhistoryPermission.visibility =View.VISIBLE
-//                Log.d(TAG, "observePermissionLiveData: permission not given")
-//                if (this.viewmodel != null  ) {
-//
-//                    if(this.viewmodel?.callLogs != null)
-//                        if(this.viewmodel!!.callLogs?.hasObservers())
-//                            this.viewmodel?.callLogs?.removeObservers(this);
-//                }
-//            }
-//        })
-    }
+
     private fun initListeners() {
 
-        binding.btnCallhistoryPermission.setOnClickListener(this)
         binding.imgBtnCallTbrBlock.setOnClickListener(this)
         binding.imgBtnCallTbrMuteCaller.setOnClickListener(this)
         binding.imgBtnCallTbrDelete.setOnClickListener(this)
@@ -324,47 +272,11 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         })
     }
 
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d(TAG, "onRequestPermissionsResult: ")
-        // EasyPermissions handles the request result.
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    private fun checkRequiredPermission(): Boolean {
+       return EasyPermissions.hasPermissions(context,
+           READ_CALL_LOG,
+        WRITE_CALL_LOG)
     }
-
-    @AfterPermissionGranted(REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION)
-    fun methodRequiresTwoPermission() {
-        Log.d(TAG, "methodRequiresTwoPermission: ")
-        if (EasyPermissions.hasPermissions(context,
-                READ_CALL_LOG,
-                WRITE_CALL_LOG,
-                READ_CONTACTS,
-                READ_PHONE_STATE))
-
-                {
-
-
-            // Already have permission, do the thing
-            Log.d(TAG, "methodRequiresTwoPermission: already permission")
-        } else {
-            // Do not have permissions, request them now
-            EasyPermissions.requestPermissions(
-                host = this,
-                "Hash caller need call logs permission to identify unknown callers in your call history",
-                  requestCode = REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION,
-                  perms = arrayOf(READ_CALL_LOG, READ_CONTACTS, READ_PHONE_STATE,
-                            WRITE_CALL_LOG)
-            )
-        }
-    }
-
-    private fun checkContactPermission(): Boolean {
-       return EasyPermissions.hasPermissions(context, READ_CALL_LOG,
-           READ_CONTACTS,
-                WRITE_CALL_LOG)
-    }
-
-
 
     private fun addScrollListener() {
         binding.rcrViewCallHistoryLogs.addOnScrollListener(object : RecyclerView.OnScrollListener(){
@@ -601,7 +513,8 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         Log.d(TAG, "onClick: ")
         when (v?.id) {
             R.id.btnCallFragmentPermission ->{
-                methodRequiresTwoPermission()
+//                methodRequiresTwoPermission()
+                requestRequiredPermissions()
             }
 //            R.id.fabBtnShowDialpad-> {
 //                Log.d(TAG, "onClick: show dialpad button clicked")
@@ -619,7 +532,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
 //            }else->{
 //            Log.d(TAG, "onClick: clicked ")
 //        }
-            R.id.btnCallhistoryPermission->{
+            R.id.btnCallFragmentPermission->{
 //                val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
 //                Log.d(TAG, "onClick: res is $res")
 //                this.permissionGivenLiveData.value = res
@@ -669,6 +582,23 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
         }
 
     }
+
+    private fun requestRequiredPermissions() {
+        val request = PermissionRequest.Builder(this.context)
+            .code(REQUEST_CODE_CALL_LOG)
+            .perms(arrayOf(READ_CALL_LOG,
+                WRITE_CALL_LOG,
+            ))
+            .rationale("HashCaller needs access to call logs to identify unknown callers in call log.")
+            .positiveButtonText("Continue")
+            .negativeButtonText("Cancel")
+            .build()
+        EasyPermissions.requestPermissions(this, request)
+    }
+
+
+
+
 
     private fun setSpammerTypeBasedOnRadio(v: View) {
         when(v?.id){
@@ -1172,7 +1102,7 @@ class CallFragment : Fragment(),View.OnClickListener , IDefaultFragmentSelection
      * called from mainactivity on back button pressed
      */
     fun clearMarkeditems() {
-        if(checkContactPermission()){
+        if(checkRequiredPermission()){
             if(viewmodel!=null){
 
                 lifecycleScope.launchWhenStarted {

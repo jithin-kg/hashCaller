@@ -9,5 +9,7 @@ class PermisssionRequestCodes {
         const val ROLE_SCREENING_APP_REQUEST_CODE =123
         const val REQUEST_CODE_STORAGE = 6
 
+        const val REQUEST_CODE_CALL_LOG = 12
+
     }
 }

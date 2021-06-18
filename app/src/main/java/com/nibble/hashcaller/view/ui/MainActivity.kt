@@ -48,6 +48,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityMainBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS_CONTACTS
@@ -74,15 +75,11 @@ import com.nibble.hashcaller.view.ui.search.SearchFragment
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
-import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
-import com.nibble.hashcaller.view.utils.getDecodedBytes
-import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
@@ -236,7 +233,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this,
             READ_CONTACTS,
             READ_PHONE_STATE,
-            READ_CALL_LOG,
             CALL_PHONE
 //            WRITE_CALL_LOG,
 //            READ_CONTACTS,
@@ -1245,6 +1241,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onRequestPermissionsResult: ")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode){
+            PermisssionRequestCodes.REQUEST_CODE_CALL_LOG ->{
+                detachAndAttachFragment(callFragment)
+            }
             REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION ->{
                 callFragment.getDataDelayed()
             }
@@ -1264,6 +1263,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                Toast.makeText(this, "call permission denied", Toast.LENGTH_SHORT).show()
 //            }
 //        }
+    }
+
+    /**
+     * This function is called when a permission is granted by user
+     * @param fragment the fragment that have got requested permission
+     * Re attaches the fragment will result in restarting the fragment life cycle from start.
+     * So the  data will be requested again from content provider
+     */
+    private fun detachAndAttachFragment(fragment: Fragment) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.detach(fragment)
+        fragmentTransaction.attach(fragment)
+        fragmentTransaction.commit()
     }
 
     //
