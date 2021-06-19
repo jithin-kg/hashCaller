@@ -18,7 +18,7 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.contacts.isActivityIncommingCallViewVisible
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
@@ -34,10 +34,16 @@ class CallFeedbackForegroundService : Service() {
     private lateinit var  searchRepository: SearchNetworkRepository
     private lateinit var notificationHelper: NotificationHelper
     private lateinit var inComingCallManager: InCommingCallManager
+    private lateinit var countryCodeIso:String
+    override fun onCreate() {
+        countryCodeIso = CountrycodeHelper(this.applicationContext).getCountryISO()
 
+    }
     companion object {
         var phoneNumber: String = ""
         const val TAG = "__ForegroundService"
+
+
         fun startService(context: Context, message: String, num: String) {
             phoneNumber = num
             val startIntent = Intent(context, CallFeedbackForegroundService::class.java)
@@ -134,7 +140,8 @@ class CallFeedbackForegroundService : Service() {
             null, searchRepository,
             internetChecker, blockedListpatternDAO,
             contactAdressesDAO,
-            callerInfoFromServerDAO
+            callerInfoFromServerDAO,
+            countryCodeIso
         )
     }
 }

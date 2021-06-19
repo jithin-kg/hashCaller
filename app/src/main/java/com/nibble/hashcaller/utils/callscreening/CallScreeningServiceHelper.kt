@@ -45,7 +45,7 @@ class CallScreeningServiceHelper(
                  WindowObj.getWindowObj()?.setPhoneNum(phoneNumber)
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
-
+                val defBlockForeignCountryCalls = async { inComingCallManager.isBlockForeignCountryEnabled() }
                 var defServerHandling:Deferred<CntctitemForView?>? = null
                 val definfoAvaialbleInDb = async { inComingCallManager.getAvailbleInfoInDb() }
 
@@ -117,6 +117,13 @@ class CallScreeningServiceHelper(
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
                 }
+            try {
+               if( defBlockForeignCountryCalls.await()){
+                   respondToSpamCall(InCommingCallManager.REASON_FOREIGN)
+               }
+            }catch (e:Exception){
+                Log.d(TAG, "handleCall:$e ")
+            }
 
 
 
@@ -127,7 +134,7 @@ class CallScreeningServiceHelper(
         
         if(!respondedToCall){
             respondedToCall = true
-            resToCallCallBack(false, 1)
+            resToCallCallBack(false, 0)
         }
         delay(16000L)
         Log.d(TAG, "handleCall: after 6s")

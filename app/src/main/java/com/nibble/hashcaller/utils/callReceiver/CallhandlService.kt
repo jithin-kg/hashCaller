@@ -20,9 +20,9 @@ import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 class CallhandlService : JobIntentService(){
@@ -137,7 +137,8 @@ class CallhandlService : JobIntentService(){
             notificationHelper, searchRepository,
             internetChecker, blockedListpatternDAO,
             contactAdressesDAO,
-            callerInfoFromServerDAO
+            callerInfoFromServerDAO,
+            CountrycodeHelper(this.applicationContext).getCountryISO()
         )
     }
 

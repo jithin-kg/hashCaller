@@ -48,7 +48,8 @@ class InCommingCallManager(
     private val internetChecker: InternetChecker,
     private val blockedListpatternDAO: BlockedLIstDao,
     private val contactAdressesDAO: IContactAddressesDao,
-    private val callerInfoFromServerDAO: CallersInfoFromServerDAO
+    private val callerInfoFromServerDAO: CallersInfoFromServerDAO,
+    countryCodeIso: String
 )  {
     private val phoneNumber = formatPhoneNumber(num)
     private val libPhoneCodeHelper =  LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
@@ -106,11 +107,13 @@ class InCommingCallManager(
         const val REASON_BLOCK_NON_CONTACT = 1
         const val REASON_BLOCK_TOP_SPAMMER = 2
         const val REASON_BLOCK_BY_PATTERN = 3
+//        const val REASON_BLOCK_FOREIGN_NUMBER= 4
+        const val REASON_FOREIGN = 9
     }
 
 
      fun endIncommingCall(reason: Int) {
-         Log.d(TAG, "endIncommingCall: ")
+         Log.d(TAG, "endIncommingCall: $reason ")
         val c = CallEnder(context)
         if(c.endIncomingCall()){
             //call ended successfully, show notificatoin
@@ -156,6 +159,14 @@ class InCommingCallManager(
 
     }
 
+    suspend fun isBlockForeignCountryEnabled(): Boolean {
+        if(isBlockEnabledForKey(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER)){
+            if(libPhoneCodeHelper.getCountryIso(phoneNumber, countryIso) != countryIso){
+               return  true
+            }
+        }
+        return false
+    }
     /**
      * if the function returns true block the call
      */
@@ -301,6 +312,8 @@ class InCommingCallManager(
         }
         return@withContext contact
     }
+
+
 
 
 }

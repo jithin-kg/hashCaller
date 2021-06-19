@@ -11,14 +11,16 @@ import java.util.*
 
 class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
 
-    suspend fun getCountryIso(phoneNum: String, countryIso: String){
+    suspend fun getCountryIso(phoneNum: String, countryIso: String): String {
+        var regionCode = ""
         try {
             val numberProto =phoneUtil.parse(phoneNum, countryIso)
-            val regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
+             regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
             Log.d(TAG+"iso", "getCopuntryIso: regionCode:$regionCode")
         }catch (e:Exception){
             Log.d(TAG+"iso", "getCopuntryIso: $e")
         }
+        return regionCode
     }
     suspend fun getCountryName(phoneNum:String): String = withContext(Dispatchers.IO) {
         var countryName = ""

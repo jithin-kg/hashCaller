@@ -18,7 +18,6 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.HashCaller.Companion.NOTIFICATION_ID
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
@@ -157,7 +156,8 @@ class CallHandleWorker(private val context: Context, private val workerParameter
             notificationHelper, searchRepository,
             internetChecker, blockedListpatternDAO,
             contactAdressesDAO,
-            callerInfoFromServerDAO
+            callerInfoFromServerDAO,
+            CountrycodeHelper(this.applicationContext).getCountryISO()
         )
     }
 

@@ -54,6 +54,7 @@ import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
+import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
@@ -556,7 +557,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 (activity as MainActivity).showDialerFragment()
             }
             R.id.imgBtnCallTbrMore ->{
-                val intent = Intent(activity, BlockListActivity::class.java)
+                val intent = Intent(activity, BlockManageActivity::class.java)
                 startActivity(intent)
 //                val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
 //                popup.setOnMenuItemClickListener(this)

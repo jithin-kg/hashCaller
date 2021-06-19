@@ -29,6 +29,9 @@ import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.COUNTRY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
@@ -254,16 +257,22 @@ fun Context.isActivityIncommingCallViewVisible():Boolean{
 
 fun Context.showNotifcationForSpamCall(reason: Int, phoneNumber: String) {
     var content = ""
+    Log.d("__Context", "showNotifcationForSpamCall:reason $reason")
     when(reason){
-        InCommingCallManager.REASON_BLOCK_NON_CONTACT -> {
+        InCommingCallManager.REASON_FOREIGN -> {
+            content = "Call from foreign country blocked."
+        }
+
+        REASON_BLOCK_NON_CONTACT -> {
             content = "Call from non contact blocked."
         }
-        InCommingCallManager.REASON_BLOCK_TOP_SPAMMER -> {
+        REASON_BLOCK_TOP_SPAMMER -> {
             content  = "Call identified as spam blocked."
         }
-        InCommingCallManager.REASON_BLOCK_BY_PATTERN -> {
+        REASON_BLOCK_BY_PATTERN -> {
             content = "Call from black list blocked."
         }
+
     }
     NotificationHelper(true,
         this)

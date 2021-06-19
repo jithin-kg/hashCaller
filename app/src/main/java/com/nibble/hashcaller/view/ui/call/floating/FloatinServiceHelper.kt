@@ -10,6 +10,7 @@ import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_FOREIGN
 import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
@@ -37,6 +38,8 @@ class FloatinServiceHelper(
                 var defServerHandling:Deferred<CntctitemForView?>? = null
                 val definfoFromDb = async { inComingCallManager.getAvailbleInfoInDb() }
                 val defredInfoFromCprovider = async { inComingCallManager.infoFromContentProvider() }
+
+                val deferedBlockForeignCountry = async { inComingCallManager.isBlockForeignCountryEnabled() }
                 try {
                     val contactInCprovider = defredInfoFromCprovider.await()
 //                    window.open()
@@ -129,6 +132,18 @@ class FloatinServiceHelper(
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
                 }
+
+            try {
+                if(deferedBlockForeignCountry.await()){
+                    endCall(
+                        inComingCallManager,
+                        phoneNumber,
+                        REASON_FOREIGN
+                    )
+                }
+            }catch (e:Exception){
+                Log.d(TAG, "handleCall: exception country ${e}")
+            }
 //            stopSelf();
 
         }.join()
