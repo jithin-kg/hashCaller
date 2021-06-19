@@ -4,14 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
-import android.telecom.Call;
-import android.telecom.CallScreeningService;
 import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
 
 import com.android.internal.telephony.ITelephony;
 
@@ -45,6 +42,8 @@ public class CallEnder implements ITelephony {
                 callEnded = true;
 
             }
+
+
 
         } catch ( Exception e) {
             Log.d(TAG, "endIncomingCall:exception  " + e.toString());

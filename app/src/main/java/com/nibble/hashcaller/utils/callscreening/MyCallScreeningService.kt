@@ -24,20 +24,16 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
-import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
-import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
-import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
-import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
 import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
+import com.nibble.hashcaller.view.ui.contacts.showNotifcationForSpamCall
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
@@ -153,7 +149,6 @@ class MyCallScreeningService: CallScreeningService() {
     }
 
     fun respondeToTheCall(isEndCall:Boolean, reason:Int){
-        var content = ""
         supervisorScope.launch {
             withContext(Dispatchers.Main){
                 if(isEndCall){
@@ -161,28 +156,17 @@ class MyCallScreeningService: CallScreeningService() {
                    stopFloatingService(true)
                 }
                 respondToCall(mCallDetails, responseBuilder.build())
-                when(reason){
-                    REASON_BLOCK_NON_CONTACT -> {
-                        content = "Call from non contact blocked."
-                    }
-                    REASON_BLOCK_TOP_SPAMMER -> {
-                        content  = "Call identified as spam blocked."
-                    }
-                    REASON_BLOCK_BY_PATTERN -> {
-                        content = "Call from black list blocked."
-                    }
+                if(isEndCall){
+                    //only show notiifcation for calls that needs to be blocked
+                    showNotifcationForSpamCall(reason, phoneNumber)
                 }
-                NotificationHelper(true,
-                    this@MyCallScreeningService)
-                    ?.showNotificatification(
-                        true,
-                    phoneNumber,
-                        content
-                )
+
             }
         }
 
     }
+
+
 
 
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {

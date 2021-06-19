@@ -21,6 +21,7 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.contacts.showNotifcationForSpamCall
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
@@ -93,7 +94,7 @@ class InCommingCallManager(
                     match = phoneNumber.endsWith(item.numberPattern)
                 }
                 if(match){
-                    endIncommingCall()
+                    endIncommingCall(REASON_BLOCK_BY_PATTERN)
                     break
                 }
             }
@@ -108,10 +109,13 @@ class InCommingCallManager(
     }
 
 
-     fun endIncommingCall() {
+     fun endIncommingCall(reason: Int) {
          Log.d(TAG, "endIncommingCall: ")
         val c = CallEnder(context)
-        c.endIncomingCall()
+        if(c.endIncomingCall()){
+            //call ended successfully, show notificatoin
+            context.showNotifcationForSpamCall(reason, phoneNumber)
+        }
     }
 
     /**

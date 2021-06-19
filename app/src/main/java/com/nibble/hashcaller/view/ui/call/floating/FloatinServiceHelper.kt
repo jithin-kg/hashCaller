@@ -7,6 +7,9 @@ import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.StatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
@@ -47,8 +50,11 @@ class FloatinServiceHelper(
                     if(infoAvailableInDb!=null){
                         if(infoAvailableInDb.spammCount?:0L > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
                             isSpam = true
-                            endCall(inComingCallManager,
-                                phoneNumber)
+                            endCall(
+                                inComingCallManager,
+                                phoneNumber,
+                                REASON_BLOCK_TOP_SPAMMER
+                                )
 
                         }
                         if(!isInfoFoundInCprovider){
@@ -77,8 +83,11 @@ class FloatinServiceHelper(
                     val isBlockedByPattern  = defBlockedByPattern.await()
                     if(isBlockedByPattern){
                         isSpam = true
-                        endCall(inComingCallManager,
-                            phoneNumber, )
+                        endCall(
+                            inComingCallManager,
+                            phoneNumber,
+                            REASON_BLOCK_BY_PATTERN
+                            )
                     }
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
@@ -94,8 +103,11 @@ class FloatinServiceHelper(
                     if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
 
                         isSpam = true
-                        endCall(inComingCallManager,
-                            phoneNumber)
+                        endCall(
+                            inComingCallManager,
+                            phoneNumber,
+                            REASON_BLOCK_TOP_SPAMMER
+                            )
                     }
                     if(resFromServer!=null){
                         inComingCallManager.saveInfoFromServer(resFromServer, phoneNumber)
@@ -108,8 +120,11 @@ class FloatinServiceHelper(
                     Log.d(TAG, "onReceive: third try ")
                     val r = defNonContactsBlocked.await()
                     if(r){
-                        endCall(inComingCallManager,
-                            phoneNumber,)
+                        endCall(
+                            inComingCallManager,
+                            phoneNumber,
+                            REASON_BLOCK_NON_CONTACT
+                            )
                     }
                 }catch (e: Exception){
                     Log.d(TAG, "onReceive: $e")
@@ -141,10 +156,11 @@ class FloatinServiceHelper(
 
     private fun endCall(
         inComingCallManager: InCommingCallManager,
-        phoneNumber: String
+        phoneNumber: String,
+        reason:Int
     ) {
         window?.setwindowSpamColor()
-        inComingCallManager.endIncommingCall()
+        inComingCallManager.endIncommingCall(reason)
 //        notificationHelper.showNotificatification(true, phoneNumber)
     }
 

@@ -18,10 +18,8 @@ import android.provider.CallLog
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.work.*
@@ -29,6 +27,8 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.NotificationHelper
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.COUNTRY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
@@ -250,6 +250,28 @@ fun Context.closeIncommingCallView(){
 }
 fun Context.isActivityIncommingCallViewVisible():Boolean{
     return ActivityIncommingCallView.isVisible?:false
+}
+
+fun Context.showNotifcationForSpamCall(reason: Int, phoneNumber: String) {
+    var content = ""
+    when(reason){
+        InCommingCallManager.REASON_BLOCK_NON_CONTACT -> {
+            content = "Call from non contact blocked."
+        }
+        InCommingCallManager.REASON_BLOCK_TOP_SPAMMER -> {
+            content  = "Call identified as spam blocked."
+        }
+        InCommingCallManager.REASON_BLOCK_BY_PATTERN -> {
+            content = "Call from black list blocked."
+        }
+    }
+    NotificationHelper(true,
+        this)
+        ?.showNotificatification(
+            true,
+            phoneNumber,
+            content
+        )
 }
 
 /**
