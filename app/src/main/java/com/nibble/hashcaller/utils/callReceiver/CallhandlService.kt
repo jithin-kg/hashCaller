@@ -133,7 +133,7 @@ class CallhandlService : JobIntentService(){
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
         return  InCommingCallManager(
             context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
+            phoneNumber,
             notificationHelper, searchRepository,
             internetChecker, blockedListpatternDAO,
             contactAdressesDAO,

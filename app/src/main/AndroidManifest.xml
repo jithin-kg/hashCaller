@@ -237,7 +237,7 @@
         </activity>
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:theme="@style/PopupTheme" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"

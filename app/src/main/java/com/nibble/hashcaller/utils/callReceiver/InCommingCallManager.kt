@@ -6,7 +6,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
 import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
@@ -16,6 +18,7 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.getStringValue
 import com.nibble.hashcaller.utils.internet.InternetChecker
+import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
@@ -25,7 +28,10 @@ import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -36,7 +42,6 @@ import java.util.*
 class InCommingCallManager(
     private val context: Context,
     num: String,
-    private val blockNonContactsEnabled: Boolean,
     private val notificationHelper: NotificationHelper?,
     private val searchRepository: SearchNetworkRepository,
     private val internetChecker: InternetChecker,
@@ -97,6 +102,9 @@ class InCommingCallManager(
 
     companion object{
         private const val  TAG = "__IncomingCallManager"
+        const val REASON_BLOCK_NON_CONTACT = 1
+        const val REASON_BLOCK_TOP_SPAMMER = 2
+        const val REASON_BLOCK_BY_PATTERN = 3
     }
 
 
@@ -149,17 +157,31 @@ class InCommingCallManager(
      */
     suspend fun isNonContactsCallsAllowed(): Boolean {
         var isBlock  = false
-        val res = contactAdressesDAO.find(phoneNumber)
+        if(isBlockEnabledForKey(PreferencesKeys.KEY_BLOCK_NON_CONTACT)){
+            val res = getContactDetailForNumberFromCp(phoneNumber)
             if (res == null) {
                 //this number not in contacts
-                if (blockNonContactsEnabled) {
-                    isBlock = true
+                isBlock = true
+
 //                    endIncommingCall(context)
-//                    notificationHelper.showNotificatification(true, phoneNumber)
-                }
+//                    notificationHelper?.showNotificatification(true,
+//                        phoneNumber,
+//                        "Call from $phoneNumber blocked because you enabled block calls from persosn not in contacts"
+//                        )
             }
+        }
+
+
         return isBlock
 
+    }
+
+    private suspend fun isBlockEnabledForKey(key: String): Boolean {
+        val wrapedKey =  booleanPreferencesKey(key)
+        val tokenFlow: Flow<Boolean> = context.blockPreferencesDataStore.data.map {
+            it[wrapedKey]?:false
+        }
+        return tokenFlow.first()
     }
 
     suspend fun getAvailbleInfoInDb(): CntctitemForView? = withContext(Dispatchers.IO) {
@@ -249,6 +271,31 @@ class InCommingCallManager(
                 carrier = resFromServer?.carrier?:""
                 )
         }
+    }
+
+    suspend fun getContactDetailForNumberFromCp(phoneNumber: String): Contact?  = withContext(Dispatchers.IO) {
+        var cursor:Cursor? = null
+        val phoneNum = phoneNumber.replace("+", "").trim()
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+
+        var  contact:Contact? = null
+        try{
+            if(cursor2!=null && cursor2.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+                val name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+                val contactId = cursor2.getLong(cursor2.getColumnIndex("contact_id"))
+                val normalizedNumber = cursor2.getString(cursor2.getColumnIndex("normalized_number"))
+                contact = Contact(contactId, name, normalizedNumber, null)
+            }
+
+
+        }catch (e:Exception){
+            Log.d(TAG, "getConactInfoForNumber: exception $e")
+        }finally {
+            cursor2?.close()
+        }
+        return@withContext contact
     }
 
 

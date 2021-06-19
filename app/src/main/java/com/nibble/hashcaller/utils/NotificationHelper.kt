@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
@@ -37,10 +38,10 @@ class NotificationHelper(
      * to show notify for blocked calls , then show notification
      */
     @SuppressLint("LongLogTag")
-     fun showNotificatification(isBlocked: Boolean, phoneNumber: String) {
+     fun showNotificatification(isBlocked: Boolean, phoneNumber: String, content: String) {
 //        var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(this)
         if(isBlocked && isReceiveNotificationForSpamCallBlk){
-
+            Log.d(TAG, "showNotificatification: ")
 //            resultIntent.putExtra(CONTACT_ADDRES, senderNo)
 
 // Create the TaskStackBuilder
@@ -48,7 +49,7 @@ class NotificationHelper(
             val notification = notificationCmpt
                 .setSmallIcon(R.drawable.ic_baseline_block_red)
                 .setContentTitle("Call Blocked")
-                .setContentText("Call from $phoneNumber is blocked")
+                .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setContentIntent(resultPendingIntent)
@@ -72,5 +73,9 @@ class NotificationHelper(
             .build()
 
         notificationManagerCmpt.notify(2, notification)
+    }
+
+    companion object {
+        const val TAG = "__NotificationHelper"
     }
 }

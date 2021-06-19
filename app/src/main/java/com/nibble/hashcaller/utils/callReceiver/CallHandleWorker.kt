@@ -153,7 +153,7 @@ class CallHandleWorker(private val context: Context, private val workerParameter
 
         return  InCommingCallManager(
             context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
+            phoneNumber,
             notificationHelper, searchRepository,
             internetChecker, blockedListpatternDAO,
             contactAdressesDAO,

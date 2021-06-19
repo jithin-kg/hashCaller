@@ -130,7 +130,7 @@ class CallFeedbackForegroundService : Service() {
 
         return  InCommingCallManager(
             context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
+            phoneNumber,
             null, searchRepository,
             internetChecker, blockedListpatternDAO,
             contactAdressesDAO,

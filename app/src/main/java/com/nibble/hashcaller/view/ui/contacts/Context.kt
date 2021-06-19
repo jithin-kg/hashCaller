@@ -346,15 +346,9 @@ fun Context.isBlockNonContactsEnabled():Boolean{
 
 }
 
-fun Context.isBlkForeignCallsEnabled():Boolean{
-    val sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE)
-    return sharedpreferences.getBoolean("isBlockForeignCallsEnabled", false)
-}
 
-fun Context.isBlockTopSpammersAutomaticallyEnabled():Boolean{
-    val sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE)
-    return sharedpreferences.getBoolean("isBlockTopSpamersAutomaticallyEnabled", false)
-}
+
+
 
 /**
  * Called to check whether the application have Screening app role held

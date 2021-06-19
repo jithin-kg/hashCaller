@@ -24,10 +24,14 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
+import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
@@ -64,6 +68,7 @@ class MyCallScreeningService: CallScreeningService() {
     private var tokenHelper: TokenHelper? = null
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private lateinit var countryCodeIso :String
+    private var phoneNumber = ""
     //    private  var _window:Window? = null
 //    private  val window:Window get() = _window!!
 
@@ -82,7 +87,7 @@ class MyCallScreeningService: CallScreeningService() {
         tokenHelper = TokenHelper(user)
         mCallDetails = callDetails
         Log.d(TAG, "onScreenCall: ")
-        var phoneNumber = getPhoneNumber(callDetails)
+         phoneNumber = getPhoneNumber(callDetails)
         phoneNumber = formatPhoneNumber(phoneNumber)
         phoneNumber = libCountryHelper.getES164Formatednumber(phoneNumber, countryCodeIso)
         responseBuilder = CallResponse.Builder()
@@ -110,7 +115,7 @@ class MyCallScreeningService: CallScreeningService() {
                     this@MyCallScreeningService,
                     DataStoreRepository(blockPreferencesDataStore)
 
-                ) { resToCall: Boolean -> run { respondeToTheCall(resToCall) } }
+                ) { resToCall: Boolean, reason:Int -> run { respondeToTheCall(resToCall,reason) } }
             }
             helper?.handleCall()
 
@@ -147,7 +152,8 @@ class MyCallScreeningService: CallScreeningService() {
         Log.d(TAG, "onUnbind: ")
     }
 
-    fun respondeToTheCall(isEndCall:Boolean){
+    fun respondeToTheCall(isEndCall:Boolean, reason:Int){
+        var content = ""
         supervisorScope.launch {
             withContext(Dispatchers.Main){
                 if(isEndCall){
@@ -155,6 +161,24 @@ class MyCallScreeningService: CallScreeningService() {
                    stopFloatingService(true)
                 }
                 respondToCall(mCallDetails, responseBuilder.build())
+                when(reason){
+                    REASON_BLOCK_NON_CONTACT -> {
+                        content = "Call from non contact blocked."
+                    }
+                    REASON_BLOCK_TOP_SPAMMER -> {
+                        content  = "Call identified as spam blocked."
+                    }
+                    REASON_BLOCK_BY_PATTERN -> {
+                        content = "Call from black list blocked."
+                    }
+                }
+                NotificationHelper(true,
+                    this@MyCallScreeningService)
+                    ?.showNotificatification(
+                        true,
+                    phoneNumber,
+                        content
+                )
             }
         }
 
@@ -177,8 +201,9 @@ class MyCallScreeningService: CallScreeningService() {
 
         return  InCommingCallManager(
             context,
-            phoneNumber, context.isBlockNonContactsEnabled(),
-            null, searchRepository,
+            phoneNumber,
+            null,
+            searchRepository,
             internetChecker,
             blockedListpatternDAO,
             contactAdressesDAO,

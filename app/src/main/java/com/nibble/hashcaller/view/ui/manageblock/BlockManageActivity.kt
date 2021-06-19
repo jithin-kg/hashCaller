@@ -7,16 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityBlockManageBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
-import com.nibble.hashcaller.view.ui.contacts.isBlkForeignCallsEnabled
-import com.nibble.hashcaller.view.ui.contacts.isBlockNonContactsEnabled
-import com.nibble.hashcaller.view.ui.contacts.isBlockTopSpammersAutomaticallyEnabled
-import com.nibble.hashcaller.view.ui.contacts.writeBoolToSharedPref
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 
@@ -25,7 +23,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener {
     private lateinit var binding:ActivityBlockManageBinding
 
-    private lateinit var sharedpreferences: SharedPreferences
+//    private lateinit var sharedpreferences: SharedPreferences
     private  var isBlockTopSpammersEnabled = false
     private var isBlockForeignCallsEnabled = false
     private var isBlockNonContactCallsEnabled = false
@@ -82,10 +80,19 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockNotIncontacts.isChecked = isBlockNonContactCallsEnabled
     }
     private fun getSharedPrefValues() {
-        sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
-        isBlockTopSpammersEnabled = isBlockTopSpammersAutomaticallyEnabled()
-        isBlockForeignCallsEnabled = isBlkForeignCallsEnabled()
-        isBlockNonContactCallsEnabled  = isBlockNonContactsEnabled()
+//        sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
+
+//        dataStoreViewmodel.getBoolean()
+        dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS).observe(this, Observer {
+            binding.blockSpammersAuto.isChecked = it
+        })
+        dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER).observe(this, Observer {
+            binding.blockForeignCoutries.isChecked = it
+        })
+        dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT).observe(this, Observer {
+            binding.blockNotIncontacts.isChecked = it
+        })
+
     }
 
 
@@ -97,17 +104,13 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         when(buttonView?.id){
             R.id.blockNotIncontacts -> {
-//               writeBoolToSharedPref("isBlockNonContactCallsEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
-
-
+                dataStoreViewmodel.setBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT, binding.blockNotIncontacts.isChecked)
             }
             R.id.blockSpammersAuto ->{
-//                writeBoolToSharedPref("isBlockTopSpamersAutomaticallyEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
-                dataStoreViewmodel.enableBlockCommonSpammers(isChecked)
-
+                  dataStoreViewmodel.setBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS, binding.blockSpammersAuto.isChecked)
             }
             R.id.blockForeignCoutries ->{
-//                writeBoolToSharedPref("isBlockForeignCallsEnabled", isChecked, SHARED_PREF_BLOCK_CONFIGURATIONS)
+                dataStoreViewmodel.setBoolean(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER, binding.blockForeignCoutries.isChecked)
             }
         }
     }
