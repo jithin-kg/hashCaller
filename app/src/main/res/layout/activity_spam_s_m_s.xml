@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     tools:context=".view.ui.sms.spam.SpamSMSActivity">
+
     <Toolbar
         android:id="@+id/toolbar_dialer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="4dp"
         android:background="@color/colorBackground"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,9 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
+                android:elevation="2dp"
                 android:focusable="true"
                 android:padding="8dp"
-                android:elevation="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -40,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:alpha="0.87"
-                android:text="Calls identified as spam"
+                android:text="Spam SMS"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -52,15 +53,27 @@
 
     </Toolbar>
 
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyvlerV"
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:background="@color/colorBackground"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_dialer"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_dialer" />
+
+    <TextView
+        android:id="@+id/tvSMSideinfiiedInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sms_spam_info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

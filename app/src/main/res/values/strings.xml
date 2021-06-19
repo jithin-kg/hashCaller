@@ -50,4 +50,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="general">General</string>
     <string name="create_pattern">Create pattern</string>
+    <string name="sms_spam_info">SMS sent by scammers appear hear.</string>
+    <string name="calls_spam_info">Calls identified as spam will appear here.</string>
 </resources>

@@ -21,9 +21,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.db.SmsThreadTable
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
-import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_LONG_PRESS
-import com.nibble.hashcaller.view.ui.sms.individual.util.UNMARK_ITEM
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import kotlinx.coroutines.Dispatchers
 
@@ -55,6 +53,11 @@ class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
             Log.d(TAG, "observeSMSLivedata: size ${it.size} ")
             lifecycleScope.launchWhenStarted {
                 var list: MutableList<SmsThreadTable> = mutableListOf()
+                if(it.isNotEmpty()){
+                    binding.tvSMSideinfiiedInfo.beGone()
+                }else {
+                    binding.tvSMSideinfiiedInfo.beVisible()
+                }
                 list.addAll(it.filter { !it.isDeleted })
                 Log.d(TAG, "observeSMSLivedata: list2 size ${list.size}")
                 smsadapter.setList(list)

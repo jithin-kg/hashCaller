@@ -66,6 +66,11 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
     private fun observeSpamCallLogs() {
         viewmodel.spamCalllivedata.observe(this, Observer {
             callLogAdapter?.submitCallLogs(it)
+            if(it.isEmpty()){
+                binding.tvSpamInfoCall.beVisible()
+            }else {
+                binding.tvSpamInfoCall.beGone()
+            }
         })
     }
 

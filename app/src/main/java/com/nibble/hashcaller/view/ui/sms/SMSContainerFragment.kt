@@ -133,8 +133,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     @SuppressLint("WrongViewCast", "LongLogTag")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initListeners()
         registerForContextMenu( binding.recyclreviewSMSContainer )
+        setupBottomSheet()
+        initListeners()
         if(MainActivity.fetchSMSOnCreate){
             getData()
         }
@@ -173,7 +174,6 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                    binding.pgbarSMSContainer.beVisible()
                    binding.btnSMSPermsions.beGone()
                }
-                setupBottomSheet()
                 initRecyclerView()
                 initVieModel()
                 showRecyclerView()
