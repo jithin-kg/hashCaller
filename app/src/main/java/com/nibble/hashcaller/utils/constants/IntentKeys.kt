@@ -30,5 +30,7 @@ class IntentKeys {
         const val START_FLOATING_SERVICE = "com.nibble.start_floatin_window"
         const val START_FLOATING_SERVICE_FROM_SCREENING_SERVICE = "com.nibble.start_floatin_window_from_screening"
 
+        const val SHOW_BLOCK_LIST = "showBlockList" // to how blocklistframgnet in mainactivity
+        const val SHOW_BLOCK_LIST_VALUE = 14
     }
 }

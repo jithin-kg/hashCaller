@@ -57,6 +57,7 @@ import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_COD
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
@@ -161,6 +162,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: ")
         mainViewmodel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewmodel::class.java)
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
@@ -1224,6 +1226,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onPostResume() {
         super.onPostResume()
         Log.i(TAG, "Onresume")
+//        val iExtra = intent.getIntExtra(IntentKeys.SHOW_BLOCK_LIST, 0)
+//        when(iExtra){
+//            IntentKeys.SHOW_BLOCK_LIST_VALUE -> {
+//                binding.bottomNavigationView.selectedItemId = R.id.bottombaritem_blockList
+//            }
+//        }
+
 //        saveTokenIfConnected()
 
         //        checkPermission();
@@ -1237,6 +1246,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                _rcfirebaseAuth?.addAuthStateListener(_rcAuthStateListener!!)
 //        }
         //        firebaseHelper.addFirebaseAuthListener();
+
     }
 
     private fun setcurrentThemeInSharedPref() {
@@ -1525,6 +1535,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume: ")
 
     }
 

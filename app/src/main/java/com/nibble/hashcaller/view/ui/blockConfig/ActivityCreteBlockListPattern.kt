@@ -1,28 +1,30 @@
 package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
+import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityCreteBlockListPatternBinding
-import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
+import com.nibble.hashcaller.utils.constants.IntentKeys
+import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.nibble.hashcaller.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
 
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,LifecycleObserver,
-    AdapterView.OnItemClickListener {
+    AdapterView.OnItemClickListener, MyUndoListener.SnackBarListner {
 
     private lateinit var binding : ActivityCreteBlockListPatternBinding
     private lateinit var  blockListViewModel: BlockListViewModel
@@ -84,28 +86,50 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
     private fun savePattern() {
         Log.d(TAG, "save button clicked")
+        var message = ""
         val newPattern = formatPhoneNumber(binding.editTextNewPattern?.text?.toString()!!)
         if(newPattern.isNotEmpty()){
             var patternRegex = ""
             when(patterntype){
                 NUMBER_STARTS_WITH ->{
                     patternRegex = "$newPattern([0-9]*)"
+                    message = "Calls and SMS number starting with $newPattern will be blocked."
                 }
                 NUMBER_ENDS_WITH ->{
                     patternRegex = "([0-9]*$newPattern)"
+                    message = "Calls and SMS number ending  with $newPattern will be blocked."
                 }
                 NUMBER_CONTAINING ->{
                     patternRegex = "([0-9]*$newPattern[0-9]*)"
+                    message = "Calls and SMS number containing  $newPattern will be blocked."
                 }
             }
             blockListViewModel.insert(newPattern, patterntype).observe(this, Observer {
                 if(it == OPERATION_COMPLETED){
-                    finish()
+//                    finish()
+                    showSnackBar(message)
                 }
             })
         }
 
 
+    }
+
+    private fun showSnackBar(message: String) {
+
+        val sbar = Snackbar.make(binding.layoutCreatePattern,
+            message,
+            Snackbar.LENGTH_SHORT)
+//        lastOperationPerformed = OPERTION_MUTE
+        sbar.setAction("View", MyUndoListener(this))
+//        sbar.anchorView = bottomNavigationView
+
+        sbar.show()
+//        Handler().postDelayed(
+//            {
+//            val intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent)
+//            }, 1500)
     }
 
     companion object {
@@ -147,6 +171,15 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
             }
         }
 
+    }
+
+    override fun onUndoClicked() {
+//        val intent = Intent(this, MainActivity::class.java)
+//        intent.putExtra(IntentKeys.SHOW_BLOCK_LIST,IntentKeys.SHOW_BLOCK_LIST_VALUE )
+//        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+////        startActivity(intent)
+//        startActivityIfNeeded(intent, 0)
+        finishAfterTransition()
     }
 
 

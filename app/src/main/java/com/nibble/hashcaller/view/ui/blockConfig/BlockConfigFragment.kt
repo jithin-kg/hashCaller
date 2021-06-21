@@ -22,6 +22,7 @@ import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListAdapter
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 
@@ -118,6 +119,11 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
             Observer<List<BlockedListPattern>> { blockedListPatterns ->
                 binding.pgBarBlockList.beGone()
                 blockedListPatterns?.let{blockListAdapter.submitPatternsList(it)}
+                if(blockedListPatterns.isNullOrEmpty()){
+                    binding.tvInfo.beVisible()
+                }else {
+                    binding.tvInfo.beGone()
+                }
             });
     }
     override fun onSaveInstanceState(outState: Bundle) {

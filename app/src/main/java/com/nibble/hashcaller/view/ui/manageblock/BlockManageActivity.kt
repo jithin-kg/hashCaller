@@ -14,6 +14,7 @@ import com.nibble.hashcaller.databinding.ActivityBlockManageBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.PreferencesKeys
+import com.nibble.hashcaller.view.ui.blockConfig.ActivityCreteBlockListPattern
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
@@ -131,28 +132,34 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockNotIncontacts.setOnCheckedChangeListener(this)
         binding.blockForeignCoutries.setOnCheckedChangeListener(this)
         binding.blockSpammersAuto.setOnCheckedChangeListener(this)
-        binding.layoutBlockContains.setOnClickListener(this)
-        binding.layoutBlockEndsWith.setOnClickListener(this)
-        binding.layoutBlockBeginsWith.setOnClickListener(this)
+//        binding.layoutBlockContains.setOnClickListener(this)
+//        binding.layoutBlockEndsWith.setOnClickListener(this)
+//        binding.layoutBlockBeginsWith.setOnClickListener(this)
 
     }
     override fun onClick(v: View?) {
         when(v?.id) {
-            R.id.layoutBlockContains ->{
-                startBlockListActivity(NUMBER_CONTAINING)
-            }
-            R.id.layoutBlockEndsWith ->{
-                startBlockListActivity(NUMBER_ENDS_WITH)
-            }
-            R.id.layoutBlockBeginsWith ->{
-                startBlockListActivity(NUMBER_STARTS_WITH)
-            }
+//            R.id.layoutBlockContains ->{
+//                startBlockListActivity(NUMBER_CONTAINING)
+//            }
+//            R.id.layoutBlockEndsWith ->{
+//                startBlockListActivity(NUMBER_ENDS_WITH)
+//            }
+//            R.id.layoutBlockBeginsWith ->{
+//                startBlockListActivity(NUMBER_STARTS_WITH)
+//            }
         }
     }
 
     private fun startBlockListActivity(value: Int) {
-        val intent = Intent(this, BlockListActivity::class.java)
-        intent.putExtra(KEY_INTENT_BLOCK_LIST, value )
-        startActivity(intent)
+//        val intent = Intent(this, BlockListActivity::class.java)
+//        intent.putExtra(KEY_INTENT_BLOCK_LIST, value )
+//        startActivity(intent)
+        val i = Intent(this, ActivityCreteBlockListPattern::class.java)
+//                i.putExtra("PersonID", personID);
+        i.putExtra(KEY_INTENT_BLOCK_LIST, value)
+        startActivity(i)
     }
+
+
 }

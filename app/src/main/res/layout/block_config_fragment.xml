@@ -263,13 +263,24 @@
     <!--    </com.facebook.shimmer.ShimmerFrameLayout>-->
 
 
-
+    <TextView
+        android:id="@+id/tvInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColor"
+        android:gravity="center"
+        android:layout_marginStart="@dimen/margin_padding_size_xlarge"
+        android:layout_marginEnd="@dimen/margin_padding_size_xlarge"
+        android:text="Create your custom block list to block calls and SMS."
+        android:layout_gravity="center"
+        />
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabBtnShowAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:contentDescription="dialpad"
+        android:text="Create"
         android:textColor="@color/colorWhite"
         android:layout_marginEnd="@dimen/bottom_fab_margin"
         android:layout_marginBottom="@dimen/margin_padding_size_large"

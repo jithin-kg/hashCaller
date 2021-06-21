@@ -329,6 +329,7 @@
             android:name=".view.ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
             android:theme="@style/SplashTheme"
             android:windowSoftInputMode="adjustPan"> <!-- Service that delivers messages from the phone "quick response" -->
             <meta-data

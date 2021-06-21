@@ -358,211 +358,211 @@
 
                    />
 
-               <TextView
-                   android:id="@+id/tvBlockByPattern"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
-                   android:layout_marginTop="@dimen/img_btn_back_margin"
-                   android:text="@string/create_pattern"
-                   android:textColor="@color/primaryText"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock4"
+<!--               <TextView-->
+<!--                   android:id="@+id/tvBlockByPattern"-->
+<!--                   android:layout_width="match_parent"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:layout_marginStart="@dimen/margin_start_imgv_block_settings"-->
+<!--                   android:layout_marginTop="@dimen/img_btn_back_margin"-->
+<!--                   android:text="@string/create_pattern"-->
+<!--                   android:textColor="@color/primaryText"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock4"-->
 
-                   />
+<!--                   />-->
 
-               <androidx.constraintlayout.widget.ConstraintLayout
-                   android:id="@+id/layoutBlockBeginsWith"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:clickable="true"
-                   android:focusable="true"
-                   android:foreground="?android:attr/selectableItemBackground"
+<!--               <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                   android:id="@+id/layoutBlockBeginsWith"-->
+<!--                   android:layout_width="match_parent"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_block_settings_list"-->
+<!--                   android:clickable="true"-->
+<!--                   android:focusable="true"-->
+<!--                   android:foreground="?android:attr/selectableItemBackground"-->
 
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/tvBlockByPattern">
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/tvBlockByPattern">-->
 
-                   <TextView
-                       android:id="@+id/tvBlockStarting"
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_marginStart="48dp"
-                       android:alpha=".87"
-                       android:textColor="@color/textColor"
-                       android:textSize="@dimen/text_size_list_headings"
-                       android:layout_marginTop="@dimen/margin_top_divider_blk"
-                       android:layout_marginBottom="@dimen/margin_top_divider_blk"
-                       android:text="Block number that begins with"
-                       app:layout_constraintBottom_toBottomOf="parent"
-                       app:layout_constraintEnd_toEndOf="@+id/imgVstartWith"
-                       app:layout_constraintStart_toStartOf="parent"
-                       app:layout_constraintTop_toTopOf="parent"
-                       />
-                   <TextView
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       app:layout_constraintTop_toBottomOf="@+id/tvBlockStarting"
-                       app:layout_constraintStart_toStartOf="@+id/tvBlockStarting"
-                       app:layout_constraintEnd_toEndOf="@+id/tvBlockStarting"
-                       android:layout_marginTop="@dimen/margin_top_info_text_block_settings"
-                       android:text="Block numbers like 9***"
-                       />
+<!--                   <TextView-->
+<!--                       android:id="@+id/tvBlockStarting"-->
+<!--                       android:layout_width="0dp"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       android:layout_marginStart="48dp"-->
+<!--                       android:alpha=".87"-->
+<!--                       android:textColor="@color/textColor"-->
+<!--                       android:textSize="@dimen/text_size_list_headings"-->
+<!--                       android:layout_marginTop="@dimen/margin_top_divider_blk"-->
+<!--                       android:layout_marginBottom="@dimen/margin_top_divider_blk"-->
+<!--                       android:text="Block number that begins with"-->
+<!--                       app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                       app:layout_constraintEnd_toEndOf="@+id/imgVstartWith"-->
+<!--                       app:layout_constraintStart_toStartOf="parent"-->
+<!--                       app:layout_constraintTop_toTopOf="parent"-->
+<!--                       />-->
+<!--                   <TextView-->
+<!--                       android:layout_width="0dp"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       app:layout_constraintTop_toBottomOf="@+id/tvBlockStarting"-->
+<!--                       app:layout_constraintStart_toStartOf="@+id/tvBlockStarting"-->
+<!--                       app:layout_constraintEnd_toEndOf="@+id/tvBlockStarting"-->
+<!--                       android:layout_marginTop="@dimen/margin_top_info_text_block_settings"-->
+<!--                       android:text="Block numbers like 9***"-->
+<!--                       />-->
 
-                   <ImageView
-                       android:id="@+id/imgVstartWith"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"
-                       android:src="@drawable/ic_baseline_arrow_forward_24"
-                       app:layout_constraintBottom_toBottomOf="@+id/tvBlockStarting"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:layout_constraintTop_toTopOf="@+id/tvBlockStarting" />
+<!--                   <ImageView-->
+<!--                       android:id="@+id/imgVstartWith"-->
+<!--                       android:layout_width="wrap_content"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"-->
+<!--                       android:src="@drawable/ic_baseline_arrow_forward_24"-->
+<!--                       app:layout_constraintBottom_toBottomOf="@+id/tvBlockStarting"-->
+<!--                       app:layout_constraintEnd_toEndOf="parent"-->
+<!--                       app:layout_constraintTop_toTopOf="@+id/tvBlockStarting" />-->
 
-               </androidx.constraintlayout.widget.ConstraintLayout>
+<!--               </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-               <ImageView
-                   android:id="@+id/imgViewDiderBlock5"
-                   android:layout_width="0dp"
-                   android:layout_height="1dp"
-                   android:layout_marginStart="48dp"
-                   android:layout_marginTop="@dimen/margin_top_divider_blk"
-                   android:alpha="0.12"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockBeginsWith"
-                   app:srcCompat="@drawable/horizontal_line_settings"
+<!--               <ImageView-->
+<!--                   android:id="@+id/imgViewDiderBlock5"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="1dp"-->
+<!--                   android:layout_marginStart="48dp"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_divider_blk"-->
+<!--                   android:alpha="0.12"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockBeginsWith"-->
+<!--                   app:srcCompat="@drawable/horizontal_line_settings"-->
 
-                   />
+<!--                   />-->
 
-               <androidx.constraintlayout.widget.ConstraintLayout
-                   android:id="@+id/layoutBlockEndsWith"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:clickable="true"
-                   android:focusable="true"
-                   android:foreground="?android:attr/selectableItemBackground"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockBeginsWith"
+<!--               <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                   android:id="@+id/layoutBlockEndsWith"-->
+<!--                   android:layout_width="match_parent"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_block_settings_list"-->
+<!--                   android:clickable="true"-->
+<!--                   android:focusable="true"-->
+<!--                   android:foreground="?android:attr/selectableItemBackground"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockBeginsWith"-->
 
-                   >
+<!--                   >-->
 
-                   <TextView
-                       android:id="@+id/tvEndsWith"
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_marginStart="48dp"
-                       android:alpha=".87"
-                       android:textSize="@dimen/text_size_list_headings"
-                       android:textColor="@color/textColor"
-                       android:layout_marginTop="@dimen/margin_top_divider_blk"
-                       android:layout_marginBottom="@dimen/margin_top_divider_blk"
-                       android:text="Block number that ends with"
-                       app:layout_constraintBottom_toBottomOf="parent"
-                       app:layout_constraintEnd_toStartOf="@+id/imgVEndsWith"
-                       app:layout_constraintStart_toStartOf="parent"
-                       app:layout_constraintTop_toTopOf="parent" />
+<!--                   <TextView-->
+<!--                       android:id="@+id/tvEndsWith"-->
+<!--                       android:layout_width="0dp"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       android:layout_marginStart="48dp"-->
+<!--                       android:alpha=".87"-->
+<!--                       android:textSize="@dimen/text_size_list_headings"-->
+<!--                       android:textColor="@color/textColor"-->
+<!--                       android:layout_marginTop="@dimen/margin_top_divider_blk"-->
+<!--                       android:layout_marginBottom="@dimen/margin_top_divider_blk"-->
+<!--                       android:text="Block number that ends with"-->
+<!--                       app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                       app:layout_constraintEnd_toStartOf="@+id/imgVEndsWith"-->
+<!--                       app:layout_constraintStart_toStartOf="parent"-->
+<!--                       app:layout_constraintTop_toTopOf="parent" />-->
 
-                   <ImageView
-                       android:id="@+id/imgVEndsWith"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"
-                       android:src="@drawable/ic_baseline_arrow_forward_24"
-                       app:layout_constraintBottom_toBottomOf="@+id/tvEndsWith"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:layout_constraintTop_toTopOf="@+id/tvEndsWith" />
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@+id/tvEndsWith"
-                            app:layout_constraintStart_toStartOf="@+id/tvEndsWith"
-                            app:layout_constraintEnd_toEndOf="@+id/tvEndsWith"
-                            android:text="Block numbers like ***9"
-                            />
+<!--                   <ImageView-->
+<!--                       android:id="@+id/imgVEndsWith"-->
+<!--                       android:layout_width="wrap_content"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"-->
+<!--                       android:src="@drawable/ic_baseline_arrow_forward_24"-->
+<!--                       app:layout_constraintBottom_toBottomOf="@+id/tvEndsWith"-->
+<!--                       app:layout_constraintEnd_toEndOf="parent"-->
+<!--                       app:layout_constraintTop_toTopOf="@+id/tvEndsWith" />-->
+<!--                        <TextView-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            app:layout_constraintTop_toBottomOf="@+id/tvEndsWith"-->
+<!--                            app:layout_constraintStart_toStartOf="@+id/tvEndsWith"-->
+<!--                            app:layout_constraintEnd_toEndOf="@+id/tvEndsWith"-->
+<!--                            android:text="Block numbers like ***9"-->
+<!--                            />-->
 
-               </androidx.constraintlayout.widget.ConstraintLayout>
+<!--               </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-               <ImageView
-                   android:id="@+id/imgViewDiderBlock6"
-                   android:layout_width="0dp"
-                   android:layout_height="1dp"
-                   android:layout_marginStart="48dp"
-                   android:layout_marginTop="@dimen/margin_top_divider_blk"
-                   android:alpha="0.12"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockEndsWith"
-                   app:srcCompat="@drawable/horizontal_line_settings"
+<!--               <ImageView-->
+<!--                   android:id="@+id/imgViewDiderBlock6"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="1dp"-->
+<!--                   android:layout_marginStart="48dp"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_divider_blk"-->
+<!--                   android:alpha="0.12"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockEndsWith"-->
+<!--                   app:srcCompat="@drawable/horizontal_line_settings"-->
 
-                   />
+<!--                   />-->
 
-               <androidx.constraintlayout.widget.ConstraintLayout
-                   android:id="@+id/layoutBlockContains"
-                   android:layout_width="0dp"
-                   android:layout_height="wrap_content"
-                   android:clickable="true"
-                   android:focusable="true"
-                   android:foreground="?android:attr/selectableItemBackground"
-                   android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockEndsWith">
+<!--               <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                   android:id="@+id/layoutBlockContains"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:clickable="true"-->
+<!--                   android:focusable="true"-->
+<!--                   android:foreground="?android:attr/selectableItemBackground"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_block_settings_list"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockEndsWith">-->
 
-                   <TextView
-                       android:id="@+id/tvContainsBlk"
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_marginStart="48dp"
-                       android:alpha=".87"
-                       android:textSize="@dimen/text_size_list_headings"
-                       android:textColor="@color/textColor"
-                       android:layout_marginTop="@dimen/margin_top_divider_blk"
-                       android:layout_marginBottom="@dimen/margin_top_divider_blk"
-                       android:text="Block numbers that contains"
-                       app:layout_constraintEnd_toStartOf="@+id/imgVContainsBlk"
-                       app:layout_constraintStart_toStartOf="parent"
-                       app:layout_constraintTop_toTopOf="parent" />
+<!--                   <TextView-->
+<!--                       android:id="@+id/tvContainsBlk"-->
+<!--                       android:layout_width="0dp"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       android:layout_marginStart="48dp"-->
+<!--                       android:alpha=".87"-->
+<!--                       android:textSize="@dimen/text_size_list_headings"-->
+<!--                       android:textColor="@color/textColor"-->
+<!--                       android:layout_marginTop="@dimen/margin_top_divider_blk"-->
+<!--                       android:layout_marginBottom="@dimen/margin_top_divider_blk"-->
+<!--                       android:text="Block numbers that contains"-->
+<!--                       app:layout_constraintEnd_toStartOf="@+id/imgVContainsBlk"-->
+<!--                       app:layout_constraintStart_toStartOf="parent"-->
+<!--                       app:layout_constraintTop_toTopOf="parent" />-->
 
-                   <ImageView
-                       android:id="@+id/imgVContainsBlk"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"
-                       android:src="@drawable/ic_baseline_arrow_forward_24"
-                       app:layout_constraintBottom_toBottomOf="@+id/tvContainsBlk"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:layout_constraintStart_toEndOf="@+id/tvContainsBlk"
-                       app:layout_constraintTop_toTopOf="@+id/tvContainsBlk" />
-                   <TextView
-                       android:id="@+id/tvContainsHint"
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       app:layout_constraintStart_toStartOf="@+id/tvContainsBlk"
-                       app:layout_constraintEnd_toEndOf="@+id/tvContainsBlk"
-                       app:layout_constraintTop_toBottomOf="@+id/tvContainsBlk"
-                       android:hint="Block numbers like ***9***"
+<!--                   <ImageView-->
+<!--                       android:id="@+id/imgVContainsBlk"-->
+<!--                       android:layout_width="wrap_content"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"-->
+<!--                       android:src="@drawable/ic_baseline_arrow_forward_24"-->
+<!--                       app:layout_constraintBottom_toBottomOf="@+id/tvContainsBlk"-->
+<!--                       app:layout_constraintEnd_toEndOf="parent"-->
+<!--                       app:layout_constraintStart_toEndOf="@+id/tvContainsBlk"-->
+<!--                       app:layout_constraintTop_toTopOf="@+id/tvContainsBlk" />-->
+<!--                   <TextView-->
+<!--                       android:id="@+id/tvContainsHint"-->
+<!--                       android:layout_width="0dp"-->
+<!--                       android:layout_height="wrap_content"-->
+<!--                       app:layout_constraintStart_toStartOf="@+id/tvContainsBlk"-->
+<!--                       app:layout_constraintEnd_toEndOf="@+id/tvContainsBlk"-->
+<!--                       app:layout_constraintTop_toBottomOf="@+id/tvContainsBlk"-->
+<!--                       android:hint="Block numbers like ***9***"-->
 
-                       />
+<!--                       />-->
 
-               </androidx.constraintlayout.widget.ConstraintLayout>
+<!--               </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-               <ImageView
-                   android:id="@+id/imgViewDiderBlock7"
-                   android:layout_width="0dp"
-                   android:layout_height="1dp"
-                   android:layout_marginStart="48dp"
-                   android:layout_marginTop="16dp"
-                   android:alpha="0.12"
-                   app:layout_goneMarginTop="16dp"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockContains"
-                   app:srcCompat="@drawable/horizontal_line_settings" />
+<!--               <ImageView-->
+<!--                   android:id="@+id/imgViewDiderBlock7"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="1dp"-->
+<!--                   android:layout_marginStart="48dp"-->
+<!--                   android:layout_marginTop="16dp"-->
+<!--                   android:alpha="0.12"-->
+<!--                   app:layout_goneMarginTop="16dp"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/layoutBlockContains"-->
+<!--                   app:srcCompat="@drawable/horizontal_line_settings" />-->
            </androidx.constraintlayout.widget.ConstraintLayout>
        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
