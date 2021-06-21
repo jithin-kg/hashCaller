@@ -111,9 +111,7 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
                     if(!isLoading){
                         if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
                             //we have reached the bottom
-                            Log.d(TAG, "onScrolled:page: $page, totalsms count $totalSMSCount ")
 //                                if(page+12 <= totalSMSCount ){
-                            pageSpam+=12
                             smsListVIewModel.getNextSmsPage()
                             if(dy > 0){
                                 if(!isSizeEqual){

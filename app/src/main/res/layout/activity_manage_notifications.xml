@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/AppTheme"
+    android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_manage_notifications_scene"
     tools:context=".view.ui.notifications.ManageNotificationsActivity">
 
@@ -98,7 +100,7 @@
                 android:alpha=".80"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_call_white" />
+                app:srcCompat="@drawable/ic_phone_line_dual" />
 
             <Switch
                 android:id="@+id/switchCallBlkNotification"
@@ -148,7 +150,7 @@
                 android:alpha="0.8"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgViewDivierNotification2"
-                app:srcCompat="@drawable/ic_baseline_sms_24" />
+                app:srcCompat="@drawable/ic_message_3_line_dual" />
 
             <Switch
                 android:id="@+id/switchSMSBlkNotifications"

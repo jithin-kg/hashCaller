@@ -1,5 +1,8 @@
 package com.nibble.hashcaller.datastore
 
+import androidx.annotation.Keep
+
+@Keep
 class PreferencesKeys {
     companion object{
         const val TOKEN = "token"
@@ -8,5 +11,9 @@ class PreferencesKeys {
         const val KEY_BLOCK_NON_CONTACT = "block_non_contact_numbers"
         const val SHOW_SMS_IN_SEARCH_RESULT = "show_sms_search_result"
         const val USER_INFO_AVIALABLE_IN_DB ="user_info_avialable_in_db"
+        const val DO_NOT_RECIEVE_SPAM_SMS = "doNotReceiveSpamSMS"
+
+        const val RCV_NOT_BLK_CALL ="rcvntoForBlkCall"
+        const val RCV_NOT_BLK_SMS ="rcvntoForBlkSMS"
     }
 }

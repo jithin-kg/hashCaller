@@ -24,6 +24,7 @@ const val NUMBER_CONTAINING = 1
 const val NUMBER_ENDS_WITH = 2
 const val EXACT_NUMBER = 3
 
+const val SET_DEF_SMS_REQ_CODE = 222
 const val UNMARK_ITEM = 0
 const val MARK_ITEM = 1
 const val EXPAND_LAYOUT = 2 // EXPAND EXPANDABLE LAYOUT

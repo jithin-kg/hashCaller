@@ -69,7 +69,6 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
             observeSMSList()
             observeMutabeLiveData()
             observeSendersInfoFromServer()
-            addScrollListener()
         }
         initListeners()
         observeLoadinState()
@@ -89,7 +88,6 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
                 observeSMSList()
                 observeMutabeLiveData()
                 observeSendersInfoFromServer()
-                addScrollListener()
             }else{
                 this.viewMesages.btnSmsReadPermission.visibility = View.VISIBLE
                 this.viewMesages.tvSMSPermissionInfo.visibility = View.VISIBLE
@@ -158,36 +156,7 @@ class SMSIdentifiedAsSpamFragment : Fragment(), View.OnClickListener {
         })
     }
 
-    private fun addScrollListener() {
-        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-//                if(dy>0){
-                //scrollview scrolled vertically
-                //get the visible item count
-                if(layoutMngr!=null){
-                    val visibleItemCount = layoutMngr!!.childCount
-                    val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
-                    val recyclerViewSize = smsRecyclerAdapter!!.itemCount
-                    if(!isLoading){
-                        if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
-                            //we have reached the bottom
-                            pageOb.pageSpam +=3
-                            viewmodel.getNextSmsPage()
-                            if(dy > 0){
-                                if(!isSizeEqual){
-//                                    viewMesages.shimmer_view_container.visibility = View.VISIBLE
-//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
-                                }
-                            }
-                        }
-                    }
 
-                }
-//                }
-            }
-        })
-    }
     @SuppressLint("LongLogTag")
     private fun observeSMSList() {
         viewmodel.SMS.observe(viewLifecycleOwner, Observer { sms->

@@ -117,7 +117,6 @@ class SMScontainerRepository(
            val list = listOf<CallersInfoFromServer>(info)
 
            smsSenderInfoDAO!!.insert(list)
-           pageOb.page = 0
         }
 
 

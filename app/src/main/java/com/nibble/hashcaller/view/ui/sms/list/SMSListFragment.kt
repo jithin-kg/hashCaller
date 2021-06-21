@@ -97,40 +97,7 @@ class SMSListFragment : Fragment(), View.OnClickListener,
         return  viewMesages
     }
 
-    private fun addScrollListener() {
-        this.recyclerV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-//                if(dy>0){
-                //scrollview scrolled vertically
-                //get the visible item count
-                if(layoutMngr!=null){
-                    val visibleItemCount = layoutMngr!!.childCount
-                    val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
-                    val recyclerViewSize = smsRecyclerAdapter!!.itemCount
-                    if(!isLoading){
-                        if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
-                            //we have reached the bottom
-                            Log.d(TAG, "onScrolled:page: $page, totalsms count $totalSMSCount ")
-//                                if(page+12 <= totalSMSCount ){
-                            page+=12
-//                            smsListVIewModel.getNextSmsPage()
-                            if(dy > 0){
-                                if(!isSizeEqual){
-                                    viewMesages.shimmerViewContainer.visibility = View.VISIBLE
-//                                    viewMesages.rcrViewSMSList.visibility = View.INVISIBLE
-                                }
-//                                    }
-                            }
 
-                        }
-                    }
-
-                }
-//                }
-            }
-        })
-    }
 
 
 //    override fun onCreateContextMenu(
@@ -268,7 +235,6 @@ class SMSListFragment : Fragment(), View.OnClickListener,
 
         observeLive()
         observeMutabeLiveData()
-        addScrollListener()
 
 
 

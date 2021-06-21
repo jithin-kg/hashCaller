@@ -51,6 +51,7 @@ import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.PERMISSION__ONLY_GIVEN
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_AND_PERMISSION_GIVEN
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_ONLY_GIVEN
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.USER_INFO_AVIALABLE_IN_DB
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
@@ -68,6 +69,7 @@ import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
+import com.nibble.hashcaller.view.ui.contacts.isDefaultSMSHandler
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
@@ -1536,6 +1538,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
+        if(!isDefaultSMSHandler()){
+            //this is to make sure that when BlockManageActivity starts the
+                //switch will be in accordance with DefaultSMsHandlerPermission
+            dataStoreViewModel?.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, false)
+        }
 
     }
 

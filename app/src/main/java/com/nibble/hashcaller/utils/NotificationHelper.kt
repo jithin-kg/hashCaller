@@ -31,8 +31,8 @@ class NotificationHelper(
         addNextIntentWithParentStack(resultIntent)
         // Get the PendingIntent containing the entire back stack
         getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-
     }
+
     /**
      * funcftion to handle notificatoin, if call blocked and user preference is to
      * to show notify for blocked calls , then show notification
@@ -50,7 +50,7 @@ class NotificationHelper(
                 .setSmallIcon(R.drawable.ic_baseline_block_red)
                 .setContentTitle("Call Blocked")
                 .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setContentIntent(resultPendingIntent)
                 .setAutoCancel(true)

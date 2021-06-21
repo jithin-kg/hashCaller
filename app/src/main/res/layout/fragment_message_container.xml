@@ -265,7 +265,7 @@
         android:layout_marginEnd="@dimen/bottom_fab_margin"
         android:layout_marginBottom="8dp"
         app:iconTint="@color/colorWhite"
-        app:icon="@drawable/ic_baseline_send_24"
+        app:icon="@drawable/ic_chat_new_line"
         android:backgroundTint="@color/colorPrimary" />
 <!--    <androidx.viewpager.widget.ViewPager-->
 <!--        android:id="@+id/viewPagerMessages"-->

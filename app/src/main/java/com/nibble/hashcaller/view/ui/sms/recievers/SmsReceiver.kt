@@ -14,24 +14,25 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.nibble.hashcaller.R
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.sms.block.BlockedOrSpamSenders
-import com.nibble.hashcaller.local.db.sms.block.IBlockedOrSpamSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.IMutedSendersDAO
 import com.nibble.hashcaller.local.db.sms.mute.MutedSenders
 import com.nibble.hashcaller.utils.notifications.HashCaller
+import com.nibble.hashcaller.view.ui.contacts.getBooleanFromSharedPref
+import com.nibble.hashcaller.view.ui.contacts.isDefaultSMSHandler
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_NAME
 import com.nibble.hashcaller.view.ui.contacts.utils.FROM_SMS_RECIEVER
 
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
 import com.nibble.hashcaller.view.ui.sms.services.SaveSmsService
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.work.formatPhoneNumber
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 /**
  * Broadcast receiver for incomming Sms,and manages notifications
@@ -41,31 +42,35 @@ class SmsReceiver : BroadcastReceiver() {
 
     private val TAG = "__SmsReceiver"
     private var mutedSendersDAO:IMutedSendersDAO? = null
-    private var blockedOrSpamSendersDAO: IBlockedOrSpamSendersDAO? = null
+    private var blockListPatternDAO: BlockedLIstDao? = null
+//    private var blockedOrSpamSendersDAO: IBlockedOrSpamSendersDAO? = null
     private lateinit var notificationManagerCmpt:  NotificationManagerCompat
     override fun onReceive(context: Context, intent: Intent) {
-
+        Log.d(TAG, "onReceive: ")
          mutedSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedSendersDAO() }
-         blockedOrSpamSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
-        page = 0
+        blockListPatternDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
+//         blockedOrSpamSendersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).blockedOrSpamSendersDAO() }
+        GlobalScope.launch {
+            if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
+                notificationManagerCmpt = NotificationManagerCompat.from(context)
+                val bundle = intent.extras
+                if (bundle != null) {
+                    val pdu_Objects = bundle["pdus"] as Array<Any>?
+                    if (pdu_Objects != null) {
+                        for (aObject in pdu_Objects) {
+                            val currentSMS = getIncomingMessage(aObject, bundle)
+                            val senderNo = currentSMS.displayOriginatingAddress
+                            //check if the sender is spammer or muted chat, if muted or spam => no notification should be shown
 
-        if (intent.action == "android.provider.Telephony.SMS_RECEIVED") {
+                            var isMutedAddress = false
+                           val defIsSpam =  async { isBlockedOrSpam(senderNo) }
+                           val defDoNotReceiveSpamSMS =  async {context.getBooleanFromSharedPref(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS)  }
 
-            notificationManagerCmpt = NotificationManagerCompat.from(context)
-
-            val bundle = intent.extras
-            if (bundle != null) {
-                val pdu_Objects = bundle["pdus"] as Array<Any>?
-                if (pdu_Objects != null) {
-                    for (aObject in pdu_Objects) {
-                        val currentSMS = getIncomingMessage(aObject, bundle)
-                        val senderNo = currentSMS.displayOriginatingAddress
-                        //check if the sender is spammer or muted chat, if muted or spam => no notification should be shown
-
-                        var isMutedAddress = false
-                        if(!isBlockedOrSpam(senderNo)){
-                            //if senderNo is not spam or manually blocked
+                            if(!defIsSpam.await() && !defDoNotReceiveSpamSMS.await() && context.isDefaultSMSHandler()){
+                                //if senderNo is not spam or manually blocked and user not enabled not receive sms from
+                                    //blocked or spam senders
                                 isMutedAddress = isMutedUser(senderNo)
+
 //                            Log.d(TAG, "onReceive isBlockedOrMuted: $isBlokcedOrMuted")
                                 if(!isMutedAddress){
                                     val message = currentSMS.displayMessageBody
@@ -77,15 +82,17 @@ class SmsReceiver : BroadcastReceiver() {
                                 saveSmsInInbox(context, currentSMS)
 
 //                        }
-                        }
+                            }
 //
 
+                        }
+                        abortBroadcast()
+                        // End of loop
                     }
-                    abortBroadcast()
-                    // End of loop
                 }
-            }
-        } // bundle null
+            } // bundle null
+        }
+
 
         if(intent.action == "android.provider.Telephony.SMS_DELIVER"){
             Log.d(TAG, "onReceive: action sms deliver")
@@ -98,23 +105,35 @@ class SmsReceiver : BroadcastReceiver() {
      * @param senderNo Phone number of the incoming Sms sender
      * @return Boolean
      */
-    private  fun isBlockedOrSpam(senderNo: String): Boolean {
+    private  suspend fun isBlockedOrSpam(senderNo: String): Boolean {
         var res: BlockedOrSpamSenders? = null
-        val job = GlobalScope.launch {
-            res =  blockedOrSpamSendersDAO!!.find(formatPhoneNumber(senderNo))
-            Log.d(TAG, "isBlockedUser: res in launch is $res")
+        var isSpam = false
+
+            withContext(Dispatchers.IO) {
+//            res =  blockedOrSpamSendersDAO!!.find(formatPhoneNumber(senderNo))
+
+                Log.d(TAG, "isBlockedUser: res in launch is $res")
+                val defBlockExactNumPattern =   async {blockListPatternDAO?.find(senderNo, EXACT_NUMBER)  }
+                try {
+                    if (defBlockExactNumPattern.await()!=null){
+                        isSpam =  true
+                    }else {
+
+                    }
+                }catch (e:Exception){
+                    Log.d(TAG, "isBlockedOrSpam: $e")
+                }
         }
+
         //Here we are running this runblocking because because the if(res != null) check
         //only needs to be processed only after that task is completed
-        runBlocking {
-            job.join()
-            Log.d(TAG, "isBlockedUser: withing runblocking ")
-
-        }
+//        runBlocking {
+//            job.join()
+//            Log.d(TAG, "isBlockedUser: withing runblocking ")
+//
+//        }
         Log.d(TAG, "isBlockedUser: res is $res")
-        if(res != null)
-            return true
-        return false
+        return isSpam
 
 
     }

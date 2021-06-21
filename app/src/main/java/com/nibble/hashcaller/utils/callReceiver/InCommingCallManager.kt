@@ -112,7 +112,7 @@ class InCommingCallManager(
     }
 
 
-     fun endIncommingCall(reason: Int) {
+     suspend fun endIncommingCall(reason: Int) {
          Log.d(TAG, "endIncommingCall: $reason ")
         val c = CallEnder(context)
         if(c.endIncomingCall()){

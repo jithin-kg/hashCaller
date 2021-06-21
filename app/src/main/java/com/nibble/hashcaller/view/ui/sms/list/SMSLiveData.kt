@@ -44,7 +44,6 @@ class SMSLiveData(
         private const val TAG = "__SMSLiveDataFlow"
     }
      private suspend fun getMessages(context: Context): ArrayList<SmsThreadTable> = withContext(Dispatchers.IO){
-         pageOb.page = 0 //set page size to 0 when there is a change in sms
 
 //        SMSViewModel.isLoading.postValue(true)
 

@@ -16,15 +16,19 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CallLog
 import android.provider.ContactsContract
+import android.provider.Telephony
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.fragment.app.FragmentActivity
 import androidx.work.*
+import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactListBinding
+import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.NotificationHelper
@@ -47,7 +51,9 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
+import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
+import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.floating.FloatingService
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
@@ -60,10 +66,14 @@ import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.search.SearchSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
+import com.nibble.hashcaller.view.ui.sms.util.SetAsDefaultSMSSnackbarListener
 import com.nibble.hashcaller.view.utils.SIMAccount
 import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.util.*
 
 
@@ -255,32 +265,54 @@ fun Context.isActivityIncommingCallViewVisible():Boolean{
     return ActivityIncommingCallView.isVisible?:false
 }
 
-fun Context.showNotifcationForSpamCall(reason: Int, phoneNumber: String) {
-    var content = ""
-    Log.d("__Context", "showNotifcationForSpamCall:reason $reason")
-    when(reason){
-        InCommingCallManager.REASON_FOREIGN -> {
-            content = "Call from foreign country blocked."
-        }
-
-        REASON_BLOCK_NON_CONTACT -> {
-            content = "Call from non contact blocked."
-        }
-        REASON_BLOCK_TOP_SPAMMER -> {
-            content  = "Call identified as spam blocked."
-        }
-        REASON_BLOCK_BY_PATTERN -> {
-            content = "Call from black list blocked."
-        }
-
+suspend fun Context.getBooleanFromSharedPref(key: String): Boolean {
+    val wrapedKey =  booleanPreferencesKey(key)
+    val tokenFlow: Flow<Boolean> = blockPreferencesDataStore.data.map {
+        it[wrapedKey]?:false
     }
-    NotificationHelper(true,
-        this)
-        ?.showNotificatification(
-            true,
-            phoneNumber,
-            content
-        )
+    return tokenFlow.first()
+}
+
+fun Context.showSnackBar(anchorView:View,
+                         snackMessage:String,
+                         actionMessage:String,
+                         listener:View.OnClickListener,
+                         duration:Int = Snackbar.LENGTH_INDEFINITE
+                        ){
+    val sBar = Snackbar.make(anchorView, snackMessage, duration)
+    sBar.setAction(actionMessage, listener)
+//    sBar.anchorView = anchorView
+    sBar.show()
+}
+suspend fun Context.showNotifcationForSpamCall(reason: Int, phoneNumber: String) {
+     if(getBooleanFromSharedPref(PreferencesKeys.RCV_NOT_BLK_CALL)){
+         var content = ""
+         Log.d("__Context", "showNotifcationForSpamCall:reason $reason")
+         when(reason){
+             InCommingCallManager.REASON_FOREIGN -> {
+                 content = "Call from foreign country blocked."
+             }
+
+             REASON_BLOCK_NON_CONTACT -> {
+                 content = "Call from non contact blocked."
+             }
+             REASON_BLOCK_TOP_SPAMMER -> {
+                 content  = "Call identified as spam blocked."
+             }
+             REASON_BLOCK_BY_PATTERN -> {
+                 content = "Call from black list blocked."
+             }
+
+         }
+         NotificationHelper(true,
+             this)
+             ?.showNotificatification(
+                 true,
+                 phoneNumber,
+                 content
+             )
+     }
+
 }
 
 /**
@@ -378,7 +410,30 @@ fun Context.isBlockNonContactsEnabled():Boolean{
 }
 
 
+fun Context.isDefaultSMSHandler(): Boolean {
+    var isDefaultSMSHandler = false
+    try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager: RoleManager = this.getSystemService(RoleManager::class.java)
+            // check if the app is having permission to be as default SMS app
+            val isRoleAvailable =
+                roleManager.isRoleAvailable(RoleManager.ROLE_SMS)
+            if (isRoleAvailable) {
+                // check whether your app is already holding the default SMS app role.
+                val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
+                isDefaultSMSHandler = isRoleHeld
+            }
+        } else {
 
+            var isDefault = this.getPackageName() == Telephony.Sms.getDefaultSmsPackage(this)
+            isDefaultSMSHandler = isDefault
+        }
+    }catch (e:java.lang.Exception) {
+        Log.d("__Context", "isDefaultSMSHandler: $e")
+        toast("Unable to identify default SMS role")
+    }
+    return isDefaultSMSHandler
+}
 
 
 /**

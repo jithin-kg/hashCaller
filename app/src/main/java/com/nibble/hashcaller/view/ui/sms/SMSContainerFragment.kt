@@ -38,10 +38,13 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.extensions.requestDefaultSMSrole
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.hasSMSReadPermission
+import com.nibble.hashcaller.view.ui.contacts.isDefaultSMSHandler
+import com.nibble.hashcaller.view.ui.contacts.showSnackBar
 
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
@@ -229,53 +232,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
 
-    private fun addScrollListener() {
-        binding.recyclreviewSMSContainer.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-//                if(dy>0){
-                //scrollview scrolled vertically
-                //get the visible item count
-                if(layoutMngr!=null){
 
-//                   val h =  (toolbarSmS.height!!).toFloat()
-//                    if(dy>0){
-//                        toolbarSmS.animate().translationY(-h)
-//                            .setInterpolator(DecelerateInterpolator()).start()
-//                    }
-//                    else if(dy<0){
-//                        toolbarSmS.animate().translationY(h)
-//                            .setInterpolator(DecelerateInterpolator()).start()
-//                    }
-
-                    val visibleItemCount = layoutMngr!!.childCount
-                    val pastVisibleItem = layoutMngr!!.findFirstCompletelyVisibleItemPosition()
-                    val recyclerViewSize = smsRecyclerAdapter!!.itemCount
-                    if(!isLoading){
-                        if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
-                            //we have reached the bottom
-                            Log.d(TAG, "onScrolled:page: ${pageOb.page}, totalsms count ${pageOb.totalSMSCount} ")
-//                                if(page+12 <= totalSMSCount ){
-                            pageOb.page +=12
-//                            smsListVIewModel.getNextSmsPage()
-                            if(dy > 0){
-
-                                if(!isSizeEqual){
-//                                    binding.shimmer_view_container.visibility = View.VISIBLE
-                                    binding.recyclreviewSMSContainer.beInvisible()
-                                }
-//                                    }
-                            }
-
-
-                        }
-                    }
-
-                }
-//                }
-            }
-        })
-    }
 
 
 
@@ -525,14 +482,21 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
 
     private fun deleteMarkedSMSThreads() {
-        if(checkDefaultSMSHandlerSettings()){
+
+        if(context?.isDefaultSMSHandler() == true){
             deleteSms()
         }else {
+            context?.showSnackBar(
+                binding.MessagesFragment,
+                        getString(R.string.enable_hash_caller_for_sms),
+                       getString(R.string.enable_hash_caller_sms_action),
+                         SetAsDefaultSMSSnackbarListener(this)
+                      )
 
-            val sbar = Snackbar.make((activity as MainActivity).getCorinateLayout(), getString(R.string.enable_hash_caller_for_sms), Snackbar.LENGTH_SHORT)
-            sbar.setAction(getString(R.string.enable_hash_caller_sms_action), SetAsDefaultSMSSnackbarListener(this))
-            sbar.anchorView = (activity as MainActivity).getBottomNavView()
-            sbar.show()
+//            val sbar = Snackbar.make((activity as MainActivity).getCorinateLayout(), getString(R.string.enable_hash_caller_for_sms), Snackbar.LENGTH_SHORT)
+//            sbar.setAction(getString(R.string.enable_hash_caller_sms_action), SetAsDefaultSMSSnackbarListener(this))
+//            sbar.anchorView = (activity as MainActivity).getBottomNavView()
+//            sbar.show()
 //            context?.toast("Not defaul sms handler")
         }
 
@@ -1019,48 +983,12 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     override fun onSetAsDefaultSMSHandlerClicked() {
 
         Log.d(TAG, "onSetAsDefaultSMSHandlerClicked: ")
-        requestDefaultSMSrole()
+       activity?.requestDefaultSMSrole()
         
     }
 
 
-    private fun requestDefaultSMSrole() {
-        var requestCode=  222
-        var resultCode = 232
-        var isDefault = false
-        try{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val roleManager: RoleManager? = context?.getSystemService(RoleManager::class.java)
-                // check if the app is having permission to be as default SMS app
-                val isRoleAvailable =
-                    roleManager?.isRoleAvailable(RoleManager.ROLE_SMS)
-                if (isRoleAvailable == true) {
-                    // check whether your app is already holding the default SMS app role.
-                    val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
-                    if (!isRoleHeld) {
-//                        is not defauls sms app, so show request button
-                        val roleRequestIntent =
-                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
-                        startActivityForResult(roleRequestIntent, requestCode)
-//                            layoutSend.beInvisible()
-//                            btnMakeDefaultSMS.beVisible()
-                    }
-//                    else{
-////                            layoutSend.beInvisible()
-////                            btnMakeDefaultSMS.beVisible()
-//                        requesetPermission()
-//                    }
-                }
-            } else {
-                val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, context?.packageName)
-                startActivityForResult(intent, requestCode)
-            }
-        }catch (e: Exception){
-            Log.d(IndividualSMSActivity.TAG, "checkDefaultSettings: exception $e")
-        }
-//            return isDefault
-    }
+
 
 
 }

@@ -30,7 +30,7 @@ interface BlockedLIstDao {
     suspend fun getAllBLockListPatternList():List<BlockedListPattern>
 
     @Query("SELECT * FROM block_list_pattern WHERE num_pattern =:numberPattern AND type =:type ")
-    suspend fun find(numberPattern: String, type: Int):BlockedListPattern
+    suspend fun find(numberPattern: String, type: Int):BlockedListPattern?
 
     @Query("DELETE FROM  block_list_pattern")
     suspend fun deleteAll()

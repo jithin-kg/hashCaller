@@ -22,6 +22,7 @@
     <string name="dsf">dsf</string>
     <string name="enable_hashcaller_for_sms">Enable Hashcaller for SMS</string>
     <string name="enable_hash_caller_for_sms">Enable Hashcaller for sms</string>
+    <string name="ennable_for_blocking_sms">set HashCaller as Default SMS to block SMS</string>
     <string name="enable_hash_caller_sms_action">Enable</string>
     <string name="hashcaller_name">HashCaller</string>
     <string name="contacts">Contacts</string>

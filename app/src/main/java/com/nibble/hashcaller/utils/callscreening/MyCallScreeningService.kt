@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -14,7 +13,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.i18n.phonenumbers.PhoneNumberUtil
@@ -29,10 +27,7 @@ import com.nibble.hashcaller.utils.callHandlers.base.extensions.parseCountryCode
 import com.nibble.hashcaller.utils.callHandlers.base.extensions.removeTelPrefix
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.internet.InternetChecker
-import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
-import com.nibble.hashcaller.view.ui.MainActivity
-import com.nibble.hashcaller.view.ui.contacts.isReceiveNotificationForSpamCallEnabled
 import com.nibble.hashcaller.view.ui.contacts.showNotifcationForSpamCall
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
@@ -111,7 +106,7 @@ class MyCallScreeningService: CallScreeningService() {
                     this@MyCallScreeningService,
                     DataStoreRepository(blockPreferencesDataStore)
 
-                ) { resToCall: Boolean, reason:Int -> run { respondeToTheCall(resToCall,reason) } }
+                ) { resToCall: Boolean, reason:Int -> run { respondeToTheCallCallback(resToCall,reason) } }
             }
             helper?.handleCall()
 
@@ -148,7 +143,7 @@ class MyCallScreeningService: CallScreeningService() {
         Log.d(TAG, "onUnbind: ")
     }
 
-    fun respondeToTheCall(isEndCall:Boolean, reason:Int){
+    fun respondeToTheCallCallback(isEndCall:Boolean, reason:Int){
         supervisorScope.launch {
             withContext(Dispatchers.Main){
                 if(isEndCall){
@@ -309,33 +304,33 @@ class MyCallScreeningService: CallScreeningService() {
     @SuppressLint("LongLogTag")
     private fun showNotificatification(isBlocked: Boolean, phoneNumber: String) {
         var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(this)
-        if(isBlocked && isReceiveNotificationForSpamCallEnabled()){
-            //show notification
-            val resultIntent = Intent(this, MainActivity::class.java)
-//            resultIntent.putExtra(CONTACT_ADDRES, senderNo)
-
-// Create the TaskStackBuilder
-            val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
-                // Add the intent, which inflates the back stack
-                addNextIntentWithParentStack(resultIntent)
-                // Get the PendingIntent containing the entire back stack
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-
-            }
-            val notification = NotificationCompat
-                .Builder(this, HashCaller.CHANNEL_2_ID )
-                .setSmallIcon(R.drawable.ic_baseline_block_red)
-                .setContentTitle("Call Blocked")
-                .setContentText("Call from $phoneNumber is blocked")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_EVENT)
-                .setContentIntent(resultPendingIntent)
-                .setAutoCancel(true)
-                .build()
-
-            notificationManagerCmpt.notify(2, notification)
-
-        }
+//        if(isBlocked && isReceiveNotificationForSpamCallEnabled()){
+//            //show notification
+//            val resultIntent = Intent(this, MainActivity::class.java)
+////            resultIntent.putExtra(CONTACT_ADDRES, senderNo)
+//
+//// Create the TaskStackBuilder
+//            val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
+//                // Add the intent, which inflates the back stack
+//                addNextIntentWithParentStack(resultIntent)
+//                // Get the PendingIntent containing the entire back stack
+//                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+//
+//            }
+//            val notification = NotificationCompat
+//                .Builder(this, HashCaller.CHANNEL_2_ID )
+//                .setSmallIcon(R.drawable.ic_baseline_block_red)
+//                .setContentTitle("Call Blocked")
+//                .setContentText("Call from $phoneNumber is blocked")
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setCategory(NotificationCompat.CATEGORY_EVENT)
+//                .setContentIntent(resultPendingIntent)
+//                .setAutoCancel(true)
+//                .build()
+//
+//            notificationManagerCmpt.notify(2, notification)
+//
+//        }
     }
 
 

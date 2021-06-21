@@ -42,7 +42,9 @@ import com.nibble.hashcaller.databinding.ActivityIndividualSMSBinding
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.extensions.requestDefaultSMSrole
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.nibble.hashcaller.view.ui.contacts.isDefaultSMSHandler
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -135,7 +137,7 @@ class IndividualSMSActivity : AppCompatActivity(),
 
         contact = contactAddress
         Log.d(TAG, "onCreate: contact is $contact")
-        if(checkContactPermission()){
+        if(checkRequiredPermission()){
             setupBottomSheet()
             observerSmsSent()
             initViewModel()
@@ -186,7 +188,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         })
     }
 
-    private fun checkContactPermission(): Boolean {
+    private fun checkRequiredPermission(): Boolean {
         val permissionContact =
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
         if(permissionContact!= PackageManager.PERMISSION_GRANTED){
@@ -520,49 +522,14 @@ class IndividualSMSActivity : AppCompatActivity(),
         var requestCode=  222
         var resultCode = 232
         var isDefault = false
-        try{
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val roleManager: RoleManager = this.getSystemService(RoleManager::class.java)
-                // check if the app is having permission to be as default SMS app
-                val isRoleAvailable =
-                    roleManager.isRoleAvailable(RoleManager.ROLE_SMS)
-                if (isRoleAvailable) {
-                    // check whether your app is already holding the default SMS app role.
-                    val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
-                    if (!isRoleHeld) {
-//                        is not defauls sms app, so show request button
-//                        val roleRequestIntent =
-//                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
-//                        startActivityForResult(roleRequestIntent, requestCode)
-                       binding.layoutSend.beInvisible()
-                        binding.btnMakeDefaultSMS.beVisible()
-
-                    }else{
-                        binding.layoutSend.beVisible()
-                       binding. btnMakeDefaultSMS.beInvisible()
-
-//                        requesetPermission()
-                    }
-                }
-            } else {
-
-                var isDefault = this.getPackageName() == Telephony.Sms.getDefaultSmsPackage(this)
-                Log.d(TAG, "checkDefaultSettings: isDefault $isDefault")
-                if(isDefault){
-                    binding.layoutSend.beVisible()
-                   binding. btnMakeDefaultSMS.beInvisible()
-                }else{
-                    binding.layoutSend.beInvisible()
-                    binding.btnMakeDefaultSMS.beVisible()
-                }
-
-//
+            if(isDefaultSMSHandler()){
+                binding.layoutSend.beVisible()
+                binding. btnMakeDefaultSMS.beInvisible()
+                isDefault = true
+            }else {
+                binding.layoutSend.beInvisible()
+                binding.btnMakeDefaultSMS.beVisible()
             }
-
-        }catch (e: Exception){
-            Log.d(TAG, "checkDefaultSettings: exception $e")
-        }
 
         return isDefault
     }
@@ -966,42 +933,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         }
     }
 
-    private fun requestDefaultSMSrole() {
-            var requestCode=  222
-            var resultCode = 232
-            var isDefault = false
-            try{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val roleManager: RoleManager = this.getSystemService(RoleManager::class.java)
-                    // check if the app is having permission to be as default SMS app
-                    val isRoleAvailable =
-                        roleManager.isRoleAvailable(RoleManager.ROLE_SMS)
-                    if (isRoleAvailable) {
-                        // check whether your app is already holding the default SMS app role.
-                        val isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_SMS)
-                        if (!isRoleHeld) {
-//                        is not defauls sms app, so show request button
-                        val roleRequestIntent =
-                            roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
-                        startActivityForResult(roleRequestIntent, requestCode)
-//                            layoutSend.beInvisible()
-//                            btnMakeDefaultSMS.beVisible()
-                        }else{
-//                            layoutSend.beInvisible()
-//                            btnMakeDefaultSMS.beVisible()
-                        requesetPermission()
-                        }
-                    }
-                } else {
-                    val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
-                    startActivityForResult(intent, requestCode)
-                }
-            }catch (e: Exception){
-                Log.d(TAG, "checkDefaultSettings: exception $e")
-            }
-//            return isDefault
-    }
+
 
 
     private fun scrollUp() {

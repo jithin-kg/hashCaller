@@ -1,10 +1,9 @@
 package com.nibble.hashcaller.view.ui.manageblock
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
@@ -14,14 +13,17 @@ import com.nibble.hashcaller.databinding.ActivityBlockManageBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.PreferencesKeys
+import com.nibble.hashcaller.utils.extensions.requestDefaultSMSrole
 import com.nibble.hashcaller.view.ui.blockConfig.ActivityCreteBlockListPattern
-import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
+import com.nibble.hashcaller.view.ui.contacts.isDefaultSMSHandler
+import com.nibble.hashcaller.view.ui.contacts.showSnackBar
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.util.SetAsDefaultSMSSnackbarListener
 
 
 class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
-    CompoundButton.OnCheckedChangeListener {
+    CompoundButton.OnCheckedChangeListener, SetAsDefaultSMSSnackbarListener.SnackBarListner {
     private lateinit var binding:ActivityBlockManageBinding
 
 //    private lateinit var sharedpreferences: SharedPreferences
@@ -36,9 +38,9 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         setContentView(binding.root)
 
         initViewmodel()
+        observeSharedPrefValues()
         toggleRequestScreeningRoleBtn()
         initListeners()
-        getSharedPrefValues()
         setToggleButtons()
 
 
@@ -80,7 +82,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockForeignCoutries.isChecked = isBlockForeignCallsEnabled
         binding.blockNotIncontacts.isChecked = isBlockNonContactCallsEnabled
     }
-    private fun getSharedPrefValues() {
+    private fun observeSharedPrefValues() {
 //        sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
 
 //        dataStoreViewmodel.getBoolean()
@@ -92,6 +94,10 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         })
         dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT).observe(this, Observer {
             binding.blockNotIncontacts.isChecked = it
+        })
+        dataStoreViewmodel.getBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS).observe(this, Observer {
+            binding.switchDoNotReceiveSpamSMS.isChecked = it
+
         })
 
     }
@@ -116,13 +122,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-//    private fun writeToSharedPref(key: String, checked: Boolean) {
-//        val sharedPref = this?.getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
-//        with (sharedPref.edit()) {
-//            putBoolean(key, checked)
-//            apply()
-//        }
-//    }
+
 
     companion object{
         const val TAG = "__BlockManageActivity"
@@ -132,6 +132,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockNotIncontacts.setOnCheckedChangeListener(this)
         binding.blockForeignCoutries.setOnCheckedChangeListener(this)
         binding.blockSpammersAuto.setOnCheckedChangeListener(this)
+        binding.switchDoNotReceiveSpamSMS.setOnClickListener(this)
 //        binding.layoutBlockContains.setOnClickListener(this)
 //        binding.layoutBlockEndsWith.setOnClickListener(this)
 //        binding.layoutBlockBeginsWith.setOnClickListener(this)
@@ -139,6 +140,10 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     }
     override fun onClick(v: View?) {
         when(v?.id) {
+            R.id.switchDoNotReceiveSpamSMS -> {
+
+                onDoNotRecieveSpamSmsClicked()
+            }
 //            R.id.layoutBlockContains ->{
 //                startBlockListActivity(NUMBER_CONTAINING)
 //            }
@@ -151,14 +156,38 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-    private fun startBlockListActivity(value: Int) {
-//        val intent = Intent(this, BlockListActivity::class.java)
-//        intent.putExtra(KEY_INTENT_BLOCK_LIST, value )
-//        startActivity(intent)
-        val i = Intent(this, ActivityCreteBlockListPattern::class.java)
-//                i.putExtra("PersonID", personID);
-        i.putExtra(KEY_INTENT_BLOCK_LIST, value)
-        startActivity(i)
+    private fun onDoNotRecieveSpamSmsClicked() {
+        if(binding.switchDoNotReceiveSpamSMS.isChecked){
+            if(isDefaultSMSHandler()){
+                dataStoreViewmodel.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, binding.switchDoNotReceiveSpamSMS.isChecked)
+            }else {
+//                    binding.switchDoNotReceiveSpamSMS.isChecked = false
+//                    showSnackB
+                showSnackBar(
+                    binding.layoutBlockManage,
+                    getString(R.string.ennable_for_blocking_sms),
+                    getString(R.string.enable_hash_caller_sms_action),
+                    SetAsDefaultSMSSnackbarListener(this)
+                )
+                binding.switchDoNotReceiveSpamSMS.isChecked = false
+            }
+        }else {
+            dataStoreViewmodel.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, binding.switchDoNotReceiveSpamSMS.isChecked)
+        }
+
+
+    }
+
+
+
+    override fun onSetAsDefaultSMSHandlerClicked() {
+        requestDefaultSMSrole()
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+            if(resultCode != 0 && requestCode ==SET_DEF_SMS_REQ_CODE){
+                binding.switchDoNotReceiveSpamSMS.isChecked = true
+            }
     }
 
 

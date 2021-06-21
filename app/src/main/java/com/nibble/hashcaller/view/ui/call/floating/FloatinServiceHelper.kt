@@ -169,7 +169,7 @@ class FloatinServiceHelper(
 //    }
 
 
-    private fun endCall(
+    private suspend fun endCall(
         inComingCallManager: InCommingCallManager,
         phoneNumber: String,
         reason:Int
