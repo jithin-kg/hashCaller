@@ -1538,11 +1538,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
-        if(!isDefaultSMSHandler()){
-            //this is to make sure that when BlockManageActivity starts the
-                //switch will be in accordance with DefaultSMsHandlerPermission
-            dataStoreViewModel?.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, false)
-        }
+//        if(!isDefaultSMSHandler()){
+//            //this is to make sure that when BlockManageActivity starts the
+//                //switch will be in accordance with DefaultSMsHandlerPermission
+//            dataStoreViewModel?.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, false)
+//        }
 
     }
 

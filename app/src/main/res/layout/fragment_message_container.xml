@@ -10,7 +10,6 @@
     android:backgroundTint="@color/colorBackground"
     android:id="@+id/MessagesFragment">
 
-
     <Button
         android:id="@+id/btnSMSPermsions"
         android:layout_width="wrap_content"
@@ -58,16 +57,16 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginStart="32dp"
-                    android:layout_marginEnd="4dp"
-                    android:padding="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
                     android:src="@drawable/ic_menu_line"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/searchViewSms"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tvMessages"
+                    />
                 <TextView
-                    android:id="@+id/tvHashCaller"
+                    android:id="@+id/tvMessages"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:fontFamily="@font/roboto"
@@ -81,6 +80,18 @@
                     app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMain"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+                <ImageButton
+                    android:id="@+id/imgBtnSearch"
+                    android:layout_width="@dimen/margin_padding_size_large"
+                    android:layout_height="@dimen/margin_padding_size_large"
+                    android:layout_marginEnd="@dimen/margin_padding_size_large"
+                    android:padding="@dimen/margin_padding_size_small"
+                    android:background="?android:selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/ic_search_line_white"
+                    />
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnTbrMore"
                     android:layout_width="16dp"
@@ -90,7 +101,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrBlock"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnTbrBlock"
-                    app:srcCompat="@drawable/ic_baseline_more_vert" />
+                    app:srcCompat="@drawable/ic_more_2_line_white" />
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/imgBtnTbrBlock"
@@ -98,22 +109,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
                     android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_baseline_block_24"
+                    android:src="@drawable/ic_spam_3_line_white"
                     android:visibility="invisible"
                     app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnTbrMuteSender" />
-
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnTbrMuteSender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_baseline_notifications_off"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"
                     app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete" />
+
+<!--                <androidx.appcompat.widget.AppCompatImageButton-->
+<!--                    android:id="@+id/imgBtnTbrMuteSender"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginEnd="32dp"-->
+<!--                    android:background="?android:selectableItemBackground"-->
+<!--                    android:src="@drawable/ic_baseline_notifications_off"-->
+<!--                    android:visibility="invisible"-->
+<!--                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnTbrDelete"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/imgBtnTbrDelete" />-->
                 <ProgressBar
                     android:id="@+id/pgBarSMSDeleting"
                     android:layout_width="0dp"
@@ -136,10 +147,10 @@
                     android:layout_marginEnd="32dp"
                     android:layout_marginBottom="8dp"
                     android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_delete_blue_24"
+                    android:src="@drawable/ic_delete_bin_5_line_white"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMuteSender"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrBlock"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/tvSelectedCount"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -157,23 +168,23 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/searchViewSms"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:backgroundTint="@color/colorBackground"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:layout_marginStart="24dp"
-                    android:focusedByDefault="false"
-                    android:visibility="invisible"
-                    android:iconifiedByDefault="false"
-                    android:queryBackground="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"
-                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMain"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <EditText-->
+<!--                    android:id="@+id/searchViewSms"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="?android:attr/selectableItemBackground"-->
+<!--                    android:backgroundTint="@color/colorBackground"-->
+<!--                    android:cursorVisible="false"-->
+<!--                    android:focusable="false"-->
+<!--                    android:layout_marginStart="24dp"-->
+<!--                    android:focusedByDefault="false"-->
+<!--                    android:visibility="invisible"-->
+<!--                    android:iconifiedByDefault="false"-->
+<!--                    android:queryBackground="@android:color/transparent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/imgBtnTbrMore"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMain"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -225,36 +236,6 @@
         android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list" />
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabBtnDeleteSMS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:textColor="@color/colorWhite"
-        android:paddingBottom="16dp"
-        android:layout_marginBottom="?attr/actionBarSize"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        app:iconTint="@color/colorWhite"
-        android:visibility="invisible"
-        app:icon="@drawable/ic_delete_white_24"
-        android:backgroundTint="@color/colorPrimary" />
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabBtnDeleteSMSExpanded"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:text="Schedule"
-
-        android:contentDescription="Schedule"
-        android:textColor="@color/colorWhite"
-        android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="@dimen/bottom_fab_margin"
-        app:iconTint="@color/colorWhite"
-        android:visibility="invisible"
-        app:icon="@drawable/ic_delete_white_24"
-        android:backgroundTint="@color/colorPrimary" />
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabSendNewSMS"
         android:layout_width="wrap_content"

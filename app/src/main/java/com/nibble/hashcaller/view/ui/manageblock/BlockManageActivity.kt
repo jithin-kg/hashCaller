@@ -36,14 +36,11 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
         binding = ActivityBlockManageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         initViewmodel()
         observeSharedPrefValues()
         toggleRequestScreeningRoleBtn()
         initListeners()
         setToggleButtons()
-
-
     }
 
     private fun initViewmodel() {
@@ -95,10 +92,10 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT).observe(this, Observer {
             binding.blockNotIncontacts.isChecked = it
         })
-        dataStoreViewmodel.getBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS).observe(this, Observer {
-            binding.switchDoNotReceiveSpamSMS.isChecked = it
-
-        })
+//        dataStoreViewmodel.getBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS).observe(this, Observer {
+////            binding.switchDoNotReceiveSpamSMS.isChecked = it
+//
+//        })
 
     }
 
@@ -132,7 +129,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockNotIncontacts.setOnCheckedChangeListener(this)
         binding.blockForeignCoutries.setOnCheckedChangeListener(this)
         binding.blockSpammersAuto.setOnCheckedChangeListener(this)
-        binding.switchDoNotReceiveSpamSMS.setOnClickListener(this)
+//        binding.switchDoNotReceiveSpamSMS.setOnClickListener(this)
 //        binding.layoutBlockContains.setOnClickListener(this)
 //        binding.layoutBlockEndsWith.setOnClickListener(this)
 //        binding.layoutBlockBeginsWith.setOnClickListener(this)
@@ -140,10 +137,10 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     }
     override fun onClick(v: View?) {
         when(v?.id) {
-            R.id.switchDoNotReceiveSpamSMS -> {
-
-                onDoNotRecieveSpamSmsClicked()
-            }
+//            R.id.switchDoNotReceiveSpamSMS -> {
+//
+//                onDoNotRecieveSpamSmsClicked()
+//            }
 //            R.id.layoutBlockContains ->{
 //                startBlockListActivity(NUMBER_CONTAINING)
 //            }
@@ -157,23 +154,23 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun onDoNotRecieveSpamSmsClicked() {
-        if(binding.switchDoNotReceiveSpamSMS.isChecked){
-            if(isDefaultSMSHandler()){
-                dataStoreViewmodel.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, binding.switchDoNotReceiveSpamSMS.isChecked)
-            }else {
-//                    binding.switchDoNotReceiveSpamSMS.isChecked = false
-//                    showSnackB
-                showSnackBar(
-                    binding.layoutBlockManage,
-                    getString(R.string.ennable_for_blocking_sms),
-                    getString(R.string.enable_hash_caller_sms_action),
-                    SetAsDefaultSMSSnackbarListener(this)
-                )
-                binding.switchDoNotReceiveSpamSMS.isChecked = false
-            }
-        }else {
-            dataStoreViewmodel.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, binding.switchDoNotReceiveSpamSMS.isChecked)
-        }
+//        if(binding.switchDoNotReceiveSpamSMS.isChecked){
+//            if(isDefaultSMSHandler()){
+//                dataStoreViewmodel.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, binding.switchDoNotReceiveSpamSMS.isChecked)
+//            }else {
+////                    binding.switchDoNotReceiveSpamSMS.isChecked = false
+////                    showSnackB
+//                showSnackBar(
+//                    binding.layoutBlockManage,
+//                    getString(R.string.ennable_for_blocking_sms),
+//                    getString(R.string.enable_hash_caller_sms_action),
+//                    SetAsDefaultSMSSnackbarListener(this)
+//                )
+//                binding.switchDoNotReceiveSpamSMS.isChecked = false
+//            }
+//        }else {
+//            dataStoreViewmodel.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, binding.switchDoNotReceiveSpamSMS.isChecked)
+//        }
 
 
     }
@@ -183,12 +180,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     override fun onSetAsDefaultSMSHandlerClicked() {
         requestDefaultSMSrole()
     }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-            if(resultCode != 0 && requestCode ==SET_DEF_SMS_REQ_CODE){
-                binding.switchDoNotReceiveSpamSMS.isChecked = true
-            }
-    }
+
 
 
 }

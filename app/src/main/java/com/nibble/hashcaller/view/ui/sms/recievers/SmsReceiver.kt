@@ -29,6 +29,8 @@ import com.nibble.hashcaller.view.ui.contacts.utils.FROM_SMS_RECIEVER
 
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.view.ui.sms.services.SaveSmsService
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -64,9 +66,11 @@ class SmsReceiver : BroadcastReceiver() {
 
                             var isMutedAddress = false
                            val defIsSpam =  async { isBlockedOrSpam(senderNo) }
-                           val defDoNotReceiveSpamSMS =  async {context.getBooleanFromSharedPref(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS)  }
-
-                            if(!defIsSpam.await() && !defDoNotReceiveSpamSMS.await() && context.isDefaultSMSHandler()){
+//                           val defDoNotReceiveSpamSMS =  async {context.getBooleanFromSharedPref(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS)  }
+                            val isSpam = defIsSpam.await()
+//                            val notReceiveSpamSm = defDoNotReceiveSpamSMS.await()
+                            val defaultSMSHandler =  context.isDefaultSMSHandler()
+                            if(!isSpam && defaultSMSHandler){
                                 //if senderNo is not spam or manually blocked and user not enabled not receive sms from
                                     //blocked or spam senders
                                 isMutedAddress = isMutedUser(senderNo)
@@ -114,9 +118,14 @@ class SmsReceiver : BroadcastReceiver() {
 
                 Log.d(TAG, "isBlockedUser: res in launch is $res")
                 val defBlockExactNumPattern =   async {blockListPatternDAO?.find(senderNo, EXACT_NUMBER)  }
+               val defBlockedByPattern =  async { isSpamInPattern(senderNo) }
+
                 try {
                     if (defBlockExactNumPattern.await()!=null){
                         isSpam =  true
+                    }
+                    else if(defBlockedByPattern.await()){
+                        isSpam = true
                     }else {
 
                     }
@@ -137,6 +146,25 @@ class SmsReceiver : BroadcastReceiver() {
 
 
     }
+
+    private suspend fun isSpamInPattern(phoneNumber: String): Boolean {
+       val blockList =  blockListPatternDAO?.getAllBLockListPatternList()
+       var matches = false
+        blockList?.forEach { item->
+            if(item.type == NUMBER_STARTS_WITH) {
+                matches =   phoneNumber.startsWith(item.numberPattern)
+            }else if(item.type == NUMBER_CONTAINING ){
+                matches =  phoneNumber.contains(item.numberPattern)
+            }else {
+                matches = phoneNumber.endsWith(item.numberPattern)
+            }
+            if(matches){
+                return true
+            }
+        }
+        return false
+    }
+
     /**
      * Returns true if the senderNo is  muted.
      *
@@ -211,12 +239,14 @@ class SmsReceiver : BroadcastReceiver() {
 
     }
 
-    private fun saveSmsInInbox(context: Context, sms: SmsMessage) {
-        val serviceIntent = Intent(context, SaveSmsService::class.java)
-        serviceIntent.putExtra("sender_no", sms.displayOriginatingAddress)
-        serviceIntent.putExtra("message", sms.displayMessageBody)
-        serviceIntent.putExtra("date", sms.timestampMillis)
-        context.startService(serviceIntent)
+    private suspend fun saveSmsInInbox(context: Context, sms: SmsMessage) {
+       withContext(Dispatchers.Main){
+           val serviceIntent = Intent(context, SaveSmsService::class.java)
+           serviceIntent.putExtra("sender_no", sms.displayOriginatingAddress)
+           serviceIntent.putExtra("message", sms.displayMessageBody)
+           serviceIntent.putExtra("date", sms.timestampMillis)
+           context.startService(serviceIntent)
+       }
     }
 
     private fun issueNotification(context: Context, senderNo: String, message: String) {

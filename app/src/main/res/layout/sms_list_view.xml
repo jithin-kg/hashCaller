@@ -89,7 +89,7 @@
         android:layout_height="50dp"
         android:src="@drawable/contact_circular_marked_background"
         android:visibility="invisible"
-        android:elevation="2dp"
+        android:elevation="6dp"
         app:layout_constraintStart_toStartOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintEnd_toEndOf="@+id/textViewSMScontactCrclr"
         app:layout_constraintTop_toTopOf="@+id/textViewSMScontactCrclr"

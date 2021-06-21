@@ -38,6 +38,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
+//todo close window when user takes call and show second windo iff call ended
+//todo now the second activity appears immediately when first window closes
 //const val INTENT_COMMAND = "com.localazy.quicknote.COMMAND"
 const val INTENT_COMMAND_EXIT = "EXIT"
 const val INTENT_COMMAND_NOTE = "NOTE"

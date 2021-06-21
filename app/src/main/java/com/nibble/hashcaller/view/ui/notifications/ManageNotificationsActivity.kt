@@ -45,7 +45,7 @@ class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnChecke
 
     private fun initListeners() {
         binding.switchCallBlkNotification.setOnCheckedChangeListener(this)
-        binding.switchSMSBlkNotifications.setOnCheckedChangeListener(this)
+//        binding.switchSMSBlkNotifications.setOnCheckedChangeListener(this)
     }
 
 
@@ -61,9 +61,9 @@ class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnChecke
             binding.switchCallBlkNotification.isChecked = it
         })
 
-        dataStoreViewmodel.getBoolean(PreferencesKeys.RCV_NOT_BLK_SMS).observe(this, Observer {
-            binding.switchSMSBlkNotifications.isChecked = it
-        })
+//        dataStoreViewmodel.getBoolean(PreferencesKeys.RCV_NOT_BLK_SMS).observe(this, Observer {
+////            binding.switchSMSBlkNotifications.isChecked = it
+//        })
 
     }
 
@@ -76,15 +76,15 @@ class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnChecke
 //                                   SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
 //                                )
             }
-            R.id.switchSMSBlkNotifications ->{
-                dataStoreViewmodel.setBoolean(PreferencesKeys.RCV_NOT_BLK_SMS, binding.switchSMSBlkNotifications.isChecked)
-
-
-//                writeBoolToSharedPref(IS_SMS_BLOCK_NOTIFICATION_ENABLED,
-//                                    isChecked,
-//                                SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
-//                                    )
-            }
+//            R.id.switchSMSBlkNotifications ->{
+//                dataStoreViewmodel.setBoolean(PreferencesKeys.RCV_NOT_BLK_SMS, binding.switchSMSBlkNotifications.isChecked)
+//
+//
+////                writeBoolToSharedPref(IS_SMS_BLOCK_NOTIFICATION_ENABLED,
+////                                    isChecked,
+////                                SHARED_PREF_NOTIFICATOINS_CONFIGURATIONS
+////                                    )
+//            }
         }
     }
 }

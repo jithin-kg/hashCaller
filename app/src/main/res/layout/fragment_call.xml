@@ -102,16 +102,17 @@
 <!--https://www.flaticon.com/free-icon/shield_786447?term=shield&page=1&position=35&page=1&position=35&related_id=786447&origin=search-->
 <!--          attribution <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/imgBtnCallTbrMore"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="@dimen/margin_padding_size_large"
+                android:layout_height="@dimen/margin_padding_size_large"
+                android:padding="@dimen/margin_padding_size_small"
+                android:layout_marginEnd="@dimen/margin_padding_size_large"
                 android:background="?android:selectableItemBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:src="@drawable/ic_shield"
+                android:src="@drawable/ic_search_line_white"
                 />
 
             <androidx.appcompat.widget.AppCompatImageButton

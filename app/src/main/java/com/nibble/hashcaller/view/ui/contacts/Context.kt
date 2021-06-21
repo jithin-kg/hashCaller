@@ -61,6 +61,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
+import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*

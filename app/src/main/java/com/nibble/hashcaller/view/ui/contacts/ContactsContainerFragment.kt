@@ -26,6 +26,7 @@ import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.extensions.startSearchActivity
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -210,7 +211,8 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     private fun initListeners() {
         binding.btnGivecontactPermission.setOnClickListener(this)
-        binding.searchViewContacts.setOnClickListener(this)
+//        binding.searchViewContacts.setOnClickListener(this)
+        binding.imgBtnSearch.setOnClickListener(this)
         binding.imgBtnHamBergerCntct.setOnClickListener(this)
         binding.fabBtn.setOnClickListener(this)
         binding.tvContacts.setOnClickListener(this)
@@ -238,13 +240,14 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     private fun startSearchActivity() {
 
-        val intent = Intent(activity, ActivitySerchContacts::class.java)
-        intent.putExtra("animation", "explode")
-        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
-        val p1 = android.util.Pair(binding.searchViewContacts as View, "editTextTransition")
-
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity, p1)
-        startActivity(intent, options.toBundle())
+//        val intent = Intent(activity, ActivitySerchContacts::class.java)
+//        intent.putExtra("animation", "explode")
+//        Log.d(TAG, "startSearchActivity: $btnSampleTransition")
+//        val p1 = android.util.Pair(binding.searchViewContacts as View, "editTextTransition")
+//
+//        val options = ActivityOptions.makeSceneTransitionAnimation(activity, p1)
+//        startActivity(intent, options.toBundle())
+        activity?.startSearchActivity()
 
 
     }
@@ -262,7 +265,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                 Log.d(TAG, "onClick: delete")
 //                contactViewModel.delteContactsInformation()
             }
-            R.id.tvContacts -> {
+            R.id.imgBtnSearch -> {
                 startSearchActivity()
             }
             R.id.imgBtnHamBergerCntct -> {
@@ -308,24 +311,24 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         user = FirebaseAuth.getInstance().currentUser
         tokenHelper = TokenHelper(user)
 
-        ViewCompat.setTransitionName(
-            binding.searchViewContacts,
-            binding.searchViewContacts.transitionName
-        )
+//        ViewCompat.setTransitionName(
+//            binding.searchViewContacts,
+//            binding.searchViewContacts.transitionName
+//        )
 //        val contextThemeWrapper: Context =
 //            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
 
 
 
-        binding.searchViewContacts.onFocusChangeListener =
-            View.OnFocusChangeListener { view, hasFocus ->
-
-                if (hasFocus) {
-//                if((activity as MainActivity).searchFragment!=null)
-//                    startSearchActivity()
-                }
-            }
-        binding.searchViewContacts.setOnClickListener(this)
+//        binding.searchViewContacts.onFocusChangeListener =
+//            View.OnFocusChangeListener { view, hasFocus ->
+//
+//                if (hasFocus) {
+////                if((activity as MainActivity).searchFragment!=null)
+////                    startSearchActivity()
+//                }
+//            }
+//        binding.searchViewContacts.setOnClickListener(this)
 
     }
 

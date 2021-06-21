@@ -344,56 +344,56 @@
                <!--                android:layout_marginTop="32dp"-->
                <!--                android:layout_height="wrap_content">-->
 
-               <ImageView
-                   android:id="@+id/imgViewDivierBlock4"
-                   android:layout_width="0dp"
-                   android:layout_height="1dp"
-                   android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:layout_marginBottom="@dimen/margin_start_imgv_block_settings"
-                   android:alpha="0.12"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/tvNotInContacts"
-                   app:srcCompat="@drawable/horizontal_line_settings"
-                   />
+<!--               <ImageView-->
+<!--                   android:id="@+id/imgViewDivierBlock4"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="1dp"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_block_settings_list"-->
+<!--                   android:layout_marginBottom="@dimen/margin_start_imgv_block_settings"-->
+<!--                   android:alpha="0.12"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/tvNotInContacts"-->
+<!--                   app:srcCompat="@drawable/horizontal_line_settings"-->
+<!--                   />-->
 
-               <androidx.appcompat.widget.AppCompatImageView
-                   android:id="@+id/imgVSMSBlk"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
-                   android:layout_marginTop="@dimen/margin_top_block_settings_list"
-                   android:src="@drawable/ic_message_3_line_dual"
-                   android:alpha="0.80"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock4" />
+<!--               <androidx.appcompat.widget.AppCompatImageView-->
+<!--                   android:id="@+id/imgVSMSBlk"-->
+<!--                   android:layout_width="wrap_content"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:layout_marginStart="@dimen/margin_start_imgv_block_settings"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_block_settings_list"-->
+<!--                   android:src="@drawable/ic_message_3_line_dual"-->
+<!--                   android:alpha="0.80"-->
+<!--                   app:layout_constraintStart_toStartOf="parent"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/imgViewDivierBlock4" />-->
 
-               <Switch
-                   android:id="@+id/switchDoNotReceiveSpamSMS"
-                   android:layout_width="0dp"
-                   android:layout_height="wrap_content"
-                   android:layout_marginStart="@dimen/img_btn_back_margin"
-                   android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"
-                   android:alpha=".87"
-                   android:text="Do not receive spam SMS"
-                   android:textSize="@dimen/text_size_list_headings"
-                   app:layout_constraintBottom_toBottomOf="@+id/imgVSMSBlk"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toEndOf="@+id/imgVSMSBlk"
-                   app:layout_constraintTop_toTopOf="@+id/imgVSMSBlk"
-                   tools:ignore="HardcodedText,UseSwitchCompatOrMaterialXml" />
+<!--               <Switch-->
+<!--                   android:id="@+id/switchDoNotReceiveSpamSMS"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:layout_marginStart="@dimen/img_btn_back_margin"-->
+<!--                   android:layout_marginEnd="@dimen/margin_start_imgv_block_settings"-->
+<!--                   android:alpha=".87"-->
+<!--                   android:text="Do not receive spam SMS"-->
+<!--                   android:textSize="@dimen/text_size_list_headings"-->
+<!--                   app:layout_constraintBottom_toBottomOf="@+id/imgVSMSBlk"-->
+<!--                   app:layout_constraintEnd_toEndOf="parent"-->
+<!--                   app:layout_constraintStart_toEndOf="@+id/imgVSMSBlk"-->
+<!--                   app:layout_constraintTop_toTopOf="@+id/imgVSMSBlk"-->
+<!--                   tools:ignore="HardcodedText,UseSwitchCompatOrMaterialXml" />-->
 
-               <TextView
-                   android:id="@+id/tvBlockSpamSMS"
-                   android:layout_width="0dp"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="@dimen/margin_top_info_text_block_settings"
-                   android:layout_marginEnd="@dimen/tv_margin_end_block_settings"
-                   android:alpha=".70"
-                   android:text="Enable to not to receive SMS from blocked or spam SMS"
-                   app:layout_constraintEnd_toEndOf="@+id/switchDoNotReceiveSpamSMS"
-                   app:layout_constraintStart_toStartOf="@+id/switchDoNotReceiveSpamSMS"
-                   app:layout_constraintTop_toBottomOf="@+id/switchDoNotReceiveSpamSMS" />
+<!--               <TextView-->
+<!--                   android:id="@+id/tvBlockSpamSMS"-->
+<!--                   android:layout_width="0dp"-->
+<!--                   android:layout_height="wrap_content"-->
+<!--                   android:layout_marginTop="@dimen/margin_top_info_text_block_settings"-->
+<!--                   android:layout_marginEnd="@dimen/tv_margin_end_block_settings"-->
+<!--                   android:alpha=".70"-->
+<!--                   android:text="Enable to not to receive SMS from blocked or spam SMS"-->
+<!--                   app:layout_constraintEnd_toEndOf="@+id/switchDoNotReceiveSpamSMS"-->
+<!--                   app:layout_constraintStart_toStartOf="@+id/switchDoNotReceiveSpamSMS"-->
+<!--                   app:layout_constraintTop_toBottomOf="@+id/switchDoNotReceiveSpamSMS" />-->
 
 <!--               <TextView-->
 <!--                   android:id="@+id/tvBlockByPattern"-->

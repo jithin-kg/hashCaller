@@ -34,6 +34,7 @@ import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys
+import com.nibble.hashcaller.utils.extensions.startSearchActivity
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
@@ -556,8 +557,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 (activity as MainActivity).showDialerFragment()
             }
             R.id.imgBtnCallTbrMore ->{
-                val intent = Intent(activity, BlockManageActivity::class.java)
-                startActivity(intent)
+                activity?.startSearchActivity()
+//                val intent = Intent(activity, BlockManageActivity::class.java)
+//                startActivity(intent)
 //                val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
 //                popup.setOnMenuItemClickListener(this)
 //                popup.show()

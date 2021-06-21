@@ -46,7 +46,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_menu_line"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/searchViewContacts"
+            app:layout_constraintEnd_toStartOf="@+id/tvContacts"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,30 +63,42 @@
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imgBtnHamBergerCntct"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnSearch"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/searchViewContacts"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginBottom="10dp"
-                android:background="#00000000"
-                android:cursorVisible="false"
-                android:drawablePadding="16dp"
-                android:focusable="false"
-                android:visibility="invisible"
-                android:focusedByDefault="false"
-                android:iconifiedByDefault="false"
-                android:queryHint="Search numbers, names"
-                android:transitionName="@string/search_view_transition"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnHamBergerCntct"
+            <ImageButton
+                android:id="@+id/imgBtnSearch"
+                android:layout_width="@dimen/margin_padding_size_large"
+                android:layout_height="@dimen/margin_padding_size_large"
+                android:layout_marginEnd="@dimen/margin_padding_size_large"
+                android:padding="@dimen/margin_padding_size_small"
+                android:background="?android:selectableItemBackground"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBergerCntct"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnHamBergerCntct" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_search_line_white"
+                />
+
+<!--            <EditText-->
+<!--                android:id="@+id/searchViewContacts"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginStart="24dp"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:layout_marginEnd="32dp"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:background="#00000000"-->
+<!--                android:cursorVisible="false"-->
+<!--                android:drawablePadding="16dp"-->
+<!--                android:focusable="false"-->
+<!--                android:visibility="invisible"-->
+<!--                android:focusedByDefault="false"-->
+<!--                android:iconifiedByDefault="false"-->
+<!--                android:queryHint="Search numbers, names"-->
+<!--                android:transitionName="@string/search_view_transition"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/imgBtnHamBergerCntct"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBergerCntct"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/imgBtnHamBergerCntct" />-->
 <!--        </androidx.appcompat.widget.Toolbar>-->
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>

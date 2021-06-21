@@ -2,14 +2,20 @@ package com.nibble.hashcaller.utils.extensions
 
 import android.app.Activity
 import android.app.role.RoleManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Telephony
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.SET_DEF_SMS_REQ_CODE
 
+fun Activity.startSearchActivity() {
+    val intent = Intent(this, SearchActivity::class.java)
+    startActivity(intent)
+}
 fun Activity.requestDefaultSMSrole() {
     var isDefault = false
     try{
