@@ -32,8 +32,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
-import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_RAD_CALLLOG_AND_READ_CONTACTS_PERMISSION
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
@@ -61,7 +61,6 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
@@ -917,6 +916,14 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             INDIVIDUAL_CALL_LOG_ACTIVITY ->{
                  intent = Intent(context, IndividualCallLogActivity::class.java )
                 intent.putExtra(CONTACT_ADDRES, log.numberFormated)
+                intent.putExtra(IntentKeys.FULL_NAME_IN_C_PROVIDER, log.name)
+                intent.putExtra(IntentKeys.FULL_NAME_FROM_SERVER, log.nameFromServer)
+                intent.putExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER, log.thumbnailFromCp)
+                intent.putExtra(IntentKeys.THUMBNAIL_FROM_BB, log.imageFromDb)
+                intent.putExtra(IntentKeys.SPAM_COUNT, log.spamCount)
+                intent.putExtra(IntentKeys.IS_REPORTED_BY_USER, log.isReportedByUser)
+                intent.putExtra(IntentKeys.AVATAR_COLOR, log.color)
+
             }else ->{
              intent = Intent(context, IndividualContactViewActivity::class.java )
         }

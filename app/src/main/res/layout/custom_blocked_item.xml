@@ -9,6 +9,7 @@
     android:animateLayoutChanges="true"
     android:background="@color/colorBackground"
     android:clickable="true"
+    android:paddingTop="@dimen/margin_padding_size_medium"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical">
@@ -60,17 +61,17 @@
         app:layout_constraintStart_toStartOf="@+id/tvBlkType"
         app:layout_constraintTop_toBottomOf="@+id/tvBlkType" />
 
-    <ImageView
-        android:id="@+id/imgVBlkSeperator"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:alpha="0.12"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tvBlkType"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBlkPattern"
-        app:srcCompat="@drawable/horizontal_line" />
+<!--    <ImageView-->
+<!--        android:id="@+id/imgVBlkSeperator"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        android:alpha="0.12"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/tvBlkType"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/textViewBlkPattern"-->
+<!--        app:srcCompat="@drawable/horizontal_line" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

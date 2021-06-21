@@ -37,7 +37,6 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
         blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
         binding = ActivityBlockListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         observeBlocklistLivedata()
         intiListeners()
         initSwipeHandler()

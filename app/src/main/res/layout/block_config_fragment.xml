@@ -3,64 +3,279 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorBackground"
+    android:theme="@style/AppTheme"
     android:layout_marginBottom="?attr/actionBarSize"
-    >
+    android:id="@+id/cordinateLyoutBlk">
+
+
+
+
+    <Button
+        android:id="@+id/btnBlkFragmentPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        android:text="Give permissions"
+        android:textColor="@color/colorWhite"
+        />
+
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbarCall"
-        android:layout_height="100dp"
+        android:id="@+id/appbarBlkContainer"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:elevation="4dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:background="#fff"
-
+        android:background="@color/colorBackgroundAppBar"
         >
+        <!--        <androidx.appcompat.widget.Toolbar-->
+        <!--            android:id="@+id/toolbarCall"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="?attr/actionBarSize"-->
+        <!--            android:background="@drawable/toolbar_background"-->
+        <!--            app:elevation="4dp"-->
+        <!--            android:elevation="4dp"-->
+        <!--            android:layout_margin="4dp"-->
+        <!--            app:contentInsetStartWithNavigation="0dp"-->
+        <!--            app:navigationIcon="@drawable/ic_baseline_menu_24"-->
+        <!--            app:layout_scrollFlags="scroll|enterAlways"-->
+        <!--            >-->
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarBlockConfig"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ToolbarLayoutItemsBlk"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-
-
+            android:layout_height="70dp"
+            android:layout_marginStart="0dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <SearchView
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnHamBrgerBlk"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu_line"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tvCircularAvatar"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="0dp"-->
+            <!--                    android:text="H"-->
+            <!--                    android:gravity="center"-->
+            <!--                    android:textColor="@color/colorWhite"-->
+            <!--                    app:layout_constraintTop_toTopOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    app:layout_constraintStart_toStartOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    app:layout_constraintEnd_toEndOf="@+id/imgBtnAvatarMainCalls"-->
+            <!--                    />-->
+            <TextView
+                android:id="@+id/tvVHashcaller"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:gravity="start"
+                android:text="My blocklist"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                android:layout_marginStart="16dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerBlk"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--https://www.flaticon.com/free-icon/shield_786447?term=shield&page=1&position=35&page=1&position=35&related_id=786447&origin=search-->
+            <!--          attribution <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
+
+            <ImageView
+                android:id="@+id/imgBtnCallTbrMore"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
+                android:background="?android:selectableItemBackground"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_shield"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_delete_blue_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrMore"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrMore" />
+
+            <ProgressBar
+                android:id="@+id/pgBarDeleting"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:indeterminateTint="@color/colorPrimary"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_delete_blue_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintEnd_toEndOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintStart_toStartOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrMuteCaller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_notifications_off"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallUnMuteCaller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_notifications_active_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgBtnCallTbrBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_baseline_block_24"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrDelete"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
+
+            <TextView
+                android:id="@+id/tvCallSelectedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="selected "
+                android:textColor="@color/textColor"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/searchViewCall"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/searchViewCall"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginStart="24dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:backgroundTint="@color/colorBackground"
+                android:cursorVisible="false"
+                android:focusable="false"
                 android:focusedByDefault="false"
-
                 android:iconifiedByDefault="false"
-                android:paddingBottom="10dp"
-                android:queryHint="Search numbers, names" />
-        </androidx.appcompat.widget.Toolbar>
+                android:queryBackground="@android:color/transparent"
+                android:queryHint="Search numbers, names"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrMore"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerBlk"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayoutBlockConfig"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            app:tabGravity="fill"
-            app:tabIndicatorColor="@color/colorPrimaryDark"
-            app:tabIndicatorHeight="2dp"
-            app:tabPaddingBottom="25dp"
-            app:tabMaxWidth="0dp"
-            app:tabMode="fixed" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!--        </androidx.appcompat.widget.Toolbar>-->
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabBtnAddNewBlock"
+    <!--    <androidx.viewpager.widget.ViewPager-->
+    <!--        android:id="@+id/viewPagerCall"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"-->
+    <!--        />-->
+    <!--important android:overScrollMode="never" to remove shadow-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcrViewPtrnList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/recycler_view_padding_bottom"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/contact_list"
+        />
+
+    <!--    /***********/-->
+    <ProgressBar
+        android:id="@+id/pgBarBlockList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        />
+    <!--    <com.facebook.shimmer.ShimmerFrameLayout-->
+    <!--        android:id="@+id/shimmerViewContainerCall"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        android:orientation="vertical"-->
+    <!--        android:visibility="visible"-->
+    <!--        app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+    <!--        app:shimmer_duration="800">-->
+
+    <!--        <androidx.appcompat.widget.LinearLayoutCompat-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:orientation="vertical">-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+    <!--        </androidx.appcompat.widget.LinearLayoutCompat>-->
+    <!--    </com.facebook.shimmer.ShimmerFrameLayout>-->
+
+
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabBtnShowAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:contentDescription="dialpad"
+        android:textColor="@color/colorWhite"
         android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="@dimen/bottom_fab_margin"
+        android:layout_marginBottom="@dimen/margin_padding_size_large"
+        app:iconTint="@color/colorWhite"
+        app:icon="@drawable/ic_baseline_add_white"
         android:backgroundTint="@color/colorPrimary" />
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPagerBlockConfig"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -18,8 +18,8 @@ import com.nibble.hashcaller.view.utils.getRelativeTime
  * Created by Jithin KG on 22,July,2020
  */
 class IndividualCallLogAdapter(
-                               private val  longPresHandler:LongPressHandler, private val context: Context,
-                               private val onContactItemClickListener: (id:String)->Unit
+           private val  longPresHandler:LongPressHandler, private val context: Context,
+           private val onContactItemClickListener: (id:String)->Unit
 ) :
     androidx.recyclerview.widget.ListAdapter<IndividualCallLogObj, RecyclerView.ViewHolder>(SMSIndividualDiffCallback()) {
     private var smsList:MutableList<IndividualCallLogObj>? = mutableListOf()

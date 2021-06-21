@@ -62,36 +62,25 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
-
-                <TextView
-                    android:id="@+id/tvSMSAddress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="TextView"
-                    android:textColor="@color/textColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imgVAvatar"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.619" />
-
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imgVAvatar"
-                    android:layout_width="50dp"
-                    android:layout_height="0dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_marginStart="16dp"
-
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
                     app:layout_constraintStart_toEndOf="@+id/imgBtnBackSmsIndividual"
-                    app:layout_constraintTop_toTopOf="@+id/imgBtnBackSmsIndividual"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout"
+                    app:layout_constraintEnd_toStartOf="@+id/linearLayout"
                     android:elevation="4dp"
                     android:transitionName="contactImageTransition"
                     android:scaleType="centerCrop"
                     />
                 <TextView
-                    android:layout_width="50dp"
-                    android:layout_height="0dp"
+                    android:id="@+id/tvFirstLetter"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:text="A"
+                    android:visibility="invisible"
                     android:gravity="center"
                     android:transitionName="firstLetterTransition"
                     app:layout_constraintTop_toTopOf="@+id/imgVAvatar"
@@ -100,8 +89,42 @@
                     app:layout_constraintEnd_toEndOf="@+id/imgVAvatar"/>
 
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgBtnMoreIndividualHistory"
+                    app:layout_constraintStart_toEndOf="@+id/imgVAvatar"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <TextView
+                        android:id="@+id/tvFullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Name"
+                        android:textColor="@color/textColor"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/tvPhoneNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:paddingTop="4dp"
+                        android:text="Number"
+                        android:textColor="@color/textColor"
+                        android:layout_marginBottom="8dp"
+                        />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <ImageButton
-                    android:id="@+id/imageButton2"
+                    android:id="@+id/imgBtnMoreIndividualHistory"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginEnd="16dp"

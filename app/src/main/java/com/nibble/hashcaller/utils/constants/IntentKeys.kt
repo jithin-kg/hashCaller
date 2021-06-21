@@ -6,6 +6,12 @@ import androidx.annotation.Keep
 class IntentKeys {
     companion object{
         //incomming call view Activity
+        const val FULL_NAME_IN_C_PROVIDER = "fullName"
+        const val FULL_NAME_FROM_SERVER = "nameFromServer"
+        const val THUMBNAIL_FROM_CPROVIDER = "thumbnailFromCProvider"
+        const val THUMBNAIL_FROM_BB = "thumbnailFromDatabase"
+        const val IS_REPORTED_BY_USER = "isReportedByUser"
+        const val AVATAR_COLOR = "color"
         const val FIRST_NAME = "fistName"
         const val LAST_NAME = "lastName"
         const val PHONE_NUMBER = "phoneNumber"
@@ -23,5 +29,6 @@ class IntentKeys {
         const val STOP_FLOATING_SERVICE_AND_WINDOW = "com.nibble.close_service_n_window"
         const val START_FLOATING_SERVICE = "com.nibble.start_floatin_window"
         const val START_FLOATING_SERVICE_FROM_SCREENING_SERVICE = "com.nibble.start_floatin_window_from_screening"
+
     }
 }

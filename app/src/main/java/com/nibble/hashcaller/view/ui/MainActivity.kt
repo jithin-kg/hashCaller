@@ -61,6 +61,7 @@ import com.nibble.hashcaller.utils.crypto.KeyManager
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     //    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsContainerFragment
     private lateinit var searchFragment: SearchFragment
+    private lateinit var blockListFragment: BlockConfigFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
     private lateinit var header:View
@@ -228,6 +230,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                        ft.attach(contactFragment)
                        ft.detach(searchFragment)
                        ft.attach(searchFragment)
+                       ft.detach(blockListFragment)
+                       ft.attach(blockListFragment)
                        ft.commit()
 //                       setFragmentsFromSavedInstanceState(savedInstanceState)
 //                       addAllFragments()
@@ -565,6 +569,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
             this.dialerFragment = DialerFragment()
             this.searchFragment = SearchFragment()
+            this.blockListFragment = BlockConfigFragment()
 //            this.searchFragment =  SearchFragment.newInstance()
 //            setInstancesInApp()
 
@@ -652,6 +657,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             savedInstanceState,
             "searchFragment"
         ) as SearchFragment
+        this.blockListFragment = supportFragmentManager.getFragment(
+            savedInstanceState,
+            "blockListFragment"
+        ) as BlockConfigFragment
+
+
 //        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
 //            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
 //
@@ -688,6 +699,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     showSearchFragment()
                     return@OnNavigationItemSelectedListener true
                 }
+                R.id.bottombaritem_blockList -> {
+                    showBlockConfigFragment()
+                    return@OnNavigationItemSelectedListener true
+                }
 //
             }
             false
@@ -706,6 +721,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
         supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
+        supportFragmentManager.putFragment(outState, "blockListFragment", this.blockListFragment)
+
 
 
 
@@ -858,6 +875,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.add(R.id.frame_fragmentholder, searchFragment)
         hideThisFragment(ft, searchFragment, searchFragment)
 
+        ft.add(R.id.frame_fragmentholder, blockListFragment)
+        hideThisFragment(ft, blockListFragment, blockListFragment)
+
+
+
 //        ft.add(R.id.frame_fragmentholder, blockConfigFragment)
 //        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
 
@@ -902,31 +924,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun showBlockConfigFragment() {
         val ft = supportFragmentManager.beginTransaction()
-//        if (blockConfigFragment.isAdded) { // if the fragment is already in container
-//            ft.show(blockConfigFragment)
-//            unMarkItems()
-//            messagesFragment.showSearchView()
-//
-//        }
-        // Hide fragment contact
-        if (contactFragment.isAdded) {
-            ft.hide(contactFragment)
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
+        if(blockListFragment.isAdded){
+            ft.show(blockListFragment)
+            mainViewmodel.setActiveFragment(blockListFragment)
         }
-//        // Hide fragment call
-        if (callFragment.isAdded) {
-            ft.hide(callFragment)
-        }
-        if(dialerFragment.isAdded){
-            ft.hide(dialerFragment)
-        }
-        if (smsFragment.isAdded) {
-            ft.hide(smsFragment)
-        }
-//        if(searchFragment!=null)
-//        if(searchFragment!!.isAdded){
-//            ft.hide(searchFragment!!)
-//        }
-        // Commit changes
+
         ft.commit()
     }
 
@@ -942,6 +945,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.show(contactFragment)
             mainViewmodel.setActiveFragment(contactFragment)
 //            unMarkItems()
+
             smsFragment.showSearchView()
         }
 //         if(searchFragment!=null)

@@ -28,9 +28,11 @@
         app:showAsAction="ifRoom|withText"
       />
     <item
-        android:id="@+id/spam"
-        android:icon="@drawable/ic_baseline_spam"
-        android:title="Spam" />
+        android:id="@+id/bottombaritem_blockList"
+        android:icon="@drawable/ic_spam_3_line"
+        android:title="My blocklist"
+        app:showAsAction="ifRoom|withText"
+        />
 <!--    <item-->
 <!--        android:id="@+id/bottombaritem_premium"-->
 <!--        android:icon="@drawable/ic_baseline_block_24"-->

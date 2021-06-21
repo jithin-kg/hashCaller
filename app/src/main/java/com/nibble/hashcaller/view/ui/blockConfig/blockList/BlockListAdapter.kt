@@ -2,22 +2,18 @@ package com.nibble.hashcaller.view.ui.blockConfig.blockList
 
 
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.nibble.hashcaller.R
+import com.nibble.hashcaller.databinding.CustomBlockedItemBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
-import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.view.ui.contacts.ContactAdapter
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
 import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
-import kotlinx.android.synthetic.main.block_pattern_list.view.*
-import kotlinx.android.synthetic.main.block_pattern_list.view.tvBlkType
-import kotlinx.android.synthetic.main.custom_blocked_item.view.*
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import kotlin.collections.ArrayList
 
 
@@ -28,11 +24,9 @@ class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPat
     private val TAG: String = "__BlogRecyclerAdapter"
 
     private var items: ArrayList<BlockedListPattern> = ArrayList()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return BlockListViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.custom_blocked_item, parent, false)
-        )
+        val binding = CustomBlockedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return BlockListViewHolder(binding, parent.context)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -62,9 +56,10 @@ class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPat
         return item;
     }
 
-    private class BlockListViewHolder constructor(
-        itemView: View
-    ): RecyclerView.ViewHolder(itemView){
+    private class BlockListViewHolder(
+        private val binding: CustomBlockedItemBinding,
+        private val context: Context
+    ): RecyclerView.ViewHolder(binding.root){
 
 //        val blog_image = itemView.blog_image
 //        val block_title = itemView.textViewBlockedPattern
@@ -87,13 +82,22 @@ class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPat
                 NUMBER_ENDS_WITH -> {
                     text = "Number ends with"
                     firstletter = "L"
+                }else -> {
+                    text = "Exact number"
+                    firstletter = "E"
                 }
+
             }
 
             Log.d(TAG, "bind: ${pattern.numberPattern}")
-            itemView.tvBlkType.text = text
-            itemView.textViewBlkPattern.text = pattern.numberPattern
-            itemView.tvFirstLetterBlk.text = firstletter
+            binding.tvBlkType.text = text
+            binding.textViewBlkPattern.text = pattern.numberPattern
+            binding.tvFirstLetterBlk.text = firstletter
+            binding.root.setOnLongClickListener {
+                context.toast("Please swipe left to delete")
+                 true
+            }
+
 //            block_title.text = pattern.numberPattern
 //            blog_author.setText(blogPost.username)
 
