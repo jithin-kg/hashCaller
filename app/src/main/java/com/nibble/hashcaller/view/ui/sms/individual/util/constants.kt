@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
+import java.util.*
 
 val SPAMMER_TYPE = "spammer_typ"
 val SPAMMER_TYPE_BUSINESS = 1
@@ -288,3 +289,10 @@ fun scrollTOPosition(position:Int, layoutMngr: LinearLayoutManager ){
  */
 var scrollToPositions:MutableList<Int> = mutableListOf()
 var scrollToCount : Int ? = null
+
+fun getRandomColor(): Int {
+    var random = 0
+    val rand = Random()
+    random = rand.nextInt(5 - 1) + 1
+    return random
+}

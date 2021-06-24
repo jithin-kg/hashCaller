@@ -1,7 +1,6 @@
 package com.nibble.hashcaller.view.ui.search
 
 import android.content.Context
-import android.database.Cursor
 import android.graphics.Color
 import android.text.SpannableStringBuilder
 import android.text.style.BackgroundColorSpan
@@ -30,10 +29,15 @@ class AllSearchRepository(
             mapofContacts[formatedNumber] = contact
         }
     }
+    suspend fun getAllContacts(): List<Contact>  = withContext(Dispatchers.IO){
+        return@withContext listofContacts
+    }
 
-    suspend fun searchInContacts(searchTerm: String): MutableList<Contact>  = withContext(Dispatchers.IO){
+    suspend fun searchInContacts(searchTerm: String, isFullResultNeeded: Boolean): MutableList<Contact>  = withContext(Dispatchers.IO){
         var contactsListOfSize3:MutableList<Contact> = mutableListOf()
-        for (contact in listofContacts){
+        val copyList:MutableList<Contact> = mutableListOf()
+        copyList.addAll(listofContacts)
+        for (contact in copyList){
 
             contact.spanStartPosNum = 0
             contact.spanEndPosNum = 0
@@ -44,7 +48,7 @@ class AllSearchRepository(
             if( lowercaseName.contains(searchTerm, true)
 
             ){
-                if(contactsListOfSize3.size >=3){
+                if(contactsListOfSize3.size >=3 && !isFullResultNeeded){
                     break
                 }
                 isTobeAddedToList = true
@@ -53,7 +57,7 @@ class AllSearchRepository(
             }
 
             if(contact.phoneNumber.contains(searchTerm, true)){
-                if(contactsListOfSize3.size >=3){
+                if(contactsListOfSize3.size >=3 && !isFullResultNeeded){
                     break
                 }
                 isTobeAddedToList = true
@@ -177,5 +181,9 @@ class AllSearchRepository(
 
     suspend fun doSomeDelay() = withContext(Dispatchers.IO) {
         delay(100)
+    }
+
+    suspend fun getListOfLimitedContacts(): MutableList<Contact> = withContext(Dispatchers.IO) {
+        return@withContext contactQueryHelper.getAllContacts(true)
     }
 }

@@ -53,4 +53,5 @@
     <string name="create_pattern">Create pattern</string>
     <string name="sms_spam_info">SMS sent by scammers appear hear.</string>
     <string name="calls_spam_info">Calls identified as spam will appear here.</string>
+    <string name="no_result">No result</string>
 </resources>

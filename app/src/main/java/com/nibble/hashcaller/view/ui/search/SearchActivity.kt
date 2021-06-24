@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
@@ -36,9 +35,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.search.SMSSearchAdapter
-import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListenerDelayed
-import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListenerDelayed
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
@@ -232,7 +229,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
             queryStr = newText
 //            this.searchViewmodel.searc
             if(queryStr.isNotEmpty()){
-                searchViewmodel.onQueryTextChanged(newText.toLowerCase())
+                searchViewmodel.onQueryTextChanged(newText.toLowerCase(), true)
                 binding.linearLayoutSearch.beVisible()
                 //this is important to cancel job, or request will be made frequently
 //                searchViewmodel.cancelPrevJob(searchJob).observe(this, Observer {
@@ -388,6 +385,10 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
                 updateSearchPreferences(isChecked)
             }
         }
+    }
+
+    override fun onBackPressed() {
+        finishAfterTransition()
     }
 
     private fun updateSearchPreferences(checked: Boolean) {

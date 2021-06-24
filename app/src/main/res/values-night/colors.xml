@@ -2,6 +2,8 @@
 <resources>
     <color name="colorPrimary">#40ABEE</color>
     <color name="colorBackground">#03141B</color>
+    <color name="search_background_color">#9703141B</color>
+
     <color name="statusBarColor">#AB000000</color>
     <color name="colorPrimaryDark">#AB000000</color>
     <color name="primaryText"> #40ABEE</color>
@@ -63,7 +65,6 @@
     <color name="toolbarBackground">#2E2D2D</color>
     <color name="textcolor_recieved_sms">#ffff</color>
     <color name="divider_color">#7E7B7B</color>
-    <color name="search_background_color">#2D2D2D</color>
     <color name="avatar_circle_bg_color">#dddd</color>
     <color name="icon_color_drawer">#A3FFFFFF</color>
     <color name="icon_filter">#dddd</color>

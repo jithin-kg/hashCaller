@@ -24,9 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.87"
-            motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="120dp" />
+            motion:layout_editor_absoluteY="120dp" />
         <Constraint
             android:elevation="2dp"
             motion:layout_constraintEnd_toEndOf="parent"

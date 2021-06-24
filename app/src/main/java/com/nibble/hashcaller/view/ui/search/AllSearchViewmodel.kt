@@ -17,10 +17,17 @@ class AllSearchViewmodel(
 ) :ViewModel() {
 
     var contactsListOfLivedata:MutableLiveData<List<Contact>> = MutableLiveData()
+    var contactsSearchListLivedata:MutableLiveData<List<Contact>> = MutableLiveData()
+
+
     var smsListOfLivedata:MutableLiveData<List<SMS>> = MutableLiveData()
     private  var defContacts:Deferred<MutableList<Contact>>? = null
     private  var defSMS:Deferred<MutableList<SMS>>? = null
-    fun onQueryTextChanged(searchTerm:String) = viewModelScope.launch {
+
+    /**
+     * @param isFullResultNeeded if set to true get all results else get limited amount of result (3)
+     */
+    fun onQueryTextChanged(searchTerm: String, isFullResultNeeded: Boolean = false) = viewModelScope.launch {
 
 //        libPhoneCodeHelper.getCountryIso( libPhoneCodeHelper.getES164Formatednumber(searchTerm, countryIso = "IN"))
         defContacts?.cancel()
@@ -28,10 +35,10 @@ class AllSearchViewmodel(
 
         emptyAllLists()
 
-        defContacts = async { allSearchRepository.searchInContacts(searchTerm)}
+        defContacts = async { allSearchRepository.searchInContacts(searchTerm, isFullResultNeeded)}
         defSMS = async {  allSearchRepository.searchInSMS(searchTerm) }
         try {
-            contactsListOfLivedata.value =  defContacts?.await()
+            contactsSearchListLivedata.value =  defContacts?.await()
         }catch (e:Exception){
             Log.d(TAG, "onQueryTextChanged: $e")
         }
@@ -52,21 +59,45 @@ class AllSearchViewmodel(
     /**
      * To initialise all contacts, sms, and call logs lists
      * with all info available in cprovider such as name,photothumbnail etc.
+     *  Called from all search activity
      */
     fun initAllLists() = viewModelScope.launch {
         allSearchRepository.setListOfContacts()
         allSearchRepository.setListOfSMS()
     }
 
+    /**
+     * Called from SearchSMSActivity
+     */
+    fun initContactsList()= viewModelScope.launch {
+       val defLimtedList =  async { allSearchRepository.getListOfLimitedContacts() }
+       val fullList =  async { allSearchRepository.setListOfContacts() }
+        try {
+            contactsListOfLivedata.value = defLimtedList.await()
+            fullList.await()
+            contactsListOfLivedata.value = allSearchRepository.getAllContacts()
+
+        }catch (e:Exception){
+            Log.d(TAG, "initContactsList: $e")
+        }
+    }
+
     fun emptyAllLists() = viewModelScope.launch{
-        contactsListOfLivedata.value = emptyList()
+        contactsSearchListLivedata.value = emptyList()
         smsListOfLivedata.value = emptyList()
 
     }
 
+
+
     fun getDefaultCountry(countryCodeHelper: CountrycodeHelper):LiveData<String> = liveData {
         emit(countryCodeHelper.getCountryISO())
     }
+
+    fun setFullContactsList() = viewModelScope.launch {
+        contactsListOfLivedata.value = allSearchRepository.getAllContacts()
+    }
+
 
 //    fun cancelPrevJob(searchJob: Job?) :LiveData<Int> = liveData{
 //        try {

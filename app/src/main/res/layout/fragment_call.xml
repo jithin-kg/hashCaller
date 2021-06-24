@@ -106,7 +106,7 @@
                 android:id="@+id/imgBtnCallTbrMore"
                 android:layout_width="@dimen/margin_padding_size_large"
                 android:layout_height="@dimen/margin_padding_size_large"
-                android:padding="@dimen/margin_padding_size_small"
+                android:padding="@dimen/margin_padding_size_medium"
                 android:layout_marginEnd="@dimen/margin_padding_size_large"
                 android:background="?android:selectableItemBackground"
                 app:layout_constraintBottom_toBottomOf="parent"

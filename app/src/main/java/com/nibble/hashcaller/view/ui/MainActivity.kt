@@ -83,6 +83,7 @@ import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.search.SMSSearchFragment
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
@@ -122,6 +123,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var blockListFragment: BlockConfigFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
+    private lateinit var smsSearchFragment: SMSSearchFragment
+
     private lateinit var header:View
     private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
     private lateinit var firstLetterView:TextView
@@ -147,6 +150,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 
+
 //    private  var _rcfirebaseAuth: FirebaseAuth? = null
 //    private  val rcfirebaseAuth get() =  _rcfirebaseAuth!!
 //    private  var _rcAuthStateListener: FirebaseAuth.AuthStateListener? = null
@@ -160,6 +164,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
+    private lateinit var hashCallerViewModel: HashCallerViewModel
+
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -217,6 +223,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                   ft.remove(fullScreenFragment)
 //                   ft.show(callFragment)
 //                   ft.commit()
+
                    binding = ActivityMainBinding.inflate(layoutInflater)
                     setContentView(binding.root)
                    initMainActivityComponents()
@@ -236,6 +243,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                        ft.attach(searchFragment)
                        ft.detach(blockListFragment)
                        ft.attach(blockListFragment)
+                       ft.detach(smsSearchFragment)
+                       ft.attach(smsSearchFragment)
                        ft.commit()
 //                       setFragmentsFromSavedInstanceState(savedInstanceState)
 //                       addAllFragments()
@@ -394,7 +403,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        setStatusBarColor(this)
 //        binding = ActivityMainBinding.inflate(layoutInflater)
 //        setContentView(binding.root)
-
+        initHashCallerViewmodel()
+        initColors()
         setAllMenuItems()
 
 
@@ -422,6 +432,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         initListeners()
 
         setupBottomMenuIconsBasedOnTheme()
+
+    }
+
+    private fun initColors() {
+        hashCallerViewModel.initColors()
+
+    }
+
+    private fun initHashCallerViewmodel() {
+//        hashCallerViewModel = ViewModelProvider.AndroidViewModelFactory(application).create(HashCallerViewModel::class.java)
+        hashCallerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(HashCallerViewModel::class.java)
 
     }
 
@@ -574,6 +595,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this.dialerFragment = DialerFragment()
             this.searchFragment = SearchFragment()
             this.blockListFragment = BlockConfigFragment()
+            smsSearchFragment = SMSSearchFragment.newInstance()
 //            this.searchFragment =  SearchFragment.newInstance()
 //            setInstancesInApp()
 
@@ -666,6 +688,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             "blockListFragment"
         ) as BlockConfigFragment
 
+        this.smsSearchFragment = supportFragmentManager.getFragment(
+            savedInstanceState,
+            "smsSearchFragment"
+        ) as SMSSearchFragment
+
+
+
 
 //        if(supportFragmentManager.getFragment(savedInstanceState, "searchFragment") !=null){
 //            this.searchFragment = supportFragmentManager.getFragment(savedInstanceState, "searchFragment") as SearchFragment
@@ -726,6 +755,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
         supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
         supportFragmentManager.putFragment(outState, "blockListFragment", this.blockListFragment)
+        supportFragmentManager.putFragment(outState, "smsSearchFragment", this.smsSearchFragment)
 
 
 
@@ -882,6 +912,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.add(R.id.frame_fragmentholder, blockListFragment)
         hideThisFragment(ft, blockListFragment, blockListFragment)
 
+        ft.add(R.id.frame_fragmentholder, smsSearchFragment)
+        hideThisFragment(ft, smsSearchFragment, smsSearchFragment)
+
+
+
 
 
 //        ft.add(R.id.frame_fragmentholder, blockConfigFragment)
@@ -968,6 +1003,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //
         ft.commit()
     }
+    fun showSMSSearchFragment() {
+        val ft = supportFragmentManager.beginTransaction()
+        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
+
+        if (smsSearchFragment.isAdded) { // if the fragment is already in container
+            ft.show(smsSearchFragment)
+            mainViewmodel.setActiveFragment(smsSearchFragment)
+        }
+//
+        ft.commit()
+        binding.bottomNavigationView.beGone()
+        binding.navView.beGone()
+    }
     fun showSearchFragment() {
         toggleBottomMenuIcons(showSearchFragment = true)
         val ft = supportFragmentManager.beginTransaction()
@@ -978,19 +1026,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.show(searchFragment)
             mainViewmodel.setActiveFragment(searchFragment)
         }
-//         if(searchFragment!=null)
-//             if(searchFragment!!.isAdded){
-//                 ft.hide(searchFragment!!)
-//             }
-//        // Commit changes
-        /**
-         * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
-         */
         val intent = intent
         intent.getByteArrayExtra("key")
-//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-//            .build()
-//        WorkManager.getInstance().enqueue(request)
 //
         ft.commit()
     }
@@ -1012,10 +1049,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.commit()
     }
 
-    private fun showMessagesFragment() {
+     fun showMessagesFragment() {
 
 //        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
+//        if( mainViewmodel.getActiveFragment() == smsSearchFragment){
+//            smsSearchFragment.
+//        }
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
         if (smsFragment.isAdded) { // if the fragment is already in container
 //            ft.addToBackStack(messagesFragment.javaClass.name)
@@ -1024,7 +1064,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 //            setDefaultFragment(R.id.bottombaritem_messages)
-
+        binding.bottomNavigationView.beVisible()
+        binding.navView.beVisible()
         }
         // Hide fragment B
 //        if (blockConfigFragment.isAdded) {
@@ -1164,7 +1205,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                markingStarted = false
             }
             else{
-                super.onBackPressed()
+//                super.onBackPressed()
+                finishAfterTransition()
             }
 
         }
@@ -1175,9 +1217,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 }
 //                callFragment.showSearchView()
 //                callFragment.updateSelectedItemCount()
-            }else{
-                super.onBackPressed()
+        }
+
+            else{
+//                super.onBackPressed()
+                finishAfterTransition()
             }
+        }
+        else if(smsSearchFragment.isVisible){
+            showMessagesFragment()
+
         }
 
         else{
@@ -1193,7 +1242,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //
 //                }
 
-            super.onBackPressed()
+//            super.onBackPressed()
+            finishAfterTransition()
 
         }
 

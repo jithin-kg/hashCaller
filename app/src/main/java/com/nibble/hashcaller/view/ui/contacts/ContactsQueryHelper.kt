@@ -7,14 +7,12 @@ import com.nibble.hashcaller.work.formatPhoneNumber
 
 class ContactsQueryHelper(private val context: Context?) {
 
-    suspend fun getAllContacts(): MutableList<Contact> {
+    suspend fun getAllContacts(isLimitedContactsNeeded:Boolean = false): MutableList<Contact> {
         val listOfContacts = mutableListOf<Contact>()
         val setOfContacts = mutableSetOf<String>()
-        val cursor =  context?.getAllContactsCursor()
+        val cursor =  context?.getAllContactsCursor(isLimitedContactsNeeded)
         try {
-
             if(cursor != null && cursor.moveToFirst()){
-
                 do{
                     var id = cursor.getString(0).toLong()
                     var name = cursor.getString(1)

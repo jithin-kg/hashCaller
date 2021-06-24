@@ -27,7 +27,6 @@ import com.nibble.hashcaller.local.db.blocklist.BlockTypes
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
-import com.nibble.hashcaller.view.ui.contacts.getRandomColor
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil

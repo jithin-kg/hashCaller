@@ -585,8 +585,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //                addToBlockList()
 //            }
             R.id.fabSendNewSMS -> {
+                (activity as MainActivity).showSMSSearchFragment()
+//                startSMSSearchActivity()
                 Log.d(TAG, "onClick: fabSendNewSMS")
-                this.viewmodel?.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
+//                this.viewmodel?.deleteAllSmsindb() // JUST FOR TESTING PURPOSE
 //                val i = Intent(context, ContactSelectorActivity::class.java )
 //                i.putExtra(DESTINATION_ACTIVITY, INDIVIDUAL_SMS_ACTIVITY)
 //                startActivity(i)
@@ -611,6 +613,11 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             }
         }
+    }
+
+    private fun startSMSSearchActivity() {
+        val intent = Intent(context, SearchSMSActivity::class.java)
+        startActivity(intent)
     }
 
     private fun setSpammerTypeBasedOnRadio(v: View) {

@@ -53,7 +53,6 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
-import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
 import com.nibble.hashcaller.view.ui.call.floating.FloatingService
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
@@ -61,13 +60,11 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactLiveData
 import com.nibble.hashcaller.view.ui.contacts.utils.QUERY_STRING
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
-import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.search.SearchSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.SMSContract
-import com.nibble.hashcaller.view.ui.sms.util.SetAsDefaultSMSSnackbarListener
 import com.nibble.hashcaller.view.utils.SIMAccount
 import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -133,8 +130,10 @@ fun Context.getAllCallLogsCursor(): Cursor? {
     }
     return cursor
 }
-fun Context.getAllContactsCursor(): Cursor? {
+fun Context.getAllContactsCursor(isLimitedListNeeded:Boolean = false): Cursor? {
     var cursor:Cursor? = null
+    var  sortOrder: String = ""
+
 
     if(hasReadContactsPermission()){
         val projection = arrayOf(
@@ -144,12 +143,17 @@ fun Context.getAllContactsCursor(): Cursor? {
             ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
             ContactsContract.Contacts.PHOTO_URI
         )
+        if(isLimitedListNeeded){
+            sortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " COLLATE NOCASE ASC LIMIT 30"
+        }else {
+            sortOrder =  ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " COLLATE NOCASE ASC"
+        }
         cursor =  contentResolver.query(
             ContactLiveData.URI,
             projection,
             null,
             null,
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " COLLATE NOCASE ASC"
+            sortOrder
         )
     }
     return  cursor
@@ -467,12 +471,12 @@ fun Context.makeCall(num:String){
 
 
 
-fun Context.getRandomColor(): Int {
-    var random = 0
-    val rand = Random()
-    random = rand.nextInt(5 - 1) + 1
-    return random
-}
+//fun Context.getRandomColor(): Int {
+//    var random = 0
+//    val rand = Random()
+//    random = rand.nextInt(5 - 1) + 1
+//    return random
+//}
 
 fun Context.generateCircleView(num:Int?=null): Drawable? {
     var random = 0
