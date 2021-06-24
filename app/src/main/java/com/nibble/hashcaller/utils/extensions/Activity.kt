@@ -5,9 +5,13 @@ import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.provider.Telephony
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.SET_DEF_SMS_REQ_CODE
@@ -50,4 +54,15 @@ fun Activity.requestDefaultSMSrole() {
         android.util.Log.d("__Activity", "checkDefaultSettings: exception $e")
     }
 //            return isDefault
+}
+
+fun Activity.startIndividualSMSActivityByAddress(address: String, view: View) {
+    val intent = Intent(this, IndividualSMSActivity::class.java )
+    val bundle = Bundle()
+    bundle.putString(CONTACT_ADDRES, address)
+    bundle.putString(SMS_CHAT_ID, "")
+
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+    intent.putExtras(bundle)
+    startActivity(intent)
 }

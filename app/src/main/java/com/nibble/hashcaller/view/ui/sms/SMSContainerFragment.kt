@@ -39,6 +39,7 @@ import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.extensions.requestDefaultSMSrole
+import com.nibble.hashcaller.utils.extensions.startIndividualSMSActivityByAddress
 import com.nibble.hashcaller.utils.extensions.startSearchActivity
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
@@ -434,7 +435,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 
             }else ->{
             if(viewmodel?.getmarkedItemSize() == 0){
-                startIndividualSMSActivity(address, view)
+               requireActivity().startIndividualSMSActivityByAddress(address, view)
+//                startIndividualSMSActivity(address, view)
 
             }else{
                 return markItem(threadId, clickType, position, address)

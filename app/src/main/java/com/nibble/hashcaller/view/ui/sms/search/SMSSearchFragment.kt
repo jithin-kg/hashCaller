@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.databinding.FragmentSMSSearchBinding
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.extensions.startIndividualSMSActivityByAddress
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.hasReadContactsPermission
 import com.nibble.hashcaller.view.ui.search.AllSearchInjectorUtil
 import com.nibble.hashcaller.view.ui.search.AllSearchViewmodel
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -65,28 +67,28 @@ class SMSSearchFragment : Fragment() , IDefaultFragmentSelection, ITextChangeLis
         searchAdapter?.setList(it)
         binding.pgBarSMSSearch.beGone()
         if(it.isNotEmpty()) {
-            binding.reclrSmsSearchResult.beVisible()
+//            binding.reclrSmsSearchResult.beVisible()
             binding.tvNoResult.beGone()
         }else {
-            binding.reclrSmsSearchResult.beGone()
+//            binding.reclrSmsSearchResult.beGone()
             binding.tvNoResult.beVisible()
         }
     })
     }
     private fun observeContactsList() {
         allSearchViewmodel.contactsListOfLivedata.observe(viewLifecycleOwner, Observer {
-              if (isFirstTimeOpening){
+//              if (isFirstTimeOpening){
                   fullContactAdapter?.setList(it)
                   isFirstTimeOpening = false
                   binding.pgBarSMSSearch.beGone()
                   if(it.isNotEmpty()) {
-                      binding.reclrSmsSearchResult.beVisible()
+//                      binding.reclrSmsSearchResult.beVisible()
                       binding.tvNoResult.beGone()
                   }else {
-                      binding.reclrSmsSearchResult.beGone()
-                      binding.tvNoResult.beVisible()
+//                      binding.reclrSmsSearchResult.beGone()
+//                      binding.tvNoResult.beVisible()
                   }
-              }
+//              }
 
 
         })
@@ -113,9 +115,10 @@ class SMSSearchFragment : Fragment() , IDefaultFragmentSelection, ITextChangeLis
                 binding.pgBarSMSSearch.beVisible()
                 allSearchViewmodel.onQueryTextChanged(newText.toLowerCase(), true)
             }else {
-                binding.reclrFullContacts.beVisible()
                 binding.reclrSmsSearchResult.beGone()
-                allSearchViewmodel.setFullContactsList()
+                binding.reclrFullContacts.beVisible()
+
+//                allSearchViewmodel.setFullContactsList()
                 binding.pgBarSMSSearch.beInvisible()
             }
         }
@@ -123,14 +126,15 @@ class SMSSearchFragment : Fragment() , IDefaultFragmentSelection, ITextChangeLis
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        binding.reclrSmsSearchResult.beGone()
         binding.reclrFullContacts.beVisible()
+        binding.reclrSmsSearchResult.beGone()
+
         if(!hidden && !this::allSearchViewmodel.isInitialized){
             if (requireContext()?.hasReadContactsPermission()) {
                 initViewModel()
                 initContactsList()
-                observeSearchResult()
                 observeContactsList()
+                observeSearchResult()
 
 
             }
@@ -180,13 +184,21 @@ class SMSSearchFragment : Fragment() , IDefaultFragmentSelection, ITextChangeLis
 
         binding.reclrFullContacts.layoutManager = CustomLinearLayoutManager(requireContext())
         binding.reclrFullContacts.adapter = this.fullContactAdapter
+        binding.reclrFullContacts.itemAnimator = null
     }
     private fun onContactItemClicked(
         binding: ContactSearchResultItemBinding,
         contactItem: Contact,
         clickType: Int
     ){
-
+        when(clickType){
+            TYPE_CLICK -> {
+                requireActivity().startIndividualSMSActivityByAddress(
+                    contactItem.phoneNumber,
+                    binding.root
+                    )
+            }
+        }
 
     }
     companion object {

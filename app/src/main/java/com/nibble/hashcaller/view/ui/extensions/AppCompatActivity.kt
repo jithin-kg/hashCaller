@@ -6,6 +6,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.DisplayMetrics
 import android.view.View
@@ -13,12 +14,17 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
+import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
+import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 
 fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
     return dm
 }
+
+
 fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
 
     val popup = PopupMenu(this, anchorView )

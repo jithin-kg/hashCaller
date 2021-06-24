@@ -143,7 +143,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
     }
 
     private fun observeContactsList() {
-        searchViewmodel.contactsListOfLivedata.observe(this, Observer {
+        searchViewmodel.contactsSearchListLivedata.observe(this, Observer {
             contactsRecyclerAdapter?.setList(it)
             if(it.isNotEmpty()) {
                   binding.recyclerViewContacts.beVisible()
@@ -229,7 +229,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
             queryStr = newText
 //            this.searchViewmodel.searc
             if(queryStr.isNotEmpty()){
-                searchViewmodel.onQueryTextChanged(newText.toLowerCase(), true)
+                searchViewmodel.onQueryTextChanged(newText.toLowerCase(), false)
                 binding.linearLayoutSearch.beVisible()
                 //this is important to cancel job, or request will be made frequently
 //                searchViewmodel.cancelPrevJob(searchJob).observe(this, Observer {
