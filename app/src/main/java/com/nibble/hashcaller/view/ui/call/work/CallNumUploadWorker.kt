@@ -112,19 +112,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                            var formated = formatPhoneNumber(cntct.hash)
 
                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
-//                           val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-//                               contactAddress = formated,
-//                               spammerType = 0,
-//                               firstName = cntct.firstName?:"",
-//                               informationReceivedDate =Date(),
-//                               spamReportCount =  cntct.spamCount,
-//                               isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
-//                               thumbnailImg = cntct.imageThumbnail?:"",
-//                               carrier = cntct.carrier,
-//                               country = cntct.country,
-//                               city =cntct.location
-//                           )
-
                            callersInfoFromServerDAO?.updateByHash(
                                hashedNum = cntct.hash,
                                spamCount = cntct.spamCount,
@@ -178,7 +165,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                hashedAddress = hashUsingArgon(hashedAddress)
                 hashedAddress?.let {hashed->
-                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashed))
+                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(hashed))
                     insertIntoListSetUploadingStatus(
                         caller.number,
                         hashed,
@@ -191,7 +178,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                    hashedAddress = hashUsingArgon(hashedAddress)
                     hashedAddress?.let {hashed->
-                        callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashed))
+                        callersListTobeSendToServer.add(ContactAddressWithHashDTO( hashed))
                         insertIntoListSetUploadingStatus(
                             caller.number,
                             hashed,

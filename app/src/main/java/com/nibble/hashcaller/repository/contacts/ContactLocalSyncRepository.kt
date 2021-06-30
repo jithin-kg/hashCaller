@@ -220,6 +220,7 @@ class ContactLocalSyncRepository(
         contactLisDAO?.delete()
         HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO().deleteAll()
         HashCallerDatabase.getDatabaseInstance(context).callLogDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).smsThreadsDAO().deleteAll()
 
     }
 

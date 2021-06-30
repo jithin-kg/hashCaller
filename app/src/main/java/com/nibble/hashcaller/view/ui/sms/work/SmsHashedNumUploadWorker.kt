@@ -17,6 +17,7 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
+import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.nibble.hashcaller.view.ui.sms.util.SMS
@@ -52,6 +53,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val smsRepository:SMSWorkerRepository = SMSWorkerRepository(context, libCountryHelper,countryCodeHelper )
     private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
 
+
     private val repository: SMScontainerRepository = SMScontainerRepository(
         context,
         sMSSendersInfoFromServerDAO,
@@ -66,8 +68,21 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private lateinit var senderListChuckOfSize12: List<List<ContactAddressWithHashDTO>>
     private val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
     private val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
+    val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
+    val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
 
-
+    val callContainerRepository =
+        CallContainerRepository(
+            context,
+            callersInfoFromServerDAO,
+            mutedCallersDAO,
+            callLogDAO,
+            DataStoreRepository(context.tokeDataStore),
+            tokenHelper,
+            smsThreadsDAO,
+            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+            CountrycodeHelper(context).getCountryISO()
+        )
 
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO) {
@@ -96,41 +111,70 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
             if(senderListChuckOfSize12.isNotEmpty()){
                 for (senderInfoSublist in senderListChuckOfSize12){
 
-                    val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+
+                    val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
 
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
-                    var smsSenderlistToBeSavedToLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
 
-                    if(result?.body() != null){
-                        for(cntct in result?.body()!!.contacts){
-                            val formatedNum = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countryCodeIso)
+                    if(result!=null){
+                        for(cntct in result?.body()?.contacts!!){
+                            var formated = formatPhoneNumber(cntct.hash)
 
-                            //todo add carrier information and geolocation info for number
-                            var hashedAddress:String? = Secrets().managecipher(context.packageName,formatedNum)
-//                            val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
-//                                formatedNum, hashedNum = hashedAddress!!,
-//                                spammerType = 0,
-//                                firstName = cntct.name,
-//                               "",
-//                                Date(),
-//                                )
-//                            callerInfoFromServerDAO?.updateByHash(
-//                                hashedNum = cntct.hash,
-//                                spamCount = cntct.spamCount,
-//                                firstName = cntct.firstName,
-//                                lastName = "cntct.lastName",
-//                                date = Date(),
-//                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
-//                                thumbnailImg = cntct.imageThumbnail?:"",
-//                                city = cntct.location,
-//                                carrier = cntct.carrier
-//
-//                            )
-//                            smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
+                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+                            callersInfoFromServerDAO?.updateByHash(
+                                hashedNum = cntct.hash,
+                                spamCount = cntct.spamCount,
+                                firstName = cntct.firstName,
+                                lastName = "cntct.lastName",
+                                date = Date(),
+                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                                thumbnailImg = cntct.imageThumbnail?:"",
+                                city = cntct.location,
+                                carrier = cntct.carrier
+
+                            )
+
+//                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                         }
                     }
+//                    val result = smsContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+//
+//                    if(result?.code() in (500..599)){
+//                        return@withContext Result.retry()
+//                    }
+//                    var smsSenderlistToBeSavedToLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+
+//                    if(result?.body() != null){
+//                        for(cntct in result?.body()!!.contacts){
+//                            val formatedNum = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countryCodeIso)
+//
+//                            //todo add carrier information and geolocation info for number
+//                            var hashedAddress:String? = Secrets().managecipher(context.packageName,formatedNum)
+////                            val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
+////                                formatedNum, hashedNum = hashedAddress!!,
+////                                spammerType = 0,
+////                                firstName = cntct.name,
+////                               "",
+////                                Date(),
+////                                )
+////                            callerInfoFromServerDAO?.updateByHash(
+////                                hashedNum = cntct.hash,
+////                                spamCount = cntct.spamCount,
+////                                firstName = cntct.firstName,
+////                                lastName = "cntct.lastName",
+////                                date = Date(),
+////                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+////                                thumbnailImg = cntct.imageThumbnail?:"",
+////                                city = cntct.location,
+////                                carrier = cntct.carrier
+////
+////                            )
+////                            smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
+//                        }
+//                    }
 
 //                    callerInfoFromServerDAO.insert(smsSenderlistToBeSavedToLocalDb)
                 }
@@ -175,7 +219,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 //
 //                     hashedAddress = hashUsingArgon(hashedAddress)
                      hashedAddress?.let {hashed->
-                         senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, hashed))
+                         senderListTobeSendToServer.add(ContactAddressWithHashDTO( hashed))
                          insertIntoListSetUploadingStatus(
                              contactAddressWithoutSpecialChars,
                              hashed,
@@ -187,7 +231,10 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                      if(isCurrentDateAndPrevDateisGreaterThanLimit(this.informationReceivedDate, NUMBER_OF_DAYS)) {
                          val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
                          val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
-                         senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))
+                         senderListTobeSendToServer.add(
+                             ContactAddressWithHashDTO
+                                 (hashedAddress)
+                         )
                          insertIntoListSetUploadingStatus(
                              contactAddressWithoutSpecialChars,
                              hashedAddress,

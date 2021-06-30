@@ -59,7 +59,7 @@ class HashedUploadWorker(private val context: Context,
                         isToBeSearchedInServer = true
                     }
                     if(isToBeSearchedInServer){
-                        callersListTobeSendToServer.add(ContactAddressWithHashDTO(item.number, item.hashedNumber))
+                        callersListTobeSendToServer.add(ContactAddressWithHashDTO(item.hashedNumber))
                     }
                 }
                 callersListChunkOfSize12 = callersListTobeSendToServer.chunked(12)

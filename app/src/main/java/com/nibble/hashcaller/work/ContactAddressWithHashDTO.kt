@@ -7,7 +7,6 @@ import androidx.annotation.Keep
  */
 @Keep
 data class ContactAddressWithHashDTO(
-    val contactAddressString:String,
     val contactAddressHashed:String
 ) {
 }
