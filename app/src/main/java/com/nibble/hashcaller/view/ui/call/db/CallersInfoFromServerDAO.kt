@@ -39,6 +39,18 @@ interface CallersInfoFromServerDAO {
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount,isBlockedByUser =:isBlockedByUser  WHERE contact_address =:contactAddress ")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String, isBlockedByUser:Boolean)
 
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount, firstName =:firstName,lastName=:lastName,informationReceivedDate=:date,isInfoFoundInServer=:isUserInfoFoundInServer,thumbnailImg=:thumbnailImg, city=:city,carrier=:carrier  WHERE hashedNum =:hashedNum ")
+    suspend fun updateByHash(hashedNum:String,
+                     spamCount: Long ,
+                     firstName:String,
+                     lastName:String,
+                     date:Date,
+                     isUserInfoFoundInServer:Int,
+                     thumbnailImg:String="",
+                     city:String="",
+                     carrier:String = ""
+                     )
+
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier WHERE contact_address =:contactAddress ")
     suspend fun updateWithServerinfo(
                                      contactAddress: kotlin.String,

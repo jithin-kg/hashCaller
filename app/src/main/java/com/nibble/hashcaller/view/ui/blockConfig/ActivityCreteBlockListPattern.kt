@@ -2,24 +2,32 @@ package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentSender
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.credentials.*
 import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityCreteBlockListPatternBinding
-import com.nibble.hashcaller.utils.constants.IntentKeys
-import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.stubs.TelephonyInfo
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
+import com.nibble.hashcaller.view.ui.contacts.getSimAndNumberPairList
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
+import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.nibble.hashcaller.work.formatPhoneNumber
 
 
@@ -134,9 +142,10 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
     companion object {
         private const val TAG = "__ActivityAddNewPattern"
+        var CREDENTIAL_PICKER_REQUEST = 1
     }
 
-    @SuppressLint("LogNotTimber")
+    @SuppressLint("LogNotTimber", "NewApi")
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
         when(v?.id){
@@ -146,9 +155,75 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
             R.id.btnSave -> {
                 Log.d(TAG, "onClick: $patterntype")
                 savePattern()
-
+//                getSimIndexForSubscriptionId()
+//                getAvailableSIMCardLabels()
+//                getSimAndNumberPairList()
+//                isDualSimOrNot()
+                requestHint()
             }
         }
+    }
+
+    private fun requestHint() {
+        // To retrieve the Phone Number hints, first, configure
+        // the hint selector dialog by creating a HintRequest object.
+        val hintRequest = HintRequest.Builder()
+            .setPhoneNumberIdentifierSupported(true)
+            .build()
+
+        val options = CredentialsOptions.Builder()
+            .forceEnableSaveDialog()
+            .build()
+        // Then, pass the HintRequest object to
+        // credentialsClient.getHintPickerIntent()
+        // to get an intent to prompt the user to
+        // choose a phone number.
+        val credentialsClient = Credentials.getClient(applicationContext, options)
+        val intent = credentialsClient.getHintPickerIntent(hintRequest)
+        try {
+            startIntentSenderForResult(
+                intent.intentSender,
+                CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle()
+            )
+        } catch (e: IntentSender.SendIntentException) {
+            e.printStackTrace()
+        }
+
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == RESULT_OK) {
+
+            // get data from the dialog which is of type Credential
+            val credential: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
+
+            // set the received data t the text view
+            credential?.apply {
+//                tv1.text = credential.id
+                Log.d(TAG, "onActivityResult: ${credential.id}")
+            }
+        } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
+            Log.d(TAG, "onActivityResult: no phone num")
+        //            Toast.makeText(this, "No phone numbers found", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private fun isDualSimOrNot() {
+        val telephonyInfo = TelephonyInfo.getInstance(this)
+        val imeiSIM1 = telephonyInfo.imeiSIM1
+        val imeiSIM2 = telephonyInfo.imeiSIM2
+        val isSIM1Ready = telephonyInfo.isSIM1Ready
+        val isSIM2Ready = telephonyInfo.isSIM2Ready
+        val isDualSIM = telephonyInfo.isDualSIM
+        Log.i(
+            "Dual = ", """ IME1 : $imeiSIM1
+ IME2 : $imeiSIM2
+ IS DUAL SIM : $isDualSIM
+ IS SIM1 READY : $isSIM1Ready
+ IS SIM2 READY : $isSIM2Ready
+"""
+        )
     }
 
     fun saveData(view: View) {

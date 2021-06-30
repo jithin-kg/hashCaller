@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contacts.ContactAddresses
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.util.*
@@ -19,7 +19,7 @@ import java.util.*
 class ContactsAddressLocalWorker(private val context: Context, private val params:WorkerParameters ) :
         CoroutineWorker(context, params){
     private val contactAddressDAO = HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO()
-    private var allcontactsInContentProvider:MutableList<ContactUploadDTO> = mutableListOf()
+    private var allcontactsInContentProvider:MutableList<PhoneNumWithHashedNumDTO> = mutableListOf()
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO) {
         try {
             val cursor = context!!.contentResolver.query(

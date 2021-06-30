@@ -1,9 +1,7 @@
 package com.nibble.hashcaller.network.search
 
-import com.nibble.hashcaller.network.contact.NetWorkResponse
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.network.user.IuserService
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
 import com.nibble.hashcaller.repository.search.SearchDTO
 import com.nibble.hashcaller.view.ui.search.ManualSearchDTO
 import retrofit2.Response

@@ -19,8 +19,10 @@ import android.provider.ContactsContract
 import android.provider.Telephony
 import android.telecom.TelecomManager
 import android.telephony.SubscriptionManager
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.fragment.app.FragmentActivity
@@ -31,6 +33,7 @@ import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.stubs.SimAndNumberDTO
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
@@ -346,7 +349,34 @@ fun Context.getPreparedincommingIntent(
 
 val Context.telecomManager: TelecomManager get() = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
 
+// Manifest.permission.READ_PHONE_STATE is needed
+@RequiresApi(Build.VERSION_CODES.P)
+@SuppressLint("MissingPermission", "HardwareIds", "NewApi")
+fun Context.getSimAndNumberPairList(): MutableList<SimAndNumberDTO> {
+    val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+    val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
+    val i =         subscriptionManager.opportunisticSubscriptions
+    val info = subscriptionManager.getActiveSubscriptionInfoForSimSlotIndex(0)
+    info.number
+    val l = subscriptionManager.accessibleSubscriptionInfoList
+    val listOfSimAndNumber : MutableList<SimAndNumberDTO> = mutableListOf()
 
+
+    val tm = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    val num = tm.line1Number
+
+    Log.d("_Context", "getSimAndNumberPairList:$num ")
+
+    if(availableSIMs.size > 0){
+        for(subScriptionInfo in availableSIMs){
+
+            listOfSimAndNumber.add(
+                SimAndNumberDTO(subScriptionInfo.number, subScriptionInfo.carrierName.toString())
+            )
+        }
+    }
+    return listOfSimAndNumber
+}
 @SuppressLint("MissingPermission")
 fun Context.getSimIndexForSubscriptionId(): List<String> {
     val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager

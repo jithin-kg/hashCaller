@@ -6,18 +6,25 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVE
 
 @Keep
 data class CallersInfoResponseItem (
-    var phoneNumber:String = "",
-    var type: Int = 0,
+    @SerializedName("phoneNumber")
+    var hash:String = "",
+
     @SerializedName("firstName")
     val firstName: String = "",
+
     @SerializedName("lastName")
     val lastName: String = "",
+
+    var type: Int = 0,
     var location: String = "",
-    var country:String = "",
     var carrier: String = "",
+    var country:String = "",
     var spamCount:Long = 0L,
+    var isRegistered:Boolean = false,
+    var hUname:String = "",
     @SerializedName("isInfoFoundInDb")
     val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
+
     var imageThumbnail:String? = ""
 ){
 }

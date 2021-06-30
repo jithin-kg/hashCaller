@@ -3,7 +3,7 @@ package com.nibble.hashcaller.view.ui.hashworker
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.contacts.utils.DATE_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
@@ -90,7 +90,7 @@ class HashRepository(
        try {
            if (contactsCursor?.count ?: 0 > 0) {
                while (contactsCursor!!.moveToNext()) {
-                   var contact = ContactUploadDTO()
+                   var contact = PhoneNumWithHashedNumDTO()
                    val name =
                        contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                    var phoneNo =

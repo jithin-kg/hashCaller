@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import kotlinx.android.synthetic.main.list_item.view.*
 
 
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.list_item.view.*
  */
 class MyListAdapter:
     RecyclerView.Adapter<MyListAdapter.ViewHolder?>() {
-    private var listdata = emptyList<ContactUploadDTO>()
+    private var listdata = emptyList<PhoneNumWithHashedNumDTO>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -48,7 +48,7 @@ class MyListAdapter:
     override fun getItemCount(): Int {
         return listdata.size
     }
-    fun setContactList(newContactList: List<ContactUploadDTO>) {
+    fun setContactList(newContactList: List<PhoneNumWithHashedNumDTO>) {
         listdata = emptyList()
         listdata = newContactList.toList()
         Log.d("__MYListAdapter", "setContactList: ${newContactList.size}")

@@ -263,7 +263,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             }
             R.id.fabBtn -> {
                 Log.d(TAG, "onClick: delete")
-//                contactViewModel.delteContactsInformation()
+                contactViewModel.delteContactsInformation()
             }
             R.id.imgBtnSearch -> {
                 startSearchActivity()

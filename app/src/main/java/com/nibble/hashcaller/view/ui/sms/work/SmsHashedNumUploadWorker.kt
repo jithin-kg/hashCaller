@@ -12,7 +12,7 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit
  */
 class SmsHashedNumUploadWorker(private val context: Context, private val params:WorkerParameters ) :
         CoroutineWorker(context, params){
-    val contacts = mutableListOf<ContactUploadDTO>()
+    val contacts = mutableListOf<PhoneNumWithHashedNumDTO>()
 
     private val sMSSendersInfoFromServerDAO: CallersInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private val mutedSendersDAO = HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO()
@@ -102,10 +102,13 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                             val formatedNum = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countryCodeIso)
 
                             //todo add carrier information and geolocation info for number
+                            var hashedAddress:String? = Secrets().managecipher(context.packageName,formatedNum)
                             val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
-                                formatedNum, 0, cntct.name,
-                               "", Date(),
-
+                                formatedNum, hashedNum = hashedAddress!!,
+                                spammerType = 0,
+                                firstName = cntct.name,
+                               "",
+                                Date(),
                                 )
                             smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
                         }
@@ -151,6 +154,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                      val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
 
                      var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
+//
 //                     hashedAddress = hashUsingArgon(hashedAddress)
                      hashedAddress?.let {
                          senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, it))

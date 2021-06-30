@@ -10,7 +10,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
 import com.nibble.hashcaller.work.ContactsUploadWorker
@@ -64,7 +64,7 @@ class ContactsViewModel(
      * If there is no contacts is local sqlite database then we insert all contacts
      * by adding all contacts to a list
      */
-    private suspend fun insertContactstoLocalDb(contentProviderContacts: List<ContactUploadDTO>?) {
+    private suspend fun insertContactstoLocalDb(contentProviderContacts: List<PhoneNumWithHashedNumDTO>?) {
         val contactsListToSave:MutableList<ContactTable> = mutableListOf()
 //        for(item in contentProviderContacts){
 //            Log.d(TAG, "getPreparedContacts: ${i}")

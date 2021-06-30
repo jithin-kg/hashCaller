@@ -2,7 +2,7 @@ package com.nibble.hashcaller.view.utils
 
 import android.content.Context
 import android.provider.ContactsContract
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.nibble.hashcaller.work.formatPhoneNumber
 import java.util.LinkedHashSet
@@ -11,11 +11,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ContactRepositoryTwo(context: Context) {
 
     private val context: Context? = context
-    private var contacts: MutableList<ContactUploadDTO> = ArrayList()
-    var uniqueMobilePhones: List<ContactUploadDTO> = ArrayList()
+    private var contacts: MutableList<PhoneNumWithHashedNumDTO> = ArrayList()
+    var uniqueMobilePhones: List<PhoneNumWithHashedNumDTO> = ArrayList()
     var lastNumber = "0"
 
-    fun fetchContacts(): MutableList<ContactUploadDTO> {
+    fun fetchContacts(): MutableList<PhoneNumWithHashedNumDTO> {
         val cursor = context!!.contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null, null, null,
@@ -25,7 +25,7 @@ class ContactRepositoryTwo(context: Context) {
 
         if (cursor?.count ?: 0 > 0) {
             while (cursor!!.moveToNext()) {
-                var contact = ContactUploadDTO()
+                var contact = PhoneNumWithHashedNumDTO()
                 val name =
                     cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                 var phoneNo =
@@ -63,8 +63,8 @@ class ContactRepositoryTwo(context: Context) {
         return sortAndSet(contacts)
     }
 
-    private fun sortAndSet(contacts:  MutableList<ContactUploadDTO>): ArrayList<ContactUploadDTO> {
-        val s: LinkedHashSet<ContactUploadDTO> = LinkedHashSet(contacts)
+    private fun sortAndSet(contacts:  MutableList<PhoneNumWithHashedNumDTO>): ArrayList<PhoneNumWithHashedNumDTO> {
+        val s: LinkedHashSet<PhoneNumWithHashedNumDTO> = LinkedHashSet(contacts)
         val data = ArrayList(s)
 
         return data

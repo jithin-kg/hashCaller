@@ -5,7 +5,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.repository.search.ContactSearchRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 class ContactsSearchViewModel(application: Application): AndroidViewModel(application) {
 
-    var contacts: MutableLiveData<List<ContactUploadDTO>>
+    var contacts: MutableLiveData<List<PhoneNumWithHashedNumDTO>>
     val contactSearchRepository = ContactSearchRepository(getApplication())
     init {
 
@@ -25,7 +25,7 @@ class ContactsSearchViewModel(application: Application): AndroidViewModel(applic
 
     }
 
-    var contactsList = mutableListOf<ContactUploadDTO>()
+    var contactsList = mutableListOf<PhoneNumWithHashedNumDTO>()
         @SuppressLint("LongLogTag")
     fun findContactForNum(number:String) = viewModelScope.launch(
             Dispatchers.IO) {

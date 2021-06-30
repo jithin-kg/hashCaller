@@ -32,10 +32,12 @@ import java.util.*
 data class CallersInfoFromServer (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "contact_address") var contactAddress: String= "",
+    @ColumnInfo(name = "hashedNum") var hashedNum: String= "",
+
     @ColumnInfo(name = "type") var  spammerType: Int = 0,
     @ColumnInfo(name = "firstName") var firstName:String = "",
     @ColumnInfo(name = "lastName") var lastName:String = "",
-    @ColumnInfo(name = "informationReceivedDate") val informationReceivedDate:Date,
+    @ColumnInfo(name = "informationReceivedDate") var informationReceivedDate:Date,
     @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = 0,
     @ColumnInfo(name = "city") var city: String  = "",
     @ColumnInfo(name = "country") var country: String = "",

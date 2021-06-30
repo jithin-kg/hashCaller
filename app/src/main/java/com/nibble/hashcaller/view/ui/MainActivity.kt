@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var fullScreenFragment: FullscreenFragment
     //    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsContainerFragment
-    private lateinit var searchFragment: SearchFragment
+//    private lateinit var searchFragment: SearchFragment
     private lateinit var blockListFragment: BlockConfigFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
@@ -239,8 +239,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                        ft.attach(smsFragment)
                        ft.detach(contactFragment)
                        ft.attach(contactFragment)
-                       ft.detach(searchFragment)
-                       ft.attach(searchFragment)
+//                       ft.detach(searchFragment)
+//                       ft.attach(searchFragment)
                        ft.detach(blockListFragment)
                        ft.attach(blockListFragment)
                        ft.detach(smsSearchFragment)
@@ -330,7 +330,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this,
             READ_CONTACTS,
             READ_PHONE_STATE,
-            CALL_PHONE
+            CALL_PHONE,
+            READ_PHONE_NUMBERS
 //            WRITE_CALL_LOG,
 //            READ_CONTACTS,
 //            READ_PHONE_STATE
@@ -593,7 +594,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this.callFragment = CallFragment()
 
             this.dialerFragment = DialerFragment()
-            this.searchFragment = SearchFragment()
+//            this.searchFragment = SearchFragment()
             this.blockListFragment = BlockConfigFragment()
             smsSearchFragment = SMSSearchFragment.newInstance()
 //            this.searchFragment =  SearchFragment.newInstance()
@@ -679,10 +680,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             "dialerFragment"
         ) as DialerFragment
 
-        this.searchFragment = supportFragmentManager.getFragment(
-            savedInstanceState,
-            "searchFragment"
-        ) as SearchFragment
+//        this.searchFragment = supportFragmentManager.getFragment(
+//            savedInstanceState,
+//            "searchFragment"
+//        ) as SearchFragment
         this.blockListFragment = supportFragmentManager.getFragment(
             savedInstanceState,
             "blockListFragment"
@@ -726,12 +727,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                    fabBtnShowDialpad.visibility = View.GONE
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.bottombaritem_search -> {
-//                    showBlockConfigFragment()
-//                    fabBtnShowDialpad.visibility = View.GONE
-                    showSearchFragment()
-                    return@OnNavigationItemSelectedListener true
-                }
+//                R.id.bottombaritem_search -> {
+////                    showBlockConfigFragment()
+////                    fabBtnShowDialpad.visibility = View.GONE
+//                    showSearchFragment()
+//                    return@OnNavigationItemSelectedListener true
+//                }
                 R.id.bottombaritem_blockList -> {
                     showBlockConfigFragment()
                     return@OnNavigationItemSelectedListener true
@@ -753,7 +754,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
         supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
         supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
-        supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
+//        supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
         supportFragmentManager.putFragment(outState, "blockListFragment", this.blockListFragment)
         supportFragmentManager.putFragment(outState, "smsSearchFragment", this.smsSearchFragment)
 
@@ -906,8 +907,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.add(R.id.frame_fragmentholder, contactFragment)
         hideThisFragment(ft, contactFragment, contactFragment)
 
-        ft.add(R.id.frame_fragmentholder, searchFragment)
-        hideThisFragment(ft, searchFragment, searchFragment)
+//        ft.add(R.id.frame_fragmentholder, searchFragment)
+//        hideThisFragment(ft, searchFragment, searchFragment)
 
         ft.add(R.id.frame_fragmentholder, blockListFragment)
         hideThisFragment(ft, blockListFragment, blockListFragment)
@@ -933,7 +934,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         menuMessage = menu.findItem(R.id.bottombaritem_messages)
         menuContacts = menu.findItem(R.id.bottombaritem_contacts)
         menuCalls = menu.findItem( R.id.bottombaritem_calls )
-        menuSearch = menu.findItem(R.id.bottombaritem_search)
+//        menuSearch = menu.findItem(R.id.bottombaritem_search)
 
 
 //        menuMessage = menu.findItem(R.id.bottombaritem_messages)
@@ -1022,10 +1023,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
 
-        if (searchFragment.isAdded) { // if the fragment is already in container
-            ft.show(searchFragment)
-            mainViewmodel.setActiveFragment(searchFragment)
-        }
+//        if (searchFragment.isAdded) { // if the fragment is already in container
+//            ft.show(searchFragment)
+//            mainViewmodel.setActiveFragment(searchFragment)
+//        }
         val intent = intent
         intent.getByteArrayExtra("key")
 //
@@ -1141,11 +1142,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }else{
             menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
         }
-        if(showSearchFragment){
-            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
-        }else {
-            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
-        }
+//        if(showSearchFragment){
+//            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+//        }else {
+//            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
+//        }
 //        }
 //        else {
 //            if(showMessageFragment){
@@ -1556,10 +1557,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 val intent = Intent(this, BlockManageActivity::class.java)
                 startActivity(intent)
             }
-            R.id.myBlockLIst ->{
-                val intent = Intent(this, BlockListActivity::class.java)
-                startActivity(intent)
-            }
+//            R.id.myBlockLIst ->{
+//                val intent = Intent(this, BlockListActivity::class.java)
+//                startActivity(intent)
+//            }
             R.id.notifications ->{
                 val intent = Intent(this, ManageNotificationsActivity::class.java)
                 startActivity(intent)

@@ -84,7 +84,7 @@ class HashedUploadWorker(private val context: Context,
                             for(cntct in result?.body()?.contacts!!){
 
                                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                                    contactAddress = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.phoneNumber), countrIso),
+                                    contactAddress = libCountryHelper.getES164Formatednumber(formatPhoneNumber(cntct.hash), countrIso),
                                     spammerType = 0,
                                     firstName = cntct.firstName?:"",
                                     informationReceivedDate = Date(),

@@ -113,7 +113,9 @@ class SMScontainerRepository(
 
            }
            spamCount+=1
-           val info = CallersInfoFromServer(contactAddress, 0,name, "Date()", Date())
+           val info = CallersInfoFromServer(contactAddress, spammerType=0,
+               firstName=name, lastName="",
+               informationReceivedDate=Date())
            val list = listOf<CallersInfoFromServer>(info)
 
            smsSenderInfoDAO!!.insert(list)

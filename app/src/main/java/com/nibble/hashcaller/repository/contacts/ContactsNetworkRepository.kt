@@ -45,6 +45,7 @@ class ContactsNetworkRepository(private val context: Context,
             uploadContacts(
         contacts: ContactsSyncDTO
     ): Response<UnknownCallersInfoResponse>? {
+
         // Execute web request through coroutine call adapter & retrofit
 //        val webResponse = WebAccess.partsApi.getPartsAsync().await()
 
@@ -66,6 +67,7 @@ class ContactsNetworkRepository(private val context: Context,
         } catch (e: Exception) {
             Log.e(TAG, "decryptData() called with: " + e.message, e)
         }
+
 
 
         return token?.let { retrofitService?.uploadContacts(contacts, it) }

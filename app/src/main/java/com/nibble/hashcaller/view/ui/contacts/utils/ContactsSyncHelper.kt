@@ -1,11 +1,9 @@
 package com.nibble.hashcaller.view.ui.contacts.utils
 
-import android.os.Build
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.nibble.hashcaller.local.db.contactInformation.ContactTable
 import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
 
 import kotlin.collections.ArrayList
@@ -20,7 +18,7 @@ class ContactsSyncHelper(
     private val contactNetworkRepository: ContactsNetworkRepository?
 ) {
     suspend fun syncContacts(
-        contactsListfromContentProvider: ArrayList<ContactUploadDTO>?,
+        contactsListfromContentProvider: ArrayList<PhoneNumWithHashedNumDTO>?,
         contactsListFromLocalDb: LiveData<List<ContactTable>>?
     ) {
 

@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogLiveData
@@ -173,7 +173,7 @@ class HashWorker (private val context: Context,
             for(cntct in result?.body()?.contacts!!){
 
                 val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                    contactAddress = formatPhoneNumber(cntct.phoneNumber),
+                    contactAddress = formatPhoneNumber(cntct.hash),
                     spammerType = 0,
                     firstName = cntct.firstName?:"",
                     informationReceivedDate = Date(),
@@ -201,7 +201,7 @@ class HashWorker (private val context: Context,
         try {
             if (contactsCursor?.count ?: 0 > 0) {
                 while (contactsCursor!!.moveToNext()) {
-                    var contact = ContactUploadDTO()
+                    var contact = PhoneNumWithHashedNumDTO()
                     val name =
                         contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                     var phoneNo =

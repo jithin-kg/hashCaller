@@ -1797,10 +1797,10 @@ class SMSLocalRepository(
                     val spamcount = this.spamReportCount +1
                 callerInfoDAO!!.update(spamcount, formatedAddress, true)
             }else{
-                callerInfoDAO.insert(listOf(CallersInfoFromServer(
-                    formatedAddress,
-                    spammerType!!,
-                    " ","Date()", Date(), 1000 )))
+//                callerInfoDAO.insert(listOf(CallersInfoFromServer(
+//                    formatedAddress,
+//                    spammerType!!,
+//                    " ","Date()", Date(), 1000 )))
             }
         }
     }

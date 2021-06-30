@@ -15,12 +15,10 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
-import com.nibble.hashcaller.repository.contacts.ContactLocalSyncRepository
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
-import com.nibble.hashcaller.repository.contacts.ContactsNetworkRepository
-import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
+import com.nibble.hashcaller.repository.contacts.*
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
+import com.nibble.hashcaller.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.*
@@ -36,7 +34,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     val contacts = mutableListOf<ContactUploadDTO>()
     private  var contactsListOf12: List<List<ContactUploadDTO>> = mutableListOf()
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
-
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
     private val contactLocalSyncRepository = ContactLocalSyncRepository(contactLisDAO, context)
@@ -44,7 +41,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
     val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
-
+    private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
 
@@ -64,6 +61,12 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             val lastDate = contactsLastSyncedDateDAO.getLastSyncedDate()
 
             setNewlySavedContactsList()
+
+            //first insert the list in DB
+                if(listToBeInsertedToDBFirst.isNotEmpty()){
+                    callersInfoFromServerDAO.insert(listToBeInsertedToDBFirst)
+                }
+
             if(!contactsListOf12.isNullOrEmpty()){
                 for (contactSublist in contactsListOf12){
                     Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
@@ -72,11 +75,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
                     var countryCode = countryCodeIso
 
-
-
                     val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                     val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
                     val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
@@ -84,26 +86,39 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
                     if(result!=null){
                         for(cntct in result?.body()?.contacts!!){
-                            var formated = formatPhoneNumber(cntct.phoneNumber)
+//                            var formated = formatPhoneNumber(cntct.hash)
+//
+//                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+//                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+//                                contactAddress = formated,
+//                                spammerType = 0,
+//                                firstName = cntct.firstName?:"",
+//                                informationReceivedDate =Date(),
+//                                spamReportCount =  cntct.spamCount,
+//                                isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+//                                thumbnailImg = cntct.imageThumbnail?:"",
+//                                carrier = cntct.carrier,
+//                                country = cntct.country,
+//                                city =cntct.location
+//                            )
 
-                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
-                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                                contactAddress = formated,
-                                spammerType = 0,
-                                firstName = cntct.firstName?:"",
-                                informationReceivedDate =Date(),
-                                spamReportCount =  cntct.spamCount,
-                                isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+                            //todo do updation
+                            callersInfoFromServerDAO?.updateByHash(
+                                hashedNum = cntct.hash,
+                                spamCount = cntct.spamCount,
+                                firstName = cntct.firstName,
+                                lastName = "cntct.lastName",
+                                date = Date(),
+                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
                                 thumbnailImg = cntct.imageThumbnail?:"",
-                                carrier = cntct.carrier,
-                                country = cntct.country,
-                                city =cntct.location
-                            )
+                                city = cntct.location,
+                                carrier = cntct.carrier
 
-                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                            )
+//                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                         }
                     }
-                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
+//                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                     saveDateInContactLastSycnDate()
                 }
             }
@@ -132,7 +147,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     @SuppressLint("LongLogTag")
     private suspend fun setNewlySavedContactsList() {
-        val newlyCreatedContacts = mutableListOf<ContactUploadDTO>()
+        val newlyCreatedContacts = mutableListOf<PhoneNumWithHashedNumDTO>()
 
         /**
          * All numbers are formatted to  ES164 standard
@@ -146,24 +161,48 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //                    formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
 //                    val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
                     val res = callersInfoFromServerDAO.find(contact.phoneNumber)
-                    if(res==null){
-                        Log.d(TAG , "not in db: ${contact.phoneNumber}")
+                    var isTobeSearchedInServer = false
+                    if(res==null ){
+                        isTobeSearchedInServer = true
+
+                    }
+                    if(res!=null){
+                        if(res?.isUserInfoFoundInServer == SEARCHING_FOR_INFO ){
+                            isTobeSearchedInServer = true
+                        }
+                    }
+
+                    if(isTobeSearchedInServer){
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, contact.phoneNumber)
-//                        hashedPhoneNum = hashUsingArgon(hashedPhoneNum)
-                        Log.d("__hashedInContactUploadWorker", "setNewlySavedContactsList: hashed num is ${hashedPhoneNum}")
-                        hashedPhoneNum?.let {
-                            val cntctDtoObj = ContactUploadDTO(contact.name, contact.phoneNumber, it)
+                        hashedPhoneNum?.let { hashed ->
+                            
+                            insertIntoListSetUploadingStatus(contact.phoneNumber, hashed,
+                                )
+
+                            val cntctDtoObj = ContactUploadDTO(contact.name, hashed)
                             contacts.add(cntctDtoObj)
                         }
-
                     }
                 }
             }
         }
         contactsListOf12 = contacts.chunked(12)
+
+
     }
 
-    
+    suspend fun insertIntoListSetUploadingStatus(phoneNumber: String, hashed: String) {
+        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+            contactAddress = phoneNumber,
+            hashedNum = hashed,
+            isUserInfoFoundInServer = SEARCHING_FOR_INFO,
+            informationReceivedDate = Date(),
+            )
+        listToBeInsertedToDBFirst.add(callerInfoTobeSavedInDatabase)
+
+    }
+
+
 //    private suspend fun saveContactsToLocalDB(cntactsFromServer: List<UnknownCallersInfoResponse>?) {
 //        Log.d(TAG, "saveContactsToLocalDB:  ")
 //        var cts:MutableList<CallersInfoFromServer>? = mutableListOf();

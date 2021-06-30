@@ -21,12 +21,12 @@
             android:icon="@drawable/ic_phone_line"
             android:state_activated="false"
             />
-        <item
-            android:id="@+id/myBlockLIst"
-            android:title="My block list"
-            android:icon="@drawable/ic_spam_3_line"
-            android:state_activated="false"
-            />
+<!--        <item-->
+<!--            android:id="@+id/myBlockLIst"-->
+<!--            android:title="My block list"-->
+<!--            android:icon="@drawable/ic_spam_3_line"-->
+<!--            android:state_activated="false"-->
+<!--            />-->
         <item
             android:id="@+id/notifications"
             android:title="Notifications"

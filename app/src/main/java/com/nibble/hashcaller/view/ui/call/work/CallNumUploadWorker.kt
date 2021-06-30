@@ -12,7 +12,7 @@ import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.network.spam.hashednums
-import com.nibble.hashcaller.repository.contacts.ContactUploadDTO
+import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.utils.notifications.tokeDataStore
@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 class CallNumUploadWorker(private val context: Context, private val params:WorkerParameters ) :
         CoroutineWorker(context, params){
 
-    val contacts = mutableListOf<ContactUploadDTO>()
+    val contacts = mutableListOf<PhoneNumWithHashedNumDTO>()
     private val callersListDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
     private lateinit var callersListTobeSendToServer: MutableList<ContactAddressWithHashDTO>
     private lateinit var callersListChunkOfSize12: List<List<ContactAddressWithHashDTO>>
@@ -104,7 +104,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
                    if(result!=null){
                        for(cntct in result?.body()?.contacts!!){
-                           var formated = formatPhoneNumber(cntct.phoneNumber)
+                           var formated = formatPhoneNumber(cntct.hash)
 
                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
@@ -171,7 +171,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 //                    hashedAddress = hashUsingArgon(hashedAddress)
                     hashedAddress?.let {
                         callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
-
                     }
                 }
 //                    if(sms.currentDate)
