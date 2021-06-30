@@ -18,6 +18,7 @@ import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
+import com.nibble.hashcaller.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
@@ -49,6 +50,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val countryCodeHelper = CountrycodeHelper(context)
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val smsRepository:SMSWorkerRepository = SMSWorkerRepository(context, libCountryHelper,countryCodeHelper )
+    private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
+
     private val repository: SMScontainerRepository = SMScontainerRepository(
         context,
         sMSSendersInfoFromServerDAO,
@@ -86,7 +89,10 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
             setlistOfAllUnknownSenders(allsmsincontentProvider, callerInfoFromServerDAO )
 
-
+            //first insert the list in DB
+            if(listToBeInsertedToDBFirst.isNotEmpty()){
+                callerInfoFromServerDAO.insert(listToBeInsertedToDBFirst)
+            }
             if(senderListChuckOfSize12.isNotEmpty()){
                 for (senderInfoSublist in senderListChuckOfSize12){
 
@@ -103,18 +109,30 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                             //todo add carrier information and geolocation info for number
                             var hashedAddress:String? = Secrets().managecipher(context.packageName,formatedNum)
-                            val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
-                                formatedNum, hashedNum = hashedAddress!!,
-                                spammerType = 0,
-                                firstName = cntct.name,
-                               "",
-                                Date(),
-                                )
-                            smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
+//                            val smsSenderTobeSavedToDatabase = CallersInfoFromServer(
+//                                formatedNum, hashedNum = hashedAddress!!,
+//                                spammerType = 0,
+//                                firstName = cntct.name,
+//                               "",
+//                                Date(),
+//                                )
+//                            callerInfoFromServerDAO?.updateByHash(
+//                                hashedNum = cntct.hash,
+//                                spamCount = cntct.spamCount,
+//                                firstName = cntct.firstName,
+//                                lastName = "cntct.lastName",
+//                                date = Date(),
+//                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+//                                thumbnailImg = cntct.imageThumbnail?:"",
+//                                city = cntct.location,
+//                                carrier = cntct.carrier
+//
+//                            )
+//                            smsSenderlistToBeSavedToLocalDb.add(smsSenderTobeSavedToDatabase)
                         }
                     }
 
-                    callerInfoFromServerDAO.insert(smsSenderlistToBeSavedToLocalDb)
+//                    callerInfoFromServerDAO.insert(smsSenderlistToBeSavedToLocalDb)
                 }
             }else{
                 Log.d(TAG, "doWork: size less than 1")
@@ -156,9 +174,12 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                      var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //
 //                     hashedAddress = hashUsingArgon(hashedAddress)
-                     hashedAddress?.let {
-                         senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, it))
-
+                     hashedAddress?.let {hashed->
+                         senderListTobeSendToServer.add(ContactAddressWithHashDTO(contactAddressWithoutSpecialChars, hashed))
+                         insertIntoListSetUploadingStatus(
+                             contactAddressWithoutSpecialChars,
+                             hashed,
+                         )
                      }
 
                  }else{
@@ -167,6 +188,10 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                          val contactAddressWithoutSpecialChars = formatPhoneNumber(sms.addressString!!)
                          val hashedAddress = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
                          senderListTobeSendToServer.add(ContactAddressWithHashDTO(sms.addressString!!, hashedAddress))
+                         insertIntoListSetUploadingStatus(
+                             contactAddressWithoutSpecialChars,
+                             hashedAddress,
+                         )
                      }
 //                    if(sms.currentDate)
                      //Todo compare dates
@@ -182,6 +207,17 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
         senderListChuckOfSize12 = senderListTobeSendToServer.chunked(12)
         Log.d(TAG, "setlistOfAllUnknownSenders : chucked list is $senderListChuckOfSize12")
 
+
+    }
+
+    suspend fun insertIntoListSetUploadingStatus(phoneNumber: String, hashed: String) {
+        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+            contactAddress = phoneNumber,
+            hashedNum = hashed,
+            isUserInfoFoundInServer = SEARCHING_FOR_INFO,
+            informationReceivedDate = Date(),
+        )
+        listToBeInsertedToDBFirst.add(callerInfoTobeSavedInDatabase)
 
     }
 

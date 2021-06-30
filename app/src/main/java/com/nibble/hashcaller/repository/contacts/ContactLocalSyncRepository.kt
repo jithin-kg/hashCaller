@@ -219,6 +219,7 @@ class ContactLocalSyncRepository(
     suspend fun deleteAllitems()   = withContext(Dispatchers.IO){
         contactLisDAO?.delete()
         HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).callLogDAO().deleteAll()
 
     }
 

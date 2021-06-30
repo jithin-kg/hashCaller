@@ -105,7 +105,8 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
             android.Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_CALL_LOG,
             Manifest.permission.CALL_PHONE,
-            Manifest.permission.READ_SMS
+            Manifest.permission.READ_SMS,
+            Manifest.permission.WRITE_CALL_LOG
         )
         val permissionRequest =  PermissionRequest.Builder(this)
             .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)

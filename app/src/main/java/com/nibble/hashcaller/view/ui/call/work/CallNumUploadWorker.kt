@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
 import com.nibble.hashcaller.view.ui.call.dialer.util.CallLogData
 import com.nibble.hashcaller.view.ui.call.repository.CallContainerRepository
 import com.nibble.hashcaller.view.ui.call.repository.CallLocalRepository
+import com.nibble.hashcaller.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.ContactAddressWithHashDTO
@@ -51,9 +52,10 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     val smsThreadsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).smsThreadsDAO() }
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
-
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
+    private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
+
 
     val callContainerRepository =
         CallContainerRepository(
@@ -89,7 +91,10 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
             setlistOfAllUnknownCallers(allcallsincontentProvider, callersInfoFromServerDAO )
 
-
+            //first insert the list in DB
+            if(listToBeInsertedToDBFirst.isNotEmpty()){
+                callersInfoFromServerDAO.insert(listToBeInsertedToDBFirst)
+            }
             if(callersListChunkOfSize12.isNotEmpty()){
                 for (senderInfoSublist in callersListChunkOfSize12){
                     /**
@@ -107,23 +112,36 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                            var formated = formatPhoneNumber(cntct.hash)
 
                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
-                           val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-                               contactAddress = formated,
-                               spammerType = 0,
-                               firstName = cntct.firstName?:"",
-                               informationReceivedDate =Date(),
-                               spamReportCount =  cntct.spamCount,
-                               isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+//                           val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+//                               contactAddress = formated,
+//                               spammerType = 0,
+//                               firstName = cntct.firstName?:"",
+//                               informationReceivedDate =Date(),
+//                               spamReportCount =  cntct.spamCount,
+//                               isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
+//                               thumbnailImg = cntct.imageThumbnail?:"",
+//                               carrier = cntct.carrier,
+//                               country = cntct.country,
+//                               city =cntct.location
+//                           )
+
+                           callersInfoFromServerDAO?.updateByHash(
+                               hashedNum = cntct.hash,
+                               spamCount = cntct.spamCount,
+                               firstName = cntct.firstName,
+                               lastName = "cntct.lastName",
+                               date = Date(),
+                               isUserInfoFoundInServer = cntct.isInfoFoundInDb,
                                thumbnailImg = cntct.imageThumbnail?:"",
-                               carrier = cntct.carrier,
-                               country = cntct.country,
-                               city =cntct.location
+                               city = cntct.location,
+                               carrier = cntct.carrier
+
                            )
 
-                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+//                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                        }
                    }
-                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
+//                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                 }
             }else{
                 Log.d(TAG, "doWork: size less than 1")
@@ -159,9 +177,12 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
                 var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                hashedAddress = hashUsingArgon(hashedAddress)
-                hashedAddress?.let {
-                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
-
+                hashedAddress?.let {hashed->
+                    callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashed))
+                    insertIntoListSetUploadingStatus(
+                        caller.number,
+                        hashed,
+                    )
                 }
 
             }else{
@@ -169,8 +190,12 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                    hashedAddress = hashUsingArgon(hashedAddress)
-                    hashedAddress?.let {
-                        callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), it))
+                    hashedAddress?.let {hashed->
+                        callersListTobeSendToServer.add(ContactAddressWithHashDTO(formatPhoneNumber(caller.number!!), hashed))
+                        insertIntoListSetUploadingStatus(
+                            caller.number,
+                            hashed,
+                        )
                     }
                 }
 //                    if(sms.currentDate)
@@ -183,6 +208,17 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
         //to reduce load on server, we only sends 12 items at a time
         callersListChunkOfSize12 = callersListTobeSendToServer.chunked(12)
 
+
+    }
+
+    suspend fun insertIntoListSetUploadingStatus(phoneNumber: String, hashed: String) {
+        val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
+            contactAddress = phoneNumber,
+            hashedNum = hashed,
+            isUserInfoFoundInServer = SEARCHING_FOR_INFO,
+            informationReceivedDate = Date(),
+        )
+        listToBeInsertedToDBFirst.add(callerInfoTobeSavedInDatabase)
 
     }
 

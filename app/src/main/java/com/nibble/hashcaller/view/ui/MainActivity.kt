@@ -331,7 +331,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             READ_CONTACTS,
             READ_PHONE_STATE,
             CALL_PHONE,
-            READ_PHONE_NUMBERS
+            READ_PHONE_NUMBERS,
+            WRITE_CALL_LOG
 //            WRITE_CALL_LOG,
 //            READ_CONTACTS,
 //            READ_PHONE_STATE
