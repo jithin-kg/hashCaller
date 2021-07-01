@@ -84,7 +84,7 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
         val dialog = ConfirmDialogFragment(this,
             getSpannableString("Confirm phone number"),
 
-            getSpannableString("The phone number You entered is +$phoneNumber. Is thi correct ?"),
+            getSpannableString("The phone number You entered is +$phoneNumber. Is this correct ?"),
             TYPE_DELETE
         )
         dialog.show(supportFragmentManager, "sample")

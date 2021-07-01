@@ -2,12 +2,15 @@ package com.nibble.hashcaller.view.ui.auth
 
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -54,10 +57,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
     private var tokenHelper: TokenHelper? = null
     private lateinit var customTokenSigner: CustometokenSigner
-
-
     var code: String? = null
-
     // [END declare_auth]
     var phoneNumber: String? = null
 
@@ -65,29 +65,24 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityTestauthBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-
         phoneNumber = intent.getStringExtra("phoneNumber")
-
+        tvOTPInfo.text = "we just sent you an SMS verification code to +${phoneNumber}"
         // Restore instance state
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
         }
         initListeners()
-
         // Initialize Firebase Auth
         auth = Firebase.auth
         registerCallback()
         customTokenSigner = CustometokenSigner(auth, this)
         startPhoneNumberVerification("+$phoneNumber")
-
-
     }
 
     private fun initListeners() {
         binding.verifyManually.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
+        binding.btnResend.setOnClickListener(this)
 
     }
 
@@ -95,10 +90,20 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private fun initViewModel() {
 
         tokenHelper = TokenHelper(FirebaseAuth.getInstance().currentUser)
-        _userInfoViewModel = ViewModelProvider(this, UserInfoInjectorUtil.provideUserInjectorUtil(applicationContext, tokenHelper)).get(
-            UserInfoViewModel::class.java)
+        _userInfoViewModel = ViewModelProvider(
+            this, UserInfoInjectorUtil.provideUserInjectorUtil(
+                applicationContext,
+                tokenHelper
+            )
+        ).get(
+            UserInfoViewModel::class.java
+        )
 //
-        dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+        dataStoreViewmodel = ViewModelProvider(
+            this, DataStoreInjectorUtil.providerViewmodelFactory(
+                applicationContext
+            )
+        ).get(
             DataStoreViewmodel::class.java
         )
     }
@@ -115,6 +120,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 Log.d(TAG, "onVerificationCompleted:$credential")
                 // [START_EXCLUDE silent]
                 code = credential.smsCode
+
 //                if(code == null) code = "123456" //Only for testing purpose
                 if (code != null) {
                     verifycode(code!!)
@@ -149,8 +155,10 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                     // The SMS quota for the project has been exceeded
                     // [START_EXCLUDE]
                     Log.d(TAG, "onVerificationFailed: quote exceeeded")
-                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.",
-                        Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        findViewById(android.R.id.content), "Quota exceeded.",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                     // [END_EXCLUDE]
                 }
 
@@ -169,18 +177,43 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 // by combining the code with a verification ID.
 
                 // Save verification ID and resending token so we can use them later
+                binding.tvDescResend.beVisible()
+                binding.btnResend.beVisible()
                 binding.pgBarOtpVerify.beGone()
+                startOtpTimer()
                 storedVerificationId = verificationId
                 resendToken = token
                 binding.verifyManually.isEnabled = true
 
-                tvOTPInfo.text = "we just sent you an SMS verification code to +${phoneNumber}"
                 // [START_EXCLUDE]
                 // Update UI
 //                updateUI(STATE_CODE_SENT)
                 // [END_EXCLUDE]
             }
+
+            override fun onCodeAutoRetrievalTimeOut(p0: String) {
+                super.onCodeAutoRetrievalTimeOut(p0)
+
+
+
+            }
         }
+    }
+
+    fun startOtpTimer() {
+        object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.btnResend.setTextColor(ContextCompat.getColor(this@ActivityVerifyOTP, R.color.textColor))
+                binding.btnResend.text = "00:${String.format("%02d", millisUntilFinished / 1000)}"
+                binding.btnResend.isEnabled = false
+                //here you can have your logic to set text to edittext
+            }
+            override fun onFinish() {
+                binding.btnResend.setTextColor(getColor(R.color.colorPrimary))
+                binding.btnResend.text = getString(R.string.resend_otp)
+                binding.btnResend.isEnabled = true
+            }
+        }.start()
     }
 
     override fun onStart() {
@@ -204,6 +237,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     }
     private fun startPhoneNumberVerification(phoneNumber: String) {
         // [START start_phone_auth]
+        binding.pgBarOtpVerify.beVisible()
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phoneNumber)       // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
@@ -295,7 +329,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         when (v?.id) {
 
 
-            R.id.verifyManually ->{
+            R.id.verifyManually -> {
                 binding.verifyManually.isEnabled = false
                 binding.pgBarOtpVerify.beVisible()
                 verifycode(otpview.text.toString())
@@ -303,10 +337,13 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
             R.id.imgBtnBack -> {
                 startPhoneAuthActivity()
             }
+            R.id.btnResend -> {
+                startPhoneNumberVerification("+$phoneNumber")
+            }
         }
     }
 
-    private fun verifycode(code : String) {
+    private fun verifycode(code: String) {
         val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code!!)
         signInWithCreadential(credential, code)
     }
@@ -412,7 +449,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
             // Send token to your backend via HTTPS
             if(!token.isNullOrEmpty()){
                 encryptor = EnCryptor()
-                val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
+                val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS, token.toString())
                 val encodeTokenString = Base64.encodeToString(
                     encryptedText,
                     Base64.DEFAULT
@@ -434,29 +471,35 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private fun checkUserInfoInServer() {
         binding.pgBarOtpVerify.beVisible()
         binding.tvVerifying.beVisible()
+            userInfoViewModel.getUserInfoFromServer(phoneNumber, this@ActivityVerifyOTP).observe(
+                this@ActivityVerifyOTP,
+                Observer { userinfo ->
+                    lifecycleScope.launchWhenStarted {
+                        customTokenSigner.signInWithCustomToken(userinfo.result.customToken)
+                        if (userinfo != null) {
+                            if (!userinfo.result.firstName.isNullOrEmpty()) {
+                                //user exists in server
+                                userInfoViewModel.saveUserInfoInLocalDb(
+                                    userinfo,
+                                    dataStoreViewmodel
+                                )
+                                    .observe(this@ActivityVerifyOTP, Observer { status ->
+                                        when (status) {
+                                            OPERATION_COMPLETED -> {
 
-            userInfoViewModel.getUserInfoFromServer( phoneNumber, this@ActivityVerifyOTP).observe(this@ActivityVerifyOTP, Observer { userinfo ->
-                lifecycleScope.launchWhenStarted {
-                customTokenSigner.signInWithCustomToken(userinfo.result.customToken)
-                if (userinfo != null) {
-                    if (!userinfo.result.firstName.isNullOrEmpty()) {
-                        //user exists in server
-                        userInfoViewModel.saveUserInfoInLocalDb(userinfo, dataStoreViewmodel)
-                            .observe(this@ActivityVerifyOTP, Observer { status ->
-                                when (status) {
-                                    OPERATION_COMPLETED -> {
-                                        binding.pgBarOtpVerify.beGone()
-                                        startMainActivity()
-                                    }
-                                }
-                            })
-                    } else {
-                        //user info not exists in server
-                        startGetUserInfoActivity()
+
+                                                binding.pgBarOtpVerify.beGone()
+                                                startMainActivity()
+                                            }
+                                        }
+                                    })
+                            } else {
+                                //user info not exists in server
+                                startGetUserInfoActivity()
+                            }
+                        }
                     }
-                }
-            }
-            })
+                })
 
     }
 
