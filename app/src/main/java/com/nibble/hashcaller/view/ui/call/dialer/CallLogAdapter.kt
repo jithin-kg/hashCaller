@@ -138,15 +138,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if (viewMarkingHandlerHelper.isMarked(callLog.id)) {
                 Log.d(TAG, "bind: ismarked")
                 logBinding.imgViewCallMarked.beVisible()
-
             } else {
                 logBinding.imgViewCallMarked.beInvisible()
             }
             if(viewMarkingHandlerHelper.isViewExpanded(callLog.id!!)){
              logBinding.layoutExpandableCall.beVisible()
-            }else{
+            }else {
                 logBinding.layoutExpandableCall.beGone()
-
             }
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
@@ -218,7 +216,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                         logBinding.imgVThumbnail.beInvisible()
                         circle.beVisible()
                         logBinding.pgBarCallItem.beInvisible()
-
                     }
                 }
                 SENDER_INFO_SEARCHING ->{
@@ -226,12 +223,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     circle.beVisible()
                     logBinding.pgBarCallItem.beVisible()
                 }
+
                 else ->{
                     logBinding.imgVThumbnail.beInvisible()
                     circle.beVisible()
                     logBinding.pgBarCallItem.beInvisible()
                 }
-
             }
             val firstLetter = nameStr[0]
             val firstLetterString = firstLetter.toString().toUpperCase()

@@ -108,12 +108,17 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
             Manifest.permission.READ_SMS,
             Manifest.permission.WRITE_CALL_LOG
         )
+
         val permissionRequest =  PermissionRequest.Builder(this)
             .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)
             .perms(perms)
             .rationale(getString(R.string.contact_and_phone_state_rational))
             .build()
-        EasyPermissions.requestPermissions(this, permissionRequest )
+
+        EasyPermissions.requestPermissions(
+            this,
+            permissionRequest)
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

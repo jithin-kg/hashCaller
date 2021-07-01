@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
  */
 
 class CallNumUploadWorker(private val context: Context, private val params:WorkerParameters ) :
-        CoroutineWorker(context, params){
+        CoroutineWorker(context, params) {
 
     val contacts = mutableListOf<PhoneNumWithHashedNumDTO>()
     private val callersListDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
@@ -102,7 +102,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                      */
                     val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-
+                    //99e6b20ac2e79d44dc9fe018c188b5ec6fb10ad78a844cb9d67a6ba5f14b30a0 918086176331
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
@@ -122,7 +122,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                thumbnailImg = cntct.imageThumbnail?:"",
                                city = cntct.location,
                                carrier = cntct.carrier
-
                            )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
@@ -156,11 +155,11 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
         for (caller in allcallsInContentProvider){
 
+            val contactAddressWithoutSpecialChars = libCountryHelper.getES164Formatednumber(formatPhoneNumber(caller.number), countryCodeIso)
 
-            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(libCountryHelper.getES164Formatednumber(formatPhoneNumber(caller.number), countryCodeIso))
+            val callersInfoAvailableInLocalDb=  callerssInfoFromServerDAO.find(contactAddressWithoutSpecialChars)
 
             if(callersInfoAvailableInLocalDb == null){
-                val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
 
                 var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                hashedAddress = hashUsingArgon(hashedAddress)
@@ -174,7 +173,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
             }else{
                 if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
-                    val contactAddressWithoutSpecialChars = formatPhoneNumber(caller.number!!)
+
                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                    hashedAddress = hashUsingArgon(hashedAddress)
                     hashedAddress?.let {hashed->

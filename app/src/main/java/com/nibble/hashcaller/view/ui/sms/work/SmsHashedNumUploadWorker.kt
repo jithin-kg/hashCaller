@@ -124,6 +124,7 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                             var formated = formatPhoneNumber(cntct.hash)
 
                             formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+
                             callersInfoFromServerDAO?.updateByHash(
                                 hashedNum = cntct.hash,
                                 spamCount = cntct.spamCount,
@@ -134,7 +135,6 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                                 thumbnailImg = cntct.imageThumbnail?:"",
                                 city = cntct.location,
                                 carrier = cntct.carrier
-
                             )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

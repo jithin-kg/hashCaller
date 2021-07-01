@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetStartedBinding
 import com.nibble.hashcaller.databinding.ContactPermissionAlertBinding
@@ -30,7 +31,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
         super.onCreate(savedInstanceState)
         binding = ActivityGetStartedBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initAlertView()
+//        initAlertView()
         initListeners()
     }
 
@@ -53,14 +54,16 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
 
     }
     private fun initListeners() {
-        binding.btnRequestPermission.setOnClickListener(this)
+        binding.btnContinueGetStd.setOnClickListener(this)
         binding.tvTermsAgree.setOnClickListener(this)
-        alertBinding.btnContinueAlert.setOnClickListener(this)
+//        alertBinding.btnContinueAlert.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btnRequestPermission -> {
+            R.id.btnContinueGetStd -> {
+//                startPhoneAuthActivity()
+
 //                val isPermissionGiven = requesetPermission()
 //                if(isPermissionGiven){
 
@@ -71,8 +74,6 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
                 }else {
                     startPhoneAuthActivity()
                 }
-
-
             }
             R.id.tvTermsAgree ->{
                 startPrivacyIntent()
@@ -115,9 +116,9 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
     private fun requestPermission() {
         val perms = arrayOf(Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.READ_SMS,
-                    CALL_PHONE // this permission is required make phone call intent
+//            Manifest.permission.READ_CALL_LOG,
+//            Manifest.permission.READ_SMS,
+//                    CALL_PHONE // this permission is required make phone call intent
         )
        val permissionRequest =  PermissionRequest.Builder(this)
             .code(PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS)
@@ -141,10 +142,24 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
         startPhoneAuthActivity()
     }
 
+//    override fun finish() {
+//        super.finish()
+//        overridePendingTransition(R.anim.in_anim,
+//            R.anim.out_anim
+//        );
+//    }
     private fun startPhoneAuthActivity() {
-        val i = Intent(this, ActivityPhoneAuth::class.java)
-        startActivity(i)
-        finish()
+            val i = Intent(this, ActivityPhoneAuth::class.java)
+            startActivity(i)
+
+            overridePendingTransition(R.anim.in_anim,
+                R.anim.out_anim
+            );
+            finish()
+
+    }
+    override fun onBackPressed() {
+        finishAfterTransition()
     }
 
     companion object {

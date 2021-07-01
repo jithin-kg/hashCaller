@@ -8,6 +8,7 @@
     android:background="@android:color/transparent"
     android:id="@+id/layoutWindowParent"
     >
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutInnerWindow"
         android:layout_width="match_parent"

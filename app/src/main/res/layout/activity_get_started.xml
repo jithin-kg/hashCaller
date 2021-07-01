@@ -69,12 +69,12 @@
         android:focusable="true"
         android:text="@string/terms_and_conditions_agree"
         android:textColor="@color/textColor"
-        app:layout_constraintBottom_toTopOf="@+id/btnRequestPermission"
+        app:layout_constraintBottom_toTopOf="@+id/btnContinueGetStd"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="@+id/textView19" />
 
     <Button
-        android:id="@+id/btnRequestPermission"
+        android:id="@+id/btnContinueGetStd"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"

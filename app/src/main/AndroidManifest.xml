@@ -10,7 +10,6 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -52,16 +51,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SplashTheme">
+        <activity android:name=".view.ui.GetStartActivity"
+            android:theme="@style/AppTheme"
+            />
         <activity
             android:name=".view.ui.FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/SplashTheme">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
 
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
         <activity
             android:name=".view.ui.userdata.GetUserDataActiivty"
             android:theme="@style/AppTheme" />
@@ -270,11 +272,14 @@
             <!-- android:name="com.google.android.safetynet.ATTEST_API_KEY" -->
             <!-- android:value="@string/safety_net_api_key" /> -->
 
-           <!-- <intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
@@ -337,10 +342,11 @@
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
                 android:value="@string/safety_net_api_key" />
 
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service

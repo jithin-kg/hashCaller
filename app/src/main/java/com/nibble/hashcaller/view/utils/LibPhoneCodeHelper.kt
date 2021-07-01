@@ -76,6 +76,22 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
         return formatPhoneNumber(formatedNumber)
     }
 
+    fun isValidForRegion(phoneNum: String, countryIso:String): Boolean {
+        var isValidForRegion = false
+
+        try {
+            val numProto = phoneUtil.parseAndKeepRawInput(phoneNum, countryIso)
+            val e164Formated = phoneUtil.format(numProto, PhoneNumberUtil.PhoneNumberFormat.E164)
+            val formatedNumProto = phoneUtil.parse(e164Formated, countryIso)
+             isValidForRegion = phoneUtil.isValidNumberForRegion(formatedNumProto, countryIso)
+
+        }catch (e:Exception){
+            Log.d(TAG, "getNumberWithCountryCode: $e")
+        }
+        return isValidForRegion
+    }
+
+
     companion object{
         const val TAG = "__LibCoutryCodeHelper"
     }

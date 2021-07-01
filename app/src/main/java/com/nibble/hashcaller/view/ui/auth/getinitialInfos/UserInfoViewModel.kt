@@ -199,8 +199,8 @@ class UserInfoViewModel(
                 response?.let {
                     emit(getGenericResponse(response))
                 }
-
             }
+
 
         }catch (e:Exception){
             Log.d(TAG, "upload: exception $e")

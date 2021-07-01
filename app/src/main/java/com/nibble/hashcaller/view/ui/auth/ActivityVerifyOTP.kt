@@ -74,7 +74,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
         }
-        binding.verifyManually.setOnClickListener(this)
+        initListeners()
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -82,6 +82,12 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         customTokenSigner = CustometokenSigner(auth, this)
         startPhoneNumberVerification("+$phoneNumber")
 
+
+    }
+
+    private fun initListeners() {
+        binding.verifyManually.setOnClickListener(this)
+        binding.imgBtnBack.setOnClickListener(this)
 
     }
 
@@ -294,12 +300,28 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 binding.pgBarOtpVerify.beVisible()
                 verifycode(otpview.text.toString())
             }
+            R.id.imgBtnBack -> {
+                startPhoneAuthActivity()
+            }
         }
     }
 
     private fun verifycode(code : String) {
         val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code!!)
         signInWithCreadential(credential, code)
+    }
+
+    override fun onBackPressed() {
+//        super.onBackPressed()
+       startPhoneAuthActivity()
+    }
+
+    private fun startPhoneAuthActivity() {
+        val intent = Intent(this, ActivityPhoneAuth::class.java)
+        startActivity(intent)
+        this.overridePendingTransition(R.anim.enter_from_left,
+            R.anim.fade_out_animation);
+        finish()
     }
 
     private fun signInWithCreadential(
@@ -423,8 +445,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                             .observe(this@ActivityVerifyOTP, Observer { status ->
                                 when (status) {
                                     OPERATION_COMPLETED -> {
-
-
                                         binding.pgBarOtpVerify.beGone()
                                         startMainActivity()
                                     }

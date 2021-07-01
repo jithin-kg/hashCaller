@@ -30,6 +30,7 @@ class Window(
     private val context: Context,
     private val countryCodeHelper: LibPhoneCodeHelper?
 ) {
+
     private var phoneNumber:String = ""
     private var callerInfoFoundFrom = INFO_SEARCHING
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
