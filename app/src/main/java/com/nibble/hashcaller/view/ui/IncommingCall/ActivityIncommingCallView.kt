@@ -29,13 +29,19 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
+import com.nibble.hashcaller.utils.extensions.startIndividualSMSActivityByAddress
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
+import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
+import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
+import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
@@ -88,6 +94,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
         binding.tvPhoneNumIncomming.text = phoneNumber
+        binding.txtVcallerName.text = phoneNumber
         Log.d(TAG, "onCreate: $phoneNumber")
         getCallerInfo()
         checkIfUserBlockedThisNumber()
@@ -204,10 +211,9 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private fun initListeners() {
         binding.imgBtnCloseIncommin.setOnClickListener(this)
         binding.imgBtnCallIncomingBlock.setOnClickListener(this)
-        binding.imgBtnCallIncomingSMS.setOnClickListener(this)
+        binding.imgBtnSendSMSInc.setOnClickListener(this)
         binding.imgBtnCallIncomming.setOnClickListener(this)
-
-
+        binding.imgBtnSearchForCaller.setOnClickListener(this)
 
         radioBusiness?.setOnClickListener(this)
         radioPerson?.setOnClickListener(this)
@@ -229,15 +235,25 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             R.id.imgBtnCallIncomingBlock ->{
                 showBottomSheetDialog()
             }
-            R.id.imgBtnCallIncomingSMS ->{
-
+            R.id.imgBtnSendSMSInc ->{
+                startIndividualSMSActivityByAddress(phoneNumber)
+                finishAfterTransition()
             }
 
             R.id.imgBtnCallIncomming ->{
+                makeCall("+${formatPhoneNumber(phoneNumber)}")
+                finishAfterTransition()
             }
             R.id.radioScam, R.id.radioSales, R.id.radioPerson, R.id.radioBusiness    ->{
 //                toast("radio scan clicked")
                 radioClicked(v as RadioButton)
+
+            }
+            R.id.imgBtnSearchForCaller -> {
+                val intent = Intent(this, IndividualContactViewActivity::class.java)
+                intent.putExtra(CONTACT_ID, phoneNumber)
+                startActivity(intent)
+                finishAfterTransition()
             }
             R.id.btnBlock -> {
                 blockThisAddress()
@@ -357,7 +373,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
      */
     override fun onBackPressed() {
         closeActivity()
-        super.onBackPressed()
+
 
     }
 

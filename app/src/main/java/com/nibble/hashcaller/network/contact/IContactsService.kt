@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.network.contact
 
 import com.nibble.hashcaller.network.user.IuserService
+import com.nibble.hashcaller.repository.contacts.ContactsSaveDTO
 import com.nibble.hashcaller.repository.contacts.ContactsSyncDTO
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import retrofit2.Response
@@ -39,6 +40,12 @@ interface IContactsService  {
     @POST("contacts/uploadcontacts")
     suspend fun uploadContacts(
         @Body contacts: ContactsSyncDTO,
+        @Header("Authorization") token:String
+    ):Response<UnknownCallersInfoResponse>
+
+    @POST("contacts/savecontacts")
+    suspend fun uploadContactsOf1000(
+        @Body contacts: ContactsSaveDTO,
         @Header("Authorization") token:String
     ):Response<UnknownCallersInfoResponse>
 

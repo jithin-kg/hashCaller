@@ -657,7 +657,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     }
 
     private fun showPopupMenu(menu: Int, anchorView: View) {
-        Log.d(IndividualSMSActivity.TAG, "onClick: img button")
+        Log.d(TAG, "onClick: img button")
 
         val popup = PopupMenu(this.requireActivity(), anchorView )
         popup.inflate(menu)
@@ -979,7 +979,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             }
 
         }catch (e: Exception){
-            Log.d(IndividualSMSActivity.TAG, "checkDefaultSettings: exception $e")
+            Log.d(TAG, "checkDefaultSettings: exception $e")
         }
 
         return isDefaultSMSHandler

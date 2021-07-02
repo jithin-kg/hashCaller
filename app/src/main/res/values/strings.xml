@@ -56,4 +56,7 @@
     <string name="no_result">No result</string>
     <string name="continue_str">Continue</string>
     <string name="resend_otp">Resend OTP</string>
+    <string name="location">Location</string>
+    <string name="drag_to_move_caller_id">Drag to move caller ID</string>
+    <string name="searching">Searching..</string>
 </resources>

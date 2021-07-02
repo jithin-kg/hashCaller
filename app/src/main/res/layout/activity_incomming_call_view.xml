@@ -149,14 +149,14 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
             android:src="@drawable/ic_baseline_call_24"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingSMS"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnSendSMSInc"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/imgBtnCallIncomingSMS"
+            android:id="@+id/imgBtnSendSMSInc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -177,7 +177,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_baseline_block_24"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnSearchForCaller"
-            app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingSMS"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnSendSMSInc"
             app:layout_constraintTop_toTopOf="parent"
 
             />
@@ -214,9 +214,9 @@
             android:layout_marginTop="8dp"
             android:text="Message"
             android:textColor="@color/textColor"
-            app:layout_constraintEnd_toEndOf="@+id/imgBtnCallIncomingSMS"
-            app:layout_constraintStart_toStartOf="@+id/imgBtnCallIncomingSMS"
-            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIncomingSMS" />
+            app:layout_constraintEnd_toEndOf="@+id/imgBtnSendSMSInc"
+            app:layout_constraintStart_toStartOf="@+id/imgBtnSendSMSInc"
+            app:layout_constraintTop_toBottomOf="@+id/imgBtnSendSMSInc" />
 
         <TextView
             android:id="@+id/tvBlockIncommingExpand"

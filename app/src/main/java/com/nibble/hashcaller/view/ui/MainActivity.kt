@@ -82,12 +82,16 @@ import com.nibble.hashcaller.view.ui.search.SearchFragment
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.ui.sms.search.SMSSearchFragment
 import com.nibble.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.DefaultFragmentManager
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
+import com.nibble.hashcaller.view.utils.getDecodedBytes
+import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
@@ -431,10 +435,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        mangeCipherInSharedPref()
         observeUserInfoLiveData()
 //        setupContactUploadWork()
-        observeUserInfo()
         initListeners()
 
         setupBottomMenuIconsBasedOnTheme()
+        initViewModel()
+        observeUserInfo()
+
 
     }
 
@@ -468,26 +474,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun observeUserInfo() {
 
-//        userInfoViewModel.userInfoLivedata.observe(this, Observer {
-//            if (it != null) {
-//                //todo possibilityr of strinindexoutofbound exception
-//                    try {
-//                         val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-//                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
-//                fullName.text = "${it.firstname} ${it.lastName}"
-//                if(!it.photoURI.isNullOrEmpty()){
-//                    headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
-//                    firstLetterView.beInvisible()
-//                }else{
-//                    firstLetterView.beVisible()
-//                }
-//                    }catch (e:Exception){
-//                        Log.d(TAG, "observeUserInfo: $e")
-//                        toast("Unable to get user name")
-//                    }
-//
-//            }
-//        })
+        userInfoViewModel.userInfoLivedata.observe(this, Observer {
+            if (it != null) {
+                    try {
+                        if(it.firstname.isNotEmpty()){
+                            val fLetter = formatPhoneNumber(it.firstname)[0].toString()
+                        }
+
+                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
+                fullName.text = "${it.firstname} ${it.lastName}"
+                if(!it.photoURI.isNullOrEmpty()){
+                    headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
+                    firstLetterView.beInvisible()
+                }else{
+                    firstLetterView.beVisible()
+                }
+                    }catch (e:Exception){
+                        Log.d(TAG, "observeUserInfo: $e")
+                        toast("Unable to get user name")
+                    }
+
+            }
+        })
     }
 
 

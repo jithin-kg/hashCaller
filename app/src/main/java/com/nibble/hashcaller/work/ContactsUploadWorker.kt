@@ -23,7 +23,9 @@ import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.*
 import retrofit2.HttpException
+import java.io.IOException
 import java.util.*
+import kotlin.jvm.Throws
 
 /**
  * Created by Jithin KG on 25,July,2020
@@ -33,6 +35,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         CoroutineWorker(context, params){
     val contacts = mutableListOf<ContactUploadDTO>()
     private  var contactsListOf12: List<List<ContactUploadDTO>> = mutableListOf()
+    private  var contactsListOf1000: List<List<ContactUploadDTO>> = mutableListOf()
 //    context?.let { HashCallerDatabase.getDatabaseInstance(it).contactInformationDAO()
     private val contactLisDAO:IContactIformationDAO = HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO()
     private val contactsLastSyncedDateDAO:IContactLastSycnedDateDAO = HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO()
@@ -41,6 +44,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
     val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
+    val hashedContactsDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).hashedContactsDAO() }
     private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
@@ -67,74 +71,11 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     callersInfoFromServerDAO.insert(listToBeInsertedToDBFirst)
                 }
 
-            if(!contactsListOf12.isNullOrEmpty()){
-                for (contactSublist in contactsListOf12){
-                    Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
-//                    val countryCode =   "91" //for emulator country code should be 91
-                    var countryISO = countryCodeIso
-//                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
-                    var countryCode = countryCodeIso
+            val def1= async { sendContactsOfSize12() }
+            val def2 = async { sendContactOfSize1000() }
 
-                    val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
-                    val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
-                    val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
-
-                    var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-                    if(result?.code() in (500..599)){
-                        return@withContext Result.retry()
-                    }
-
-                    if(result!=null){
-                        for(cntct in result?.body()?.contacts!!){
-//                            var formated = formatPhoneNumber(cntct.hash)
-//
-//                            formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
-//                            val callerInfoTobeSavedInDatabase = CallersInfoFromServer(
-//                                contactAddress = formated,
-//                                spammerType = 0,
-//                                firstName = cntct.firstName?:"",
-//                                informationReceivedDate =Date(),
-//                                spamReportCount =  cntct.spamCount,
-//                                isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
-//                                thumbnailImg = cntct.imageThumbnail?:"",
-//                                carrier = cntct.carrier,
-//                                country = cntct.country,
-//                                city =cntct.location
-//                            )
-
-                            //todo do updation
-                            callersInfoFromServerDAO?.updateByHash(
-                                hashedNum = cntct.hash,
-                                spamCount = cntct.spamCount,
-                                firstName = cntct.firstName,
-                                lastName = "cntct.lastName",
-                                date = Date(),
-                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
-                                thumbnailImg = cntct.imageThumbnail?:"",
-                                city = cntct.location,
-                                carrier = cntct.carrier
-
-                            )
-//                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
-                        }
-                    }
-//                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
-                    saveDateInContactLastSycnDate()
-                }
-            }
-
-//            if(lastDate==null ){
-//               sendContactsToServer()
-//            }else{
-//                val date = lastDate.date;
-//                val dateCompareHelper = DateCompareHelper()
-//                if(dateCompareHelper.isSyncDateLimitReached(date, 7)){
-//                    sendContactsToServer()
-//                }
-//            }
-            //if the previous contact synced date is greater than 7 perform the work
-
-//                uploadContactsToServer()
+            def1.await()
+            def2.await()
 
         }catch (e: HttpException){
             return@withContext Result.retry()
@@ -143,6 +84,83 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         return@withContext Result.success()
     }
 
+    private suspend fun sendContactOfSize1000() {
+        if(!contactsListOf1000.isNullOrEmpty()){
+            for (contactSublist in contactsListOf1000){
+                Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
+//                    val countryCode =   "91" //for emulator country code should be 91
+                var countryISO = countryCodeIso
+//                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
+                var countryCode = countryCodeIso
+
+                val contactSyncDto = ContactsSaveDTO(contactSublist)
+                val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
+
+                val result = contactsNetworkRepository.uploadContactsOf1000(contactSyncDto)
+
+                var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+                if(result?.code() in (500..599)){
+//                    throw  IOException()
+//                    return Result.retry()
+                    Log.d(TAG, "sendContactOfSize1000: server error ${result?.code()}")
+                }
+
+//                if(result!=null){
+//                    hashedContactsDAO.insert()
+//                    val contactsList:MutableList<MyContacts> = mutableListOf()
+//                    for(cntct in result?.body()?.contacts!!){
+//                       contactsList.add(MyContacts(cntct.))
+//                    }
+//                }
+////                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
+//                saveDateInContactLastSycnDate()
+            }
+        }
+    }
+
+    @Throws(IOException::class)
+    private suspend fun sendContactsOfSize12() {
+        if(!contactsListOf12.isNullOrEmpty()){
+            for (contactSublist in contactsListOf12){
+                Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
+//                    val countryCode =   "91" //for emulator country code should be 91
+                var countryISO = countryCodeIso
+//                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
+                var countryCode = countryCodeIso
+
+                val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
+                val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
+                val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+
+                var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+                if(result?.code() in (500..599)){
+                    throw  IOException()
+//                    return Result.retry()
+                }
+
+                if(result!=null){
+                    for(cntct in result?.body()?.contacts!!){
+                        //todo do updation
+                        callersInfoFromServerDAO?.updateByHash(
+                            hashedNum = cntct.hash,
+                            spamCount = cntct.spamCount,
+                            firstName = cntct.firstName,
+                            lastName = "",
+                            date = Date(),
+                            isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                            thumbnailImg = cntct.imageThumbnail?:"",
+                            city = cntct.location,
+                            carrier = cntct.carrier
+
+                        )
+//                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                    }
+                }
+//                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
+                saveDateInContactLastSycnDate()
+            }
+        }
+    }
 
 
     @SuppressLint("LongLogTag")
@@ -187,6 +205,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             }
         }
         contactsListOf12 = contacts.chunked(12)
+        contactsListOf1000 = contacts.chunked(1000)
 
 
     }

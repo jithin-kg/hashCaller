@@ -22,6 +22,7 @@
     <color name="colorBackgroundAppBar">#145291</color>
     <color name="statusBarColor">#FA145291</color>
     <color name="colorPrimaryDark">#145291</color>
+    <color name="colorPrimaryDarkIncomingCallView">#145291</color>
     <color name="primaryText"> #145191</color>
     <!--    <color name="colorBackgroundAppBar">#2D83C4</color>-->
 

@@ -3,15 +3,10 @@ package com.nibble.hashcaller.repository.contacts
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
-import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
-import com.nibble.hashcaller.network.contact.ContactsUploadResponse
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.utils.auth.TokenManager
-import com.nibble.hashcaller.utils.notifications.tokeDataStore
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
 import retrofit2.Response
 
@@ -46,58 +41,20 @@ class ContactsNetworkRepository(private val context: Context,
         contacts: ContactsSyncDTO
     ): Response<UnknownCallersInfoResponse>? {
 
-        // Execute web request through coroutine call adapter & retrofit
-//        val webResponse = WebAccess.partsApi.getPartsAsync().await()
-
-
-//            val contactListObject =
-//                ContactsListHelper(contacts)
-//            val list:MutableList<String> = ArrayList<String>()
-//            list.add("hi")
         var token:String? = tokenHelper?.getToken()
-        try {
-//            decryptor = Decryptor()
-
-//            token = decryptor?.decryptData(
-//                SAMPLE_ALIAS,
-//                EncryptorObject.encryption,
-//                EncryptorObject.iv
-//            ).toString()
-
-        } catch (e: Exception) {
-            Log.e(TAG, "decryptData() called with: " + e.message, e)
-        }
-
-
-
         return token?.let { retrofitService?.uploadContacts(contacts, it) }
-
-
-//        val decryptFromStringToke = decryptor.decryptFromStringToke(SAMPLE_ALIAS, tkn.toString())
-
-//        var tokenManager = TokenManager()
-//        Log.d(TAG, "uploadContacts: ${decryptFromStringToke.toString()}")
-
-//        val response = retrofitService?.uploadContacts(contacts, token)
-
-
-//        val isSuccess = response?.isSuccessful ?: false
-//        if(isSuccess){
-//            val result =response?.body()?.message
-////            val topic = Gson().fromJson(result, NetWorkResponse::class.java)
-////            Log.d(TAG, "uploadContacts: $topic")
-////            Log.d(TAG, "uploadContacts: ${response?.code()}")
-////            Log.d(TAG, "uploadContacts: $result")
-//            val r = response?.message()
-////            Log.d(TAG, "uploadContacts: $r")
-//            Log.d(TAG, "phone number: ${response?.body()!!.cntcts[0]?.phoneNumber}")
-//
-//
-//        }else{
-//            Log.d(TAG, "uploadContacts:failure ")
-//        }
-
     }
+
+    suspend fun
+            uploadContactsOf1000(
+        contacts: ContactsSaveDTO
+    ): Response<UnknownCallersInfoResponse>? {
+
+        var token:String? = tokenHelper?.getToken()
+        return token?.let { retrofitService?.uploadContactsOf1000(contacts, it) }
+    }
+
+
     companion object{
         private const val TAG = "__ContactsNetworkRepository"
     }

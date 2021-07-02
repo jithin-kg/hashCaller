@@ -116,7 +116,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                hashedNum = cntct.hash,
                                spamCount = cntct.spamCount,
                                firstName = cntct.firstName,
-                               lastName = "cntct.lastName",
+                               lastName = "",
                                date = Date(),
                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
                                thumbnailImg = cntct.imageThumbnail?:"",

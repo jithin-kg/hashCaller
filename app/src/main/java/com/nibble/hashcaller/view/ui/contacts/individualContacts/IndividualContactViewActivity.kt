@@ -255,7 +255,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onBackPressed: ")
 //        this.finishAfterTransition()
 //        super.onBackPressed()
-        finish()
+        finishAfterTransition()
     }
 
 
@@ -317,7 +317,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
             }
             R.id.imgBtnBack -> {
-                finish()
+                finishAfterTransition()
             }
             R.id.imgBtnCallindividual -> {
                 makeCall(phoneNum)

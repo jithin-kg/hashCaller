@@ -10,13 +10,13 @@ import androidx.room.Query
 @Dao
 interface IHashedContactsDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(sms: List<HashedContacts>)
+    suspend fun insert(sms: List<MyContacts>)
 
-    @Query("DELETE from hashed_number_contacts")
-    suspend fun delete()
-    @Query("SELECT * FROM hashed_number_contacts")
-    suspend fun getAll():List<HashedContacts>
+    @Query("DELETE from my_synced_contacts")
+    suspend fun deleteAll()
+    @Query("SELECT * FROM my_synced_contacts")
+    suspend fun getAll():List<MyContacts>
 
-    @Query("SELECT * FROM hashed_number_contacts")
-    fun getLivedata():LiveData<List<HashedContacts>?>
+//    @Query("SELECT * FROM my_synced_contacts")
+//    fun getLivedata():LiveData<List<MyContacts>?>
 }

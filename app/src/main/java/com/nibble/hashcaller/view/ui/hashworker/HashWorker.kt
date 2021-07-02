@@ -69,7 +69,6 @@ class HashWorker (private val context: Context,
                 //and upload to server and save in server and get info for that
 ////                //insert contacts into db (number, argonhashedNumber)
                 val listOfUnknownContacts = setOfContacts.toList()
-                insertIntoHashedContactsTable(listOfUnknownContacts)
 
                 Log.d(TAG, "getUnknownNumbers: all opearations completed")
 
@@ -120,24 +119,7 @@ class HashWorker (private val context: Context,
     }
 
 
-    private suspend fun insertIntoHashedContactsTable(listOfUnknownCallers: List<String>) {
-        var listOfHashedNumbers :MutableList<HashedContacts> = mutableListOf()
-        var callersListChunkOfSize12 = listOfUnknownCallers.chunked(12)
 
-        for (sublist in callersListChunkOfSize12){
-            val listOfUploadDTO: MutableList<ContactAddressWithHashDTO> = mutableListOf()
-                for (item in sublist){
-                    val formtedNumber = formatPhoneNumber(item)
-                    var hashed:String?=  Secrets().managecipher(context.packageName, formtedNumber)
-//                    hashed =  hashUsingArgon(hashed)
-                    hashed?.let {
-                        val hashedNumber = HashedContacts(formtedNumber, it )
-                        listOfHashedNumbers.add(hashedNumber)
-                    }
-                }
-                hashedContactsDAO?.insert(listOfHashedNumbers)
-        }
-    }
     private suspend fun insertHashedNumsIntoDatabase(listOfUnknownCallers: List<String>) {
         var listOfHashedNumbers :MutableList<HashedNumber> = mutableListOf()
         var callersListChunkOfSize12 = listOfUnknownCallers.chunked(12)

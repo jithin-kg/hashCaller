@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.activity_phone_auth.*
 class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, ConfirmationClickListener {
     var displayedInstruction = false
     private lateinit var userInfoViewModel: UserInfoViewModel
-
     private lateinit var binding:ActivityPhoneAuthBinding
     private lateinit var libCountryCodeHelper: LibPhoneCodeHelper
     private var phoneNumber: String = ""

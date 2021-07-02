@@ -56,7 +56,8 @@ fun Activity.requestDefaultSMSrole() {
 //            return isDefault
 }
 
-fun Activity.startIndividualSMSActivityByAddress(address: String, view: View) {
+fun Activity.startIndividualSMSActivityByAddress(address: String, view: View?= null) {
+
     val intent = Intent(this, IndividualSMSActivity::class.java )
     val bundle = Bundle()
     bundle.putString(CONTACT_ADDRES, address)

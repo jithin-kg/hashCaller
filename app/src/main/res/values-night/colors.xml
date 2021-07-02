@@ -7,6 +7,8 @@
     <color name="statusBarColor">#AB000000</color>
     <color name="colorPrimaryDark">#AB000000</color>
     <color name="primaryText"> #40ABEE</color>
+    <color name="colorPrimaryDarkIncomingCallView">#145291</color>
+
 
     <color name="primary_analogus_one">#4F8FBF</color>
     <color name="primary_analogus_two">#7F4FBF</color>
