@@ -30,7 +30,7 @@
                 android:layout_marginStart="@dimen/margin_padding_size_small"
                 android:layout_marginTop="@dimen/margin_padding_size_medium"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_baseline_arrow_back_white"
+                android:src="@drawable/ic_arrow_left_s_line"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

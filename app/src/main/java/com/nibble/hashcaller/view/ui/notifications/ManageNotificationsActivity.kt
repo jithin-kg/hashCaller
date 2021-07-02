@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,7 +24,8 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.SHARED_PREF_NOTIFICATOI
 import kotlinx.android.synthetic.main.activity_manage_notifications.*
 
 
-class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
+class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener,
+    View.OnClickListener {
     private var isRecieveCallNotificationEnabled = false
     private var isRecieveSMSNotificationEnabled = false
 //    private lateinit var sharedpreferences: SharedPreferences
@@ -46,6 +48,7 @@ class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnChecke
     private fun initListeners() {
         binding.switchCallBlkNotification.setOnCheckedChangeListener(this)
 //        binding.switchSMSBlkNotifications.setOnCheckedChangeListener(this)
+        binding.imgBtnBacckNotificaions.setOnClickListener(this)
     }
 
 
@@ -86,5 +89,17 @@ class ManageNotificationsActivity : AppCompatActivity(), CompoundButton.OnChecke
 ////                                    )
 //            }
         }
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.imgBtnBacckNotificaions -> {
+                finishAfterTransition()
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        finishAfterTransition()
     }
 }

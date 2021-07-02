@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.CallListBinding
+import com.nibble.hashcaller.databinding.ItemFinishSettingUpBinding
 import com.nibble.hashcaller.utils.DummYViewHolder
+import com.nibble.hashcaller.view.ui.call.CallFragment.Companion.ID_SHOW_SCREENING_ROLE
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.contacts.utils.TYPE_SPAM
@@ -46,7 +48,9 @@ class CallLogAdapter(private val context: Context,
     private val VIEW_TYPE_LOG = 0;
 //    private val VIEW_TYPE_SPAM = 1;
     private val VIEW_TYPE_LOADING = 1
+    private val VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID = 2
     private var callLogs: MutableList<CallLogTable> = mutableListOf()
+    private var showDefCallerIdLayout = false
     companion object{
         private const val TAG = "__CallLogAdapter";
         var prevView:View? = null
@@ -72,7 +76,14 @@ class CallLogAdapter(private val context: Context,
 
 
             return ViewHolderCallLog(logBinding)
-        }else {
+        }
+        else if(viewType == VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID){
+            val logBinding =  ItemFinishSettingUpBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+
+            return ViewHolderDefaultCallerId(logBinding)
+        }
+        else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.call_list_item_loading, parent, false)
             return DummYViewHolder(view)
         }
@@ -80,10 +91,16 @@ class CallLogAdapter(private val context: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(this.callLogs.isNotEmpty() && position < callLogs.size)
+        if(callLogs.isNotEmpty() ){
+            if (callLogs[position].id == ID_SHOW_SCREENING_ROLE){
+                return VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID
+            }
+         else if( position < callLogs.size)
              if(this.callLogs[position].id == null){
                 return VIEW_TYPE_LOADING
             }
+        }
+
         return VIEW_TYPE_LOG
     }
 
@@ -95,6 +112,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
              (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener, networkHandler)
+        }
+        VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID -> {
+            (holder as ViewHolderDefaultCallerId).bind()
         }
 
         VIEW_TYPE_LOADING ->{
@@ -116,8 +136,28 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         this.submitList(newContactList)
     }
 
-
-
+    inner class ViewHolderDefaultCallerId(private val binding:  ItemFinishSettingUpBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(){
+//            if(showDefCallerIdLayout){
+//                binding.root.beVisible()
+//            }else {
+//                callLogs.removeAt(0)
+////                binding.root.beGone()
+//            }
+            binding.btnSetup.setOnClickListener {
+                onContactItemClickListener(
+                    ID_SHOW_SCREENING_ROLE,
+                    this.adapterPosition,
+                    it,
+                    BUTTON_SIM_1,
+                    CallLogTable(id=ID_SHOW_SCREENING_ROLE),
+                    TYPE_CLICK_SCREENING_ROLE,
+                    it.visibility
+                )
+                true
+            }
+        }
+    }
     inner class ViewHolderCallLog(private val logBinding:  CallListBinding) : RecyclerView.ViewHolder(logBinding.root) {
         private val name = logBinding.textVcallerName
         private val circle = logBinding.textViewCrclr;
@@ -606,6 +646,38 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     fun getLogAt(adapterPosition: Int): CallLogTable {
         return callLogs[adapterPosition]
+    }
+
+    /**
+     * removes  the first item  in list if the id is -1 -> set as default caller Id list items
+     */
+    fun removeCallerIdRoleItem() {
+//        showDefCallerIdLayout = value
+        if(callLogs.isNotEmpty()){
+            if(callLogs[0].id== ID_SHOW_SCREENING_ROLE){
+                callLogs.removeAt(0)
+                notifyItemRemoved(0)
+                notifyItemRangeChanged(0, callLogs.size)
+            }
+        }
+
+    }
+
+    fun addCallerIdRoleItem() {
+//        showDefCallerIdLayout = value
+        if(callLogs.isEmpty()){
+            callLogs.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+        }else {
+            if(callLogs[0].id!= ID_SHOW_SCREENING_ROLE){
+                callLogs.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+            }
+        }
+        notifyItemInserted(0)
+        notifyItemRangeChanged(0, callLogs.size)
+
+
+//            }
+
     }
 
     interface ViewHandlerHelper {

@@ -6,6 +6,7 @@ import android.text.Editable
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySearchBinding
 import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.stubs.Contact
@@ -25,7 +26,7 @@ import com.nibble.hashcaller.view.ui.sms.util.*
 import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchSMSActivity : AppCompatActivity(), SMSSearchAdapter.LongPressHandler,
-    SMSListAdapter.NetworkHandler, ITextChangeListenerDelayed {
+    SMSListAdapter.NetworkHandler, ITextChangeListenerDelayed, View.OnClickListener {
     private lateinit var editTextListener: TextChangeListenerDelayed
 //    private lateinit var viewmodel:SMSSearchViewModel
     private lateinit var allSearchViewmodel: AllSearchViewmodel
@@ -151,6 +152,7 @@ class SearchSMSActivity : AppCompatActivity(), SMSSearchAdapter.LongPressHandler
     private fun initListeners() {
         editTextListener = TextChangeListenerDelayed(this)
         editTextListener.addListener( binding.edtTextSMSSearch)
+        binding.imgBtnBack.setOnClickListener(this)
 
     }
 
@@ -167,4 +169,14 @@ class SearchSMSActivity : AppCompatActivity(), SMSSearchAdapter.LongPressHandler
     override fun onBackPressed() {
         finishAfterTransition()
     }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.imgBtnBack -> {
+                finishAfterTransition()
+            }
+        }
+    }
+
+
 }

@@ -65,5 +65,6 @@
     <dimen name="margin_padding_size_xxlarge">40dp</dimen>
     <!-- Touch Target Size, https://material.io/design/usability/accessibility.html#layout-and-typography -->
     <dimen name="standard_touch_size">48dp</dimen>
+    <dimen name="avatar_profile_width">176dp</dimen>
 
 </resources>

@@ -70,6 +70,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun initListeners() {
         binding.ivAvatar.setOnClickListener(this)
         binding.btnUpdate.setOnClickListener(this)
+        binding.imgBtnBackBlock.setOnClickListener(this)
     }
 
     private fun observeFormfields() {
@@ -142,6 +143,9 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         requestCode= PermisssionRequestCodes.REQUEST_CODE_STORAGE
                     )
                 }
+            }
+            R.id.imgBtnBackBlock -> {
+                finishAfterTransition()
             }
             R.id.btnUpdate ->{
                 updateUserInfo()
@@ -231,6 +235,9 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
+    }
+    override fun onBackPressed() {
+        finishAfterTransition()
     }
 
 }

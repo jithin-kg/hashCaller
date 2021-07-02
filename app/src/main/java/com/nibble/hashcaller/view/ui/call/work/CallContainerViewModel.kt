@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
 import androidx.work.*
-import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.db.CallLogAndInfoFromServer
@@ -24,7 +23,6 @@ import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_PENDING
 import com.nibble.hashcaller.view.ui.sms.db.NameAndThumbnail
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
-import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import java.lang.Exception
 
@@ -35,6 +33,7 @@ class CallContainerViewModel(
     private val blockListPatternRepository: BlockListPatternRepository,
     private val generalBlockRepository: GeneralBlockRepository
 ) :ViewModel(){
+    private var showDfltCallerIdLayout = false
     var contactAddress = ""
      var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
@@ -47,7 +46,12 @@ class CallContainerViewModel(
 
     var markeditemsHelper = MarkeditemsHelper()
 
-
+    fun setShowDfltCallerIdLayout(value:Boolean){
+        showDfltCallerIdLayout = value
+    }
+    fun getShowDfltCallerIdLayout(): Boolean {
+        return showDfltCallerIdLayout
+    }
     init {
     }
 
@@ -548,6 +552,20 @@ class CallContainerViewModel(
 
 //        repository?.startHashWork(applicationContext)
     }
+
+    fun removeScreeningRoleItemFromList() = viewModelScope.launch{
+//        callLogTableData?.let { liveData ->
+//            liveData.value?.let { list->
+//                if(list[0].id == ID_SHOW_SCREENING_ROLE){
+//                    list.removeAt(0)
+//                    callLogTableData.value = list
+//                }
+//
+//            }
+//        }
+    }
+
+
 
 
     companion object {

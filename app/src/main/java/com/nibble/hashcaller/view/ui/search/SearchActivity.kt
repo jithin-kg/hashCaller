@@ -185,6 +185,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
         editTextListener.addListener(binding.searchVCallSearch)
         binding.imgBtnSearchFilter.setOnClickListener(this)
         searchFilterViewBinding.checkboxIncludeSMS.setOnCheckedChangeListener(this)
+        binding.imgBtnBackCallhistory.setOnClickListener(this)
 
 
     }
@@ -348,6 +349,9 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
         when(v?.id){
             R.id.imgBtnSearchFilter -> {
              showSearchFilterAlert()
+            }
+            R.id.imgBtnBackCallhistory -> {
+                finishAfterTransition()
             }
         }
     }

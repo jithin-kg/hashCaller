@@ -10,7 +10,6 @@ import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
@@ -51,34 +50,26 @@ import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.PERMISSION__ONLY_GIVEN
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_AND_PERMISSION_GIVEN
 import com.nibble.hashcaller.datastore.DataStoreViewmodel.Companion.USER_INFO_ONLY_GIVEN
-import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.USER_INFO_AVIALABLE_IN_DB
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.nibble.hashcaller.utils.auth.TokenHelper
-import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.crypto.KeyManager
-import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment
-import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListActivity
 import com.nibble.hashcaller.view.ui.call.CallFragment
 import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
-import com.nibble.hashcaller.view.ui.contacts.isDefaultSMSHandler
 import com.nibble.hashcaller.view.ui.contacts.utils.*
-import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
-import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.getstarted.GetStartedActivity
 import com.nibble.hashcaller.view.ui.hashworker.HasherViewmodel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.nibble.hashcaller.view.ui.notifications.ManageNotificationsActivity
 import com.nibble.hashcaller.view.ui.profile.ProfileActivity
-import com.nibble.hashcaller.view.ui.search.SearchFragment
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
@@ -424,12 +415,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         setupNavigationDrawer()
         initHeaderView()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if(!this. isScreeningRoleHeld()){
-                requestScreeningRole()
-
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if(!this. isScreeningRoleHeld()){
+//                requestScreeningRole()
+//
+//            }
+//        }
         setBottomSheetListener()
 
 //        mangeCipherInSharedPref()
@@ -1533,6 +1524,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 if (resultCode == Activity.RESULT_OK) {
                     //The user set you as the default screening app!
 //                        dataStoreViewModel.userSelectedAsScreeningApp()
+                    callFragment.activtyResultisDefaultScreening()
                     Log.d(TAG, "onActivityResult: user set as as the defaul screening app")
                 } else {
                     //the user didn't set you as the default screening app...

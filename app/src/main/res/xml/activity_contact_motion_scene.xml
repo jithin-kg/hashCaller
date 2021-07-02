@@ -31,7 +31,7 @@
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="32dp" />
+            android:layout_marginTop="@dimen/margin_padding_size_medium" />
         <Constraint
             android:id="@+id/ivAvatar"
             motion:layout_constraintWidth_percent=".28"
@@ -85,13 +85,13 @@
 
     <ConstraintSet android:id="@+id/end">
         <Constraint
+            android:id="@+id/imgBtnBack"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="32dp"
-            android:id="@+id/imgBtnBack"
+            android:layout_marginTop="@dimen/margin_padding_size_medium"
             android:layout_marginLeft="16dp" />
         <Constraint
             android:id="@+id/ivAvatar"

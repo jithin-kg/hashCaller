@@ -38,6 +38,7 @@ const val TYPE_LONG_PRESS = 1
 const val TYPE_MAKE_CALL= 2
 const val TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT = 3
 const val TYPE_CLICK_VIEW_CALL_HISTORY = 4
+const val TYPE_CLICK_SCREENING_ROLE = 5
 
 const val SMS_NOT_READ = 0
 const val SMS_READED = 1

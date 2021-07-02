@@ -6,53 +6,100 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     tools:context=".view.ui.call.spam.SpamCallsActivity">
-
-
-    <Toolbar
-        android:id="@+id/toolbar_dialer"
+ <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarSpamCall"
+        android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorBackground"
         android:elevation="4dp"
+        app:layout_scrollFlags="scroll|enterAlways"
+        android:background="@color/colorBackgroundAppBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+     <androidx.constraintlayout.widget.ConstraintLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/imgBtnBackBlock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:elevation="2dp"
-                android:focusable="true"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_close_24" />
+         <ImageView
+             android:id="@+id/imgBtnBackBlock"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:clickable="true"
+             android:elevation="2dp"
+             android:layout_marginStart="@dimen/margin_padding_size_medium"
+             android:focusable="true"
+             android:padding="8dp"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toTopOf="parent"
+             app:srcCompat="@drawable/ic_baseline_arrow_back_white" />
 
-            <TextView
-                android:id="@+id/tvDialerToolbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:alpha="0.87"
-                android:text="Spam Calls"
-                android:textColor="@color/textColor"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlock"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock" />
+         <TextView
+             android:id="@+id/tvDialerToolbar"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginStart="16dp"
+             android:alpha="0.87"
+             android:text="@string/spam_calls"
+             android:textColor="@color/colorWhite"
+             android:textSize="16sp"
+             app:layout_constraintBottom_toBottomOf="@+id/imgBtnBackBlock"
+             app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlock"
+             app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+     </androidx.constraintlayout.widget.ConstraintLayout>
+ </com.google.android.material.appbar.AppBarLayout>
 
 
-    </Toolbar>
+<!--    <Toolbar-->
+<!--        android:id="@+id/toolbar_dialer"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:elevation="4dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:background="@color/colorBackgroundAppBar"-->
+<!--        >-->
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imgBtnBackBlock"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:clickable="true"-->
+<!--                android:elevation="2dp"-->
+<!--                android:focusable="true"-->
+<!--                android:padding="8dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_baseline_close_24" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tvDialerToolbar"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="32dp"-->
+<!--                android:alpha="0.87"-->
+<!--                android:text="Spam Calls"-->
+<!--                android:textColor="@color/textColor"-->
+<!--                android:textSize="16sp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/imgBtnBackBlock"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock" />-->
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+<!--    </Toolbar>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyvlerV"
@@ -63,7 +110,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_dialer" />
+        app:layout_constraintTop_toBottomOf="@+id/appbarSpamCall" />
 
     <TextView
         android:id="@+id/tvSpamInfoCall"

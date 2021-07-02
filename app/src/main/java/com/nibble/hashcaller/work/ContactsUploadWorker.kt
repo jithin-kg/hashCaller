@@ -84,7 +84,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         return@withContext Result.success()
     }
 
-    private suspend fun sendContactOfSize1000() {
+    private suspend fun sendContactOfSize1000(): Int {
         if(!contactsListOf1000.isNullOrEmpty()){
             for (contactSublist in contactsListOf1000){
                 Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
@@ -100,6 +100,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
                 var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
                 if(result?.code() in (500..599)){
+                    return ERROR_WHILE_UPLODING
 //                    throw  IOException()
 //                    return Result.retry()
                     Log.d(TAG, "sendContactOfSize1000: server error ${result?.code()}")
@@ -116,6 +117,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //                saveDateInContactLastSycnDate()
             }
         }
+        return SUCCESS_UPLODING
     }
 
     @Throws(IOException::class)
@@ -127,7 +129,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                 var countryISO = countryCodeIso
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
                 var countryCode = countryCodeIso
-
                 val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
                 val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
                 val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
@@ -283,6 +284,8 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     companion object{
         private const val TAG = "__ContactsUploadWorker"
+        private const val ERROR_WHILE_UPLODING = 5
+        private const val SUCCESS_UPLODING = 2
     }
 
 }

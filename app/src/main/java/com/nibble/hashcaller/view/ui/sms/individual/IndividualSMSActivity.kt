@@ -972,7 +972,7 @@ class IndividualSMSActivity : AppCompatActivity(),
             binding.toolbarSMSIndividual.menu.findItem(R.id.itemSettings).isVisible = true
 
         }else{
-            finish()
+            finishAfterTransition()
 
         }
     }
@@ -1179,7 +1179,6 @@ class IndividualSMSActivity : AppCompatActivity(),
 
     override fun onBackPressed() {
         finishAfterTransition()
-        super.onBackPressed()
     }
 }
 

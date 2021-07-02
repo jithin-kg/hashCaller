@@ -13,27 +13,27 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorBackground"
+        android:background="@color/colorBackgroundAppBar"
         tools:context=".view.ui.settings.SettingsActivity">
 
         <ImageButton
             android:id="@+id/imgBtnBackMain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/margin_padding_size_medium"
             android:layout_marginTop="@dimen/img_btn_back_margin"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+            app:srcCompat="@drawable/ic_baseline_arrow_back_white" />
 
         <TextView
             android:id="@+id/textView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Settings"
-            android:textColor="@color/textColor"
+            android:text="@string/settings"
+            android:textColor="@color/colorWhite"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/imgBtnBackMain"
             app:layout_constraintStart_toEndOf="@+id/imgBtnBackMain"

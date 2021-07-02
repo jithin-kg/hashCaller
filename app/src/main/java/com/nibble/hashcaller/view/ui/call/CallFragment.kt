@@ -55,7 +55,7 @@ import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.utils.*
 import com.nibble.hashcaller.view.ui.extensions.getSpannableString
 import com.nibble.hashcaller.view.ui.extensions.isScreeningRoleHeld
-import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
+import com.nibble.hashcaller.view.ui.extensions.requestScreeningRole
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
@@ -136,7 +136,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         Log.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-
         setupBottomSheet()
         initListeners()
         if(checkRequiredPermission()){
@@ -148,6 +147,18 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             hideRecyclerView()
         }
 
+    }
+
+    private fun checkScreeningRole(): Boolean {
+        var isDefault = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if((activity as AppCompatActivity).isScreeningRoleHeld()){
+//                requestScreeningRole()
+               isDefault = true
+            }
+        }
+        return isDefault
+//        viewmodel?.setShowDfltCallerIdLayout(showLayout)
     }
 
     private fun hideRecyclerView() {
@@ -202,7 +213,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             callLogAdapter?.itemCount.let { count ->
                 if(count!=null && count < it.size ){
                     binding.pgBarCall.beGone()
-                    callLogAdapter?.submitCallLogs(it)
+                    submitListToAdapter(it)
+
 
                 }
             }
@@ -210,6 +222,18 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 binding.pgBarCall.beGone()
             }
         })
+    }
+
+    private fun submitListToAdapter(it: MutableList<CallLogTable>) {
+        lifecycleScope.launchWhenStarted {
+            if(!checkScreeningRole()){
+//                            callLogAdapter?.setCallerIdReqViewVisiblity(true)
+                it.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+            }else {
+                callLogAdapter?.removeCallerIdRoleItem()
+            }
+            callLogAdapter?.submitCallLogs(it)
+        }
     }
 
     private suspend fun observeMarkedItems() {
@@ -229,15 +253,22 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
-
-            callLogAdapter?.submitCallLogs(it)
+            submitListToAdapter(it)
+//           lifecycleScope.launchWhenStarted {
+//               if(!checkScreeningRole()){
+////                   callLogAdapter?.setCallerIdReqViewVisiblity(true)
+//                   it.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+//               }
+//               callLogAdapter?.submitCallLogs(it)
+//           }
         })
 
     }
 
-
-
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult: ")
+    }
 
     private fun initListeners() {
 
@@ -318,6 +349,14 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     override fun onResume() {
         super.onResume()
+
+        if(checkScreeningRole()){
+            callLogAdapter?.removeCallerIdRoleItem()
+        }else {
+            callLogAdapter?.addCallerIdRoleItem()
+            callLogAdapter?.scro
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             isScreeningApp = ( activity as AppCompatActivity).isScreeningRoleHeld()
         }
@@ -505,6 +544,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             var fullDataFromCproviderFetched = false
          const val INDIVIDUAL_CONTACT_ACTIVITY = 0
          const val INDIVIDUAL_CALL_LOG_ACTIVITY = 1
+        const val ID_SHOW_SCREENING_ROLE = -1L
 
     
     }
@@ -807,6 +847,12 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     ): Int {
         Log.d(TAG, "onCallLog item clicked: $id")
         when(clickType){
+            TYPE_CLICK_SCREENING_ROLE -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    (activity as AppCompatActivity).requestScreeningRole()
+                }
+                return UNMARK_ITEM
+            }
             TYPE_LONG_PRESS ->{
                 val prevExpandedLyoutId = viewmodel?.getPreviousExpandedLayout()
                 if(prevExpandedLyoutId!=null){
@@ -835,7 +881,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             }
             TYPE_MAKE_CALL ->{
              context?.makeCall(callLog.numberFormated)
+                return UNMARK_ITEM
             }
+
 
             else ->{
                 if(getMarkedItemsSize() == 0){
@@ -1154,6 +1202,14 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     override fun isInternetAvailable(): Boolean {
         return isInternetAvailable
+    }
+
+    fun activtyResultisDefaultScreening() {
+//        viewmodel?.removeScreeningRoleItemFromList()
+        callLogAdapter?.removeCallerIdRoleItem()
+//        callLogAdapter?.notifyItemChanged(0)
+//        viewmodel?.doFakeUpdate()
+
     }
 
 

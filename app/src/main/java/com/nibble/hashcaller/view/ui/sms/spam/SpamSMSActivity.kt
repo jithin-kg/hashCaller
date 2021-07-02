@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivitySpamSMSBinding
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
@@ -26,7 +27,7 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import kotlinx.coroutines.Dispatchers
 
 class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
-    SMSListAdapter.LongPressHandler, SMSListAdapter.NetworkHandler {
+    SMSListAdapter.LongPressHandler, SMSListAdapter.NetworkHandler, View.OnClickListener {
     private lateinit var binding : ActivitySpamSMSBinding
     private lateinit var viewmodel: SpamSMSViewModel
     private var isInternetAvailable = false
@@ -44,8 +45,13 @@ class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
         initRecyclerView()
         initViewmodel()
         observeSMSLivedata()
+        initListeners()
 
 
+    }
+
+    private fun initListeners() {
+        binding.imgBtnBackBlock.setOnClickListener(this)
     }
 
     private fun observeSMSLivedata() {
@@ -152,6 +158,13 @@ class SpamSMSActivity : AppCompatActivity(), SMSListAdapter.ViewMarkHandler,
     }
     override fun onBackPressed() {
         finishAfterTransition()
-        super.onBackPressed()
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.imgBtnBackBlock -> {
+                finishAfterTransition()
+            }
+        }
     }
 }

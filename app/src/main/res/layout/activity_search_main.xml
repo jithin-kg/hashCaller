@@ -32,7 +32,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/searchVCallSearch"
-            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+            app:srcCompat="@drawable/ic_arrow_left_s_line"
             tools:layout_editor_absoluteX="16dp" />
         <com.hbb20.CountryCodePicker
             android:id="@+id/coutryCodePicker"

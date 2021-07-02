@@ -29,7 +29,8 @@ import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import kotlinx.android.synthetic.main.activity_block_list.*
 
 
-class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper, SMSListAdapter.NetworkHandler {
+class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper, SMSListAdapter.NetworkHandler,
+    View.OnClickListener {
     private lateinit var binding: ActivitySpamCallsBinding
     private lateinit var layoutMngr: LinearLayoutManager
     var callLogAdapter: CallLogAdapter? = null
@@ -47,6 +48,11 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         initRecyclerView()
         initViewmodel()
         observeSpamCallLogs()
+        initListeners()
+    }
+
+    private fun initListeners() {
+        binding.imgBtnBackBlock.setOnClickListener(this)
     }
 
     private fun initSwipeHandler() {
@@ -275,5 +281,15 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         return isInternetAvailable
     }
 
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.imgBtnBackBlock -> {
+                finishAfterTransition()
+            }
+        }
+    }
 
+    override fun onBackPressed() {
+        finishAfterTransition()
+    }
 }

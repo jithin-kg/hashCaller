@@ -91,7 +91,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+                    app:srcCompat="@drawable/ic_arrow_left_s_line" />
 
                 <TextView
                     android:id="@+id/tvSMSAddress"

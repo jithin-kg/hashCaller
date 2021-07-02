@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -25,6 +27,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+
 
 /**
  * Created by Jithin KG on 03,July,2020
@@ -118,7 +121,15 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         blockListViewModel.allblockedList?.observe(viewLifecycleOwner,
             Observer<List<BlockedListPattern>> { blockedListPatterns ->
                 binding.pgBarBlockList.beGone()
-                blockedListPatterns?.let{blockListAdapter.submitPatternsList(it)}
+
+                blockedListPatterns?.let{
+                    //important to set animation controller for recyclerview to show recyclerview animation
+                    val animationController: LayoutAnimationController =
+                        AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
+                    binding.rcrViewPtrnList.layoutAnimation = animationController
+
+                    blockListAdapter.submitPatternsList(it)
+                }
                 if(blockedListPatterns.isNullOrEmpty()){
                     binding.tvInfo.beVisible()
                 }else {

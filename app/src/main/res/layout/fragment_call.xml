@@ -36,18 +36,7 @@
         app:layout_scrollFlags="scroll|enterAlways"
         android:background="@color/colorBackgroundAppBar"
         >
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:id="@+id/toolbarCall"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            android:background="@drawable/toolbar_background"-->
-<!--            app:elevation="4dp"-->
-<!--            android:elevation="4dp"-->
-<!--            android:layout_margin="4dp"-->
-<!--            app:contentInsetStartWithNavigation="0dp"-->
-<!--            app:navigationIcon="@drawable/ic_baseline_menu_24"-->
-<!--            app:layout_scrollFlags="scroll|enterAlways"-->
-<!--            >-->
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/callToolbarLayoutItems"
@@ -70,18 +59,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!--                <TextView-->
-            <!--                    android:id="@+id/tvCircularAvatar"-->
-            <!--                    android:layout_width="0dp"-->
-            <!--                    android:layout_height="0dp"-->
-            <!--                    android:text="H"-->
-            <!--                    android:gravity="center"-->
-            <!--                    android:textColor="@color/colorWhite"-->
-            <!--                    app:layout_constraintTop_toTopOf="@+id/imgBtnAvatarMainCalls"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="@+id/imgBtnAvatarMainCalls"-->
-            <!--                    app:layout_constraintStart_toStartOf="@+id/imgBtnAvatarMainCalls"-->
-            <!--                    app:layout_constraintEnd_toEndOf="@+id/imgBtnAvatarMainCalls"-->
-            <!--                    />-->
             <TextView
                 android:id="@+id/tvVHashcaller"
                 android:layout_width="0dp"

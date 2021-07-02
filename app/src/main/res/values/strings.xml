@@ -59,4 +59,7 @@
     <string name="location">Location</string>
     <string name="drag_to_move_caller_id">Drag to move caller ID</string>
     <string name="searching">Searching..</string>
+    <string name="spam_calls">Spam Calls</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
 </resources>

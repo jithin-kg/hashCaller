@@ -64,6 +64,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var radioSales:RadioButton
     private lateinit var btnBlock:Button
     private lateinit var tvSpamfeedbackMsg : TextView
+    private lateinit var tvblockedFeedback : TextView
     private var  popup: PopupMenu? = null
     @SuppressLint("LongLogTag")
 //    private  var contactId: Long? = null
@@ -195,14 +196,23 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 when(it.imageFoundFrom){
                     IMAGE_FOUND_FROM_C_PROVIDER ->{
                         loadImage(this, binding.ivAvatar, it.imageStr)
+                        binding.tvFirstLetter.beInvisible()
+                        //because when using motin layout somehow  unable to set  invisible visibility to tvFirstLetter
+                        binding.tvFirstLetter.text = ""
                     }
                     IMAGE_FOUND_FROM_DB ->{
                         binding.ivAvatar.setImageBitmap(getDecodedBytes(it.imageStr))
+                        binding.tvFirstLetter.beInvisible()
+                        binding.tvFirstLetter.text = ""
                     }
                     else->{
                         binding.tvFirstLetter.setRandomBackgroundCircle(color)
                         binding.ivAvatar.beInvisible()
-                        binding.tvFirstLetter.text = name[0].toString()
+                        if(name.isNotEmpty()){
+                            binding.tvFirstLetter.beVisible()
+                            binding.tvFirstLetter.text = name[0].toString()
+                        }
+
                     }
                 }
 
@@ -219,6 +229,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         bottomSheetDialog.setContentView(viewSheet)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
         tvSpamfeedbackMsg = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
+        tvblockedFeedback = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
 
 //        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
         radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
@@ -285,7 +296,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             binding.tvFirstLetter.beInvisible()
         }else{
 //            binding.ivAvatar.beInvisible()
-            binding.tvFirstLetter.beVisible()
+//            binding.tvFirstLetter.beVisible()
         }
     }
 
@@ -430,6 +441,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                        tvSpamfeedbackMsg.text = sb
 
                         bottomSheetDialogfeedback.show()
+                        tvblockedFeedback.text  = "You blocked $phoneNum"
                     }
 
                 }

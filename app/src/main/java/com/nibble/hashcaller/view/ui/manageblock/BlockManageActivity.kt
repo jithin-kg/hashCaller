@@ -129,6 +129,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockNotIncontacts.setOnCheckedChangeListener(this)
         binding.blockForeignCoutries.setOnCheckedChangeListener(this)
         binding.blockSpammersAuto.setOnCheckedChangeListener(this)
+        binding.imgBtnBackBlk.setOnClickListener(this)
 //        binding.switchDoNotReceiveSpamSMS.setOnClickListener(this)
 //        binding.layoutBlockContains.setOnClickListener(this)
 //        binding.layoutBlockEndsWith.setOnClickListener(this)
@@ -137,6 +138,9 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     }
     override fun onClick(v: View?) {
         when(v?.id) {
+            R.id.imgBtnBackBlk -> {
+                finishAfterTransition()
+            }
 //            R.id.switchDoNotReceiveSpamSMS -> {
 //
 //                onDoNotRecieveSpamSmsClicked()
@@ -181,6 +185,9 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         requestDefaultSMSrole()
     }
 
+    override fun onBackPressed() {
+        finishAfterTransition()
+    }
 
 
 }

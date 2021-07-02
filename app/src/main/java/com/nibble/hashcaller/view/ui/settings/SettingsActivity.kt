@@ -95,7 +95,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
                 startBlockManageActivity()
             }
             R.id.imgBtnBackMain -> {
-                finish()
+                finishAfterTransition()
             }
             R.id.layoutNotifications -> {
                 val intent = Intent(this, ManageNotificationsActivity::class.java)
@@ -112,6 +112,10 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         val intent = Intent(this, BlockManageActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
+    }
+
+    override fun onBackPressed() {
+        finishAfterTransition()
     }
     companion object{
         const val TAG = "__SettingsActivity"
