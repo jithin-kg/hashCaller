@@ -29,7 +29,7 @@ class BlockListPatternRepository(
 ) {
 
     //room executes all queries on a seperate thread
-    val allBlockedList: LiveData<List<BlockedListPattern>>? = blockedLIstDao?.getAllBLockListPattern()
+    val allBlockedList: LiveData<MutableList<BlockedListPattern>>? = blockedLIstDao?.getAllBLockListPattern()
 
     @SuppressLint("LongLogTag")
     suspend fun insert(blockedListPattern: BlockedListPattern): Int  = withContext(Dispatchers.IO){
@@ -78,7 +78,7 @@ class BlockListPatternRepository(
 
 
     }
-     fun getListLiveData(): LiveData<List<BlockedListPattern>>? {
+     fun getListLiveData(): LiveData<MutableList<BlockedListPattern>>? {
         return blockedLIstDao?.getAllBLockListPattern()
 
 

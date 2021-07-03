@@ -27,7 +27,7 @@ class GeneralblockViewmodel(
 
     ):ViewModel() {
 
-    val allBlockListLivedata: LiveData<List<BlockedListPattern>>? =  blockListPatternRepository.getListLiveData()
+    val allBlockListLivedata: LiveData<MutableList<BlockedListPattern>>? =  blockListPatternRepository.getListLiveData()
     val isThisNumberBlocked : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun blockThisAddress(spammerType: Int, contactAddress:String) : LiveData<Int> = liveData {

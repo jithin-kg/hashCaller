@@ -354,7 +354,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             callLogAdapter?.removeCallerIdRoleItem()
         }else {
             callLogAdapter?.addCallerIdRoleItem()
-            callLogAdapter?.scro
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -430,7 +429,20 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 context.isDarkThemeOn()
 
                 ) {
-                    id:Long, position:Int, view:View, btn:Int, callLog: CallLogTable, clickType:Int, visibility:Int ->onCallItemClicked(id, position, view, btn, callLog,clickType,visibility)}
+                    id:Long,
+                    position:Int,
+                    view:View,
+                    btn:Int,
+                    callLog: CallLogTable,
+                    clickType:Int,
+                    visibility:Int ->onCallItemClicked(id,
+                        position,
+                        view,
+                        btn,
+                        callLog,
+                        clickType,
+                        visibility)
+            }
             adapter = callLogAdapter
             itemAnimator = null
 
@@ -852,6 +864,10 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     (activity as AppCompatActivity).requestScreeningRole()
                 }
                 return UNMARK_ITEM
+            }
+
+            TYPE_CLICK_DISMISS_SCREENING_ROLE -> {
+                callLogAdapter?.removeCallerIdRoleItem()
             }
             TYPE_LONG_PRESS ->{
                 val prevExpandedLyoutId = viewmodel?.getPreviousExpandedLayout()

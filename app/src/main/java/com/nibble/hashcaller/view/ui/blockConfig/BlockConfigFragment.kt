@@ -2,14 +2,17 @@ package com.nibble.hashcaller.view.ui.blockConfig
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -23,6 +26,9 @@ import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlkListFragment
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListAdapter
 import com.nibble.hashcaller.view.ui.blockConfig.blockList.BlockListViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.nibble.hashcaller.view.ui.extensions.requestAlertWindowPermission
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK_ALLOW_OVERLAY
+import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_CLICK_DISMISS_OVERLAY
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
@@ -41,7 +47,6 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     private lateinit var blockListAdapter: BlockListAdapter
     private lateinit var blockListViewModel: BlockListViewModel
     private lateinit var swipeHandler: SwipeToDeleteCallback
-
 
 
     override fun onCreateView(
@@ -98,11 +103,27 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                 TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)
             blockListAdapter =
-                BlockListAdapter()
+                BlockListAdapter(){clickType:Int -> onListItemClicked(clickType)}
             adapter = blockListAdapter
 
         }
     }
+    fun onListItemClicked(clickType:Int){
+        when(clickType){
+            TYPE_CLICK_ALLOW_OVERLAY ->{
+                (activity as AppCompatActivity).requestAlertWindowPermission()
+            }
+            TYPE_CLICK_DISMISS_OVERLAY -> {
+                blockListViewModel.setDismissedState(true)
+                removePermissionItemFromList()
+            }
+        }
+    }
+
+    private fun removePermissionItemFromList() {
+        blockListAdapter?.removePermissionItemFromView()
+    }
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden && !this::blockListViewModel.isInitialized){
@@ -119,22 +140,32 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     }
     private fun observeBlocklistLivedata() {
         blockListViewModel.allblockedList?.observe(viewLifecycleOwner,
-            Observer<List<BlockedListPattern>> { blockedListPatterns ->
+            Observer<MutableList<BlockedListPattern>> { blockedListPatterns ->
                 binding.pgBarBlockList.beGone()
+               lifecycleScope.launchWhenStarted {
+                   blockedListPatterns?.let{ list->
+                       //important to set animation controller for recyclerview to show recyclerview animation
+                       val animationController: LayoutAnimationController =
+                           AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
+                       binding.rcrViewPtrnList.layoutAnimation = animationController
+                       if(!Settings.canDrawOverlays(context) && !blockListViewModel.getDismissedState()){
+                           list.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
+                       }else {
+                           if(list.isNotEmpty()){
+                               if(list[0].id == LIST_DUMMY_ID){
+                                   list.removeAt(0)
+                               }
+                           }
+                       }
+                       blockListAdapter.submitPatternsList(list)
 
-                blockedListPatterns?.let{
-                    //important to set animation controller for recyclerview to show recyclerview animation
-                    val animationController: LayoutAnimationController =
-                        AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
-                    binding.rcrViewPtrnList.layoutAnimation = animationController
-
-                    blockListAdapter.submitPatternsList(it)
-                }
-                if(blockedListPatterns.isNullOrEmpty()){
-                    binding.tvInfo.beVisible()
-                }else {
-                    binding.tvInfo.beGone()
-                }
+                   }
+                   if(blockedListPatterns.isNullOrEmpty()){
+                       binding.tvInfo.beVisible()
+                   }else {
+                       binding.tvInfo.beGone()
+                   }
+               }
             });
     }
     override fun onSaveInstanceState(outState: Bundle) {
@@ -185,7 +216,27 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(Settings.canDrawOverlays(context)){
+            removePermissionItemFromList()
+        }else {
+            addItemPermissionItemToList()
+        }
+
+    }
+
+    private fun addItemPermissionItemToList() {
+        blockListAdapter.addPermissionItemToList()
+    }
+
     override var isDefaultFgmnt: Boolean
         get() = isDflt
         set(value) {isDflt = value}
+
+    companion object {
+        const val TAG = "__BlockConfigFragment"
+        const val LIST_DUMMY_ID = -1
+
+    }
 }

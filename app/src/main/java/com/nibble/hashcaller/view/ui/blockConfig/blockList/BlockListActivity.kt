@@ -8,9 +8,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityBlockListBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.view.ui.SwipeToDeleteCallback
@@ -90,10 +88,16 @@ class BlockListActivity : AppCompatActivity(), View.OnClickListener {
                 TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)
             blockListAdapter =
-                BlockListAdapter()
+                BlockListAdapter(){
+                    clickType:Int -> onListItemClicked(clickType)
+                }
             adapter = blockListAdapter
 
         }
+    }
+
+    private fun onListItemClicked(clickType: Int) {
+
     }
 
     companion object{

@@ -21,7 +21,7 @@ interface BlockedLIstDao {
     suspend fun delete(blockPattern: String, type:Int)
     
     @Query("SELECT * FROM block_list_pattern")
-     fun getAllBLockListPattern():LiveData<List<BlockedListPattern>>
+     fun getAllBLockListPattern():LiveData<MutableList<BlockedListPattern>>
 
     @Query("SELECT * FROM block_list_pattern")
     fun getAllBLockListPatternByFlow():Flow<List<BlockedListPattern>>

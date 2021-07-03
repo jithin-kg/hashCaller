@@ -1,12 +1,15 @@
 package com.nibble.hashcaller.view.ui.auth
 
 import android.content.Intent
+import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.credentials.*
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityPhoneAuthBinding
@@ -21,6 +24,7 @@ import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_phone_auth.*
+import kotlinx.coroutines.delay
 
 
 class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, ConfirmationClickListener {
@@ -39,6 +43,10 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
         initListeners()
         initViewModel()
         libCountryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+        lifecycleScope.launchWhenCreated {
+            delay(2000L)
+            requestHint()
+        }
 
     }
 
@@ -141,8 +149,54 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
 //            R.anim.out_anim
 //        );
 //    }
+private fun requestHint() {
+    // To retrieve the Phone Number hints, first, configure
+    // the hint selector dialog by creating a HintRequest object.
+    val hintRequest = HintRequest.Builder()
+        .setPhoneNumberIdentifierSupported(true)
+        .build()
+
+    val options = CredentialsOptions.Builder()
+        .forceEnableSaveDialog()
+        .build()
+    // Then, pass the HintRequest object to
+    // credentialsClient.getHintPickerIntent()
+    // to get an intent to prompt the user to
+    // choose a phone number.
+    val credentialsClient = Credentials.getClient(this, options)
+    val intent = credentialsClient.getHintPickerIntent(hintRequest)
+    try {
+        startIntentSenderForResult(
+            intent.intentSender,
+            CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle()
+        )
+    } catch (e: IntentSender.SendIntentException) {
+        e.printStackTrace()
+    }
+
+}
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == RESULT_OK) {
+
+            // get data from the dialog which is of type Credential
+            val credential: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
+
+            // set the received data t the text view
+            credential?.apply {
+//                tv1.text = credential.id
+                Log.d(TAG, "onActivityResult: ${credential.id}")
+            }
+        } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
+            Log.d(TAG, "onActivityResult: no phone num")
+            //            Toast.makeText(this, "No phone numbers found", Toast.LENGTH_LONG).show();
+        }
+    }
 
     companion object {
         const val TAG = "__ActivityPhoneAuth"
+        var CREDENTIAL_PICKER_REQUEST = 1
+
     }
 }

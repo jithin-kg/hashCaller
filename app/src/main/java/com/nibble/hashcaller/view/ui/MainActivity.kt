@@ -407,7 +407,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
 //        listenUiEvents()
-        requestAlertWindowPermission()
+//        requestAlertWindowPermission()
         Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(applicationContext, R.color.textColor);
 
@@ -493,7 +493,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun requestAlertWindowPermission() {
         // Show alert dialog to the user saying a separate permission is needed
         if(!canDrawOverlays(applicationContext)){
-            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION)
+            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             startActivity(myIntent)
         }
 

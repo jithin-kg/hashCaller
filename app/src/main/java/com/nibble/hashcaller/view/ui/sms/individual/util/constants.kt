@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
+//TODO add this file to proguard rule
 
 val SPAMMER_TYPE = "spammer_typ"
 val SPAMMER_TYPE_BUSINESS = 1
@@ -39,6 +40,9 @@ const val TYPE_MAKE_CALL= 2
 const val TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT = 3
 const val TYPE_CLICK_VIEW_CALL_HISTORY = 4
 const val TYPE_CLICK_SCREENING_ROLE = 5
+const val TYPE_CLICK_DISMISS_SCREENING_ROLE = 6
+const val TYPE_CLICK_ALLOW_OVERLAY = 7
+const val TYPE_CLICK_DISMISS_OVERLAY = 8
 
 const val SMS_NOT_READ = 0
 const val SMS_READED = 1

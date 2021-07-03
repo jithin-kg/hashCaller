@@ -74,8 +74,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
 
     override fun onBackPressed() {
-        finish()
-        super.onBackPressed()
+       finishAfterTransition()
     }
 
     override fun onPostResume() {
@@ -142,7 +141,6 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
     companion object {
         private const val TAG = "__ActivityAddNewPattern"
-        var CREDENTIAL_PICKER_REQUEST = 1
     }
 
     @SuppressLint("LogNotTimber", "NewApi")
@@ -150,7 +148,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onClick: ")
         when(v?.id){
             R.id.imgBtnBackBlock->{
-                finish()
+                finishAfterTransition()
             }
             R.id.btnSave -> {
                 Log.d(TAG, "onClick: $patterntype")
@@ -159,54 +157,13 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 //                getAvailableSIMCardLabels()
 //                getSimAndNumberPairList()
 //                isDualSimOrNot()
-                requestHint()
+//                requestHint()
             }
         }
     }
 
-    private fun requestHint() {
-        // To retrieve the Phone Number hints, first, configure
-        // the hint selector dialog by creating a HintRequest object.
-        val hintRequest = HintRequest.Builder()
-            .setPhoneNumberIdentifierSupported(true)
-            .build()
 
-        val options = CredentialsOptions.Builder()
-            .forceEnableSaveDialog()
-            .build()
-        // Then, pass the HintRequest object to
-        // credentialsClient.getHintPickerIntent()
-        // to get an intent to prompt the user to
-        // choose a phone number.
-        val credentialsClient = Credentials.getClient(applicationContext, options)
-        val intent = credentialsClient.getHintPickerIntent(hintRequest)
-        try {
-            startIntentSenderForResult(
-                intent.intentSender,
-                CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle()
-            )
-        } catch (e: IntentSender.SendIntentException) {
-            e.printStackTrace()
-        }
 
-    }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == RESULT_OK) {
-
-            // get data from the dialog which is of type Credential
-            val credential: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
-
-            // set the received data t the text view
-            credential?.apply {
-//                tv1.text = credential.id
-                Log.d(TAG, "onActivityResult: ${credential.id}")
-            }
-        } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
-            Log.d(TAG, "onActivityResult: no phone num")
-        //            Toast.makeText(this, "No phone numbers found", Toast.LENGTH_LONG).show();
-        }
-    }
 
 
     private fun isDualSimOrNot() {

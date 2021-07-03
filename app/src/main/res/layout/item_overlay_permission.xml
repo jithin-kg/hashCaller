@@ -8,18 +8,17 @@
     android:layout_marginEnd="@dimen/margin_padding_size_medium"
     android:layout_marginBottom="@dimen/margin_padding_size_medium"
     app:layout_goneMarginBottom="@dimen/margin_padding_size_medium"
-    android:layout_marginTop="@dimen/margin_padding_size_medium"
     android:background="@drawable/background_setting_up">
 <!--<div>Icons made by <a href="https://flat-icons.com/" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
     <TextView
-        android:id="@+id/tvFinishSetup"
+        android:id="@+id/tvHeadOverlayItem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:alpha="0.84"
-        android:text="Set as Default Caller ID"
+        android:text="Enable Overlay"
         android:textColor="@color/textColor"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -45,12 +44,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:alpha="0.74"
-        android:text="Set HashCaller as default Caller Id to block spam calls and identify unknown calls."
+        android:text="Allow HashCaller to display over other apps to show caller information on incoming call."
         android:textColor="@color/textColor"
         app:layout_constraintEnd_toStartOf="@+id/imageButton"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvFinishSetup" />
+        app:layout_constraintTop_toBottomOf="@+id/tvHeadOverlayItem" />
 
     <Button
         android:id="@+id/btnDismiss"

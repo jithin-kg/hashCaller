@@ -7,7 +7,9 @@
     android:id="@+id/ContactFragment"
     android:background="@color/colorBackground"
     android:layout_marginBottom="?attr/actionBarSize"
-    android:backgroundTint="@color/colorBackground">
+    android:backgroundTint="@color/colorBackground"
+    android:theme="@style/AppTheme"
+    >
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"

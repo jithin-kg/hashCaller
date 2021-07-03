@@ -5,9 +5,11 @@ import android.app.role.RoleManager
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.View
 import androidx.annotation.RequiresApi
@@ -22,6 +24,15 @@ fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
     return dm
+}
+
+fun AppCompatActivity.requestAlertWindowPermission() {
+    // Show alert dialog to the user saying a separate permission is needed
+    if(!Settings.canDrawOverlays(applicationContext)){
+        val myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+        startActivity(myIntent)
+    }
+
 }
 
 

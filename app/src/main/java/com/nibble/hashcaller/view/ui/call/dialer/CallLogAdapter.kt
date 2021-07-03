@@ -51,7 +51,7 @@ class CallLogAdapter(private val context: Context,
     private val VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID = 2
     private var callLogs: MutableList<CallLogTable> = mutableListOf()
     private var showDefCallerIdLayout = false
-    companion object{
+    companion object {
         private const val TAG = "__CallLogAdapter";
         var prevView:View? = null
         var prevPos:Int? = null
@@ -62,7 +62,6 @@ class CallLogAdapter(private val context: Context,
         const val BUTTON_SIM_2 = 1;
         const val BUTTON_SMS = 2;
         const val BUTTON_INFO = 3;
-
     }
 
      
@@ -92,7 +91,7 @@ class CallLogAdapter(private val context: Context,
 
     override fun getItemViewType(position: Int): Int {
         if(callLogs.isNotEmpty() ){
-            if (callLogs[position].id == ID_SHOW_SCREENING_ROLE){
+            if (callLogs[position].id == ID_SHOW_SCREENING_ROLE && position==0){
                 return VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID
             }
          else if( position < callLogs.size)
@@ -152,6 +151,19 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     BUTTON_SIM_1,
                     CallLogTable(id=ID_SHOW_SCREENING_ROLE),
                     TYPE_CLICK_SCREENING_ROLE,
+                    it.visibility
+                )
+                true
+            }
+
+            binding.btnDismiss.setOnClickListener {
+                onContactItemClickListener(
+                    ID_SHOW_SCREENING_ROLE,
+                    this.adapterPosition,
+                    it,
+                    BUTTON_SIM_1,
+                    CallLogTable(id=ID_SHOW_SCREENING_ROLE),
+                    TYPE_CLICK_DISMISS_SCREENING_ROLE,
                     it.visibility
                 )
                 true

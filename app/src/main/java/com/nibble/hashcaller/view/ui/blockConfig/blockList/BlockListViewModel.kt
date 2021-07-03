@@ -17,10 +17,17 @@ import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
  */
 //todo extends from viewmodel
 class BlockListViewModel(application: Application) : AndroidViewModel(application) {
+    private var permsnBadgeDismissed = false
 
     private  val blockListPatternRepository: BlockListPatternRepository
 
-    val allblockedList: LiveData<List<BlockedListPattern>>?
+    val allblockedList: LiveData<MutableList<BlockedListPattern>>?
+    fun setDismissedState(isDismissed:Boolean){
+        permsnBadgeDismissed = isDismissed
+    }
+    fun getDismissedState(): Boolean {
+        return permsnBadgeDismissed
+    }
 
     init {
         //todo move theese to injector util

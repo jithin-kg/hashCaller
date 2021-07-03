@@ -9,32 +9,63 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.nibble.hashcaller.databinding.CustomBlockedItemBinding
+import com.nibble.hashcaller.databinding.ItemOverlayPermissionBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_CONTAINING
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_ENDS_WITH
-import com.nibble.hashcaller.view.ui.sms.individual.util.NUMBER_STARTS_WITH
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
+import com.nibble.hashcaller.view.ui.blockConfig.BlockConfigFragment.Companion.LIST_DUMMY_ID
+import com.nibble.hashcaller.view.ui.call.CallFragment
+import com.nibble.hashcaller.view.ui.call.db.CallLogTable
+import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import kotlin.collections.ArrayList
 
 
-class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPattern, RecyclerView.ViewHolder>(
+class BlockListAdapter(
+    private val onItemClickHandler: (Int) -> Unit
+) : androidx.recyclerview.widget.ListAdapter<BlockedListPattern, RecyclerView.ViewHolder>(
     PatternItemDiffCallback())
 {
 
+    private val VIEW_TYPE_BLOCK_LIST = 1
+    private val VIEW_TYPE_SETUP = 2
     private val TAG: String = "__BlogRecyclerAdapter"
 
     private var items: ArrayList<BlockedListPattern> = ArrayList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val binding = CustomBlockedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return BlockListViewHolder(binding, parent.context)
+        if(viewType == VIEW_TYPE_BLOCK_LIST){
+            val binding = CustomBlockedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return BlockListViewHolder(binding, parent.context)
+        }else {
+            val binding = ItemOverlayPermissionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ViewHolderItemSetup(binding)
+        }
+
+    }
+
+    inner class ViewHolderItemSetup(private val binding: ItemOverlayPermissionBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(){
+            binding.btnSetup.setOnClickListener {
+                onItemClickHandler(TYPE_CLICK_ALLOW_OVERLAY)
+                true
+            }
+            binding.btnDismiss.setOnClickListener {
+                onItemClickHandler(TYPE_CLICK_DISMISS_OVERLAY)
+                true
+            }
+
+
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder) {
+        when(holder.itemViewType) {
 
-            is BlockListViewHolder -> {
-                holder.bind(items[position])
+             VIEW_TYPE_BLOCK_LIST -> {
+                 (holder as BlockListViewHolder).bind(items[position])
             }
+            VIEW_TYPE_SETUP -> {
+                ( holder as  ViewHolderItemSetup).bind()
+            }
+
+
 
         }
     }
@@ -42,7 +73,15 @@ class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPat
     override fun getItemCount(): Int {
         return items.size
     }
+    override fun getItemViewType(position: Int): Int {
+        if (items.isNotEmpty()){
+            if(items[position].id == LIST_DUMMY_ID && position == 0){
+                return VIEW_TYPE_SETUP
+            }
+        }
+        return VIEW_TYPE_BLOCK_LIST
 
+    }
     fun submitPatternsList(patternsList: List<BlockedListPattern>){
         items = patternsList as ArrayList<BlockedListPattern>
         this.submitList(patternsList)
@@ -54,6 +93,28 @@ class BlockListAdapter : androidx.recyclerview.widget.ListAdapter<BlockedListPat
         Log.d(TAG, "size ${items.size}");
         items.removeAt(position)
         return item;
+    }
+
+    fun removePermissionItemFromView() {
+        if(items.isNotEmpty()){
+            if(items[0].id == LIST_DUMMY_ID){
+                items.removeAt(0)
+                notifyItemRemoved(0)
+                notifyItemRangeChanged(0, items.size)
+            }
+        }
+    }
+
+    fun addPermissionItemToList() {
+        if(items.isEmpty()){
+            items.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
+        }else {
+            if(items[0].id!= LIST_DUMMY_ID){
+                items.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
+            }
+        }
+        notifyItemInserted(0)
+        notifyItemRangeChanged(0, items.size)
     }
 
     private class BlockListViewHolder(
