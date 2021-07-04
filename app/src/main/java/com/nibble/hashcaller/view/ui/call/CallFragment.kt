@@ -307,7 +307,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private fun checkRequiredPermission(): Boolean {
        return EasyPermissions.hasPermissions(context,
            READ_CALL_LOG,
-        WRITE_CALL_LOG)
+        WRITE_CALL_LOG
+
+       )
     }
 
     private fun addScrollListener() {

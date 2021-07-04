@@ -1,186 +1,433 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutPermParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorBackground"
+    app:layoutDescription="@xml/activity_permission_request_scene"
     tools:context=".view.ui.auth.PermissionRequestActivity">
 
     <!--    https://storyset.com/illustration/solidarity/rafiki-->
     <!--<a href="https://storyset.com/work">Work illustrations by Storyset</a>-->
-<!--  important android:adjustViewBounds="true" removes padding in svg/ image-->
+    <!--  important android:adjustViewBounds="true" removes padding in svg/ image-->
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-         android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvAllowPermissionFirst"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="56dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="56dp"
-            android:gravity="center"
-            android:text="Let's Allow Permissions"
-            android:textColor="@color/textColor"
-            android:textSize="21sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvPermissionDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:text="@string/hashcaller_needs_your_permission"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvAllowPermissionFirst"
-            android:layout_marginTop="32dp"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:textColor="@color/textColor"
-            />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutPhoneAcccess"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        >
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/imgvCirclePhoneBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/contact_circular_background_primary"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            >
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_phone_line_white"
-                app:layout_constraintTop_toTopOf="@+id/imgvCirclePhoneBackground"
-                app:layout_constraintStart_toStartOf="@+id/imgvCirclePhoneBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/imgvCirclePhoneBackground"
-                app:layout_constraintEnd_toEndOf="@+id/imgvCirclePhoneBackground"
-                android:padding="10dp"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/tvPhoneStateHead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="Phone Access"
-            android:textStyle="bold"
-            android:textColor="@color/textColor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/imgvCirclePhoneBackground"
-            app:layout_constraintTop_toTopOf="@+id/imgvCirclePhoneBackground" />
-
-        <TextView
-            android:id="@+id/tvPhonestateDesc"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:text="@string/to_identify_and_block"
-            android:textColor="@color/textColor"
-            android:alpha="0.74"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tvPhoneStateHead"
-            app:layout_constraintTop_toBottomOf="@+id/tvPhoneStateHead" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--    End of phone state-->
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/layoutContact"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-
-    >
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/imgvCircleContactBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/contact_circular_background_primary"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_contacts_book_2_line_white"
-            app:layout_constraintTop_toTopOf="@+id/imgvCircleContactBackground"
-            app:layout_constraintStart_toStartOf="@+id/imgvCircleContactBackground"
-            app:layout_constraintBottom_toBottomOf="@+id/imgvCircleContactBackground"
-            app:layout_constraintEnd_toEndOf="@+id/imgvCircleContactBackground"
-            android:padding="10dp"
-            />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/constraintLayout4"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:layout_conversion_absoluteHeight="133dp"-->
+<!--        tools:layout_conversion_absoluteWidth="411dp"-->
+<!--        tools:layout_editor_absoluteX="0dp">-->
 
     <TextView
-        android:id="@+id/tvContactHead"
+        android:id="@+id/tvAllowPermissionFirst"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:text="Contacts Access"
-        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="Let's Allow Permissions"
         android:textColor="@color/textColor"
+        android:textSize="21sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imgvCircleContactBackground"
-        app:layout_constraintTop_toTopOf="@+id/imgvCircleContactBackground" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_conversion_absoluteHeight="28dp"
+        tools:layout_conversion_absoluteWidth="299dp" />
+    <ImageView
+        android:id="@+id/imgVLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:src="@drawable/horizontal_line"
+        android:alpha="0"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAllowPermissionFirst"
+        tools:layout_conversion_absoluteHeight="1dp"
+        tools:layout_conversion_absoluteWidth="411dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="68dp" />
 
     <TextView
-        android:id="@+id/tvContactDesc"
+        android:id="@+id/tvPermissionDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:text="@string/to_prevent_blocking_your"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="40dp"
+        android:gravity="center"
+        android:alpha="0.70"
+        android:text="@string/hashcaller_needs_your_permission"
         android:textColor="@color/textColor"
-        android:alpha="0.74"
-        android:layout_marginTop="8dp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tvContactHead"
-        app:layout_constraintTop_toBottomOf="@+id/tvContactHead" />
-</androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAllowPermissionFirst"
+        tools:layout_conversion_absoluteHeight="40dp"
+        tools:layout_conversion_absoluteWidth="347dp" />
+
+
+    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-        <Button
-            android:id="@+id/btnRequestPermission"
-            android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPermissionDescription">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Continue"
-            android:paddingTop="@dimen/primary_button_vertical_padding"
-            android:paddingBottom="@dimen/primary_button_vertical_padding"
-            android:textAllCaps="false"
-            android:textColor="@color/colorWhite"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="@dimen/btn_lower_margin"
-            />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutPhoneAcccess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutPhoneBackground"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/contact_circular_background_danger"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imgVPhoneState"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_phone_line_white"
+                        app:layout_constraintBottom_toBottomOf="@+id/layoutPhoneBackground"
+                        app:layout_constraintEnd_toEndOf="@+id/layoutPhoneBackground"
+                        app:layout_constraintStart_toStartOf="@+id/layoutPhoneBackground"
+                        app:layout_constraintTop_toTopOf="@+id/layoutPhoneBackground" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/tvPhoneStateHead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="Phone Access"
+                    android:textColor="@color/textColor"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/layoutPhoneBackground"
+                    app:layout_constraintTop_toTopOf="@+id/layoutPhoneBackground" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mandatory"
+                    app:layout_constraintStart_toEndOf="@+id/tvPhoneStateHead"
+                    app:layout_constraintTop_toTopOf="@+id/tvPhoneStateHead"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvPhoneStateHead"
+                    android:layout_marginStart="8dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/textColor"
+                    android:alpha="0.59"
+                    />
+                <TextView
+                    android:id="@+id/tvPhonestateDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:alpha="0.69"
+                    android:text="@string/to_identify_and_block"
+                    android:textColor="@color/textColor"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvPhoneStateHead"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPhoneStateHead" />
 
 
+                <Button
+                    android:id="@+id/btnPhoneState"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="28dp"
+                    android:text="@string/enable"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPhonestateDesc" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!--    End of phone state-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
 
-</LinearLayout>
+                >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/imgvCircleContactBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/contact_circular_background_danger"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imgVContact"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_contacts_book_2_line_white"
+                        app:layout_constraintBottom_toBottomOf="@+id/imgvCircleContactBackground"
+                        app:layout_constraintEnd_toEndOf="@+id/imgvCircleContactBackground"
+                        app:layout_constraintStart_toStartOf="@+id/imgvCircleContactBackground"
+                        app:layout_constraintTop_toTopOf="@+id/imgvCircleContactBackground" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <TextView
+                    android:id="@+id/tvContactHead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="Contacts Access"
+                    android:textColor="@color/textColor"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/imgvCircleContactBackground"
+                    app:layout_constraintTop_toTopOf="@+id/imgvCircleContactBackground" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mandatory"
+                    app:layout_constraintStart_toEndOf="@+id/tvContactHead"
+                    app:layout_constraintTop_toTopOf="@+id/tvContactHead"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvContactHead"
+                    android:layout_marginStart="8dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/textColor"
+                    android:alpha="0.59"
+                    />
+                <TextView
+                    android:id="@+id/tvContactDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:alpha="0.69"
+                    android:text="@string/to_prevent_blocking_your"
+                    android:textColor="@color/textColor"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvContactHead"
+                    app:layout_constraintTop_toBottomOf="@+id/tvContactHead" />
+                <Button
+                    android:id="@+id/btnContactAcces"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/enable"
+                    android:layout_marginEnd="@dimen/margin_padding_size_xlarge"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvContactDesc"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="32dp"
+                android:alpha="0.30"
+                android:src="@drawable/horizontal_line" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutDispalyOver"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+
+                >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/imgvCirlcDispalyOver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/contact_circular_background_danger"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_contacts_book_2_line_white"
+                        app:layout_constraintBottom_toBottomOf="@+id/imgvCirlcDispalyOver"
+                        app:layout_constraintEnd_toEndOf="@+id/imgvCirlcDispalyOver"
+                        app:layout_constraintStart_toStartOf="@+id/imgvCirlcDispalyOver"
+                        app:layout_constraintTop_toTopOf="@+id/imgvCirlcDispalyOver" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <TextView
+                    android:id="@+id/tvDisplayOverHead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="Overlay permission."
+                    android:textColor="@color/textColor"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/imgvCirlcDispalyOver"
+                    app:layout_constraintTop_toTopOf="@+id/imgvCirlcDispalyOver" />
+
+                <TextView
+                    android:id="@+id/tvDisplayOverDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:alpha="0.69"
+                    android:text="@string/overly_description"
+                    android:textColor="@color/textColor"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvDisplayOverHead"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDisplayOverHead" />
+                <Button
+                    android:id="@+id/btnOverlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/enable"
+                    android:layout_marginEnd="@dimen/margin_padding_size_xlarge"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDisplayOverDesc"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/layoutCallerId"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+
+<!--                >-->
+
+<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                    android:id="@+id/imgvCirlcCallerId"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="32dp"-->
+<!--                    android:layout_marginTop="32dp"-->
+<!--                    android:background="@drawable/contact_circular_background_danger"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:src="@drawable/ic_contacts_book_2_line_white"-->
+<!--                        app:layout_constraintBottom_toBottomOf="@+id/imgvCirlcCallerId"-->
+<!--                        app:layout_constraintEnd_toEndOf="@+id/imgvCirlcCallerId"-->
+<!--                        app:layout_constraintStart_toStartOf="@+id/imgvCirlcCallerId"-->
+<!--                        app:layout_constraintTop_toTopOf="@+id/imgvCirlcCallerId" />-->
+<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+<!--                <TextView-->
+<!--                    android:id="@+id/tvCallerId"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="32dp"-->
+<!--                    android:text="Default Caller ID."-->
+<!--                    android:textColor="@color/textColor"-->
+<!--                    android:textStyle="bold"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="0.0"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/imgvCirlcCallerId"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/imgvCirlcCallerId" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/tvCallerIdDesc"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:layout_marginEnd="32dp"-->
+<!--                    android:alpha="0.74"-->
+<!--                    android:text="@string/caller_id_description"-->
+<!--                    android:textColor="@color/textColor"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/tvCallerId"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/tvCallerId" />-->
+<!--                <Button-->
+<!--                    android:id="@+id/btnCallerIdEnable"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/enable"-->
+<!--                    android:layout_marginEnd="@dimen/margin_padding_size_xlarge"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/tvCallerIdDesc"-->
+<!--                    style="@style/Widget.MaterialComponents.Button.TextButton"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    android:layout_marginBottom="8dp"-->
+<!--                    />-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+            <Button
+                android:id="@+id/btnRequestPermission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="@dimen/btn_lower_margin"
+                android:paddingTop="@dimen/primary_button_vertical_padding"
+                android:paddingBottom="@dimen/primary_button_vertical_padding"
+                android:text="Continue"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/constraintLayout5"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/btnRequestPermission"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="32dp"-->
+<!--            android:layout_marginEnd="32dp"-->
+<!--            android:layout_marginBottom="@dimen/btn_lower_margin"-->
+<!--            android:paddingTop="@dimen/primary_button_vertical_padding"-->
+<!--            android:paddingBottom="@dimen/primary_button_vertical_padding"-->
+<!--            android:text="Continue"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/colorWhite"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
+
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

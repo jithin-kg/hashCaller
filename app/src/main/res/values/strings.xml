@@ -62,4 +62,10 @@
     <string name="spam_calls">Spam Calls</string>
     <string name="profile">Profile</string>
     <string name="settings">Settings</string>
+    <string name="allow_all">Allow all</string>
+    <string name="overly_description">Enable display over other apps to show caller Id during incoming calls.</string>
+    <string name="caller_id_description">Set HashCaller as default caller ID to block and identify incoming calls, without this call blocking and caller Id functionality will not work properly.</string>
+    <string name="mandatory">mandatory</string>
+    <string name="enable">Enable</string>
+    <string name="rational_cntcts">HashCaller needs access to contacts to identify unknown calls and to enabling searching.</string>
 </resources>

@@ -5,7 +5,7 @@
 
     <!-- A transition describes an animation via start and end state -->
     <Transition
-        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetEnd="@+id/first_half"
         motion:constraintSetStart="@id/start"
         motion:duration="2000">
 
@@ -26,7 +26,7 @@
     </ConstraintSet>
 
     <!-- Constraints to apply at the end of the animation -->
-    <ConstraintSet android:id="@+id/end">
+    <ConstraintSet android:id="@+id/first_half">
         <Constraint
             android:id="@+id/red_star"
             android:layout_width="wrap_content"

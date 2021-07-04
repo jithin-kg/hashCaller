@@ -166,8 +166,11 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                        binding.tvInfo.beGone()
                    }
                }
-            });
+            })
+        ;
     }
+
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 //        if(this.blkListFragment != null){

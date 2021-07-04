@@ -61,8 +61,6 @@ class DataStoreViewmodel(private val repository: DataStoreRepository) : ViewMode
                     context,
                     Manifest.permission.READ_CONTACTS,
                     Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.CALL_PHONE,
-                    Manifest.permission.READ_SMS
 
                 )
             }

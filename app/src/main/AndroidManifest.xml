@@ -51,9 +51,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SplashTheme">
-        <activity android:name=".view.ui.GetStartActivity"
-            android:theme="@style/AppTheme"
-            />
+        <activity android:name=".view.ui.auth.RecommendeSettingsActivity"></activity>
+        <activity
+            android:name=".view.ui.GetStartActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -107,7 +108,9 @@
         <service
             android:name=".utils.callReceiver.IncommingCallForegroundService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            />
+
         <service
             android:name=".utils.callReceiver.CallFeedbackForegroundService"
             android:enabled="true"
@@ -233,7 +236,7 @@
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppThemeStatusBar">
             <intent-filter>
                 <category android:name="android.app.role.SMS" />
             </intent-filter>
@@ -395,6 +398,7 @@
                 <data android:mimeType="application/vnd.wap.sic" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name=".utils.MmsSentReceiver"
             android:taskAffinity="com.klinker.android.messaging.MMS_SENT" />

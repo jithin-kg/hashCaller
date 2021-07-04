@@ -54,7 +54,7 @@
     <dimen name="margin_start_search_result_info">16dp</dimen>
     <dimen name="img_btn_individual_contact">32dp</dimen>
     <dimen name="margin_horizontal_rational">80dp</dimen>
-    <dimen name="primary_button_vertical_padding">16dp</dimen>
+    <dimen name="primary_button_vertical_padding">8dp</dimen>
     <dimen name="btn_lower_margin">32dp</dimen>
 
     <!-- Margin & Padding, 8 dp baseline, https://material.io/design/layout/understanding-layout.html -->

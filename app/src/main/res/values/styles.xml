@@ -22,6 +22,27 @@
         <item name="android:windowContentTransitions">true</item>
     </style>
 
+<!--    This app them is used for  activities without blue actionbar/toolbar/appbar-->
+    <style name="AppThemeStatusBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorWhite</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="backgroundColor">@color/colorBackground</item>
+        <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
+        <item name="fontFamily">@font/roboto</item>
+        <!--        For enabling window activity transition-->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- android:windowLightStatusBar is important, this makes status bar item colors dark
+               so that it is visible when layout colorPrimaryDark is white-->
+        <item name="android:windowLightStatusBar">true</item>
+        <!--        end -->
+
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
     <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="backgroundColor">@color/colorPrimary</item>

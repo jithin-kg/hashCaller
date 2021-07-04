@@ -29,7 +29,6 @@ import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
-import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED

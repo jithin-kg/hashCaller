@@ -19,6 +19,26 @@
         <item name="android:windowLightStatusBar">false</item>
         <!--        end -->
     </style>
+
+    <!-- Base application theme. -->
+    <style name="AppThemeStatusBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorBackground</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:timePickerDialogTheme">@style/defaultNumberPickerTheme</item>
+        <item name="fontFamily"> @font/roboto</item>
+        <!--        For enabling window activity transition-->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- android:windowLightStatusBar is important, this makes status bar item colors dark
+              so that it is visible when layout colorPrimaryDark is white-->
+        <item name="android:windowLightStatusBar">false</item>
+        <!--        end -->
+    </style>
+
+
     <style name="AppModalStyle"
         parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottom_sheet_background</item>
