@@ -83,6 +83,13 @@ fun Context.isDarkThemeOn(): Boolean {
             UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
 }
 
+fun Context.hasMandatoryPermissions(): Boolean {
+    return EasyPermissions.hasPermissions(
+        this,
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.READ_PHONE_STATE,
+    )
+}
 
 
 

@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -24,6 +25,15 @@ fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
     return dm
+}
+
+/**
+ * remember to call finish after calling this activity
+ */
+fun AppCompatActivity.startPermissionRequestActivity(){
+    val i = Intent(this, PermissionRequestActivity::class.java)
+    startActivity(i)
+
 }
 
 fun AppCompatActivity.requestAlertWindowPermission() {
@@ -76,7 +86,16 @@ fun AppCompatActivity. isScreeningRoleHeld(): Boolean {
     var roleHeld = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
-        roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+         val isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)
+           if(isRoleAvailable){
+               roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+           }else {
+               //if screening role not available then set as role held
+               roleHeld = true
+           }
+
+    }else {
+        roleHeld = true
     }
     return roleHeld
 }

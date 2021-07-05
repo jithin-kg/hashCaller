@@ -65,6 +65,7 @@ import com.nibble.hashcaller.view.ui.call.dialer.DialerFragment
 import com.nibble.hashcaller.view.ui.call.spam.SpamCallsActivity
 import com.nibble.hashcaller.view.ui.contacts.ContactsContainerFragment
 import com.nibble.hashcaller.view.ui.contacts.utils.*
+import com.nibble.hashcaller.view.ui.extensions.startPermissionRequestActivity
 import com.nibble.hashcaller.view.ui.getstarted.GetStartedActivity
 import com.nibble.hashcaller.view.ui.hashworker.HasherViewmodel
 import com.nibble.hashcaller.view.ui.manageblock.BlockManageActivity
@@ -252,8 +253,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                    onSingnedOutcleanUp()
                }
                USER_INFO_ONLY_GIVEN -> {
-                   val i = Intent(this, PermissionRequestActivity::class.java)
-                   startActivity(i)
+                  startPermissionRequestActivity()
                    finish()
                }
                else -> {
@@ -1382,6 +1382,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         requestCode: Int, permissions: Array<String>,
         grantResults: IntArray
     ) {
+
         Log.d(TAG, "onRequestPermissionsResult: ")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode){

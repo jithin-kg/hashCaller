@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.KEY_BLOCK_COMMONG_SPAMMERS
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
+import com.nibble.hashcaller.view.ui.contacts.hasMandatoryPermissions
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -57,12 +58,7 @@ class DataStoreViewmodel(private val repository: DataStoreRepository) : ViewMode
         var result = PERMISSION_AND_USER_INFO_NOT_GIVEN
         viewModelScope.launch{
          val permissionDef =    async {
-                EasyPermissions.hasPermissions(
-                    context,
-                    Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.READ_PHONE_STATE,
-
-                )
+                context.hasMandatoryPermissions()
             }
 
             val userInfoDef = async {  repository.getBoolean(key) }

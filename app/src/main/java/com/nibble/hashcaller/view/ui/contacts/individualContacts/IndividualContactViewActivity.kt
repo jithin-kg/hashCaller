@@ -89,9 +89,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         observeAllBlockedList()
         observeIsthisNumberBlocked()
 
-
-
-
     }
 
     private fun observeIsthisNumberBlocked() {
@@ -196,13 +193,13 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 when(it.imageFoundFrom){
                     IMAGE_FOUND_FROM_C_PROVIDER ->{
                         loadImage(this, binding.ivAvatar, it.imageStr)
-                        binding.tvFirstLetter.beInvisible()
+                        binding.tvFirstLetter.beGone()
                         //because when using motin layout somehow  unable to set  invisible visibility to tvFirstLetter
                         binding.tvFirstLetter.text = ""
                     }
                     IMAGE_FOUND_FROM_DB ->{
                         binding.ivAvatar.setImageBitmap(getDecodedBytes(it.imageStr))
-                        binding.tvFirstLetter.beInvisible()
+                        binding.tvFirstLetter.beGone()
                         binding.tvFirstLetter.text = ""
                     }
                     else->{

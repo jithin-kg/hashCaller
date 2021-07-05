@@ -32,9 +32,12 @@ import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.contacts.hasMandatoryPermissions
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
+import com.nibble.hashcaller.view.ui.extensions.startPermissionRequestActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import kotlinx.android.synthetic.main.activity_testauth.*
@@ -330,9 +333,21 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
 
             R.id.verifyManually -> {
-                binding.verifyManually.isEnabled = false
-                binding.pgBarOtpVerify.beVisible()
-                verifycode(otpview.text.toString())
+
+                var isOtpValid = false
+                if(!binding.otpview.text.isNullOrEmpty()){
+                    if (binding.otpview.text.toString().length == 6){
+                        isOtpValid = true
+                    }
+                }
+                if(isOtpValid){
+                    binding.verifyManually.isEnabled = false
+
+                    verifycode(otpview.text.toString())
+                }else {
+                    toast("Please enter the OTP")
+                }
+
             }
             R.id.imgBtnBack -> {
                 startPhoneAuthActivity()
@@ -344,6 +359,10 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun verifycode(code: String) {
+        binding.tvDescResend.beInvisible()
+        binding.btnResend.beInvisible()
+        binding.pgBarOtpVerify.beVisible()
+
         val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code!!)
         signInWithCreadential(credential, code)
     }
@@ -489,7 +508,16 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
 
                                                 binding.pgBarOtpVerify.beGone()
-                                                startMainActivity()
+                                                if(hasMandatoryPermissions()){
+                                                    startMainActivity()
+                                                }else {
+                                                    val i = Intent(this@ActivityVerifyOTP, PermissionRequestActivity::class.java)
+                                                    startActivity(i)
+                                                    overridePendingTransition(R.anim.in_anim,
+                                                        R.anim.out_anim
+                                                    )
+                                                    finish()
+                                                }
                                             }
                                         }
                                     })

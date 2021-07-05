@@ -28,9 +28,12 @@ import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.MainActivity
+import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
+import com.nibble.hashcaller.view.ui.contacts.hasMandatoryPermissions
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
 import com.nibble.hashcaller.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
+import com.nibble.hashcaller.view.ui.extensions.startPermissionRequestActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.toast
@@ -227,9 +230,19 @@ private fun sendUserInfo() {
                                 OPERATION_COMPLETED -> {
 
                                     saveToSharedPref(true)
-                                    val i = Intent(this, MainActivity::class.java)
-                                    startActivity(i)
-                                    finish()
+                                    if(hasMandatoryPermissions()){
+                                        val i = Intent(this, MainActivity::class.java)
+                                        startActivity(i)
+                                        finish()
+                                    }else {
+                                        val i = Intent(this, PermissionRequestActivity::class.java)
+                                        startActivity(i)
+                                        overridePendingTransition(R.anim.in_anim,
+                                            R.anim.out_anim
+                                        )
+                                        finish()
+                                    }
+
                                 }
                             }
                         })

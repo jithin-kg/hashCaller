@@ -69,11 +69,11 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
 
 //                requestPermission()
 //                showAlert()
-                if(!isPermissionGiven()){
-                    requestPermission()
-                }else {
+//                if(!isPermissionGiven()){
+//                    requestPermission()
+//                }else {
                     startPhoneAuthActivity()
-                }
+//                }
             }
             R.id.tvTermsAgree ->{
                 startPrivacyIntent()

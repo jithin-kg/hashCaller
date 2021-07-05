@@ -70,7 +70,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.getstarted.GetStartedActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppThemeStatusBar" />
         <activity
             android:name=".view.ui.search.SearchActivity"
             android:launchMode="singleTop"
@@ -222,7 +222,7 @@
         <activity
             android:name=".view.ui.auth.ActivityVerifyOTP"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppThemeStatusBar" />
         <activity
             android:name=".view.ui.sms.schedule.ScheduleActivity"
             android:launchMode="singleTop"
@@ -248,7 +248,7 @@
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->
+            android:theme="@style/AppThemeStatusBar" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->
         <!-- important adjust resize ensure that view that all of your layout content is accessible -->
         <activity
             android:name=".view.ui.contacts.search.ActivitySerchContacts"
@@ -266,7 +266,7 @@
         <activity
             android:name=".view.ui.auth.ActivityPhoneAuth"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppThemeStatusBar" />
         <activity
             android:name=".view.ui.splashactivity.SplashActivity"
             android:launchMode="singleTop">

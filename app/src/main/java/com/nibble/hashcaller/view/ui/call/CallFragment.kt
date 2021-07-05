@@ -156,6 +156,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 //                requestScreeningRole()
                isDefault = true
             }
+        }else {
+            isDefault = true
         }
         return isDefault
 //        viewmodel?.setShowDfltCallerIdLayout(showLayout)
@@ -650,7 +652,16 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             .negativeButtonText("Cancel")
             .build()
         EasyPermissions.requestPermissions(this, request)
+        
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        Log.d(TAG, "onRequestPermissionsResult: ")
+    }
+    
 
 
 
@@ -946,26 +957,28 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
 
             val intent = getContactIntent(log, INDIVIDUAL_CONTACT_ACTIVITY)
-                val options = getOptions(view, log)
-                startActivity(intent, options.toBundle())
+            val options = getOptions(view, log)
+            startActivity(intent)
+//            startActivity(intent, options.toBundle())
     }
 
     private fun getOptions(view: View, log: CallLogTable): ActivityOptions {
-        val pairList = ArrayList<android.util.Pair<View, String>>()
-        val imgViewUserPhoto = view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgVThumbnail)
-        val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
-        var pair:android.util.Pair<View, String>? = null
-        if(log.thumbnailFromCp.isNotEmpty()){
-            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-        }else if(log.imageFromDb.isNotEmpty()){
-            pair = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
 
-        }else{
+        val pairList = ArrayList<android.util.Pair<View, String>>()
+        val imgViewUserPhoto =
+            view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgVThumbnail)
+        val textViewCrclr = view.findViewById<TextView>(R.id.textViewCrclr)
+        var pair: android.util.Pair<View, String>? = null
+        if (log.thumbnailFromCp.isNotEmpty()) {
+            pair = android.util.Pair(imgViewUserPhoto as View, "contactImageTransition")
+        } else if (log.imageFromDb.isNotEmpty()) {
+            pair = android.util.Pair(imgViewUserPhoto as View, "contactImageTransition")
+
+        } else {
             pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
         }
         pairList.add(pair)
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
-        return options
+        return ActivityOptions.makeSceneTransitionAnimation(activity, pairList[0])
     }
 
     private fun getContactIntent(

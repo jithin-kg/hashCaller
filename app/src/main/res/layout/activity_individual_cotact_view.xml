@@ -473,7 +473,7 @@
                 android:textColor="@android:color/holo_red_light"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 app:icon="@drawable/ic_baseline_block_red"
-                app:iconSize="32dp"
+                app:iconSize="24dp"
                 android:gravity="start|center_vertical"
                 app:iconPadding="24dp"
                 app:iconTint="@android:color/holo_red_light"

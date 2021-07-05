@@ -31,6 +31,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.getRelativeTime
 import kotlinx.android.synthetic.main.call_list.view.*
+import kotlin.math.log
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -238,7 +239,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }else if(!callLog.nameFromServer.isNullOrEmpty()){
                     infoFoundFrom = SENDER_INFO_FROM_DB
                     nameStr = callLog.nameFromServer!!
-
                 }else if(callLog.nameFromServer== null){
                     infoFoundFrom = SENDER_INFO_SEARCHING
                     nameStr = callLog.numberFormated
@@ -249,6 +249,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             when (infoFoundFrom) {
                 SENDER_INFO_FROM_CONTENT_PROVIDER -> {
+                    logBinding.imgVIndentfByHash.beInvisible()
                     if(callLog.thumbnailFromCp.isNotEmpty()){
                         isImageThumbnailAvaialble = true
                         showImageInCircle(logBinding, callLog.thumbnailFromCp)
@@ -261,6 +262,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }
 
                 SENDER_INFO_FROM_DB -> {
+                    logBinding.imgVIndentfByHash.beVisible()
                     if(callLog.imageFromDb.isNotEmpty()){
                         isImageThumbnailAvaialble = true
                         logBinding.imgVThumbnail.setImageBitmap(getDecodedBytes(callLog.imageFromDb))
@@ -271,12 +273,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     }
                 }
                 SENDER_INFO_SEARCHING ->{
+                    logBinding.imgVIndentfByHash.beInvisible()
                     logBinding.imgVThumbnail.beInvisible()
                     circle.beVisible()
                     logBinding.pgBarCallItem.beVisible()
                 }
 
                 else ->{
+                    logBinding.imgVIndentfByHash.beInvisible()
                     logBinding.imgVThumbnail.beInvisible()
                     circle.beVisible()
                     logBinding.pgBarCallItem.beInvisible()
@@ -397,14 +401,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
                 true
             }
-            logBinding.textViewCrclr.setOnClickListener{
+            logBinding.textViewCrclr.setOnClickListener {
 
                 val visibility =  logBinding.layoutExpandableCall.visibility
 
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
                     this.adapterPosition,
-                    it,
+                    logBinding.root,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,

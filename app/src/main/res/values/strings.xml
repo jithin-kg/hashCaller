@@ -68,4 +68,7 @@
     <string name="mandatory">mandatory</string>
     <string name="enable">Enable</string>
     <string name="rational_cntcts">HashCaller needs access to contacts to identify unknown calls and to enabling searching.</string>
+    <string name="verifying">Verifying..</string>
+    <string name="otp">OTP</string>
+    <string name="verify_otp">Verify OTP</string>
 </resources>
