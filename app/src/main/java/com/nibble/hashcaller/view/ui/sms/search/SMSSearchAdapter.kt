@@ -175,18 +175,18 @@ class SMSSearchAdapter(private val context: Context,
             if(senderInforFrom== SENDER_INFO_SEARCHING &&  networkHandler.isInternetAvailable()){
               view.pgBarSmsListItem.beVisible()
                 view.imgvIdentifiedByHash.beInvisible()
-                view.tvIdentifiedByhash.beInvisible()
+                view.imgvIdentifiedByHash.beInvisible()
                 Log.d(TAG, "bind: searching for ${sms.addressString}")
             }else if(senderInforFrom == SENDER_INFO_FROM_DB){
                 view.imgvIdentifiedByHash.beVisible()
-                view.tvIdentifiedByhash.beVisible()
+                view.imgvIdentifiedByHash.beVisible()
 
             }
 
             else{
                 view.pgBarSmsListItem.beInvisible()
                 view.imgvIdentifiedByHash.beInvisible()
-                view.tvIdentifiedByhash.beInvisible()
+                view.imgvIdentifiedByHash.beInvisible()
 
             }
             /**

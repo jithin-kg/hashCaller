@@ -249,7 +249,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             when (infoFoundFrom) {
                 SENDER_INFO_FROM_CONTENT_PROVIDER -> {
-                    logBinding.imgVIndentfByHash.beInvisible()
+                    logBinding.imgVIdentfByHash.beInvisible()
                     if(callLog.thumbnailFromCp.isNotEmpty()){
                         isImageThumbnailAvaialble = true
                         showImageInCircle(logBinding, callLog.thumbnailFromCp)
@@ -262,7 +262,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }
 
                 SENDER_INFO_FROM_DB -> {
-                    logBinding.imgVIndentfByHash.beVisible()
+                    logBinding.imgVIdentfByHash.beVisible()
                     if(callLog.imageFromDb.isNotEmpty()){
                         isImageThumbnailAvaialble = true
                         logBinding.imgVThumbnail.setImageBitmap(getDecodedBytes(callLog.imageFromDb))
@@ -273,14 +273,14 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     }
                 }
                 SENDER_INFO_SEARCHING ->{
-                    logBinding.imgVIndentfByHash.beInvisible()
+                    logBinding.imgVIdentfByHash.beInvisible()
                     logBinding.imgVThumbnail.beInvisible()
                     circle.beVisible()
                     logBinding.pgBarCallItem.beVisible()
                 }
 
                 else ->{
-                    logBinding.imgVIndentfByHash.beInvisible()
+                    logBinding.imgVIdentfByHash.beInvisible()
                     logBinding.imgVThumbnail.beInvisible()
                     circle.beVisible()
                     logBinding.pgBarCallItem.beInvisible()

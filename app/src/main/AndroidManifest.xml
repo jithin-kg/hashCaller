@@ -287,7 +287,7 @@
         <activity
             android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
+            android:theme="@style/AppThemeStatusBar" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.sms.individual.IndividualSMSActivity"
             android:launchMode="singleTop"

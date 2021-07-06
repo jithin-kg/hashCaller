@@ -21,6 +21,7 @@ import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_CONTENT_PROVIDER
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_FROM_DB
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_NOT_FOUND
 import com.nibble.hashcaller.view.ui.sms.util.SENDER_INFO_SEARCHING
+import com.nibble.hashcaller.view.utils.getDecodedBytes
 import com.nibble.hashcaller.view.utils.getRelativeTime
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlin.time.ExperimentalTime
@@ -140,39 +141,65 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 nameStr = formatPhoneNumber(sms.contactAddress)
             }
             if(senderInforFrom == SENDER_INFO_FROM_DB){
-                binding.tvIdentifiedByhash.beVisible()
+                binding.imgvIdentifiedByHash.beVisible()
                 binding.imgvIdentifiedByHash.beVisible()
                 binding.pgBarSmsListItem.beInvisible()
             }else if(senderInforFrom == SENDER_INFO_SEARCHING){
                 binding.pgBarSmsListItem.beVisible()
-                binding.tvIdentifiedByhash.beInvisible()
+                binding.imgvIdentifiedByHash.beInvisible()
             }
             else {
                 binding.pgBarSmsListItem.beInvisible()
-                binding.tvIdentifiedByhash.beInvisible()
+                binding.imgvIdentifiedByHash.beInvisible()
                 binding.imgvIdentifiedByHash.beInvisible()
             }
+
             if(isSpam){
                 binding.textViewSMScontactCrclr.setRandomBackgroundCircle(TYPE_SPAM)
                 binding.imgVBlkIconSms.beVisible()
                 binding.textVSMSCntctName.setColorForText(R.color.spamText)
                 binding.imgVThumbnail.beInvisible()
                 binding.card.beInvisible()
-            }else if(sms.thumbnailFromCp.isEmpty()){
-                binding.textViewSMScontactCrclr.setRandomBackgroundCircle()
-                binding.imgVBlkIconSms.beInvisible()
-                firstLetter = nameStr[0].toString()
-                binding.textVSMSCntctName.setColorForText(R.color.textColor)
-                binding.imgVThumbnail.beInvisible()
                 binding.card.beInvisible()
-            }else{
-                loadImage(context, binding.imgVThumbnail, sms.thumbnailFromCp)
-                binding.imgVThumbnail.beVisible()
-                binding.imgVBlkIconSms.beInvisible()
-                binding.card.beVisible()
-                firstLetter = nameStr[0].toString()
-                binding.textVSMSCntctName.setColorForText(R.color.textColor)
+            }else {
+                if(sms.imageFromDb.isNotEmpty()){
+                    binding.imgVThumbnail.setImageBitmap(getDecodedBytes(sms.imageFromDb))
+                    binding.imgVThumbnail.beVisible()
+                    binding.textViewSMScontactCrclr.beInvisible()
+                }else if(sms.thumbnailFromCp.isNotEmpty()){
+                    loadImage(context, binding.imgVThumbnail, sms.thumbnailFromCp)
+                    binding.imgVThumbnail.beVisible()
+                    binding.textViewSMScontactCrclr.beInvisible()
+                }else {
+                    binding.textViewSMScontactCrclr.setRandomBackgroundCircle()
+                    binding.imgVThumbnail.beInvisible()
+                    binding.textViewSMScontactCrclr.beVisible()
+                    binding.card.beInvisible()
+                    firstLetter = nameStr[0].toString()
+                }
             }
+
+//            if(isSpam){
+//                binding.textViewSMScontactCrclr.setRandomBackgroundCircle(TYPE_SPAM)
+//                binding.imgVBlkIconSms.beVisible()
+//                binding.textVSMSCntctName.setColorForText(R.color.spamText)
+//                binding.imgVThumbnail.beInvisible()
+//                binding.card.beInvisible()
+//            }else if(sms.thumbnailFromCp.isEmpty()){
+//                binding.textViewSMScontactCrclr.setRandomBackgroundCircle()
+//                binding.imgVBlkIconSms.beInvisible()
+//                firstLetter = nameStr[0].toString()
+//                binding.textVSMSCntctName.setColorForText(R.color.textColor)
+//                binding.imgVThumbnail.beInvisible()
+//                binding.card.beInvisible()
+//            }else{
+//                loadImage(context, binding.imgVThumbnail, sms.thumbnailFromCp)
+//                binding.imgVThumbnail.beVisible()
+//                binding.imgVBlkIconSms.beInvisible()
+//                binding.card.beVisible()
+//                firstLetter = nameStr[0].toString()
+//                binding.textVSMSCntctName.setColorForText(R.color.textColor)
+//            }
             binding.textViewSMScontactCrclr.text = firstLetter
             binding.textVSMSCntctName.text = nameStr
             binding.tvSMSMPeek.text = sms.body
@@ -204,12 +231,12 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
             binding.tvSMSMPeek.text = sms.body
                 if(sms.readState ==SMS_NOT_READ){
                     binding.tvSMSMPeek.typeface = Typeface.DEFAULT_BOLD
-                    binding.tvSMSMPeek.alpha = 0.87f
+//                    binding.tvSMSMPeek.alpha = 0.87f
                     binding.tvSMSMPeek.setColorForText(R.color.textColor)
 
                 }else{
                     binding.tvSMSMPeek.typeface = Typeface.DEFAULT
-                    binding.tvSMSMPeek.alpha = 0.60f
+//                    binding.tvSMSMPeek.alpha = 0.60f
                     binding.tvSMSMPeek.setColorForText(R.color.textColor)
                 }
 

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.*
-import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockRepository
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -17,7 +16,6 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_PROGRESS
 import com.nibble.hashcaller.view.ui.sms.list.SMSLiveData
 import com.nibble.hashcaller.view.ui.sms.work.SmsHashedNumUploadWorker
-import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 
 /**
@@ -111,7 +109,7 @@ class SMSViewModel(
      * called when there is a change in table sender_infor_from_server changes
      */
     fun updateWithNewSenderInfo(list: List<CallersInfoFromServer>) = viewModelScope.launch {
-        upadteThreadsWithInfoFromServer()
+        upadteThreadsWithInfoFromServerAndCp()
 //        for(item in list){
 //            async { repository?.updateThreadsDBWithServerInfo(item) }.await()
 //        }
@@ -274,7 +272,7 @@ class SMSViewModel(
 //        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         withContext(Dispatchers.IO){
             sms?.let{
-                val as1 =    async {  repository?.insertIntoThreadsDb(it) }
+                val as1 =    async { repository?.insertIntoThreadsDb(it) }
                 val as2 = async{repository?.updateThreadContent(it)}
                 val as3 = async { applicationContext?.let { it1 -> scheduleWorker(it1) } }
                 val as4 = async { repository?.deleteFromDb(it) }
@@ -315,7 +313,7 @@ class SMSViewModel(
             }
 
         }
-        upadteThreadsWithInfoFromServer()
+        upadteThreadsWithInfoFromServerAndCp()
 
 //        updateWithServerInfo()
 
@@ -328,7 +326,7 @@ class SMSViewModel(
 //        as1.await()
     }
 
-    private fun upadteThreadsWithInfoFromServer() = viewModelScope.launch {
+    private fun upadteThreadsWithInfoFromServerAndCp() = viewModelScope.launch {
       withContext(Dispatchers.IO){
           val allThreads = repository?.getAllSmsThreads()
           if(allThreads!=null)
@@ -343,13 +341,12 @@ class SMSViewModel(
                           repository?.updateThreadsDBWithServerInfo(infoFromServer)
                       }
                   }
+
                   if(infoFromCprovider!=null){
-                      if(threadItem.firstName!= infoFromCprovider.firstName || threadItem.thumbnailFromCp != infoFromCprovider.photoThumnailServer){
-                          withContext(Dispatchers.Default) {
+                      if(threadItem.firstName!= infoFromCprovider.firstName || threadItem.thumbnailFromCp != infoFromCprovider.thumbnailInCprovider){
                               repository?.updateChatThreadWithContentProviderInfo(
                                   infoFromCprovider
                               )
-                          }
                       }
                   }
               }

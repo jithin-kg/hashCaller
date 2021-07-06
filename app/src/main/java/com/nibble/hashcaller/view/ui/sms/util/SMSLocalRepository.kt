@@ -1010,7 +1010,7 @@ class SMSLocalRepository(
                 val photoURI =  cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
                 val times_used = cursor2.getString(cursor2.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
                 contact?.firstName = name
-                contact?.photoThumnailServer = photoURI
+                contact?.thumbnailInCprovider = photoURI
             }
         }catch (e:Exception){
             Log.d(TAG, "getConactInfoForNumber: exception $e")
@@ -1858,7 +1858,7 @@ class SMSLocalRepository(
 
     suspend fun updateThreadsDBWithServerInfo(item: CallersInfoFromServer) = withContext(Dispatchers.IO) {
         smsThreadsDAO?.updateWithServerInfo(
-            formatPhoneNumber(item.contactAddress),
+            libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(item.contactAddress), countryISO),
             item.spamReportCount,
             item.firstName,
             item.lastName,
@@ -2195,7 +2195,7 @@ class SMSLocalRepository(
     }
 
     suspend fun updateChatThreadWithContentProviderInfo(infoFromCprovider: Contact) = withContext(Dispatchers.IO) {
-        smsThreadsDAO!!.updateWithContentProviderInfo(infoFromCprovider.firstName, infoFromCprovider.photoURI, infoFromCprovider.phoneNumber)
+        smsThreadsDAO!!.updateWithContentProviderInfo(infoFromCprovider.firstName, infoFromCprovider.thumbnailInCprovider, infoFromCprovider.phoneNumber)
     }
 
     suspend fun marAsReportedByUserInCall(contactAddress: String)  = withContext(Dispatchers.IO){
