@@ -186,7 +186,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
         }
 
     }
-//     fun onContactItemClicked(binding: ContactListBinding, contactItem: Contact){
+//     fun onContactItemClicked(binding: ContactListBinding, contactItem: com.nibble.hashcaller.network.user.Contact){
 //        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
 //        val intent = Intent(context, IndividualContactViewActivity::class.java )
 //        intent.putExtra(CONTACT_ID, contactItem.phoneNumber)

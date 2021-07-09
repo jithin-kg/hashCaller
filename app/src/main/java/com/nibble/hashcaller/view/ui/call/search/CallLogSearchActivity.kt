@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.search
 
+import android.Manifest
 import android.app.ActivityOptions
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityCallLogSearchBinding
+import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.call.db.CallLogTable
 import com.nibble.hashcaller.view.ui.call.dialer.CallLogAdapter
@@ -26,6 +28,7 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.ui.sms.list.SMSListAdapter
 import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListener
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListener
+import com.vmadalin.easypermissions.EasyPermissions
 
 class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHandler,
     ITextChangeListener, View.OnClickListener, CallLogAdapter.ViewHandlerHelper,
@@ -106,7 +109,11 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
     ): Int {
         when(clickType) {
             TYPE_MAKE_CALL ->{
-                makeCall(callLog.number)
+                if(EasyPermissions.hasPermissions(this, Manifest.permission.CALL_PHONE)){
+                    makeCall(callLog.number)
+                }else {
+                    requestCallPhonePermission()
+                }
             } else ->{
             startIndividualContactActivity(callLog, view)
         }

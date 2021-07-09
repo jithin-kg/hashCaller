@@ -40,7 +40,7 @@ class ContactSearchRepository(context: Context) {
 //        }
 //        cursor = if (number.length === 7) {
             cursor = context?.contentResolver?.query(
-//                ContactsContract.Data.CONTENT_URI,
+//                ContactsContract.com.nibble.hashcaller.network.user.Data.CONTENT_URI,
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null,
                 ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE ?",
@@ -50,7 +50,7 @@ class ContactSearchRepository(context: Context) {
 //        }
 //        else if (number?.length === 10) {
 //            context?.contentResolver?.query(
-////                ContactsContract.Data.CONTENT_URI,
+////                ContactsContract.com.nibble.hashcaller.network.user.Data.CONTENT_URI,
 //                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 //                null,
 //                "(" + ContactsContract.CommonDataKinds.Phone.NUMBER + "=? AND LENGTH(" + ContactsContract.CommonDataKinds.Phone.NUMBER + ")=7) OR (" + ContactsContract.CommonDataKinds.Phone.NUMBER + "=? AND LENGTH(" + ContactsContract.CommonDataKinds.Phone.NUMBER + ")=10)",
@@ -135,7 +135,7 @@ class ContactSearchRepository(context: Context) {
 
 
         cursor = context?.contentResolver?.query(
-//                ContactsContract.Data.CONTENT_URI,
+//                ContactsContract.com.nibble.hashcaller.network.user.Data.CONTENT_URI,
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,
             null ,

@@ -41,6 +41,8 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
     private val permsRequestCode = 200
     private lateinit var animatedCmpt: AnimatedVectorDrawableCompat
     private lateinit var animatedVector : AnimatedVectorDrawable
+    private var isContactPermissionGivenFromView = false
+    private var isStatePermissionGivenFromView = false
 
     companion object{
         private const val TAG = "__PermissionRequestActivity"
@@ -209,7 +211,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         when(requestCode){
             REQUEST_CODE_READ_CONTACTS -> {
-
+                isContactPermissionGivenFromView = true
                 setImageOnPermissionChange(
                     binding.imgvCircleContactBackground,
                     binding.imgVContact
@@ -218,7 +220,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
 
             }
             REQUEST_CODE_READ_PHONE_STATE -> {
-
+                isStatePermissionGivenFromView = true
                 setImageOnPermissionChange(
                     binding.layoutPhoneBackground,
                     binding.imgVPhoneState
@@ -243,11 +245,14 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                 R.drawable.ic_contacts_book_2_line_white
             )
         }else {
-            binding.btnContactAcces.beGone()
-            setImageOnPermissionChange(
-                binding.imgvCircleContactBackground,
-                binding.imgVContact
-            )
+            if(!isContactPermissionGivenFromView){
+                binding.btnContactAcces.beGone()
+                setImageOnPermissionChange(
+                    binding.imgvCircleContactBackground,
+                    binding.imgVContact
+                )
+            }
+
         }
         //phone state
         if(!EasyPermissions.hasPermissions(this, READ_PHONE_STATE)){
@@ -260,11 +265,14 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                 R.drawable.ic_phone_line_white
             )
         }else {
-            binding.btnPhoneState.beGone()
-            setImageOnPermissionChange(
-                binding.layoutPhoneBackground,
-                binding.imgVPhoneState,
-            )
+            if(!isStatePermissionGivenFromView){
+                binding.btnPhoneState.beGone()
+                setImageOnPermissionChange(
+                    binding.layoutPhoneBackground,
+                    binding.imgVPhoneState,
+                )
+            }
+
         }
 
         if(Settings.canDrawOverlays(this)){

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.datastore.PreferencesKeys
-import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
@@ -99,7 +99,7 @@ class FloatinServiceHelper(
 
                     Log.d(TAG, "onReceive: second try")
                     val resFromServer = defServerHandling?.await()
-                    if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
+                    if(resFromServer?.statusCode == HttpStatusCodes.STATUS_OK){
                         window?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
 

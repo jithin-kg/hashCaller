@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityProfileBinding
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
@@ -198,11 +199,12 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun update(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?){
         binding.pgBar.beVisible()
-        viewModel.updateUserInfoInServer(userInfo, imgMultiPart).observe(this, Observer {
-            when (it.isEverytingWentWell) {
-                EVERYTHING_WENT_WELL -> {
-                   viewModel.updateUserInfoInDb(it.result?.result?.firstName,
-                       it.result?.result?.lastName, it.result?.result?.image).observe(this, Observer { status ->
+        viewModel.updateUserInfoInServer(userInfo, imgMultiPart).observe(this, Observer {response->
+            when (response.code()) {
+                HttpStatusCodes.STATUS_OK -> {
+
+                   viewModel.updateUserInfoInDb(response.body()?.data?.firstName,
+                       response.body()?.data?.lastName, response.body()?.data?.image).observe(this, Observer { status ->
                            when(status){
                                OPERATION_COMPLETED ->{
                                    binding.pgBar.beGone()

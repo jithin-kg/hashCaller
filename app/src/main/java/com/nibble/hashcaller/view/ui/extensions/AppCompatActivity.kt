@@ -20,12 +20,14 @@ import com.nibble.hashcaller.view.ui.auth.PermissionRequestActivity
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
+import com.vmadalin.easypermissions.EasyPermissions
 
 fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
     return dm
 }
+
 
 /**
  * remember to call finish after calling this activity

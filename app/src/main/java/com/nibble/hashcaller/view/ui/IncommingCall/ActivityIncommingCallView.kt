@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.IncommingCall
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -22,13 +23,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
-import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
+import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
+import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.utils.extensions.startIndividualSMSActivityByAddress
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
@@ -38,10 +40,10 @@ import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
-import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.work.formatPhoneNumber
+import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
@@ -241,8 +243,13 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.imgBtnCallIncomming ->{
-                makeCall("+${formatPhoneNumber(phoneNumber)}")
-                finishAfterTransition()
+                if(EasyPermissions.hasPermissions(this, Manifest.permission.CALL_PHONE)){
+                    makeCall("+${formatPhoneNumber(phoneNumber)}")
+                    finishAfterTransition()
+                }else {
+                    requestCallPhonePermission()
+                }
+
             }
             R.id.radioScam, R.id.radioSales, R.id.radioPerson, R.id.radioBusiness    ->{
 //                toast("radio scan clicked")

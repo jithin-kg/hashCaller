@@ -83,6 +83,14 @@ fun Context.isDarkThemeOn(): Boolean {
             UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
 }
 
+fun Context.showBadRequestToast(code: Int) {
+    if(code in   (500 ..599)){
+        toast(getString(R.string.server_error))
+    }else if(code in (400 .. 499)){
+        toast(getString(R.string.bad_request))
+    }
+}
+
 fun Context.hasMandatoryPermissions(): Boolean {
     return EasyPermissions.hasPermissions(
         this,
@@ -498,6 +506,8 @@ fun Context.isReceiveNotificationForSpamSMSEnabled(): Boolean {
 }
 
 fun Context.makeCall(num:String){
+
+
     val formatedNum = "+" +formatPhoneNumber(num)
     val callIntent = Intent(Intent.ACTION_CALL)
     callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

@@ -71,4 +71,7 @@
     <string name="verifying">Verifying..</string>
     <string name="otp">OTP</string>
     <string name="verify_otp">Verify OTP</string>
+    <string name="server_error">Something went wrong</string>
+    <string name="bad_request">Bad request</string>
+    <string name="no_internet">No internet</string>
 </resources>

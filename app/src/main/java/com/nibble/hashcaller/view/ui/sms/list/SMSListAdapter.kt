@@ -167,7 +167,12 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                     binding.imgVThumbnail.beVisible()
                     binding.textViewSMScontactCrclr.beInvisible()
                 }else if(sms.thumbnailFromCp.isNotEmpty()){
-                    loadImage(context, binding.imgVThumbnail, sms.thumbnailFromCp)
+                    loadImage(
+                        context,
+                        binding.imgVThumbnail,
+                        sms.thumbnailFromCp,
+                        textViewToHide = binding.textViewSMScontactCrclr
+                        )
                     binding.imgVThumbnail.beVisible()
                     binding.textViewSMScontactCrclr.beInvisible()
                 }else {

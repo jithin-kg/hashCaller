@@ -1,13 +1,16 @@
 package com.nibble.hashcaller.view.ui.userdata
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
@@ -16,8 +19,15 @@ import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.BufferedReader
 import java.io.File
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.lang.Exception
 
 class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityGetUserDataActiivtyBinding
@@ -26,6 +36,8 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
     private var user: FirebaseUser? = null
     private lateinit var imagePickerHelper : ImagePickerHelper
     private lateinit var internetChecker:InternetChecker
+    private val fileName = "myData.txt"
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +46,42 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         user = FirebaseAuth.getInstance().currentUser
         tokenHelper =  TokenHelper(user)
-        binding.btnRequestData.setOnClickListener(this)
+//        binding.btnRequestData.setOnClickListener(this)
         initViewmodel()
+        getUserData()
+    }
+
+    private fun getUserData() {
+        lifecycleScope.launchWhenStarted {
+            var fis: FileInputStream? = null
+            try{
+                fis = openFileInput(fileName)
+                val isr = InputStreamReader(fis)
+                val br = BufferedReader(isr)
+                val sb = StringBuilder()
+                var text:String? = ""
+                var hasNextLine = true
+                while (hasNextLine){
+                    text =  br.readLine()
+                    if(text!=null){
+
+                        sb.append(text).append("\n")
+                    }else {
+
+                        hasNextLine = false
+                    }
+                }
+                binding.tvUserData.text = sb
+//        Log.d(TAG, "saveFileToExternalStorage: $sb")
+            }catch (e: Exception){
+                Log.d(SettingsActivity.TAG, "readFile: $e")
+            }
+            finally {
+                fis?.close()
+
+            }
+        }
+
     }
 
     private fun initViewmodel() {
@@ -55,12 +101,12 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.btnRequestData -> {
-                if(isEmailValid()){
-                    viewModel.requestForUserInfoStoredInServer( binding.edtTextEmail.text.toString())
-//                    createPdf("sample pdf")
-                }
-            }
+//            R.id.btnRequestData -> {
+//                if(isEmailValid()){
+//                    viewModel.requestForUserInfoStoredInServer( binding.edtTextEmail.text.toString())
+////                    createPdf("sample pdf")
+//                }
+//            }
         }
     }
 //    cena@09876Cena
@@ -106,12 +152,12 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
         val filePath = File(targetPdf)
     }
 
-        fun isEmailValid(): Boolean {
-        val email = binding.edtTextEmail.text.toString()
-        if(email.isNullOrEmpty()){
-            return false
-        }
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
-    }
+//        fun isEmailValid(): Boolean {
+////        val email = binding.edtTextEmail.text.toString()
+////        if(email.isNullOrEmpty()){
+////            return false
+////        }
+////        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+//
+//    }
 }

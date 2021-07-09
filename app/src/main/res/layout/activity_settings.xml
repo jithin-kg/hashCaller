@@ -291,10 +291,19 @@
             android:textColor="@color/textColor"
             android:textSize="@dimen/settings_text_size"
             app:layout_constraintBottom_toBottomOf="@+id/imgVRequest"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/pgBarGetUserInfo"
             app:layout_constraintStart_toEndOf="@+id/imgVRequest"
             app:layout_constraintTop_toTopOf="@+id/imgVRequest" />
 
+        <ProgressBar
+            android:id="@+id/pgBarGetUserInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/tvRequestUserinfo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvRequestUserinfo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

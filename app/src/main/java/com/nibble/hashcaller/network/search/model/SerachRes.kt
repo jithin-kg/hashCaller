@@ -7,8 +7,8 @@ import java.io.Serializable
 
 @Keep
 data class SerachRes (
-    @SerializedName("cntcts")
+    @SerializedName("data")
     val cntcts: Cntct?,
-    @SerializedName("status")
-    val status: Int
+    @SerializedName("message")
+    val message:String
 ):Serializable

@@ -653,7 +653,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             .positiveButtonText("Continue")
             .negativeButtonText("Cancel")
             .build()
-        EasyPermissions.requestPermissions(this, request)
+        //important to give host as require activity, giving this fragment as host not helping to detach and attach framment
+        EasyPermissions.requestPermissions(requireActivity(), request)
     }
 
     private fun showPopupMenu(menu: Int, anchorView: View) {

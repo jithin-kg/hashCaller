@@ -1465,7 +1465,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             Log.d("ContactObserver", "onChange: ")
         }
 
-        // left blank below constructor for this Contact observer example to work
+        // left blank below constructor for this com.nibble.hashcaller.network.user.Contact observer example to work
         // or if you want to make this work using Handler then change below registering  //line
         init {
             Log.d("ContactObserver", "ContactObserver constructor ")

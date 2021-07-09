@@ -23,6 +23,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetInitialUserInfoBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
@@ -219,12 +220,11 @@ private fun sendUserInfo() {
     @SuppressLint("LongLogTag")
     private fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?) {
         binding.pgBarInfo.beVisible()
-        userInfoViewModel.upload(userInfo, body, this).observe(this, Observer {
-            when(it.isEverytingWentWell){
-                EVERYTHING_WENT_WELL ->{
-
+        userInfoViewModel.upload(userInfo, body, this).observe(this, Observer {response->
+            when(response.code()){
+                HttpStatusCodes.CREATED ->{
                     binding.pgBarInfo.beInvisible()
-                    it.result?.let { it1 ->
+                    response.body()?.let { it1 ->
                         userInfoViewModel.saveUserInfoInLocalDb(it1, dataStoreViewmodel).observe(this, Observer {
                             when (it) {
                                 OPERATION_COMPLETED -> {
@@ -247,7 +247,8 @@ private fun sendUserInfo() {
                             }
                         })
                     }
-                } else ->{
+                }
+                else ->{
                 binding.pgBarInfo.beInvisible()
                 toast("Something went wrong")
                 binding.btnUserContinue.isEnabled = true

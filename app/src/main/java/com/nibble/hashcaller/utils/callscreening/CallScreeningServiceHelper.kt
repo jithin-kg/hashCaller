@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.KEY_BLOCK_COMMONG_SPAMMERS
-import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
@@ -93,7 +93,7 @@ class CallScreeningServiceHelper(
 
                     Log.d(TAG, "onReceive: second try")
                     val resFromServer = defServerHandling?.await()
-                    if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
+                    if(resFromServer?.statusCode == HttpStatusCodes.STATUS_OK){
                         WindowObj.getWindowObj()?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
 

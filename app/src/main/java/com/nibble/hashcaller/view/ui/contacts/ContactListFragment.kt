@@ -49,7 +49,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
     private lateinit var contactsView: View
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
 
-//    var contacts: List<Contact>? = null
+//    var contacts: List<com.nibble.hashcaller.network.user.Contact>? = null
     var contactsRecyclerAdapter: ContactAdapter? = null
     var progressBar: ProgressBar? = null
 
@@ -179,7 +179,7 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
                         30
                     )
 //                addItemDecoration(topSpacingDecorator)
-//                contactsRecyclerAdapter = ContactAdapter(context) { id: Contact ->onContactItemClicked(id)}
+//                contactsRecyclerAdapter = ContactAdapter(context) { id: com.nibble.hashcaller.network.user.Contact ->onContactItemClicked(id)}
                 adapter = contactsRecyclerAdapter
 
             }

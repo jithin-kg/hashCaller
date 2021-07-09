@@ -31,9 +31,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys
+import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.utils.extensions.startSearchActivity
 import com.nibble.hashcaller.utils.internet.ConnectionLiveData
 import com.nibble.hashcaller.view.ui.MainActivity
@@ -73,6 +75,7 @@ import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.jar.Manifest
 
 
 /**
@@ -201,7 +204,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
 
-    private suspend fun observeInternetLivedata() {
+    private  fun observeInternetLivedata() {
         val cl = context?.let { ConnectionLiveData(it) }
         cl?.observe(viewLifecycleOwner, Observer {
             isInternetAvailable = it
@@ -651,16 +654,16 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             .positiveButtonText("Continue")
             .negativeButtonText("Cancel")
             .build()
-        EasyPermissions.requestPermissions(this, request)
+        EasyPermissions.requestPermissions(requireActivity(), request)
         
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        Log.d(TAG, "onRequestPermissionsResult: ")
-    }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int, permissions: Array<String>,
+//        grantResults: IntArray
+//    ) {
+//
+//    }
     
 
 
@@ -909,7 +912,12 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 }
             }
             TYPE_MAKE_CALL ->{
-             context?.makeCall(callLog.numberFormated)
+                if(EasyPermissions.hasPermissions(context, CALL_PHONE)){
+                    context?.makeCall(callLog.numberFormated)
+                }else {
+                   requireActivity().requestCallPhonePermission()
+                }
+
                 return UNMARK_ITEM
             }
 

@@ -279,10 +279,10 @@ class IndividualContactRepository(
        }
 
 
-//   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<Contact>{
+//   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<com.nibble.hashcaller.network.user.Contact>{
 //       var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 //
-//       val listOfContacts = mutableListOf<Contact>()
+//       val listOfContacts = mutableListOf<com.nibble.hashcaller.network.user.Contact>()
 //       var cursor: Cursor? = null
 //       val projection = arrayOf(
 //           ContactsContract.Contacts._ID,
@@ -311,8 +311,8 @@ class IndividualContactRepository(
 //                   Log.d(TAG, "phone num is $phoneNo")
 //                   Log.d(TAG, "name is  $name")
 //                   if(name!=null){
-//                       listOfContacts.add(Contact(1, name, phoneNo))
-//                       val c = Contact(1, name)
+//                       listOfContacts.add(com.nibble.hashcaller.network.user.Contact(1, name, phoneNo))
+//                       val c = com.nibble.hashcaller.network.user.Contact(1, name)
 //
 //                   }
 //

@@ -15,6 +15,7 @@ import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.contactInformation.ContactLastSyncedDate
 import com.nibble.hashcaller.local.db.contactInformation.IContactIformationDAO
 import com.nibble.hashcaller.local.db.contactInformation.IContactLastSycnedDateDAO
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.repository.contacts.*
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServer
@@ -73,10 +74,8 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
             val def1= async { sendContactsOfSize12() }
             val def2 = async { sendContactOfSize1000() }
-
             def1.await()
             def2.await()
-
         }catch (e: HttpException){
             return@withContext Result.retry()
             Log.d(TAG, "doWork: retry")
@@ -121,7 +120,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     }
 
     @Throws(IOException::class)
-    private suspend fun sendContactsOfSize12() {
+    private suspend fun sendContactsOfSize12(): Int {
         if(!contactsListOf12.isNullOrEmpty()){
             for (contactSublist in contactsListOf12){
                 Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
@@ -135,39 +134,42 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
                 var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
                 if(result?.code() in (500..599)){
-                    throw  IOException()
+                    return ERROR_WHILE_UPLODING
 //                    return Result.retry()
                 }
 
                 if(result!=null){
-                    for(cntct in result?.body()?.contacts!!){
-                        //todo do updation
-                        callersInfoFromServerDAO?.updateByHash(
-                            hashedNum = cntct.hash,
-                            spamCount = cntct.spamCount,
-                            firstName = cntct.firstName,
-                            lastName = "",
-                            date = Date(),
-                            isUserInfoFoundInServer = cntct.isInfoFoundInDb,
-                            thumbnailImg = cntct.imageThumbnail?:"",
-                            city = cntct.location,
-                            carrier = cntct.carrier
+                    if(result.code() == HttpStatusCodes.STATUS_OK){
+                        for(cntct in result?.body()?.contacts!!){
+                            //todo do updation
+                            callersInfoFromServerDAO?.updateByHash(
+                                hashedNum = cntct.hash,
+                                spamCount = cntct.spamCount,
+                                firstName = cntct.firstName,
+                                lastName = "",
+                                date = Date(),
+                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                                thumbnailImg = cntct.imageThumbnail?:"",
+                                city = cntct.location,
+                                carrier = cntct.carrier
 
-                        )
+                            )
 //                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                        }
                     }
+
                 }
 //                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                 saveDateInContactLastSycnDate()
             }
         }
+        return SUCCESS_UPLODING
     }
 
 
     @SuppressLint("LongLogTag")
     private suspend fun setNewlySavedContactsList() {
         val newlyCreatedContacts = mutableListOf<PhoneNumWithHashedNumDTO>()
-
         /**
          * All numbers are formatted to  ES164 standard
          */
@@ -175,7 +177,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
         if (allcontactsInContentProvider != null) {
             for(contact in allcontactsInContentProvider){
-
                 if(!contact.phoneNumber.isNullOrEmpty()){
 //                    formattedPhoneNum = libCountryHelper.getES164Formatednumber(formattedPhoneNum, countryIso = countryCodeHelper.getCountryISO())
 //                    val res = contactLocalSyncRepository.getContact(formattedPhoneNum)
@@ -183,14 +184,12 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     var isTobeSearchedInServer = false
                     if(res==null ){
                         isTobeSearchedInServer = true
-
                     }
                     if(res!=null){
                         if(res?.isUserInfoFoundInServer == SEARCHING_FOR_INFO ){
                             isTobeSearchedInServer = true
                         }
                     }
-
                     if(isTobeSearchedInServer){
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, contact.phoneNumber)
                         hashedPhoneNum?.let { hashed ->

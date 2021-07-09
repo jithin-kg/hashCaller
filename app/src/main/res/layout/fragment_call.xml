@@ -192,13 +192,18 @@
 <!--        </androidx.appcompat.widget.Toolbar>-->
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    <androidx.viewpager.widget.ViewPager-->
-<!--        android:id="@+id/viewPagerCall"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"-->
-<!--        />-->
-    <!--important android:overScrollMode="never" to remove shadow-->
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+<!--            >-->
+<!--&lt;!&ndash;            <a href="https://storyset.com/communication">Communication illustrations by Storyset</a>&ndash;&gt;-->
+<!--            <androidx.appcompat.widget.AppCompatImageView-->
+<!--                android:id="@+id/imgV"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewCallHistoryLogs"
         android:layout_width="match_parent"

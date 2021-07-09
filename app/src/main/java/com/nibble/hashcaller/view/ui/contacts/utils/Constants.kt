@@ -7,12 +7,14 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.notifications.HashCaller
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment.Companion.showHideBlockButton
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
 import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedItems
@@ -170,7 +172,7 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
 
 // finally change the color
     window.setStatusBarColor(ContextCompat.getColor(activity,R.color.textColor))
-}
+    }
 
 /**
  * function to load image into imageviews using glide
@@ -178,7 +180,13 @@ var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerv
  * @param view : ImageView
  *
  */
-fun loadImage(context: Context, imgView: ImageView, photoUriStr: String?, selectedImageUri: Uri?=null) {
+fun loadImage(context: Context,
+              imgView: ImageView,
+              photoUriStr: String?,
+              selectedImageUri: Uri?=null,
+              textViewToHide:TextView?=null
+
+              ) {
 
     var imgUri:Uri? = null
     if(selectedImageUri!=null){
@@ -190,6 +198,7 @@ fun loadImage(context: Context, imgView: ImageView, photoUriStr: String?, select
         if(photoUriStr!=null){
             Glide.with(context).load(imgUri)
                 .into(imgView)
+            textViewToHide?.beInvisible()
         }
     }catch (e:Exception){
         Log.d(TAG, "loadImage: exception $e")

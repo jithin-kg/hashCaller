@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.search
 
+import android.Manifest
 import android.app.ActivityOptions
 import android.content.DialogInterface
 import android.content.Intent
@@ -26,6 +27,7 @@ import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.utils.internet.CheckNetwork
 import com.nibble.hashcaller.view.ui.call.dialer.DialerAdapter
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
@@ -39,6 +41,7 @@ import com.nibble.hashcaller.view.ui.sms.util.ITextChangeListenerDelayed
 import com.nibble.hashcaller.view.ui.sms.util.TextChangeListenerDelayed
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.coroutines.Job
 
 
@@ -294,7 +297,13 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
     ){
         when(clickType){
             TYPE_MAKE_CALL ->{
-                makeCall(contactItem.phoneNumber)
+                if(EasyPermissions.hasPermissions(this, Manifest.permission.CALL_PHONE)){
+                    makeCall(contactItem.phoneNumber)
+                }else {
+                    requestCallPhonePermission()
+                }
+
+
             }
             else ->{
                 Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")

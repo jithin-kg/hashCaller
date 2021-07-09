@@ -3,8 +3,8 @@ package com.nibble.hashcaller.view.ui.search
 import android.util.Log
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
-import com.nibble.hashcaller.network.StatusCodes.Companion.NO_CONTENT
-import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
+import com.nibble.hashcaller.network.HttpStatusCodes.Companion.NO_CONTENT
+import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_OK
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.SerachRes
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
@@ -90,10 +90,10 @@ class ServerSearchViewModel(
                 }
 
            }
-            if(response?.body()?.status == NO_CONTENT){
+            if(response?.code() == NO_CONTENT){
                 saveServerIntoDb(getPreparedContact(null, formatedNum))
                 serverSearchResultLiveData.value = emptyList()
-            }else if(response?.body()?.status == STATUS_OK){
+            }else if(response?.code() == STATUS_OK){
                 saveServerIntoDb(getPreparedContact(result, formatedNum))
 
             }

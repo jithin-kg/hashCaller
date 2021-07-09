@@ -3,17 +3,12 @@ package com.nibble.hashcaller.view.ui.auth.getinitialInfos
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
 import com.nibble.hashcaller.datastore.PreferencesKeys
-import com.nibble.hashcaller.network.NetworkResponseBase
-import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
-import com.nibble.hashcaller.network.NetworkResponseBase.Companion.SOMETHING_WRONG_HAPPEND
-import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.user.GetUserDataResponse
 import com.nibble.hashcaller.network.user.GetUserInfoResponse
-import com.nibble.hashcaller.network.user.Result
 import com.nibble.hashcaller.network.user.SingupResponse
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.repository.user.UserNetworkRepository
@@ -21,13 +16,13 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHasehdNumReposi
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.db.UserInfo
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
 import java.lang.Exception
 
 class UserInfoViewModel(
@@ -46,7 +41,7 @@ class UserInfoViewModel(
     ):LiveData<Int> = liveData {
         try {
             val user = UserInfo(null)
-            val result = singupResponse.result
+            val result = singupResponse.data
 //            user.email = result.email
             user.firstname = result.firstName
             user.lastName = result.lastName
@@ -90,28 +85,34 @@ class UserInfoViewModel(
         super.onCleared()
     }
 
-    fun getUserInfoFromServer( phoneNumber: String?, context: Context): LiveData<SingupResponse> = liveData {
+    fun getUserInfoFromServer( phoneNumber: String?, context: Context): LiveData<Response<SingupResponse>> = liveData {
             try {
                 val formattedPhoneNum = formatPhoneNumber(phoneNumber!!)
                 var hashedNum:String? = Secrets().managecipher(context.packageName, formattedPhoneNum)
 //                hashedNum = hashUsingArgon(hashedNum)
                 hashedNum?.let {
-                    val response =  userNetworkRepository.getUserInfoFromServer( it, formattedPhoneNum)
-                    //todo update with status codes, in all api,
-                    Log.d(TAG, "getUserInfoFromServer: response: $response")
-                    Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
-                    response?.let {
-                        if(response.code() == StatusCodes.FORBIDDEN){
-                            context.toast("Your account is blocked for violating our terms.", Toast.LENGTH_LONG)
-                        }else if(response?.isSuccessful){
-
-                            if(response.body()!=null)
-                                emit(response.body()!!)
-//                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
-//                        emit(response.body()!!)
-//                    }
-                        }
+                    userNetworkRepository.getUserInfoFromServer( it, formattedPhoneNum)?.let { it1 ->
+                        emit(
+                            it1
+                        )
                     }
+//                    //todo update with status codes, in all api,
+//                    Log.d(TAG, "getUserInfoFromServer: response: $response")
+//                    Log.d(TAG, "getUserInfoFromServer: responsebody: ${response?.body()}")
+////                    response?.let {
+//                        if(response.code() == StatusCodes.FORBIDDEN){
+//                            context.toast("Your account is blocked for violating our terms.", Toast.LENGTH_LONG)
+//                        }else if(response?.isSuccessful && response.code() == StatusCodes.STATUS_OK){
+//
+//                            if(response.body()!=null)
+//                                emit(response.body()!!)
+////                    if(!response.body()?.result?.firstName.isNullOrEmpty()){
+////                        emit(response.body()!!)
+////                    }
+//                        }else if(response.code() in 500..599){
+//
+//                        }
+//                    }
                 }
 
 
@@ -159,14 +160,15 @@ class UserInfoViewModel(
 
     }
 
-    fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<NetworkResponseBase<SingupResponse>> = liveData{
+    fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<Response<SingupResponse>> = liveData{
             try {
                 val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
                 if(hashedNumResultFromDb!=null){
                     val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
                     val response:Response<SingupResponse>? = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
                     response?.let {
-                        emit(getGenericResponse(response))
+                        emit(it)
+//                        emit(getGenericResponse(response))
                     }
 
                 }
@@ -178,7 +180,7 @@ class UserInfoViewModel(
     fun upload(userInfo: UserInfoDTO,
                body: MultipartBody.Part?,
                context: Context
-    ):LiveData<NetworkResponseBase<SingupResponse>>
+    ):LiveData<Response<SingupResponse>>
             = liveData{
 //    Secrets().managecipher(context.packageName, formattedPhoneNum)
         /**
@@ -197,10 +199,9 @@ class UserInfoViewModel(
                 val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
                 val response:Response<SingupResponse>? = userNetworkRepository.signup(info, body)
                 response?.let {
-                    emit(getGenericResponse(response))
+                    emit(response)
                 }
             }
-
 
         }catch (e:Exception){
             Log.d(TAG, "upload: exception $e")
@@ -209,22 +210,22 @@ class UserInfoViewModel(
 
     }
 
-    private fun getGenericResponse(response: Response<SingupResponse>): NetworkResponseBase<SingupResponse> {
-        if(response?.isSuccessful){
-            response.body()?.let {
-                if(response.code() !in (400 .. 599)){
-                    return NetworkResponseBase(it, EVERYTHING_WENT_WELL)
-                }
-            }
-        }else {
-            if(response.code() in (400 .. 599)){
-                return NetworkResponseBase(
-                    SingupResponse(Result("", "", "","")),SOMETHING_WRONG_HAPPEND )
-            }
-        }
-        return NetworkResponseBase(
-            SingupResponse(Result("", "", "", "")),SOMETHING_WRONG_HAPPEND )
-    }
+//    private fun getGenericResponse(response: Response<SingupResponse>): NetworkResponseBase<SingupResponse> {
+//        if(response?.isSuccessful){
+//            response.body()?.let {
+//                if(response.code() !in (400 .. 599)){
+//                    return NetworkResponseBase(it, EVERYTHING_WENT_WELL)
+//                }
+//            }
+//        }else {
+//            if(response.code() in (400 .. 599)){
+//                return NetworkResponseBase(
+//                    SingupResponse(Result("", "", "","")),SOMETHING_WRONG_HAPPEND )
+//            }
+//        }
+//        return NetworkResponseBase(
+//            SingupResponse(Result("", "", "", "")),SOMETHING_WRONG_HAPPEND )
+//    }
 
     private fun gePreparedPhonenum(userInfo: UserInfoDTO, hashedNumResultFromDb: UserHashedNumber): UserInfoDTO {
         val info = UserInfoDTO()
@@ -257,5 +258,22 @@ class UserInfoViewModel(
 
     fun requestForUserInfoStoredInServer(email:String) = viewModelScope.launch {
         userNetworkRepository.requestForUserInfoInserver(email)
+    }
+
+    fun getUserDataInHashcaller():LiveData<Response<GetUserDataResponse>?> = liveData {
+        withContext(Dispatchers.IO){
+            //check if user data available in storage,if user data not in db get from server
+            withContext(Dispatchers.Main){
+              val  res =   userNetworkRepository.getMyData()
+               withContext(Dispatchers.Main){
+                   emit(res)
+               }
+            }
+        }
+    }
+
+    fun saveFile(res: GetUserDataResponse?, fos: FileOutputStream) :LiveData<Int> = liveData {
+        userNetworkRepository.saveFile(res, fos)
+        emit(OPERATION_COMPLETED)
     }
 }

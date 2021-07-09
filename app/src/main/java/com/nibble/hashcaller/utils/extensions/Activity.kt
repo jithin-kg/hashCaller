@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.utils.extensions
 
+import android.Manifest
 import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Context
@@ -10,11 +11,15 @@ import android.provider.Telephony
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.nibble.hashcaller.R
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.contacts.utils.SMS_CHAT_ID
 import com.nibble.hashcaller.view.ui.search.SearchActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.SET_DEF_SMS_REQ_CODE
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.models.PermissionRequest
 
 fun Activity.startSearchActivity() {
     val intent = Intent(this, SearchActivity::class.java)
@@ -56,6 +61,21 @@ fun Activity.requestDefaultSMSrole() {
 //            return isDefault
 }
 
+fun Activity.requestCallPhonePermission(){
+    val perms = arrayOf(
+        Manifest.permission.CALL_PHONE
+    )
+
+    val pr =  PermissionRequest.Builder(this)
+        .code(PermisssionRequestCodes.READ_CNCT_DISPLAY_OVER)
+        .perms(perms)
+        .rationale(getString(R.string.contact_and_phone_state_rational))
+        .build()
+
+    EasyPermissions.requestPermissions(
+        this,
+        pr)
+}
 fun Activity.startIndividualSMSActivityByAddress(address: String, view: View?= null) {
 
     val intent = Intent(this, IndividualSMSActivity::class.java )

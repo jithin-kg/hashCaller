@@ -2,7 +2,6 @@ package com.nibble.hashcaller.view.ui.auth
 
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Base64
@@ -25,6 +24,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityTestauthBinding
 import com.nibble.hashcaller.datastore.DataStoreInjectorUtil
 import com.nibble.hashcaller.datastore.DataStoreViewmodel
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.utils.auth.CustometokenSigner
 import com.nibble.hashcaller.utils.auth.EnCryptor
 import com.nibble.hashcaller.utils.auth.TokenHelper
@@ -33,9 +33,10 @@ import com.nibble.hashcaller.view.ui.auth.getinitialInfos.GetInitialUserInfoActi
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.contacts.hasMandatoryPermissions
+import com.nibble.hashcaller.view.ui.contacts.isDarkThemeOn
+import com.nibble.hashcaller.view.ui.contacts.showBadRequestToast
 import com.nibble.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.nibble.hashcaller.view.ui.contacts.utils.SAMPLE_ALIAS
-import com.nibble.hashcaller.view.ui.extensions.startPermissionRequestActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
@@ -492,44 +493,59 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         binding.tvVerifying.beVisible()
             userInfoViewModel.getUserInfoFromServer(phoneNumber, this@ActivityVerifyOTP).observe(
                 this@ActivityVerifyOTP,
-                Observer { userinfo ->
-                    lifecycleScope.launchWhenStarted {
-                        customTokenSigner.signInWithCustomToken(userinfo.result.customToken)
-                        if (userinfo != null) {
-                            if (!userinfo.result.firstName.isNullOrEmpty()) {
-                                //user exists in server
-                                userInfoViewModel.saveUserInfoInLocalDb(
-                                    userinfo,
-                                    dataStoreViewmodel
-                                )
-                                    .observe(this@ActivityVerifyOTP, Observer { status ->
-                                        when (status) {
-                                            OPERATION_COMPLETED -> {
+                Observer {res->
+                    when(res.code()){
+                        HttpStatusCodes.STATUS_OK -> {
+                            lifecycleScope.launchWhenStarted {
+                                res.body()?.let {userinfo->
+                                    customTokenSigner.signInWithCustomToken(userinfo.data.customToken)
+                                    if (userinfo != null) {
+                                        if (!userinfo.data.firstName.isNullOrEmpty()) {
+                                            //user exists in server
+                                            userInfoViewModel.saveUserInfoInLocalDb(
+                                                userinfo,
+                                                dataStoreViewmodel
+                                            )
+                                                .observe(this@ActivityVerifyOTP, Observer { status ->
+                                                    when (status) {
+                                                        OPERATION_COMPLETED -> {
 
 
-                                                binding.pgBarOtpVerify.beGone()
-                                                if(hasMandatoryPermissions()){
-                                                    startMainActivity()
-                                                }else {
-                                                    val i = Intent(this@ActivityVerifyOTP, PermissionRequestActivity::class.java)
-                                                    startActivity(i)
-                                                    overridePendingTransition(R.anim.in_anim,
-                                                        R.anim.out_anim
-                                                    )
-                                                    finish()
-                                                }
-                                            }
+                                                            binding.pgBarOtpVerify.beGone()
+                                                            if(hasMandatoryPermissions()){
+                                                                startMainActivity()
+                                                            }else {
+                                                                val i = Intent(this@ActivityVerifyOTP, PermissionRequestActivity::class.java)
+                                                                startActivity(i)
+                                                                overridePendingTransition(R.anim.in_anim,
+                                                                    R.anim.out_anim
+                                                                )
+                                                                finish()
+                                                            }
+                                                        }
+                                                    }
+                                                })
+                                        } else {
+                                            //user info not exists in server
+                                            startGetUserInfoActivity()
                                         }
-                                    })
-                            } else {
-                                //user info not exists in server
-                                startGetUserInfoActivity()
+                                    }
+                                }
+
                             }
+                        }else -> {
+                        this.showBadRequestToast(res.code())
                         }
+
+
                     }
+
+
                 })
 
     }
+
+
 
     private fun startMainActivity() {
         val i = Intent(this, MainActivity::class.java)

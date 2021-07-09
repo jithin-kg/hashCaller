@@ -11,7 +11,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.local.db.contacts.IContactAddressesDao
-import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_OK
+import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_OK
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.stubs.Contact
@@ -68,7 +68,7 @@ class InCommingCallManager(
                             country = result.country?:"",
                             spammCount = result.spammCount?:0L,
                                 thumbnailImg = result.thumbnailImg?:"",
-                                    statusCode = response.body()?.status?:0,
+                                    statusCode = response.code(),
                                         isInfoFoundInServer = result.isInfoFoundInDb?:INFO_NOT_FOUND_IN_SERVER,
                                     informationReceivedDate = Date()
 

@@ -35,7 +35,7 @@ private fun getContacts(context: Context):Contact{
             "photoThumnail",
             "photoURI"
         )
-//        val listOfContacts = mutableListOf<Contact>()
+//        val listOfContacts = mutableListOf<com.nibble.hashcaller.network.user.Contact>()
         var cursor: Cursor? = null
         val projection = arrayOf(
             ContactsContract.Contacts._ID,

@@ -23,6 +23,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactSearchResultItemBinding
 import com.nibble.hashcaller.databinding.FragmentDialerBinding
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualContactViewActivity
@@ -31,6 +32,7 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
+import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_dialer.*
 import kotlinx.android.synthetic.main.fragment_dialer.view.*
@@ -289,7 +291,11 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     ){
         when(clickType){
             TYPE_MAKE_CALL ->{
-                context?.makeCall(contactItem.phoneNumber)
+                if(EasyPermissions.hasPermissions(context, Manifest.permission.CALL_PHONE)){
+                    context?.makeCall(contactItem.phoneNumber)
+                }else {
+                    EasyPermissions.hasPermissions(context, Manifest.permission.CALL_PHONE)
+                }
             }
             else ->{
                 Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
@@ -423,7 +429,13 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         val num: String? =  getPhoneNumFromViewModel()
         if(!num.isNullOrEmpty())
         {
-            context?.makeCall(num)
+            if(EasyPermissions.hasPermissions(context, Manifest.permission.CALL_PHONE)){
+                context?.makeCall(num)
+            }else {
+                requireActivity().requestCallPhonePermission()
+            }
+
+
 
         }else{
             Toast.makeText(context, "Please enter a number to call", Toast.LENGTH_SHORT).show()

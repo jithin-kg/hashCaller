@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.Secrets
-import com.nibble.hashcaller.network.StatusCodes
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.notifications.HashCaller
@@ -88,7 +88,7 @@ class IncommingCallForegroundService : Service() {
 
                         Log.d(CallhandlService.TAG, "onReceive: second try")
                         val resFromServer = defServerHandling.await()
-                        if(resFromServer?.statusCode == StatusCodes.STATUS_OK){
+                        if(resFromServer?.statusCode == HttpStatusCodes.STATUS_OK){
                             if(this@IncommingCallForegroundService.isActivityIncommingCallViewVisible()){
                                 val intent =  this@IncommingCallForegroundService.getPreparedincommingIntent(resFromServer, phoneNumber, false)
                                 sendBroadcast(intent)

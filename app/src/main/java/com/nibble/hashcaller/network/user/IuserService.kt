@@ -63,5 +63,11 @@ interface IuserService {
         @Body emailBody: RequestUserInfoDTO
     ): Response<RequestUserinfoResponse>
 
+    @POST("user/getMyData")
+    suspend fun getMyData(
+        @Header("Authorization")
+        token: String,
+    ): Response<GetUserDataResponse>
+
 
 }

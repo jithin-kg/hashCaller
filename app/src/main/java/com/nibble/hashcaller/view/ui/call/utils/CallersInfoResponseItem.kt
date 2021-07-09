@@ -24,7 +24,6 @@ data class CallersInfoResponseItem (
     var hUname:String = "",
     @SerializedName("isInfoFoundInDb")
     val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
-
     var imageThumbnail:String? = ""
 ){
 }

@@ -2,7 +2,7 @@ package com.nibble.hashcaller.network.search.model
 
 
 import androidx.annotation.Keep
-import com.nibble.hashcaller.network.StatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
+import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import java.util.*
 

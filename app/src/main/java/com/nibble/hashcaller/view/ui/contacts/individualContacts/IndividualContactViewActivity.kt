@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.contacts.individualContacts
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
@@ -24,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockTypes
+import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralblockViewmodel
@@ -40,6 +42,7 @@ import com.nibble.hashcaller.view.ui.extensions.startContactEditActivity
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.individual.util.*
 import com.nibble.hashcaller.view.utils.getDecodedBytes
+import com.vmadalin.easypermissions.EasyPermissions
 
 
 class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
@@ -328,7 +331,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 finishAfterTransition()
             }
             R.id.imgBtnCallindividual -> {
-                makeCall(phoneNum)
+                if(EasyPermissions.hasPermissions(this, Manifest.permission.CALL_PHONE)){
+                    makeCall(phoneNum)
+                }else {
+                    requestCallPhonePermission()
+                }
             }
             R.id.imgBtnSMS -> {
                 startIndividualSMS()

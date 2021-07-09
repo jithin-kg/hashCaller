@@ -44,7 +44,6 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
         initViewModel()
         libCountryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
         lifecycleScope.launchWhenCreated {
-            delay(2000L)
             requestHint()
         }
 
