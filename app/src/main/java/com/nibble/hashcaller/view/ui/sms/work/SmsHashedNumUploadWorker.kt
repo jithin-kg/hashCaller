@@ -119,8 +119,9 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                         return@withContext Result.retry()
                     }
 
-                    if(result!=null){
-                        for(cntct in result?.body()?.contacts!!){
+                    result?.body()?.let{ body->
+
+                        for(cntct in body.contacts){
                             var formated = formatPhoneNumber(cntct.hash)
 
                             formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )

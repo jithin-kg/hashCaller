@@ -184,6 +184,7 @@ private fun requestHint() {
             // set the received data t the text view
             credential?.apply {
 //                tv1.text = credential.id
+
                 Log.d(TAG, "onActivityResult: ${credential.id}")
             }
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {

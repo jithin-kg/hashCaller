@@ -1,33 +1,30 @@
 package com.nibble.hashcaller.view.ui.userdata
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetUserDataActiivtyBinding
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
+import com.nibble.hashcaller.view.ui.MyWebViewClient
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import retrofit2.http.Header
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
-import java.lang.Exception
 
 class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityGetUserDataActiivtyBinding
@@ -48,7 +45,25 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
         tokenHelper =  TokenHelper(user)
 //        binding.btnRequestData.setOnClickListener(this)
         initViewmodel()
-        getUserData()
+//        binding.webView.loadUrl("http://www.tutorialspoint.com")
+//        binding.webView.webChromeClient = MyBrowser() as WebChromeClient
+        val map: MutableMap<String, String> = HashMap()
+       lifecycleScope.launchWhenStarted {
+           val token = TokenHelper(FirebaseAuth.getInstance().currentUser).getToken()
+           map["Authorization"] = token!!
+           binding.webView.loadUrl("http://192.168.43.34:8000/user/getMyData",  map)
+////           binding.webView.loadUrl("https://www.javatpoint.com/android-webview-example")
+//           binding.webView.getSettings().setJavaScriptEnabled(true)
+//           binding.webView.webViewClient = MyWebViewClient(this@GetUserDataActiivty)
+
+           //
+
+
+
+
+       }
+
+//        getUserData()
     }
 
     private fun getUserData() {
@@ -71,7 +86,7 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
                         hasNextLine = false
                     }
                 }
-                binding.tvUserData.text = sb
+//                binding.tvUserData.text = sb
 //        Log.d(TAG, "saveFileToExternalStorage: $sb")
             }catch (e: Exception){
                 Log.d(SettingsActivity.TAG, "readFile: $e")

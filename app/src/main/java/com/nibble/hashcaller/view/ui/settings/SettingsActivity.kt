@@ -208,14 +208,16 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun onGetUserDataClicked() {
-        if(isInternetAvailable){
-            binding.pgBarGetUserInfo.beVisible()
-            userInfoViewModel.getUserDataInHashcaller().observe(this, Observer {
-                saveFileToExternalStorage(it)
-            })
-        }else {
-            toast(getString(R.string.no_internet))
-        }
+        val intent = Intent(this@SettingsActivity, GetUserDataActiivty::class.java)
+        startActivity(intent)
+//        if(isInternetAvailable){
+//            binding.pgBarGetUserInfo.beVisible()
+//            userInfoViewModel.getUserDataInHashcaller().observe(this, Observer {
+//                saveFileToExternalStorage(it)
+//            })
+//        }else {
+//            toast(getString(R.string.no_internet))
+//        }
 
     }
 

@@ -1,3 +1,97 @@
+commit c4c18c8d5e810e04c240f0aa386e8d9340fb1f4b
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Jul 9 12:55:43 2021 +0530
+
+    displaying user data as text
+
+commit b9c36ee7e54153420119a58c3aaca418a6af48ad
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Jul 6 09:36:07 2021 +0530
+
+    showing imgthumbnail and sms sender identified by hashcaller in smscontainerfragment
+
+commit 7ca9b87fa357cef4260a94e5259dbe01d5786fec
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Jul 5 18:21:03 2021 +0530
+
+    showing hashcaller icon if call identified by hashcaller
+
+commit f84120821fa86709877d756ba7ac2b92a7026503
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sun Jul 4 15:59:54 2021 +0530
+
+    re-designed permission request activity
+
+commit a8260a26ab5fde5646fcc91f82fb4e39d9718be1
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sat Jul 3 15:05:48 2021 +0530
+
+    added cards for permission in blocklistfragment
+
+commit 9349450853e776168b555c18b82549b84c2dc732
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Jul 2 23:33:06 2021 +0530
+
+    added set as default screening role prompt in callfragment recyclerview
+
+commit 12307e16c98f3b9dd80ca39c8d543b743478cf67
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Jul 2 10:18:16 2021 +0530
+
+    added savemycontacts request in contactuploadworker
+
+commit 0f4003c622fd780e7249ce953e1c8ac8676cb451
+Merge: 4bea28a 60a3726
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Jul 1 18:57:19 2021 +0530
+
+    fixed merge conflict
+
+commit 4bea28a77188eef750cc7c04452ede9d6a3dbfa3
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Jul 1 18:04:20 2021 +0530
+
+    added phone num validation in ActivityPhoneauth
+
+commit 60a3726fe170180beb39b0d4a32092303d8d8dfb
+Merge: 44fa344 f0b3817
+Author: Jithin KG <31859018+jithin-kg@users.noreply.github.com>
+Date:   Thu Jul 1 15:34:34 2021 +0530
+
+    Merge pull request #1 from Hackerajay/master
+    
+    Otp resent implemented
+
+commit f0b38179b3a71a5fde31fdb6701ff09155d1734f
+Author: AJAY T P <ajaytp7@gmail.com>
+Date:   Thu Jul 1 15:32:18 2021 +0530
+
+    Updated .gitignore
+
+commit 9a6ba7bc195dc064aea7b20b709c6e7f74d1f565
+Author: AJAY T P <ajaytp7@gmail.com>
+Date:   Thu Jul 1 15:24:49 2021 +0530
+
+    Otp resent implemented
+
+commit 44fa3446629e804f9f5c856c5512c8ea2c3178bb
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Jun 30 12:51:55 2021 +0530
+
+    uploading sms sender without actual number
+
+commit f76d3c887d794a5248b391342403a9e2d15e6f7d
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Jun 30 12:34:15 2021 +0530
+
+    uploading call logs without actual number
+
+commit c3c507d627a3774aa24294f48254d14213457894
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Jun 30 10:59:44 2021 +0530
+
+    uploading contacts without phone numbers
+
 commit 0cddea88ee7709b07d1d0988cf629fe82f6fc8db
 Author: jithin-kg <jithinjkg@gmail.com>
 Date:   Thu Jun 24 13:38:59 2021 +0530

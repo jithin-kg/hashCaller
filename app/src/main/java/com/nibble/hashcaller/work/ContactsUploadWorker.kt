@@ -138,29 +138,33 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 //                    return Result.retry()
                 }
 
-                if(result!=null){
-                    if(result.code() == HttpStatusCodes.STATUS_OK){
-                        for(cntct in result?.body()?.contacts!!){
-                            //todo do updation
-                            callersInfoFromServerDAO?.updateByHash(
-                                hashedNum = cntct.hash,
-                                spamCount = cntct.spamCount,
-                                firstName = cntct.firstName,
-                                lastName = "",
-                                date = Date(),
-                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
-                                thumbnailImg = cntct.imageThumbnail?:"",
-                                city = cntct.location,
-                                carrier = cntct.carrier
+                    result?.let { rslt->
+                        if(rslt.code() == HttpStatusCodes.STATUS_OK){
+                            rslt?.body()?.let { ctcts->
+                                for(cntct in ctcts.contacts){
+                                    //todo do updation
+                                    callersInfoFromServerDAO?.updateByHash(
+                                        hashedNum = cntct.hash,
+                                        spamCount = cntct.spamCount,
+                                        firstName = cntct.firstName,
+                                        lastName = "",
+                                        date = Date(),
+                                        isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                                        thumbnailImg = cntct.imageThumbnail?:"",
+                                        city = cntct.location,
+                                        carrier = cntct.carrier
 
-                            )
+                                    )
 //                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
+                                }
+                            }
+
                         }
                     }
 
-                }
+                    saveDateInContactLastSycnDate()
 //                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
-                saveDateInContactLastSycnDate()
+
             }
         }
         return SUCCESS_UPLODING

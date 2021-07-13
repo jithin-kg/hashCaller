@@ -32,7 +32,6 @@ class ServerSearchViewModel(
     private var defServerSearch: Deferred<Response<SerachRes>?>? = null
     private var defServerinfoAvialableInDb: Deferred<CallersInfoFromServer?>? = null
 
-
     fun searchInServer(
         phoneNumber: String,
         packageName: String,
@@ -82,20 +81,19 @@ class ServerSearchViewModel(
         try {
            val response = defServerSearch?.await()
            val result = response?.body()?.cntcts
-           if(result!= null){
+//           if(result!= null){
                 result?.let {
                     val searchResult = getPreparedContact(it, formatedNum)
                     serverSearchResultLiveData.value = listOf(searchResult)
 
                 }
 
-           }
+//           }
             if(response?.code() == NO_CONTENT){
                 saveServerIntoDb(getPreparedContact(null, formatedNum))
                 serverSearchResultLiveData.value = emptyList()
             }else if(response?.code() == STATUS_OK){
                 saveServerIntoDb(getPreparedContact(result, formatedNum))
-
             }
        }catch (e:Exception){
            Log.d(TAG, "searchInServer: $e")

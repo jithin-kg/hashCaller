@@ -11,6 +11,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
+import com.nibble.hashcaller.network.HttpStatusCodes
 import com.nibble.hashcaller.network.spam.hashednums
 import com.nibble.hashcaller.repository.contacts.PhoneNumWithHashedNumDTO
 import com.nibble.hashcaller.utils.auth.TokenHelper
@@ -107,26 +108,32 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                         return@withContext Result.retry()
                     }
 
-                   if(result!=null){
-                       for(cntct in result?.body()?.contacts!!){
-                           var formated = formatPhoneNumber(cntct.hash)
+                    result?.let{ reslt->
+                        if(reslt.code() == HttpStatusCodes.STATUS_OK){
+                            for(cntct in reslt.body()?.contacts!!){
+                                var formated = formatPhoneNumber(cntct.hash)
 
-                           formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
-                           callersInfoFromServerDAO?.updateByHash(
-                               hashedNum = cntct.hash,
-                               spamCount = cntct.spamCount,
-                               firstName = cntct.firstName,
-                               lastName = "",
-                               date = Date(),
-                               isUserInfoFoundInServer = cntct.isInfoFoundInDb,
-                               thumbnailImg = cntct.imageThumbnail?:"",
-                               city = cntct.location,
-                               carrier = cntct.carrier
-                           )
+                                formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+                                callersInfoFromServerDAO?.updateByHash(
+                                    hashedNum = cntct.hash,
+                                    spamCount = cntct.spamCount,
+                                    firstName = cntct.firstName,
+                                    lastName = "",
+                                    date = Date(),
+                                    isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                                    thumbnailImg = cntct.imageThumbnail?:"",
+                                    city = cntct.location,
+                                    carrier = cntct.carrier
+                                )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
-                       }
-                   }
+                            }
+                        }
+
+                    }
+
+
+
 //                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
                 }
             }else{
