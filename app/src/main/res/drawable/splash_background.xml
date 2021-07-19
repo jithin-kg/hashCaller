@@ -3,5 +3,6 @@
     <item android:drawable="@color/colorPrimary"/>
     <item android:drawable="@drawable/ic_hash_text_large"
         android:gravity="center"
+
         />
 </layer-list>

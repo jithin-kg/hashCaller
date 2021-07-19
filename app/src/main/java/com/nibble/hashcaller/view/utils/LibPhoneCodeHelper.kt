@@ -18,7 +18,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
              regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
             Log.d(TAG+"iso", "getCopuntryIso: regionCode:$regionCode")
         }catch (e:Exception){
-            Log.d(TAG+"iso", "getCopuntryIso: $e")
+            Log.e(TAG+"iso", "getCopuntryIso: $e")
         }
         return regionCode
     }
@@ -37,7 +37,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
             Log.d(TAG, "getCountryCode: $countryName")
 
         }catch (e:Exception){
-            Log.d(TAG, "getCountryCode: exception $phoneNum  $e")
+            Log.e(TAG, "getCountryCode: exception $phoneNum  $e")
         }
         Log.d(TAG, "getCountryCode: returning $countryName")
         return@withContext countryName
@@ -71,7 +71,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
 
 
        }catch (e:Exception){
-           Log.d(TAG, "getNumberWithCountryCode: $e")
+           Log.e(TAG, "getNumberWithCountryCode: $e")
        }
         return formatPhoneNumber(formatedNumber)
     }
@@ -86,7 +86,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
              isValidForRegion = phoneUtil.isValidNumberForRegion(formatedNumProto, countryIso)
 
         }catch (e:Exception){
-            Log.d(TAG, "getNumberWithCountryCode: $e")
+            Log.e(TAG, "getNumberWithCountryCode: $e")
         }
         return isValidForRegion
     }

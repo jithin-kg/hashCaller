@@ -1,8 +1,10 @@
 package com.nibble.hashcaller.view.ui.call.floating
 
 import android.app.*
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
@@ -32,11 +34,11 @@ import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+
 
 //todo close window when user takes call and show second windo iff call ended
 //todo now the second activity appears immediately when first window closes
@@ -52,7 +54,6 @@ private const val CODE_NOTE_INTENT = 3
 class FloatingService: Service() {
     private lateinit var floatinServiceHelper:FloatinServiceHelper
     private  var window:Window? = null
-
     private var onStartCalled = false
     private var mphoneNumberStr = ""
     private  var rcfirebaseAuth: FirebaseAuth? = null
@@ -60,6 +61,7 @@ class FloatingService: Service() {
     private var tokenHelper: TokenHelper? = null
     private lateinit var countryCodeIso:String
     private val libPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+    private var serviceStarted = false
 //    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -88,6 +90,27 @@ class FloatingService: Service() {
             WindowObj.setWindow(window!!)
 //                    windowCompanion = window
         }
+        /**
+         * This broadcast is send from incommingcallreceiver,
+         *  this is important, sometimes notification is failed to close from within
+         *  this service, so we need to make sure the notification is stopped when call state
+         *  changed to IDLE
+         */
+        val mysms: BroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(arg0: Context?, arg1: Intent) {
+                Log.d(TAG, "onReceive:broadcast ")
+                window?.close()
+                WindowObj.clearReference()
+                window = null
+                if(mphoneNumberStr.isNotEmpty()){
+                    startActivityIncommingCallView(mphoneNumberStr)
+                }
+
+//                                }
+                stopService()
+            }
+        }
+        registerReceiver(mysms, IntentFilter(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE))
 
     }
 
@@ -96,22 +119,40 @@ class FloatingService: Service() {
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
-        super.onStartCommand(intent, flags, startId)
 
-        val command = intent.getStringExtra(INTENT_COMMAND)
+        if(!serviceStarted){
+            serviceStarted = true
+
+            super.onStartCommand(intent, flags, startId)
+            Log.d(TAG, "onStartCommand: ")
+            val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
-                window?.close()
-                WindowObj.clearReference()
-                window = null
-                startActivityIncommingCallView(mphoneNumberStr)
-                stopService()
+//                registerCallStateListener { phoneNumber, callState ->
+//                    Log.d(TAG, "onStartCommand: $phoneNumber")
+//                    when(callState){
+//                        TelephonyManager.CALL_STATE_IDLE -> {
+//                            Log.d(TAG, "onStartCommand: $phoneNumber")
+//                            if(!phoneNumber.isNullOrEmpty()){
+//                                window?.close()
+//                                WindowObj.clearReference()
+//                                window = null
+//                                startActivityIncommingCallView(mphoneNumberStr)
+//
+//                            }
+//                        }
+//
+//                    }
+//                    stopService()
+//
+//                }
+
             }
             else if(command == START_FLOATING_SERVICE){
                 if(!onStartCalled){
-                    window?.open()
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
                             TelephonyManager.CALL_STATE_RINGING ->{
+                                window?.open()
                                 mphoneNumberStr = phoneNumber
                                 onStartCalled = true
 
@@ -133,11 +174,21 @@ class FloatingService: Service() {
 //        }
                             }
                             TelephonyManager.CALL_STATE_IDLE -> {
-
+                                Log.d(TAG, "onStartCommand:callidle ")
+//                                if(!phoneNumber.isNullOrEmpty()){
+//                                    window?.close()
+//                                    WindowObj.clearReference()
+//                                    window = null
+//                                    startActivityIncommingCallView(mphoneNumberStr)
+//                                }
 //                                stopService()
 //                                Log.d(TAG, "idle callback : ")
 //                                window.close()
                             }
+                            TelephonyManager.CALL_STATE_OFFHOOK -> {
+                                Log.d(TAG, "onStartCommand: offhook")
+                            }
+
                         }
                     }
 //        val command:String? = intent.getStringExtra(INTENT_COMMAND)
@@ -170,6 +221,8 @@ class FloatingService: Service() {
                 Log.d(TAG, "onStartCommand: numfromservice: $mphoneNumberStr")
                 doHandleCall(mphoneNumberStr)
             }
+        }
+
 
 
 
@@ -207,7 +260,6 @@ class FloatingService: Service() {
         val telephony = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         telephony.listen(object : PhoneStateListener() {
             override fun onCallStateChanged(state: Int, incomingNumber: String) {
-//                Log.d(TAG, "onCallStateChanged: ")
                 super.onCallStateChanged(state, incomingNumber)
                 if (incomingNumber.isNotEmpty()) {
                     when (state) {
@@ -220,9 +272,16 @@ class FloatingService: Service() {
 
                         }
                         TelephonyManager.CALL_STATE_IDLE -> {
-                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
+//                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
                             if(incomingNumber.isNotEmpty()){
-                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
+//                                if(!phoneNumber.isNullOrEmpty()){
+                                    window?.close()
+                                    WindowObj.clearReference()
+                                    window = null
+                                    startActivityIncommingCallView(incomingNumber)
+//                                }
+                                stopService()
+//                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
                             }
 //                            stopFloatingService(true, incomingNumber)
                         }
@@ -271,10 +330,10 @@ class FloatingService: Service() {
     private suspend fun getHashedNum(phoneNumber: String, context: Context): String? {
        var hashed:String? = ""
         try {
-            Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
+//            Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
              hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
 //            hashed = hashUsingArgon(hashed)
-            Log.d(TAG, "getHashedNum: $hashed")
+//            Log.d(TAG, "getHashedNum: $hashed")
             //2fde9f69809082858fa7a55d441fde7ab7beea302204a437a793d2545fc381a9 ->123123
             return hashed
         }catch (e:Exception){
@@ -324,8 +383,9 @@ class FloatingService: Service() {
                     lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                     manager.createNotificationChannel(this)
                 }
-            } catch (ignored: Exception) {
+            } catch (e: Exception) {
                 // Ignore exception.
+                Log.d(TAG, "showNotification: $e")
             }
         }
 
@@ -363,6 +423,8 @@ class FloatingService: Service() {
 
 
     companion object{
+
+
         const val TAG = "__FloatingService"
 
 

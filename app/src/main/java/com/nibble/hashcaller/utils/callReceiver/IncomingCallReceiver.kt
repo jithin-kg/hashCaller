@@ -8,6 +8,8 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import com.nibble.hashcaller.utils.callscreening.WindowObj
+import com.nibble.hashcaller.utils.constants.IntentKeys
+import com.nibble.hashcaller.view.ui.call.floating.FloatingService
 import com.nibble.hashcaller.view.ui.contacts.startFloatingService
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 
@@ -62,7 +64,9 @@ class IncomingCallReceiver : BroadcastReceiver(){
 //                   Util.scheduleIncommingJob(context, intent.getStringExtra(EXTRA_INCOMING_NUMBER));
                }
                TelephonyManager.EXTRA_STATE_IDLE -> {
-                  context.stopFloatingService(true)
+                   val stopIntent = Intent(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE)
+                   context.sendBroadcast(stopIntent)
+//                  context.stopFloatingService(true)
 //                   WindowObj.closeWindow()
 //                   Util.setPhoneNumInUtil("")
                    //call ended

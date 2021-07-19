@@ -260,6 +260,7 @@ fun Context.stopFloatingService(
             putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE_AND_WINDOW)
 //            putExtra(CONTACT_ADDRES, incomingNumber)
         }
+
         startService(exitIntent)
     }else{
         val exitIntent = Intent(this, FloatingService::class.java).apply {

@@ -171,8 +171,25 @@ class Window(
 
     fun closeManually() {
         try {
+//             val windowParams = WindowManager.LayoutParams(
+//                0,
+//                0,
+//                0,
+//                0,
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//                } else {
+//                    WindowManager.LayoutParams.TYPE_PHONE
+//                },
+//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+//                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+//                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+//                        WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+//                PixelFormat.TRANSLUCENT
+//            )
+//            windowManager.updateViewLayout(rootView, windowParams)
             windowManager.removeView(rootView)
-            context.stopFloatingService(true)
+//            context.stopFloatingService(true)
 
         } catch (e: Exception) {
             // Ignore exception for now, but in production, you should have some

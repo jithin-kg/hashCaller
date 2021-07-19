@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityGetUserDataActiivtyBinding
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.internet.InternetChecker
@@ -19,6 +20,7 @@ import com.nibble.hashcaller.view.ui.MyWebViewClient
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.settings.SettingsActivity
+import com.nibble.hashcaller.view.ui.sms.individual.util.toast
 import com.nibble.hashcaller.view.utils.imageProcess.ImagePickerHelper
 import retrofit2.http.Header
 import java.io.BufferedReader
@@ -52,16 +54,17 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
            val token = TokenHelper(FirebaseAuth.getInstance().currentUser).getToken()
            map["Authorization"] = token!!
            binding.webView.loadUrl("http://192.168.43.34:8000/user/getMyData",  map)
-////           binding.webView.loadUrl("https://www.javatpoint.com/android-webview-example")
-//           binding.webView.getSettings().setJavaScriptEnabled(true)
-//           binding.webView.webViewClient = MyWebViewClient(this@GetUserDataActiivty)
-
-           //
-
-
-
-
+//           binding.webView.loadUrl("https://www.javatpoint.com/android-webview-example")
+////           binding.webView.getSettings().setJavaScriptEnabled(true)
+           binding.webView.webViewClient = MyWebViewClient(this@GetUserDataActiivty)
        }
+       //
+//           //
+//
+//
+//
+//
+//       }
 
 //        getUserData()
     }
@@ -119,7 +122,10 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
 //            R.id.btnRequestData -> {
 //                if(isEmailValid()){
 //                    viewModel.requestForUserInfoStoredInServer( binding.edtTextEmail.text.toString())
+//                    toast("A confirmation email is sent to your email")
 ////                    createPdf("sample pdf")
+//                }else {
+//                    toast("Please enter a valid email")
 //                }
 //            }
         }
@@ -169,10 +175,10 @@ class GetUserDataActiivty : AppCompatActivity(), View.OnClickListener {
 
 //        fun isEmailValid(): Boolean {
 ////        val email = binding.edtTextEmail.text.toString()
-////        if(email.isNullOrEmpty()){
-////            return false
-////        }
-////        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+//        if(email.isNullOrEmpty()){
+//            return false
+//        }
+//        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 //
 //    }
 }

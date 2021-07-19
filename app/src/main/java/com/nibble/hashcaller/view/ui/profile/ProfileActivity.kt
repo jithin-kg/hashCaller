@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityProfileBinding
 import com.nibble.hashcaller.network.HttpStatusCodes
+import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_CREATED
 import com.nibble.hashcaller.network.NetworkResponseBase.Companion.EVERYTHING_WENT_WELL
 import com.nibble.hashcaller.repository.user.UserInfoDTO
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
@@ -201,7 +202,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         binding.pgBar.beVisible()
         viewModel.updateUserInfoInServer(userInfo, imgMultiPart).observe(this, Observer {response->
             when (response.code()) {
-                HttpStatusCodes.STATUS_OK -> {
+                HttpStatusCodes.STATUS_OK,STATUS_CREATED -> {
 
                    viewModel.updateUserInfoInDb(response.body()?.data?.firstName,
                        response.body()?.data?.lastName, response.body()?.data?.image).observe(this, Observer { status ->

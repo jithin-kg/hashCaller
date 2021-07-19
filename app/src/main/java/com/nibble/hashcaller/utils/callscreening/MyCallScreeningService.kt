@@ -148,7 +148,7 @@ class MyCallScreeningService: CallScreeningService() {
             withContext(Dispatchers.Main){
                 if(isEndCall){
                     responseBuilder.setDisallowCall(true)
-                   stopFloatingService(true)
+//                   stopFloatingService(true)
                 }
                 respondToCall(mCallDetails, responseBuilder.build())
                 if(isEndCall){

@@ -20,7 +20,7 @@
     <string name="close">close</string>
     <string name="searching_in_progress">Searching for</string>
     <string name="dsf">dsf</string>
-    <string name="enable_hashcaller_for_sms">Enable Hashcaller for SMS</string>
+    <string name="enable_hashcaller_for_sms">Enable HashCaller for SMS</string>
     <string name="enable_hash_caller_for_sms">Enable Hashcaller for sms</string>
     <string name="ennable_for_blocking_sms">set HashCaller as Default SMS to block SMS</string>
     <string name="enable_hash_caller_sms_action">Enable</string>
