@@ -26,7 +26,6 @@
         android:focusableInTouchMode="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -103,16 +102,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="16dp"
-            android:text="918086176336"
-            android:textSize="12sp"
+            android:text="91808613213"
             android:textColor="@color/colorWhite"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/tvhashCallerIncommin"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/txtVLocaltion"
-            app:layout_constraintTop_toBottomOf="@+id/txtVLocaltion"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/txtVLocaltion" />
+
+        <ImageView
+            android:id="@+id/imgVSim"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:alpha=".74"
+            android:src="@drawable/ic_sim_1_line_white"
+            app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumIncomming"
+            app:layout_constraintStart_toStartOf="@+id/tvPhoneNumIncomming"
+            android:layout_marginTop="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            />
+        <TextView
+            android:id="@+id/tvCallEndState"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/imgVSim"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVSim"
+            app:layout_constraintStart_toEndOf="@+id/imgVSim"
+            android:layout_marginStart="8dp"
+            android:text="Call ended"
+
+            android:textColor="@color/colorWhite"
+            android:alpha="0.74"
+            android:textSize="12sp"
+            />
 
         <TextView
             android:id="@+id/tvhashCallerIncommin"
@@ -120,12 +143,13 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="HashCaller"
+            android:visibility="invisible"
             android:textColor="@color/colorWhite"
             android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvPhoneNumIncomming"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tvPhoneNumIncomming"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toTopOf="@+id/tvCallEndState"
+            app:layout_constraintVertical_bias="0.384" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -148,7 +172,8 @@
             android:layout_marginTop="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@drawable/ic_baseline_call_24"
+            android:alpha="0.70"
+            android:src="@drawable/ic_phone_line"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnSendSMSInc"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread"
@@ -162,7 +187,8 @@
             android:layout_marginTop="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@drawable/ic_baseline_sms_24"
+            android:alpha="0.70"
+            android:src="@drawable/ic_message_3_line"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnCallIncomingBlock"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomming"
@@ -175,6 +201,7 @@
             android:layout_marginTop="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
+            android:alpha="0.70"
             android:src="@drawable/ic_baseline_block_24"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnSearchForCaller"
             app:layout_constraintStart_toEndOf="@+id/imgBtnSendSMSInc"
@@ -188,7 +215,8 @@
             android:layout_marginTop="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@drawable/ic_baseline_search"
+            android:alpha="0.70"
+            android:src="@drawable/ic_search_line"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imgBtnCallIncomingBlock"
             app:layout_constraintTop_toTopOf="parent"

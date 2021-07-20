@@ -36,6 +36,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentMessageContainerBinding
+import com.nibble.hashcaller.utils.Constants
 import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.extensions.requestDefaultSMSrole
@@ -631,7 +632,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
                 this.spammerType = SPAMMER_TYPE_SCAM
             }
             R.id.radioBusiness ->{
-                spammerType = SPAMMER_TYPE_BUSINESS
+                spammerType = Constants.SPAMMER_TYPE_BUSINESS
             }
             R.id.radioPerson ->{
                 spammerType  = SPAMMER_TYPE_PEERSON

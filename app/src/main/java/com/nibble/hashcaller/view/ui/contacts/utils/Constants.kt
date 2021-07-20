@@ -8,6 +8,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.nibble.hashcaller.R
@@ -36,6 +37,7 @@ import kotlin.collections.HashMap
 /**
  * Created by Jithin KG on 23,July,2020
  */
+
 const val USER_PREFERENCES_NAME = "data_store_pref"
 const val USER_PREFERENCES_BLOCK = "data_store_pref_block_preference"
 val SAMPLE_ALIAS = "SOMETHINGNEW"
@@ -92,22 +94,8 @@ suspend fun hashUsingArgon(textToHash: String?): String? = withContext(Dispatche
 
     return@withContext hashHex
 
-//32  Mib-> c8069e9734dbe10cad37e72876c7f37d753123d1dba2ba6cddb4386662f233ed
-
 }
-/**
- * unmark all recylcelerview list item
- */
-fun unMarkItems(){
-//    for(view in MarkedItemsHandler.markedViews){
-//        view.findViewById<ImageView>(R.id.smsMarked).visibility = View.INVISIBLE
-//    }
-//    markedViews.clear()
-//    markedItems.clear()
-//    markedContactAddress.clear()
-//    SMSContainerFragment.updateSelectedItemCount(markedItems.size)
 
-}
 
 fun unMarkItem(view:View, threadId:Long, address:String){
 //    view.visibility = View.INVISIBLE
@@ -147,11 +135,6 @@ fun isNumericOnlyString(stringValue: String): Boolean {
 
 var contactWithMetaDataForSms : HashMap<String, ContactGlobal> = hashMapOf()
 
-object pageOb{
-    var page = 0
-    var pageSpam = 0
-    var totalSMSCount = 0
-}
 
 var isSizeEqual = false // to decide whether to show shimmer in smslistrecyclerview
 

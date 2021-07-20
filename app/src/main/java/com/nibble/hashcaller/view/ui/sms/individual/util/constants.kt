@@ -5,9 +5,7 @@ import android.os.Build
 import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
-//TODO add this file to proguard rule
 
-val SPAMMER_TYPE = "spammer_typ"
 val SPAMMER_TYPE_BUSINESS = 1
 val SPAMMER_TYPE_PEERSON= 2
 val SPAMMER_TYPE_SALES = 3

@@ -118,3 +118,7 @@
 
 #Sometimes it’s required to retain type information and annotations that are read at runtime, as opposed to compile time
 -keepattributes *Annotation*, Signature, Exception
+
+
+-keepclassmembers com.nibble.hashcaller.view.ui.contacts.utils.Constants
+-keepclassmembers com.nibble.hashcaller.view.ui.sms.individual.util.constants

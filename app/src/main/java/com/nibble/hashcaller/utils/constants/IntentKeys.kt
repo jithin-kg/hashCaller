@@ -33,5 +33,7 @@ class IntentKeys {
         const val BROADCAST_STOP_FLOATING_SERVICE = "com.hashcaller.stop_floating"
         const val SHOW_BLOCK_LIST = "showBlockList" // to how blocklistframgnet in mainactivity
         const val SHOW_BLOCK_LIST_VALUE = 14
+        const val CALL_STATE = "c.h.callState"
+        const val CALL_HANDLED_STATE = "c.h.callHandldState"
     }
 }

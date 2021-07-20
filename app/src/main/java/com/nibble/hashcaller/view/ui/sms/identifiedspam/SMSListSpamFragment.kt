@@ -31,9 +31,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.*
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.pageSpam
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.list.SMSSpamListAdapter

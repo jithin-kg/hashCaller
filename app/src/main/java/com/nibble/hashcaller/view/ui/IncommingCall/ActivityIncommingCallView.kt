@@ -26,7 +26,9 @@ import com.nibble.hashcaller.databinding.ActivityIncommingCallViewBinding
 import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.CntctitemForView
+import com.nibble.hashcaller.utils.Constants
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
@@ -60,6 +62,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("LongLogTag")
     private var showfeedbackView = false
     private  var phoneNumber :String = ""
+    private var callHandledState:String = ""
     private lateinit var userInfo: CntctitemForView
     private var statusCode = STATUS_SEARHING_IN_PROGRESS
     private lateinit var bottomSheetDialog: BottomSheetDialog
@@ -85,7 +88,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isVisible = true
-
+        callHandledState = intent.getStringExtra(CALL_HANDLED_STATE)?:""
         registerForBroadCastReceiver()
         getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
@@ -95,12 +98,22 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         setupBottomSheet()
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
-        binding.tvPhoneNumIncomming.text = phoneNumber
-        binding.txtVcallerName.text = phoneNumber
+
+       setViewFromIntent()
         Log.d(TAG, "onCreate: $phoneNumber")
         getCallerInfo()
         checkIfUserBlockedThisNumber()
 
+
+    }
+
+    private fun setViewFromIntent() {
+        binding.tvPhoneNumIncomming.text = phoneNumber
+        binding.txtVcallerName.text = phoneNumber
+        if(callHandledState.isEmpty()){
+            callHandledState = "Call Ended"
+        }
+        binding.tvCallEndState.text = callHandledState
 
     }
 
@@ -309,7 +322,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
                 R.id.radioBusiness -> {
                     val checked = v.isChecked
                     if (checked) {
-                        spammerType = SPAMMER_TYPE_BUSINESS
+                        spammerType = Constants.SPAMMER_TYPE_BUSINESS
                     }
                 }
                 R.id.radioPerson -> {

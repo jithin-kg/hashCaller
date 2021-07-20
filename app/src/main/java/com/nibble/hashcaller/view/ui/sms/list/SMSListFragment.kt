@@ -30,13 +30,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.*
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.page
-import com.nibble.hashcaller.view.ui.contacts.utils.pageOb.totalSMSCount
 import com.nibble.hashcaller.view.ui.sms.SMSContainerFragment
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
 import com.nibble.hashcaller.view.ui.sms.util.*
-import com.nibble.hashcaller.view.ui.sms.util.MarkedItemsHandler.markedContactAddress
-import kotlinx.android.synthetic.main.fragment_message_container.*
 import kotlinx.android.synthetic.main.fragment_message_container.view.*
 import kotlinx.android.synthetic.main.fragment_messages_list.view.*
 import kotlinx.android.synthetic.main.sms_list_view.view.*

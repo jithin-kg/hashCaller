@@ -39,6 +39,7 @@ import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualSMSBinding
+import com.nibble.hashcaller.utils.Constants
 import com.nibble.hashcaller.utils.SmsStatusDeliveredReceiver
 import com.nibble.hashcaller.utils.SmsStatusSentReceiver
 import com.nibble.hashcaller.utils.auth.TokenHelper
@@ -1026,7 +1027,7 @@ class IndividualSMSActivity : AppCompatActivity(),
                 R.id.radioBusiness -> {
                     val checked = v.isChecked
                     if (checked) {
-                        spammerType = SPAMMER_TYPE_BUSINESS
+                        spammerType = Constants.SPAMMER_TYPE_BUSINESS
                     }
                 }
                 R.id.radioPerson -> {

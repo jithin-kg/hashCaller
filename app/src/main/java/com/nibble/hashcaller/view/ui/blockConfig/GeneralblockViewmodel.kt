@@ -5,11 +5,11 @@ import androidx.lifecycle.*
 import androidx.work.*
 import com.nibble.hashcaller.local.db.blocklist.BlockedListPattern
 import com.nibble.hashcaller.repository.BlockListPatternRepository
+import com.nibble.hashcaller.utils.Constants
 import com.nibble.hashcaller.view.ui.call.work.CallContainerViewModel
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.ui.sms.individual.util.EXACT_NUMBER
 import com.nibble.hashcaller.view.ui.sms.individual.util.ON_COMPLETED
-import com.nibble.hashcaller.view.ui.sms.individual.util.SPAMMER_TYPE
 import com.nibble.hashcaller.work.SpamReportWorker
 import com.nibble.hashcaller.work.formatPhoneNumber
 import kotlinx.coroutines.async
@@ -48,7 +48,7 @@ class GeneralblockViewmodel(
                                 .build()
                         val data = Data.Builder()
                         data.putString(CONTACT_ADDRES, contactAddress)
-                        data.putInt(SPAMMER_TYPE, spammerType)
+                        data.putInt(Constants.SPAMMER_TYPE, spammerType)
 
                         val oneTimeWorkRequest =
                             OneTimeWorkRequest.Builder(SpamReportWorker::class.java)

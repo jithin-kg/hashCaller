@@ -149,6 +149,7 @@ class Window(
     fun open() {
         try {
             windowManager.addView(rootView, windowParams)
+            FloatingService.setWindowOpened(true)
         } catch (e: Exception) {
             // Ignore exception for now, but in production, you should have some
             // warning for the user here.
@@ -159,6 +160,7 @@ class Window(
     fun close() {
         try {
             windowManager.removeView(rootView)
+            FloatingService.setWindowClosedManually(true)
 
         } catch (e: Exception) {
             // Ignore exception for now, but in production, you should have some
@@ -189,6 +191,7 @@ class Window(
 //            )
 //            windowManager.updateViewLayout(rootView, windowParams)
             windowManager.removeView(rootView)
+            FloatingService.setWindowClosedManually(true)
 //            context.stopFloatingService(true)
 
         } catch (e: Exception) {

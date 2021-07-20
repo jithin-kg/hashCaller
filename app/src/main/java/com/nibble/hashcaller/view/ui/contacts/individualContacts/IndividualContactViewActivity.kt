@@ -25,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityIndividualCotactViewBinding
 import com.nibble.hashcaller.local.db.blocklist.BlockTypes
+import com.nibble.hashcaller.utils.Constants
 import com.nibble.hashcaller.utils.extensions.requestCallPhonePermission
 import com.nibble.hashcaller.view.ui.MyUndoListener
 import com.nibble.hashcaller.view.ui.blockConfig.GeneralBlockInjectorUtil
@@ -400,7 +401,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 R.id.radioBusiness -> {
                     val checked = v.isChecked
                     if (checked) {
-                        spammerType = SPAMMER_TYPE_BUSINESS
+                        spammerType = Constants.SPAMMER_TYPE_BUSINESS
                     }
                 }
                 R.id.radioPerson -> {

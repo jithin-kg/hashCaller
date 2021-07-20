@@ -35,11 +35,14 @@ import com.nibble.hashcaller.datastore.PreferencesKeys
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.stubs.SimAndNumberDTO
+import com.nibble.hashcaller.utils.Constants
 import com.nibble.hashcaller.utils.NotificationHelper
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_STATE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.COUNTRY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.FIRST_NAME
@@ -208,10 +211,11 @@ fun Context.getAllSMSCursor(): Cursor? {
      return cursor
 }
 
-fun Context.startFloatingService() {
+fun Context.startFloatingService(state: String?) {
 
     val intent = Intent(this, FloatingService::class.java)
         intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE )
+        intent.putExtra(CALL_STATE, state?:"")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.startForegroundService(intent)
         } else {
@@ -219,11 +223,13 @@ fun Context.startFloatingService() {
         }
 
 }
-fun Context.startFloatingServiceOffhook(num: String) {
+fun Context.startFloatingServiceOffhook(num: String, state: String?) {
 
     val intent = Intent(this, FloatingService::class.java)
     intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE_OFF_HOOK )
     intent.putExtra(PHONE_NUMBER, num)
+    intent.putExtra(CALL_STATE, state?:"")
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         this.startForegroundService(intent)
     } else {
@@ -238,7 +244,7 @@ fun Context.startSpamReportWorker(contactAddress: String, spammerType: Int) {
             .build()
     val data = Data.Builder()
     data.putString(CONTACT_ADDRES, contactAddress)
-    data.putInt(SPAMMER_TYPE, spammerType)
+    data.putInt(Constants.SPAMMER_TYPE, spammerType)
 
     val oneTimeWorkRequest =
         OneTimeWorkRequest.Builder(SpamReportWorker::class.java)
@@ -291,10 +297,11 @@ fun Context.stopFloatingService(
 
 }
 
-fun Context.startActivityIncommingCallView( phoneNumber: String) {
+fun Context.startActivityIncommingCallView(phoneNumber: String, prevCallState: String?) {
 
     val i = Intent(this, ActivityIncommingCallView::class.java)
     i.putExtra(PHONE_NUMBER, phoneNumber?:"")
+    i.putExtra(CALL_HANDLED_STATE, prevCallState?:"" )
     i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
     startActivity(i)
 }

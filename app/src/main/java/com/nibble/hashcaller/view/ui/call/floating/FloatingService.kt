@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
-import android.telephony.CellInfo
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -33,7 +32,6 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
-import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ADDRES
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -65,6 +63,8 @@ class FloatingService: Service() {
     private lateinit var countryCodeIso:String
     private val libPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private var serviceStarted = false
+    private var prevCallState:String? = null
+    private var callEndedState:String = ""
 //    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -93,6 +93,7 @@ class FloatingService: Service() {
             WindowObj.setWindow(window!!)
 //                    windowCompanion = window
         }
+
         /**
          * This broadcast is send from incommingcallreceiver,
          *  this is important, sometimes notification is failed to close from within
@@ -102,12 +103,14 @@ class FloatingService: Service() {
 
         val mysms: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(arg0: Context?, arg1: Intent) {
-                Log.d(TAG, "onReceive:broadcast ")
+                
+                onCallEnded()
+
                 window?.close()
                 WindowObj.clearReference()
                 window = null
                 if(mphoneNumberStr.isNotEmpty()){
-                    startActivityIncommingCallView(mphoneNumberStr)
+                    startActivityIncommingCallView(mphoneNumberStr, callEndedState)
                 }
 
 //                                }
@@ -123,11 +126,16 @@ class FloatingService: Service() {
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
-
+        val newState = intent.getStringExtra(IntentKeys.CALL_STATE)?:""
+        if(newState.isNotEmpty()){
+            prevCallState = newState
+        }
+        
         if(!serviceStarted){
+
+            Log.d(TAG, "onStartCommand: service starting for firstime")
             serviceStarted = true
             super.onStartCommand(intent, flags, startId)
-            Log.d(TAG, "onStartCommand: ")
             val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
 
@@ -150,7 +158,11 @@ class FloatingService: Service() {
 //
 //                }
             }
-            else if(command == START_FLOATING_SERVICE_OFF_HOOK){
+            else if(command == START_FLOATING_SERVICE_OFF_HOOK && !isCallScreeningRoleHeld()){
+                registerCallStateListener { phoneNumber, callState ->
+
+                }
+
                   val num =   intent.getStringExtra(PHONE_NUMBER)
                 num?.let{
                     window?.open()
@@ -159,12 +171,11 @@ class FloatingService: Service() {
                     doHandleCall(it)
                 }
 
-                registerCallStateListener { phoneNumber, callState ->
 
-                }
             }
             else if(command == START_FLOATING_SERVICE){
-                if(!onStartCalled){
+
+                if(!onStartCalled && !isCallScreeningRoleHeld()){
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
                             TelephonyManager.CALL_STATE_RINGING, TelephonyManager.CALL_STATE_OFFHOOK ->{
@@ -232,6 +243,9 @@ class FloatingService: Service() {
 //        }
                 }
             }else if(command == START_FLOATING_SERVICE_FROM_SCREENING_SERVICE){
+                registerCallStateListener { phoneNumber, callState ->
+
+                }
                 val num = intent.getStringExtra(PHONE_NUMBER)
                 num?.let {
                     window?.open()
@@ -239,16 +253,26 @@ class FloatingService: Service() {
                     onStartCalled = true
                     doHandleCall(mphoneNumberStr)
                 }
-                registerCallStateListener { phoneNumber, callState ->
-
-                }
+                
 
             }
+        }else {
+            //floating service already started
+            //check if window is visible in view, if window is not visible and
+            //window has not been closed before start the window, this cituation
+            //can occur when user attend the call even before broadcast receiver
+            //receives the call state
+            if(!isWinManuallyClsd  && !isWindopwOpened){
+                val command = intent.getStringExtra(INTENT_COMMAND)
+                val num =   intent.getStringExtra(PHONE_NUMBER)?:""
+                if(command == START_FLOATING_SERVICE_OFF_HOOK && num.isNotEmpty()){
+                    window?.open()
+                    mphoneNumberStr = num
+                    onStartCalled = true
+                    doHandleCall(mphoneNumberStr)
+                }
+            }
         }
-
-
-
-
         return START_STICKY
     }
 
@@ -279,20 +303,19 @@ class FloatingService: Service() {
     }
 
     private fun registerCallStateListener(listener:(phoneNumber:String, callState:Int)-> Unit) {
-
+        Log.d(TAG, "registerCallStateListener: ")
         val telephony = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         telephony.listen(object : PhoneStateListener() {
 
-            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
-                super.onCellInfoChanged(cellInfo)
-            }
+//            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
+//                super.onCellInfoChanged(cellInfo)
+//            }
 
             override fun onCallStateChanged(state: Int, incomingNumber: String) {
                 super.onCallStateChanged(state, incomingNumber)
                 if (incomingNumber.isNotEmpty()) {
                     when (state) {
                         TelephonyManager.CALL_STATE_RINGING -> {
-                            Log.d(TAG, "onCallStateChanged:ringing $incomingNumber ")
 //                            startFloatingService(incomingNumber)
                            if(incomingNumber.isNotEmpty()){
                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
@@ -308,15 +331,19 @@ class FloatingService: Service() {
 //
 //                        }
                         TelephonyManager.CALL_STATE_IDLE -> {
+                            onCallEnded()
+
                             Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
                             if(incomingNumber.isNotEmpty()){
 //                                if(!phoneNumber.isNullOrEmpty()){
-                                    window?.close()
+
+                                window?.close()
                                     WindowObj.clearReference()
                                     window = null
-                                    startActivityIncommingCallView(incomingNumber)
+                                    startActivityIncommingCallView(incomingNumber, callEndedState)
 //                                }
                                 stopService()
+                                
 //                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
                             }
 //                            stopFloatingService(true, incomingNumber)
@@ -330,6 +357,24 @@ class FloatingService: Service() {
 
             }
         }, PhoneStateListener.LISTEN_CALL_STATE)
+    }
+
+    /**
+     * Called when call ends / floating service get stopped
+     */
+    private fun onCallEnded() {
+        when(prevCallState){
+            TelephonyManager.EXTRA_STATE_RINGING -> {
+                Log.d(TAG, "onCallEnded: miss call")
+                callEndedState = "Missed call"
+            }
+            TelephonyManager.EXTRA_STATE_OFFHOOK -> {
+                Log.d(TAG, "onCallEnded: call ended")
+                callEndedState = "Call ended"
+
+            }
+
+        }
     }
 
     private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
@@ -459,6 +504,15 @@ class FloatingService: Service() {
 
 
     companion object{
+        private var isWinManuallyClsd = false
+        private var isWindopwOpened = false
+        fun setWindowClosedManually(state: Boolean) {
+            isWinManuallyClsd = state
+        }
+
+        fun setWindowOpened(state: Boolean) {
+            isWindopwOpened = state
+        }
 
 
         const val TAG = "__FloatingService"

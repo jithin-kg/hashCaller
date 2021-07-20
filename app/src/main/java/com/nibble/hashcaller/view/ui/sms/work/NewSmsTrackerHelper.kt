@@ -3,7 +3,6 @@ package com.nibble.hashcaller.view.ui.sms.work
 import android.util.Log
 import com.nibble.hashcaller.Secrets
 import com.nibble.hashcaller.view.ui.call.db.CallersInfoFromServerDAO
-import com.nibble.hashcaller.view.ui.contacts.utils.hashUsingArgon
 import com.nibble.hashcaller.view.ui.sms.SMScontainerRepository
 import com.nibble.hashcaller.view.ui.sms.util.SMS
 import java.text.SimpleDateFormat
