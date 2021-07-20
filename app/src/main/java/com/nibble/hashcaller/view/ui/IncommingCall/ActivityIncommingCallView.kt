@@ -422,7 +422,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         super.onDestroy()
         Log.d(TAG, "onDestroy: ")
         isVisible = null
-        finish()
 
     }
     companion object{

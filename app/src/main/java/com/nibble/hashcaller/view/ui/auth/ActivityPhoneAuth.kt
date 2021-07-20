@@ -69,6 +69,7 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
                     binding.edtTextPhone?.text.toString()
 
         )
+
         val isValidForRegion = libCountryCodeHelper.isValidForRegion(phoneNumber, binding.coutryCodePicker.selectedCountryNameCode)
 
         if (isValidForRegion){

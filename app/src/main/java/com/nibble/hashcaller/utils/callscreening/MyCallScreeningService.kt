@@ -77,7 +77,12 @@ class MyCallScreeningService: CallScreeningService() {
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)
         mCallDetails = callDetails
-        Log.d(TAG, "onScreenCall: ")
+        //todo check call direction to show outgoing call view quickly
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            Log.d(TAG, "onScreenCall: ${callDetails.callDirection}")
+
+        }
+
          phoneNumber = getPhoneNumber(callDetails)
         phoneNumber = formatPhoneNumber(phoneNumber)
         phoneNumber = libCountryHelper.getES164Formatednumber(phoneNumber, countryCodeIso)

@@ -321,14 +321,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        })
     }
 
-    private fun checkPermission(): Boolean {
-        return EasyPermissions.hasPermissions(
-            this,
-            READ_CONTACTS,
-            READ_PHONE_STATE,
 
-        )
-    }
     private fun firebaseAuthListener() {
         rcfirebaseAuth = FirebaseAuth.getInstance()
         user = rcfirebaseAuth?.currentUser
@@ -1433,7 +1426,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        callIntent.data = Uri.parse("tel:$phoneNumFromViewModel")
         if (ActivityCompat.checkSelfPermission(
                 this,
-                Manifest.permission.CALL_PHONE
+                CALL_PHONE
             ) != PackageManager.PERMISSION_GRANTED) {
             return
         }

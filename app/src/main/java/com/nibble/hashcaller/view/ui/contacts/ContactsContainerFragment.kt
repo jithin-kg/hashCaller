@@ -1,18 +1,18 @@
 package com.nibble.hashcaller.view.ui.contacts
 
 import android.Manifest
-import android.app.ActivityOptions
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +24,7 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.extensions.startSearchActivity
@@ -31,7 +32,6 @@ import com.nibble.hashcaller.view.ui.MainActivity
 import com.nibble.hashcaller.view.ui.MainActivityInjectorUtil
 import com.nibble.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.nibble.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
-import com.nibble.hashcaller.view.ui.contacts.search.ActivitySerchContacts
 import com.nibble.hashcaller.view.ui.contacts.utils.ContacInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactGlobalHelper
 import com.nibble.hashcaller.view.ui.contacts.utils.ContactsViewModel
@@ -40,11 +40,9 @@ import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
-import com.nibble.hashcaller.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
-import kotlinx.android.synthetic.main.fragment_search.*
-import kotlinx.coroutines.delay
+import com.vmadalin.easypermissions.models.PermissionRequest
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -332,12 +330,47 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     }
 
+    @SuppressLint(  "HardwareIds")
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden && !this::contactViewModel.isInitialized){
             if (context?.hasReadContactsPermission() == true) {
+
+//               if (ActivityCompat.checkSelfPermission(
+//                       requireContext(),
+//                       Manifest.permission.READ_SMS
+//                   ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                       requireContext(),
+//                       Manifest.permission.READ_PHONE_NUMBERS
+//                   ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                       requireContext(),
+//                       Manifest.permission.READ_PHONE_STATE
+//                   ) != PackageManager.PERMISSION_GRANTED
+//               ) {
+//                   val request = PermissionRequest.Builder(this.context)
+//                       .code(PermisssionRequestCodes.REQUEST_CODE_CALL_LOG)
+//                       .perms(arrayOf(
+//                           Manifest.permission.READ_PHONE_NUMBERS,
+//                       ))
+//                       .rationale("HashCaller needs access to call logs to identify unknown callers in call log.")
+//                       .positiveButtonText("Continue")
+//                       .negativeButtonText("Cancel")
+//                       .build()
+//                  EasyPermissions.requestPermissions(requireActivity(), request)
+//                   return
+//               }else {
+//                  val telManager =  (context?.getSystemService(Context.TELEPHONY_SERVICE)) as TelephonyManager
+////                   (context!!.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).line1Number
+//                   Log.d(TAG, "onHiddenChanged:line1  ${ telManager.line1Number}")
+//
+//
+//               }
                 initRecyclerView()
                 getData()
+
+
+
+
             } else {
                 hideRecyevlerView()
             }

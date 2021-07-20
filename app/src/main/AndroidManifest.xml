@@ -23,7 +23,12 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.PROCESS_INCOMING_CALLS" />
+    <!-- Needed only if your calling app uses the getLine1Number() or
+      getMsisdn() methods. -->
+    <uses-permission android:name="android.permissions.READ_PHONE_NUMBERS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
@@ -451,9 +456,13 @@
         </receiver>
         <receiver
             android:name=".utils.callReceiver.IncomingCallReceiver"
-            android:exported="false">
+            android:exported="true"
+            android:enabled="true"
+
+            >
             <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.PHONE_STATE"
+                    />
             </intent-filter>
         </receiver>
 

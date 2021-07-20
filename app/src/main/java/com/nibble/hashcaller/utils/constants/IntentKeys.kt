@@ -28,6 +28,7 @@ class IntentKeys {
         const val STOP_FLOATING_SERVICE = "com.nibble.stop_floating_service"
         const val STOP_FLOATING_SERVICE_AND_WINDOW = "com.nibble.close_service_n_window"
         const val START_FLOATING_SERVICE = "com.nibble.start_floatin_window"
+        const val START_FLOATING_SERVICE_OFF_HOOK = "com.nibble.start_floatin_offhook"
         const val START_FLOATING_SERVICE_FROM_SCREENING_SERVICE = "com.nibble.start_floatin_window_from_screening"
         const val BROADCAST_STOP_FLOATING_SERVICE = "com.hashcaller.stop_floating"
         const val SHOW_BLOCK_LIST = "showBlockList" // to how blocklistframgnet in mainactivity

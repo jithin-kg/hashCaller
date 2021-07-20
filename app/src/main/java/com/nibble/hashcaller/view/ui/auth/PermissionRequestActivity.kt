@@ -1,26 +1,27 @@
 package com.nibble.hashcaller.view.ui.auth
 
-import android.Manifest
-import android.Manifest.permission.READ_CONTACTS
-import android.Manifest.permission.READ_PHONE_STATE
+import android.Manifest.permission.*
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ActivityPermissionRequestBinding
-import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.READ_CNCT_DISPLAY_OVER
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_PHONE_STATE
@@ -49,6 +50,8 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
         private  const val SHARED_PREFERENCE_TOKEN_NAME = "com.nibble.hashCaller.prefs"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        //todo importnatnt to check this before publishing to playstore
+        //https://support.google.com/googleplay/android-developer/answer/10208820?visit_id=637622876885343522-2706833952&rd=1
         super.onCreate(savedInstanceState)
         binding = ActivityPermissionRequestBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -93,6 +96,25 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
         binding.btnOverlay.setOnClickListener(this)
     }
 
+    @SuppressLint("HardwareIds")
+//    private fun getLine1Number(context: Context): String? {
+//        return if (ActivityCompat.checkSelfPermission(
+//                context,
+//                READ_SMS
+//            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+//                context,
+//                READ_PHONE_NUMBERS
+//            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+//                context,
+//                READ_PHONE_STATE
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//
+//            TelephonyUtil.getManager(context).getLine1Number()
+//        } else {
+//            ""
+//        }
+//    }
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnRequestPermission -> {
@@ -107,10 +129,12 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                 requestAlertWindowPermission()
             }
             R.id.btnPhoneState -> {
-                requestPermission(
-                    READ_PHONE_STATE,
+                requestPermissions(
+                   arrayOf( READ_PHONE_STATE,
+                       CALL_PHONE,
+                       READ_PHONE_NUMBERS
+                   ),
                     REQUEST_CODE_READ_PHONE_STATE,
-                    getString(R.string.rational_phone_state)
                 )
             }
             R.id.btnContactAcces -> {
@@ -182,7 +206,9 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
     private fun requestAllPermission() {
         val perms = arrayOf(
             READ_CONTACTS,
-            android.Manifest.permission.READ_PHONE_STATE,
+            READ_PHONE_STATE,
+            CALL_PHONE,
+//            READ_PHONE_NUMBERS
 //            Manifest.permission.CALL_PHONE,
         )
 
@@ -255,7 +281,11 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
 
         }
         //phone state
-        if(!EasyPermissions.hasPermissions(this, READ_PHONE_STATE)){
+        if(!EasyPermissions.hasPermissions(this,
+                READ_PHONE_STATE,
+                CALL_PHONE,
+                READ_PHONE_NUMBERS
+                )){
             //read contacts permission not given
             binding.btnPhoneState.beVisible()
             setImageOnPermissionChange(

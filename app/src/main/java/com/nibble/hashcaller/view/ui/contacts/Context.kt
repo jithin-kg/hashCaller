@@ -1,6 +1,7 @@
 package com.nibble.hashcaller.view.ui.contacts
 
 import android.Manifest
+import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
@@ -50,6 +51,7 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.SPAM_COUNT
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_OFF_HOOK
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
@@ -91,37 +93,41 @@ fun Context.showBadRequestToast(code: Int) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun Context.hasMandatoryPermissions(): Boolean {
     return EasyPermissions.hasPermissions(
         this,
-        Manifest.permission.READ_CONTACTS,
-        Manifest.permission.READ_PHONE_STATE,
+        READ_CONTACTS,
+        READ_PHONE_STATE,
+        CALL_PHONE,
+//        READ_PHONE_NUMBERS
     )
 }
 
 
 
 fun Context.hasSMSReadPermission():Boolean{
-    return EasyPermissions.hasPermissions(this, Manifest.permission.READ_CONTACTS,
+    return EasyPermissions.hasPermissions(this, READ_CONTACTS,
         Manifest.permission.READ_SMS
     )
 }
 
 fun Context.hasReadContactsPermission(): Boolean {
     return EasyPermissions.hasPermissions(this,
-        Manifest.permission.READ_CONTACTS
+        READ_CONTACTS
     )
 }
 
 fun Context.hasReadPhoneStatePermission():Boolean {
     return EasyPermissions.hasPermissions(this,
-        Manifest.permission.READ_PHONE_STATE
+        READ_PHONE_STATE
         )
 }
 
 fun Context.hasReadCallLogPermission(): Boolean {
    return EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALL_LOG,
-        Manifest.permission.READ_CONTACTS)
+        READ_CONTACTS
+   )
 }
 
 fun Context.getAllCallLogsCursor(): Cursor? {
@@ -213,6 +219,18 @@ fun Context.startFloatingService() {
         }
 
 }
+fun Context.startFloatingServiceOffhook(num: String) {
+
+    val intent = Intent(this, FloatingService::class.java)
+    intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE_OFF_HOOK )
+    intent.putExtra(PHONE_NUMBER, num)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        this.startForegroundService(intent)
+    } else {
+        this.startService(intent)
+    }
+
+}
 
 fun Context.startSpamReportWorker(contactAddress: String, spammerType: Int) {
     val constraints =
@@ -234,7 +252,7 @@ fun Context.startFloatingServiceFromScreeningService(phoneNumber: String) {
 
     val intent = Intent(this, FloatingService::class.java)
     intent.putExtra(INTENT_COMMAND,START_FLOATING_SERVICE_FROM_SCREENING_SERVICE )
-    intent.putExtra(CONTACT_ADDRES,phoneNumber )
+    intent.putExtra(PHONE_NUMBER,phoneNumber )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         this.startForegroundService(intent)

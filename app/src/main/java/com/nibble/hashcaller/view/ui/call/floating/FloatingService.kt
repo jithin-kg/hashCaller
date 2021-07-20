@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.telephony.CellInfo
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -25,8 +26,10 @@ import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callscreening.WindowObj
 import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.INTENT_COMMAND
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_OFF_HOOK
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
@@ -96,6 +99,7 @@ class FloatingService: Service() {
          *  this service, so we need to make sure the notification is stopped when call state
          *  changed to IDLE
          */
+
         val mysms: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(arg0: Context?, arg1: Intent) {
                 Log.d(TAG, "onReceive:broadcast ")
@@ -122,11 +126,11 @@ class FloatingService: Service() {
 
         if(!serviceStarted){
             serviceStarted = true
-
             super.onStartCommand(intent, flags, startId)
             Log.d(TAG, "onStartCommand: ")
             val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
+
 //                registerCallStateListener { phoneNumber, callState ->
 //                    Log.d(TAG, "onStartCommand: $phoneNumber")
 //                    when(callState){
@@ -145,24 +149,37 @@ class FloatingService: Service() {
 //                    stopService()
 //
 //                }
+            }
+            else if(command == START_FLOATING_SERVICE_OFF_HOOK){
+                  val num =   intent.getStringExtra(PHONE_NUMBER)
+                num?.let{
+                    window?.open()
+                    mphoneNumberStr = it
+                        onStartCalled = true
+                    doHandleCall(it)
+                }
 
+                registerCallStateListener { phoneNumber, callState ->
+
+                }
             }
             else if(command == START_FLOATING_SERVICE){
                 if(!onStartCalled){
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
-                            TelephonyManager.CALL_STATE_RINGING ->{
+                            TelephonyManager.CALL_STATE_RINGING, TelephonyManager.CALL_STATE_OFFHOOK ->{
                                 window?.open()
                                 mphoneNumberStr = phoneNumber
                                 onStartCalled = true
 
-                                if(command == START_FLOATING_SERVICE){
+//                                if(command == START_FLOATING_SERVICE){
                                     Log.d(TAG, "onStartCommand: window opening")
                                     // Be sure to show the notification first for all commands.
                                     // Don't worry, repeated calls have no effects.
+
                                     doHandleCall(phoneNumber)
 //                        return START_NOT_STICKY
-                                }
+//                                }
 //            }
 //        }
 
@@ -215,11 +232,17 @@ class FloatingService: Service() {
 //        }
                 }
             }else if(command == START_FLOATING_SERVICE_FROM_SCREENING_SERVICE){
-                window?.open()
-                mphoneNumberStr = intent.getStringExtra(CONTACT_ADDRES)
-                onStartCalled = true
-                Log.d(TAG, "onStartCommand: numfromservice: $mphoneNumberStr")
-                doHandleCall(mphoneNumberStr)
+                val num = intent.getStringExtra(PHONE_NUMBER)
+                num?.let {
+                    window?.open()
+                    mphoneNumberStr = it
+                    onStartCalled = true
+                    doHandleCall(mphoneNumberStr)
+                }
+                registerCallStateListener { phoneNumber, callState ->
+
+                }
+
             }
         }
 
@@ -259,6 +282,11 @@ class FloatingService: Service() {
 
         val telephony = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         telephony.listen(object : PhoneStateListener() {
+
+            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
+                super.onCellInfoChanged(cellInfo)
+            }
+
             override fun onCallStateChanged(state: Int, incomingNumber: String) {
                 super.onCallStateChanged(state, incomingNumber)
                 if (incomingNumber.isNotEmpty()) {
@@ -271,8 +299,16 @@ class FloatingService: Service() {
                            }
 
                         }
+//                        TelephonyManager.CALL_STATE_OFFHOOK -> {
+//                            Log.d(TAG, "onCallStateChanged:ringing $incomingNumber ")
+////                            startFloatingService(incomingNumber)
+//                            if(incomingNumber.isNotEmpty()){
+//                                listener(incomingNumber, TelephonyManager.CALL_STATE_OFFHOOK)
+//                            }
+//
+//                        }
                         TelephonyManager.CALL_STATE_IDLE -> {
-//                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
+                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
                             if(incomingNumber.isNotEmpty()){
 //                                if(!phoneNumber.isNullOrEmpty()){
                                     window?.close()
