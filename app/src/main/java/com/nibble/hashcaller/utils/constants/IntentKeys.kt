@@ -35,5 +35,6 @@ class IntentKeys {
         const val SHOW_BLOCK_LIST_VALUE = 14
         const val CALL_STATE = "c.h.callState"
         const val CALL_HANDLED_STATE = "c.h.callHandldState"
+        const val CALL_HANDLED_SIM = "c.h.callHndledSim"
     }
 }

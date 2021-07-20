@@ -641,6 +641,8 @@ class IndividualSMSActivity : AppCompatActivity(),
     @SuppressLint("MissingPermission")
     private fun setupSIMSelector() {
         val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+
+
         val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
 //        val res1 = subscriptionManager.getSubscriptionIds(0)
 //        val res2 = subscriptionManager.getSubscriptionIds(1)
@@ -651,6 +653,7 @@ class IndividualSMSActivity : AppCompatActivity(),
         if (availableSIMs.size > 0) {
             var index = 0
             for(subscriptionInfo in availableSIMs){
+                subscriptionInfo.subscriptionId
                 var label = subscriptionInfo.displayName?.toString() ?: ""
                 if (subscriptionInfo.number?.isNotEmpty() == true) {
                     label += " (${subscriptionInfo.number})"

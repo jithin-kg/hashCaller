@@ -54,7 +54,7 @@
                 >
 
                 <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/imgBtnAvatarMain"
+                    android:id="@+id/imgBtnHamBrgr"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginStart="32dp"
@@ -78,7 +78,7 @@
                     android:textColor="@color/colorWhite"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imgBtnAvatarMain"
+                    app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgr"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
                 <ImageButton
@@ -163,11 +163,13 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text=""
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/colorWhite"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="@+id/tvMessages"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    />
 
 <!--                <EditText-->
 <!--                    android:id="@+id/searchViewSms"-->

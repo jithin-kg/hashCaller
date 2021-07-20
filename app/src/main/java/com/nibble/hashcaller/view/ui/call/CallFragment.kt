@@ -31,7 +31,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.FragmentCallBinding
-import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.constants.IntentKeys
@@ -75,7 +74,6 @@ import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.jar.Manifest
 
 
 /**
@@ -278,13 +276,12 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private fun initListeners() {
 
         binding.imgBtnCallTbrBlock.setOnClickListener(this)
-        binding.imgBtnCallTbrMuteCaller.setOnClickListener(this)
+//        binding.imgBtnCallTbrMuteCaller.setOnClickListener(this)
         binding.imgBtnCallTbrDelete.setOnClickListener(this)
         binding.fabBtnShowDialpad.setOnClickListener(this)
         binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
-        binding.imgBtnCallTbrMore.setOnClickListener(this)
+        binding.imgBtnCallSearch.setOnClickListener(this)
         binding.imgBtnHamBrgerCalls.setOnClickListener(this)
-        binding.searchViewCall.setOnClickListener(this)
 
         radioSales?.setOnClickListener(this)
         radioScam?.setOnClickListener(this)
@@ -550,12 +547,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 //        fabBtnShowDialpad.show()
     }
 
-
-
-    private fun initialize() {
-//        toolbar = callFragment?.findViewById(R.id.toolbarCall)
-//        searchViewCall = callFragment?.findViewById(R.id.searchViewCall)!!
-    }
+    
 
     companion object {
             private const val TAG ="__CallFragment"
@@ -615,7 +607,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
                 (activity as MainActivity).showDialerFragment()
             }
-            R.id.imgBtnCallTbrMore ->{
+            R.id.imgBtnCallSearch ->{
                 activity?.startSearchActivity()
 //                val intent = Intent(activity, BlockManageActivity::class.java)
 //                startActivity(intent)
@@ -627,9 +619,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 (activity as MainActivity).showDrawer()
 //                requireContext().startSettingsActivity(activity)
             }
-            R.id.searchViewCall ->{
-                startSeaActivity()
-            }
+
             R.id.btnBlock->{
                 blockMarkedCaller()
             }
@@ -688,11 +678,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         }
     }
 
-    private fun startSeaActivity() {
 
-        val intent = Intent(activity, CallLogSearchActivity::class.java)
-        startActivity(intent)
-    }
 
 
     private fun unmuteUser() {
@@ -701,7 +687,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 OPERATION_COMPLETED -> {
                     requireActivity().toast("Enabled notification for ${viewmodel?.contactAddress} ", Toast.LENGTH_LONG)
                     binding.imgBtnCallUnMuteCaller.beInvisible()
-                    binding.imgBtnCallTbrMuteCaller.beVisible()
+//                    binding.imgBtnCallTbrMuteCaller.beVisible()
 //                    clearlists()
                     showSearchView()
                 }
@@ -1085,7 +1071,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                       IS_NOT_MUTED_ADDRESS ->{
 
                           binding.imgBtnCallUnMuteCaller.beInvisible()
-                          binding.imgBtnCallTbrMuteCaller.beVisible()
+//                          binding.imgBtnCallTbrMuteCaller.beVisible()
                       }
                   }
               })
@@ -1098,8 +1084,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private fun showDeleteBtnInToolbar(count: Int) {
         Log.d(TAG, "showDeleteBtnInToolbar: ")
         updateSelectedItemCount(count)
-
-        binding.searchViewCall.beInvisible()
+        binding.imgBtnCallSearch.beInvisible()
         if(count==1){ //only show block button if only one item marked
             binding.imgBtnCallTbrBlock.beVisible()
 
@@ -1108,11 +1093,11 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
         }
         if(isScreeningApp){
-            binding.imgBtnCallTbrMuteCaller.beVisible()
+//            binding.imgBtnCallTbrMuteCaller.beVisible()
 
         }
         binding.imgBtnCallTbrDelete.beVisible()
-        binding.imgBtnCallTbrMore.beVisible()
+        binding.imgBtnCallSearch.beInvisible()
         binding.tvVHashcaller.beInvisible()
         binding.imgBtnHamBrgerCalls.beInvisible()
 
@@ -1128,7 +1113,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     fun showSearchView(){
 
-        binding.searchViewCall.beVisible()
         binding.imgBtnCallTbrBlock.beInvisible()
         binding. imgBtnCallTbrMuteCaller.beInvisible()
         binding.imgBtnCallTbrDelete.beInvisible()

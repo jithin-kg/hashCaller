@@ -41,6 +41,7 @@ import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_SIM
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_STATE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CARRIER
@@ -297,11 +298,16 @@ fun Context.stopFloatingService(
 
 }
 
-fun Context.startActivityIncommingCallView(phoneNumber: String, prevCallState: String?) {
+fun Context.startActivityIncommingCallView(
+    phoneNumber: String,
+    prevCallState: String?,
+    callHandledSim: Int
+) {
 
     val i = Intent(this, ActivityIncommingCallView::class.java)
     i.putExtra(PHONE_NUMBER, phoneNumber?:"")
     i.putExtra(CALL_HANDLED_STATE, prevCallState?:"" )
+    i.putExtra(CALL_HANDLED_SIM, callHandledSim )
     i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
     startActivity(i)
 }
@@ -437,7 +443,9 @@ fun Context.getAvailableSIMCardLabels(): ArrayList<SIMAccount> {
     val SIMAccounts = ArrayList<SIMAccount>()
     try {
         telecomManager.callCapablePhoneAccounts.forEachIndexed { index, account ->
+
             val phoneAccount = telecomManager.getPhoneAccount(account)
+
             var label = phoneAccount.label.toString()
             var address = phoneAccount.address.toString()
             if (address.startsWith("tel:") && address.substringAfter("tel:").isNotEmpty()) {

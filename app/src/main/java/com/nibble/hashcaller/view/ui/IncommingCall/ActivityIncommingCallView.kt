@@ -27,7 +27,11 @@ import com.nibble.hashcaller.network.HttpStatusCodes.Companion.STATUS_SEARHING_I
 import com.nibble.hashcaller.network.search.model.Cntct
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.utils.Constants
+import com.nibble.hashcaller.utils.Constants.Companion.NO_SIM_DETECTED
+import com.nibble.hashcaller.utils.Constants.Companion.SIM_ONE
+import com.nibble.hashcaller.utils.Constants.Companion.SIM_TWO
 import com.nibble.hashcaller.utils.auth.TokenHelper
+import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
@@ -63,6 +67,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private var showfeedbackView = false
     private  var phoneNumber :String = ""
     private var callHandledState:String = ""
+    private var callHandledSim = NO_SIM_DETECTED
     private lateinit var userInfo: CntctitemForView
     private var statusCode = STATUS_SEARHING_IN_PROGRESS
     private lateinit var bottomSheetDialog: BottomSheetDialog
@@ -89,6 +94,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         isVisible = true
         callHandledState = intent.getStringExtra(CALL_HANDLED_STATE)?:""
+
         registerForBroadCastReceiver()
         getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
@@ -98,6 +104,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         setupBottomSheet()
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
+        callHandledSim = intent.getIntExtra(IntentKeys.CALL_HANDLED_SIM, NO_SIM_DETECTED)
 
        setViewFromIntent()
         Log.d(TAG, "onCreate: $phoneNumber")
@@ -110,10 +117,26 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     private fun setViewFromIntent() {
         binding.tvPhoneNumIncomming.text = phoneNumber
         binding.txtVcallerName.text = phoneNumber
+
         if(callHandledState.isEmpty()){
             callHandledState = "Call Ended"
         }
         binding.tvCallEndState.text = callHandledState
+
+        when(callHandledSim){
+            SIM_ONE -> {
+                binding.imgVSimOne.beVisible()
+                binding.imgVSimTwo.beInvisible()
+            }
+            SIM_TWO -> {
+                binding.imgVSimTwo.beVisible()
+                binding.imgVSimOne.beInvisible()
+            }
+            else -> {
+                binding.imgVSimOne.beInvisible()
+                binding.imgVSimTwo.beInvisible()
+            }
+        }
 
     }
 

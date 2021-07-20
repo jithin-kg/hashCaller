@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -15,10 +16,13 @@ import androidx.core.content.ContextCompat
 import com.nibble.hashcaller.R
 import com.nibble.hashcaller.network.search.model.CntctitemForView
 import com.nibble.hashcaller.stubs.Contact
+import com.nibble.hashcaller.utils.Constants.Companion.SIM_ONE
+import com.nibble.hashcaller.utils.Constants.Companion.SIM_TWO
 import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
+import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.nibble.hashcaller.view.ui.sms.individual.util.beVisible
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.view.utils.getDecodedBytes
@@ -42,6 +46,8 @@ class Window(
     private val tvLocation:TextView = rootView.findViewById(R.id.txtVLocaltionWindow)
     private val layoutInnerWindow: ConstraintLayout = rootView.findViewById(R.id.layoutInnerWindow)
     private val imgVAvatar : CircleImageView = rootView.findViewById(R.id.imgVAvatarIncomming)
+    private val imgVSimOne: ImageView = rootView.findViewById(R.id.imgVSimOne)
+    private val imgVSimTwo: ImageView = rootView.findViewById(R.id.imgVSimTwo)
     private val windowParams = WindowManager.LayoutParams(
         0,
         0,
@@ -66,7 +72,20 @@ class Window(
         return dm
     }
 
+     fun setSimInView(simNum:Int){
+         when(simNum){
+             SIM_ONE -> {
+                 imgVSimTwo.beInvisible()
+                 imgVSimOne.beVisible()
+             }
+             SIM_TWO -> {
+                 imgVSimOne.beInvisible()
+                 imgVSimTwo.beVisible()
+             }
 
+         }
+         FloatingService.setSimCard(simNum)
+    }
     private fun calculateSizeAndPosition(
         params: WindowManager.LayoutParams,
         widthInDp: Int,

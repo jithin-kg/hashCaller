@@ -2,6 +2,13 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
 <!--    <solid android:color="@android:color/transparent"/>-->
     <solid android:color="@color/colorPrimaryDarkIncomingCallView"/>
+
+    <gradient
+        android:angle="90"
+        android:startColor="#2672AC"
+        android:endColor="#2D83C4"
+        android:type="linear"
+        />
 <!--    <corners android:radius="8dp"-->
 <!--        />-->
     <corners android:topLeftRadius="8dp"

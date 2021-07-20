@@ -1,7 +1,5 @@
 package com.nibble.hashcaller.view.ui.sms
 
-import android.Manifest
-import android.Manifest.permission.READ_CONTACTS
 import android.Manifest.permission.READ_SMS
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
@@ -62,7 +60,6 @@ import com.nibble.hashcaller.view.utils.ConfirmDialogFragment
 import com.nibble.hashcaller.view.utils.ConfirmationClickListener
 import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
 import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
@@ -254,7 +251,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrBlock.setOnClickListener(this)
         binding.imgBtnTbrMore.setOnClickListener(this)
         binding.imgBtnTbrDelete.setOnClickListener(this)
-        binding.imgBtnAvatarMain.setOnClickListener(this)
+        binding.imgBtnHamBrgr.setOnClickListener(this)
         binding.fabSendNewSMS.setOnClickListener(this)
         binding.imgBtnSearch.setOnClickListener(this)
 
@@ -275,9 +272,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        unMarkItems()
 //        binding.searchViewSms.visibility = View.VISIBLE
 //        binding.imgBtnTbrMuteSender.visibility = View.INVISIBLE
-        binding.imgBtnTbrBlock.visibility = View.INVISIBLE
-        binding.imgBtnTbrDelete.visibility = View.INVISIBLE
-        binding.tvSelectedCount.visibility = View.INVISIBLE
+        binding.imgBtnTbrBlock.beInvisible()
+        binding.imgBtnTbrDelete.beInvisible()
+        binding.tvSelectedCount.beInvisible()
     }
 
 
@@ -599,7 +596,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
             R.id.imgBtnTbrMore->{
                 showPopupMenu(R.menu.sms_list_more_popup,imgBtnTbrMore)
             }
-            R.id.imgBtnAvatarMain ->{
+            R.id.imgBtnHamBrgr ->{
                 (activity as MainActivity).showDrawer()
 
 //               requireContext().startSettingsActivity(activity)
@@ -784,6 +781,10 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         binding.imgBtnTbrBlock.beInvisible()
         binding.tvSelectedCount.beInvisible()
         binding.pgBarSMSDeleting.beInvisible()
+        binding.tvSelectedCount.beInvisible()
+        binding.imgBtnSearch.beVisible()
+        binding.imgBtnHamBrgr.beVisible()
+        binding.tvMessages.beVisible()
 
 
 //        unMarkItems()
@@ -792,6 +793,9 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     fun showToolbarButtons(size: Int) {
         Log.d(TAG, "showToolbarButtons: ")
 //        binding.searchViewSms.beInvisible()
+        binding.imgBtnSearch.beInvisible()
+        binding.imgBtnHamBrgr.beInvisible()
+        binding.tvMessages.beInvisible()
         binding.imgBtnTbrDelete.beVisible()
 //        binding.imgBtnTbrMuteSender.beVisible()
 
@@ -801,6 +805,8 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
         }else{
             binding.imgBtnTbrBlock.beVisible()
         }
+        binding.tvSelectedCount.text = "${size.toString()} Selected"
+        binding.tvSelectedCount.beVisible()
     }
 //    fun isSearchViewVisible(): Boolean {
 //        if(binding.searchViewSms.visibility== View.VISIBLE)
@@ -808,7 +814,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //        return false
 //    }
 
-    private  suspend fun observeMarkedItems() {
+    private  fun observeMarkedItems() {
 //       withContext(Dispatchers.Main){
            viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
                when(it.size){

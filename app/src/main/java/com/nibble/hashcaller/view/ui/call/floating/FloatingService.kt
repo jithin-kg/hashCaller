@@ -1,5 +1,6 @@
 package com.nibble.hashcaller.view.ui.call.floating
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,6 +9,7 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
+import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -20,6 +22,9 @@ import com.nibble.hashcaller.datastore.DataStoreRepository
 import com.nibble.hashcaller.local.db.HashCallerDatabase
 import com.nibble.hashcaller.local.db.blocklist.BlockedLIstDao
 import com.nibble.hashcaller.repository.search.SearchNetworkRepository
+import com.nibble.hashcaller.utils.Constants.Companion.NO_SIM_DETECTED
+import com.nibble.hashcaller.utils.Constants.Companion.SIM_ONE
+import com.nibble.hashcaller.utils.Constants.Companion.SIM_TWO
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callscreening.WindowObj
@@ -110,7 +115,7 @@ class FloatingService: Service() {
                 WindowObj.clearReference()
                 window = null
                 if(mphoneNumberStr.isNotEmpty()){
-                    startActivityIncommingCallView(mphoneNumberStr, callEndedState)
+                    startActivityIncommingCallView(mphoneNumberStr, callEndedState, callHandledSim)
                 }
 
 //                                }
@@ -132,7 +137,7 @@ class FloatingService: Service() {
         }
         
         if(!serviceStarted){
-
+            observeSubscriptionStatus(this)
             Log.d(TAG, "onStartCommand: service starting for firstime")
             serviceStarted = true
             super.onStartCommand(intent, flags, startId)
@@ -276,6 +281,75 @@ class FloatingService: Service() {
         return START_STICKY
     }
 
+    @SuppressLint("MissingPermission", "LogNotTimber")
+    private fun observeSubscriptionStatus(context: Context) {
+        var simHandlingCall = 0
+        val telManager =  (context.getSystemService(Context.TELEPHONY_SERVICE) )as TelephonyManager
+
+        val subscriptionManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+            // add phone state listener to the respective telemanager
+           val availableSIMs =  subscriptionManager.activeSubscriptionInfoList
+        
+        if(availableSIMs.size >1){
+            val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
+            val tel1 = telManager.createForSubscriptionId(availableSIMs[1].subscriptionId)
+
+            tel0.listen(object :PhoneStateListener(){
+                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                    super.onCallStateChanged(state, phoneNumber)
+                    Log.d(TAG, "onCallStateChanged: sim1 $state")
+
+                    if(state ==  TelephonyManager.CALL_STATE_RINGING){
+                        simHandlingCall = SIM_ONE
+                        window?.setSimInView(SIM_ONE)
+                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
+                        simHandlingCall = SIM_ONE
+                        window?.setSimInView(SIM_ONE)
+
+                    }
+                }
+            }, PhoneStateListener.LISTEN_CALL_STATE)
+
+            tel1.listen(object :PhoneStateListener(){
+                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                    super.onCallStateChanged(state, phoneNumber)
+                    Log.d(TAG, "onCallStateChanged: sim2 $state")
+                    if(state ==  TelephonyManager.CALL_STATE_RINGING){
+                        simHandlingCall = SIM_TWO
+                        window?.setSimInView(SIM_TWO)
+
+                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
+                        simHandlingCall = SIM_TWO
+                        window?.setSimInView(SIM_TWO)
+
+                    }
+                }
+            }, PhoneStateListener.LISTEN_CALL_STATE)
+
+        }else if(availableSIMs.size ==1) {
+            val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
+            tel0.listen(object :PhoneStateListener(){
+                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                    super.onCallStateChanged(state, phoneNumber)
+                    if(state ==  TelephonyManager.CALL_STATE_RINGING){
+                        simHandlingCall = SIM_ONE
+                        window?.setSimInView(SIM_ONE)
+
+                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
+                        simHandlingCall = SIM_ONE
+                        window?.setSimInView(SIM_ONE)
+                    }
+                }
+            }, PhoneStateListener.LISTEN_CALL_STATE)
+        }else {
+            Log.d(TAG, "observeSubscriptionStatus: no sim cards inserted")
+        }
+
+//        Log.d(TAG, "observeSubscriptionStatus: simHandlingCall $simHandlingCall")
+        
+
+    }
+
     private fun doHandleCall(phoneNumber: String) {
 
         val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -307,9 +381,10 @@ class FloatingService: Service() {
         val telephony = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         telephony.listen(object : PhoneStateListener() {
 
-//            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
+            //            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
 //                super.onCellInfoChanged(cellInfo)
 //            }
+
 
             override fun onCallStateChanged(state: Int, incomingNumber: String) {
                 super.onCallStateChanged(state, incomingNumber)
@@ -340,7 +415,11 @@ class FloatingService: Service() {
                                 window?.close()
                                     WindowObj.clearReference()
                                     window = null
-                                    startActivityIncommingCallView(incomingNumber, callEndedState)
+                                    startActivityIncommingCallView(
+                                        incomingNumber,
+                                        callEndedState,
+                                        callHandledSim
+                                    )
 //                                }
                                 stopService()
                                 
@@ -504,6 +583,7 @@ class FloatingService: Service() {
 
 
     companion object{
+        private var callHandledSim = NO_SIM_DETECTED
         private var isWinManuallyClsd = false
         private var isWindopwOpened = false
         fun setWindowClosedManually(state: Boolean) {
@@ -512,6 +592,10 @@ class FloatingService: Service() {
 
         fun setWindowOpened(state: Boolean) {
             isWindopwOpened = state
+        }
+
+        fun setSimCard(simNum: Int) {
+            callHandledSim = simNum
         }
 
 

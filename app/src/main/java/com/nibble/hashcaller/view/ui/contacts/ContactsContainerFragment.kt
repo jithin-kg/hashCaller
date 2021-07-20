@@ -2,16 +2,12 @@ package com.nibble.hashcaller.view.ui.contacts
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -24,7 +20,6 @@ import com.nibble.hashcaller.R
 import com.nibble.hashcaller.databinding.ContactListBinding
 import com.nibble.hashcaller.databinding.FragmentContactsContainerBinding
 import com.nibble.hashcaller.stubs.Contact
-import com.nibble.hashcaller.utils.PermisssionRequestCodes
 import com.nibble.hashcaller.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.utils.extensions.startSearchActivity
@@ -42,7 +37,6 @@ import com.nibble.hashcaller.view.utils.IDefaultFragmentSelection
 import com.nibble.hashcaller.view.utils.TopSpacingItemDecoration
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
-import com.vmadalin.easypermissions.models.PermissionRequest
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -262,7 +256,11 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             R.id.fabBtn -> {
                 Log.d(TAG, "onClick: delete")
 //                contactViewModel.delteContactsInformation()
-               context?. startActivityIncommingCallView("+9180861762224", "Missed Call")
+               context?. startActivityIncommingCallView(
+                   "+9180861762224",
+                   "Missed Call",
+                   -1
+               )
             }
             R.id.imgBtnSearch -> {
                 startSearchActivity()
