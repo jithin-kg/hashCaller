@@ -30,6 +30,7 @@ import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.showNotifcationForSpamCall
 import com.nibble.hashcaller.view.ui.contacts.startFloatingServiceFromScreeningService
+import com.nibble.hashcaller.view.ui.contacts.stopFltinServiceFromActiivtyIncomming
 import com.nibble.hashcaller.view.utils.CountrycodeHelper
 import com.nibble.hashcaller.view.utils.LibPhoneCodeHelper
 import com.nibble.hashcaller.work.formatPhoneNumber
@@ -152,6 +153,7 @@ class MyCallScreeningService: CallScreeningService() {
             withContext(Dispatchers.Main){
                 if(isEndCall){
                     responseBuilder.setDisallowCall(true)
+                    stopFltinServiceFromActiivtyIncomming()
 //                   stopFloatingService(true)
                 }
                 respondToCall(mCallDetails, responseBuilder.build())

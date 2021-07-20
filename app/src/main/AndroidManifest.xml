@@ -460,6 +460,9 @@
             android:enabled="true"
 
             >
+<!--  proirity is set based on article https://www.programmersought.com/article/7983992012/
+if 1000 doesnt work ,try 2147483647
+-->
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.PHONE_STATE"
                     />
