@@ -44,6 +44,7 @@ import com.nibble.hashcaller.view.ui.contacts.individualContacts.IndividualConta
 import com.nibble.hashcaller.view.ui.contacts.makeCall
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.nibble.hashcaller.view.ui.contacts.search.utils.SearchViewModel
+import com.nibble.hashcaller.view.ui.contacts.stopFltinServiceFromActiivtyIncomming
 import com.nibble.hashcaller.view.ui.contacts.utils.CONTACT_ID
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.IndividualSMSActivity
@@ -91,21 +92,21 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     //    private var country = ""
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         isVisible = true
         callHandledState = intent.getStringExtra(CALL_HANDLED_STATE)?:""
-
         registerForBroadCastReceiver()
         getIntentxras(intent)
         binding = ActivityIncommingCallViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        stopFltinServiceFromActiivtyIncomming()
         configurePopupActivity()
         initViewmodel()
         setupBottomSheet()
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER)
         callHandledSim = intent.getIntExtra(IntentKeys.CALL_HANDLED_SIM, NO_SIM_DETECTED)
-
        setViewFromIntent()
         Log.d(TAG, "onCreate: $phoneNumber")
         getCallerInfo()

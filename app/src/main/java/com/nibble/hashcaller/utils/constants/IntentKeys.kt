@@ -27,6 +27,8 @@ class IntentKeys {
         const val INTENT_COMMAND = "com.nibble.hashcaller.incommingCallintent"
         const val STOP_FLOATING_SERVICE = "com.nibble.stop_floating_service"
         const val STOP_FLOATING_SERVICE_AND_WINDOW = "com.nibble.close_service_n_window"
+        const val STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY = "c.h.stopPltIncomAct"
+        const val STOP_FLOATIN_SERVICE_FROM_RECEIVER = "c.h.stopFltFromReceiever"
         const val START_FLOATING_SERVICE = "com.nibble.start_floatin_window"
         const val START_FLOATING_SERVICE_OFF_HOOK = "com.nibble.start_floatin_offhook"
         const val START_FLOATING_SERVICE_FROM_SCREENING_SERVICE = "com.nibble.start_floatin_window_from_screening"

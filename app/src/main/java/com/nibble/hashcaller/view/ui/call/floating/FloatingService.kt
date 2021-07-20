@@ -34,6 +34,8 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_FROM_SCREENING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVICE_OFF_HOOK
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATIN_SERVICE_FROM_RECEIVER
 import com.nibble.hashcaller.utils.internet.InternetChecker
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.contacts.*
@@ -107,19 +109,34 @@ class FloatingService: Service() {
          */
 
         val mysms: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(arg0: Context?, arg1: Intent) {
-                
-                onCallEnded()
+            override fun onReceive(arg0: Context?, intent: Intent) {
+                val  command = intent.getStringExtra(INTENT_COMMAND)?:""
 
-                window?.close()
-                WindowObj.clearReference()
-                window = null
-                if(mphoneNumberStr.isNotEmpty()){
-                    startActivityIncommingCallView(mphoneNumberStr, callEndedState, callHandledSim)
-                }
+                when(command){
+                    STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY -> {
+                        onCallEnded()
+
+                        window?.close()
+                        WindowObj.clearReference()
+                        window = null
+//                                }
+                        stopService()
+                    }
+                    STOP_FLOATIN_SERVICE_FROM_RECEIVER -> {
+                        onCallEnded()
+
+                        window?.close()
+                        WindowObj.clearReference()
+                        window = null
+                        if(mphoneNumberStr.isNotEmpty()){
+                            startActivityIncommingCallView(mphoneNumberStr, callEndedState, callHandledSim)
+                        }
 
 //                                }
-                stopService()
+                        stopService()
+                    }
+                }
+
             }
         }
         registerReceiver(mysms, IntentFilter(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE))
@@ -135,7 +152,7 @@ class FloatingService: Service() {
         if(newState.isNotEmpty()){
             prevCallState = newState
         }
-        
+        val command = intent.getStringExtra(INTENT_COMMAND)
         if(!serviceStarted){
             observeSubscriptionStatus(this)
             Log.d(TAG, "onStartCommand: service starting for firstime")
@@ -306,6 +323,16 @@ class FloatingService: Service() {
                         simHandlingCall = SIM_ONE
                         window?.setSimInView(SIM_ONE)
 
+                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                        window?.close()
+                        WindowObj.clearReference()
+                        window = null
+                        startActivityIncommingCallView(
+                            mphoneNumberStr,
+                            callEndedState,
+                            callHandledSim
+                        )
+                        stopService()
                     }
                 }
             }, PhoneStateListener.LISTEN_CALL_STATE)
@@ -322,6 +349,18 @@ class FloatingService: Service() {
                         simHandlingCall = SIM_TWO
                         window?.setSimInView(SIM_TWO)
 
+                    }
+                    else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+
+                        window?.close()
+                        WindowObj.clearReference()
+                        window = null
+                        startActivityIncommingCallView(
+                            mphoneNumberStr,
+                            callEndedState,
+                            callHandledSim
+                        )
+                        stopService()
                     }
                 }
             }, PhoneStateListener.LISTEN_CALL_STATE)
@@ -588,6 +627,8 @@ class FloatingService: Service() {
         private var isWindopwOpened = false
         fun setWindowClosedManually(state: Boolean) {
             isWinManuallyClsd = state
+
+
         }
 
         fun setWindowOpened(state: Boolean) {

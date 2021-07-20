@@ -69,7 +69,11 @@ class IncomingCallReceiver : BroadcastReceiver(){
                    Log.d(TAG, "onReceive: idle sending broadcast")
 
                    val stopIntent = Intent(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE)
-                        stopIntent.putExtra(CALL_STATE, state?:"")
+                   stopIntent.putExtra(
+                       IntentKeys.INTENT_COMMAND,
+                       IntentKeys.STOP_FLOATIN_SERVICE_FROM_RECEIVER
+                   )
+                   stopIntent.putExtra(CALL_STATE, state?:"")
                        context.sendBroadcast(stopIntent)
                }
            }

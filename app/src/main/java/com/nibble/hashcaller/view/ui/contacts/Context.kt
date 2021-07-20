@@ -41,6 +41,7 @@ import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
 import com.nibble.hashcaller.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
+import com.nibble.hashcaller.utils.constants.IntentKeys
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_SIM
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.CALL_STATE
@@ -59,6 +60,7 @@ import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
+import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
 import com.nibble.hashcaller.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.nibble.hashcaller.utils.notifications.blockPreferencesDataStore
 import com.nibble.hashcaller.view.ui.IncommingCall.ActivityIncommingCallView
@@ -295,6 +297,22 @@ fun Context.stopFloatingService(
         }
         startService(exitIntent)
     }
+
+}
+
+fun Context.stopFltinServiceFromActiivtyIncomming(){
+//        val exitIntent = Intent(this, FloatingService::class.java).apply {
+//            putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY)
+//        }
+//
+//        startService(exitIntent)
+
+    val stopIntent = Intent(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE)
+    stopIntent.putExtra(INTENT_COMMAND, STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY)
+    stopIntent.putExtra(CALL_STATE, "")
+
+    sendBroadcast(stopIntent)
+
 
 }
 

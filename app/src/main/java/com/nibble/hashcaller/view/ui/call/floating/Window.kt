@@ -19,7 +19,6 @@ import com.nibble.hashcaller.stubs.Contact
 import com.nibble.hashcaller.utils.Constants.Companion.SIM_ONE
 import com.nibble.hashcaller.utils.Constants.Companion.SIM_TWO
 import com.nibble.hashcaller.utils.constants.IntentKeys
-import com.nibble.hashcaller.view.ui.contacts.stopFloatingService
 import com.nibble.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.nibble.hashcaller.view.ui.sms.individual.util.beGone
 import com.nibble.hashcaller.view.ui.sms.individual.util.beInvisible
