@@ -223,7 +223,7 @@
             android:name=".utils.callscreening.MyCallScreeningService"
             android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
-                <action android:name="android.telecom.CallScreeningService" />
+                <action  android:name="android.telecom.CallScreeningService" />
             </intent-filter>
         </service>
 
@@ -250,8 +250,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:windowSoftInputMode="adjustPan"
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
+
             android:theme="@style/PopupTheme" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"

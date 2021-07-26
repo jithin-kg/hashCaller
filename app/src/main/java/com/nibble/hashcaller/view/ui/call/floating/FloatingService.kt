@@ -310,6 +310,8 @@ class FloatingService: Service() {
         if(availableSIMs.size >1){
             val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
             val tel1 = telManager.createForSubscriptionId(availableSIMs[1].subscriptionId)
+            Log.d(TAG, "observeSubscriptionStatus: lin1num ${tel0.line1Number}")
+            Log.d(TAG, "observeSubscriptionStatus:line2num ${tel1.line1Number}")
 
             tel0.listen(object :PhoneStateListener(){
                 override fun onCallStateChanged(state: Int, phoneNumber: String?) {
