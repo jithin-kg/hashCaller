@@ -47,7 +47,7 @@ interface IContactsService  {
     suspend fun uploadContactsOf1000(
         @Body contacts: ContactsSaveDTO,
         @Header("Authorization") token:String
-    ):Response<UnknownCallersInfoResponse>
+    ):Response<ContactsSaveResponse>
 
 //    @GET("getContacts")
 //    fun getContacts(token: String?): Call<JsonObject?>?

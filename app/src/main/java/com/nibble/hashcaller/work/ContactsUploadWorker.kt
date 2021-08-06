@@ -67,7 +67,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
             setNewlySavedContactsList()
 
-            //first insert the list in DB
+            //first insert the list in DB,
                 if(listToBeInsertedToDBFirst.isNotEmpty()){
                     callersInfoFromServerDAO.insert(listToBeInsertedToDBFirst)
                 }

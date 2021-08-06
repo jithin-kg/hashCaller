@@ -255,7 +255,7 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             }
             R.id.fabBtn -> {
                 Log.d(TAG, "onClick: delete")
-//                contactViewModel.delteContactsInformation()
+                contactViewModel.delteContactsInformation()
                context?. startActivityIncommingCallView(
                    "+9180861762224",
                    "Missed Call",

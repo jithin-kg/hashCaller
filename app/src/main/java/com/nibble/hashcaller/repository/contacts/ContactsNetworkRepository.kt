@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.nibble.hashcaller.network.contact.IContactsService
 import com.nibble.hashcaller.network.RetrofitClient
+import com.nibble.hashcaller.network.contact.ContactsSaveResponse
 import com.nibble.hashcaller.utils.auth.Decryptor
 import com.nibble.hashcaller.utils.auth.TokenHelper
 import com.nibble.hashcaller.view.ui.call.utils.UnknownCallersInfoResponse
@@ -48,7 +49,7 @@ class ContactsNetworkRepository(private val context: Context,
     suspend fun
             uploadContactsOf1000(
         contacts: ContactsSaveDTO
-    ): Response<UnknownCallersInfoResponse>? {
+    ): Response<ContactsSaveResponse>? {
 
         var token:String? = tokenHelper?.getToken()
         return token?.let { retrofitService?.uploadContactsOf1000(contacts, it) }
