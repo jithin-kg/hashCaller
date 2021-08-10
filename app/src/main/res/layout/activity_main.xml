@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/colorBackground"
-    tools:context="com.nibble.hashcaller.view.ui.MainActivity"
+    tools:context="com.hashcaller.view.ui.MainActivity"
     tools:openDrawer="start"
     >
 
@@ -19,7 +19,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorBackground"
     android:id="@+id/cordinateLyoutMainActivity"
-    tools:context="com.nibble.hashcaller.view.ui.MainActivity"
+    tools:context="com.hashcaller.view.ui.MainActivity"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <FrameLayout

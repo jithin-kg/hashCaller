@@ -122,3 +122,7 @@
 
 -keepclassmembers com.nibble.hashcaller.view.ui.contacts.utils.Constants
 -keepclassmembers com.nibble.hashcaller.view.ui.sms.individual.util.constants
+# native
+-keepclasseswithmembernames,includedescriptorclasses class * {
+    native <methods>;
+}

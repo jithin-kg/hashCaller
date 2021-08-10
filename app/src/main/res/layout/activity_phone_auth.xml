@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context="com.nibble.hashcaller.view.ui.auth.ActivityPhoneAuth">
+    tools:context="com.hashcaller.view.ui.auth.ActivityPhoneAuth">
    <TextView
        android:id="@+id/tvHead"
        android:layout_width="0dp"

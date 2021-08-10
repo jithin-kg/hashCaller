@@ -6,7 +6,7 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nibble.hashcaller.view.ui.ActivityAddNewPattern">
+    tools:context="com.hashcaller.view.ui.ActivityAddNewPattern">
 
 
     <!--    <com.hbb20.CountryCodePicker-->
