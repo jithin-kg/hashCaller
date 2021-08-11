@@ -12,6 +12,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.hashcaller.R
 import com.hashcaller.databinding.ActivitySettingsBinding
+import com.hashcaller.datastore.DataStoreInjectorUtil
+import com.hashcaller.datastore.DataStoreViewmodel
+import com.hashcaller.datastore.PreferencesKeys
 import com.hashcaller.network.HttpStatusCodes
 import com.hashcaller.network.user.GetUserDataResponse
 import com.hashcaller.utils.PermisssionRequestCodes
@@ -21,15 +24,21 @@ import com.hashcaller.view.ui.CreditsActvity
 import com.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.hashcaller.view.ui.contacts.utils.TYPE_DELETE
+import com.hashcaller.view.ui.extensions.getSpannableString
+import com.hashcaller.view.ui.getstarted.GetStartedActivity
 import com.hashcaller.view.ui.manageblock.BlockManageActivity
 import com.hashcaller.view.ui.notifications.ManageNotificationsActivity
+import com.hashcaller.view.ui.sms.individual.util.toast
 import com.hashcaller.view.ui.userdata.GetUserDataActiivty
+import com.hashcaller.view.utils.ConfirmDialogFragment
+import com.hashcaller.view.utils.ConfirmationClickListener
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.models.PermissionRequest
 import retrofit2.Response
 
 
-class SettingsActivity : AppCompatActivity(), View.OnClickListener {
+class SettingsActivity : AppCompatActivity(), View.OnClickListener, ConfirmationClickListener {
     private lateinit var binding:ActivitySettingsBinding
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
@@ -38,6 +47,9 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     private var readPermissionGranted = false;
     private var writePermissionGranted = false;
     private val fileName = "myData.txt"
+    private lateinit var dataStoreViewmodel: DataStoreViewmodel
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,6 +179,13 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         ).get(
             UserInfoViewModel::class.java
         )
+        dataStoreViewmodel = ViewModelProvider(
+            this, DataStoreInjectorUtil.providerViewmodelFactory(
+                applicationContext
+            )
+        ).get(
+            DataStoreViewmodel::class.java
+        )
     }
 
 
@@ -177,6 +196,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         binding.layoutRequestUserInfo.setOnClickListener(this)
         binding.layoutPrivacy.setOnClickListener(this)
         binding.layoutCredits.setOnClickListener(this)
+        binding.layoutDeactivate.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -202,6 +222,14 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
 //                val intent = Intent(this, GetUserDataActiivty::class.java)
 //                startActivity(intent)
 
+            }
+            R.id.layoutDeactivate -> {
+                val dialog = ConfirmDialogFragment(this,
+                    getSpannableString("Your data will be deleted if you deactivate your account. Do you want to continue?"),
+
+                    getSpannableString("Deactivate?"), TYPE_DELETE
+                )
+                dialog.show(supportFragmentManager, "sample")
             }
         }
     }
@@ -241,5 +269,38 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
     }
     companion object{
         const val TAG = "__SettingsActivity"
+    }
+
+    override fun onYesConfirmationDelete() {
+        //todo add otp verification before deactivation of account
+
+        userInfoViewModel.deleteUserInfoFromServer().observe(this, Observer {
+            when(it){
+                null -> {
+                    toast("Unable to process")
+                }
+                HttpStatusCodes.STATUS_OK -> {
+                    FirebaseAuth.getInstance().signOut();
+                    dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, false)
+                    toast("Account deleted")
+//                    val intent = Intent(this, GetStartedActivity::class.java)
+//                   startActivity(intent)
+                    finish()
+                }
+                HttpStatusCodes.SOMETHING_WENT_WRONG -> {
+                    toast("Something went wrong")
+                }
+                HttpStatusCodes.FORBIDDEN -> {
+                    toast("Bad request")
+                }
+
+                else -> {
+                    toast("Something went wrong")
+                }
+            }
+        })
+    }
+
+    override fun onYesConfirmationMute() {
     }
 }

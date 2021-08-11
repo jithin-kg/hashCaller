@@ -1263,7 +1263,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onPostResume() {
         super.onPostResume()
-        Log.i(TAG, "Onresume")
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        Log.i(TAG, "Onresume curretnUser $currentUser")
+        if(currentUser == null){
+            onSingnedOutcleanUp()
+        }
 //        val iExtra = intent.getIntExtra(IntentKeys.SHOW_BLOCK_LIST, 0)
 //        when(iExtra){
 //            IntentKeys.SHOW_BLOCK_LIST_VALUE -> {

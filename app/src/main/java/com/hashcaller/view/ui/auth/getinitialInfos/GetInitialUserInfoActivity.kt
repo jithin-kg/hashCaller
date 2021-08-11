@@ -126,8 +126,6 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         Log.d(TAG, "onClick: ")
         when(v?.id){
             R.id.btnUserContinue -> {
-                binding.btnUserContinue.isEnabled = false
-                Log.d(TAG, "onClick: btn")
                 sendUserInfo()
             }
             R.id.imgVAvatarInitial -> {
@@ -192,7 +190,8 @@ private fun sendUserInfo() {
                 binding.editTextLName.error = null
                 val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
                 if(isValid){
-                    Log.d(TAG, "isvalid: ")
+                    binding.btnUserContinue.isEnabled = false
+
                     var userInfo = UserInfoDTO()
                     userInfo.firstName = firstName;
                     userInfo.lastName =  lastName;

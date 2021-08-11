@@ -10,5 +10,6 @@ package com.hashcaller.network
          const val STATUS_SEARHING_IN_PROGRESS = 900
          const val FORBIDDEN = 403
          const val SERVER_ERROR = 500
+         const val SOMETHING_WENT_WRONG = 419
      }
 }

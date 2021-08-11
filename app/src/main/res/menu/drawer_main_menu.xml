@@ -48,6 +48,7 @@
             android:title="Invite friends"
             android:icon="@drawable/ic_heart_add_line"
             android:state_activated="false"
+            android:visible="false"
             />
     </group>
 

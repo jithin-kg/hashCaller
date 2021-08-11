@@ -3,6 +3,7 @@ package com.hashcaller.repository.user
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.hashcaller.BasicResponseItem
 import com.hashcaller.network.RetrofitClient
 import com.hashcaller.network.user.GetUserDataResponse
 import com.hashcaller.network.user.GetUserInfoDTO
@@ -173,6 +174,11 @@ class UserNetworkRepository(
             fos?.close()
         }
 
+    }
+
+    suspend fun deactivate() :Response<BasicResponseItem<String>>?  = withContext(Dispatchers.IO) {
+        token = tokenHelper?.getToken()
+        return@withContext token?.let { retrofitService.deactivateMyAccount(it) }
     }
 
 

@@ -1,6 +1,7 @@
 package com.hashcaller.network.user
 
 import androidx.annotation.Keep
+import com.hashcaller.BasicResponseItem
 import com.hashcaller.view.ui.profile.RequestUserInfoDTO
 import com.hashcaller.view.ui.profile.RequestUserinfoResponse
 import okhttp3.MultipartBody
@@ -12,8 +13,8 @@ import retrofit2.http.*
 interface IuserService {
     companion object{
 
-        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
-//        public const val BASE_URL: String = "http://192.168.43.34:8080/"
+//        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
+        public const val BASE_URL: String = "http://192.168.43.34:8080/"
 
 //         const val BASE_URL: String = "https:/    /real-caller-api-2-jzlji.ondigitalocean.app/"  //-> worked
 //        public const val BASE_URL: String = "https://real-caller-api-2-jzlji.ondigitalocean.app/" worker with DO
@@ -71,5 +72,9 @@ interface IuserService {
         token: String,
     ): Response<GetUserDataResponse>
 
-
+    @POST("user/deactivate")
+    suspend fun deactivateMyAccount(
+        @Header("Authorization")
+        token: String,
+    ): Response<BasicResponseItem<String>>
 }

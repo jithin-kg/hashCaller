@@ -219,6 +219,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
+        android:visibility="gone"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
         app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
@@ -347,6 +348,46 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvRequestUserinfo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tvRequestUserinfo" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutDeactivate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings"
+        android:paddingTop="8dp"
+        >
+
+    <ImageView
+        android:id="@+id/imgVDeactivate"
+        android:layout_width="@dimen/settings_icons_width"
+        android:layout_height="@dimen/settings_icons_width"
+        android:layout_marginStart="@dimen/margin_start_setting_img"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="@dimen/margin_img_settings_img"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_file_info_line" />
+
+    <TextView
+        android:id="@+id/tvDeactivate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
+        android:letterSpacing="0.1"
+        android:text="Deactivate"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/settings_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/imgVDeactivate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgVDeactivate"
+        app:layout_constraintTop_toTopOf="@+id/imgVDeactivate" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

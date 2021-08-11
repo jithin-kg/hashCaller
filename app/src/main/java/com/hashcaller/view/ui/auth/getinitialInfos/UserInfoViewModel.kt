@@ -276,4 +276,9 @@ class UserInfoViewModel(
         userNetworkRepository.saveFile(res, fos)
         emit(OPERATION_COMPLETED)
     }
+
+    fun deleteUserInfoFromServer():LiveData<Int?> = liveData {
+        val response = userNetworkRepository.deactivate()
+       emit( response?.body()?.statusCode)
+    }
 }
