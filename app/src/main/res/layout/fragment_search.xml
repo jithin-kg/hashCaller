@@ -45,29 +45,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shimmerViewContainer" />
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerViewContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        app:layout_constraintEnd_toStartOf="@+id/btnSampleTransition"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imgViewLock"
-        app:layout_constraintTop_toBottomOf="@+id/tvSearchIndicator"
-        app:shimmer_auto_start="false"
-        app:shimmer_colored="false"
-        app:shimmer_repeat_count="1">
+<!--    <com.facebook.shimmer.ShimmerFrameLayout-->
+<!--        android:id="@+id/shimmerViewContainer"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginTop="32dp"-->
+<!--        android:layout_marginEnd="32dp"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/btnSampleTransition"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/imgViewLock"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/tvSearchIndicator"-->
+<!--        app:shimmer_auto_start="false"-->
+<!--        app:shimmer_colored="false"-->
+<!--        app:shimmer_repeat_count="1">-->
 
-        <EditText
-            android:id="@+id/edtTextPhoneSearch"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:textColor="@color/textColor" />
-    </com.facebook.shimmer.ShimmerFrameLayout>
+<!--        <EditText-->
+<!--            android:id="@+id/edtTextPhoneSearch"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:ems="10"-->
+<!--            android:inputType="textPersonName"-->
+<!--            android:textColor="@color/textColor" />-->
+<!--    </com.facebook.shimmer.ShimmerFrameLayout>-->
 
     <include
         android:id="@+id/layoutSearchResult2"

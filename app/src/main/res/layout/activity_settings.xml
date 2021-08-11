@@ -256,6 +256,49 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutCredits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@+id/imgViewAvatarMain"
+        app:layout_constraintStart_toStartOf="@+id/imgViewAvatarMain"
+        app:layout_constraintTop_toBottomOf="@+id/imgViewDivierSettings"
+        android:paddingTop="8dp"
+        >
+
+        <ImageView
+            android:id="@+id/imgVCredits"
+            android:layout_width="@dimen/settings_icons_width"
+            android:layout_height="@dimen/settings_icons_width"
+            android:layout_marginStart="@dimen/margin_start_setting_img"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="@dimen/margin_img_settings_img"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_award_line" />
+
+        <TextView
+            android:id="@+id/tvCreditsInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:letterSpacing="0.1"
+            android:text="License, Credits"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/settings_text_size"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVCredits"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgVCredits"
+            app:layout_constraintTop_toTopOf="@+id/imgVCredits" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutRequestUserInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -287,7 +330,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="16dp"
             android:letterSpacing="0.1"
-            android:text="Request User Info"
+            android:text="Get my data"
             android:textColor="@color/textColor"
             android:textSize="@dimen/settings_text_size"
             app:layout_constraintBottom_toBottomOf="@+id/imgVRequest"

@@ -1,6 +1,7 @@
 package com.hashcaller.view.ui.settings
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -16,6 +17,7 @@ import com.hashcaller.network.user.GetUserDataResponse
 import com.hashcaller.utils.PermisssionRequestCodes
 import com.hashcaller.utils.auth.TokenHelper
 import com.hashcaller.utils.internet.ConnectionLiveData
+import com.hashcaller.view.ui.CreditsActvity
 import com.hashcaller.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.hashcaller.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -173,12 +175,20 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         binding.layoutManageBlocking.setOnClickListener(this)
         binding.layoutNotifications.setOnClickListener(this)
         binding.layoutRequestUserInfo.setOnClickListener(this)
+        binding.layoutPrivacy.setOnClickListener(this)
+        binding.layoutCredits.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.layoutManageBlocking -> {
                 startBlockManageActivity()
+            }
+            R.id.layoutPrivacy -> {
+                startPrivacyIntent()
+            }
+            R.id.layoutCredits -> {
+                startCreditsActivity()
             }
             R.id.imgBtnBackMain -> {
                 finishAfterTransition()
@@ -194,6 +204,16 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
 
             }
         }
+    }
+
+    private fun startCreditsActivity() {
+        val intent = Intent(this, CreditsActvity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startPrivacyIntent() {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://hashcaller.com/privacy"))
+        startActivity(browserIntent)
     }
 
     private fun onGetUserDataClicked() {

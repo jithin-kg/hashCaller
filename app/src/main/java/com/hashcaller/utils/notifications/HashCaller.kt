@@ -7,9 +7,9 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.preferencesDataStore
+import com.hashcaller.BuildConfig
 import com.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_NAME
 import com.hashcaller.view.ui.contacts.utils.USER_PREFERENCES_BLOCK
-import org.signal.argon2.*
 import timber.log.Timber
 
 /**
@@ -38,10 +38,10 @@ class HashCaller : Application(){
         const val CHANNEL_3_CALL_SERVICE_ID ="chanel3"
         const val NOTIFICATION_CHANNEL_NAME = "callerId"
         const val NOTIFICATION_ID = 1
-        private lateinit var argon2:Argon2
-        fun getArgon2(): Argon2 {
-            return argon2
-        }
+//        private lateinit var argon2:Argon2
+//        fun getArgon2(): Argon2 {
+//            return argon2
+//        }
 
 
 //          var callFragment: CallFragment? = null
@@ -60,10 +60,10 @@ class HashCaller : Application(){
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         createNotificationChannels()
 //        https://www.freecodecamp.org/news/how-to-log-more-efficiently-with-timber-a3f41b193940/
-        if(BuildConfig.DEBUG){
-            //timber only works in debug build
-            Timber.plant(Timber.DebugTree())
-        }
+//        if(BuildConfig.DEBUG){
+//            //timber only works in debug build
+//            Timber.plant(Timber.DebugTree())
+//        }
     }
 
 

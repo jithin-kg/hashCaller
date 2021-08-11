@@ -60,18 +60,24 @@ android {
     signingConfigs{
         debug {
             keyAlias 'Key0'
-            keyPassword 'newmoto@535'
+            keyPassword 'newHkey@535'
             storeFile file('/Users/jithin/Desktop/hashcallerKey')
-            storePassword 'newmoto@535'
+            storePassword 'newHkey@535'
+        }
+        release {
+            keyAlias 'Key0'
+            keyPassword 'newHkey@535'
+            storeFile file('/Users/jithin/Desktop/hashcallerKey')
+            storePassword 'newHkey@535'
         }
 //        84:3b:42:94:37:e0:d0:3e:b1:89:44:a8:39:6f:9d:90:76:ee:1a:85 removed from firebase recently
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            zipAlignEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            shrinkResources false
+            zipAlignEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         //this is added by me to debud c++, should remove in production
         customDebugType {
@@ -188,7 +194,7 @@ dependencies {
 //    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     //GIF image drawable
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+//    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
     // WorkManager dependency
     def work_version = "1.0.1"
     implementation 'androidx.work:work-runtime-ktx:2.5.0'
@@ -205,7 +211,7 @@ dependencies {
     //swipe to delete
 //    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
     //skeleton shimmer
-    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+//    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     //firebase stoped sending verfication because in the new update they
     //need recaptcha for emulators
@@ -231,7 +237,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
 //    implementation 'pub.devrel:easypermissions:3.0.0'
-    implementation 'org.greenrobot:eventbus:3.2.0'
+//    implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     //leakcanary to find memory leak
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
@@ -240,7 +246,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'com.mikhaellopez:circularimageview:4.2.0'
+//    implementation 'com.mikhaellopez:circularimageview:4.2.0'
     //image compression
     implementation 'id.zelory:compressor:3.0.1'
     //permission livedata
@@ -254,7 +260,7 @@ dependencies {
     implementation 'com.vmadalin:easypermissions-ktx:1.0.0'
     // Preferences DataStore (SharedPreferences like APIs)
     implementation "androidx.datastore:datastore-preferences:1.0.0-beta01"
-    implementation 'org.signal:argon2:13.1@aar'
+//    implementation 'org.signal:argon2:13.1@aar'
     implementation 'com.hbb20:ccp:2.4.7'
 
 

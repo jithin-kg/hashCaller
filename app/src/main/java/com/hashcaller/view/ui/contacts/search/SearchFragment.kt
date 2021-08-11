@@ -129,9 +129,9 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
     private fun observerPhoneHashValue() {
         this.searchViewmodel.hashedPhoneNum.observe(viewLifecycleOwner, Observer {
             no->
-            edtTextPhoneSearch.setText(no)
+//            edtTextPhoneSearch.setText(no)
             tvSearchIndicator.text = "Searching for"
-            shimmerViewContainer.startShimmer()
+//            shimmerViewContainer.startShimmer()
         } )
     }
 
@@ -214,7 +214,7 @@ class SearchFragment : Fragment(), View.OnClickListener, View.OnFocusChangeListe
 //                requireActivity().packageName,
 //                )
         }else{
-            edtTextPhoneSearch.setText("")
+//            edtTextPhoneSearch.setText("")
             tvSearchIndicator.text = ""
         }
 

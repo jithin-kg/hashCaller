@@ -49,38 +49,38 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerViewContainer"
-        android:visibility="visible"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:shimmer_duration="800">
+<!--    <com.facebook.shimmer.ShimmerFrameLayout-->
+<!--        android:id="@+id/shimmerViewContainer"-->
+<!--        android:visibility="visible"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+<!--        app:shimmer_duration="800">-->
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+<!--        <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </com.facebook.shimmer.ShimmerFrameLayout>
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+<!--        </androidx.appcompat.widget.LinearLayoutCompat>-->
+<!--    </com.facebook.shimmer.ShimmerFrameLayout>-->
 <!--important, android:overScrollMode="never" to remove shadows-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewContactsList"

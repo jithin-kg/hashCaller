@@ -25,7 +25,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.shimmer.Shimmer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.hashcaller.R
@@ -54,7 +53,6 @@ class SMSListSpamFragment : Fragment(), View.OnClickListener{
     private lateinit var sView:EditText
     private lateinit var sharedPreferences: SharedPreferences
     var skeletonLayout: LinearLayout? = null
-    var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
     private var layoutMngr:LinearLayoutManager? = null

@@ -54,6 +54,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
     private fun initListeners() {
         binding.btnContinueGetStd.setOnClickListener(this)
         binding.tvTermsAgree.setOnClickListener(this)
+
 //        alertBinding.btnContinueAlert.setOnClickListener(this)
     }
 
@@ -108,7 +109,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
         alert.window?.setLayout( dm.widthPixels - 160, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
     private fun startPrivacyIntent() {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hashcaller.com/privacy"))
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://hashcaller.com/privacy"))
         startActivity(browserIntent)
     }
     private fun requestPermission() {

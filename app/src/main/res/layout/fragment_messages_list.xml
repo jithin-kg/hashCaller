@@ -10,40 +10,40 @@
     android:layout_height="match_parent"
     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior`">
 
-    <com.facebook.shimmer.ShimmerFrameLayout
+<!--    <com.facebook.shimmer.ShimmerFrameLayout-->
 
-        android:id="@+id/shimmer_view_containerL"
-        android:visibility="visible"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shimmer_duration="800">
+<!--        android:id="@+id/shimmer_view_containerL"-->
+<!--        android:visibility="visible"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:shimmer_duration="800">-->
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+<!--        <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
 
-            <include layout="@layout/skeleton_shimmer_layout" />
-            <include layout="@layout/skeleton_shimmer_layout" />
-            <include layout="@layout/skeleton_shimmer_layout" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </com.facebook.shimmer.ShimmerFrameLayout>
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+<!--            <include layout="@layout/skeleton_shimmer_layout" />-->
+<!--        </androidx.appcompat.widget.LinearLayoutCompat>-->
+<!--    </com.facebook.shimmer.ShimmerFrameLayout>-->
     <androidx.recyclerview.widget.RecyclerView
         android:backgroundTint="@color/colorBackground"
         android:background="@color/colorBackground"

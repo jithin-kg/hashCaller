@@ -28,7 +28,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.shimmer.Shimmer
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -94,7 +93,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private lateinit var sharedPreferences: SharedPreferences
     private var isInternetAvailable = false
     var skeletonLayout: LinearLayout? = null
-    var shimmer: Shimmer? = null
+//    var shimmer: Shimmer? = null
     var inflater: LayoutInflater? = null
     private var layoutMngr: LinearLayoutManager? = null
     private lateinit var searchViewMessages: EditText
@@ -150,13 +149,13 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
     private  fun showRecyclerView() {
 //        withContext(Dispatchers.Main){
             binding.recyclreviewSMSContainer.beVisible()
-            binding.shimmerViewContainer.beVisible()
+//            binding.shimmerViewContainer.beVisible()
             binding.btnSMSPermsions.beInvisible()
 //        }
     }
     private fun hideRecyclerView(){
         binding.recyclreviewSMSContainer.beInvisible()
-        binding.shimmerViewContainer.beInvisible()
+//        binding.shimmerViewContainer.beInvisible()
         binding.btnSMSPermsions.beVisible()
     }
 
@@ -386,7 +385,7 @@ SMSListAdapter.LongPressHandler, PopupMenu.OnMenuItemClickListener, Confirmation
 //            it.forEach{sms-> newList.add(sms.deepCopy())}
             Log.d(TAG, "observeMutabeLiveData: ")
 //            smsRecyclerAdapter?.setList(it)
-            binding.shimmerViewContainer.beGone()
+//            binding.shimmerViewContainer.beGone()
 //            this.viewMesages.pgBarsmslist.visibility = View.GONE
 //            binding.shimmer_view_container.visibility = View.GONE
             binding.recyclreviewSMSContainer.visibility = View.VISIBLE

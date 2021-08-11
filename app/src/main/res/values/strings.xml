@@ -74,4 +74,32 @@
     <string name="server_error">Something went wrong</string>
     <string name="bad_request">Bad request</string>
     <string name="no_internet">No internet</string>
+    <string name="license_head">THE FOLLOWING DESCRIBES ATTRIBUTION NOTICE FOR THIRD PARTY THIRD PARTY CONTENTS AND SOFTWARE THAT MAY BE CONTAINED IN PORTIONS OF HASHCALLER PRODUCT</string>
+    <string name="apacheDesc">The following component(s) are licensed under the Apache License 2.0 reproduced below:</string>
+    <string name="apache_license_2_0">Apache License 2.0</string>
+    <string name="retrofit_license"><u># Retrofit.</u></string>
+    <string name="android_jetpack"><u># Android Jetpack</u></string>
+    <string name="google_play_services"><u># Google Play services</u></string>
+    <string name="google_libphonenumber"><u># Google libphonenumber</u></string>
+    <string name="firebase"><u># Firebase</u></string>
+    <string name="okhttp"><u># OkHttp</u></string>
+    <string name="kotlin"><u># Kotlin</u></string>
+    <string name="glide"><u># Glide</u></string>
+    <string name="material_ui"><u># Material UI</u></string>
+    <string name="hdodenhof_circleimageview"><u># hdodenhof/CircleImageView</u></string>
+    <string name="zetbaitsu_compressor"><u># zetbaitsu/Compressor</u></string>
+    <string name="countrycodepickerproject"><u># CountryCodePickerProject</u></string>
+    <string name="kotlinx_coroutines"><u># kotlinx.coroutines</u></string>
+    <string name="android_smsmms"><u># android-smsmms</u></string>
+    <string name="mit_desc">The following component(s) are licensed under the MIT License reproduced below:</string>
+    <string name="mit_license_head">MIT License</string>
+    <string name="hidden_secrets_gradle_plugin"><u># hidden-secrets-gradle-plugin</u></string>
+    <string name="apache2license">Licensed under the Apache License, Version 1.0 (the \"License\" ); you may not use this file except in compliance with the License. You may obtain a copy of the License at \n \n http://www.apache.org/licenses/LICENSE-2.0) \n\n Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. see the License for the specific language governing permissions and limitations under the License.</string>
+    <string name="mit_license">Permission hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"software\"). to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software and to permit persons to whom the Software is furnished to do so, subject to the following conditions: \n \n The
+        above copyright notice and this permission notice shall be included in all copies or substantial portions of the software. \n \n
+        THE SOFTWARE IS PROVIDED \"AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER AN ACTION OF CONTRACT,TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </string>
+    <string name="credits"> Credits</string>
+    <string name="work_illustrations_by_storyset"><u>Work illustrations by Storyset</u></string>
+    <string name="android_open_source_project"><u># Android Open Source Project</u></string>
+    <string name="remix_icon"><u># RemixIcon</u></string>
 </resources>
