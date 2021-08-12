@@ -36,7 +36,7 @@ class ContactSelectorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // decides which activity to go when user click on a contact item
-         destinationActivity = intent.getStringExtra(DESTINATION_ACTIVITY)
+         destinationActivity = intent.getStringExtra(DESTINATION_ACTIVITY)?:""
         setContentView(R.layout.activity_contact_selector)
         if(checkContactPermission()){
             initViewmodel()

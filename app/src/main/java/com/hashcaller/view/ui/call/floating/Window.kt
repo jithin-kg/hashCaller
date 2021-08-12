@@ -160,7 +160,8 @@ class Window(
     private suspend fun setcountry(country: String?) = withContext(Dispatchers.Main) {
         Log.d(TAG, "setCountryCode: $country")
         tvLocation.text = country
-        tvPhoneNumIncomming.text = phoneNumber
+//        tvPhoneNumIncomming.text = phoneNumber
+        tvPhoneNumIncomming.text = "+911234567890"
     }
 
 

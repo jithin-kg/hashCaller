@@ -19,11 +19,11 @@ class CheckNetwork(private val context: Context){
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val builder = NetworkRequest.Builder()
             connectivityManager.registerDefaultNetworkCallback(object : NetworkCallback() {
-                override fun onAvailable(network: Network?) {
+                override fun onAvailable(network: Network) {
                     isNetworkConnected = true // Global Static Variable
                 }
 
-                override fun onLost(network: Network?) {
+                override fun onLost(network: Network) {
                     isNetworkConnected = false // Global Static Variable
                 }
             }

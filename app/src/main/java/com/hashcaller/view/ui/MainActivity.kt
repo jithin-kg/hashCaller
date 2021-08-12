@@ -1447,25 +1447,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     //                       }
     //    }
     //after nested frags
-    internal inner class ContactObserver(handler: Handler?) : ContentObserver(handler) {
-        //        @Override
-        //        public void onChange(boolean selfChange) {
-        //            this.onChange(selfChange, null);
-        //            Log.e("", "~~~~~~" + selfChange);
-        //            // Override this method to listen to any changes
-        //        }
-        override fun onChange(selfChange: Boolean, uri: Uri) {
-            // depending on the handler you might be on the UI
-            // thread, so be cautious!
-            Log.d("ContactObserver", "onChange: ")
-        }
-
-        // left blank below constructor for this com.hashcaller.network.user.Contact observer example to work
-        // or if you want to make this work using Handler then change below registering  //line
-        init {
-            Log.d("ContactObserver", "ContactObserver constructor ")
-        }
-    }
+//    internal inner class ContactObserver(handler: Handler?) : ContentObserver(handler) {
+//        //        @Override
+//        //        public void onChange(boolean selfChange) {
+//        //            this.onChange(selfChange, null);
+//        //            Log.e("", "~~~~~~" + selfChange);
+//        //            // Override this method to listen to any changes
+//        //        }
+//        override fun onChange(selfChange: Boolean, uri: Uri) {
+//            // depending on the handler you might be on the UI
+//            // thread, so be cautious!
+//            Log.d("ContactObserver", "onChange: ")
+//        }
+//
+//        // left blank below constructor for this com.hashcaller.network.user.Contact observer example to work
+//        // or if you want to make this work using Handler then change below registering  //line
+//        init {
+//            Log.d("ContactObserver", "ContactObserver constructor ")
+//        }
+//    }
 
     fun isDarkThemeOn(): Boolean {
         return resources.configuration.uiMode and

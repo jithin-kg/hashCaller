@@ -24,7 +24,7 @@ android {
 //        enabled = true
 //    }
 
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
 // Enable NDK build
@@ -40,7 +40,8 @@ android {
     defaultConfig {
         applicationId "com.hashcaller"
         minSdkVersion 24 //using stream need api level 24
-        targetSdkVersion 29
+        targetSdkVersion 30
+//        todo update targetSdkVersion to 30
         versionCode 1
         versionName "1.0"
 
@@ -70,6 +71,7 @@ android {
             storeFile file('/Users/jithin/Desktop/hashcallerKey')
             storePassword 'newHkey@535'
         }
+
 //        84:3b:42:94:37:e0:d0:3e:b1:89:44:a8:39:6f:9d:90:76:ee:1a:85 removed from firebase recently
     }
     buildTypes {
