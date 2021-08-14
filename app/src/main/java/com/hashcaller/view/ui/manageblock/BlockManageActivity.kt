@@ -1,5 +1,6 @@
 package com.hashcaller.view.ui.manageblock
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,7 @@ import com.hashcaller.datastore.DataStoreViewmodel
 import com.hashcaller.datastore.PreferencesKeys
 import com.hashcaller.utils.extensions.requestDefaultSMSrole
 import com.hashcaller.view.ui.extensions.isScreeningRoleHeld
+import com.hashcaller.view.ui.extensions.requestScreeningRole
 import com.hashcaller.view.ui.sms.individual.util.*
 import com.hashcaller.view.ui.sms.util.SetAsDefaultSMSSnackbarListener
 
@@ -125,6 +127,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockForeignCoutries.setOnCheckedChangeListener(this)
         binding.blockSpammersAuto.setOnCheckedChangeListener(this)
         binding.imgBtnBackBlk.setOnClickListener(this)
+        binding.btnRqstScreeningPermission.setOnClickListener(this)
 //        binding.switchDoNotReceiveSpamSMS.setOnClickListener(this)
 //        binding.layoutBlockContains.setOnClickListener(this)
 //        binding.layoutBlockEndsWith.setOnClickListener(this)
@@ -135,6 +138,11 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         when(v?.id) {
             R.id.imgBtnBackBlk -> {
                 finishAfterTransition()
+            }
+            R.id.btnRqstScreeningPermission -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    requestScreeningRole()
+                }
             }
 //            R.id.switchDoNotReceiveSpamSMS -> {
 //
@@ -151,6 +159,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
 //            }
         }
     }
+
 
     private fun onDoNotRecieveSpamSmsClicked() {
 //        if(binding.switchDoNotReceiveSpamSMS.isChecked){

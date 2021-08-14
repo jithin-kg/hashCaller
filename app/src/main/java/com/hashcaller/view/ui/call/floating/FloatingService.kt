@@ -37,7 +37,9 @@ import com.hashcaller.utils.constants.IntentKeys.Companion.START_FLOATING_SERVIC
 import com.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
 import com.hashcaller.utils.constants.IntentKeys.Companion.STOP_FLOATIN_SERVICE_FROM_RECEIVER
 import com.hashcaller.utils.internet.InternetChecker
+import com.hashcaller.utils.notifications.HashCaller
 import com.hashcaller.utils.notifications.blockPreferencesDataStore
+import com.hashcaller.view.ui.MainActivity
 import com.hashcaller.view.ui.contacts.*
 import com.hashcaller.view.utils.CountrycodeHelper
 import com.hashcaller.view.utils.LibPhoneCodeHelper
@@ -54,7 +56,7 @@ import kotlinx.coroutines.launch
 const val INTENT_COMMAND_EXIT = "EXIT"
 const val INTENT_COMMAND_NOTE = "NOTE"
 
-private const val NOTIFICATION_CHANNEL_GENERAL = "quicknote_general"
+const val NOTIFICATION_CHANNEL_GENERAL = "Caller_id"
 private const val CODE_FOREGROUND_SERVICE = 1
 private const val CODE_EXIT_INTENT = 2
 private const val CODE_NOTE_INTENT = 3
@@ -82,6 +84,10 @@ class FloatingService: Service() {
         stopForeground(true)
         stopSelf()
         window = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     /**
@@ -148,6 +154,7 @@ class FloatingService: Service() {
      */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
+//          showForegroundNotification()
         val newState = intent.getStringExtra(IntentKeys.CALL_STATE)?:""
         if(newState.isNotEmpty()){
             prevCallState = newState
@@ -296,6 +303,18 @@ class FloatingService: Service() {
             }
         }
         return START_STICKY
+    }
+
+    private fun showForegroundNotification() {
+        val intent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
+            .setContentText("HashCaller Caller id is running")
+            .setContentTitle("HashCaller Caller Id is active ")
+            .setSmallIcon(R.drawable.ic_phone_line)
+//            .setContentIntent(pendingIntent)
+            .build()
+        startForeground(CODE_FOREGROUND_SERVICE,notification )
     }
 
     @SuppressLint("MissingPermission", "LogNotTimber")
@@ -573,7 +592,7 @@ class FloatingService: Service() {
                 with(
                     NotificationChannel(
                         NOTIFICATION_CHANNEL_GENERAL,
-                        " getString(R.string.notification_channel_general)",
+                        "Caller Id",
                         NotificationManager.IMPORTANCE_DEFAULT
                     )
                 ) {

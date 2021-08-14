@@ -20,6 +20,7 @@ import com.hashcaller.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.utils.Constants.Companion.SIM_TWO
 import com.hashcaller.utils.constants.IntentKeys
 import com.hashcaller.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.hashcaller.view.ui.contacts.utils.loadImage
 import com.hashcaller.view.ui.sms.individual.util.beGone
 import com.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.view.ui.sms.individual.util.beVisible
@@ -154,7 +155,6 @@ class Window(
             val country = countryCodeHelper?.getCountryName(phoneNumber)
             setcountry(country)
         }
-
     }
 
     private suspend fun setcountry(country: String?) = withContext(Dispatchers.Main) {
@@ -223,6 +223,7 @@ class Window(
     }
 
 
+
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
 //        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
 
@@ -252,9 +253,11 @@ class Window(
             }else if(!resFromServer.country.isNullOrEmpty()){
                 location = resFromServer.country
             }
-            tvFirstLetter.text = firstLetter
+//            tvFirstLetter.text = firstLetter
+            tvFirstLetter.text = "T"
             if(name.isNotEmpty()){
-                tvName.text = name
+//                tvName.text = name
+                tvName.text = "Thomas Morton"
             }
 
             if(!resFromServer.thumbnailImg.isNullOrEmpty()){
@@ -274,8 +277,25 @@ class Window(
         }
 
     }
+    fun updateWithDummyData(){
+        //        tvName.text = "Thomas Morton"
+        tvName.text = "Sales Spam"
+//        tvPhoneNumIncomming.text = "+911234567890"
+        tvPhoneNumIncomming.text = "+911404567890"
+        tvLocation.text = "IN"
+        imgVAvatar.beVisible()
+        imgVAvatar.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_block_24))
+//        loadImage(context, imgVAvatar, "content://com.android.contacts/contacts/4826/photo" )
+        layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
+        imgVAvatar.beVisible()
+        tvFirstLetter.beInvisible()
+        tvFirstLetter.text = "T"
+        tvFirstLetter.beInvisible()
+
+    }
 
     suspend fun updateWithcontentProviderInfo(contactInfoInCprovider: Contact) = withContext(Dispatchers.Main) {
+        Log.d(TAG, "updateWithcontentProviderInfo: ${contactInfoInCprovider.photoThumnailServer}")
         var firstName:String? = ""
         var firstLetter:String?   = ""
         var photoThumbnailUri:String? = ""
@@ -286,11 +306,14 @@ class Window(
 
         if(!contactInfoInCprovider.photoThumnailServer.isNullOrEmpty()){
             photoThumbnailUri = contactInfoInCprovider.photoThumnailServer
+            loadImage(context, imgVAvatar, contactInfoInCprovider.photoThumnailServer)
         }
         if(!firstName.isNullOrEmpty()){
-            tvName.text = firstName
+//            tvName.text = firstName
+            tvName.text = "Thomas Morton"
             firstLetter = firstName[0].toString()
             tvFirstLetter.text = firstLetter
+            tvFirstLetter.text = "T"
             setCallerInfoFoundFrom(INFO_FOUND_FROM_CPROVIDER)
         }
 

@@ -39,6 +39,7 @@ class ServerSearchViewModel(
         countryIso: String
     ) =  viewModelScope.launch {
 //        searchNetworkRepository.makeDelay()
+//        showDummySearchResult()
         var formatedNum = formatPhoneNumber(phoneNumber)
         formatedNum =  libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
 
@@ -52,7 +53,7 @@ class ServerSearchViewModel(
        val hashed =  Secrets().managecipher(packageName,formatedNum)
        var infoAvialbleInDb:CallersInfoFromServer? = null
        try {
-           infoAvialbleInDb =  defServerinfoAvialableInDb?.await() 
+           infoAvialbleInDb =  defServerinfoAvialableInDb?.await()
        } catch (e:Exception){
            Log.d(TAG, "searchInServer: $e")
        }
@@ -102,6 +103,14 @@ class ServerSearchViewModel(
 
     }
 
+    private fun showDummySearchResult(){
+        val dummyContact = Contact(1,
+            firstName = "Tina Moss",
+            phoneNumber = "+12065550134",
+            photoThumnailServer = "content://com.android.contacts/contacts/5352/photo"
+        )
+        serverSearchResultLiveData.value = listOf(dummyContact)
+    }
     private fun getPreparedContact(contact: Cntct?, formatedNum: String): Contact {
         return Contact(-1,
             firstName = contact?.firstName?:"",

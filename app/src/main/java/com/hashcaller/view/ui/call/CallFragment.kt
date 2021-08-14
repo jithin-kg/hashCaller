@@ -3,6 +3,7 @@ package com.hashcaller.view.ui.call
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -37,6 +38,9 @@ import com.hashcaller.utils.constants.IntentKeys
 import com.hashcaller.utils.extensions.requestCallPhonePermission
 import com.hashcaller.utils.extensions.startSearchActivity
 import com.hashcaller.utils.internet.ConnectionLiveData
+import com.hashcaller.utils.notifications.HashCaller.Companion.CHANNEL_1_ID
+import com.hashcaller.utils.notifications.HashCaller.Companion.CHANNEL_2_ID
+import com.hashcaller.utils.notifications.HashCaller.Companion.CHANNEL_3_CALL_SERVICE_ID
 import com.hashcaller.view.ui.MainActivity
 import com.hashcaller.view.ui.MainActivityInjectorUtil
 import com.hashcaller.view.ui.MyUndoListener
@@ -46,6 +50,7 @@ import com.hashcaller.view.ui.call.db.CallLogTable
 import com.hashcaller.view.ui.call.dialer.CallLogAdapter
 import com.hashcaller.view.ui.call.dialer.DialerFragment
 import com.hashcaller.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.hashcaller.view.ui.call.floating.NOTIFICATION_CHANNEL_GENERAL
 import com.hashcaller.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.hashcaller.view.ui.call.utils.CallContainerInjectorUtil
 import com.hashcaller.view.ui.call.work.CallContainerViewModel
@@ -138,6 +143,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         initRecyclerView()
         setupBottomSheet()
         initListeners()
+        deleteNotificationChannels()
+
         if(checkRequiredPermission()){
             showRecyclerView()
             getDataDelayed()
@@ -145,8 +152,19 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             binding.btnCallFragmentPermission.beVisible()
             binding.pgBarCall.beGone()
             hideRecyclerView()
+
         }
 
+    }
+
+    private fun deleteNotificationChannels() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationManager =requireContext().getSystemService(NotificationManager::class.java)
+            notificationManager.deleteNotificationChannel(CHANNEL_3_CALL_SERVICE_ID)
+            notificationManager.deleteNotificationChannel(CHANNEL_2_ID)
+            notificationManager.deleteNotificationChannel(CHANNEL_1_ID)
+            notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_GENERAL)
+        }
     }
 
     private fun checkScreeningRole(): Boolean {

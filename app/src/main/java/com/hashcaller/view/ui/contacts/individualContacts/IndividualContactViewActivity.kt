@@ -196,6 +196,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             viewModel.getClearImage(phoneNum).observe(this, Observer {
                 when(it.imageFoundFrom){
                     IMAGE_FOUND_FROM_C_PROVIDER ->{
+                        Log.d(TAG, "setClearImage: ${it.imageStr}")
                         loadImage(this, binding.ivAvatar, it.imageStr)
                         binding.tvFirstLetter.beGone()
                         //because when using motin layout somehow  unable to set  invisible visibility to tvFirstLetter

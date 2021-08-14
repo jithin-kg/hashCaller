@@ -87,15 +87,16 @@ class HashCaller : Application(){
 
             channel2.description = "Notification for blocked calls"
 
-            val channel3 = NotificationChannel(CHANNEL_3_CALL_SERVICE_ID, NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW)
-            channel3.description = "Caller id active"
+//            val channel3 = NotificationChannel(CHANNEL_3_CALL_SERVICE_ID, NOTIFICATION_CHANNEL_NAME,
+//                NotificationManager.IMPORTANCE_DEFAULT)
+//            channel3.description = "HashCaller Caller id active"
+
 
             val notificationManager = getSystemService(NotificationManager::class.java)
 
             notificationManager.createNotificationChannel(channel1)
             notificationManager.createNotificationChannel(channel2)
-            notificationManager.createNotificationChannel(channel3)
+//            notificationManager.createNotificationChannel(channel3)
 
 
 
