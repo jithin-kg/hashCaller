@@ -62,13 +62,13 @@ android {
         debug {
             keyAlias 'Key0'
             keyPassword 'newHkey@535'
-            storeFile file('/Users/jithin/Desktop/hashcallerKey')
+            storeFile file('/Users/jithin/Desktop/hashcallerandoirdkey/hashcallerKey')
             storePassword 'newHkey@535'
         }
         release {
             keyAlias 'Key0'
             keyPassword 'newHkey@535'
-            storeFile file('/Users/jithin/Desktop/hashcallerKey')
+            storeFile file('/Users/jithin/Desktop/hashcallerandoirdkey/hashcallerKey')
             storePassword 'newHkey@535'
         }
 

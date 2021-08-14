@@ -256,8 +256,7 @@ class Window(
 //            tvFirstLetter.text = firstLetter
             tvFirstLetter.text = "T"
             if(name.isNotEmpty()){
-//                tvName.text = name
-                tvName.text = "Thomas Morton"
+                tvName.text = name
             }
 
             if(!resFromServer.thumbnailImg.isNullOrEmpty()){
@@ -278,7 +277,7 @@ class Window(
 
     }
     fun updateWithDummyData(){
-        //        tvName.text = "Thomas Morton"
+                tvName.text = "Thomas Morton"
         tvName.text = "Sales Spam"
 //        tvPhoneNumIncomming.text = "+911234567890"
         tvPhoneNumIncomming.text = "+911404567890"
@@ -295,7 +294,7 @@ class Window(
     }
 
     suspend fun updateWithcontentProviderInfo(contactInfoInCprovider: Contact) = withContext(Dispatchers.Main) {
-        Log.d(TAG, "updateWithcontentProviderInfo: ${contactInfoInCprovider.photoThumnailServer}")
+
         var firstName:String? = ""
         var firstLetter:String?   = ""
         var photoThumbnailUri:String? = ""
@@ -309,8 +308,7 @@ class Window(
             loadImage(context, imgVAvatar, contactInfoInCprovider.photoThumnailServer)
         }
         if(!firstName.isNullOrEmpty()){
-//            tvName.text = firstName
-            tvName.text = "Thomas Morton"
+            tvName.text = firstName
             firstLetter = firstName[0].toString()
             tvFirstLetter.text = firstLetter
             tvFirstLetter.text = "T"
