@@ -143,6 +143,7 @@
         android:layout_marginBottom="@dimen/bottom_fab_margin"
         android:backgroundTint="@color/colorPrimary"
         />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"

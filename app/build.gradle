@@ -41,9 +41,8 @@ android {
         applicationId "com.hashcaller"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-//        todo update targetSdkVersion to 30
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.0.6"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -80,7 +79,8 @@ android {
             shrinkResources false
             zipAlignEnabled false
             useProguard false
-            debuggable true
+//            make sure to change app debuggable to false in build.gradle file, otherwise google play console will complain that app is not signed while uploading
+            debuggable false
 
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
