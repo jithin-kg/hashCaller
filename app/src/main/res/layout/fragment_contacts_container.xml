@@ -139,6 +139,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/bottom_fab_margin"
+        android:visibility="gone"
         android:layout_marginBottom="@dimen/bottom_fab_margin"
         android:backgroundTint="@color/colorPrimary"
         />
