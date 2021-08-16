@@ -322,6 +322,16 @@
               android:text="@string/work_illustrations_by_storyset"
               android:textColor="@color/textColor"
               />
+          <TextView
+              android:id="@+id/tvAttr2"
+              android:layout_width="wrap_content"
+              android:clickable="true"
+              android:alpha="0.74"
+              android:focusable="true"
+              android:layout_height="wrap_content"
+              android:text="Icons made by https://www.freepik.com Freepik from  https://www.flaticon.com"
+              android:textColor="@color/textColor"
+              />
       </LinearLayout>
   </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

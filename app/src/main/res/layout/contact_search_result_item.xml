@@ -54,9 +54,9 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp"
         android:alpha="0.84"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewTime"
+        app:layout_constraintBottom_toBottomOf="@+id/textVContactName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textVcallerName"
+        app:layout_constraintTop_toTopOf="@+id/textVContactName"
         app:srcCompat="@drawable/ic_baseline_call_24" />
     <TextView
         android:id="@+id/tvNumber"

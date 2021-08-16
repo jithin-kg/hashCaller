@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:src="@drawable/ic_baseline_green_lock"
-        app:layout_constraintBottom_toBottomOf="@+id/shimmerViewContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/shimmerViewContainer" />
+         />
 
     <Button
         android:id="@+id/btnSampleTransition"
@@ -43,7 +43,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shimmerViewContainer" />
+        />
 
 <!--    <com.facebook.shimmer.ShimmerFrameLayout-->
 <!--        android:id="@+id/shimmerViewContainer"-->
@@ -78,7 +78,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shimmerViewContainer" />
+        app:layout_constraintTop_toBottomOf="parent" />
 
     <TextView
         android:id="@+id/tvSearchIndicator"

@@ -94,7 +94,7 @@
                     android:layout_marginStart="@dimen/margin_start_imgv_block_settings"
                     android:alpha=".80"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView23"
+                    app:layout_constraintTop_toBottomOf="@+id/switchCallBlkNotification"
                     app:srcCompat="@drawable/ic_baseline_call_white" />
 
                 <Switch

@@ -51,7 +51,6 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_baseline_close_24"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/searchViewCall"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
