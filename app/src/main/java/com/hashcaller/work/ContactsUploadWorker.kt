@@ -173,11 +173,12 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     @SuppressLint("LongLogTag")
     private suspend fun setNewlySavedContactsList() {
+    try {
         val newlyCreatedContacts = mutableListOf<PhoneNumWithHashedNumDTO>()
         /**
          * All numbers are formatted to  ES164 standard
          */
-       val  allcontactsInContentProvider =  contactRepository?.fetchContacts()
+        val  allcontactsInContentProvider =  contactRepository?.fetchContacts()
 
         if (allcontactsInContentProvider != null) {
             for(contact in allcontactsInContentProvider){
@@ -197,9 +198,10 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     if(isTobeSearchedInServer){
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, contact.phoneNumber)
                         hashedPhoneNum?.let { hashed ->
-                            
+                            Log.d(TAG, "setNewlySavedContactsList: hashedNum ${hashed}")
+
                             insertIntoListSetUploadingStatus(contact.phoneNumber, hashed,
-                                )
+                            )
 
                             val cntctDtoObj = ContactUploadDTO(contact.name, hashed)
                             contacts.add(cntctDtoObj)
@@ -212,6 +214,9 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
         contactsListOf1000 = contacts.chunked(1000)
 
 
+    }catch (e:Exception){
+        Log.d(TAG, "setNewlySavedContactsList: $e")
+    }
     }
 
     suspend fun insertIntoListSetUploadingStatus(phoneNumber: String, hashed: String) {

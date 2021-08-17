@@ -41,15 +41,15 @@ android {
         applicationId "com.hashcaller"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-        versionCode 7
-        versionName "1.0.6"
+        versionCode 10
+        versionName "1.0.9"
 
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //   https://stackoverflow.com/questions/27186726/java-lang-unsatisfiedlinkerror-dalvik-system-pathclassloader/46051246
         ndk {
-//            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
         }
     }
 
