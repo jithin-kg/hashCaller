@@ -4,7 +4,6 @@ apply plugin: 'kotlin-kapt' //kotlin synthetic binding
 apply plugin: 'kotlin-android-extensions' // synthetic binding
 apply plugin: 'com.google.gms.google-services' // firebase
 
-apply plugin: 'com.klaxit.hiddensecrets'
 
 android {
 
@@ -28,11 +27,11 @@ android {
     buildToolsVersion "30.0.3"
 
 // Enable NDK build
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-        }
-    }
+//    externalNativeBuild {
+//        cmake {
+//            path "src/main/cpp/CMakeLists.txt"
+//        }
+//    }
 
     //codelab android mvvm kotlin
 
@@ -41,16 +40,16 @@ android {
         applicationId "com.hashcaller"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-        versionCode 10
-        versionName "1.0.9"
+        versionCode 12
+        versionName "1.01.0"
 
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //   https://stackoverflow.com/questions/27186726/java-lang-unsatisfiedlinkerror-dalvik-system-pathclassloader/46051246
-        ndk {
-            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
-        }
+//        ndk {
+//            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+//        }
     }
 
     buildFeatures {
@@ -118,7 +117,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    ndkVersion '22.0.7026061'
+//    ndkVersion '22.0.7026061'
 
 }
 
