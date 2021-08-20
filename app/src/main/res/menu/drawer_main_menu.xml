@@ -9,12 +9,12 @@
             android:state_activated="false"
 
             />
-        <item
-            android:id="@+id/spamSms"
-            android:title="Spam SMSs"
-            android:icon="@drawable/ic_message_3_line"
-            android:state_activated="false"
-            />
+<!--        <item-->
+<!--            android:id="@+id/spamSms"-->
+<!--            android:title="Spam SMSs"-->
+<!--            android:icon="@drawable/ic_message_3_line"-->
+<!--            android:state_activated="false"-->
+<!--            />-->
         <item
             android:id="@+id/spamCalls"
             android:title="Spam calls"

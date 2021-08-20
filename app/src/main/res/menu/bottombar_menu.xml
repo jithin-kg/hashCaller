@@ -2,11 +2,11 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 <!--    https://www.flaticon.com/packs/multimedia-collection?k=1622288085585-->
-    <item
-        android:id="@+id/bottombaritem_messages"
-        android:icon="@drawable/ic_message_3_line"
-        android:title="Messages"
-        app:showAsAction="ifRoom|withText" />
+<!--    <item-->
+<!--        android:id="@+id/bottombaritem_messages"-->
+<!--        android:icon="@drawable/ic_message_3_line"-->
+<!--        android:title="Messages"-->
+<!--        app:showAsAction="ifRoom|withText" />-->
 
     <item
         android:id="@+id/bottombaritem_contacts"

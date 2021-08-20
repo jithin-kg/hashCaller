@@ -280,7 +280,6 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
         if(!EasyPermissions.hasPermissions(this,
                 READ_PHONE_STATE,
                 CALL_PHONE,
-                READ_PHONE_NUMBERS
                 )){
             //read contacts permission not given
             binding.btnPhoneState.beVisible()

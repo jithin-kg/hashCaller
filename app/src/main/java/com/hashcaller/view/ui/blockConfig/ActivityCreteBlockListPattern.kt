@@ -95,15 +95,15 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
             when(patterntype){
                 NUMBER_STARTS_WITH ->{
                     patternRegex = "$newPattern([0-9]*)"
-                    message = "Calls and SMS number starting with $newPattern will be blocked."
+                    message = "Calls from number starting with $newPattern will be blocked."
                 }
                 NUMBER_ENDS_WITH ->{
                     patternRegex = "([0-9]*$newPattern)"
-                    message = "Calls and SMS number ending  with $newPattern will be blocked."
+                    message = "Calls from number ending  with $newPattern will be blocked."
                 }
                 NUMBER_CONTAINING ->{
                     patternRegex = "([0-9]*$newPattern[0-9]*)"
-                    message = "Calls and SMS number containing  $newPattern will be blocked."
+                    message = "Calls from number containing  $newPattern will be blocked."
                 }
             }
             blockListViewModel.insert(newPattern, patterntype).observe(this, Observer {

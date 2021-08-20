@@ -76,7 +76,6 @@ import com.hashcaller.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.view.ui.sms.individual.util.beVisible
 import com.hashcaller.view.ui.sms.individual.util.toast
 import com.hashcaller.view.ui.sms.search.SMSSearchFragment
-import com.hashcaller.view.ui.sms.spam.SpamSMSActivity
 import com.hashcaller.view.utils.CountrycodeHelper
 import com.hashcaller.view.utils.DefaultFragmentManager
 import com.hashcaller.view.utils.IDefaultFragmentSelection
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
     private lateinit var firstLetterView:TextView
     private lateinit var menu:Menu
-    private lateinit var  menuMessage:MenuItem
+//    private lateinit var  menuMessage:MenuItem
     private lateinit var  menuContacts:MenuItem
     private lateinit var  menuCalls:MenuItem
     private lateinit var  menuSearch:MenuItem
@@ -696,12 +695,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             var fragment: Fragment
             val selectedFragment = ""
             when (menuItem.itemId) {
-                R.id.bottombaritem_messages -> {
-                    showMessagesFragment()
-                    Log.d(TAG, "setBottomSheetListener: show sms clicked")
-//                    fabBtnShowDialpad.visibility = View.GONE
-                    return@OnNavigationItemSelectedListener true
-                }
+//                R.id.bottombaritem_messages -> {
+//                    showMessagesFragment()
+//                    Log.d(TAG, "setBottomSheetListener: show sms clicked")
+////                    fabBtnShowDialpad.visibility = View.GONE
+//                    return@OnNavigationItemSelectedListener true
+//                }
                 R.id.bottombaritem_calls -> {
                     showCallFragment()
 //                    fabBtnShowDialpad.visibility = View.VISIBLE
@@ -916,7 +915,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun setAllMenuItems() {
         menu = binding.bottomNavigationView.menu
-        menuMessage = menu.findItem(R.id.bottombaritem_messages)
+//        menuMessage = menu.findItem(R.id.bottombaritem_messages)
         menuContacts = menu.findItem(R.id.bottombaritem_contacts)
         menuCalls = menu.findItem( R.id.bottombaritem_calls )
 //        menuSearch = menu.findItem(R.id.bottombaritem_search)
@@ -1110,11 +1109,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         showSearchFragment: Boolean=false ) {
 //        if(isDarkThemeOn){
 
-        if(showMessageFragment){
-            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
-        }else{
-            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_line)
-        }
+//        if(showMessageFragment){
+//            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_fill)
+//        }else{
+//            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_message_3_line)
+//        }
 
         if(showContactsFragment){
             menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_fill)
@@ -1378,10 +1377,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         grantResults: IntArray
     ) {
 
-        Log.d(TAG, "onRequestPermissionsResult: ")
+        Log.d(TAG, "onRequestPermissionsResult: ${requestCode}")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         when(requestCode){
             PermisssionRequestCodes.REQUEST_CODE_CALL_LOG ->{
+
                 detachAndAttachFragment(callFragment)
             }
 
@@ -1411,10 +1412,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      * So the  data will be requested again from content provider
      */
     private fun detachAndAttachFragment(fragment: Fragment) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.detach(fragment)
-        fragmentTransaction.attach(fragment)
-        fragmentTransaction.commit()
+        val fragmentTransactionDetach = supportFragmentManager.beginTransaction()
+//        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransactionDetach.detach(fragment)
+        fragmentTransactionDetach.commit()
+        val fragmentTransactionAttach = supportFragmentManager.beginTransaction()
+        fragmentTransactionAttach.attach(fragment)
+        fragmentTransactionAttach.commit()
     }
 
     //
@@ -1531,11 +1535,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.spamSms -> {
-                val intent = Intent(this, SpamSMSActivity::class.java)
-                startActivity(intent)
-
-            }
+//            R.id.spamSms -> {
+//                val intent = Intent(this, SpamSMSActivity::class.java)
+//                startActivity(intent)
+//
+//            }
             R.id.settingsMenuItem ->{
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)

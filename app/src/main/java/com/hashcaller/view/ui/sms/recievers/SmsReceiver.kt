@@ -192,7 +192,7 @@ class SmsReceiver : BroadcastReceiver() {
 
         //todo this might be a bug if I ser defaulfragment from here, becuse sms will
         //be dfault when sms arrive
-           DefaultFragmentManager.id = R.id.bottombaritem_messages
+//           DefaultFragmentManager.id = R.id.bottombaritem_messages
            DefaultFragmentManager.defaultFragmentToShow =
                DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT
 

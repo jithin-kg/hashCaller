@@ -153,7 +153,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Call, SMS, Spam"
+            android:text="Call"
             app:layout_constraintStart_toStartOf="@+id/tvNotifications"
             app:layout_constraintEnd_toEndOf="@+id/tvNotifications"
             app:layout_constraintTop_toBottomOf="@+id/tvNotifications"

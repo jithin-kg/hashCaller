@@ -29,13 +29,7 @@
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.WRITE_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_MMS" /> <!-- https://github.com/klinker41/android-smsmms -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.provider.Telephony.SMS_RECEIVED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -131,10 +125,8 @@
             android:name=".view.ui.profile.ProfileActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.sms.spam.SpamSMSActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
+
+
         <activity
             android:name=".view.ui.call.spam.SpamCallsActivity"
             android:launchMode="singleTop"
@@ -171,50 +163,12 @@
             android:name=".view.ui.contacts.search.FulllSearchResultsActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.sms.search.SearchSMSActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateVisible" />
+
         <activity
             android:name=".view.ui.contactSelector.ContactSelectorActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.sms.send.SendTestActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <action android:name="android.intent.action.SENDTO" />
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="sms" />
-                <data android:scheme="smsto" />
-                <data android:scheme="mms" />
-                <data android:scheme="mmsto" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-                <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name=".utils.callscreening.MyCallScreeningService"
@@ -228,23 +182,14 @@
             android:name=".view.ui.auth.ActivityVerifyOTP"
             android:launchMode="singleTop"
             android:theme="@style/AppThemeStatusBar" />
-        <activity
-            android:name=".view.ui.sms.schedule.ScheduleActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.sms.individual.SampleActivity"
-            android:label="@string/title_activity_sample"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
+
+
         <activity
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/AppThemeStatusBar">
-            <intent-filter>
-                <category android:name="android.app.role.SMS" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
@@ -295,45 +240,8 @@
         <activity
             android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppThemeStatusBar" /> <!-- Activity that allows the user to send new SMS/MMS messages -->
-        <activity
-            android:name=".view.ui.sms.individual.IndividualSMSActivity"
-            android:launchMode="singleTop"
-            android:parentActivityName=".view.ui.MainActivity"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.DIAL" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="tel" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-            <!-- android:windowSoftInputMode="adjustNothing" https://stackoverflow.com/questions/4207880/android-how-do-i-prevent-the-soft-keyboard-from-pushing-my-view-up#:~:text=I%20was%20able%20to%20avoid,that%20sits%20above%20the%20buttons.&text=didnt.&text=This%20worked%20like%20a%20charm,Its%20smoother.> -->
-            <!-- prent activity is need to define the natural hierarchy of the application / navigation -->
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <action android:name="android.intent.action.SENDTO" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="sms" />
-                <data android:scheme="smsto" />
-                <data android:scheme="mms" />
-                <data android:scheme="mmsto" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppThemeStatusBar" />
+        <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern"
             android:launchMode="singleTop"
@@ -360,99 +268,8 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".view.ui.sms.services.HeadlessSmsSendService"
-            android:exported="true"
-            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
 
-                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
 
-                <data android:scheme="SMS" />
-                <data android:scheme="smsto" />
-                <data android:scheme="mms" />
-                <data android:scheme="mmsto" />
-            </intent-filter>
-        </service>
-        <service android:name="com.android.mms.transaction.TransactionService" />
-
-        <receiver
-            android:name=".utils.SmsStatusSentReceiver"
-            android:enabled="true">
-            <intent-filter>
-
-                <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
-                <action android:name="myhashcallersms" />
-                <!-- and some more actions if you want -->
-            </intent-filter>
-        </receiver> <!-- BroadcastReceiver that listens for incoming MMS messages -->
-        <!-- <receiver -->
-        <!-- android:name=".view.ui.sms.recievers.MmsReceiver" -->
-        <!-- android:permission="android.permission.BROADCAST_WAP_PUSH"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" /> -->
-        <!-- <data android:mimeType="application/vnd.wap.mms-message" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
-        <!-- from simple sms -->
-        <receiver
-            android:name="com.android.mms.transaction.PushReceiver"
-            android:permission="android.permission.BROADCAST_WAP_PUSH">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
-
-                <data android:mimeType="application/vnd.wap.mms-message" />
-                <data android:mimeType="application/vnd.wap.sic" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".utils.MmsSentReceiver"
-            android:taskAffinity="com.klinker.android.messaging.MMS_SENT" />
-        <receiver
-            android:name=".utils.MmsReceiver"
-            android:exported="true"
-            android:permission="android.permission.BROADCAST_WAP_PUSH"
-            android:taskAffinity="com.klinker.android.messaging.MMS_RECEIVED">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
-
-                <data android:mimeType="application/vnd.wap.mms-message" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".utils.MarkAsReadReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.simplemobiletools.smsmessenger.action.mark_as_read" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".utils.DirectReplyReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.simplemobiletools.smsmessenger.action.reply" />
-            </intent-filter>
-        </receiver> <!-- from simple sms -->
-        <receiver android:name=".utils.SmsStatusDeliveredReceiver">
-            <intent-filter>
-
-                <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
-                <action android:name="android.provider.Telephony.SMS_DELIVER" />
-            </intent-filter>
-        </receiver> <!-- Broadcast receiver that listen for SMS -->
-        <receiver
-            android:name=".view.ui.sms.recievers.SmsReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
-
-                <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
-                <action android:name="android.provider.Telephony.SMS_DELIVER" />
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
         <receiver
             android:name=".utils.callReceiver.IncomingCallReceiver"
             android:enabled="true"
@@ -467,9 +284,7 @@ if 1000 doesnt work ,try 2147483647
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".view.ui.sms.services.SaveSmsService"
-            android:exported="false" />
+
 
         <receiver android:name=".repository.spam.AlarmReceiver" />
 
