@@ -73,6 +73,7 @@
             android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
+            android:visibility="invisible"
             android:src="@drawable/ic_filter_3_line"
             app:layout_constraintBottom_toBottomOf="@+id/searchVCallSearch"
             app:layout_constraintEnd_toEndOf="parent"
@@ -189,6 +190,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
             android:alpha="0.04"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvNotContacts"
@@ -200,6 +202,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
             android:text="@string/messages"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/recyclerViewContacts"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="@dimen/margin_start_search_result_info"
@@ -208,6 +211,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewSMS"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/tvSMS"
@@ -219,6 +223,7 @@
             android:layout_marginTop="16dp"
             android:textColor="@color/textColor"
             android:alpha="0.74"
+            android:visibility="gone"
             android:text="@string/no_result_in_messages"
             android:layout_marginStart="@dimen/margin_start_search_result_info"
             />

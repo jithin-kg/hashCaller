@@ -36,18 +36,18 @@ class AllSearchViewmodel(
         emptyAllLists()
 
         defContacts = async { allSearchRepository.searchInContacts(searchTerm, isFullResultNeeded)}
-        defSMS = async {  allSearchRepository.searchInSMS(searchTerm) }
+//        defSMS = async {  allSearchRepository.searchInSMS(searchTerm) }
         try {
             contactsSearchListLivedata.value =  defContacts?.await()
         }catch (e:Exception){
             Log.d(TAG, "onQueryTextChanged: $e")
         }
 
-        try {
-            smsListOfLivedata.value = defSMS?.await()
-        }catch (e:Exception){
-            Log.d(TAG, "onQueryTextChanged: $e")
-        }
+//        try {
+////            smsListOfLivedata.value = defSMS?.await()
+//        }catch (e:Exception){
+//            Log.d(TAG, "onQueryTextChanged: $e")
+//        }
 
     }
 

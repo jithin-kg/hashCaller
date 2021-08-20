@@ -133,14 +133,14 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
             this.smsAdapter?.setList(it)
             if (showSMSEnabled && it.size > 0) {
                 isFoundInSMS = true
-                binding.recyclerViewSMS.beVisible()
-                binding.tvSMS.beVisible()
-                binding.tvNotInSMS.beInvisible()
+//                binding.recyclerViewSMS.beVisible()
+//                binding.tvSMS.beVisible()
+//                binding.tvNotInSMS.beInvisible()
             } else {
                 isFoundInSMS = false
-                binding.recyclerViewSMS.beInvisible()
-                binding.tvSMS.beVisible()
-                binding.tvNotInSMS.beVisible()
+//                binding.recyclerViewSMS.beInvisible()
+//                binding.tvSMS.beVisible()
+//                binding.tvNotInSMS.beVisible()
             }
         })
     }
@@ -166,13 +166,13 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
 
         dataStoreViewmodel.searchFilterLiveData.asLiveData().observe(this, Observer { isshowSMSResult ->
             showSMSEnabled = isshowSMSResult
-            searchFilterViewBinding.checkboxIncludeSMS.isChecked = isshowSMSResult
+//            searchFilterViewBinding.checkboxIncludeSMS.isChecked = isshowSMSResult
             if(isshowSMSResult && isFoundInSMS)  {
-                binding.recyclerViewSMS.beVisible()
-                binding.tvSMS.beVisible()
+//                binding.recyclerViewSMS.beVisible()
+//                binding.tvSMS.beVisible()
             }else {
-                binding.recyclerViewSMS.beInvisible()
-                binding.tvSMS.beInvisible()
+//                binding.recyclerViewSMS.beInvisible()
+//                binding.tvSMS.beInvisible()
 
             }
         })

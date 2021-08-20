@@ -259,6 +259,7 @@
             android:layout_width="101dp"
             android:layout_height="38dp"
             android:alpha="0.74"
+            android:visibility="invisible"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnInfoExpand"
             app:layout_constraintHorizontal_bias="0.5"

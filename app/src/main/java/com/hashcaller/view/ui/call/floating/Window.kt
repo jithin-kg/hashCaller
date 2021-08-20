@@ -160,8 +160,7 @@ class Window(
     private suspend fun setcountry(country: String?) = withContext(Dispatchers.Main) {
         Log.d(TAG, "setCountryCode: $country")
         tvLocation.text = country
-//        tvPhoneNumIncomming.text = phoneNumber
-        tvPhoneNumIncomming.text = "+911234567890"
+        tvPhoneNumIncomming.text = phoneNumber
     }
 
 
@@ -253,8 +252,7 @@ class Window(
             }else if(!resFromServer.country.isNullOrEmpty()){
                 location = resFromServer.country
             }
-//            tvFirstLetter.text = firstLetter
-            tvFirstLetter.text = "T"
+            tvFirstLetter.text = firstLetter
             if(name.isNotEmpty()){
                 tvName.text = name
             }
@@ -311,7 +309,6 @@ class Window(
             tvName.text = firstName
             firstLetter = firstName[0].toString()
             tvFirstLetter.text = firstLetter
-            tvFirstLetter.text = "T"
             setCallerInfoFoundFrom(INFO_FOUND_FROM_CPROVIDER)
         }
 

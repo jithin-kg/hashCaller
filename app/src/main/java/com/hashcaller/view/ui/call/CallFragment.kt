@@ -294,7 +294,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
         binding.imgBtnCallTbrBlock.setOnClickListener(this)
 //        binding.imgBtnCallTbrMuteCaller.setOnClickListener(this)
-        binding.imgBtnCallTbrDelete.setOnClickListener(this)
+//        binding.imgBtnCallTbrDelete.setOnClickListener(this)
         binding.fabBtnShowDialpad.setOnClickListener(this)
         binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
         binding.imgBtnCallSearch.setOnClickListener(this)
@@ -325,9 +325,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private fun checkRequiredPermission(): Boolean {
        return EasyPermissions.hasPermissions(context,
-           READ_CALL_LOG,
-        WRITE_CALL_LOG
-
+           READ_CALL_LOG
        )
     }
 
@@ -606,9 +604,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 //                Log.d(TAG, "onClick: res is $res")
 //                this.permissionGivenLiveData.value = res
             }
-            R.id.imgBtnCallTbrDelete->{
-                deletemarkedLogs()
-            }
+//            R.id.imgBtnCallTbrDelete->{
+//                deletemarkedLogs()
+//            }
             R.id.imgBtnCallTbrMuteCaller ->{
                 muteMarkedCaller()
             }
@@ -655,7 +653,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         val request = PermissionRequest.Builder(this.context)
             .code(REQUEST_CODE_CALL_LOG)
             .perms(arrayOf(READ_CALL_LOG,
-                WRITE_CALL_LOG,
             ))
             .rationale("HashCaller needs access to call logs to identify unknown callers in call log.")
             .positiveButtonText("Continue")
@@ -1113,7 +1110,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 //            binding.imgBtnCallTbrMuteCaller.beVisible()
 
         }
-        binding.imgBtnCallTbrDelete.beVisible()
+//        binding.imgBtnCallTbrDelete.beVisible()
         binding.imgBtnCallSearch.beInvisible()
         binding.tvVHashcaller.beInvisible()
         binding.imgBtnHamBrgerCalls.beInvisible()
@@ -1132,7 +1129,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
         binding.imgBtnCallTbrBlock.beInvisible()
         binding. imgBtnCallTbrMuteCaller.beInvisible()
-        binding.imgBtnCallTbrDelete.beInvisible()
+//        binding.imgBtnCallTbrDelete.beInvisible()
 //        binding.imgBtnCallTbrMore.beInvisible()
         binding.tvCallSelectedCount.beInvisible()
         binding.imgBtnCallUnMuteCaller.beInvisible()
@@ -1148,12 +1145,12 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     override fun onYesConfirmationDelete() {
         this.activity?.runOnUiThread{
-            binding.imgBtnCallTbrDelete.beInvisible()
+//            binding.imgBtnCallTbrDelete.beInvisible()
         }
         this.viewmodel?.deleteThread()?.observe(viewLifecycleOwner, Observer {
             when (it) {
                 ON_PROGRESS -> {
-                    binding.imgBtnCallTbrDelete.beInvisible()
+//                    binding.imgBtnCallTbrDelete.beInvisible()
 
                     binding.pgBarDeleting.beVisible()
                 }

@@ -282,7 +282,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.btnBlockIndividualContact.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
         binding.imgBtnCallindividual.setOnClickListener(this)
-        binding.imgBtnSMS.setOnClickListener(this)
+//        binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
         radioSales.setOnClickListener(this)
         radioScam.setOnClickListener(this)
@@ -339,9 +339,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                     requestCallPhonePermission()
                 }
             }
-            R.id.imgBtnSMS -> {
-                startIndividualSMS()
-            }
+//            R.id.imgBtnSMS -> {
+//                startIndividualSMS()
+//            }
             R.id.switchIndividualContact -> {
                 muteOrUnmute()
             }

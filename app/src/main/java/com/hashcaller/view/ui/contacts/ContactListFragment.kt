@@ -214,11 +214,11 @@ class ContactListFragment  : Fragment(), View.OnClickListener {
     }
 
     private fun checkContactPermission(): Boolean {
-        val permissionContact =
-            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CALL_LOG)
-        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
-            return false
-        }
+//        val permissionContact =
+//            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CALL_LOG)
+//        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+//            return false
+//        }
         return true
     }
 

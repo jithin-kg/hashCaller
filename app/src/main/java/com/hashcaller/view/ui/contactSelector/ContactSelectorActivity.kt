@@ -103,11 +103,11 @@ class ContactSelectorActivity : AppCompatActivity() {
     }
 
     private fun checkContactPermission(): Boolean {
-        val permissionContact =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALL_LOG)
-        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
-            return false
-        }
+//        val permissionContact =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALL_LOG)
+//        if(permissionContact!= PackageManager.PERMISSION_GRANTED){
+//            return false
+//        }
         return true
     }
 

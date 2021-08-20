@@ -27,7 +27,6 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -53,9 +52,7 @@
             android:theme="@style/AppTheme"
             ></activity>
         <activity android:name=".view.ui.auth.RecommendeSettingsActivity" />
-        <activity
-            android:name=".view.ui.GetStartActivity"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name=".view.ui.FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -131,10 +128,7 @@
             android:name=".view.ui.call.spam.SpamCallsActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.call.history.CallhistoryActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name=".view.ui.call.search.CallLogSearchActivity"
             android:launchMode="singleTop"
@@ -241,7 +235,6 @@
             android:name=".view.ui.contacts.individualContacts.IndividualContactViewActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppThemeStatusBar" />
-        <!-- Activity that allows the user to send new SMS/MMS messages -->
         <activity
             android:name=".view.ui.blockConfig.ActivityCreteBlockListPattern"
             android:launchMode="singleTop"

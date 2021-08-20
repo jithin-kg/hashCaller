@@ -44,7 +44,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         binding = ActivitySpamCallsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         observeInternetLivedata()
-        initSwipeHandler()
+//        initSwipeHandler()
         initRecyclerView()
         initViewmodel()
         observeSpamCallLogs()
@@ -96,7 +96,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
 
         binding.recyvlerV.apply {
             layoutManager = CustomLinearLayoutManager(context)
-            ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyvlerV);
+//            ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyvlerV);
 
             layoutMngr = layoutManager as CustomLinearLayoutManager
 

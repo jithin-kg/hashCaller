@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"
-            android:text="918086176336"
+            android:text=""
             android:textColor="@color/colorWhite"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"

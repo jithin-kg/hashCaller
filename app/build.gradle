@@ -40,8 +40,8 @@ android {
         applicationId "com.hashcaller"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-        versionCode 12
-        versionName "1.01.0"
+        versionCode 13
+        versionName "1.02."
 
         vectorDrawables.useSupportLibrary = true
 
