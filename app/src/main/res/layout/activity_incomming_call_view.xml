@@ -11,7 +11,7 @@
     android:background="@android:color/transparent"
     android:backgroundTint="@android:color/transparent"
     android:excludeFromRecents="true"
-    tools:context=".view.ui.IncommingCall.ActivityIncommingCallView">
+    tools:context=".app.view.ui.IncommingCall.ActivityIncommingCallView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cnstraintlyoutInner"

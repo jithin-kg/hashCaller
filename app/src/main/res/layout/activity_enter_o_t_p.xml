@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".view.ui.auth.ActivityEnterOTP">
+    tools:context=".app.view.ui.auth.ActivityEnterOTP">
 
 <!--    <include-->
 <!--        android:id="@+id/include2"-->

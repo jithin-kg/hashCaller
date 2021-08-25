@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackgroundAppBar"
-        tools:context=".view.ui.settings.SettingsActivity">
+        tools:context=".app.view.ui.settings.SettingsActivity">
 
         <ImageButton
             android:id="@+id/imgBtnBackMain"

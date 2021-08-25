@@ -7,7 +7,7 @@
     android:theme="@style/AppTheme"
     android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_manage_notifications_scene"
-    tools:context=".view.ui.notifications.ManageNotificationsActivity">
+    tools:context=".app.view.ui.notifications.ManageNotificationsActivity">
 
     <ImageButton
         android:id="@+id/imgBtnBacckNotificaions"

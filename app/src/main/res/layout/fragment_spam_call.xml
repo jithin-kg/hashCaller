@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.ui.call.SpamCallFragment">
+    tools:context=".app.view.ui.call.SpamCallFragment">
 
     <Button
         android:id="@+id/btnDefaulCallScreening"

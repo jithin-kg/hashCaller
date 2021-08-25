@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutDescription="@xml/test_scene"
-    tools:context=".view.ui.manageblock.BlockManageActivity">
+    tools:context=".app.view.ui.manageblock.BlockManageActivity">
 
     <ImageButton
         android:id="@+id/imgBtnBacckNotificaions"

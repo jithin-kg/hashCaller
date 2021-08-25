@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".view.ui.profile.ProfileActivity">
+    android:theme="@style/AppTheme"
+   >
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarProfile"
@@ -157,9 +158,29 @@
             app:counterMaxLength="25" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/pgBar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:elevation="18dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:trackColor="@color/colorWhite"
+        app:indicatorColor="@color/colorPrimary"
+        app:trackThickness="2dp"
+        app:indicatorSize="32dp"
+        app:layout_constraintTop_toTopOf="@+id/btnUpdate"
+        app:layout_constraintBottom_toBottomOf="@+id/btnUpdate"
+        app:layout_constraintEnd_toEndOf="@+id/btnUpdate"
+        app:layout_constraintStart_toStartOf="@+id/btnUpdate"
+        tools:layout_editor_absoluteX="186dp"
+        tools:layout_editor_absoluteY="667dp" />
+
     <Button
         android:id="@+id/btnUpdate"
         android:layout_width="0dp"
+        android:visibility="invisible"
+
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginStart="16dp"
@@ -169,21 +190,10 @@
         android:text="Save"
         android:textAllCaps="false"
         android:textColor="@color/colorWhite"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/pgBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outlinedTextField2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".view.MyQuoteListFragment"
+        tools:context=".app.view.MyQuoteListFragment"
         tools:listitem="@layout/myquote_list_item"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutDescription="@xml/activity_send_test_scene"
-    tools:context=".view.ui.sms.send.SendTestActivity">
+    tools:context=".app.view.ui.sms.send.SendTestActivity">
 
     <ImageView
         android:id="@+id/imageView3"

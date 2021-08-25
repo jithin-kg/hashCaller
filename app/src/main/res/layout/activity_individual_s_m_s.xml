@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".view.ui.sms.individual.IndividualSMSActivity">
+    tools:context=".app.view.ui.sms.individual.IndividualSMSActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarIndividualSMS"

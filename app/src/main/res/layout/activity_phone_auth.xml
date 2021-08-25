@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context="com.hashcaller.view.ui.auth.ActivityPhoneAuth">
+    tools:context=".app.view.ui.auth.ActivityPhoneAuth">
    <TextView
        android:id="@+id/tvHead"
        android:layout_width="0dp"
@@ -103,6 +103,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:text="Go"
+        android:textColor="@color/colorWhite"
         android:paddingTop="@dimen/margin_padding_size_small"
         android:paddingBottom="@dimen/margin_padding_size_small"
         app:layout_constraintEnd_toEndOf="parent"

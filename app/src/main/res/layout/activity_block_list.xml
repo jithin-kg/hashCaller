@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.ui.blockConfig.blockList.BlockListActivity">
+    tools:context=".app.view.ui.blockConfig.blockList.BlockListActivity">
     <ImageButton
         android:id="@+id/imgBtnBackBlkList"
         android:layout_width="wrap_content"

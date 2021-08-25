@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="?attr/actionBarSize"
-    tools:context=".view.ui.MainActivity">
+    tools:context=".app.view.ui.MainActivity">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutCallerId"
         android:layout_width="match_parent"

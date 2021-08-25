@@ -3,7 +3,8 @@ apply plugin: 'kotlin-android' // synthetic binding
 apply plugin: 'kotlin-kapt' //kotlin synthetic binding
 apply plugin: 'kotlin-android-extensions' // synthetic binding
 apply plugin: 'com.google.gms.google-services' // firebase
-
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
 
@@ -37,12 +38,11 @@ android {
 
 
     defaultConfig {
-        applicationId "com.hashcaller"
+        applicationId "com.hashcaller.app"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-        versionCode 13
-        versionName "1.02."
-
+        versionCode 16
+        versionName "1.05.0"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -225,6 +225,11 @@ dependencies {
     // Declare the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-auth-ktx'
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+
     implementation 'com.google.android.gms:play-services-safetynet:17.0.1'
     implementation 'com.google.android.gms:play-services-basement:17.6.0'
     implementation "androidx.browser:browser:1.3.0"

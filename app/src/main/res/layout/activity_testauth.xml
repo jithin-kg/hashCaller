@@ -53,7 +53,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:text=""
+        android:text="Sending OTP"
         android:textAlignment="center"
         android:textColor="@color/textColor"
         android:textSize="16sp"
@@ -61,6 +61,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvVeirfyHead" />
+
     <com.chaos.view.PinView
         android:id="@+id/otpview"
         style="@style/PinWidget.PinView"
@@ -114,13 +115,14 @@
         android:id="@+id/tvDescResend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Didn't receive the OTP?"
+        android:layout_marginStart="32dp"
         android:visibility="invisible"
+        android:text="Didn't receive the OTP?"
         android:textColor="@color/textColor"
         app:layout_constraintBottom_toBottomOf="@+id/btnResend"
         app:layout_constraintEnd_toStartOf="@+id/btnResend"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnResend" />
 
@@ -129,16 +131,18 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text=""
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:enabled="false"
+        android:text="resend"
+        android:visibility="invisible"
         android:textColor="@color/colorPrimary"
         android:textStyle="bold"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/tvDescResend"
         app:layout_constraintTop_toBottomOf="@+id/verifyManually" />
+
     <ProgressBar
         android:id="@+id/pgBarOtpVerify"
         style="?android:attr/progressBarStyle"
@@ -168,8 +172,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/verifyManually" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

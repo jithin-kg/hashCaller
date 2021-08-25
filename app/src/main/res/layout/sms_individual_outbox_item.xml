@@ -42,7 +42,7 @@ out of the screen-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.hashcaller.view.utils.HorizontalDottedProgress
+    <com.hashcaller.app.view.utils.HorizontalDottedProgress
         android:id="@+id/dotedPgSMSSengingOutbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,5 +1,0 @@
-1   Internet checker is leaking memory
-2   check appear over other apps permission allowed in callreceiver or screening service
-    if not available show notification to request appear over other apps permission
-3   Call reason  in window.
-4

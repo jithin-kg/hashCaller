@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".view.ui.getstarted.GetStartedActivity">
+  >
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="28dp"
         android:gravity="center"
-        android:text="Caller Id That doesn't \n save your phone number"
+        android:text="Privacy does matter"
         android:textColor="@color/textColor"
         android:textSize="32sp"
         android:textStyle="bold"
@@ -59,6 +59,19 @@
         app:layout_constraintTop_toBottomOf="@+id/tvWelcome"
 
         />
+
+    <TextView
+        android:id="@+id/tvHFirst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="19sp"
+        android:alpha="0.70"
+        android:textColor="@color/textColor"
+        android:text="World's first hash based caller Id"
+        app:layout_constraintEnd_toEndOf="@+id/textView19"
+        app:layout_constraintStart_toStartOf="@+id/textView19"
+        app:layout_constraintTop_toBottomOf="@+id/textView19" />
 
     <TextView
         android:id="@+id/tvTermsAgree"
@@ -75,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textView19"
-        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+        app:layout_constraintTop_toBottomOf="@+id/tvHFirst" />
 
     <Button
         android:id="@+id/btnContinueGetStd"

@@ -8,7 +8,7 @@
     android:theme="@style/AppTheme"
     android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_block_manage_scene"
-    tools:context=".view.ui.manageblock.BlockManageActivity">
+    tools:context=".app.view.ui.manageblock.BlockManageActivity">
 
     <ImageButton
         android:id="@+id/imgBtnBackBlk"

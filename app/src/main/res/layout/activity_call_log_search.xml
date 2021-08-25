@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_call_log_search_scene2"
-    tools:context=".view.ui.call.search.CallLogSearchActivity">
+    tools:context=".app.view.ui.call.search.CallLogSearchActivity">
 
     <TextView
         android:id="@+id/tvCallSearchSmall"

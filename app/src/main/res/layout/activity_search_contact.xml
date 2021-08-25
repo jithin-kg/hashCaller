@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     app:layoutDescription="@xml/activity_search_contact_scene"
-    tools:context=".view.ui.contacts.search.SearchFragment">
+    tools:context=".app.view.ui.contacts.search.SearchFragment">
 
     <TextView
         android:id="@+id/tvCallSearchSmall"

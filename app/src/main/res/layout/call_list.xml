@@ -22,16 +22,17 @@
         android:background="@color/colorBackground"
         android:paddingTop="16dp">
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/pgBarCallItem"
-            android:layout_width="68dp"
-            android:layout_height="68dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:elevation="6dp"
-            android:fromDegrees="0"
+            app:indicatorSize="60dp"
+            app:trackColor="@color/colorPrimary"
+            app:indicatorColor="@color/colorBackground"
+            android:indeterminate="true"
+            app:trackThickness="2dp"
             android:gravity="center_vertical|center_horizontal"
-            android:toDegrees="180"
-
-            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
             app:layout_constraintEnd_toEndOf="@+id/textViewCrclr"
             app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
@@ -43,6 +44,7 @@
             android:layout_height="@dimen/circular_avatar_item_width"
             android:layout_marginStart="24dp"
             android:elevation="4dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical|center_horizontal"
             android:textColor="@color/colorWhite"
             android:textSize="24sp"

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/SplashTheme"
-    tools:context=".view.ui.FullscreenFragment">
+    tools:context=".app.view.ui.FullscreenFragment">
 
 <!--    android:background="?attr/fullscreenBackgroundColor"-->
 <!--    android:theme="@style/ThemeOverlay.HashCaller.FullscreenContainer"-->

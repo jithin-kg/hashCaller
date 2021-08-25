@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="?attr/actionBarSize"
     android:background="@color/colorBackground"
-    tools:context=".view.ui.search.SearchActivity">
+    tools:context=".app.view.ui.search.SearchActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutSearchMain"

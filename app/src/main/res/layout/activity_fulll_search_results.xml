@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.ui.contacts.search.FulllSearchResultsActivity">
+    tools:context=".app.view.ui.contacts.search.FulllSearchResultsActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewFullSearchResults"

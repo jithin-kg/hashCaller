@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_permission_request_scene"
-    tools:context=".view.ui.auth.PermissionRequestActivity">
+    tools:context=".app.view.ui.auth.PermissionRequestActivity">
 
     <!--    https://storyset.com/illustration/solidarity/rafiki-->
     <!--<a href="https://storyset.com/work">Work illustrations by Storyset</a>-->
