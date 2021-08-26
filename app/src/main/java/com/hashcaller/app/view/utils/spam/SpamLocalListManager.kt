@@ -14,7 +14,7 @@ object SpamLocalListManager{
     
     
     fun menuItemClickPerformed(menuItem: MenuItem?, bottomSheetDialog: BottomSheetDialog): Int {
-        bottomSheetDialog.radioGroup.clearCheck()
+        bottomSheetDialog.radioGroupOne.clearCheck()
         Log.d(IndividualSMSActivity.TAG, "onMenuItemClick: ")
 
 
@@ -47,7 +47,7 @@ object SpamLocalListManager{
         title: CharSequence,
         bottomSheetDialog: BottomSheetDialog
     ) {
-        bottomSheetDialog.radioGroup.clearCheck()
+        bottomSheetDialog.radioGroupOne.clearCheck()
         var titeString = title
         if(title.length > 4){
             titeString = title.substring(0, 5)

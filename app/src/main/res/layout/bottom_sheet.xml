@@ -417,7 +417,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.74"
-                android:text="JKL"
+                android:text="TUV"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/dialpad_character10sp"
                 app:layout_constraintEnd_toEndOf="@+id/textView8"

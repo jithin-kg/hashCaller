@@ -44,6 +44,7 @@ import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.vmadalin.easypermissions.EasyPermissions
+import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
 class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
@@ -66,6 +67,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //    private lateinit var imgExpand:ImageView
     private lateinit var radioScam:RadioButton
     private lateinit var radioSales:RadioButton
+    private lateinit var radioBusiness:RadioButton
+    private lateinit var radioPerson:RadioButton
+    private var radioGroupOne: RadioGroup? = null
+    private var radioGroupTwo: RadioGroup? = null
+
     private lateinit var btnBlock:Button
     private lateinit var tvSpamfeedbackMsg : TextView
     private lateinit var tvblockedFeedback : TextView
@@ -236,6 +242,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
         radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
         radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales) as RadioButton
+        radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness) as RadioButton
+        radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson) as RadioButton
+
+        radioGroupOne = bottomSheetDialog.findViewById<RadioGroup>(R.id.radioGroupOne) as RadioGroup
+        radioGroupTwo = bottomSheetDialog.findViewById<RadioGroup>(R.id.radioPersonOrBusiness) as RadioGroup
+
         btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock) as Button
         selectedRadioButton = radioScam
 //        imgExpand.setOnClickListener(this)
@@ -246,10 +258,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
 //        }
 
-        bottomSheetDialog.setOnDismissListener {
-            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
-
-        }
+//        bottomSheetDialog.setOnDismissListener {
+//            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+//
+//        }
     }
 
 
@@ -286,6 +298,8 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
         radioSales.setOnClickListener(this)
         radioScam.setOnClickListener(this)
+        radioBusiness.setOnClickListener(this)
+        radioPerson.setOnClickListener(this)
         btnBlock.setOnClickListener(this)
     }
 
@@ -377,40 +391,22 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         if(v is RadioButton){
             when(v.id){
                 R.id.radioScam -> {
-                    val checked = v.isChecked
-                    if (checked) {
-                        selectedRadioButton = radioScam
-                        Log.d(IndividualSMSActivity.TAG, "radio button clicked")
-                        this.spammerType = SPAMMER_TYPE_SCAM
+                    radioGroupTwo?.clearCheck()
+                    this.spammerType = SPAMMER_TYPE_SCAM
 
-//                                spinnerSelected.value = false
-
-
-                    }
                 }
                 R.id.radioSales -> {
+                    this.spammerType = SPAMMER_TYPE_SALES
+                    radioGroupTwo?.clearCheck()
 
-                    val checked = v.isChecked
-                    if (checked) {
-                        selectedRadioButton = radioSales
-                        this.spammerType = SPAMMER_TYPE_SALES
-                        Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
-//                                spinnerSelected.value = false
-
-                    }
                 }
                 R.id.radioBusiness -> {
-                    val checked = v.isChecked
-                    if (checked) {
-                        spammerType = Constants.SPAMMER_TYPE_BUSINESS
-                    }
+                    radioGroupOne?.clearCheck()
+                    spammerType = Constants.SPAMMER_TYPE_BUSINESS
                 }
                 R.id.radioPerson -> {
-                    val checked = v.isChecked
-                    if (checked) {
-                        spammerType = SPAMMER_TYPE_PEERSON
-
-                    }
+                    radioGroupOne?.clearCheck()
+                    spammerType = SPAMMER_TYPE_PEERSON
                 }
             }
         }

@@ -12,10 +12,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.RadioButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -32,6 +29,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.FragmentCallBinding
+import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.Constants.Companion.SPAMMER_TYPE_BUSINESS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.constants.IntentKeys
@@ -116,6 +115,10 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  var radioScam:RadioButton?= null
     private  var radioBusiness:RadioButton?= null
     private  var radioPerson:RadioButton?= null
+    private  var selectedRadioButton: RadioButton? = null
+    private var radioGroupOne: RadioGroup? = null
+    private var radioGroupTwo: RadioGroup? = null
+
     /************/
     var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
@@ -638,7 +641,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             R.id.btnBlock->{
                 blockMarkedCaller()
             }
-            R.id.radioSales, R.id.radioBusiness, R.id.radioScam,R.id.radioSales ->{
+            else ->{
                 setSpammerTypeBasedOnRadio(v)
             }
 
@@ -674,23 +677,31 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
 
 
-    private fun setSpammerTypeBasedOnRadio(v: View) {
-        when(v?.id){
-            R.id.radioSales-> {
-                this.spammerType = SPAMMER_TYPE_SALES
-            }
-            R.id.radioScam ->{
-                this.spammerType = SPAMMER_TYPE_SCAM
-            }
-            R.id.radioBusiness ->{
-                spammerType = SPAMMER_TYPE_BUSINESS
-            }
-            R.id.radioPerson ->{
-                spammerType  = SPAMMER_TYPE_PEERSON
-            }
+    private fun setSpammerTypeBasedOnRadio(v: View?) {
+        if(v is RadioButton){
+            when(v?.id){
+                R.id.radioSales-> {
+                    radioGroupTwo?.clearCheck()
+                    this.spammerType = SPAMMER_TYPE_SALES
+                }
+                R.id.radioScam ->{
+                    radioGroupTwo?.clearCheck()
+                    this.spammerType = SPAMMER_TYPE_SALES
+                }
+                R.id.radioBusiness ->{
+                    radioGroupOne?.clearCheck()
+                    spammerType = SPAMMER_TYPE_BUSINESS
+                }
+                R.id.radioPerson ->{
+                    radioGroupOne?.clearCheck()
+                    this.spammerType = SPAMMER_TYPE_PEERSON
+                }
 
+            }
         }
+
     }
+
 
 
 
@@ -719,19 +730,22 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
 //        selectedRadioButton = bottomSheetDialog.radioScam
-        radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness)
-        radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson)
-        radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales)
-        radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam)
+        radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness) as RadioButton
+        radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson) as RadioButton
+        radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales) as RadioButton
+        radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
+
+        radioGroupOne = bottomSheetDialog.findViewById<RadioGroup>(R.id.radioGroupOne) as RadioGroup
+        radioGroupTwo = bottomSheetDialog.findViewById<RadioGroup>(R.id.radioPersonOrBusiness) as RadioGroup
+
         btnBlock = bottomSheetDialog.findViewById(R.id.btnBlock)
-//        bottomSheetDialog.imgExpand.setOnClickListener(this)
+        selectedRadioButton = radioScam
 
-        
 
-        bottomSheetDialog.setOnDismissListener {
-            Log.d(TAG, "bottomSheetDialogDismissed")
-
-        }
+//        bottomSheetDialog.setOnDismissListener {
+//            Log.d(TAG, "bottomSheetDialogDismissed")
+//
+//        }
 
 
     }
