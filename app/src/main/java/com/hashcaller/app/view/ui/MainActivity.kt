@@ -226,8 +226,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                        setDefaultFragment(DefaultFragmentManager.id)
                        ft.detach(callFragment)
                        ft.attach(callFragment)
-                       ft.detach(smsFragment)
-                       ft.attach(smsFragment)
+//                       ft.detach(smsFragment)
+//                       ft.attach(smsFragment)
                        ft.detach(contactFragment)
                        ft.attach(contactFragment)
 //                       ft.detach(searchFragment)
@@ -570,7 +570,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
 
-            this.smsFragment = SMSContainerFragment()
+//            this.smsFragment = SMSContainerFragment()
 //            this.blockConfigFragment = BlockConfigFragment()
             this.contactFragment = ContactsContainerFragment()
             this.callFragment = CallFragment()
@@ -591,6 +591,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            addAllFragments()
 
         }else{
+            setFragmentsFromSavedInstanceState(savedInstanceState)
 
 //            setFragmentsFromSavedInstanceState(savedInstanceState)
 //            this.ft = supportFragmentManager.beginTransaction()
@@ -648,10 +649,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
 //        this.fullScreenFragment = supportFragmentManager.getFragment(savedInstanceState, "fullScreenFragment") as FullscreenFragment
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
-        this.smsFragment = supportFragmentManager.getFragment(
-            savedInstanceState,
-            "messagesFragment"
-        ) as SMSContainerFragment
+//        this.smsFragment = supportFragmentManager.getFragment(
+//            savedInstanceState,
+//            "messagesFragment"
+//        ) as SMSContainerFragment
 //        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
         this.contactFragment = supportFragmentManager.getFragment(
             savedInstanceState,
@@ -735,7 +736,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        supportFragmentManager.putFragment(outState, "fullScreenFragment", this.fullScreenFragment)
         supportFragmentManager.putFragment(outState, "contactFragment", this.contactFragment)
         supportFragmentManager.putFragment(outState, "dialerFragment", this.dialerFragment)
-        supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
+//        supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
 //        supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
         supportFragmentManager.putFragment(outState, "blockListFragment", this.blockListFragment)
         supportFragmentManager.putFragment(outState, "smsSearchFragment", this.smsSearchFragment)
@@ -781,9 +782,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
             callFragment.isDefaultFgmnt = true
         }
-        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
-            smsFragment.isDefaultFgmnt = true
-        }
+//        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
+//            smsFragment.isDefaultFgmnt = true
+//        }
         else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CONTACT_FRAGMENT){
             contactFragment.isDefaultFgmnt = true
         }
@@ -804,7 +805,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         val ft = supportFragmentManager.beginTransaction()
         callFragment.clearMarkeditems()
-        smsFragment.clearMarkeditems()
+//        smsFragment.clearMarkeditems()
 
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
 
@@ -881,8 +882,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.add(R.id.frame_fragmentholder, dialerFragment)
         hideThisFragment(ft, dialerFragment, dialerFragment)
 
-        ft.add(R.id.frame_fragmentholder, smsFragment)
-        hideThisFragment(ft, smsFragment, smsFragment)
+//        ft.add(R.id.frame_fragmentholder, smsFragment)
+//        hideThisFragment(ft, smsFragment, smsFragment)
 
 
 //        bottomNavigationView!!.selectedItemId = R.id.bottombaritem_calls
@@ -968,7 +969,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             mainViewmodel.setActiveFragment(contactFragment)
 //            unMarkItems()
 
-            smsFragment.showSearchView()
+//            smsFragment.showSearchView()
         }
 //         if(searchFragment!=null)
 //             if(searchFragment!!.isAdded){
@@ -1040,16 +1041,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            smsSearchFragment.
 //        }
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
-        if (smsFragment.isAdded) { // if the fragment is already in container
-//            ft.addToBackStack(messagesFragment.javaClass.name)
-            ft.show(smsFragment)
-            mainViewmodel.setActiveFragment(smsFragment)
-
-
-//            setDefaultFragment(R.id.bottombaritem_messages)
-        binding.bottomNavigationView.beVisible()
-        binding.navView.beVisible()
-        }
+//        if (smsFragment.isAdded) { // if the fragment is already in container
+////            ft.addToBackStack(messagesFragment.javaClass.name)
+//            ft.show(smsFragment)
+//            mainViewmodel.setActiveFragment(smsFragment)
+//
+//
+////            setDefaultFragment(R.id.bottombaritem_messages)
+//        binding.bottomNavigationView.beVisible()
+//        binding.navView.beVisible()
+//        }
         // Hide fragment B
 //        if (blockConfigFragment.isAdded) {
 //            ft.hide(blockConfigFragment)
@@ -1179,20 +1180,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 //            fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
-        }else if(smsFragment.isVisible){
-            if(smsFragment.getMarkedItemsSize() > 0){
-//                unMarkItems()
-                lifecycleScope.launchWhenCreated {
-                    smsFragment.clearMarkeditems()
-                }
-//                markingStarted = false
-            }
-            else{
-//                super.onBackPressed()
-                finishAfterTransition()
-            }
-
         }
+//        else if(smsFragment.isVisible){
+//            if(smsFragment.getMarkedItemsSize() > 0){
+////                unMarkItems()
+//                lifecycleScope.launchWhenCreated {
+//                    smsFragment.clearMarkeditems()
+//                }
+////                markingStarted = false
+//            }
+//            else{
+////                super.onBackPressed()
+//                finishAfterTransition()
+//            }
+//
+//        }
         else if(callFragment.isVisible){
             if(callFragment.getMarkedItemsSize() > 0){
                 lifecycleScope.launchWhenCreated {
@@ -1387,10 +1389,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             REQUEST_CODE_READ_CONTACTS ->{
 
             }
-            REQUEST_CODE_READ_SMS ->{
-                fetchSMSOnCreate = true
-                detachAndAttachFragment(smsFragment)
-            }
+//            REQUEST_CODE_READ_SMS ->{
+//                fetchSMSOnCreate = true
+//                detachAndAttachFragment(smsFragment)
+//            }
 
 
         }
