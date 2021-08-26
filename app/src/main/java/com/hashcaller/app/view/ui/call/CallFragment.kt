@@ -266,7 +266,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     showSearchView()
                 }
                 else ->{
-                    showDeleteBtnInToolbar(it.size)
+                    showBlockBtnInToolbar(it.size)
                 }
 
             }
@@ -296,8 +296,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private fun initListeners() {
 
         binding.imgBtnCallTbrBlock.setOnClickListener(this)
-//        binding.imgBtnCallTbrMuteCaller.setOnClickListener(this)
-//        binding.imgBtnCallTbrDelete.setOnClickListener(this)
         binding.fabBtnShowDialpad.setOnClickListener(this)
         binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
         binding.imgBtnCallSearch.setOnClickListener(this)
@@ -316,11 +314,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  suspend fun observeCallLog() {
         viewmodel?.callLogs?.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
-//                viewmodel.updateCAllLogLivedata(logs)
-//                viewmodel.setAdditionalInfo(logs)
                 viewmodel?.updateDatabase(logs, context?.applicationContext)
-//                binding.shimmerViewContainerCall.stopShimmer()
-//                binding.shimmerViewContainerCall.beGone()
                 binding.pgBarCall.beGone()
             }
         })
@@ -347,7 +341,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     if(!fullDataFromCproviderFetched){
                         Log.d(TAG, "onScrolled: getting next page")
                         if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
-                            //we have reached the bottom
                             pageCall+=10
 //                            viewmodel.getNextPage()
                             if(dy > 0){
@@ -358,7 +351,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     }
 
                 }
-//                }
             }
         })
     }
@@ -381,8 +373,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             isScreeningApp = ( activity as AppCompatActivity).isScreeningRoleHeld()
         }
-
-//        this.permissionGivenLiveData.value  = checkContactPermission()
     }
 
     private suspend fun initViewModel() {
@@ -433,14 +423,11 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d(TAG, "onDestroyView: ")
-//        viewmodel.callLogTableData?.removeObserver(this)
         viewmodel = null
     }
 
 
     private fun initRecyclerView() {
-
         binding.rcrViewCallHistoryLogs.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as CustomLinearLayoutManager
@@ -467,104 +454,17 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             }
             adapter = callLogAdapter
             itemAnimator = null
-
         }
     }
 
 
 
     private fun toggleExpandableView(v: View, pos: Int) {
-
     }
-
-//    private fun makeCall(callLog: CallLogData) {
-//
-//        val num = callLog.number
-//
-//        if(num.isNotEmpty())  {
-//
-//
-//            val intent =
-//                Intent(Intent.ACTION_CALL, Uri.parse("tel:${callLog.number}"))
-//            val simSlotIndex = 1 //Second sim slot
-//
-//
-////            try {
-////                val getSubIdMethod =
-////                    SubscriptionManager::class.java.getDeclaredMethod(
-////                        "getSubId",
-////                        Int::class.javaPrimitiveType
-////                    )
-////                getSubIdMethod.isAccessible = true
-////                val subIdForSlot = (getSubIdMethod.invoke(
-////                    SubscriptionManager::class.java,
-////                    simSlotIndex
-////                ) as LongArray)[0]
-////                val componentName = ComponentName(
-////                    "com.android.phone",
-////                    "com.android.services.telephony.TelephonyConnectionService"
-////                )
-////                val phoneAccountHandle =
-////                    PhoneAccountHandle(componentName, 0.toString())
-////                intent.putExtra("android.telecom.extra.PHONE_ACCOUNT_HANDLE", phoneAccountHandle)
-////            } catch (e: Exception) {
-////                e.printStackTrace()
-////            }
-////
-////            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-////            requireActivity()!!.startActivity(intent)
-//
-//
-//
-//            val callIntent = Intent(Intent.ACTION_CALL)
-//            callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//            callIntent.data = Uri.parse("tel:$num")
-//            requireActivity().startActivity(callIntent)
-//
-////            callIntent.putExtra("com.android.phone.extra.slot", 0); //For sim 1
-////           callIntent.putExtra("simSlot", 0)
-////
-//        }
-//    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-
-
     }
-
-
-    private fun addFragmentDialer() {
-
-       val  ft = childFragmentManager.beginTransaction()
-        ft?.add(R.id.frameFragmentDialer, dialerFragment)
-        ft.replace(R.id.frameFragmentDialer, dialerFragment).commit();
-
-    }
-
-
-
-    private fun intialize() {
-//        fabBtnShowDialpad?.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_baseline_add_24))
-//        fabBtnShowDialpad?.setOnClickListener(this as View.OnClickListener)
-//        layoutBottomSheet = callFragment!!.findViewById(R.id.bottom_sheet)
-    }
-
-    private fun toggleBottomNavView() {
-        val bottomNavigation =
-            requireActivity().findViewById<View>(R.id.bottomNavigationView)
-
-        if (bottomNavigation.visibility == View.VISIBLE) {
-            bottomNavigation.visibility = View.INVISIBLE
-//            fabBtnShowDialpad.hide()
-            //            bottomSheetBehavior.setPeekHeight((Resources.getSystem().getDisplayMetrics().heightPixels)/2);
-            return
-        }
-        bottomNavigation.visibility = View.VISIBLE
-//        fabBtnShowDialpad.show()
-    }
-
     
 
     companion object {
@@ -583,33 +483,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         Log.d(TAG, "onClick: ")
         when (v?.id) {
             R.id.btnCallFragmentPermission ->{
-//                methodRequiresTwoPermission()
                 requestRequiredPermissions()
             }
-//            R.id.fabBtnShowDialpad-> {
-//                Log.d(TAG, "onClick: show dialpad button clicked")
-////                if (bottomSheetBehavior?.state != BottomSheetBehavior.STATE_EXPANDED) {
-//////                    toggleBottomNavView()
-////                    bottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-////                    Log.d(TAG, "onClick:  hiding")
-////                }
-//                showDialerFragment()
-////                else{
-////                    Log.d(TAG, "onClick: expanding")
-////                    bottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-////                }
-//
-//            }else->{
-//            Log.d(TAG, "onClick: clicked ")
-//        }
-            R.id.btnCallFragmentPermission->{
-//                val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
-//                Log.d(TAG, "onClick: res is $res")
-//                this.permissionGivenLiveData.value = res
-            }
-//            R.id.imgBtnCallTbrDelete->{
-//                deletemarkedLogs()
-//            }
+
             R.id.imgBtnCallTbrMuteCaller ->{
                 muteMarkedCaller()
             }
@@ -620,22 +496,13 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 unmuteUser()
             }
             R.id.fabBtnShowDialpad ->{
-//                viewmodel?.clearCallLogDB()
-//                context?.startActivityIncommingCallView( "100101")
-
                 (activity as MainActivity).showDialerFragment()
             }
             R.id.imgBtnCallSearch ->{
                 activity?.startSearchActivity()
-//                val intent = Intent(activity, BlockManageActivity::class.java)
-//                startActivity(intent)
-//                val popup = (requireActivity() as AppCompatActivity).getMyPopupMenu(R.menu.call_fragment_popup_menu, imgBtnCallTbrMore)
-//                popup.setOnMenuItemClickListener(this)
-//                popup.show()
             }
             R.id.imgBtnHamBrgerCalls ->{
                 (activity as MainActivity).showDrawer()
-//                requireContext().startSettingsActivity(activity)
             }
 
             R.id.btnBlock->{
@@ -644,10 +511,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             else ->{
                 setSpammerTypeBasedOnRadio(v)
             }
-
-
-
-
         }
 
     }
@@ -662,18 +525,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             .negativeButtonText("Cancel")
             .build()
         EasyPermissions.requestPermissions(requireActivity(), request)
-        
     }
-
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int, permissions: Array<String>,
-//        grantResults: IntArray
-//    ) {
-//
-//    }
-    
-
-
 
 
 
@@ -779,9 +631,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     private fun blockMarkedCaller() {
-
         this.viewmodel?.blockThisAddress(
-            this.spammerType, context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
+            this.spammerType,
+            context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
                 when(it){
                     ON_COMPLETED -> {
                         viewmodel?.clearMarkedItems()
@@ -824,57 +676,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         get() = isDflt
         set(value) {isDflt = value}
 
-//    override fun onLongPressed(view: View, pos: Int, id: Long, address: String): Int {
-//        val expandedView = getExpandedLayoutView()
-//        expandedView?.beGone()
-//        markItem(id, pos)
-//
-//        if(viewmodel.markedItems.value!!.contains(id)){
-//            return UNMARK_ITEM
-//        }else{
-//            return MARK_ITEM
-//        }
-//
-//    }
-
-//    override fun onCallButtonClicked(view: View, type: Int, log: CallLogTable) {
-//
-//        when(type){
-//            INTENT_TYPE_MAKE_CALL->{
-//                requireContext().makeCall(log.number)
-//            }
-//            INTENT_TYPE_START_INDIVIDUAL_SMS ->{
-//                val intent = Intent(context, IndividualSMSActivity::class.java )
-//                val bundle = Bundle()
-//                bundle.putString(CONTACT_ADDRES, log.number)
-//                bundle.putString(SMS_CHAT_ID, "")
-//
-//                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//                intent.putExtras(bundle)
-//                startActivity(intent)
-//            }
-//            INTENT_TYPE_MORE_INFO -> {
-//                val intent = Intent(context, IndividualCotactViewActivity::class.java )
-//                intent.putExtra(com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID, log.number)
-//                intent.putExtra("name", log.name )
-//                intent.putExtra("photo", "")
-////                intent.putExtra("color", log.color)
-//
-//                val pairList = ArrayList<android.util.Pair<View, String>>()
-//                val p1 = android.util.Pair(imgViewUserPhoto as View,"contactImageTransition")
-//                val p2 = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
-////                pairList.add(p1)
-//                pairList.add(p2)
-//                val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0] )
-//                options.toBundle()
-//
-//                startActivity(intent, options.toBundle())
-//            }
-//
-//
-//
-//        }
-//    }
 
 
 
@@ -887,7 +688,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         clickType: Int,
         visibility: Int
     ): Int {
-        Log.d(TAG, "onCallLog item clicked: $id")
         when(clickType){
             TYPE_CLICK_SCREENING_ROLE -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -1097,7 +897,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
                       }
                       IS_NOT_MUTED_ADDRESS ->{
-
                           binding.imgBtnCallUnMuteCaller.beInvisible()
 //                          binding.imgBtnCallTbrMuteCaller.beVisible()
                       }
@@ -1109,22 +908,14 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     }
 
-    private fun showDeleteBtnInToolbar(count: Int) {
-        Log.d(TAG, "showDeleteBtnInToolbar: ")
+    private fun showBlockBtnInToolbar(count: Int) {
         updateSelectedItemCount(count)
         binding.imgBtnCallSearch.beInvisible()
-        if(count==1){ //only show block button if only one item marked
             binding.imgBtnCallTbrBlock.beVisible()
 
-        }else{
-            binding.imgBtnCallTbrBlock.beInvisible()
-
-        }
         if(isScreeningApp){
 //            binding.imgBtnCallTbrMuteCaller.beVisible()
-
         }
-//        binding.imgBtnCallTbrDelete.beVisible()
         binding.imgBtnCallSearch.beInvisible()
         binding.tvVHashcaller.beInvisible()
         binding.imgBtnHamBrgerCalls.beInvisible()
@@ -1143,8 +934,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
         binding.imgBtnCallTbrBlock.beInvisible()
         binding. imgBtnCallTbrMuteCaller.beInvisible()
-//        binding.imgBtnCallTbrDelete.beInvisible()
-//        binding.imgBtnCallTbrMore.beInvisible()
         binding.tvCallSelectedCount.beInvisible()
         binding.imgBtnCallUnMuteCaller.beInvisible()
         binding.pgBarDeleting.beInvisible()
@@ -1206,7 +995,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 viewmodel?.unmute()
             }
             OPERTION_DELETE ->{
-
             }
         }
     }

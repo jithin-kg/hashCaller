@@ -1403,19 +1403,12 @@ class SMSLocalRepository(
                             var num =
                                 cursor.getString(cursor.getColumnIndexOrThrow("address"))
                             num = num.replace("+", "")
-                            //                    objSMS.address = num
-
                             objSMS.type =
                                 cursor.getInt(cursor.getColumnIndexOrThrow("type"))
 
                             var msg =
                                 cursor.getString(cursor.getColumnIndexOrThrow("body"))
                             objSMS.msgString = msg
-
-                            //
-
-                           /// setSpannableStringBuilder(objSMS, searchQuery, msg, num) //calling
-                            // spannable string builder function to setup spannable string builder
                             objSMS.addressString = num.replace("+", "")
                             objSMS.addressString = formatPhoneNumber(num)
                             objSMS.nameForDisplay = objSMS.addressString!!
@@ -1443,7 +1436,6 @@ class SMSLocalRepository(
                                     objSMS.spammerType = r.spammerType
 
                             }
-//                            setSMSHashMap(objSMS)
                             listOfMessages.add(objSMS)
                         } catch (e: Exception) {
                             Log.d(TAG, "getSMSForSpammList: $e")
@@ -1456,12 +1448,8 @@ class SMSLocalRepository(
 
                 }
 
-                //        data = sortAndSet(listOfMessages)
                 data.addAll(listOfMessages)
-                //        setAdditionalData(data)
                 scope.launch {
-//                    val r1 =  async {  setSMSReadStatus(data) }
-                    //        setSpamDetails(data)
                     val r2 = async {  setNameIfExistInContactContentProvider(data) }
 //                    r1.await()
                     r2.await()
@@ -1472,10 +1460,6 @@ class SMSLocalRepository(
 
             }
         }.join()
-
-
-
-
         return data
     }
 
@@ -1484,10 +1468,6 @@ class SMSLocalRepository(
      */
     suspend fun markAsSpam(contactAddress: String)   = withContext(Dispatchers.IO){
        val formatedAddress = formatPhoneNumber(contactAddress)
-
-//        smsThreadsDAO?.find(formatedAddress).apply {
-//            if(this!=null) {
-
         val res  = smsThreadsDAO?.find(formatedAddress)
         if(res!=null){
             var spamCount = res.spamCount
@@ -1496,33 +1476,9 @@ class SMSLocalRepository(
 
 
         }
-//            }
-//        }
-//        smssendersInfoDAO!!.find(formatPhoneNumber(contactAddress)).apply {
-//            if(this!=null){
-//                name = this.name
-//                spamCount = this.spamReportCount
-//
-//            }
-//
-//            spamCount+=1
-//            val info = SMSSendersInfoFromServer(contactAddress, 0,name, Date(), spamCount)
-//            val list = listOf<SMSSendersInfoFromServer>(info)
-//
-//            smssendersInfoDAO!!.insert(list)
-//            pageOb.page = 0
-
 
     }
-    suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>?  = withContext(Dispatchers.IO){
-        var retrofitService:ISpamService? = null
 
-        retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-        var result:Response<NetWorkResponse>? = null
-        val token = tokenHelper?.getToken()
-         result = token?.let { retrofitService?.report(callerInfo, it) }
-        return@withContext result
-    }
 
 
     @SuppressLint("LongLogTag")

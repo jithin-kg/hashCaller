@@ -192,12 +192,6 @@ var markedViewsLiveData:MutableLiveData<View> = MutableLiveData()
 //            spamRepository?.save(SpammerInfo(null, contactAddress, spammerType!!, spammerCategory, threadID ))
            smsLocalRepository.saveSpamReportedByUser(contactAddress, threadID, spammerType)
         }
-       async {
-           spamRepository?.report(ReportedUserDTo(
-               formatPhoneNumber(contactAddress), " ",
-               spammerType.toString()
-           ))
-       }
 
 
         /**

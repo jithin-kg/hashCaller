@@ -301,20 +301,18 @@ class CallContainerViewModel(
 
     fun blockThisAddress(spammerType: Int, applicationContext: Context?) : LiveData<Int> = liveData {
 
-        contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
-        if (contactAddress.isNotEmpty()) {
+        val markedItems = markeditemsHelper.getMarkedItems()
+        if (markedItems.isNotEmpty()) {
             viewModelScope.launch {
                 supervisorScope {
-                    val as1 = async { repository?.marAsReportedByUser(contactAddress) }
+                    val as1 = async { repository?.marAsReportedByUser(markedItems) }
 
                     val as2 = async {
-                        blockListPatternRepository.insertPattern(
-                           contactAddress,
-                            EXACT_NUMBER )
-                    }
-                    val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
-                    val as3 = async { applicationContext?.startSpamReportWorker(contactAddress, spammerType) }
+                        addAddressToPatternsTable(markedItems)
 
+                    }
+//                    val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
+                    val as3 = async { startSpamReportWorker(markedItems, applicationContext, spammerType) }
                     try {
                         as1.await()
                     } catch (e: Exception) {
@@ -330,11 +328,11 @@ class CallContainerViewModel(
                     } catch (e: Exception) {
                         Log.d(TAG, "blockThisAddress: $e")
                     }
-                    try{
-                        as4.await()
-                    }catch (e:Exception){
-                        Log.d(TAG, "blockThisAddress: $e")
-                    }
+//                    try{
+//                        as4.await()
+//                    }catch (e:Exception){
+//                        Log.d(TAG, "blockThisAddress: $e")
+//                    }
 
                     generalBlockRepository.marAsReportedByUserInCall(contactAddress)
                     generalBlockRepository.marAsReportedByUserInSMS(contactAddress)
@@ -346,6 +344,31 @@ class CallContainerViewModel(
 
             emit(ON_COMPLETED)
 
+        }
+    }
+
+    private suspend fun startSpamReportWorker(
+        markedItems: List<String>,
+        applicationContext: Context?,
+        spammerType: Int
+    ) {
+        var commanSeperatedNumbers = ""
+        for((count, num) in markedItems.withIndex()){
+            if(count == markedItems.size -1){
+                commanSeperatedNumbers += "$num"
+            }else {
+                commanSeperatedNumbers += "$num,"
+            }
+        }
+        val list = commanSeperatedNumbers.split(",")
+        applicationContext?.startSpamReportWorker(commanSeperatedNumbers, spammerType)
+    }
+
+    private suspend fun addAddressToPatternsTable(markedItems: List<String>) {
+        for (num in markedItems){
+            blockListPatternRepository.insertPattern(
+                num,
+                EXACT_NUMBER )
         }
     }
 

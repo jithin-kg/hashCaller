@@ -651,13 +651,16 @@ class CallContainerRepository(
         callLogDAO?.updateWitCproviderInfo(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(number), countryISO), nameAndThumbnailFromCp.name, nameAndThumbnailFromCp.thumbnailUri )
     }
 
-    suspend fun marAsReportedByUser(contactAddress: String) {
-        val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
+    suspend fun marAsReportedByUser(contactAddressList: List<String>) {
+        for(num in contactAddressList){
+            val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(num), countryISO)
+            callLogDAO?.markAsReportedByUser(formatedAdders, 1)
+        }
 //       val log =  callLogDAO?.findOne(formatedAdders)
 //        if(log!=null){
 //            var spamCount = log.spamCount
 //            spamCount += 1
-            callLogDAO?.markAsReportedByUser(formatedAdders, 1)
+
 //        }
     }
 

@@ -12,4 +12,7 @@ interface IMutedSendersDAO {
 
     @Query("SELECT * FROM muted_senders WHERE address LIKE '%'|| :address || '%'")
     suspend fun find(address:String):MutedSenders?
+
+    @Query("DELETE FROM muted_senders")
+    suspend fun deleteAll()
 }

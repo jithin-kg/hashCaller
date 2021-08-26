@@ -28,32 +28,6 @@ class IncommingCallViewModel(
 
 
 
-    fun report(phoneNumber: String, packageName: String) = liveData(Dispatchers.IO) {
-                emit(Resource.loading(data=null))
-        var res: Response<NetWorkResponse>? = null
-             try {
-                    var number:String = formatPhoneNumber(phoneNumber)
-                    var hash:String? = Secrets().managecipher(packageName, number)
-//                    hash = hashUsingArgon(hash)
-                    hash?.let {
-                        res = spamNetworkRepository.report(ReportedUserDTo(
-                            it,
-                            "",
-                            ""
-                        ))
-
-                        emit(Resource.success(data = res?.body()));
-                    }
-
-
-             }catch (e:Exception){
-                 Log.d(TAG, "response: $res");
-                 Log.d(TAG, "execption : $e");
-                     emit(Resource.error(null, message ="Error Occurred!" ))
-             }
-
-
-    }
 
 
 

@@ -18,4 +18,7 @@ interface IMutedCallersDAO {
      suspend fun delete(contactAdders: String)
      @Query("SELECT * FROM muted_callers")
       fun get(): Flow<List<MutedCallers>>
+
+    @Query("DELETE FROM muted_callers")
+    suspend fun deleteAll()
 }

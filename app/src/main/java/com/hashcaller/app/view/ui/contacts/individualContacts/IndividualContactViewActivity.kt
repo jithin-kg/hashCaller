@@ -171,26 +171,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             phoneNum
          )).get(GeneralblockViewmodel::class.java)
     }
-
-    private fun getinfoFromServer() {
-//        viewModel.getInfoFromServer(phoneNum).observe(this, Observer {
-//            binding.tvSimValue.text = it.carrier
-//        })
-//        viewModel.infoFromServer?.observe(this, Observer {
-//            it.let {
-//                if(it!=null){
-//                    binding.tvSimCardValue.text = it.carrier
-//                    binding.tvLocationValues.text = it.location
-//                    binding.tvSpamCountValue.text = it.spamCount.toString()
-//                   // binding.tvSimValue.text = it.carrier
-//                    //binding.tvLocationValue.text = "large location value foferdsjshdfkljhsdflksjdfh skjdfh"
-//                    //binding.tvIndividualCntSpamCount.text = it.spamCount.toString()
-//                }
-//            }
-//        })
-    }
-
-
     @SuppressLint("LongLogTag")
     private fun setClearImage(photoURI: String?) {
         binding.tvName.text = name

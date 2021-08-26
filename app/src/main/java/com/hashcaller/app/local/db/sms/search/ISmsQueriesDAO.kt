@@ -15,4 +15,7 @@ interface ISmsQueriesDAO {
     suspend fun delete(query: String)
     @Query("SELECT * FROM sms_search_queries")
     suspend fun getAll(): List<SmsSearchQueries>
+
+    @Query("DELETE from sms_search_queries")
+    suspend fun deleteAll()
 }

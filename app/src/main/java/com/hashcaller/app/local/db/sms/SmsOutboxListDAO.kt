@@ -13,4 +13,7 @@ interface SmsOutboxListDAO {
 
     @Query("DELETE from sms_outbox WHERE id=:id")
     suspend fun delete(id: String?)
+
+    @Query("DELETE from sms_outbox")
+    suspend fun deleteAll()
 }

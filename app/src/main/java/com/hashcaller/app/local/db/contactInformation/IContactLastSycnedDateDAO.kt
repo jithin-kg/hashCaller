@@ -20,7 +20,7 @@ interface IContactLastSycnedDateDAO {
      fun getLastSyncedDate(): ContactLastSyncedDate
 
     @Query("DELETE FROM contact_last_synced_date")
-     fun delteAll()
+     suspend fun delteAll()
 //WHERE number LIKE '%'|| :phonNumber || '%'
     /**
      * Do not return Live data while searching, because live data observe to change,

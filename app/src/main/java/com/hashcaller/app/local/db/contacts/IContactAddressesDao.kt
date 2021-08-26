@@ -21,4 +21,7 @@ interface IContactAddressesDao {
     @Query("SELECT * FROM contact_addresses_for_searching WHERE number =:number")
     suspend fun find(number: String):ContactAddresses?
 
+    @Query("DELETE from contact_addresses_for_searching")
+    fun deleteAll()
+
 }

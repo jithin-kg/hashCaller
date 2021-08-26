@@ -10,13 +10,13 @@ import com.hashcaller.app.Secrets
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.spam.ISpamService
-import com.hashcaller.app.network.spam.ReportedUserDTo
+import com.hashcaller.app.network.spam.SpamNumbersDTO
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ADDRES
 import com.hashcaller.app.view.ui.contacts.utils.SHARED_PREFERENCE_TOKEN_NAME
-import com.hashcaller.app.view.ui.sms.individual.util.SPAMMER_TYPE_SCAM
+import com.hashcaller.app.view.ui.sms.individual.util.SPAMMER_TYPE_NOT_SPECIFIC
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.Dispatchers
@@ -34,24 +34,36 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryCodeHelper = CountrycodeHelper(context)
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        val num = inputData.getString(CONTACT_ADDRES)
+        val commaSeperatedNums = inputData.getString(CONTACT_ADDRES)
+        val numsList = commaSeperatedNums?.split(",")
+        val hashedNumsList : MutableList<String>  = mutableListOf()
         val countryIso = countryCodeHelper.getCountryISO()
-        var hasehdNum:String? = num?.let { libCountryHelper.getES164Formatednumber(formatPhoneNumber(it), countryIso) }?.let { Secrets().managecipher(context.packageName, it) }
-//        hasehdNum = hashUsingArgon(hasehdNum)
-        val spammerType = inputData.getInt( Constants.SPAMMER_TYPE, SPAMMER_TYPE_SCAM)
-        val report = hasehdNum?.let { ReportedUserDTo(it, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),) }
-//        repository.report(report)
-        try {
-            val tokenHelper = TokenHelper( FirebaseAuth.getInstance().currentUser)
-            val token = tokenHelper?.getToken()
-           val response = token?.let { report?.let { it1 -> retrofitService?.report(it1, it) } }
-            if(response?.code() in 500..599){
+        if (numsList != null) {
+            for(num in numsList){
+                var hasehdNum:String? = num?.let { libCountryHelper.getES164Formatednumber(formatPhoneNumber(it), countryIso) }?.let { Secrets().managecipher(context.packageName, it) }
+                if (hasehdNum != null) {
+                    hashedNumsList.add(hasehdNum)
+                }
+            }
+        }
+
+        val spammerType = inputData.getInt( Constants.SPAMMER_TYPE, SPAMMER_TYPE_NOT_SPECIFIC)
+        if(hashedNumsList.isNotEmpty()){
+            try {
+                val report = SpamNumbersDTO(hashedNumsList, CountrycodeHelper(context).getCountrycode(), spammerType.toString(),)
+                val tokenHelper = TokenHelper( FirebaseAuth.getInstance().currentUser)
+                val token = tokenHelper?.getToken()
+                val response = token?.let { report?.let { it1 -> retrofitService?.report(it1, it) } }
+                if(response?.code() in 500..599){
+                    return@withContext Result.retry()
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "doWork: ")
                 return@withContext Result.retry()
             }
-        } catch (e: Exception) {
-            Log.d(TAG, "doWork: ")
-            return@withContext Result.retry()
         }
+//        repository.report(report)
+
 
         return@withContext Result.success()
     }

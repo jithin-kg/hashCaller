@@ -41,15 +41,6 @@ class SmsContainerViewModel(
         async {
             repository?.save(contactAddress, 1, "", "" )
         }
-
-        async {
-            repository?.report(
-                ReportedUserDTo(contactAddress, " ",
-                spammerType.toString()
-            )
-            )
-        }
-
     }
 
     fun deleteAllSmsindb() = viewModelScope.launch{

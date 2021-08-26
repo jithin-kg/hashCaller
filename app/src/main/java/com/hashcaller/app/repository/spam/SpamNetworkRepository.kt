@@ -20,21 +20,6 @@ class SpamNetworkRepository(
 ){
 
     private var retrofitService:ISpamService? = null
-    @SuppressLint("LongLogTag")
-
-    suspend fun report(callerInfo: ReportedUserDTo): Response<NetWorkResponse>? {
-        retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-
-        val tokenManager = TokenManager(dataStoreRepository)
-        val token = tokenManager.getDecryptedToken()
-
-//        val response = retrofitService?.search(SearchDTO(phoneNum), token)
-//        Log.d(TAG, "signup: ${response?.body()?.message}")
-
-
-//        return response
-         return retrofitService?.report(callerInfo, token)
-    }
 
     suspend fun save(spammerInfo: SpammerInfo){
 //        spamListDAO?.insert(spammerInfo)

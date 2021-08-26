@@ -17,9 +17,11 @@ interface ISpamService {
 
     @POST("spam/report")
     suspend fun report(
-        @Body userInfo :ReportedUserDTo,
+        @Body userInfo: SpamNumbersDTO,
         @Header ("Authorization") token:String
     ):Response<NetWorkResponse>
+
+
 
 
     @POST("spam/getReleventSpamInfo")

@@ -219,9 +219,20 @@ class ContactLocalSyncRepository(
     suspend fun deleteAllitems()   = withContext(Dispatchers.IO){
         contactLisDAO?.delete()
         HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).spamListDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).blocklistDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).spamListDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).smsDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).contactInformationDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).contactLastSyncedDateDAO().delteAll()
+        HashCallerDatabase.getDatabaseInstance(context).mutedSendersDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).blockedOrSpamSendersDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).smsSearchQueriesDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO().deleteAll()
         HashCallerDatabase.getDatabaseInstance(context).callLogDAO().deleteAll()
         HashCallerDatabase.getDatabaseInstance(context).smsThreadsDAO().deleteAll()
-
+        HashCallerDatabase.getDatabaseInstance(context).userHashedNumDAO().deleteAll()
+        HashCallerDatabase.getDatabaseInstance(context).hashedContactsDAO().deleteAll()
     }
 
     @SuppressLint("LongLogTag")

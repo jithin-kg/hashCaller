@@ -123,13 +123,7 @@ class SMScontainerRepository(
 
     }
 
-    suspend fun report(callerInfo: ReportedUserDTo) : Response<NetWorkResponse>? {
-        retrofitService = RetrofitClient.createaService(ISpamService::class.java)
-       val token:String?= tokenHelper?.getToken()
-        var respone:Response<NetWorkResponse>? = null
-        respone = token?.let { retrofitService?.report(callerInfo, it) }
-        return respone
-    }
+   
 
     companion object{
         const val TAG = "__SMScontainerRepository"

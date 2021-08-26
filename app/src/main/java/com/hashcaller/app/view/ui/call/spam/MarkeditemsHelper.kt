@@ -17,6 +17,9 @@ class MarkeditemsHelper {
          }
         return null
     }
+    fun getMarkedItems(): List<String> {
+        return markedAddres.toList()
+    }
 
     fun getExpanedLayoutPosition(): Int? {
         return expandedLayoutPositin

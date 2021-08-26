@@ -38,6 +38,9 @@ interface IContactIformationDAO {
      @Query("DELETE FROM contacts_information")
      suspend fun delete()
 
+    @Query("DELETE FROM contacts_information")
+    suspend fun deleteAll()
+
 
 //    suspend fun getInfoForNumber(phoneNum: String?) :ContactTable
 

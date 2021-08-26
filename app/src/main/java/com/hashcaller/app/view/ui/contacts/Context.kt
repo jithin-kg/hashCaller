@@ -240,12 +240,15 @@ fun Context.startFloatingServiceOffhook(num: String, state: String?) {
 
 }
 
-fun Context.startSpamReportWorker(contactAddress: String, spammerType: Int) {
+/**
+ * Function accepts a commaSeperated contact addresses
+ */
+fun Context.startSpamReportWorker(comaSeperatedNums: String, spammerType: Int) {
     val constraints =
         Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
     val data = Data.Builder()
-    data.putString(CONTACT_ADDRES, contactAddress)
+    data.putString(CONTACT_ADDRES, comaSeperatedNums)
     data.putInt(Constants.SPAMMER_TYPE, spammerType)
 
     val oneTimeWorkRequest =

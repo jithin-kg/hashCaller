@@ -12,4 +12,6 @@ interface IBlockedOrSpamSendersDAO {
 
     @Query("SELECT * FROM blocked_or_spam_senders WHERE address LIKE '%'|| :address || '%'")
     suspend fun find(address:String):BlockedOrSpamSenders?
+    @Query("DELETE FROM blocked_or_spam_senders")
+    suspend fun deleteAll()
 }
