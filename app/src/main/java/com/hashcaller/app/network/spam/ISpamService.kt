@@ -21,6 +21,12 @@ interface ISpamService {
         @Header ("Authorization") token:String
     ):Response<NetWorkResponse>
 
+    @POST("spam/unblock")
+    suspend fun unblock(
+        @Body userInfo: SpamNumbersDTO,
+        @Header ("Authorization") token:String
+    ):Response<NetWorkResponse>
+
 
 
 

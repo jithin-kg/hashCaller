@@ -574,19 +574,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //            this.blockConfigFragment = BlockConfigFragment()
             this.contactFragment = ContactsContainerFragment()
             this.callFragment = CallFragment()
-
             this.dialerFragment = DialerFragment()
 //            this.searchFragment = SearchFragment()
             this.blockListFragment = BlockConfigFragment()
-//            smsSearchFragment = SMSSearchFragment.newInstance()
-//            this.searchFragment =  SearchFragment.newInstance()
-//            setInstancesInApp()
-
-//            fabBtnShowDialpad.visibility = View.GONE
-//            syncSpamList()
-
-
-            //set the default fragment
             setTheDefaultFragment()
 //            addAllFragments()
 
@@ -649,11 +639,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
 //        this.fullScreenFragment = supportFragmentManager.getFragment(savedInstanceState, "fullScreenFragment") as FullscreenFragment
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
-//        this.smsFragment = supportFragmentManager.getFragment(
-//            savedInstanceState,
-//            "messagesFragment"
-//        ) as SMSContainerFragment
-//        this.blockConfigFragment = supportFragmentManager.getFragment(savedInstanceState,"blockConfigFragment") as BlockConfigFragment
+
         this.contactFragment = supportFragmentManager.getFragment(
             savedInstanceState,
             "contactFragment"
@@ -663,10 +649,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             "dialerFragment"
         ) as DialerFragment
 
-//        this.searchFragment = supportFragmentManager.getFragment(
-//            savedInstanceState,
-//            "searchFragment"
-//        ) as SearchFragment
         this.blockListFragment = supportFragmentManager.getFragment(
             savedInstanceState,
             "blockListFragment"

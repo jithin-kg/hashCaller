@@ -44,7 +44,6 @@ import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.vmadalin.easypermissions.EasyPermissions
-import kotlinx.android.synthetic.main.bottom_sheet_block.*
 
 
 class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
@@ -105,11 +104,14 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         generalBlockViewmodel.isThisNumberBlocked.observe(this, Observer { isNumberBlocked->
             if(isNumberBlocked){
                 binding.btnBlockIndividualContact.beGone()
-                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
+                binding.btnUnblock.beVisible()
+//                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
 
             } else {
-                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = false
                 binding.btnBlockIndividualContact.beVisible()
+                binding.btnUnblock.beGone()
+//                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = false
+//                binding.btnBlockIndividualContact.beVisible()
             }
         })
 
@@ -273,6 +275,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         binding.switchIndividualContact.setOnClickListener(this)
         binding.btnBlockIndividualContact.setOnClickListener(this)
         binding.imgBtnBack.setOnClickListener(this)
+        binding.btnUnblock.setOnClickListener(this)
         binding.imgBtnCallindividual.setOnClickListener(this)
 //        binding.imgBtnSMS.setOnClickListener(this)
         binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
@@ -308,11 +311,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
                 if (!isBlocked) {
                     showBottomSheetDialog()
-//
                 }
 
                 else {
-                    blockOrUnBlock()
+                    reportSpamAndblock()
                 }
 
 
@@ -343,6 +345,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 Log.d(TAG, "onClick: clicked block")
                 blockThisAddress()
             }
+            R.id.btnUnblock -> {
+                unblockThisAddres()
+            }
             else -> {
             this.radioButtonClickPerformed(v)
             }
@@ -352,11 +357,21 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
+    private fun unblockThisAddres() {
+
+        generalBlockViewmodel.removeFromBlockList(phoneNum,
+            BlockTypes.BLOCK_TYPE_EXACT_NUMBER,
+            getRandomColor(),
+            applicationContext
+        )
+    }
+
     private fun blockThisAddress() {
         //todo, while saving spam count in chat threads the spam count is having large number, fix it
         generalBlockViewmodel.blockThisAddress(
             spammerType,
-            phoneNum
+            phoneNum,
+            applicationContext
         ).observe(this, Observer {
             when(it){
                 ON_COMPLETED -> {
@@ -392,8 +407,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-    private fun blockOrUnBlock() {
-        viewModel.blockOrUnblockByAdderss(phoneNum, this.spammerType).observe(
+    private fun reportSpamAndblock() {
+        viewModel.reportSpam(
+            phoneNum,
+            this.spammerType,
+            this
+        ).observe(
             this,
             Observer {
                 when (it) {
@@ -405,12 +424,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                             "You have unblocked $phoneNum",
                             Snackbar.LENGTH_LONG
                         )
-//                    sbar.setAction("Undo", MyUndoListener(this))
-//        sbar.anchorView = bottomNavigationView
-
                         sbar.show()
                     }
-                    OPERATION_BLOCKED -> {
+                    ON_COMPLETED -> {
                         bottomSheetDialog.hide()
                         val sb = SpannableStringBuilder(phoneNum);
                         val bss = StyleSpan(Typeface.BOLD); // Span to make text bold
@@ -428,20 +444,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
                 }
             })
-//        viewModel.blockThisAddress(
-//            IndividualMarkedItemHandlerCall.getMarkedContactAddress()!!, MarkedItemsHandler.markedTheadIdForBlocking,
-//            this.spammerType,
-//            this.SPAMMER_CATEGORY )
-
-//        Toast.makeText(this.requireActivity(), "Number added to spamlist", Toast.LENGTH_LONG)
-//        bottomSheetDialog.hide()
-//        bottomSheetDialog.dismiss()
-//        bottomSheetDialogfeedback.show()
-//        var txt = "${IndividualMarkedItemHandlerCall.getMarkedContactAddress()} can no longer send SMS or call you."
-//        val  sb =  SpannableStringBuilder(txt);
-//        val bss =  StyleSpan(Typeface.BOLD); // Span to make text bold
-//        sb.setSpan(bss, 0, IndividualMarkedItemHandlerCall.getMarkedContactAddress()!!.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE); // make first 4 characters Bold
-//        bottomSheetDialogfeedback.tvSpamfeedbackMsg.text = sb
     }
 
     private fun showBottomSheetDialog() {
@@ -538,10 +540,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
             R.id.itemUnblockNumber -> {
                 Log.d(TAG, "onMenuItemClick: unblock")
-                generalBlockViewmodel.removeFromBlockList(phoneNum,
-                    BlockTypes.BLOCK_TYPE_EXACT_NUMBER,
-                 getRandomColor()
-                )
+//                generalBlockViewmodel.removeFromBlockList(phoneNum,
+//                    BlockTypes.BLOCK_TYPE_EXACT_NUMBER,
+//                 getRandomColor()
+//                )
             }
 
         }

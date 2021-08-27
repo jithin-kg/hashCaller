@@ -278,6 +278,13 @@ class IndividualContactRepository(
            return@withContext callLogDAO.find(formatedNum)
        }
 
+       suspend fun marAsReportedByUser(contactAddressList: List<String>) {
+           for(num in contactAddressList){
+               val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(num), countryISO)
+               callLogDAO?.markAsReportedByUser(formatedAdders, 1)
+           }
+       }
+
 
 //   suspend fun getIndividualContactFromContentProvider(context : Context, phoneNum: String):List<com.hashcaller.app.network.user.Contact>{
 //       var isLoading: MutableLiveData<Boolean> = MutableLiveData(true)

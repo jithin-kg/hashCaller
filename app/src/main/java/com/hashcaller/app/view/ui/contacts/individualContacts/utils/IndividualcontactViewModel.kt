@@ -1,27 +1,35 @@
 package com.hashcaller.app.view.ui.contacts.individualContacts.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.hashcaller.app.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.hashcaller.app.local.db.blocklist.mutedCallers.MutedCallers
 import com.hashcaller.app.local.db.contactInformation.ContactTable
 import com.hashcaller.app.network.search.model.CntctitemForView
+import com.hashcaller.app.repository.BlockListPatternRepository
 import com.hashcaller.app.repository.spam.SpamNetworkRepository
 import com.hashcaller.app.stubs.Contact
+import com.hashcaller.app.view.ui.blockConfig.GeneralBlockRepository
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
+import com.hashcaller.app.view.ui.call.work.CallContainerViewModel
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactLiveData
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
+import com.hashcaller.app.view.ui.contacts.startSpamReportWorker
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
+import com.hashcaller.app.view.ui.sms.individual.util.EXACT_NUMBER
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
+import com.hashcaller.app.view.ui.sms.individual.util.ON_COMPLETED
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import java.lang.Exception
 import java.util.*
 
@@ -33,8 +41,11 @@ class IndividualcontactViewModel(
     val livedataCntct: IndividualContactLiveData,
     private val mutedContactsDAO: IMutedCallersDAO,
     private val callersInfoFromServer: CallersInfoFromServerDAO,
-    private val spamNetworkRepository: SpamNetworkRepository
-)
+    private val spamNetworkRepository: SpamNetworkRepository,
+    private val blockListPatternRepository: BlockListPatternRepository,
+    private val generalBlockRepository: GeneralBlockRepository
+
+    )
     : ViewModel()  {
 
     var contactId = 0L
@@ -157,9 +168,82 @@ class IndividualcontactViewModel(
 //        emit(isBlocked)
     }
 
-    fun blockOrUnblockByAdderss(phoneNum: String, spammerType: Int):LiveData<Int> = liveData {
+    fun reportSpam(phoneNum: String,
+                   spammerType: Int,
+                   applicationContext: Context?
+    ):LiveData<Int> = liveData {
+
+        if (phoneNum.isNotEmpty()) {
+            val formattedNum = formatPhoneNumber(phoneNum)
+            val listOfNums = listOf<String>(formattedNum)
+            viewModelScope.launch {
+                supervisorScope {
+                    val as1 = async { repository?.marAsReportedByUser(listOfNums) }
+
+                    val as2 = async {
+                        addAddressToPatternsTable(listOfNums)
+
+                    }
+//                    val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
+                    val as3 = async { startSpamReportWorker(listOfNums, applicationContext, spammerType) }
+                    try {
+                        as1.await()
+                    } catch (e: Exception) {
+                        Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
+                    }
+                    try {
+                        as2.await()
+                    } catch (e: Exception) {
+                        Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
+                    }
+                    try {
+                        as3.await()
+                    } catch (e: Exception) {
+                        Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
+                    }
+//                    try{
+//                        as4.await()
+//                    }catch (e:Exception){
+//                        Log.d(TAG, "blockThisAddress: $e")
+//                    }
+
+                    generalBlockRepository.marAsReportedByUserInCall(formattedNum)
+                    generalBlockRepository.marAsReportedByUserInSMS(formattedNum)
+                }
 
 
+//            }.join()
+            }.join()
+
+            emit(ON_COMPLETED)
+
+        }
+
+    }
+
+    private suspend fun startSpamReportWorker(
+        markedItems: List<String>,
+        applicationContext: Context?,
+        spammerType: Int
+    ) {
+        var commanSeperatedNumbers = ""
+        for((count, num) in markedItems.withIndex()){
+            if(count == markedItems.size -1){
+                commanSeperatedNumbers += "$num"
+            }else {
+                commanSeperatedNumbers += "$num,"
+            }
+        }
+        val list = commanSeperatedNumbers.split(",")
+        applicationContext?.startSpamReportWorker(commanSeperatedNumbers, spammerType)
+    }
+
+    private suspend fun addAddressToPatternsTable(markedItems: List<String>) {
+        for (num in markedItems){
+            blockListPatternRepository.insertPattern(
+                num,
+                EXACT_NUMBER )
+        }
     }
 
     fun unmute(phoneNum: String) = viewModelScope.launch {

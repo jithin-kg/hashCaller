@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -118,6 +119,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  var selectedRadioButton: RadioButton? = null
     private var radioGroupOne: RadioGroup? = null
     private var radioGroupTwo: RadioGroup? = null
+    val vm: CallContainerViewModel by viewModels()
+
 
     /************/
     var callLogAdapter: CallLogAdapter? = null
@@ -135,7 +138,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     binding = FragmentCallBinding.inflate(inflater, container, false)
        tokenHelper =  TokenHelper(FirebaseAuth.getInstance().currentUser)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
-
         return binding.root
 
     }
@@ -374,7 +376,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             isScreeningApp = ( activity as AppCompatActivity).isScreeningRoleHeld()
         }
     }
-
     private suspend fun initViewModel() {
         withContext(Dispatchers.IO){
             viewmodel = ViewModelProvider(this@CallFragment, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope, tokenHelper)).get(

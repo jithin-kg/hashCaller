@@ -3,7 +3,9 @@ package com.hashcaller.app.view.ui.contacts.individualContacts.utils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hashcaller.app.local.db.blocklist.mutedCallers.IMutedCallersDAO
+import com.hashcaller.app.repository.BlockListPatternRepository
 import com.hashcaller.app.repository.spam.SpamNetworkRepository
+import com.hashcaller.app.view.ui.blockConfig.GeneralBlockRepository
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactLiveData
 
@@ -15,15 +17,18 @@ class IndividualContactFactory(
     private val livedata: IndividualContactLiveData,
     private val mutedContactsDAO: IMutedCallersDAO,
     private val callersInfoFromServer: CallersInfoFromServerDAO,
-    private val spamNetworkRepository: SpamNetworkRepository
+    private val spamNetworkRepository: SpamNetworkRepository,
+    private val blockListPatternRepository: BlockListPatternRepository,
+    private val generalBlockRepository: GeneralBlockRepository
 ) :ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return IndividualcontactViewModel(repo,
             livedata,
             mutedContactsDAO,
             callersInfoFromServer,
-            spamNetworkRepository
-
+            spamNetworkRepository,
+            blockListPatternRepository,
+            generalBlockRepository
         ) as T
     }
 //    override fun <T : ViewModel?> create(application: Class<T>): T {

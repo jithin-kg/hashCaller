@@ -306,7 +306,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun blockThisAddress() {
-        generalBlockViewmodel.blockThisAddress(spammerType = spammerType, phoneNumber)
+        generalBlockViewmodel.blockThisAddress(spammerType = spammerType, phoneNumber, applicationContext)
             .observe(this, Observer {
                 when(it){
                     ON_COMPLETED -> {
