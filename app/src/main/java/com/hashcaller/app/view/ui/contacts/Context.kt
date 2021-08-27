@@ -105,6 +105,7 @@ fun Context.hasMandatoryPermissions(): Boolean {
         READ_CONTACTS,
         READ_PHONE_STATE,
         CALL_PHONE,
+        ANSWER_PHONE_CALLS
 //        READ_PHONE_NUMBERS
     )
 }

@@ -24,23 +24,6 @@ class IncomingCallReceiver : BroadcastReceiver(){
               if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
                return
                 }
-
-//          val telManager =  (context.getSystemService(Context.TELEPHONY_SERVICE) )as TelephonyManager
-//
-//           val subscriptionManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
-//
-//
-//           val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
-//
-//           val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
-//           val tel1 = telManager.createForSubscriptionId(availableSIMs[1].subscriptionId)
-//           Log.d(TAG, "onReceive:call state sim1 ${tel0.callState}")
-//           Log.d(TAG, "onReceive:call state sim2 ${tel1.callState}")
-
-//           telManager.callState
-//           Log.d(TAG+"prev", "onReceive: prevState $prevState")
-//           Log.d(TAG, "onReceive:carrier id ${intent.getStringExtra(TelephonyManager.EXTRA_CARRIER_ID)}")
-//           Log.d(TAG, "onReceive:carrier id ${intent.getStringExtra(TelephonyManager.CARRieR)}")
            val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
 //           telephonyManager = context.defaultSubTelephonyManager.createForSubscriptionId(subId)
            prevState = state

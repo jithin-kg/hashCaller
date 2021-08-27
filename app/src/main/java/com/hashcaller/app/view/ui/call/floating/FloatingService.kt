@@ -203,11 +203,13 @@ class FloatingService: Service() {
 
             }
             else if(command == START_FLOATING_SERVICE){
-
+                Log.d(TAG, "onStartCommand:command == START_FLOATING_SERVICE ")
                 if(!onStartCalled && !isCallScreeningRoleHeld()){
+                    Log.d(TAG, "onStartCommand: screeningRoleHeld false")
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
                             TelephonyManager.CALL_STATE_RINGING, TelephonyManager.CALL_STATE_OFFHOOK ->{
+                                Log.d(TAG, "onStartCommand: ringin,offhook")
                                 window?.open()
                                 mphoneNumberStr = phoneNumber
                                 onStartCalled = true
@@ -452,6 +454,7 @@ class FloatingService: Service() {
                     when (state) {
                         TelephonyManager.CALL_STATE_RINGING -> {
 //                            startFloatingService(incomingNumber)
+                            Log.d(TAG, "onCallStateChanged:inside ringing ")
                            if(incomingNumber.isNotEmpty()){
                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
                            }

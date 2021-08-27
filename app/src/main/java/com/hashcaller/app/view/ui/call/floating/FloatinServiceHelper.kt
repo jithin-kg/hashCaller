@@ -82,8 +82,9 @@ class FloatinServiceHelper(
                     Log.d(TAG, "handleCall: $e")
                 }
                 try {
-                    Log.d(TAG, "onReceive: firsttry")
                     val isBlockedByPattern  = defBlockedByPattern.await()
+                    Log.d(TAG, "isBlockedByPattern: $isBlockedByPattern")
+
                     if(isBlockedByPattern){
                         isSpam = true
                         endCall(

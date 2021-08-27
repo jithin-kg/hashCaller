@@ -137,6 +137,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                 requestPermission(
                     READ_CONTACTS,
                     REQUEST_CODE_READ_CONTACTS,
+
                     getString(R.string.rational_cntcts)
                     )
             }
@@ -204,6 +205,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
             READ_CONTACTS,
             READ_PHONE_STATE,
             CALL_PHONE,
+            ANSWER_PHONE_CALLS
 //            READ_PHONE_NUMBERS
 //            Manifest.permission.CALL_PHONE,
         )
@@ -257,7 +259,10 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
 
     override fun onPostResume() {
         super.onPostResume()
-        if(!EasyPermissions.hasPermissions(this, READ_CONTACTS)){
+        if(!EasyPermissions.hasPermissions(this,
+                READ_CONTACTS,
+                ANSWER_PHONE_CALLS
+                )){
             //read contacts permission not given
             binding.btnContactAcces.beVisible()
             setImageOnPermissionChange(

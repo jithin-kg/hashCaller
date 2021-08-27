@@ -267,13 +267,14 @@
         <receiver
             android:name="com.hashcaller.app.utils.callReceiver.IncomingCallReceiver"
             android:enabled="true"
+
             android:exported="true">
 
             <!--
 proirity is set based on article https://www.programmersought.com/article/7983992012/
 if 1000 doesnt work ,try 2147483647
             -->
-            <intent-filter android:priority="1000">
+            <intent-filter android:priority="2147483647">
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
