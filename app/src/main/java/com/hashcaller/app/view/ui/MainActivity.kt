@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var blockListFragment: BlockConfigFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
-    private lateinit var smsSearchFragment: SMSSearchFragment
+//    private lateinit var smsSearchFragment: SMSSearchFragment
 
     private lateinit var header:View
     private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
@@ -234,8 +234,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //                       ft.attach(searchFragment)
                        ft.detach(blockListFragment)
                        ft.attach(blockListFragment)
-                       ft.detach(smsSearchFragment)
-                       ft.attach(smsSearchFragment)
+//                       ft.detach(smsSearchFragment)
+//                       ft.attach(smsSearchFragment)
                        ft.commit()
 //                       setFragmentsFromSavedInstanceState(savedInstanceState)
 //                       addAllFragments()
@@ -578,7 +578,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             this.dialerFragment = DialerFragment()
 //            this.searchFragment = SearchFragment()
             this.blockListFragment = BlockConfigFragment()
-            smsSearchFragment = SMSSearchFragment.newInstance()
+//            smsSearchFragment = SMSSearchFragment.newInstance()
 //            this.searchFragment =  SearchFragment.newInstance()
 //            setInstancesInApp()
 
@@ -672,10 +672,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             "blockListFragment"
         ) as BlockConfigFragment
 
-        this.smsSearchFragment = supportFragmentManager.getFragment(
-            savedInstanceState,
-            "smsSearchFragment"
-        ) as SMSSearchFragment
+//        this.smsSearchFragment = supportFragmentManager.getFragment(
+//            savedInstanceState,
+//            "smsSearchFragment"
+//        ) as SMSSearchFragment
 
 
 
@@ -739,7 +739,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        supportFragmentManager.putFragment(outState, "messagesFragment", this.smsFragment)
 //        supportFragmentManager.putFragment(outState, "searchFragment", this.searchFragment)
         supportFragmentManager.putFragment(outState, "blockListFragment", this.blockListFragment)
-        supportFragmentManager.putFragment(outState, "smsSearchFragment", this.smsSearchFragment)
+//        supportFragmentManager.putFragment(outState, "smsSearchFragment", this.smsSearchFragment)
 
 
 
@@ -896,8 +896,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.add(R.id.frame_fragmentholder, blockListFragment)
         hideThisFragment(ft, blockListFragment, blockListFragment)
 
-        ft.add(R.id.frame_fragmentholder, smsSearchFragment)
-        hideThisFragment(ft, smsSearchFragment, smsSearchFragment)
+//        ft.add(R.id.frame_fragmentholder, smsSearchFragment)
+//        hideThisFragment(ft, smsSearchFragment, smsSearchFragment)
 
 
 
@@ -988,17 +988,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.commit()
     }
     fun showSMSSearchFragment() {
-        val ft = supportFragmentManager.beginTransaction()
-        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
-
-        if (smsSearchFragment.isAdded) { // if the fragment is already in container
-            ft.show(smsSearchFragment)
-            mainViewmodel.setActiveFragment(smsSearchFragment)
-        }
+//        val ft = supportFragmentManager.beginTransaction()
+//        mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
 //
-        ft.commit()
-        binding.bottomNavigationView.beGone()
-        binding.navView.beGone()
+//        if (smsSearchFragment.isAdded) { // if the fragment is already in container
+//            ft.show(smsSearchFragment)
+//            mainViewmodel.setActiveFragment(smsSearchFragment)
+//        }
+////
+//        ft.commit()
+//        binding.bottomNavigationView.beGone()
+//        binding.navView.beGone()
     }
     fun showSearchFragment() {
         toggleBottomMenuIcons(showSearchFragment = true)
@@ -1209,10 +1209,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 finishAfterTransition()
             }
         }
-        else if(smsSearchFragment.isVisible){
-            showMessagesFragment()
-
-        }
+//        else if(smsSearchFragment.isVisible){
+//            showMessagesFragment()
+//
+//        }
 
         else{
 

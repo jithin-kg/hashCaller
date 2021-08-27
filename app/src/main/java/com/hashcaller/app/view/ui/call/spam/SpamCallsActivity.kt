@@ -128,12 +128,11 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
     ): Int {
         when(clickType){
             TYPE_LONG_PRESS -> {
-                toast("Slide left or right to delete")
+//                toast("Slide left or right to delete")
             }
 
             TYPE_CLICK_VIEW_CALL_HISTORY -> {
                 startCallHistoryActivity(callLog, view)
-
                 return COMPRESS_LAYOUT
             }
 

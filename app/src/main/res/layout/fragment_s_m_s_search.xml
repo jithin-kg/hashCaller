@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_search_scene"
-    tools:context=".app.view.ui.sms.search.SMSSearchFragment">
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarSMSSearch"

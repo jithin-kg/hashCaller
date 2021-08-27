@@ -128,7 +128,7 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                 requestPermissions(
                    arrayOf( READ_PHONE_STATE,
                        CALL_PHONE,
-                       READ_PHONE_NUMBERS
+                       ANSWER_PHONE_CALLS
                    ),
                     REQUEST_CODE_READ_PHONE_STATE,
                 )
