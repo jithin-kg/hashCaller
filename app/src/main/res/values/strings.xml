@@ -66,6 +66,7 @@
     <string name="overly_description">Enable display over other apps to show caller Id during incoming calls.</string>
     <string name="caller_id_description">Set HashCaller as default caller ID to block and identify incoming calls, without this call blocking and caller Id functionality will not work properly.</string>
     <string name="mandatory">mandatory</string>
+    <string name="optional">optional</string>
     <string name="enable">Enable</string>
     <string name="rational_cntcts">HashCaller needs access to contacts to identify unknown calls and to enabling searching.</string>
     <string name="verifying">Verifying..</string>
