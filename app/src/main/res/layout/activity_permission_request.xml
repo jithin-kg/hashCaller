@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:background="@color/colorBackground"
     app:layoutDescription="@xml/activity_permission_request_scene"
-    tools:context=".app.view.ui.auth.PermissionRequestActivity">
+    tools:context=".view.ui.auth.PermissionRequestActivity">
 
     <!--    https://storyset.com/illustration/solidarity/rafiki-->
     <!--<a href="https://storyset.com/work">Work illustrations by Storyset</a>-->
@@ -61,8 +61,8 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="40dp"
-        android:gravity="center"
         android:alpha="0.70"
+        android:gravity="center"
         android:text="@string/hashcaller_needs_your_permission"
         android:textColor="@color/textColor"
         android:textSize="16sp"

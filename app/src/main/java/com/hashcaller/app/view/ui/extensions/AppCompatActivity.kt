@@ -15,9 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
-import com.hashcaller.app.view.ui.auth.PermissionRequestActivity
+import com.hashcaller.app.view.ui.auth.permissionrequest.PermissionRequestActivity
 
-fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
+fun AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
     return dm
@@ -27,16 +27,21 @@ fun  AppCompatActivity.getCurrentDisplayMetrics(): DisplayMetrics {
 /**
  * remember to call finish after calling this activity
  */
-fun AppCompatActivity.startPermissionRequestActivity(){
-    val i = Intent(this, PermissionRequestActivity::class.java)
+fun AppCompatActivity.startPermissionRequestActivity() {
+//    val i = Intent(this, PermissionRequestActivity::class.java)
+    val i = Intent(
+        this,
+        PermissionRequestActivity::class.java
+    )
     startActivity(i)
 
 }
 
 fun AppCompatActivity.requestAlertWindowPermission() {
     // Show alert dialog to the user saying a separate permission is needed
-    if(!Settings.canDrawOverlays(applicationContext)){
-        val myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+    if (!Settings.canDrawOverlays(applicationContext)) {
+        val myIntent =
+            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
         startActivity(myIntent)
     }
 
@@ -45,14 +50,14 @@ fun AppCompatActivity.requestAlertWindowPermission() {
 
 fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
 
-    val popup = PopupMenu(this, anchorView )
+    val popup = PopupMenu(this, anchorView)
     popup.inflate(menu)
 //    popup.setOnMenuItemClickListener(this)
 //    popup.show()
     return popup
 }
 
- fun AppCompatActivity.startContactEditActivity(contactId: Long) {
+fun AppCompatActivity.startContactEditActivity(contactId: Long) {
     val i = Intent(Intent.ACTION_EDIT)
     val contactUri =
         ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
@@ -60,12 +65,13 @@ fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
     i.putExtra("finishActivityOnSaveCompleted", true)
     startActivity(i)
 }
+
 @RequiresApi(Build.VERSION_CODES.Q)
-    fun AppCompatActivity. requestScreeningRole(){
+fun AppCompatActivity.requestScreeningRole() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
         val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-        if(!isHeld){
+        if (!isHeld) {
             //ask the user to set your app as the default screening app
             val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
             startActivityForResult(intent, ROLE_SCREENING_APP_REQUEST_CODE)
@@ -79,28 +85,29 @@ fun AppCompatActivity.getMyPopupMenu(menu: Int, anchorView: View): PopupMenu {
  * function to check if hashcaller is the call screening app
  */
 @RequiresApi(Build.VERSION_CODES.Q)
-fun AppCompatActivity. isScreeningRoleHeld(): Boolean {
+fun AppCompatActivity.isScreeningRoleHeld(): Boolean {
     var roleHeld = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
-         val isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)
-           if(isRoleAvailable){
-               roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-           }else {
-               //if screening role not available then set as role held
-               roleHeld = true
-           }
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)
+        if (isRoleAvailable) {
+            roleHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+        } else {
+            //if screening role not available then set as role held
+            roleHeld = true
+        }
 
-    }else {
+    } else {
         roleHeld = true
     }
     return roleHeld
 }
-fun Activity.requestScreeningRole(){
+
+fun Activity.requestScreeningRole() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val roleManager =  getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
         val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
-        if(!isHeld){
+        if (!isHeld) {
             //ask the user to set your app as the default screening app
             val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
             startActivityForResult(intent, 123)

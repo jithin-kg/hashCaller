@@ -19,6 +19,8 @@
 
     <!--    <color name="colorPrimary">#145291</color>-->
     <color name="colorPrimary">#3398ED</color>
+    <color name="colorPrimaryAlpha">#1D3398ED</color>
+    <color name="colorBgLowAlpha">#12000000</color>
     <color name="colorBackgroundAppBar">#145291</color>
     <color name="statusBarColor">#FA145291</color>
     <color name="colorPrimaryDark">#145291</color>
