@@ -1,5 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable-xhdpi/avd_done.xml" value="0.29375" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/contact_circular_background_danger.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/ic_phone_line_white.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_incomming_call_view.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_individual_call_log.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_main.xml" value="0.24365942028985507" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_manage_notifications.xml" value="0.1762917933130699" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_permission_request.xml" value="0.264" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_permission_request_swipe.xml" value="0.20260416666666667" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_premission_request.xml" value="0.3484375" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/contact_consent_fragment.xml" value="0.4" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_search.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_search2.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_second.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_spam.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_spam_call.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_spam_messages.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_tes.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_test.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/image_layout.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/individual_call_log_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/item_finish_setting_up.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/item_overlay_permission.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/layout_blog_list_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/layout_second.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/list_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/myquote_list_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/new_list_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/other_pending_permissions_fragment.xml" value="0.2" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/permission_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/popup_layout.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/request_permission.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sample_dialog.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/search_filter_alert_check_box.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/search_result_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/search_result_item1.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/search_result_item2.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/search_result_item3.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/search_result_layout.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sheet_dial_pad.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/skeleton_row_layout.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/skeleton_shimmer_layout.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sms_indiivdual_date.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sms_individual_outbox_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sms_individual_recived_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sms_individual_sent_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sms_list_item_spam.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/sms_list_view.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/testmotionlayout.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/toolbar.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/toolbar_dialer.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/window.xml" value="0.24365942028985507" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

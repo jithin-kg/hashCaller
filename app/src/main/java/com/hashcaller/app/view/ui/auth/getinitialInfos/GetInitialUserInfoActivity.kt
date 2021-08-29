@@ -27,7 +27,7 @@ import com.hashcaller.app.repository.user.UserInfoDTO
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.MainActivity
-import com.hashcaller.app.view.ui.auth.PermissionRequestActivity
+import com.hashcaller.app.view.ui.auth.permissionrequest.PermissionRequestActivity
 import com.hashcaller.app.view.ui.contacts.hasMandatoryPermissions
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
@@ -40,20 +40,22 @@ import com.hashcaller.app.view.utils.validateInput
 import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
 
-class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
+class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var sharedPreferences: SharedPreferences
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var dataStoreViewmodel: DataStoreViewmodel
 
-    private lateinit var binding:ActivityGetInitialUserInfoBinding
-//    private var imgFile: File? = null
+    private lateinit var binding: ActivityGetInitialUserInfoBinding
+
+    //    private var imgFile: File? = null
 //    private var picturePath: String = ""
-    private lateinit var imagePickerHelper : ImagePickerHelper
-    var imgeMultipartBody:MultipartBody.Part? = null
-    private  var rcfirebaseAuth: FirebaseAuth? = null
+    private lateinit var imagePickerHelper: ImagePickerHelper
+    var imgeMultipartBody: MultipartBody.Part? = null
+    private var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +82,10 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         ).get(
             UserInfoViewModel::class.java
         )
-        dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(
+        dataStoreViewmodel = ViewModelProvider(
+            this,
+            DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)
+        ).get(
             DataStoreViewmodel::class.java
         )
     }
@@ -111,11 +116,11 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         outlinedTextField: TextInputLayout,
         message: String
     ) {
-            if(text.length > 25){
-                outlinedTextField.error = message
-            }else{
-                outlinedTextField.error = null
-            }
+        if (text.length > 25) {
+            outlinedTextField.error = message
+        } else {
+            outlinedTextField.error = null
+        }
 
 
     }
@@ -124,25 +129,32 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     @SuppressLint("LongLogTag")
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
-        when(v?.id){
+        when (v?.id) {
             R.id.btnUserContinue -> {
                 sendUserInfo()
             }
             R.id.imgVAvatarInitial -> {
-                if(hasStoragePermission()){
+                if (hasStoragePermission()) {
                     startImagePickActivity()
-                }else{
-                    EasyPermissions.requestPermissions(this, perms= arrayOf(READ_EXTERNAL_STORAGE),
+                } else {
+                    EasyPermissions.requestPermissions(
+                        this, perms = arrayOf(READ_EXTERNAL_STORAGE),
                         rationale = "Hash caller need storage permission to configure profile picture",
-                        requestCode=REQUEST_CODE_STORAGE)
+                        requestCode = REQUEST_CODE_STORAGE
+                    )
                 }
 
             }
         }
 
     }
+
     @SuppressLint("LongLogTag")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG, "onRequestPermissionsResult: ")
         // EasyPermissions handles the request result.
@@ -157,6 +169,7 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
         val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(pickPhoto, REQUEST_CODE_IMG_PICK)
     }
+
     @SuppressLint("LongLogTag")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -173,33 +186,38 @@ class GetInitialUserInfoActivity : AppCompatActivity() , View.OnClickListener{
     }
 
 
-
     @SuppressLint("LongLogTag")
-private fun sendUserInfo() {
+    private fun sendUserInfo() {
 
-    val firstName = binding.editTextFName.text.toString().trim()
-    val lastName = binding.editTextLName.text.toString().trim()
+        val firstName = binding.editTextFName.text.toString().trim()
+        val lastName = binding.editTextLName.text.toString().trim()
 //    val email = binding.editTextEmail.text.toString().trim()
 
-        userInfoViewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile,
-            this@GetInitialUserInfoActivity).observe(this@GetInitialUserInfoActivity,
+        userInfoViewModel.compresSAndPrepareForUpload(
+            imagePickerHelper.imgFile,
+            this@GetInitialUserInfoActivity
+        ).observe(this@GetInitialUserInfoActivity,
             Observer {
                 imgeMultipartBody = it
 
                 binding.editTextFName.error = null
                 binding.editTextLName.error = null
-                val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
-                if(isValid){
+                val isValid = validateInput(
+                    firstName,
+                    lastName,
+                    binding.outlinedTextField,
+                    binding.outlinedTextField2
+                );
+                if (isValid) {
                     binding.btnUserContinue.isEnabled = false
 
                     var userInfo = UserInfoDTO()
                     userInfo.firstName = firstName;
-                    userInfo.lastName =  lastName;
+                    userInfo.lastName = lastName;
 //        userInfo.email = "email";
 
 //        val body: MultipartBody.Part = createFormData.createFormData("files[0]", file.getName(), requestFile)
 //        userInfo.profilePic =imgPart
-
 
 
                     upload(userInfo, imgeMultipartBody)
@@ -207,48 +225,51 @@ private fun sendUserInfo() {
             })
 
 
-
-
-}
-
+    }
 
 
     @SuppressLint("LongLogTag")
     private fun upload(userInfo: UserInfoDTO, body: MultipartBody.Part?) {
         binding.pgBarInfo.beVisible()
-        userInfoViewModel.upload(userInfo, body, this).observe(this, Observer {response->
-            when(response.code()){
-                HttpStatusCodes.CREATED ->{
+        userInfoViewModel.upload(userInfo, body, this).observe(this, Observer { response ->
+            when (response.code()) {
+                HttpStatusCodes.CREATED -> {
                     binding.pgBarInfo.beInvisible()
                     response.body()?.let { it1 ->
-                        userInfoViewModel.saveUserInfoInLocalDb(it1, dataStoreViewmodel).observe(this, Observer {
-                            when (it) {
-                                OPERATION_COMPLETED -> {
+                        userInfoViewModel.saveUserInfoInLocalDb(it1, dataStoreViewmodel)
+                            .observe(this, Observer {
+                                when (it) {
+                                    OPERATION_COMPLETED -> {
 
-                                    saveToSharedPref(true)
-                                    if(hasMandatoryPermissions()){
-                                        val i = Intent(this, MainActivity::class.java)
-                                        startActivity(i)
-                                        finish()
-                                    }else {
-                                        val i = Intent(this, PermissionRequestActivity::class.java)
-                                        startActivity(i)
-                                        overridePendingTransition(R.anim.in_anim,
-                                            R.anim.out_anim
-                                        )
-                                        finish()
+                                        saveToSharedPref(true)
+                                        if (hasMandatoryPermissions()) {
+                                            val i = Intent(this, MainActivity::class.java)
+                                            startActivity(i)
+                                            finish()
+                                        } else {
+//                                        val i = Intent(this, PermissionRequestActivity::class.java)
+                                            val i = Intent(
+                                                this,
+                                                PermissionRequestActivity::class.java
+                                            )
+                                            startActivity(i)
+                                            overridePendingTransition(
+                                                R.anim.in_anim,
+                                                R.anim.out_anim
+                                            )
+                                            finish()
+                                        }
+
                                     }
-
                                 }
-                            }
-                        })
+                            })
                     }
                 }
-                else ->{
-                binding.pgBarInfo.beInvisible()
-                toast("Something went wrong")
-                binding.btnUserContinue.isEnabled = true
-            }
+                else -> {
+                    binding.pgBarInfo.beInvisible()
+                    toast("Something went wrong")
+                    binding.btnUserContinue.isEnabled = true
+                }
             }
 
         })
@@ -312,8 +333,7 @@ private fun sendUserInfo() {
     }
 
 
-
-    companion object{
+    companion object {
         const val TAG = "__GetInitialUserInfoActivity"
     }
 }

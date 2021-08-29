@@ -32,6 +32,7 @@ import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
+import com.hashcaller.app.view.ui.auth.permissionrequest.PermissionRequestActivity
 import com.hashcaller.app.view.ui.contacts.hasMandatoryPermissions
 import com.hashcaller.app.view.ui.contacts.showBadRequestToast
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -45,22 +46,24 @@ import java.util.concurrent.TimeUnit
 
 
 class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
-    private lateinit var binding : ActivityTestauthBinding
+    private lateinit var binding: ActivityTestauthBinding
     private var verificationInProgress = false
     private var storedVerificationId: String? = ""
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var auth: FirebaseAuth
-    private  var _userInfoViewModel: UserInfoViewModel? = null
+    private var _userInfoViewModel: UserInfoViewModel? = null
     private val userInfoViewModel get() = _userInfoViewModel!!
-    private lateinit var dataStoreViewmodel:DataStoreViewmodel
-//    private var _dataStoreViewmodel: DataStoreViewmodel? = null
+    private lateinit var dataStoreViewmodel: DataStoreViewmodel
+
+    //    private var _dataStoreViewmodel: DataStoreViewmodel? = null
 //    private val dataStoreViewmodel get() = _dataStoreViewmodel!!
     private lateinit var encryptor: EnCryptor
 
     private var tokenHelper: TokenHelper? = null
     private lateinit var customTokenSigner: CustometokenSigner
     var code: String? = null
+
     // [END declare_auth]
     var phoneNumber: String? = null
 
@@ -109,6 +112,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
             DataStoreViewmodel::class.java
         )
     }
+
     private fun registerCallback() {
 
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -199,7 +203,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 super.onCodeAutoRetrievalTimeOut(p0)
 
 
-
             }
         }
     }
@@ -207,11 +210,17 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     fun startOtpTimer() {
         object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.btnResend.setTextColor(ContextCompat.getColor(this@ActivityVerifyOTP, R.color.textColor))
+                binding.btnResend.setTextColor(
+                    ContextCompat.getColor(
+                        this@ActivityVerifyOTP,
+                        R.color.textColor
+                    )
+                )
                 binding.btnResend.text = "00:${String.format("%02d", millisUntilFinished / 1000)}"
                 binding.btnResend.isEnabled = false
                 //here you can have your logic to set text to edittext
             }
+
             override fun onFinish() {
                 binding.btnResend.setTextColor(getColor(R.color.colorPrimary))
                 binding.btnResend.text = getString(R.string.resend_otp)
@@ -231,14 +240,17 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
         // [END_EXCLUDE]
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_VERIFY_IN_PROGRESS, verificationInProgress)
     }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         verificationInProgress = savedInstanceState.getBoolean(KEY_VERIFY_IN_PROGRESS)
     }
+
     private fun startPhoneNumberVerification(phoneNumber: String) {
         // [START start_phone_auth]
         binding.pgBarOtpVerify.beVisible()
@@ -253,6 +265,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
         verificationInProgress = true
     }
+
     private fun verifyPhoneNumberWithCode(verificationId: String?, code: String) {
         // [START verify_with_code]
         val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
@@ -305,10 +318,12 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 }
             }
     }
+
     private fun signOut() {
         auth.signOut()
 //        updateUI(STATE_INITIALIZED)
     }
+
     private fun validatePhoneNumber(): Boolean {
 //        val phoneNumber = binding.fieldPhoneNumber.text.toString()
 //        if (TextUtils.isEmpty(phoneNumber)) {
@@ -318,6 +333,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
         return true
     }
+
     companion object {
         const val TAG = "__ActivityVerifyOTP"
         private const val KEY_VERIFY_IN_PROGRESS = "key_verify_in_progress"
@@ -336,16 +352,16 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
             R.id.verifyManually -> {
 
                 var isOtpValid = false
-                if(!binding.otpview.text.isNullOrEmpty()){
-                    if (binding.otpview.text.toString().length == 6){
+                if (!binding.otpview.text.isNullOrEmpty()) {
+                    if (binding.otpview.text.toString().length == 6) {
                         isOtpValid = true
                     }
                 }
-                if(isOtpValid){
+                if (isOtpValid) {
                     binding.verifyManually.isEnabled = false
 
                     verifycode(otpview.text.toString())
-                }else {
+                } else {
                     toast("Please enter the OTP")
                 }
 
@@ -370,14 +386,16 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 
     override fun onBackPressed() {
 //        super.onBackPressed()
-       startPhoneAuthActivity()
+        startPhoneAuthActivity()
     }
 
     private fun startPhoneAuthActivity() {
         val intent = Intent(this, ActivityPhoneAuth::class.java)
         startActivity(intent)
-        this.overridePendingTransition(R.anim.enter_from_left,
-            R.anim.fade_out_animation);
+        this.overridePendingTransition(
+            R.anim.enter_from_left,
+            R.anim.fade_out_animation
+        );
         finish()
     }
 
@@ -467,7 +485,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         if (task.isSuccessful) {
             var token = task.result?.token
             // Send token to your backend via HTTPS
-            if(!token.isNullOrEmpty()){
+            if (!token.isNullOrEmpty()) {
                 encryptor = EnCryptor()
                 val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS, token.toString())
                 val encodeTokenString = Base64.encodeToString(
@@ -483,7 +501,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
 //                })
             }
 
-        }else{
+        } else {
             Log.d(TAG, "onSignedInInitialize:${task.exception}")
         }
     }
@@ -491,60 +509,65 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     private fun checkUserInfoInServer() {
         binding.pgBarOtpVerify.beVisible()
         binding.tvVerifying.beVisible()
-            userInfoViewModel.getUserInfoFromServer(phoneNumber, this@ActivityVerifyOTP).observe(
-                this@ActivityVerifyOTP,
-                Observer {res->
-                    when(res.code()){
-                        HttpStatusCodes.STATUS_OK -> {
-                            lifecycleScope.launchWhenStarted {
-                                res.body()?.let {userinfo->
-                                    customTokenSigner.signInWithCustomToken(userinfo.data.customToken)
-                                    if (userinfo != null) {
-                                        if (!userinfo.data.firstName.isNullOrEmpty()) {
-                                            //user exists in server
-                                            userInfoViewModel.saveUserInfoInLocalDb(
-                                                userinfo,
-                                                dataStoreViewmodel
-                                            )
-                                                .observe(this@ActivityVerifyOTP, Observer { status ->
-                                                    when (status) {
-                                                        OPERATION_COMPLETED -> {
+        userInfoViewModel.getUserInfoFromServer(phoneNumber, this@ActivityVerifyOTP).observe(
+            this@ActivityVerifyOTP,
+            Observer { res ->
+                when (res.code()) {
+                    HttpStatusCodes.STATUS_OK -> {
+                        lifecycleScope.launchWhenStarted {
+                            res.body()?.let { userinfo ->
+                                customTokenSigner.signInWithCustomToken(userinfo.data.customToken)
+                                if (userinfo != null) {
+                                    if (!userinfo.data.firstName.isNullOrEmpty()) {
+                                        //user exists in server
+                                        userInfoViewModel.saveUserInfoInLocalDb(
+                                            userinfo,
+                                            dataStoreViewmodel
+                                        )
+                                            .observe(this@ActivityVerifyOTP, Observer { status ->
+                                                when (status) {
+                                                    OPERATION_COMPLETED -> {
 
 
-                                                            binding.pgBarOtpVerify.beGone()
-                                                            if(hasMandatoryPermissions()){
-                                                                startMainActivity()
-                                                            }else {
-                                                                val i = Intent(this@ActivityVerifyOTP, PermissionRequestActivity::class.java)
-                                                                startActivity(i)
-                                                                overridePendingTransition(R.anim.in_anim,
-                                                                    R.anim.out_anim
-                                                                )
-                                                                finish()
-                                                            }
+                                                        binding.pgBarOtpVerify.beGone()
+                                                        if (hasMandatoryPermissions()) {
+                                                            startMainActivity()
+                                                        } else {
+//                                                                val i = Intent(this@ActivityVerifyOTP, PermissionRequestActivity::class.java)
+                                                            val i = Intent(
+                                                                this@ActivityVerifyOTP,
+                                                                PermissionRequestActivity::class.java
+                                                            )
+                                                            startActivity(i)
+                                                            overridePendingTransition(
+                                                                R.anim.in_anim,
+                                                                R.anim.out_anim
+                                                            )
+                                                            finish()
                                                         }
                                                     }
-                                                })
-                                        } else {
-                                            //user info not exists in server
-                                            startGetUserInfoActivity()
-                                        }
+                                                }
+                                            })
+                                    } else {
+                                        //user info not exists in server
+                                        startGetUserInfoActivity()
                                     }
                                 }
-
                             }
-                        }else -> {
-                        this.showBadRequestToast(res.code())
+
                         }
-
-
+                    }
+                    else -> {
+                        this.showBadRequestToast(res.code())
                     }
 
 
-                })
+                }
+
+
+            })
 
     }
-
 
 
     private fun startMainActivity() {
