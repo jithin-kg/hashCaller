@@ -42,7 +42,6 @@ class ServerSearchViewModel(
 //        showDummySearchResult()
         var formatedNum = formatPhoneNumber(phoneNumber)
         formatedNum =  libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
-
         defServerSearch?.cancel()
         defServerinfoAvialableInDb?.cancel()
         defServerSearch = null

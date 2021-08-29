@@ -55,6 +55,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var generalBlockViewmodel: GeneralblockViewmodel
     private lateinit var photoURI:String
     private  var color  = 1
+    private var prevColor = 1
     private var phoneNum:String = ""
     private var name:String = ""
     private var count  = 0
@@ -102,14 +103,25 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun observeIsthisNumberBlocked() {
         generalBlockViewmodel.isThisNumberBlocked.observe(this, Observer { isNumberBlocked->
+            Log.d(TAG, "observeIsthisNumberBlocked: $isNumberBlocked")
             if(isNumberBlocked){
                 binding.btnBlockIndividualContact.beGone()
                 binding.btnUnblock.beVisible()
+                color = -1
+                setClearImage(photoURI)
 //                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
-
+                
             } else {
                 binding.btnBlockIndividualContact.beVisible()
                 binding.btnUnblock.beGone()
+
+                if(prevColor != -1 ){
+                    color = prevColor
+                }else {
+                    prevColor = getRandomColor()
+                    color = prevColor
+                }
+                setClearImage(photoURI)
 //                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = false
 //                binding.btnBlockIndividualContact.beVisible()
             }
@@ -155,6 +167,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //        val id = intent.getLongExtra("id",0L)
         photoURI = intent.getStringExtra("photo")?:""
         color = intent.getIntExtra("color", 1)
+        prevColor = color
         binding.tvNumberValue.text = phoneNum
     }
 
@@ -184,7 +197,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             viewModel.getClearImage(phoneNum).observe(this, Observer {
                 when(it.imageFoundFrom){
                     IMAGE_FOUND_FROM_C_PROVIDER ->{
-                        Log.d(TAG, "setClearImage: ${it.imageStr}")
                         loadImage(this, binding.ivAvatar, it.imageStr)
                         binding.tvFirstLetter.beGone()
                         //because when using motin layout somehow  unable to set  invisible visibility to tvFirstLetter
@@ -259,7 +271,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     @SuppressLint("LongLogTag")
     override fun onBackPressed() {
-        Log.d(TAG, "onBackPressed: ")
 //        this.finishAfterTransition()
 //        super.onBackPressed()
         finishAfterTransition()
@@ -342,7 +353,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 muteOrUnmute()
             }
             R.id.btnBlock -> {
-                Log.d(TAG, "onClick: clicked block")
                 blockThisAddress()
             }
             R.id.btnUnblock -> {
@@ -364,6 +374,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             getRandomColor(),
             applicationContext
         )
+       
     }
 
     private fun blockThisAddress() {
@@ -539,7 +550,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 startContactEditActivity(viewModel.contactId)
             }
             R.id.itemUnblockNumber -> {
-                Log.d(TAG, "onMenuItemClick: unblock")
 //                generalBlockViewmodel.removeFromBlockList(phoneNum,
 //                    BlockTypes.BLOCK_TYPE_EXACT_NUMBER,
 //                 getRandomColor()

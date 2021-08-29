@@ -74,8 +74,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
-
-
             val networklivedta = ConnectionLiveData(context)
 
             val callersLocalRepository =
@@ -112,7 +110,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                         if(reslt.code() == HttpStatusCodes.STATUS_OK){
                             for(cntct in reslt.body()?.contacts!!){
                                 var formated = formatPhoneNumber(cntct.hash)
-
+                                if(cntct.hUid.isNotEmpty()){
+                                    Log.d(TAG+"huid", "doWork: ${cntct.hUid}")
+                                }
                                 formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
                                 callersInfoFromServerDAO?.updateByHash(
                                     hashedNum = cntct.hash,
@@ -246,7 +246,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
 
 
-    companion object{
+    companion object  {
         private const val TAG = "__CallNumUploadWorker"
         const val NUMBER_OF_DAYS = 1
     }

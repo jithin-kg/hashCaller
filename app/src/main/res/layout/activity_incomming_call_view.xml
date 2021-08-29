@@ -11,7 +11,7 @@
     android:background="@android:color/transparent"
     android:backgroundTint="@android:color/transparent"
     android:excludeFromRecents="true"
-    tools:context=".app.view.ui.IncommingCall.ActivityIncommingCallView">
+   >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cnstraintlyoutInner"
@@ -173,7 +173,6 @@
         android:layout_height="wrap_content"
         android:background="@drawable/incomming_call_background_expanded"
         android:elevation="4dp"
-
         android:paddingBottom="32dp"
         app:layout_constraintEnd_toEndOf="@+id/cnstraintlyoutInner"
         app:layout_constraintStart_toStartOf="@+id/cnstraintlyoutInner"
@@ -244,7 +243,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Call"
-            android:textColor="@color/textColor"
+            android:textColor="@color/textColorBlack"
             app:layout_constraintEnd_toEndOf="@+id/imgBtnCallIncomming"
             app:layout_constraintStart_toStartOf="@+id/imgBtnCallIncomming"
             app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIncomming" />
@@ -255,7 +254,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Message"
-            android:textColor="@color/textColor"
+            android:textColor="@color/textColorBlack"
             app:layout_constraintEnd_toEndOf="@+id/imgBtnSendSMSInc"
             app:layout_constraintStart_toStartOf="@+id/imgBtnSendSMSInc"
             app:layout_constraintTop_toBottomOf="@+id/imgBtnSendSMSInc" />
@@ -266,7 +265,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Block"
-            android:textColor="@color/textColor"
+            android:textColor="@color/textColorBlack"
             app:layout_constraintEnd_toEndOf="@+id/imgBtnCallIncomingBlock"
             app:layout_constraintStart_toStartOf="@+id/imgBtnCallIncomingBlock"
             app:layout_constraintTop_toBottomOf="@+id/imgBtnCallIncomingBlock" />
@@ -276,7 +275,7 @@
             android:layout_height="wrap_content"
             android:text="Details"
             android:layout_marginTop="8dp"
-            android:textColor="@color/textColor"
+            android:textColor="@color/textColorBlack"
             app:layout_constraintTop_toBottomOf="@+id/imgBtnSearchForCaller"
             app:layout_constraintStart_toStartOf="@+id/imgBtnSearchForCaller"
             app:layout_constraintEnd_toEndOf="@+id/imgBtnSearchForCaller"

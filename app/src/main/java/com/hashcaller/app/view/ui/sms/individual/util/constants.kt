@@ -296,7 +296,7 @@ var scrollToPositions:MutableList<Int> = mutableListOf()
 var scrollToCount : Int ? = null
 
 fun getRandomColor(): Int {
-    var random = 0
+    var random: Int
     val rand = Random()
     random = rand.nextInt(5 - 1) + 1
     return random

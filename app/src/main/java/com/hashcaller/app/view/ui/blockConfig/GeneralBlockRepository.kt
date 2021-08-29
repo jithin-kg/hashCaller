@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.blockConfig
 
+import android.util.Log
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_CONTAINS
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_ENDS_WITH
@@ -31,6 +32,7 @@ class GeneralBlockRepository(
     }
     suspend fun markAsNotSpamInCalls(contactAddress: String, color:Int) = withContext(Dispatchers.IO) {
         val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
+        Log.d(TAG, "markAsNotSpamInCalls: ")
         callLogDAO?.removeFromBlockList(formatedAdders, color = color)
     }
 

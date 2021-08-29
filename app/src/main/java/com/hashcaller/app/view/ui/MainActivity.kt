@@ -850,7 +850,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     fun addAllFragments() {
 
-
         ft = supportFragmentManager.beginTransaction()
 
         setDefaultFragment(DefaultFragmentManager.id)
@@ -1371,20 +1370,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             REQUEST_CODE_READ_CONTACTS ->{
 
             }
-//            REQUEST_CODE_READ_SMS ->{
-//                fetchSMSOnCreate = true
-//                detachAndAttachFragment(smsFragment)
-//            }
 
 
         }
-//        if (requestCode == 100) {
-//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                call()
-//            } else {
-//                Toast.makeText(this, "call permission denied", Toast.LENGTH_SHORT).show()
-//            }
-//        }
     }
 
     /**

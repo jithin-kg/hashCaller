@@ -50,9 +50,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
      * formats a phone number to ES164 standard
      */
      fun getES164Formatednumber(phoneNum: String, countryIso:String): String {
-
         var formatedNumber = phoneNum
-
        try {
            val numProto = phoneUtil.parseAndKeepRawInput(phoneNum, countryIso)
            val e164Formated = phoneUtil.format(numProto, PhoneNumberUtil.PhoneNumberFormat.E164)

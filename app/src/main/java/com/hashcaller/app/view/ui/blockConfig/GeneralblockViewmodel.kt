@@ -40,7 +40,7 @@ class GeneralblockViewmodel(
             viewModelScope.launch {
                 supervisorScope {
                     val as1 = async { repository?.marAsReportedByUserInCall(formatedNum) }
-                    val as4 = async { repository?.marAsReportedByUserInSMS(formatedNum) }
+//                    val as4 = async { repository?.marAsReportedByUserInSMS(formatedNum) }
 
                     val as2 = async {
                         blockListPatternRepository.insertPattern(contactAddress,EXACT_NUMBER )
@@ -65,11 +65,11 @@ class GeneralblockViewmodel(
                     } catch (e: Exception) {
                         Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
                     }
-                    try {
-                        as4.await()
-                    }catch (e:Exception){
-                        Log.d(TAG, "blockThisAddress: $e")
-                    }
+//                    try {
+//                        as4.await()
+//                    }catch (e:Exception){
+//                        Log.d(TAG, "blockThisAddress: $e")
+//                    }
                 }
 
                 //******************************sms**********************//
@@ -146,8 +146,9 @@ class GeneralblockViewmodel(
         randomColor: Int,
         applicationContext: Context
     )  = viewModelScope.launch{
-        val defPattern = async { blockListPatternRepository.delete(phoneNum, numberType) }
         val defCall = async { repository?.markAsNotSpamInCalls(phoneNum, randomColor) }
+        val defPattern = async { blockListPatternRepository.delete(phoneNum, numberType) }
+
 //        val defSMS = async { repository?.markAsNotSpamInSMS(phoneNum, randomColor) }
         val defWorker = async { startUnblockWorker(phoneNum,applicationContext ) }
         try{

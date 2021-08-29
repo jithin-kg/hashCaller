@@ -1,5 +1,6 @@
 package com.hashcaller.app
 
+import android.util.Log
 import androidx.annotation.Keep
 import java.security.MessageDigest
 
@@ -10,6 +11,7 @@ class Secrets {
     //external fun getWellHiddenSecret(packageName: String): String
 
     companion object {
+        const val TAG ="__Secrets"
 //        init {
 //            System.loadLibrary("secrets")
 //        }
@@ -27,11 +29,11 @@ class Secrets {
 
         val hexString = StringBuffer()
         for (i in byteData.indices) {
-
             val hex = Integer.toHexString(0xff and byteData[i].toInt())
             if (hex.length == 1) hexString.append('0')
             hexString.append(hex)
         }
+    Log.d(TAG, "managecipher: ${hexString.toString()}")
     return hexString.toString()
     }
 

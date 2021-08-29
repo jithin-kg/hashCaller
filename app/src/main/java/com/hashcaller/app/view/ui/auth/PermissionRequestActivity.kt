@@ -241,7 +241,6 @@ class PermissionRequestActivity : AppCompatActivity(), View.OnClickListener, Eas
                     binding.imgVContact
                 )
                 binding.btnContactAcces.beGone()
-
             }
             REQUEST_CODE_READ_PHONE_STATE -> {
                 isStatePermissionGivenFromView = true

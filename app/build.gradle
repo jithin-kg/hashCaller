@@ -123,6 +123,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     // Kotlin components
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72"
