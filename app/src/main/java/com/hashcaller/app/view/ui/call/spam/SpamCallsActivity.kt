@@ -246,7 +246,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         log: CallLogTable,
         destinationActivity: Int
     ): Intent {
-        var name = log.name
+        var name = log.nameInPhoneBook
         if(name.isNullOrEmpty()){
             name = log?.nameFromServer
         }

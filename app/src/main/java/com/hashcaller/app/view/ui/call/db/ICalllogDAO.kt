@@ -22,7 +22,7 @@ interface ICallLogDAO {
     @Query("SELECT * FROM call_log WHERE (isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser )  AND spamCount <=:spamLimit ORDER BY dateInMilliseconds DESC ")
     fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser: Boolean = false, spamLimit: Long = SPAM_THREASHOLD): LiveData<MutableList<CallLogTable>>
 
-    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser  AND name!=''  AND spamCount <=:spamLimit  ORDER BY dateInMilliseconds DESC LIMIT 10")
+    @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser  AND (nameInPhoneBook!=''  OR nameFromServer!='' ) AND spamCount <=:spamLimit  ORDER BY dateInMilliseconds DESC LIMIT 10")
     suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false, spamLimit: Long = SPAM_THREASHOLD) : MutableList<CallLogTable>
 
     @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
@@ -42,13 +42,13 @@ interface ICallLogDAO {
     @Query("DELETE from call_log ")
     suspend fun deleteAll()
 
-    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount  WHERE numberFormated =:contactAddress")
-    suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String, spamCount: kotlin.Long)
+    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, hUid =:hUid,  spamCount =:spamCount,imageUrlFromDb=:imageFromDb  WHERE numberFormated =:contactAddress")
+    suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String,hUid:String,  spamCount: kotlin.Long,imageFromDb:String)
 
     @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount, color=:typeSpam  WHERE numberFormated =:contactAddress")
     abstract fun updateSpammerWitServerInfo(contactAddress: String, nameFromServer: String, spamCount: Long, typeSpam: Int)
 
-    @Query("UPDATE  call_log  SET name =:name, thumbnailFromCp=:thumbnailFromCp WHERE numberFormated =:contactAddress")
+    @Query("UPDATE  call_log  SET nameFromServer =:name, thumbnailFromCp=:thumbnailFromCp WHERE numberFormated =:contactAddress")
     suspend fun updateWitCproviderInfo(contactAddress: String, name:String, thumbnailFromCp: String)
 
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE numberFormated =:num")
@@ -56,7 +56,7 @@ interface ICallLogDAO {
 
 
 
-    @Query("SELECT * FROM call_log WHERE numberFormated LIKE :contactAddress OR name LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
+    @Query("SELECT * FROM call_log WHERE numberFormated LIKE :contactAddress OR nameInPhoneBook LIKE :contactAddress OR nameFromServer LIKE :contactAddress ORDER BY dateInMilliseconds DESC")
     suspend fun searchCalllog(contactAddress: String): MutableList<CallLogTable>
 
     @Query("UPDATE  call_log  SET isReportedByUser=:isReportedByUser, spamCount =:spamCount + spamCount, color =:color WHERE numberFormated =:contactAddress")

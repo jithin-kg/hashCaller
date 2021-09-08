@@ -124,7 +124,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
     }
 
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
-        var name = log.name
+        var name = log.nameInPhoneBook
         if(name.isNullOrEmpty()){
             name = log?.nameFromServer
         }

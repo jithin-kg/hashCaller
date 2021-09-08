@@ -10,6 +10,7 @@ class ContactsQueryHelper(private val context: Context?) {
     suspend fun getAllContacts(isLimitedContactsNeeded:Boolean = false): MutableList<Contact> {
         val listOfContacts = mutableListOf<Contact>()
         val setOfContacts = mutableSetOf<String>()
+
         val cursor =  context?.getAllContactsCursor(isLimitedContactsNeeded)
         try {
             if(cursor != null && cursor.moveToFirst()){

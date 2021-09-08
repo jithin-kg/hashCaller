@@ -225,7 +225,6 @@ class Window(
 
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
 //        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
-
         if(callerInfoFoundFrom!= INFO_FOUND_FROM_CPROVIDER){
             //only update contents with server info iff info has not yet found from contentprovider
             //TODO check for image uri from server and local db, if img uri in db isNullOrEpty then show image from server if exists

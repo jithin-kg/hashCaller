@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.work.*
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
+import com.hashcaller.app.databinding.ContactConsentFragmentBinding
 import com.hashcaller.app.databinding.ContactListBinding
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.network.search.model.CntctitemForView
@@ -80,6 +81,7 @@ import com.hashcaller.app.view.utils.SIMAccount
 import com.hashcaller.app.work.SpamReportWorker
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

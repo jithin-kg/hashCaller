@@ -148,7 +148,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     this.adapterPosition,
                     it,
                     BUTTON_SIM_1,
-                    CallLogTable(id=ID_SHOW_SCREENING_ROLE),
+                    CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid = ""),
                     TYPE_CLICK_SCREENING_ROLE,
                     it.visibility
                 )
@@ -161,7 +161,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     this.adapterPosition,
                     it,
                     BUTTON_SIM_1,
-                    CallLogTable(id=ID_SHOW_SCREENING_ROLE),
+                    CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid=""),
                     TYPE_CLICK_DISMISS_SCREENING_ROLE,
                     it.visibility
                 )
@@ -213,27 +213,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_2_line)
                 }
             }
-
-//            if (prevTime != null)
-//                if(prevTime == callLog.dateInMilliseconds){
-//                    expandableView.beVisible()
-//
-//                }else{
-//                   expandableView.beGone()
-//
-//                }
-//                if (callLog.callerInfoFoundFrom == SENDER_INFO_SEARCHING && networkHandler.isInternetAvailable()) {
-//                    logBinding.pgBarCallItem.beVisible()
-//                }else{
-//                    logBinding.pgBarCallItem.beInvisible()
-//
-//                }
-
                 var nameStr:String = ""
                 var infoFoundFrom = SENDER_INFO_SEARCHING
-                if(!callLog.name.isNullOrEmpty()){
+                if(!callLog.nameInPhoneBook.isNullOrEmpty()){
                     infoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                    nameStr = callLog.name!!
+                    nameStr = callLog.nameInPhoneBook!!
                 }else if(!callLog.nameFromServer.isNullOrEmpty()){
                     infoFoundFrom = SENDER_INFO_FROM_DB
                     nameStr = callLog.nameFromServer!!
@@ -262,9 +246,13 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 SENDER_INFO_FROM_DB -> {
                     logBinding.imgVIdentfByHash.beVisible()
                     if(callLog.imageFromDb.isNotEmpty()){
+                        Log.d(TAG, "bind: imageFromDB notempty")
                         isImageThumbnailAvaialble = true
                         logBinding.imgVThumbnail.setImageBitmap(getDecodedBytes(callLog.imageFromDb))
+                        logBinding.imgVThumbnail.beVisible();
+                        logBinding.textViewCrclr.beInvisible()
                     }else{
+                        Log.d(TAG, "bind: imageFromDB is Empty")
                         logBinding.imgVThumbnail.beInvisible()
                         circle.beVisible()
                         logBinding.pgBarCallItem.beInvisible()
@@ -680,10 +668,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     fun addCallerIdRoleItem() {
 //        showDefCallerIdLayout = value
         if(callLogs.isEmpty()){
-            callLogs.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+            callLogs.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid = ""))
         }else {
             if(callLogs[0].id!= ID_SHOW_SCREENING_ROLE){
-                callLogs.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+                callLogs.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid = ""))
             }
         }
         notifyItemInserted(0)

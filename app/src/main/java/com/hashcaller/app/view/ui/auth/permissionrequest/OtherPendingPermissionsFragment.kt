@@ -26,7 +26,6 @@ class OtherPendingPermissionsFragment : Fragment() {
         fun newInstance() = OtherPendingPermissionsFragment()
         private const val TAG = "OtherPendingPermissions"
     }
-
     private val viewModel: PermissionRequestViewModel by activityViewModels()
     private lateinit var binding: OtherPendingPermissionsFragmentBinding
 

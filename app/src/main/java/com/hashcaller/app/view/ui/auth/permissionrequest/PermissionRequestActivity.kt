@@ -23,7 +23,6 @@ class PermissionRequestActivity : AppCompatActivity() {
     private val viewModel: PermissionRequestViewModel by viewModels()
 
     private val permissionCallback = object : EasyPermissions.PermissionCallbacks {
-
         override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
             if (EasyPermissions.somePermissionPermanentlyDenied(
                     this@PermissionRequestActivity,
@@ -103,7 +102,6 @@ class PermissionRequestActivity : AppCompatActivity() {
 
         currentDestination.observe(this@PermissionRequestActivity) {
             when (it) {
-
                 Destinations.ContactConsent -> {
                     supportFragmentManager.commit {
                         replace(R.id.container, ContactConsentFragment())

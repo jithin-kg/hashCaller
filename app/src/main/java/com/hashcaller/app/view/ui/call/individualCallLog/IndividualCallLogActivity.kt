@@ -27,6 +27,7 @@ class IndividualCallLogActivity : AppCompatActivity(), IndividualCallLogAdapter.
     private var phoneNum:String? = null
     private var name = ""
     private var nameInCProvider:String? = null
+    private var hUid:String? = null
     private var nameFromDb:String? = null
     private var thumbnailFromCProvider:String? = null
     private var thumbnailFromDB:String? = null
@@ -53,6 +54,7 @@ class IndividualCallLogActivity : AppCompatActivity(), IndividualCallLogAdapter.
         nameInCProvider = intent.getStringExtra(IntentKeys.FULL_NAME_IN_C_PROVIDER)
         nameFromDb = intent.getStringExtra(IntentKeys.FULL_NAME_FROM_SERVER)
         thumbnailFromCProvider = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER)
+        hUid = intent.getStringExtra(IntentKeys.H_UID)
         thumbnailFromDB = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_BB)
         isReportedByUser = intent.getBooleanExtra(IntentKeys.IS_REPORTED_BY_USER, false)
         spamCount = intent.getLongExtra(IntentKeys.SPAM_COUNT, 0L)

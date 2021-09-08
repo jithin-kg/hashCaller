@@ -118,12 +118,15 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                     hashedNum = cntct.hash,
                                     spamCount = cntct.spamCount,
                                     firstName = cntct.firstName,
-                                    lastName = "",
+                                    lastName = cntct.lastName,
+                                    nameInPhoneBook =cntct.nameInPhoneBook,
                                     date = Date(),
                                     isUserInfoFoundInServer = cntct.isInfoFoundInDb,
                                     thumbnailImg = cntct.imageThumbnail?:"",
                                     city = cntct.location,
-                                    carrier = cntct.carrier
+                                    carrier = cntct.carrier,
+                                    hUid = cntct.hUid
+
                                 )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

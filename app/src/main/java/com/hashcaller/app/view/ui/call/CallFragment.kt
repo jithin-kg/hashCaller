@@ -253,7 +253,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         lifecycleScope.launchWhenStarted {
             if(!checkScreeningRole()){
 //                            callLogAdapter?.setCallerIdReqViewVisiblity(true)
-                it.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
+                it.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid = ""))
             }else {
                 callLogAdapter?.removeCallerIdRoleItem()
             }
@@ -808,7 +808,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         log: CallLogTable,
         destinationActivity: Int
     ): Intent {
-        var name = log.name
+        var name = log.nameInPhoneBook
         if(name.isNullOrEmpty()){
             name = log?.nameFromServer
         }
@@ -820,9 +820,10 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             INDIVIDUAL_CALL_LOG_ACTIVITY ->{
                  intent = Intent(context, IndividualCallLogActivity::class.java )
                 intent.putExtra(CONTACT_ADDRES, log.numberFormated)
-                intent.putExtra(IntentKeys.FULL_NAME_IN_C_PROVIDER, log.name)
+                intent.putExtra(IntentKeys.FULL_NAME_IN_C_PROVIDER, log.nameInPhoneBook)
                 intent.putExtra(IntentKeys.FULL_NAME_FROM_SERVER, log.nameFromServer)
                 intent.putExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER, log.thumbnailFromCp)
+                intent.putExtra(IntentKeys.H_UID, log.hUid)
                 intent.putExtra(IntentKeys.THUMBNAIL_FROM_BB, log.imageFromDb)
                 intent.putExtra(IntentKeys.SPAM_COUNT, log.spamCount)
                 intent.putExtra(IntentKeys.IS_REPORTED_BY_USER, log.isReportedByUser)

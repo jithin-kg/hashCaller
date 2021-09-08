@@ -269,7 +269,7 @@ class InCommingCallManager(
                 country = resFromServer?.country?:"",
                 carrier = resFromServer?.carrier?:"",
                 isBlockedByUser = false,
-            isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?:INFO_NOT_FOUND_IN_SERVER,
+                isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?:INFO_NOT_FOUND_IN_SERVER,
                 thumbnailImg = resFromServer?.thumbnailImg?:""
                 )
 
@@ -283,7 +283,8 @@ class InCommingCallManager(
                 spamReportCount = resFromServer?.spammCount?:0L,
                 city = resFromServer?.location?:"",
                 country = resFromServer?.country?:"",
-                carrier = resFromServer?.carrier?:""
+                carrier = resFromServer?.carrier?:"",
+                thumbnailImg = resFromServer?.thumbnailImg?:""
                 )
         }
     }

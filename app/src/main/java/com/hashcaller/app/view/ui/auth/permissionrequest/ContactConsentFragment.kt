@@ -43,13 +43,10 @@ class ContactConsentFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupUi()
-
     }
 
     private fun setupUi() = with(binding) {
-
         materialCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 motionLayout.transitionToEnd()
@@ -77,7 +74,7 @@ class ContactConsentFragment : Fragment() {
             checkAndNavigateToPendingPermissionsScreen()
     }
 
-   private fun checkAndNavigateToPendingPermissionsScreen() {
+    private fun checkAndNavigateToPendingPermissionsScreen() {
         val pendingPermissionsLeft =
             !requireActivity().hasReadPhoneStatePermission() ||
                     !Settings.canDrawOverlays(requireContext())

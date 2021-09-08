@@ -16,7 +16,8 @@ import androidx.room.*
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "number") var  number:String = "", // number should be primary key, else there is duplicates
     @ColumnInfo(name = "id") var id: Long?,
-    @ColumnInfo(name = "name") var name:String? = null,
+    @ColumnInfo(name = "nameInPhoneBook") var nameInPhoneBook:String? = null,
+//    nameFromServer is the first name and last name combined name that received from server
     @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,
     @ColumnInfo(name = "spamCount") var spamCount: Long = 0,
     @ColumnInfo(name = "numberFormated") var  numberFormated:String = "",
@@ -28,5 +29,8 @@ import androidx.room.*
     @ColumnInfo(name ="isReportedByUser") var isReportedByUser:Boolean = false,
     @ColumnInfo(name = "thumbnailFromCp") var thumbnailFromCp: String = "",
     @ColumnInfo(name = "imageUrlFromDb") var imageFromDb: String = "",
-    @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false) {
+    @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false,
+    @ColumnInfo(name = "hUid") var hUid: String,
+
+    ) {
 }

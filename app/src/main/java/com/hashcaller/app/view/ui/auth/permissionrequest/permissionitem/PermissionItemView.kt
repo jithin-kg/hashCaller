@@ -25,7 +25,6 @@ class PermissionItemView(
 
     init {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
         binding = PermissionItemBinding.inflate(inflater, this@PermissionItemView, true)
         binding.title.text = title
         binding.description.text = description
@@ -40,7 +39,6 @@ class PermissionItemView(
     }
 
     private fun setImageOnPermissionChange() = with(binding) {
-
         iconBackground.background =
             ContextCompat.getDrawable(
                 this@PermissionItemView.context,

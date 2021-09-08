@@ -417,10 +417,12 @@ class CallContainerRepository(
                         isMarked = true
                     }
                     val color = getRandomColor()
-                    val log = CallLogTable(id = id, name = name,
+                    val log = CallLogTable(id = id, nameInPhoneBook = name,
                         number = number, type = type, duration = duration,
                         dateInMilliseconds = dateInMilliseconds,
-                        simId = simID, color =color, numberFormated = formatedNum)
+                        simId = simID, color =color, numberFormated = formatedNum,
+                        hUid = ""
+                    )
 //                  val callerInfo = CallersInfoFromServer(null, informationReceivedDate =Date())
 //                    val logAndServerInfo = CallLogAndInfoFromServer(log, callerInfo )
 
@@ -599,7 +601,20 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithServerInfo(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO) {
-        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress, nameFromServer = serverInfo.firstName,spamCount =  serverInfo.spamReportCount)
+        var fullName:String? =""
+        fullName = (serverInfo.firstName).trim()
+        if(!fullName.isNullOrEmpty()){
+            if(serverInfo.lastName.trim().isNullOrEmpty()){
+                fullName+= serverInfo.lastName.trim()
+            }
+        }
+        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress,
+            nameFromServer = fullName?:"",
+            spamCount =  serverInfo.spamReportCount,
+            hUid = serverInfo.hUid,
+            imageFromDb = serverInfo.thumbnailImg
+
+        )
     }
 
 
@@ -665,7 +680,10 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithSpamerDetails(serverInfo: CallersInfoFromServer) = withContext(Dispatchers.IO){
-        callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress, serverInfo.firstName, serverInfo.spamReportCount, TYPE_SPAM)
+        callLogDAO?.updateSpammerWitServerInfo(serverInfo.contactAddress,
+            serverInfo.firstName,
+            serverInfo.spamReportCount,
+            TYPE_SPAM)
 
     }
 

@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:elevation="6dp"
             app:indicatorSize="60dp"
+            android:visibility="invisible"
             app:trackColor="@color/colorPrimary"
             app:indicatorColor="@color/colorBackground"
             android:indeterminate="true"

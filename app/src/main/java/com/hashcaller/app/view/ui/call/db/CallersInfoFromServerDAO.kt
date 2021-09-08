@@ -38,19 +38,21 @@ interface CallersInfoFromServerDAO {
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount,isBlockedByUser =:isBlockedByUser  WHERE contact_address =:contactAddress ")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String, isBlockedByUser:Boolean)
 
-    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount, firstName =:firstName,lastName=:lastName,informationReceivedDate=:date,isInfoFoundInServer=:isUserInfoFoundInServer,thumbnailImg=:thumbnailImg, city=:city,carrier=:carrier  WHERE hashedNum =:hashedNum ")
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount, firstName =:firstName,lastName=:lastName,nameInPhoneBook =:nameInPhoneBook,hUid=:hUid, informationReceivedDate=:date,isInfoFoundInServer=:isUserInfoFoundInServer,thumbnailImg=:thumbnailImg, city=:city,carrier=:carrier  WHERE hashedNum =:hashedNum ")
     suspend fun updateByHash(hashedNum:String,
                      spamCount: Long ,
                      firstName:String,
                      lastName:String,
+                     nameInPhoneBook:String,
                      date:Date,
                      isUserInfoFoundInServer:Int,
                      thumbnailImg:String="",
                      city:String="",
-                     carrier:String = ""
+                     carrier:String = "",
+                     hUid:String = ""
                      )
 
-    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier WHERE contact_address =:contactAddress ")
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName,thumbnailImg=:thumbnailImg, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier WHERE contact_address =:contactAddress ")
     suspend fun updateWithServerinfo(
                                      contactAddress: kotlin.String,
                                      firstName:String,
@@ -60,6 +62,7 @@ interface CallersInfoFromServerDAO {
                                      city:String,
                                      country:String,
                                      carrier:String,
+                                     thumbnailImg:String
                                      )
 
     @Query("UPDATE  callers_info_from_server  SET isBlockedByUser =:isBlockedByUser, spamReportCount =:spamCount WHERE contact_address =:contactAddress")

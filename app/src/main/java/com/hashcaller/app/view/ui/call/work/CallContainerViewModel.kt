@@ -420,9 +420,13 @@ class CallContainerViewModel(
               if(res!=null){
                   if(res.nameFromServer!= item.firstName ){
                       repository?.updateCallLogWithServerInfo(item)
-                  }else if( res.spamCount < item.spamReportCount ){
+                  }else if(res.nameInPhoneBook != item.nameInPhoneBook){
+                      repository?.updateCallLogWithServerInfo(item)
+                  }
+                  else if( res.spamCount < item.spamReportCount ){
                       repository?.updateCallLogWithSpamerDetails(item)
-                  }else if(res.imageFromDb!= item.thumbnailImg){
+                  }
+                  else if(res.imageFromDb!= item.thumbnailImg){
                       repository?.updateCallLogWithImgFromServer(item)
                   }
 
@@ -510,7 +514,7 @@ class CallContainerViewModel(
                     }
                 }
                 if(nameAndThumbnailFromCp!=null){
-                    if(callLogTableInfo.name!= nameAndThumbnailFromCp.name || callLogTableInfo.thumbnailFromCp!= nameAndThumbnailFromCp.thumbnailUri){
+                    if(callLogTableInfo.nameFromServer!= nameAndThumbnailFromCp.name || callLogTableInfo.thumbnailFromCp!= nameAndThumbnailFromCp.thumbnailUri){
                         repository?.updateWithCproviderInfo(callLogTableInfo.number, nameAndThumbnailFromCp)
                     }
                 }
@@ -543,7 +547,7 @@ class CallContainerViewModel(
 
     fun getFirst10Logs() :LiveData<MutableList<CallLogTable>> = liveData {
         repository?.getFirst10Logs()?.let {
-            it.add(CallLogTable(id = null))
+            it.add(CallLogTable(id = null, hUid = ""))
             emit(it)
 
         }

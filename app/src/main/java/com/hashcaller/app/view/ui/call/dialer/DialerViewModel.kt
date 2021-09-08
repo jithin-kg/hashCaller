@@ -46,7 +46,19 @@ class DialerViewModel(
 
            if (result != null) {
                for (item in result){
-                   val contact = item.id?.let { item.name?.let { it1 ->
+                   if(item.id!=null){
+                      if ( !item.nameInPhoneBook.isNullOrEmpty() || !item.nameFromServer.isNullOrEmpty()){
+                          var name:String = ""
+                          if(!item.nameInPhoneBook.isNullOrEmpty()){
+                              name = item.nameInPhoneBook!!
+                          }else if(!item.nameFromServer.isNullOrEmpty()){
+                              name = item.nameInPhoneBook!!
+                          }
+                         val contact =  Contact(item.id!!,
+                              name, item.number, item.thumbnailFromCp)
+                      }
+                   }
+                   val contact = item.id?.let { item.nameInPhoneBook?.let { it1 ->
                        Contact(it,
                            it1, item.number, item.thumbnailFromCp)
                    } }

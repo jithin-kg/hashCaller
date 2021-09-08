@@ -53,10 +53,15 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
+//            val cursor = context!!.contentResolver.query(
+//                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+//                null, null, null,
+//                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+//            )
             val cursor = context!!.contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null, null, null,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC LIMIT 10"
             )
              contactRepository = WorkerContactRepository(
                  cursor,
@@ -147,13 +152,14 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                                         hashedNum = cntct.hash,
                                         spamCount = cntct.spamCount,
                                         firstName = cntct.firstName,
-                                        lastName = "",
+                                        lastName = cntct.lastName,
+                                        nameInPhoneBook = cntct.nameInPhoneBook,
                                         date = Date(),
                                         isUserInfoFoundInServer = cntct.isInfoFoundInDb,
                                         thumbnailImg = cntct.imageThumbnail?:"",
                                         city = cntct.location,
-                                        carrier = cntct.carrier
-
+                                        carrier = cntct.carrier,
+                                        hUid = cntct.hUid
                                     )
 //                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
                                 }

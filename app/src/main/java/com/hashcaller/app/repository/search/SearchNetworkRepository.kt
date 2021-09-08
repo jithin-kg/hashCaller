@@ -110,7 +110,9 @@ class SearchNetworkRepository(
                 spamReportCount = contact?.spamCount?:0L,
                 city = contact?.location?:"",
                 country = contact?.country?:"",
-                carrier = contact?.carrier?:"" )
+                carrier = contact?.carrier?:"",
+                thumbnailImg = contact?.photoThumnailServer?:""
+                )
         }
     }
 

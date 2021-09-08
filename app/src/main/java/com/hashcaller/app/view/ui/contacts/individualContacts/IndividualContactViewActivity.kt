@@ -148,6 +148,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }else {
                 binding.tvisInContact.text = "This person is not in your contact"
             }
+            if(it.spammCount > SPAM_THREASHOLD){
+                binding.layoutSpamCountt.beVisible()
+                binding.tvSpamCountValue.text = it.spammCount.toString()
+            }else {
+                binding.layoutSpamCountt.beGone()
+            }
             binding.tvFirstLetter.text = it.firstName[0].toString()
             binding.tvName.text = it.firstName + it.lastName
             binding.tvLocationValues.text = it.country + " " + it.location

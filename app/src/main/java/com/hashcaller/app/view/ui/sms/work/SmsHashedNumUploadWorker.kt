@@ -130,12 +130,14 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                                 hashedNum = cntct.hash,
                                 spamCount = cntct.spamCount,
                                 firstName = cntct.firstName,
+                                nameInPhoneBook = cntct.nameInPhoneBook,
                                 lastName = "",
                                 date = Date(),
                                 isUserInfoFoundInServer = cntct.isInfoFoundInDb,
                                 thumbnailImg = cntct.imageThumbnail?:"",
                                 city = cntct.location,
-                                carrier = cntct.carrier
+                                carrier = cntct.carrier,
+                                hUid = cntct.hUid
                             )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

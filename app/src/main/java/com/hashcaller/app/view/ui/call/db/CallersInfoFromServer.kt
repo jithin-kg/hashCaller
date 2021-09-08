@@ -32,10 +32,10 @@ data class CallersInfoFromServer (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "contact_address") var contactAddress: String= "",
     @ColumnInfo(name = "hashedNum") var hashedNum: String= "",
-
     @ColumnInfo(name = "type") var  spammerType: Int = 0,
     @ColumnInfo(name = "firstName") var firstName:String = "",
     @ColumnInfo(name = "lastName") var lastName:String = "",
+    @ColumnInfo(name = "nameInPhoneBook") var nameInPhoneBook:String = "",
     @ColumnInfo(name = "informationReceivedDate") var informationReceivedDate:Date,
     @ColumnInfo(name = "spamReportCount") var spamReportCount: Long = 0,
     @ColumnInfo(name = "city") var city: String  = "",
@@ -43,6 +43,8 @@ data class CallersInfoFromServer (
     @ColumnInfo(name = "carrier") var carrier: String = "",
     @ColumnInfo(name = "isBlockedByUser") var isBlockedByUser: Boolean = false,
     @ColumnInfo(name = "isInfoFoundInServer") var isUserInfoFoundInServer : Int = INFO_NOT_FOUND_IN_SERVER,
-    @ColumnInfo(name = "thumbnailImg") var thumbnailImg:String = ""
+    @ColumnInfo(name = "thumbnailImg") var thumbnailImg:String = "",
+    @ColumnInfo(name = "hUid") var hUid:String = "",
+
     ) {
 }

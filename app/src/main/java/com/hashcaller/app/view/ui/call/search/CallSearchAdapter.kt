@@ -147,15 +147,15 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                }
 
                 var nameStr:String = ""
-                var infoFoundFrom = SENDER_INFO_SEARCHING
-                if(callLog.name.isNullOrEmpty()){
-                    infoFoundFrom = SENDER_INFO_FROM_DB
-                    if(!callLog.nameFromServer.isNullOrEmpty()){
-                        nameStr = callLog.nameFromServer!!
-                    }
-                }else{
-                    nameStr = callLog.name!!
-                }
+//                var infoFoundFrom = SENDER_INFO_SEARCHING
+//                if(callLog.nameInPhoneBook.isNullOrEmpty()){
+//                    infoFoundFrom = SENDER_INFO_FROM_DB
+//                    if(!callLog.nameFromServer.isNullOrEmpty()){
+//                        nameStr = callLog.nameFromServer!!
+//                    }
+//                }else{
+//                    nameStr = callLog.!!
+//                }
                 if(nameStr.isNullOrEmpty()){
                     nameStr = callLog.number
                 }
@@ -343,7 +343,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         override fun areContentsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
 //            if(oldItem.ca)
 
-            return oldItem.number == newItem.number && oldItem.name == newItem.name
+            return oldItem.number == newItem.number && oldItem.nameInPhoneBook == newItem.nameInPhoneBook
         }
 
     }

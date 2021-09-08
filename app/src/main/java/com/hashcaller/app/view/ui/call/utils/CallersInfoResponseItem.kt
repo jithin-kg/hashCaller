@@ -14,14 +14,13 @@ data class CallersInfoResponseItem (
 
     @SerializedName("lastName")
     val lastName: String = "",
-
+    val nameInPhoneBook:String,
     var type: Int = 0,
     var location: String = "",
     var carrier: String = "",
     var country:String = "",
     var spamCount:Long = 0L,
     var isRegistered:Boolean = false,
-    var hUname:String = "",
     @SerializedName("isInfoFoundInDb")
     val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
     var imageThumbnail:String? = "",
