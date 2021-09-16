@@ -15,9 +15,9 @@ import retrofit2.http.*
 interface IuserService {
     companion object{
 
-//        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
+        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
 
-        public const val BASE_URL: String = "http://192.168.43.34:8080/"
+//        public const val BASE_URL: String = "http://192.168.43.34:8080/"
 
 //         const val BASE_URL: String = "https:/    /real-caller-api-2-jzlji.ondigitalocean.app/"  //-> worked
 //        public const val BASE_URL: String = "https://real-caller-api-2-jzlji.ondigitalocean.app/" worker with DO
@@ -52,6 +52,7 @@ interface IuserService {
     //retrieves cipher from hashcaller server
     @POST("user/getCipher")
     suspend fun getCipher(
+        
         @Header("Authorization")
         token: String): Response<ResponseCipher>
 

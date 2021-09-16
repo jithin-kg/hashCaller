@@ -24,7 +24,6 @@ class TokenHelper(private val user: FirebaseUser?) {
                            // Send token to your backend via HTTPS
                            if(!token.isNullOrEmpty()){
                                //returns with token, converted callback to coroutine suspend
-
                                cont.resumeWith(Result.success(token))
                            }
 

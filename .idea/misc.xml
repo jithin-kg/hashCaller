@@ -3,17 +3,38 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable-mdpi/incomming_call_background.xml" value="0.2833333333333333" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable-mdpi/incomming_call_background_expanded.xml" value="0.2833333333333333" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable-mdpi/incomming_call_background_non_rounded.xml" value="0.2833333333333333" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable-mdpi/incomming_call_background_spam.xml" value="0.2833333333333333" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable-xhdpi/avd_done.xml" value="0.29375" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/bg_incommingcallview_phoneno.xml" value="0.2833333333333333" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/bg_rounded_rectangle.xml" value="0.2833333333333333" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/bg_rounded_rectangle_24dp.xml" value="0.2833333333333333" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/contact_circular_background_danger.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/edit_text_phone_num.xml" value="0.28055555555555556" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/ic_baseline_edit_18_white.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.28055555555555556" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/ic_baseline_edit_24_white.xml" value="0.28055555555555556" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/drawable/ic_phone_line_white.xml" value="0.37864583333333335" />
-        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_incomming_call_view.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_incomming_call_feedback.xml" value="0.24074074074074073" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_incomming_call_view.xml" value="0.33" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_incomming_call_view_updated.xml" value="0.2" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_individual_call_log.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_individual_cotact_view.xml" value="0.3625" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_main.xml" value="0.24365942028985507" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_manage_notifications.xml" value="0.1762917933130699" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_permission_request.xml" value="0.264" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_permission_request_swipe.xml" value="0.20260416666666667" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/activity_premission_request.xml" value="0.3484375" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/bottom_sheet_block.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/bottom_sheet_block_feedback.xml" value="0.3625" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/contact_consent_fragment.xml" value="0.4" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/custom_blocked_item.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_contact_list.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_contacts.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_dialer.xml" value="0.3625" />
+        <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_first.xml" value="0.24444444444444444" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_search.xml" value="0.3625" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_search2.xml" value="0.3625" />
         <entry key="..\:/Users/thepz/AppProject/hashCaller/app/src/main/res/layout/fragment_second.xml" value="0.3625" />

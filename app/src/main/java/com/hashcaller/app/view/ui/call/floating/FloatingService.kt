@@ -135,7 +135,7 @@ class FloatingService: Service() {
                         WindowObj.clearReference()
                         window = null
                         if(mphoneNumberStr.isNotEmpty()){
-                            startActivityIncommingCallView(mphoneNumberStr, callEndedState, callHandledSim)
+                            startActivityIncommingCallViewUpdated(mphoneNumberStr, callEndedState, callHandledSim)
                         }
 
 //                                }
@@ -350,7 +350,7 @@ class FloatingService: Service() {
                         window?.close()
                         WindowObj.clearReference()
                         window = null
-                        startActivityIncommingCallView(
+                        startActivityIncommingCallViewUpdated(
                             mphoneNumberStr,
                             callEndedState,
                             callHandledSim
@@ -378,7 +378,7 @@ class FloatingService: Service() {
                         window?.close()
                         WindowObj.clearReference()
                         window = null
-                        startActivityIncommingCallView(
+                        startActivityIncommingCallViewUpdated(
                             mphoneNumberStr,
                             callEndedState,
                             callHandledSim
@@ -478,7 +478,7 @@ class FloatingService: Service() {
                                 window?.close()
                                     WindowObj.clearReference()
                                     window = null
-                                    startActivityIncommingCallView(
+                                    startActivityIncommingCallViewUpdated(
                                         incomingNumber,
                                         callEndedState,
                                         callHandledSim
