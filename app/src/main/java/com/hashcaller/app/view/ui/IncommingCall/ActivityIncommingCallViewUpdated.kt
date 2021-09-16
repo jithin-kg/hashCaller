@@ -13,9 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -191,7 +189,8 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         this.callersInfo = callersInfo
 
         binding.txtVLocaltion.text = callersInfo.country + " " + callersInfo.location
-        binding.txtVcallerName.text = if (callersInfo.firstName.isEmpty()) phoneNumber else callersInfo.firstName + " "+ callersInfo.lastName
+        binding.txtVcallerName.text =
+            if (callersInfo.firstName.isEmpty()) phoneNumber else callersInfo.firstName + " " + callersInfo.lastName
         if (callersInfo.spammCount > SPAM_THREASHOLD) {
             Log.d(TAG, "onCreate: spammer calling");
             binding.materialCardView.setCardBackgroundColor(getColor(R.color.spamText))
@@ -305,15 +304,27 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
         binding.suggestedNameEdittext.doOnTextChanged { text, _, _, count ->
             if (text != null) {
-                if (text.length > 3) {
-                    binding.txtVcallerName.text = text
-                    binding.applySuggestionButton.apply {
-                        visibility = View.VISIBLE
+
+                when {
+                    text.length > 100 -> {
+                        binding.textInputLayout3.isErrorEnabled = true
+                        binding.textInputLayout3.error = "Name too long"
+                        binding.applySuggestionButton.apply {
+                            visibility = View.GONE
+                        }
                     }
-                } else {
-                    binding.txtVcallerName.text = callersInfo?.firstName ?: phoneNumber
-                    binding.applySuggestionButton.apply {
-                        visibility = View.GONE
+                    text.length >= 3 -> {
+                        binding.textInputLayout3.isErrorEnabled = false
+                        binding.txtVcallerName.text = text
+                        binding.applySuggestionButton.apply {
+                            visibility = View.VISIBLE
+                        }
+                    }
+                    else -> {
+                        binding.txtVcallerName.text = callersInfo?.firstName ?: phoneNumber
+                        binding.applySuggestionButton.apply {
+                            visibility = View.GONE
+                        }
                     }
                 }
             }
@@ -323,7 +334,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     }
 
 
-
     @SuppressLint("LongLogTag")
     override fun onClick(v: View?) {
         Log.d(TAG, "onClick: ")
@@ -331,15 +341,21 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
             R.id.applySuggestionButton -> {
                 hideKeyboard(binding.suggestedNameEdittext)
-                incommingCallViewUpdatedModel.suggestName(binding.suggestedNameEdittext.text.toString(), phoneNumber)
+                incommingCallViewUpdatedModel.suggestName(
+                    binding.suggestedNameEdittext.text.toString(),
+                    phoneNumber
+                )
                     .observe(this) {
                         if (it == true) {
                             Toast.makeText(applicationContext, "Name updated! ", Toast.LENGTH_SHORT)
                                 .show()
                             binding.suggestCard.hideAnim()
-                        }
-                        else
-                            Toast.makeText(applicationContext, "Unable to update name! ", Toast.LENGTH_SHORT).show()
+                        } else
+                            Toast.makeText(
+                                applicationContext,
+                                "Unable to update name! ",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
                     }
             }
@@ -351,7 +367,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                 }
                 binding.thumbsDownButton.scaleOutAnim(500)
 
-                if(callersInfo != null) {
+                if (callersInfo != null) {
                     val name = callersInfo!!.firstName + " " + callersInfo!!.lastName
                     incommingCallViewUpdatedModel.upvote(name, phoneNumber).observe(this) {
                         if (it == true) {
@@ -373,7 +389,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                 }
 
 
-
             }
             R.id.txtVcallerName -> {
                 binding.suggestCard.showAnim()
@@ -386,7 +401,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
                 binding.thumbsUpButton.scaleOutAnim(600)
 
-                if(callersInfo != null) {
+                if (callersInfo != null) {
                     val name = callersInfo!!.firstName + " " + callersInfo!!.lastName
                     incommingCallViewUpdatedModel.upvote(name, phoneNumber).observe(this) {
                         if (it == true) {

@@ -19,13 +19,13 @@ interface IIncomingCallService {
         @Header("Authorization") token: String
     ): Response<SuggestNameModel.Response>
 
-    @POST("suggestName/upvoteName")
+    @POST("community/upvoteName")
     suspend fun upVote(
         @Body data: SuggestNameModel,
         @Header("Authorization") token: String
     ): Response<SuggestNameModel.Response>
 
-    @POST("suggestName/downvoteName")
+    @POST("community/downvoteName")
     suspend fun downVote(
         @Body data: SuggestNameModel,
         @Header("Authorization") token: String
