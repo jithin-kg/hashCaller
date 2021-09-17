@@ -131,17 +131,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
     private fun observeSMSList() {
         searchViewmodel.smsListOfLivedata.observe(this, Observer {
             this.smsAdapter?.setList(it)
-            if (showSMSEnabled && it.size > 0) {
-                isFoundInSMS = true
-//                binding.recyclerViewSMS.beVisible()
-//                binding.tvSMS.beVisible()
-//                binding.tvNotInSMS.beInvisible()
-            } else {
-                isFoundInSMS = false
-//                binding.recyclerViewSMS.beInvisible()
-//                binding.tvSMS.beVisible()
-//                binding.tvNotInSMS.beVisible()
-            }
+            isFoundInSMS = showSMSEnabled && it.size > 0
         })
     }
 

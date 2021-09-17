@@ -103,4 +103,7 @@
     <string name="work_illustrations_by_storyset"><u>Work illustrations by Storyset</u></string>
     <string name="android_open_source_project"><u># Android Open Source Project</u></string>
     <string name="remix_icon"><u># RemixIcon</u></string>
+    <string name="contacts_consent">We may process your personal information relating to you if you use your products or services. Such information may include your phone number (hashed) ,call log,contacts, and spam reports. All phone numbers are processed send and stored as secure hash values. We use these information to improve our services. We will not use this information for any other purposes. We do not share or sell your personal information with third parties.</string>
+    <string name="agree">" I've read and agree to Hashcaller's <br/> <u>Terms of service</u> and <u> privacy policy</u> "</string>
+    <string name="initial_info_title">Complete your \n Profile</string>
 </resources>

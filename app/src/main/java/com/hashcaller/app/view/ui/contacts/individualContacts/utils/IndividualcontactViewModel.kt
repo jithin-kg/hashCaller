@@ -310,6 +310,7 @@ class IndividualcontactViewModel(
              contactForview.country = getStrinProp(infoInCprovider?.country, infoInDb?.country)
 //             contactForview.lineType = getStrinProp(infoInCprovider?.lineType, infoInDb?.lineType)
              contactForview.location = getStrinProp(infoInCprovider?.location, infoInDb?.city)
+             contactForview.hUid = infoInDb?.hUid?:""
             if(infoInCprovider?.firstName.isNullOrEmpty()){
                 contactForview.isInfoFoundInServer = infoInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER
             }else {

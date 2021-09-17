@@ -39,6 +39,28 @@
             app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
             app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
 
+        <ImageView
+            android:id="@+id/imgUserIcon"
+            android:layout_width="@dimen/width_icon_user_badge_list"
+            android:layout_height="@dimen/width_icon_user_badge_list"
+            android:elevation="6dp"
+            android:src="@drawable/ic_person_outline"
+            app:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+            app:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+            app:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+            app:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+            />
+        <ImageView
+            android:id="@+id/imgUserIconBg"
+            android:layout_width="@dimen/width_user_bade_list_bg"
+            android:layout_height="@dimen/width_user_bade_list_bg"
+            android:elevation="5dp"
+            android:src="@drawable/user_badge_background"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewCrclr"
+            app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
+            android:layout_marginBottom="2dp"
+            android:layout_marginStart="2dp"
+            />
         <TextView
             android:id="@+id/textViewCrclr"
             android:layout_width="@dimen/circular_avatar_item_width"
@@ -52,6 +74,8 @@
             android:transitionName="firstLetterTransition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
         <androidx.cardview.widget.CardView
             android:id="@+id/card"
             android:layout_width="@dimen/circular_avatar_item_width"
@@ -176,10 +200,37 @@
             app:layout_constraintTop_toBottomOf="@+id/imgVCallType"
             app:srcCompat="@drawable/horizontal_line" />
 
+        <ImageView
+            android:id="@+id/imgVerifiedBackground"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:src="@drawable/user_badge_verified"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textVcallerName"
+            app:layout_constraintStart_toEndOf="@+id/textVcallerName"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="invisible"
+            />
+        <ImageView
+            android:id="@+id/imgVDone"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_baseline_done_24"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVerifiedBackground"
+            app:layout_constraintStart_toStartOf="@+id/imgVerifiedBackground"
+            android:elevation="6dp"
+            android:alpha="0.70"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="invisible"
+            />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgVIdentfByHash"
             android:layout_width="@dimen/identified_by_hash_width"
             android:layout_height="@dimen/identified_by_hash_width"
+            android:visibility="invisible"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="16dp"
             android:src="@drawable/ic_hash_circle"

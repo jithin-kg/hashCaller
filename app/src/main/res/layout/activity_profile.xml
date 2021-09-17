@@ -39,6 +39,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_arrow_back_white" />
 
+
             <TextView
                 android:id="@+id/tvDialerToolbar"
                 android:layout_width="wrap_content"
@@ -53,147 +54,250 @@
                 app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock"
                 app:layout_constraintVertical_bias="0.538" />
 
+            <ImageButton
+                android:id="@+id/btnUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnBackBlock"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnBackBlock"
+                android:elevation="2dp"
+                android:padding="8dp"
+                android:layout_marginEnd="@dimen/margin_padding_size_medium"
+                android:src="@drawable/ic_baseline_done_24"
+                style="@android:style/Widget.Holo.Button.Borderless"
+                />
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/pgBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:elevation="18dp"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                app:trackColor="@color/colorWhite"
+                app:indicatorColor="@color/colorPrimary"
+                app:trackThickness="2dp"
+                app:indicatorSize="32dp"
+                app:layout_constraintTop_toTopOf="@+id/btnUpdate"
+                app:layout_constraintBottom_toBottomOf="@+id/btnUpdate"
+                app:layout_constraintEnd_toEndOf="@+id/btnUpdate"
+                app:layout_constraintStart_toStartOf="@+id/btnUpdate"
+                tools:layout_editor_absoluteX="186dp"
+                tools:layout_editor_absoluteY="667dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/avatar_profile_width"
-        android:layout_height="@dimen/avatar_profile_width"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/contact_circular_background_grey"
-        android:clickable="true"
-        android:tag="avatar"
-        android:transitionName="contactImageTransition"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarProfile" />
-
-    <TextView
-        android:id="@+id/tvFirstLetterMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="J"
-        android:textColor="@color/colorWhite"
-        android:textSize="32sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
-        app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
-        app:layout_constraintStart_toStartOf="@+id/ivAvatar"
-        app:layout_constraintTop_toTopOf="@+id/ivAvatar" />
-
-    <ImageView
-        android:id="@+id/imgVCamBground"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="12dp"
-        android:src="@drawable/contact_circular_background_primary"
-        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
-        app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
-
-        />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imgVCam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.84"
-        android:elevation="8dp"
-        android:src="@drawable/ic_baseline_photo_camera_24"
-        app:layout_constraintBottom_toBottomOf="@+id/imgVCamBground"
-        app:layout_constraintEnd_toEndOf="@+id/imgVCamBground"
-        app:layout_constraintStart_toStartOf="@+id/imgVCamBground"
-        app:layout_constraintTop_toTopOf="@+id/imgVCamBground" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/outlinedTextField"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollV"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:hint="First name"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        app:endIconMode="clear_text"
-        app:helperTextTextColor="@color/spamText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivAvatar">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextFName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="textPersonName"
-            app:counterMaxLength="25" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/outlinedTextField2"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
-        android:hint="Last name"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        app:endIconMode="clear_text"
-        app:helperTextTextColor="@color/spamText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outlinedTextField">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextLName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="textPersonName"
-            app:counterMaxLength="25" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/pgBar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:elevation="18dp"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:trackColor="@color/colorWhite"
-        app:indicatorColor="@color/colorPrimary"
-        app:trackThickness="2dp"
-        app:indicatorSize="32dp"
-        app:layout_constraintTop_toTopOf="@+id/btnUpdate"
-        app:layout_constraintBottom_toBottomOf="@+id/btnUpdate"
-        app:layout_constraintEnd_toEndOf="@+id/btnUpdate"
-        app:layout_constraintStart_toStartOf="@+id/btnUpdate"
-        tools:layout_editor_absoluteX="186dp"
-        tools:layout_editor_absoluteY="667dp" />
-
-    <Button
-        android:id="@+id/btnUpdate"
-        android:layout_width="0dp"
-        android:visibility="invisible"
-
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:paddingVertical="8dp"
-        android:text="Save"
-        android:textAllCaps="false"
-        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@+id/appBarProfile"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="@dimen/avatar_profile_width"
+                android:layout_height="@dimen/avatar_profile_width"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/contact_circular_background_grey"
+                android:clickable="true"
+                android:tag="avatar"
+                android:transitionName="contactImageTransition"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tvFirstLetterMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="J"
+                android:textColor="@color/colorWhite"
+                android:textSize="32sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+                app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
+                app:layout_constraintStart_toStartOf="@+id/ivAvatar"
+                app:layout_constraintTop_toTopOf="@+id/ivAvatar" />
+
+            <ImageView
+                android:id="@+id/imgVCamBground"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="12dp"
+                android:src="@drawable/contact_circular_background_primary"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+                app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
+
+                />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgVCam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.84"
+                android:elevation="8dp"
+                android:src="@drawable/ic_baseline_photo_camera_24"
+                app:layout_constraintBottom_toBottomOf="@+id/imgVCamBground"
+                app:layout_constraintEnd_toEndOf="@+id/imgVCamBground"
+                app:layout_constraintStart_toStartOf="@+id/imgVCamBground"
+                app:layout_constraintTop_toTopOf="@+id/imgVCamBground" />
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlinedTextField"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="32dp"
+                android:hint="First name"
+                app:boxBackgroundColor="@color/colorBackground"
+                app:counterEnabled="false"
+                app:counterMaxLength="25"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/spamText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivAvatar">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextFName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textPersonName"
+                    android:paddingTop="32dp"
+                    app:counterMaxLength="25" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlinedTextField2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:hint="Last name"
+                app:boxBackgroundColor="@color/colorBackground"
+                app:counterEnabled="false"
+                app:counterMaxLength="25"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/spamText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/outlinedTextField">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextLName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textPersonName"
+                    app:counterMaxLength="25"
+                    android:paddingTop="32dp"
+
+
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlinedTextField3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:hint="Email"
+                app:boxBackgroundColor="@color/colorBackground"
+                app:counterEnabled="false"
+                app:counterMaxLength="100"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/spamText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/outlinedTextField2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textEmailAddress"
+                    android:paddingTop="32dp"
+                    app:counterMaxLength="100"
+
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlinedTextField4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:hint="Bio"
+                app:boxBackgroundColor="@color/colorBackground"
+                app:counterEnabled="false"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/spamText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/outlinedTextField3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextBio"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textEmailAddress"
+                    android:paddingTop="32dp"
+                    android:text=""
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnGoogle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="44dp"
+                android:layout_marginEnd="16dp"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                app:icon="@drawable/ic_google_fill"
+                android:layout_marginStart="16dp"
+                android:textColor="@color/colorWhite"
+                android:text="Connect to Google"
+                app:iconTint="@color/colorWhite"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/outlinedTextField4"
+                />
+
+            <Button
+                android:id="@+id/btnSignout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="signout"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

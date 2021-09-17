@@ -11,6 +11,7 @@ import com.hashcaller.app.network.user.IuserService
 import com.hashcaller.app.network.user.SingupResponse
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.auth.TokenManager
+import com.hashcaller.app.view.ui.auth.getinitialInfos.GoogleUserProfile
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserInfo
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserInfoDAO
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
@@ -179,6 +180,10 @@ class UserNetworkRepository(
     suspend fun deactivate() :Response<BasicResponseItem<String>>?  = withContext(Dispatchers.IO) {
         token = tokenHelper?.getToken()
         return@withContext token?.let { retrofitService.deactivateMyAccount(it) }
+    }
+
+    fun updateProfileWithGoogle(profile: GoogleUserProfile) {
+
     }
 
 

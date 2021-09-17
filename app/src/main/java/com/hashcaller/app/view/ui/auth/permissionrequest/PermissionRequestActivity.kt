@@ -97,7 +97,7 @@ class PermissionRequestActivity : AppCompatActivity() {
         observe()
         setupUi()
     }
-
+//androidx.constraintlayout.motion.widget.MotionLayout
     private fun observe() = with(viewModel) {
 
         currentDestination.observe(this@PermissionRequestActivity) {

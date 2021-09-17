@@ -182,6 +182,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         }else {
             isDefault = true
         }
+
         return isDefault
 //        viewmodel?.setShowDfltCallerIdLayout(showLayout)
     }

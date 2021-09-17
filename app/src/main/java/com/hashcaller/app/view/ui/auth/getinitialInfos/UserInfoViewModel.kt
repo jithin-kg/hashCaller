@@ -281,4 +281,17 @@ class UserInfoViewModel(
         val response = userNetworkRepository.deactivate()
        emit( response?.body()?.statusCode)
     }
+
+    fun updateUserWithGoogleProfile(firstName: String, lastName: String, googlePhotoUrl:String) :LiveData<Int> = liveData {
+
+        val profile = GoogleUserProfile(
+            firstName= firstName,
+            lastName = lastName,
+            photoUrI = googlePhotoUrl,
+            email =""
+        )
+        val response = userNetworkRepository.updateProfileWithGoogle(profile)
+    }
+
+
 }

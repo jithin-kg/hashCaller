@@ -144,6 +144,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun obseveContactForView() {
         viewModel.contactForViewLivedata.observe(this, Observer {
             if(it.isInInContacts){
+
                 binding.tvisInContact.text = "This person is in your contact"
             }else {
                 binding.tvisInContact.text = "This person is not in your contact"
@@ -154,12 +155,21 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }else {
                 binding.layoutSpamCountt.beGone()
             }
+
             binding.tvFirstLetter.text = it.firstName[0].toString()
             binding.tvName.text = it.firstName + it.lastName
             binding.tvLocationValues.text = it.country + " " + it.location
             binding.tvLocationValues.text = it.spammCount.toString()
             if(it.firstName==phoneNum){
                 binding.layoutNumber.beGone()
+            }
+
+            if(it.hUid.isNotEmpty()){
+                binding.imgUserIcon.beVisible()
+                binding.imgUserIconBg.beVisible()
+            }else {
+                binding.imgUserIcon.beInvisible()
+                binding.imgUserIconBg.beInvisible()
             }
         })
     }

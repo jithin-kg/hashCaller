@@ -30,7 +30,7 @@
 
     <color name="colorSplash">#145291</color>
     <color name="bottom_nav_color">#E2ECFD</color>
-    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBackground">#FCFFFFFF</color>
 
     <color name="primary_analogus_one">#4F8FBF</color>
     <color name="primary_analogus_two">#7F4FBF</color>
@@ -60,6 +60,7 @@
     <color name="colorControlNormal">#CCCCCC</color>
 
     <color name="colorWhite">#FFFFFF</color>
+    <color name="badgeBackground">#2797EF</color>
     <color name="spamText">#ED4133</color>
     <color name="statusBar">#E2ECFD</color>
     <color name="colorlightBlueviking">#79BEDB</color>
@@ -77,6 +78,7 @@
     <color name="numbersTextColor">#1B6EAC</color>
 
     <color name="textColor">#000000</color>
+    <color name="userBadgeBg">#3A3D3E</color>
     <color name="dashColor">#65000000</color>
     <color name="bottomNavIconColor">@color/colorPrimary</color>
     <color name="textColorBlack">#000000</color>

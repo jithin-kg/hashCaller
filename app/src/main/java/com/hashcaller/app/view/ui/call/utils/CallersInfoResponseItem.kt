@@ -8,10 +8,8 @@ import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 data class CallersInfoResponseItem (
     @SerializedName("phoneNumber")
     var hash:String = "",
-
     @SerializedName("firstName")
     val firstName: String = "",
-
     @SerializedName("lastName")
     val lastName: String = "",
     val nameInPhoneBook:String,
@@ -24,6 +22,7 @@ data class CallersInfoResponseItem (
     @SerializedName("isInfoFoundInDb")
     val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
     var imageThumbnail:String? = "",
-    val hUid:String = ""
+    val hUid:String = "",
+    val isVerifiedUser:Boolean = false,
 ){
 }

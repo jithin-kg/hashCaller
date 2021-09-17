@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
-    tools:context=".app.view.ui.auth.getinitialInfos.GetInitialUserInfoActivity">
+    android:background="@color/colorBackground">
 
     <!--    <de.hdodenhof.circleimageview.CircleImageView-->
     <!--        android:id="@+id/imgVAvatarInitial"-->
@@ -18,6 +17,79 @@
     <!--        app:layout_constraintHorizontal_bias="0.5"-->
     <!--        app:layout_constraintStart_toStartOf="parent"-->
     <!--        app:layout_constraintTop_toTopOf="@+id/guideline2" />-->
+
+    <TextView
+        android:id="@+id/tvSetup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+
+        android:alpha="0.84"
+        android:text="@string/initial_info_title"
+        android:textColor="@color/textColor"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Complete your \n Profile" />
+
+    <Button
+        android:id="@+id/btnGoogle"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/white"
+        android:text="Complete using Google"
+        android:textAllCaps="false"
+        android:textColor="@color/textColorBlack"
+        android:drawableLeft="@drawable/ic_icons8_google"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSetup" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:alpha="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvOr"
+        app:layout_constraintTop_toTopOf="@+id/tvOr"
+        app:layout_constraintBottom_toBottomOf="@+id/tvOr"
+        app:srcCompat="@drawable/horizontal_line_settings"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginEnd="@dimen/margin_padding_size_small"
+
+        />
+
+    <TextView
+        android:id="@+id/tvOr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OR"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoogle"
+        android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:alpha="0.12"
+        app:layout_constraintStart_toEndOf="@+id/tvOr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvOr"
+        app:layout_constraintBottom_toBottomOf="@+id/tvOr"
+        app:srcCompat="@drawable/horizontal_line_settings"
+        android:layout_marginStart="@dimen/margin_padding_size_small"
+        android:layout_marginEnd="@dimen/margin_padding_size_medium"
+
+        />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgVAvatarInitial"
         android:layout_width="@dimen/individual_contact_avatar"
@@ -29,7 +101,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+        app:layout_constraintTop_toBottomOf="@+id/tvOr"
+        />
 
     <ImageView
         android:id="@+id/imgVCamBground"
@@ -55,22 +128,16 @@
         app:layout_constraintStart_toStartOf="@+id/imgVCamBground"
         app:layout_constraintTop_toTopOf="@+id/imgVCamBground" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.09" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlinedTextField"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
-        android:hint="First name (required)"
-        app:counterEnabled="true"
+        android:hint="First name"
+        app:boxBackgroundColor="@color/colorBackground"
+        app:counterEnabled="false"
         app:counterMaxLength="25"
         app:endIconMode="clear_text"
         app:helperTextTextColor="@color/spamText"
@@ -83,16 +150,15 @@
             android:id="@+id/editTextFName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:maxLines="1"
-            android:maxLength="30"
             android:inputType="textPersonName"
+            android:maxLength="30"
+            android:maxLines="1"
             app:counterMaxLength="25" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlinedTextField2"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -100,9 +166,9 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:hint="Last name"
-        app:counterEnabled="true"
+        app:boxBackgroundColor="@color/colorBackground"
+        app:counterEnabled="false"
         app:counterMaxLength="25"
-
         app:endIconMode="clear_text"
         app:helperTextTextColor="@color/spamText"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,41 +178,29 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextLName"
-            android:maxLength="30"
-            android:maxLines="1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:maxLength="30"
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnUserContinue"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:paddingVertical="@dimen/primary_button_vertical_padding"
         android:text="Continue"
+        android:textSize="16sp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
         android:textAllCaps="false"
         android:textColor="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/outlinedTextField2" />
 
-    <TextView
-        android:id="@+id/tvSetup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:alpha="0.84"
-        android:text="Configure your profile"
-        android:textColor="@color/textColor"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/pgBarInfo"

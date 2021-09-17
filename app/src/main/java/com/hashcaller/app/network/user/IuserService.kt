@@ -13,7 +13,7 @@ import retrofit2.http.*
 
 @Keep
 interface IuserService {
-    companion object{
+    companion object {
 
 //        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
 

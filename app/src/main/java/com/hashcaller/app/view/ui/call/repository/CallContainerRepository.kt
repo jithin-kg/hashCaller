@@ -405,11 +405,6 @@ class CallContainerRepository(
                      *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
                      *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
                      */
-                    /**
-                     *   CallLog.Calls.INCOMING_TYPE:  "INCOMING"; ------->1
-                     *   CallLog.Calls.OUTGOING_TYPE:   "OUTGOING";----> 2
-                     *   CallLog.Calls.MISSED_TYPE:  "MISSED"; -------->3
-                     */
 
 //                    dateInMilliseconds += name + id + Math.random().toString();
                     var isMarked = false
