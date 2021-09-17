@@ -34,6 +34,7 @@ class IncomingCallRepository(private val tokenHelper: TokenHelper?) {
 
         }catch (e: Exception){
             Log.e(TAG, "suggestName: ",e)
+            return@withContext null
         }
 
         return@withContext result
@@ -50,6 +51,7 @@ class IncomingCallRepository(private val tokenHelper: TokenHelper?) {
 
         }catch (e: Exception){
             Log.e(TAG, "suggestName: ",e)
+            return@withContext null
         }
 
         return@withContext result
@@ -67,6 +69,7 @@ class IncomingCallRepository(private val tokenHelper: TokenHelper?) {
 
         }catch (e: Exception){
             Log.e(TAG, "suggestName: ",e)
+            return@withContext null
         }
 
         return@withContext result

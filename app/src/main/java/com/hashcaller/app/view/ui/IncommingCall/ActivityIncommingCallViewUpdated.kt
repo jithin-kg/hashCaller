@@ -248,7 +248,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
         incommingCallViewUpdatedModel = ViewModelProvider(
             this,
-            IncommingCallInjectorUtil.provideFactory(tokenHelper)
+            IncommingCallInjectorUtil.provideFactory(application, tokenHelper)
         )[IncommingCallViewUpdatedModel::class.java]
 
     }
@@ -345,19 +345,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                     binding.suggestedNameEdittext.text.toString(),
                     phoneNumber
                 )
-                    .observe(this) {
-                        if (it == true) {
-                            Toast.makeText(applicationContext, "Name updated! ", Toast.LENGTH_SHORT)
-                                .show()
-                            binding.suggestCard.hideAnim()
-                        } else
-                            Toast.makeText(
-                                applicationContext,
-                                "Unable to update name! ",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                    }
+                binding.suggestCard.hideAnim()
             }
 
             R.id.thumbsDownButton -> {
@@ -369,23 +357,18 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
                 if (callersInfo != null) {
                     val name = callersInfo!!.firstName + " " + callersInfo!!.lastName
-                    incommingCallViewUpdatedModel.upvote(name, phoneNumber).observe(this) {
-                        if (it == true) {
-                            binding.helpfulMessage.animateColor(800L, endColor = 0xffFFEBEE.toInt())
-                                .addListener(object : Animator.AnimatorListener {
-                                    override fun onAnimationCancel(animation: Animator?) {}
-                                    override fun onAnimationEnd(animation: Animator?) {
-                                        helpfulMessage.slideBelowHide()
+                    incommingCallViewUpdatedModel.upvote(name, phoneNumber)
+                    binding.helpfulMessage.animateColor(800L, endColor = 0xffFFEBEE.toInt())
+                        .addListener(object : Animator.AnimatorListener {
+                            override fun onAnimationCancel(animation: Animator?) {}
+                            override fun onAnimationEnd(animation: Animator?) {
+                                helpfulMessage.slideBelowHide()
 
-                                    }
+                            }
 
-                                    override fun onAnimationRepeat(animation: Animator?) {}
-                                    override fun onAnimationStart(animation: Animator?) {}
-                                })
-                        } else {
-                            toast("Unable to vote!")
-                        }
-                    }
+                            override fun onAnimationRepeat(animation: Animator?) {}
+                            override fun onAnimationStart(animation: Animator?) {}
+                        })
                 }
 
 
@@ -403,23 +386,18 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
                 if (callersInfo != null) {
                     val name = callersInfo!!.firstName + " " + callersInfo!!.lastName
-                    incommingCallViewUpdatedModel.upvote(name, phoneNumber).observe(this) {
-                        if (it == true) {
-                            binding.helpfulMessage.animateColor(800L, endColor = 0xffC8E6C9.toInt())
-                                .addListener(object : Animator.AnimatorListener {
-                                    override fun onAnimationCancel(animation: Animator?) {}
-                                    override fun onAnimationEnd(animation: Animator?) {
-                                        helpfulMessage.slideBelowHide()
+                    incommingCallViewUpdatedModel.upvote(name, phoneNumber)
+                    binding.helpfulMessage.animateColor(800L, endColor = 0xffC8E6C9.toInt())
+                        .addListener(object : Animator.AnimatorListener {
+                            override fun onAnimationCancel(animation: Animator?) {}
+                            override fun onAnimationEnd(animation: Animator?) {
+                                helpfulMessage.slideBelowHide()
 
-                                    }
+                            }
 
-                                    override fun onAnimationRepeat(animation: Animator?) {}
-                                    override fun onAnimationStart(animation: Animator?) {}
-                                })
-                        } else {
-                            toast("Unable to vote")
-                        }
-                    }
+                            override fun onAnimationRepeat(animation: Animator?) {}
+                            override fun onAnimationStart(animation: Animator?) {}
+                        })
                 }
 
 
@@ -431,13 +409,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 //                reportuser()
             }
             R.id.blockButton -> {
-                if (EasyPermissions.hasPermissions(this, Manifest.permission.CALL_PHONE)) {
-                    makeCall("+${formatPhoneNumber(phoneNumber)}")
-                    finishAfterTransition()
-                } else {
-                    requestCallPhonePermission()
-                }
-
+               showBottomSheetDialog()
             }
 
             R.id.callButton -> {
