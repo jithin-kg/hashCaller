@@ -16,7 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ContactListBinding
 import com.hashcaller.app.databinding.FragmentContactsContainerBinding
@@ -34,13 +33,10 @@ import com.hashcaller.app.view.ui.contacts.utils.ContactsViewModel
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.app.view.ui.sms.individual.util.beVisible
-import com.hashcaller.app.view.ui.sms.individual.util.toast
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
-import kotlinx.coroutines.delay
-import java.lang.RuntimeException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -52,7 +48,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ContactsContainerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFragmentSelection {
+class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
     private var _binding: FragmentContactsContainerBinding? = null
 
     private val binding get() = _binding!!
@@ -259,11 +255,11 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
             R.id.fabBtn -> {
                 Log.d(TAG, "onClick: delete")
                 contactViewModel.delteContactsInformation()
-               context?. startActivityIncommingCallView(
-                   "+9180861762224",
-                   "Missed Call",
-                   -1
-               )
+                context?.startActivityIncommingCallViewUpdated(
+                    "+9180861762224",
+                    "Missed Call",
+                    -1
+                )
                 lifecycleScope.launchWhenStarted {
 //                    delay(2000L)
 //                    throw RuntimeException("Test crash")
@@ -323,7 +319,6 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 //            ContextThemeWrapper(activity, R.style.Theme_MyDarkTheme)
 
 
-
 //        binding.searchViewContacts.onFocusChangeListener =
 //            View.OnFocusChangeListener { view, hasFocus ->
 //
@@ -336,10 +331,10 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     }
 
-    @SuppressLint(  "HardwareIds")
+    @SuppressLint("HardwareIds")
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if(!hidden && !this::contactViewModel.isInitialized){
+        if (!hidden && !this::contactViewModel.isInitialized) {
             if (context?.hasReadContactsPermission() == true) {
 
 //               if (ActivityCompat.checkSelfPermission(
@@ -375,8 +370,6 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
                 getData()
 
 
-
-
             } else {
                 hideRecyevlerView()
             }
@@ -410,10 +403,12 @@ class ContactsContainerFragment : Fragment() , View.OnClickListener, IDefaultFra
 
     override fun onPause() {
         super.onPause()
-        }
+    }
 
     override var isDefaultFgmnt: Boolean
         get() = isDflt
-        set(value) {isDflt = value}
+        set(value) {
+            isDflt = value
+        }
 
 }

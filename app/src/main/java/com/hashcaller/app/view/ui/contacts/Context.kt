@@ -65,6 +65,7 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
 import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallView
+import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallViewUpdated
 import com.hashcaller.app.view.ui.call.dialer.util.CallLogLiveData
 import com.hashcaller.app.view.ui.call.floating.FloatingService
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
@@ -327,6 +328,20 @@ fun Context.startActivityIncommingCallView(
 ) {
 
     val i = Intent(this, ActivityIncommingCallView::class.java)
+    i.putExtra(PHONE_NUMBER, phoneNumber?:"")
+    i.putExtra(CALL_HANDLED_STATE, prevCallState?:"" )
+    i.putExtra(CALL_HANDLED_SIM, callHandledSim )
+    i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
+    startActivity(i)
+}
+
+fun Context.startActivityIncommingCallViewUpdated(
+    phoneNumber: String,
+    prevCallState: String?,
+    callHandledSim: Int
+) {
+
+    val i = Intent(this, ActivityIncommingCallViewUpdated::class.java)
     i.putExtra(PHONE_NUMBER, phoneNumber?:"")
     i.putExtra(CALL_HANDLED_STATE, prevCallState?:"" )
     i.putExtra(CALL_HANDLED_SIM, callHandledSim )

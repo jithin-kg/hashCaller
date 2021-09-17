@@ -188,6 +188,13 @@
             android:theme="@style/PopupTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".view.ui.IncommingCall.ActivityIncommingCallViewUpdated"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:theme="@style/PopupTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppThemeStatusBar" > <!-- https://developer.android.com/training/keyboard-input/visibility -->

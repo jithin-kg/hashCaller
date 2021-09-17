@@ -48,12 +48,16 @@ import com.hashcaller.app.datastore.DataStoreViewmodel.Companion.PERMISSION__ONL
 import com.hashcaller.app.datastore.DataStoreViewmodel.Companion.USER_INFO_AND_PERMISSION_GIVEN
 import com.hashcaller.app.datastore.DataStoreViewmodel.Companion.USER_INFO_ONLY_GIVEN
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.USER_INFO_AVIALABLE_IN_DB
+import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.hashcaller.app.utils.auth.TokenHelper
+import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.utils.crypto.KeyManager
+import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallView
+import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallViewUpdated
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.blockConfig.BlockConfigFragment
 import com.hashcaller.app.view.ui.call.CallFragment
@@ -184,7 +188,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         checkUserInfoAvaialbleInDb(savedInstanceState)
 
 //        observeHashedNumbersTable()
-
+       
+//        val i = Intent(this, ActivityIncommingCallViewUpdated::class.java)
+//        i.putExtra(IntentKeys.PHONE_NUMBER, "+918281600086")
+//        i.putExtra(IntentKeys.CALL_HANDLED_STATE, "Missed call" )
+//        i.putExtra(IntentKeys.CALL_HANDLED_SIM,Constants.SIM_ONE)
+//        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
+//        startActivity(i)
+//        finish()
 
     }
 

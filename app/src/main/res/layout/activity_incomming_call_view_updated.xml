@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutIncommingCall"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:backgroundTint="@android:color/transparent"
+    android:clickable="true"
+    android:excludeFromRecents="true"
+    android:orientation="vertical"
+    android:focusable="true"
+    android:padding="8dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#3398ED"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/actionsCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgVAvatarIncomming"
+                android:layout_width="@dimen/incomming_call_view_avatar_width"
+                android:layout_height="@dimen/incomming_call_view_avatar_width"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/circular_avatar_main_background"
+                android:clickable="true"
+                app:layout_constraintBottom_toTopOf="@+id/helpfulMessage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.25"
+                app:srcCompat="@drawable/circular_avatar_main_background" />
+
+            <ImageView
+                android:id="@+id/imgBtnCloseIncommin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_close_white" />
+
+            <FrameLayout
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:id="@+id/nameFrame"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/txtVLocaltion"
+                app:layout_constraintEnd_toStartOf="@+id/imgBtnCloseIncommin"
+                app:layout_constraintStart_toEndOf="@+id/imgVAvatarIncomming"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread">
+
+                <TextView
+                    android:id="@+id/txtVcallerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:drawableEnd="@drawable/ic_baseline_edit_18_white"
+                    android:drawablePadding="8dp"
+                    android:letterSpacing="0.1"
+                    android:maxLines="2"
+                    android:text="Prafuldev V R"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20sp" />
+            </FrameLayout>
+          
+            
+            <ImageView
+                android:id="@+id/sim"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="8dp"
+
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_sim_2_line_white"
+                app:layout_constraintBottom_toTopOf="@+id/helpfulMessage"
+                app:layout_constraintStart_toStartOf="@+id/nameFrame"
+                app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumIncomming" />
+
+
+            <TextView
+                android:id="@+id/tvCallEndState"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:alpha="0.74"
+
+                android:text="Call ended"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/sim"
+                app:layout_constraintStart_toEndOf="@+id/sim"
+                app:layout_constraintTop_toTopOf="@+id/sim" />
+
+            <TextView
+                android:id="@+id/txtVLocaltion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.79"
+                android:text="Location"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/tvPhoneNumIncomming"
+                app:layout_constraintStart_toStartOf="@+id/nameFrame"
+                app:layout_constraintTop_toBottomOf="@+id/nameFrame" />
+
+            <TextView
+                android:id="@+id/tvPhoneNumIncomming"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="+91 808613213"
+                android:textColor="@color/colorWhite"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/sim"
+                app:layout_constraintStart_toStartOf="@+id/nameFrame"
+                app:layout_constraintTop_toBottomOf="@+id/txtVLocaltion" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/helpfulMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#ffffff"
+                android:gravity="center_vertical"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sim">
+
+                <TextView
+
+                    android:id="@+id/textView26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.79"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="12dp"
+                    android:text="Was this suggestion helpful?"
+                    android:textColor="@color/textColorBlack"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="@+id/thumbsUpButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/thumbsUpButton" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/thumbsUpButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:scaleX="0.6"
+                    android:scaleY="0.6"
+                    android:src="@drawable/ic_baseline_thumb_up_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView26"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="#53A55E" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/thumbsDownButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:scaleX="0.6"
+                    android:scaleY="0.6"
+                    android:src="@drawable/ic_baseline_thumb_down_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/thumbsUpButton"
+                    app:layout_constraintStart_toEndOf="@+id/thumbsUpButton"
+                    app:layout_constraintTop_toTopOf="@+id/thumbsUpButton"
+                    app:tint="#B55A5A" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+
+        android:id="@+id/suggestCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardElevation="12dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout3"
+                android:animateLayoutChanges="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/applySuggestionButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/suggestedNameEdittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Suggest a better name"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/textColorBlack"
+                    android:textColorHint="@color/darktGray" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/applySuggestionButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:animateLayoutChanges="true"
+                android:text="save"
+                android:textColor="@color/colorWhite"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textInputLayout3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/actionsCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="#fdFFFFFF"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/callButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/blockButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rounded_rectangle"
+                    android:src="@drawable/ic_phone_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:text="Call"
+                    android:textColor="@color/textColorBlack" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="#2F101010" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/blockButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/callButton"
+                app:layout_constraintEnd_toStartOf="@+id/detailsButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/callButton"
+                app:layout_constraintTop_toTopOf="@+id/callButton">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rounded_rectangle"
+                    android:src="@drawable/ic_baseline_block_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:text="Block"
+                    android:textColor="@color/textColorBlack" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="#2F101010" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/detailsButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/callButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/blockButton"
+                app:layout_constraintTop_toTopOf="@+id/callButton">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rounded_rectangle"
+                    android:src="@drawable/ic_search_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:text="Details"
+                    android:textColor="@color/textColorBlack" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <!--            <androidx.appcompat.widget.LinearLayoutCompat-->
+            <!--                android:id="@+id/helpfulMessage"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="16dp"-->
+            <!--                android:layout_marginEnd="16dp"-->
+            <!--                android:layout_marginBottom="8dp"-->
+            <!--                android:gravity="center_vertical"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent">-->
+
+            <!--                <TextView-->
+
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:alpha="0.79"-->
+            <!--                    android:paddingStart="8dp"-->
+            <!--                    android:paddingEnd="12dp"-->
+            <!--                    android:text="Was this suggestion helpful?"-->
+            <!--                    android:textColor="@color/textColorBlack"-->
+            <!--                    android:textSize="12sp"-->
+            <!--                    android:textStyle="italic" />-->
+
+            <!--                <androidx.appcompat.widget.AppCompatImageView-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="18dp"-->
+            <!--                    android:paddingStart="12dp"-->
+            <!--                    android:paddingEnd="12dp"-->
+            <!--                    app:tint="#53A55E"-->
+            <!--                    android:src="@drawable/ic_baseline_thumb_up_24" />-->
+
+            <!--                <androidx.appcompat.widget.AppCompatImageView-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="18dp"-->
+            <!--                    android:paddingStart="12dp"-->
+            <!--                    android:paddingEnd="12dp"-->
+            <!--                    app:tint="#B55A5A"-->
+            <!--                    android:src="@drawable/ic_baseline_thumb_down_24" />-->
+
+            <!--            </androidx.appcompat.widget.LinearLayoutCompat>-->
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
