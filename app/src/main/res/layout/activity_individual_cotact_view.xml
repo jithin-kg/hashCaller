@@ -38,44 +38,79 @@
         android:tag="title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
+        />
+    <ImageView
+        android:id="@+id/imgVdividerMain"
+        android:layout_width="1dp"
+        android:layout_height="-1000dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/horizontal_line_settings"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBack"
+        android:layout_marginTop="@dimen/margin_top_hair_cntct_ind"
+        android:alpha="0.20"
+        android:visibility="invisible"
         />
 
     <ImageButton
         android:id="@+id/imgBtnMoreIndividualCntct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="?android:selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_more_vert" />
 
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/individual_contact_avatar"
         android:layout_height="@dimen/individual_contact_avatar"
         android:layout_marginTop="16dp"
+        android:elevation="4dp"
         android:src="@drawable/contact_circular_background"
         android:tag="avatar"
         android:transitionName="contactImageTransition"
-        app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
+    <ImageView
+        android:id="@+id/imgUserIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:elevation="6dp"
+        android:visibility="invisible"
+        android:src="@drawable/ic_person_outline"
+        app:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+        app:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+        app:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+        app:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+        />
+    <ImageView
+        android:id="@+id/imgUserIconBg"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:elevation="5dp"
+        android:visibility="invisible"
+        android:src="@drawable/user_badge_background"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFirstLetter"
+        app:layout_constraintStart_toStartOf="@+id/tvFirstLetter"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        />
     <TextView
         android:id="@+id/tvFirstLetter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/individual_contact_avatar"
+        android:layout_height="@dimen/individual_contact_avatar"
         android:layout_marginTop="16dp"
-        android:visibility="invisible"
         android:gravity="center"
         android:tag="firstletter"
-        android:text=""
+        android:text="H"
+        android:elevation="4dp"
+        android:textSize="24sp"
         android:textColor="@color/colorWhite"
-        android:textSize="16sp"
         android:transitionName="firstLetterTransition"
         app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
         app:layout_constraintDimensionRatio="1"
@@ -95,7 +130,6 @@
         android:textColor="@color/textColor"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivAvatar"
         />
@@ -104,11 +138,13 @@
         android:id="@+id/tvNameSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="32dp"
         android:text="name small"
-        android:textColor="@color/textColor"
+        android:textStyle="bold"
         android:visibility="invisible"
-        android:layout_marginBottom="1200dp"
+        android:textSize="16sp"
+        android:textColor="@color/textColor"
+        android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toTopOf="@+id/imgBtnBack"
         app:layout_constraintStart_toEndOf="@+id/imgBtnBack" />
     <androidx.core.widget.NestedScrollView
@@ -119,7 +155,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/tvName">
 
         <LinearLayout

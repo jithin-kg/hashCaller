@@ -208,7 +208,6 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
         binding.imgBtnHamBergerCntct.setOnClickListener(this)
         binding.fabBtn.setOnClickListener(this)
         binding.tvContacts.setOnClickListener(this)
-
     }
 
 

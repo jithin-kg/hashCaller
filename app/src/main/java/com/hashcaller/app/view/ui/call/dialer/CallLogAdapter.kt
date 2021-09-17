@@ -15,6 +15,7 @@ import com.hashcaller.app.databinding.ItemFinishSettingUpBinding
 import com.hashcaller.app.utils.DummYViewHolder
 import com.hashcaller.app.view.ui.call.CallFragment.Companion.ID_SHOW_SCREENING_ROLE
 import com.hashcaller.app.view.ui.call.db.CallLogTable
+import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
@@ -186,6 +187,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             Log.d(TAG, "bind: ")
             expandableView.setTag(callLog.dateInMilliseconds)
 
+            val isRegisterdUser = context.toggleUserBadge(logBinding.imgUserIconBg, logBinding.imgUserIcon, callLog.hUid)
+
             if (viewMarkingHandlerHelper.isMarked(callLog.id)) {
                 Log.d(TAG, "bind: ismarked")
                 logBinding.imgViewCallMarked.beVisible()
@@ -197,6 +200,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }else {
                 logBinding.layoutExpandableCall.beGone()
             }
+
             val sim = callLog.simId
             //todo simid can be -1 then, do not show this, invisisble
             if(sim == 0){

@@ -61,7 +61,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             val cursor = context!!.contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null, null, null,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC LIMIT 10"
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
             )
              contactRepository = WorkerContactRepository(
                  cursor,

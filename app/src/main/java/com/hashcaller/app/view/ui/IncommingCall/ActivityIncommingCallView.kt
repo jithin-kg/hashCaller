@@ -157,7 +157,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
     }
     @SuppressLint("LongLogTag")
     private fun setViewElements(callersInfo: CntctitemForView) {
-
         binding.txtVLocaltion.text = callersInfo.country +" " + callersInfo.location
         binding.txtVcallerName.text = callersInfo.firstName
         if(callersInfo.spammCount > SPAM_THREASHOLD){
@@ -238,7 +237,6 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
 
-
 //        this.setFinishOnTouchOutside(true)
     }
 
@@ -288,7 +286,7 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
                 }
 
             }
-            R.id.radioScam, R.id.radioSales, R.id.radioPerson, R.id.radioBusiness    ->{
+            R.id.radioScam, R.id.radioSales, R.id.radioPerson, R.id.radioBusiness ->{
 //                toast("radio scan clicked")
                 radioClicked(v as RadioButton)
 

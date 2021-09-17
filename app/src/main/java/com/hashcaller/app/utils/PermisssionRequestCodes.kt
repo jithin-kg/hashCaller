@@ -13,8 +13,9 @@ class PermisssionRequestCodes {
         const val REQUEST_CODE_WRITE_CALL_LOG = 5
         const val ROLE_SCREENING_APP_REQUEST_CODE =123
         const val REQUEST_CODE_STORAGE = 6
-
         const val REQUEST_CODE_CALL_LOG = 12
+
+        const val RC_SIGN_IN = 32
 
     }
 }

@@ -23,6 +23,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -30,7 +31,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.work.*
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
-import com.hashcaller.app.databinding.ContactConsentFragmentBinding
 import com.hashcaller.app.databinding.ContactListBinding
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.network.search.model.CntctitemForView
@@ -82,7 +82,6 @@ import com.hashcaller.app.view.utils.SIMAccount
 import com.hashcaller.app.work.SpamReportWorker
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -663,4 +662,21 @@ fun Context.onSMSItemItemClicked(
     intent.putExtras(bundle)
 
     startActivity(intent)
+}
+
+/**
+ * function to toggle user badge
+ * if huid is not empty then badge is shown and vice versa
+ * @return true if is registered user and false if user is not registered
+ */
+fun Context.toggleUserBadge(imgVBadgeBackground:ImageView, imgVForeground:ImageView, huid:String): Boolean {
+    val isHuidEmpty = huid.isNullOrEmpty()
+    if(!isHuidEmpty){
+        imgVBadgeBackground.beVisible();
+        imgVForeground.beVisible()
+    }else {
+        imgVBadgeBackground.beInvisible();
+        imgVForeground.beInvisible()
+    }
+    return !isHuidEmpty
 }

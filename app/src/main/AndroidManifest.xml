@@ -124,6 +124,7 @@
         <activity
             android:name=".view.ui.profile.ProfileActivity"
             android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.call.spam.SpamCallsActivity"
@@ -196,7 +197,9 @@
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppThemeStatusBar" /> <!-- https://developer.android.com/training/keyboard-input/visibility -->
+            android:theme="@style/AppThemeStatusBar" > <!-- https://developer.android.com/training/keyboard-input/visibility -->
+
+        </activity>
         <!-- important adjust resize ensure that view that all of your layout content is accessible -->
         <activity
             android:name=".view.ui.contacts.search.ActivitySerchContacts"

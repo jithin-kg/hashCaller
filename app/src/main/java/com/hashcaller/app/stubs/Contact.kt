@@ -30,8 +30,7 @@ data class Contact(
     var spamCount:Long = 0L,
     var isInfoFoundInServer:Int = INFO_NOT_FOUND_IN_SERVER,
     var lastName: String = "",
-    var thumbnailInCprovider:String = ""
-
+    var thumbnailInCprovider:String = "",
     )  {
 
     fun doesContainPhoneNumber(text: String): Boolean {

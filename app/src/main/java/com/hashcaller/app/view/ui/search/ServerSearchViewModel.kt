@@ -50,6 +50,7 @@ class ServerSearchViewModel(
 
 
        val hashed =  Secrets().managecipher(packageName,formatedNum)
+        Log.d(TAG, "searchInServer: $hashed")
        var infoAvialbleInDb:CallersInfoFromServer? = null
        try {
            infoAvialbleInDb =  defServerinfoAvialableInDb?.await()

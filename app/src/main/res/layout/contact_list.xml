@@ -12,6 +12,28 @@
     android:focusable="true">
 
 
+    <ImageView
+        android:id="@+id/imgUserIcon"
+        android:layout_width="@dimen/width_icon_user_badge_list"
+        android:layout_height="@dimen/width_icon_user_badge_list"
+        android:elevation="6dp"
+        android:src="@drawable/ic_person_outline"
+        app:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+        app:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+        app:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+        app:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+        />
+    <ImageView
+        android:id="@+id/imgUserIconBg"
+        android:layout_width="@dimen/width_user_bade_list_bg"
+        android:layout_height="@dimen/width_user_bade_list_bg"
+        android:elevation="5dp"
+        android:src="@drawable/user_badge_background"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewcontactCrclr"
+        app:layout_constraintStart_toStartOf="@+id/textViewcontactCrclr"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="2dp"
+        />
     <TextView
         android:id="@+id/textViewcontactCrclr"
         android:layout_width="50dp"
