@@ -17,14 +17,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.*
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityProfileBinding
 import com.hashcaller.app.databinding.BottomSheetProfileEditBinding
@@ -41,16 +41,20 @@ import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
+import com.hashcaller.app.view.ui.extensions.getSpannableString
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.app.view.ui.sms.individual.util.beVisible
 import com.hashcaller.app.view.ui.sms.individual.util.toast
+import com.hashcaller.app.view.utils.ConfirmDialogFragment2
+import com.hashcaller.app.view.utils.ConfirmDialogFragment2.Companion.ON_NEGATIVE_ACTION
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.view.utils.imageProcess.ImagePickerHelper
 import com.hashcaller.app.view.utils.validateInput
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
+
 
 class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityProfileBinding
@@ -67,6 +71,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
     private  var rcfirebaseAuth: FirebaseAuth? = null
+    private var googlePhotoUrl: String = ""
+
     private lateinit var googleSignInClient: GoogleSignInClient
     private var isImageAvatarChosenFromGoogle = false
     private lateinit var bottomSheetDialog: BottomSheetDialog
@@ -186,11 +192,20 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 binding.tvFirstLetterMain.text = fLetter
                 firstName = "${it.firstname}"
                 lastName = "${it.lastName}"
+                email = it.email
+                bioStr = it.bio
+
 
                 binding.editTextFName.setText(firstName)
                 binding.editTextLName.setText(lastName)
-
-                if(!it.photoURI.isNullOrEmpty()){
+                binding.editTextEmail.setText(it.email)
+                binding.editTextBio.setText(it.bio)
+                //todo store image as uri in kubernetes or user a flag in db to decide which is the currently chosen image (whether google in or manual image)
+                if(!it.googleProfileImgUrl.isNullOrEmpty()){
+                    Glide.with(this).load(it.googleProfileImgUrl)
+                        .into(binding.ivAvatar)
+                    binding.tvFirstLetterMain.beInvisible()
+                }else if(!it.photoURI.isNullOrEmpty()){
                     binding.ivAvatar.setImageBitmap(getDecodedBytes(it.photoURI))
                     binding.tvFirstLetterMain.beInvisible()
                 }else{
@@ -232,7 +247,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 if(isFormValueNotChanged())
                     finishAfterTransition()
                 else
-                    toast("Show saved edited change alert")
+                    showAlert()
             }
             R.id.btnUpdate ->{
                 updateUserInfo()
@@ -242,7 +257,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             }
             R.id.btnSignout -> {
-
+                googleSignInClient.signOut()
                 val addPhotoBasicBottomDialogFragment: BasicBottomSheetfragment =
                     BasicBottomSheetfragment.newInstance()!!
                 addPhotoBasicBottomDialogFragment.show(
@@ -274,7 +289,9 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun isFormValueNotChanged(): Boolean {
     return  binding.editTextEmail.text.toString().trim() == email &&
             binding.editTextFName.text.toString().trim() == firstName  &&
-            binding.editTextLName.text.toString().trim() == lastName
+            binding.editTextLName.text.toString().trim() == lastName &&
+            binding.editTextBio.text.toString().trim() == bioStr
+
     }
 
 
@@ -291,6 +308,9 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     }
     private fun updateUserInfo() {
             if(CheckNetwork.isetworkConnected()){
+                binding.pgBar.beVisible()
+                binding.btnUpdate.beInvisible()
+
                 binding.btnUpdate.isEnabled = false
                 binding.editTextFName.error = null
                 binding.editTextLName.error = null
@@ -302,21 +322,48 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 val email = binding.editTextEmail.text.toString().trim()
                 val bio = binding.editTextBio.text.toString().trim()
 
-                val isValid = validateInput(firstName,
+                val isValid = validateInput(
+                    firstName,
                     lastName,
                     binding.outlinedTextField,
                     binding.outlinedTextField2,
                 )
                 validateEmailAndBio()
-
-                Log.d(TAG, "updateUserInfo:input valid $isValid")
                 if(isImageAvatarChosenFromGoogle){
                     //profile photo is chosen from google auth
                     viewModel.updateUserWithGoogleProfile(
                         firstName,
                         lastName,
-                        rcfirebaseAuth?.currentUser?.photoUrl.toString()
-                    )
+                        googlePhotoUrl,
+                        email,
+                        bio
+                    ).observe(this, Observer {
+                        Log.d(TAG, "updateUserInfo: $it")
+                        binding.btnUpdate.isEnabled = true
+                        if(it!=null){
+                            when(it.code()){
+                                HttpStatusCodes.STATUS_OK -> {
+                                    viewModel.updateUserInfoInDbWithGoogle(
+                                        it.body()?.data
+                                    ).observe(this, Observer { updateOP->
+                                        when(updateOP){
+                                            OPERATION_COMPLETED -> {
+                                                binding.pgBar.beGone()
+                                                binding.btnUpdate.isEnabled = true
+                                                hideSaveUpdateBtn()
+                                            }
+                                        }
+                                    })
+                                }else-> {
+                                toast("Something went wrong")
+                                }
+                            }
+                        }else {
+                            toast("Something went wrong")
+                        }
+
+
+                    })
                 }else {
                     //profile photo is chosen from gallery
                     viewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile, this).observe(this,
@@ -332,7 +379,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                                 var userInfo = UserInfoDTO()
                                 userInfo.firstName = firstName;
                                 userInfo.lastName =  lastName;
-
+                                userInfo.email = email
+                                userInfo.bio = bio
                                 update(userInfo, imageMultipartBody)
                             }
                         })
@@ -355,24 +403,30 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun update(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?){
-        binding.pgBar.beVisible()
+
         viewModel.updateUserInfoInServer(userInfo, imgMultiPart).observe(this, Observer {response->
             when (response.code()) {
                 HttpStatusCodes.STATUS_OK,STATUS_CREATED -> {
-
-                   viewModel.updateUserInfoInDb(response.body()?.data?.firstName,
-                       response.body()?.data?.lastName, response.body()?.data?.image).observe(this, Observer { status ->
+                   viewModel.updateUserInfoInDb(response.body()?.data).observe(this, Observer { status ->
                            when(status){
                                OPERATION_COMPLETED ->{
+//                                   response.body()?.data?.let{
+//                                       firstName = response.body()!!.data.firstName
+//                                       lastName = response.body()!!.data.lastName
+//                                       email = response.body()!!.data.email
+//                                       bioStr = response.body()!!.data.bio
+//
+//                                   }
                                    binding.pgBar.beGone()
-//                                   binding.btnUpdate.text = "Save"
                                    binding.btnUpdate.isEnabled = true
+                                   hideSaveUpdateBtn()
                                }
                            }
                    })
                 }
                 else ->{
                     binding.pgBar.beGone()
+                    hideSaveUpdateBtn()
 //                    binding.btnUpdate.text = "Save"
                     toast("Something went wrong")
                 }
@@ -396,90 +450,96 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                     showSaveUpdateBtn()
                     val selectedImageUri: Uri? = data.data
                     binding.ivAvatar.setImageURI(selectedImageUri)
+
                     viewModel.processImage(this, selectedImageUri, imagePickerHelper)
                     isImageAvatarChosenFromGoogle = false
                 }
                 RC_SIGN_IN -> {
                     val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                    try {
-                        // Google Sign In was successful, authenticate with Firebase
-                        val account = task.getResult(ApiException::class.java)!!
-                        Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                        firebaseAuthWithGoogle(account.idToken!!)
-                    } catch (e: ApiException) {
-                        // Google Sign In failed, update UI appropriately
-                        Log.w(TAG, "Google sign in failed", e)
-                    }
+                    handleSignInResult(task);
                 }
             }
         }
     }
+
+
+
     private fun hideSaveUpdateBtn() {
         binding.btnUpdate.beInvisible()
         binding.imgBtnBackBlock.setImageDrawable(getDrawable(R.drawable.ic_baseline_arrow_back_white))
     }
     fun showSaveUpdateBtn(){
+        Log.d(TAG, "showSaveUpdateBtn: ")
         binding.btnUpdate.beVisible()
         binding.imgBtnBackBlock.setImageDrawable(getDrawable(R.drawable.ic_close_line))
 
     }
-    private fun firebaseAuthWithGoogle(idToken: String) {
 
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        rcfirebaseAuth?.signInWithCredential(credential)
-            ?.addOnCompleteListener(this) { task ->
+    /**
+     * https://developers.google.com/identity/sign-in/android/sign-in
+     *
+     * for configuring project in google cloud
+     * https://developers.google.com/identity/sign-in/android/start-integrating
+     */
+    private fun handleSignInResult(task: Task<GoogleSignInAccount>?) {
+        try {
+            task?.let{
+                val account: GoogleSignInAccount? = task?.getResult(ApiException::class.java)
                 if (task.isSuccessful) {
-
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = rcfirebaseAuth?.currentUser
-                    val size = user?.providerData?.size
-                    val fullName = user?.displayName?:""
-                    val nameArray = fullName.split(" ")
-                    if(nameArray.size >=2 && user?.isEmailVerified == true){
-                        val firstName:String = nameArray[0]
-                        val lastName = nameArray[1]
+                    account?.let {
+                        val email = account.email
+                        val firstName:String = account.givenName?:""
+                        val lastName = account.familyName?:""
                         binding.editTextFName.setText(firstName)
                         if(lastName.isNotEmpty()){
                             binding.editTextLName.setText(lastName)
                         }
-                        if(rcfirebaseAuth?.currentUser?.photoUrl != null){
-                            Glide.with(this).load(rcfirebaseAuth?.currentUser?.photoUrl)
-                                .into(binding.ivAvatar)
-                            binding.tvFirstLetterMain.beInvisible()
-                            isImageAvatarChosenFromGoogle = true
-                        }
+                        binding.editTextEmail.setText(email?:"")
+                        account.photoUrl?.let {
+                            googlePhotoUrl = account.photoUrl?.toString()?:""
+                            if(googlePhotoUrl.isNotEmpty()){
+                                Glide.with(this).load(googlePhotoUrl)
+                                    .into(binding.ivAvatar)
+                                binding.tvFirstLetterMain.beInvisible()
+                                isImageAvatarChosenFromGoogle = true
+                            }
 
-//                         binding.ivAvatar.setImageURI(rcfirebaseAuth?.currentUser?.photoUrl)
-//                        loadImage(this,binding.ivAvatar, null, rcfirebaseAuth?.currentUser?.photoUrl,  )
+                        }
                     }
-                    val photoUrl =  rcfirebaseAuth?.currentUser?.photoUrl
-                    Log.d(TAG, "firebaseAuthWithGoogle: photourl $photoUrl")
-//                    FirebaseAuth.getInstance().currentUser.photoUrl
-                    Log.d(TAG, "firebaseAuthWithGoogle: $size")
-                    
-//                    user.providerData[0].
-//                    user?.providerData.forEach{ profile ->
-//                        profile.
-//                    };
-//                    Log.d(TAG, "firebaseAuthWithGoogle: $user")
-//                    Log.d(TAG, "firebaseAuthWithGoogle: ${user?.displayName}")
-//                    Log.d(TAG, "firebaseAuthWithGoogle: ${user?.email}")
-//                    Log.d(TAG, "firebaseAuthWithGoogle: ${user?.isEmailVerified}")
-//                    Log.d(TAG, "firebaseAuthWithGoogle: ${currentUser}")
-//                    updateUI(user)
+
                 } else {
-                    // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
-//                    updateUI(null)
                 }
             }
+        } catch (e: ApiException) {
+            // Google Sign In failed, update UI appropriately
+                toast("Unable to sign in using google")
+            Log.w(TAG, "Google sign in failed", e)
+        }
+    }
+    private fun showAlert() {
+        val dialog = ConfirmDialogFragment2(
+            getSpannableString("Would you like to save it?"),
+            getSpannableString("Your profile has been edited.")
+        )
+        {action:Int -> onDialogFragmentAction(action)}
+        dialog.show(supportFragmentManager, "profileAlert")
+    }
+    private fun onDialogFragmentAction(actionType:Int){
+        when(actionType){
+            ON_NEGATIVE_ACTION -> {
+                finishAfterTransition()
+            }
+
+        }
     }
     override fun onBackPressed() {
-        if(!isFormValueNotChanged())
+        if(isFormValueNotChanged())
             finishAfterTransition()
         else
-            toast("finish updates")
+            showAlert()
     }
+
+
 
 }

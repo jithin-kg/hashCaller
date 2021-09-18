@@ -50,6 +50,10 @@ const val TYPE_MUTE = 1
 const val TYPE_DELETE = 2
 
 
+const val ACTIVE_AVATAR_GOOGLE = 1
+const val ACTIVE_AVATAR_LOCAL = 2
+const val ACTIVE_AVATAR_NONE= 0
+
 const val TYPE_SPAM = -1
 
 const val INTENT_TYPE_MAKE_CALL = 0

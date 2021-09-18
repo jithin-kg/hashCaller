@@ -173,6 +173,7 @@ class SearchViewModel(
         }catch (e:java.lang.Exception){
             Log.d(TAG, "getCallerInfo: $e")
         }
+
         if(!infoInCProvider.isNullOrEmpty()){
             firstName = infoInCProvider
         }else if(infoAvailableInDb!= null){
