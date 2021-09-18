@@ -2,6 +2,7 @@ package com.hashcaller.app.network.user
 
 import androidx.annotation.Keep
 import com.hashcaller.app.BasicResponseItem
+import com.hashcaller.app.utils.GenericResponse
 import com.hashcaller.app.view.ui.profile.RequestUserInfoDTO
 import com.hashcaller.app.view.ui.profile.RequestUserinfoResponse
 import okhttp3.MultipartBody
@@ -15,9 +16,9 @@ import retrofit2.http.*
 interface IuserService {
     companion object {
 
-        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
+//        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
 
-//        public const val BASE_URL: String = "http://192.168.43.34:8080/"
+        public const val BASE_URL: String = "http://192.168.43.34:8080/"
 
 //         const val BASE_URL: String = "https:/    /real-caller-api-2-jzlji.ondigitalocean.app/"  //-> worked
 //        public const val BASE_URL: String = "https://real-caller-api-2-jzlji.ondigitalocean.app/" worker with DO
@@ -36,7 +37,22 @@ interface IuserService {
         @Part image: MultipartBody.Part?,
         @Header ("Authorization") token:String
     ):Response<SingupResponse>
-    
+
+
+    @POST("user/updateProfile")
+    suspend fun updateProfileWithGoogle(
+        @Header("Authorization")
+        token:String ,
+        @Body userInfo: ResUpdateProfileWithGoogle
+    ) : Response<GenericResponse<ResUpdateProfileWithGoogle>>
+
+    @POST("user/signupWithGoogle")
+    suspend fun signupWithGoogleAuth(
+        @Header("Authorization")
+        token:String,
+        @Body userInfo: SignupWithGoogleDto
+    ) : Response<GenericResponse<SignupWithGoogleDto>>
+
     @Multipart
     @POST("user/updateUserInfo")
     suspend fun updateUserInfo(
@@ -46,9 +62,13 @@ interface IuserService {
         @Part("phoneNumber") phoneNumber:RequestBody,
         @Part("countryCode") countryCode:RequestBody,
         @Part("countryISO") countryISO:RequestBody,
+        @Part("bio") bio:RequestBody,
+        @Part("email") email:RequestBody,
         @Part image: MultipartBody.Part?,
         @Header ("Authorization") token:String
-    ): Response<SingupResponse>
+    ): Response<GenericResponse<UpdateProfileResult>>
+
+
     //retrieves cipher from hashcaller server
     @POST("user/getCipher")
     suspend fun getCipher(

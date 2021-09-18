@@ -31,6 +31,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -466,7 +467,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
                 val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
                 fullName.text = "${it.firstname} ${it.lastName}"
-                if(!it.photoURI.isNullOrEmpty()){
+                if(!it.googleProfileImgUrl.isNullOrEmpty()){
+                    Glide.with(this).load(it.googleProfileImgUrl)
+                        .into(headerImgView)
+                    firstLetterView.beInvisible()
+                }else if(!it.photoURI.isNullOrEmpty()){
                     headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
                     firstLetterView.beInvisible()
                 }else{

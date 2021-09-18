@@ -57,7 +57,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     private var tokenHelper: TokenHelper? = TokenHelper(user)
     private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
 
-
     val callContainerRepository =
         CallContainerRepository(
             context,
@@ -105,7 +104,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
                     }
-
+                    
                     result?.let{ reslt->
                         if(reslt.code() == HttpStatusCodes.STATUS_OK){
                             for(cntct in reslt.body()?.contacts!!){
@@ -145,10 +144,11 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 
 
 
-        }catch (e: HttpException){
+        }catch (e: HttpException) {
             return@withContext Result.retry()
             Log.d(TAG, "doWork: retry")
         }
+
         return@withContext Result.success()
     }
 

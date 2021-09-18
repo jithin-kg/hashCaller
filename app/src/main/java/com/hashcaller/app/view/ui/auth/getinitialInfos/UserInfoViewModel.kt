@@ -4,14 +4,14 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.hashcaller.app.Secrets
 import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.datastore.PreferencesKeys
-import com.hashcaller.app.network.user.GetUserDataResponse
-import com.hashcaller.app.network.user.GetUserInfoResponse
-import com.hashcaller.app.network.user.SingupResponse
+import com.hashcaller.app.network.user.*
 import com.hashcaller.app.repository.user.UserInfoDTO
 import com.hashcaller.app.repository.user.UserNetworkRepository
+import com.hashcaller.app.utils.GenericResponse
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHasehdNumRepository
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserInfo
@@ -160,12 +160,13 @@ class UserInfoViewModel(
 
     }
 
-    fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<Response<SingupResponse>> = liveData{
+    fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<Response<GenericResponse<UpdateProfileResult>>> = liveData {
             try {
                 val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
                 if(hashedNumResultFromDb!=null){
                     val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
-                    val response:Response<SingupResponse>? = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
+                    val response = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
+                    Log.d(TAG, "updateUserInfoInServer: $response")
                     response?.let {
                         emit(it)
 //                        emit(getGenericResponse(response))
@@ -235,21 +236,23 @@ class UserInfoViewModel(
         info.phoneNumber = hashedNumResultFromDb.phoneNumber
         info.countryCode = userHashedNumRepository.getCoutryCode()
         info.countryISO = userHashedNumRepository.getCoutryISO()
+        info.bio = userInfo.bio
+        info.email = userInfo.email
+        info.googleProfileImgUrl = userInfo.googleProfileImgUrl
         return info
     }
 
-    fun updateUserInfoInDb(
-        firstName: String?,
-        lastName: String?,
-        imgeFromServer: String?
-    ) : LiveData<Int> = liveData{
+    fun updateUserInfoInDb(data: UpdateProfileResult?): LiveData<Int> = liveData{
 
         try {
-            if(!firstName.isNullOrEmpty()){
-                val user = UserInfo(null)
-                userNetworkRepository.updateUserInfoInDb(firstName, lastName?:"", imgeFromServer?:"")
-                emit(OPERATION_COMPLETED)
+            data?.let {
+//                if(!firstName.isNullOrEmpty()){
+                    val user = UserInfo(null)
+                    userNetworkRepository.updateUserInfoInDb(data)
+//                }
             }
+            emit(OPERATION_COMPLETED)
+
         }catch (e:Exception){
             Log.d(TAG, "updateUserInfoInDb: $e")
         }
@@ -282,16 +285,65 @@ class UserInfoViewModel(
        emit( response?.body()?.statusCode)
     }
 
-    fun updateUserWithGoogleProfile(firstName: String, lastName: String, googlePhotoUrl:String) :LiveData<Int> = liveData {
-
-        val profile = GoogleUserProfile(
+    fun signupUserWithGoogle(account: GoogleSignInAccount):LiveData<Response<GenericResponse<SignupWithGoogleDto>>?> = liveData {
+        val firstName = account.givenName
+        val lastName = account.familyName
+        val email = account.email
+        val googlePhotoUrl  = account.photoUrl.toString()
+        val hashedNum =  userHashedNumRepository.getHasehedNumOfuser()?.hashedNumber?:""
+        val profile = SignupWithGoogleDto(
             firstName= firstName,
             lastName = lastName,
-            photoUrI = googlePhotoUrl,
-            email =""
+            email =email,
+            avatarGoogle = googlePhotoUrl,
+            bio = "",
+            hashedNum=hashedNum
         )
-        val response = userNetworkRepository.updateProfileWithGoogle(profile)
+        emit(userNetworkRepository.signupWithGoogle(profile))
     }
+
+    fun updateUserWithGoogleProfile(
+        firstName: String,
+        lastName: String,
+        googlePhotoUrl: String,
+        email: String,
+        bio: String
+    ) :LiveData<Response<GenericResponse<ResUpdateProfileWithGoogle>>?> = liveData {
+
+       try{
+           val profile = ResUpdateProfileWithGoogle(
+               firstName= firstName,
+               lastName = lastName,
+               email =email,
+               avatarGoogle = googlePhotoUrl,
+               bio = bio
+           )
+           val response = userNetworkRepository.updateProfileWithGoogle(profile)
+           emit(response)
+       }catch (e:Exception){
+           Log.d(TAG, "updateUserWithGoogleProfile: $e")
+       }
+    }
+
+    fun insertUserInfoGoogleInDb(data: SignupWithGoogleDto?,
+                                 dataStoreViewmodel: DataStoreViewmodel
+                                 ):LiveData<Int> = liveData {
+        data?.let {
+            userNetworkRepository.saveGoogleUserInfoInLocalDb(data)
+            dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, true)
+            emit(OPERATION_COMPLETED)
+        }
+
+    }
+    fun updateUserInfoInDbWithGoogle(data: ResUpdateProfileWithGoogle?):LiveData<Int> = liveData {
+        data?.let {
+            userNetworkRepository.updateProfileWithGoogleInDb(it)
+            emit(OPERATION_COMPLETED)
+        }
+
+    }
+
+
 
 
 }

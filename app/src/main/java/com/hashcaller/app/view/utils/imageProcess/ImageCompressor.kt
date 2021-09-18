@@ -1,7 +1,10 @@
 package com.hashcaller.app.view.utils.imageProcess
 
 import android.content.Context
+import android.graphics.Bitmap
 import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
 import id.zelory.compressor.constraint.resolution
 import id.zelory.compressor.constraint.size
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -18,8 +21,8 @@ class ImageCompressor(private val context: Context) {
             imgFile
         ) {
             resolution(48, 48)
-//                                    quality(80)
-//                                    format(Bitmap.CompressFormat.WEBP)
+                                    quality(80)
+                                    format(Bitmap.CompressFormat.JPEG)
             size(compressionLimit) // 30 kb
         }
         val requestFile: RequestBody =
@@ -32,6 +35,6 @@ class ImageCompressor(private val context: Context) {
         return body
     }
     companion object{
-        const val compressionLimit = 30000L // 30 kb
+        const val compressionLimit = 30971L // 3 kb
     }
 }

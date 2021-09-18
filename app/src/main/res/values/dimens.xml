@@ -49,7 +49,7 @@
     <dimen name="circular_avatar_item_width">52dp</dimen>
     <dimen name="margin_end_dial_char">32dp</dimen>
     <dimen name="margin_top_dial_char">4dp</dimen>
-    <dimen name="avatar_side_drawer">140dp</dimen>
+    <dimen name="avatar_side_drawer">96dp</dimen>
     <dimen name="incomming_call_view_avatar_width">48dp</dimen>
     <dimen name="margin_start_search_result_info">16dp</dimen>
     <dimen name="img_btn_individual_contact">32dp</dimen>
@@ -65,7 +65,7 @@
     <dimen name="margin_padding_size_xxlarge">40dp</dimen>
     <!-- Touch Target Size, https://material.io/design/usability/accessibility.html#layout-and-typography -->
     <dimen name="standard_touch_size">48dp</dimen>
-    <dimen name="avatar_profile_width">136dp</dimen>
+    <dimen name="avatar_profile_width">96dp</dimen>
     <dimen name="identified_by_hash_width">16dp</dimen>
     <dimen name="margin_start_tv_small">16dp</dimen>
     <dimen name="width_user_bade_list_bg">16dp</dimen>

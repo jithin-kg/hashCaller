@@ -15,6 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -24,8 +30,10 @@ import com.hashcaller.app.datastore.DataStoreInjectorUtil
 import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.network.HttpStatusCodes
 import com.hashcaller.app.repository.user.UserInfoDTO
+import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_STORAGE
 import com.hashcaller.app.utils.auth.TokenHelper
+import com.hashcaller.app.utils.internet.CheckNetwork
 import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.auth.permissionrequest.PermissionRequestActivity
 import com.hashcaller.app.view.ui.contacts.hasMandatoryPermissions
@@ -45,6 +53,8 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     private val SAMPLE_ALIAS = "SOMETHINGNEW"
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var dataStoreViewmodel: DataStoreViewmodel
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var networkChecker:CheckNetwork
 
     private lateinit var binding: ActivityGetInitialUserInfoBinding
 
@@ -68,6 +78,9 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         imagePickerHelper = ImagePickerHelper()
         initViewmodels()
         initListeners()
+        initGoogleSigninClient()
+        networkChecker = CheckNetwork(this)
+        networkChecker.registerNetworkCallback()
 
 //        loadImage(this, binding.imgVAvatarInitial, "@drawable/contact_circular_background_grey")
 
@@ -92,6 +105,7 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun initListeners() {
         binding.imgVAvatarInitial.setOnClickListener(this)
+        binding.btnGoogle.setOnClickListener(this)
     }
 
     private fun clearErrorMessageOnFocus() {
@@ -133,6 +147,10 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnUserContinue -> {
                 sendUserInfo()
             }
+            R.id.btnGoogle -> {
+                val signInIntent = googleSignInClient.signInIntent
+                startActivityForResult(signInIntent, PermisssionRequestCodes.RC_SIGN_IN)
+            }
             R.id.imgVAvatarInitial -> {
                 if (hasStoragePermission()) {
                     startImagePickActivity()
@@ -147,6 +165,13 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
+    }
+    private fun initGoogleSigninClient() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     @SuppressLint("LongLogTag")
@@ -180,9 +205,87 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
                     binding.imgVAvatarInitial.setImageURI(selectedImageUri)
                     userInfoViewModel.processImage(this, selectedImageUri, imagePickerHelper)
                 }
+                PermisssionRequestCodes.RC_SIGN_IN -> {
+                    binding.pgBarInfo.beVisible()
+                    binding.btnUserContinue.isEnabled = false
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                    handleSignInResult(task);
+                }
             }
         }
 
+    }
+    /**
+     * https://developers.google.com/identity/sign-in/android/sign-in
+     *
+     * for configuring project in google cloud
+     * https://developers.google.com/identity/sign-in/android/start-integrating
+     */
+    private fun handleSignInResult(task: Task<GoogleSignInAccount>?) {
+        try {
+            task?.let{
+                val account: GoogleSignInAccount? = task?.getResult(ApiException::class.java)
+                if (task.isSuccessful) {
+                    account?.let {
+                        val email = account.email
+                        val firstName:String = account.givenName?:""
+                        val lastName = account.familyName?:""
+
+                        signupUser(account)
+//                        binding.editTextFName.setText(firstName)
+//                        if(lastName.isNotEmpty()){
+//                            binding.editTextLName.setText(lastName)
+//                        }
+//                        binding.editTextEmail.setText(email?:"")
+//                        account.photoUrl?.let {
+//                            googlePhotoUrl = account.photoUrl?.toString()?:""
+//                            if(googlePhotoUrl.isNotEmpty()){
+//                                Glide.with(this).load(googlePhotoUrl)
+//                                    .into(binding.ivAvatar)
+//                                binding.tvFirstLetterMain.beInvisible()
+//                                isImageAvatarChosenFromGoogle = true
+//                            }
+//
+//                        }
+                    }
+
+                } else {
+                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                }
+            }
+        } catch (e: ApiException) {
+            // Google Sign In failed, update UI appropriately
+            toast("Unable to sign in using google")
+            Log.w(TAG, "Google sign in failed", e)
+        }
+    }
+
+    private fun signupUser(account: GoogleSignInAccount) {
+        if (CheckNetwork.isetworkConnected()) {
+
+            userInfoViewModel.signupUserWithGoogle(account).observe(this, Observer {
+               if(it!= null){
+                   when(it.code()){
+                       HttpStatusCodes.STATUS_OK,HttpStatusCodes.STATUS_CREATED -> {
+                           userInfoViewModel.insertUserInfoGoogleInDb(
+                               it.body()?.data,
+                               dataStoreViewmodel
+                           ).observe(this, Observer { updateOP->
+                               when(updateOP){
+                                   OPERATION_COMPLETED -> {
+                                       onUserInfoSavedInLocalDb()
+                                   }
+                               }
+                           })
+                       }
+                   }
+               }else {
+                   toast("Something went wrong")
+               }
+            })
+        }else {
+            toast("No internet")
+        }
     }
 
 
@@ -240,25 +343,7 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
                             .observe(this, Observer {
                                 when (it) {
                                     OPERATION_COMPLETED -> {
-
-                                        saveToSharedPref(true)
-                                        if (hasMandatoryPermissions()) {
-                                            val i = Intent(this, MainActivity::class.java)
-                                            startActivity(i)
-                                            finish()
-                                        } else {
-//                                        val i = Intent(this, PermissionRequestActivity::class.java)
-                                            val i = Intent(
-                                                this,
-                                                PermissionRequestActivity::class.java
-                                            )
-                                            startActivity(i)
-                                            overridePendingTransition(
-                                                R.anim.in_anim,
-                                                R.anim.out_anim
-                                            )
-                                            finish()
-                                        }
+                                        onUserInfoSavedInLocalDb()
 
                                     }
                                 }
@@ -320,6 +405,27 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
 ////
 ////            }
 //        })
+    }
+
+    private fun onUserInfoSavedInLocalDb() {
+
+        if (hasMandatoryPermissions()) {
+            val i = Intent(this, MainActivity::class.java)
+            startActivity(i)
+            finish()
+        } else {
+//                                        val i = Intent(this, PermissionRequestActivity::class.java)
+            val i = Intent(
+                this,
+                PermissionRequestActivity::class.java
+            )
+            startActivity(i)
+            overridePendingTransition(
+                R.anim.in_anim,
+                R.anim.out_anim
+            )
+            finish()
+        }
     }
 
     private fun saveToSharedPref(b: Boolean) {

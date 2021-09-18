@@ -120,8 +120,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         Log.d(TAG, "onCreate: $phoneNumber")
         getCallerInfo()
         checkIfUserBlockedThisNumber()
-
-
         animateCard()
 
     }
