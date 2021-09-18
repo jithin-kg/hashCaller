@@ -48,6 +48,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.util.jar.Manifest
 
 
 //todo close window when user takes call and show second windo iff call ended
@@ -327,85 +328,89 @@ class FloatingService: Service() {
         val subscriptionManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
             // add phone state listener to the respective telemanager
            val availableSIMs =  subscriptionManager.activeSubscriptionInfoList
-        
-        if(availableSIMs.size >1){
-            val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
-            val tel1 = telManager.createForSubscriptionId(availableSIMs[1].subscriptionId)
-            Log.d(TAG, "observeSubscriptionStatus: lin1num ${tel0.line1Number}")
-            Log.d(TAG, "observeSubscriptionStatus:line2num ${tel1.line1Number}")
 
-            tel0.listen(object :PhoneStateListener(){
-                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                    super.onCallStateChanged(state, phoneNumber)
-                    Log.d(TAG, "onCallStateChanged: sim1 $state")
+        //todo find real solution for android 11>=
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if(availableSIMs.size >1){
+                val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
+                val tel1 = telManager.createForSubscriptionId(availableSIMs[1].subscriptionId)
+                Log.d(TAG, "observeSubscriptionStatus: lin1num ${tel0.line1Number}")
+                Log.d(TAG, "observeSubscriptionStatus:line2num ${tel1.line1Number}")
 
-                    if(state ==  TelephonyManager.CALL_STATE_RINGING){
-                        simHandlingCall = SIM_ONE
-                        window?.setSimInView(SIM_ONE)
-                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
-                        simHandlingCall = SIM_ONE
-                        window?.setSimInView(SIM_ONE)
+                tel0.listen(object :PhoneStateListener(){
+                    override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                        super.onCallStateChanged(state, phoneNumber)
+                        Log.d(TAG, "onCallStateChanged: sim1 $state")
 
-                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
-                        window?.close()
-                        WindowObj.clearReference()
-                        window = null
-                        startActivityIncommingCallViewUpdated(
-                            mphoneNumberStr,
-                            callEndedState,
-                            callHandledSim
-                        )
-                        stopService()
+                        if(state ==  TelephonyManager.CALL_STATE_RINGING){
+                            simHandlingCall = SIM_ONE
+                            window?.setSimInView(SIM_ONE)
+                        }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
+                            simHandlingCall = SIM_ONE
+                            window?.setSimInView(SIM_ONE)
+
+                        }else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                            window?.close()
+                            WindowObj.clearReference()
+                            window = null
+                            startActivityIncommingCallViewUpdated(
+                                mphoneNumberStr,
+                                callEndedState,
+                                callHandledSim
+                            )
+                            stopService()
+                        }
                     }
-                }
-            }, PhoneStateListener.LISTEN_CALL_STATE)
+                }, PhoneStateListener.LISTEN_CALL_STATE)
 
-            tel1.listen(object :PhoneStateListener(){
-                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                    super.onCallStateChanged(state, phoneNumber)
-                    Log.d(TAG, "onCallStateChanged: sim2 $state")
-                    if(state ==  TelephonyManager.CALL_STATE_RINGING){
-                        simHandlingCall = SIM_TWO
-                        window?.setSimInView(SIM_TWO)
+                tel1.listen(object :PhoneStateListener(){
+                    override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                        super.onCallStateChanged(state, phoneNumber)
+                        Log.d(TAG, "onCallStateChanged: sim2 $state")
+                        if(state ==  TelephonyManager.CALL_STATE_RINGING){
+                            simHandlingCall = SIM_TWO
+                            window?.setSimInView(SIM_TWO)
 
-                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
-                        simHandlingCall = SIM_TWO
-                        window?.setSimInView(SIM_TWO)
+                        }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
+                            simHandlingCall = SIM_TWO
+                            window?.setSimInView(SIM_TWO)
 
+                        }
+                        else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+
+                            window?.close()
+                            WindowObj.clearReference()
+                            window = null
+                            startActivityIncommingCallViewUpdated(
+                                mphoneNumberStr,
+                                callEndedState,
+                                callHandledSim
+                            )
+                            stopService()
+                        }
                     }
-                    else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                }, PhoneStateListener.LISTEN_CALL_STATE)
 
-                        window?.close()
-                        WindowObj.clearReference()
-                        window = null
-                        startActivityIncommingCallViewUpdated(
-                            mphoneNumberStr,
-                            callEndedState,
-                            callHandledSim
-                        )
-                        stopService()
+            }else if(availableSIMs.size ==1) {
+                val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
+                tel0.listen(object :PhoneStateListener(){
+                    override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                        super.onCallStateChanged(state, phoneNumber)
+                        if(state ==  TelephonyManager.CALL_STATE_RINGING){
+                            simHandlingCall = SIM_ONE
+                            window?.setSimInView(SIM_ONE)
+
+                        }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
+                            simHandlingCall = SIM_ONE
+                            window?.setSimInView(SIM_ONE)
+                        }
                     }
-                }
-            }, PhoneStateListener.LISTEN_CALL_STATE)
-
-        }else if(availableSIMs.size ==1) {
-            val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
-            tel0.listen(object :PhoneStateListener(){
-                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                    super.onCallStateChanged(state, phoneNumber)
-                    if(state ==  TelephonyManager.CALL_STATE_RINGING){
-                        simHandlingCall = SIM_ONE
-                        window?.setSimInView(SIM_ONE)
-
-                    }else if(state == TelephonyManager.CALL_STATE_OFFHOOK){
-                        simHandlingCall = SIM_ONE
-                        window?.setSimInView(SIM_ONE)
-                    }
-                }
-            }, PhoneStateListener.LISTEN_CALL_STATE)
-        }else {
-            Log.d(TAG, "observeSubscriptionStatus: no sim cards inserted")
+                }, PhoneStateListener.LISTEN_CALL_STATE)
+            }else {
+                Log.d(TAG, "observeSubscriptionStatus: no sim cards inserted")
+            }
         }
+
 
 //        Log.d(TAG, "observeSubscriptionStatus: simHandlingCall $simHandlingCall")
         
