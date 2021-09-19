@@ -227,7 +227,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         imagePickerHelper = ImagePickerHelper()
         internetChecker = InternetChecker(this)
     }
-    companion object{
+    companion object {
         const val TAG = "__ProfileActivity"
     }
 

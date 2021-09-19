@@ -87,6 +87,7 @@ class ContactsViewModel(
             applicationContext?.let{ appContext ->
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                 val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+                    .setConstraints(constraints)
                     .build()
                 WorkManager.getInstance(appContext).enqueue(request)
             }

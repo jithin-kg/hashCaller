@@ -14,6 +14,7 @@ import com.hashcaller.app.databinding.CallListBinding
 import com.hashcaller.app.databinding.ItemFinishSettingUpBinding
 import com.hashcaller.app.utils.DummYViewHolder
 import com.hashcaller.app.view.ui.call.CallFragment.Companion.ID_SHOW_SCREENING_ROLE
+import com.hashcaller.app.view.ui.call.RelativeTime
 import com.hashcaller.app.view.ui.call.db.CallLogTable
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
@@ -50,9 +51,16 @@ class CallLogAdapter(private val context: Context,
     private val VIEW_TYPE_LOADING = 1
     private val VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID = 2
     private var callLogs: MutableList<CallLogTable> = mutableListOf()
+    private var isCompleteCallLogsRetrieved = false
     private var showDefCallerIdLayout = false
     companion object {
         private const val TAG = "__CallLogAdapter";
+
+
+
+        private var todayDayNumber:String? = null
+        private var yesterDayNumber:String? = null
+        private var olderDayNumber:String? = null
         var prevView:View? = null
         var prevPos:Int? = null
         var prevTag:String? = null
@@ -130,7 +138,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
        return callLogs.size
     }
 
-    fun submitCallLogs(newContactList: MutableList<CallLogTable>) {
+    fun submitCallLogs(newContactList: MutableList<CallLogTable>, isFromFirst10Items: Boolean) {
+       if(!isFromFirst10Items){
+           isCompleteCallLogsRetrieved = true
+       }
         callLogs = newContactList!!
         this.submitList(newContactList)
     }
@@ -325,7 +336,40 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //
 //                }
 //            }
-            logBinding.textViewTime.text = getRelativeTime(callLog.dateInMilliseconds)
+            val relativeTime  = getRelativeTime(callLog.dateInMilliseconds)
+            logBinding.textVcallerName.text = relativeTime.relativeTime
+//            if(relativeTime.relativeDay == RelativeTime.TODAY && !isTodayTextShown){
+//                logBinding.tvRelativeDay.beVisible()
+//                logBinding.tvRelativeDay.text = "Today"
+//                isTodayTextShown = true
+//            }
+//            else
+            if(relativeTime.relativeDay == RelativeTime.TODAY && todayDayNumber == null && isCompleteCallLogsRetrieved){
+                    logBinding.tvRelativeDay.beVisible()
+                    logBinding.tvRelativeDay.text = "Today"
+                    todayDayNumber = callLog.number
+            }else if(todayDayNumber != null && callLog.number == todayDayNumber && isCompleteCallLogsRetrieved){
+                    logBinding.tvRelativeDay.beVisible()
+                    logBinding.tvRelativeDay.text = "Today"
+            } else if(relativeTime.relativeDay == RelativeTime.YESTERDAY && yesterDayNumber == null && isCompleteCallLogsRetrieved){
+                    logBinding.tvRelativeDay.beVisible()
+                    logBinding.tvRelativeDay.text = "Yesterday"
+                    yesterDayNumber = callLog.number
+            }else if(yesterDayNumber != null && callLog.number == yesterDayNumber && isCompleteCallLogsRetrieved){
+                    logBinding.tvRelativeDay.beVisible()
+                    logBinding.tvRelativeDay.text = "Yesterday"
+            }else if(relativeTime.relativeDay == RelativeTime.OLDER && olderDayNumber == null && isCompleteCallLogsRetrieved){
+                logBinding.tvRelativeDay.beVisible()
+                logBinding.tvRelativeDay.text = "Older"
+                olderDayNumber = callLog.number
+            }else if(olderDayNumber != null && callLog.number == olderDayNumber && isCompleteCallLogsRetrieved){
+                logBinding.tvRelativeDay.beVisible()
+                logBinding.tvRelativeDay.text = "Older"
+            }
+            else {
+                logBinding.tvRelativeDay.beGone()
+                logBinding.tvRelativeDay.text = ""
+            }
             expandableView.tvExpandNumCall.text = callLog.numberFormated
             setClickListener(logBinding.root, callLog)
         }

@@ -34,7 +34,22 @@ data class Cntct(
     val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
 
     @SerializedName("thumbnailImg")
-    val thumbnailImg:String = ""
+    val thumbnailImg:String = "",
+
+    @SerializedName("nameInPhoneBook")
+    val nameInPhoneBook:String = "",
+
+    @SerializedName("hUid")
+    val hUid:String = "",
+
+    @SerializedName("email")
+    val email:String = "",
+
+    @SerializedName("avatarGoogle")
+    val avatarGoogle:String = "",
+
+    @SerializedName("bio")
+    val bio:String = "",
 
 
 ):Serializable // it it important to extent serializable

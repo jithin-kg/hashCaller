@@ -82,14 +82,14 @@ class CallContainerViewModel(
      * called when there is a change in call log in content provider
      */
     fun getInformationForTheseNumbers(applicationContext: Context?) = viewModelScope.launch {
-        applicationContext?.let{
+       /* applicationContext?.let{
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
             val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
                 .setConstraints(constraints)
                 .build()
             WorkManager.getInstance(it).enqueue(oneTimeWorkRequest)
-        }
+        }*/
     }
 
 

@@ -11,15 +11,26 @@
     android:paddingTop="8dp"
     android:clickable="true"
     android:background="@color/colorBackground"
-    android:foreground="?android:attr/selectableItemBackground"
     android:focusable="true">
-
+    <TextView
+        android:id="@+id/tvRelativeDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="gone"
+        android:textAllCaps="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutcallMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackground"
+        android:foreground="?android:attr/selectableItemBackground"
+
         android:paddingTop="16dp">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -141,7 +152,6 @@
             style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:alpha=".87"
             android:ellipsize="end"

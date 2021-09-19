@@ -70,7 +70,7 @@ class CallLogSearchActivity : AppCompatActivity(), CallSearchAdapter.ViewMarkHan
             }else{
                 binding.tvQueryItem.beGone()
             }
-            searchAdapter.submitCallLogs(it)
+            searchAdapter.submitCallLogs(it, false)
         })
     }
 

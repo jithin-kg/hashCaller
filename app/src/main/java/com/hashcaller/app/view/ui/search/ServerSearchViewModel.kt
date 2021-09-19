@@ -1,5 +1,9 @@
 package com.hashcaller.app.view.ui.search
 
+import android.annotation.SuppressLint
+import android.database.Cursor
+import android.net.Uri
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.*
 import com.hashcaller.app.Secrets
@@ -15,9 +19,7 @@ import com.hashcaller.app.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreat
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Response
 import java.lang.Exception
 
@@ -54,6 +56,7 @@ class ServerSearchViewModel(
        var infoAvialbleInDb:CallersInfoFromServer? = null
        try {
            infoAvialbleInDb =  defServerinfoAvialableInDb?.await()
+//           val infoInCproviderForExactNum = searchNetworkRepository.getContactDetailForNumberFromCp(phoneNumber)
        } catch (e:Exception){
            Log.d(TAG, "searchInServer: $e")
        }
@@ -61,6 +64,7 @@ class ServerSearchViewModel(
        if(isPerformServerSearchInServer){
            defServerSearch = async { searchNetworkRepository.manualSearch(hashed, countryCode, countryIso) }
        }else {
+           //no need to perform searching in server, information avaialbe in local db
            val searchResult = Contact(-1,
                firstName = infoAvialbleInDb?.firstName?:"",
                phoneNumber= phoneNumber,
@@ -69,7 +73,7 @@ class ServerSearchViewModel(
                country = "",
                location = infoAvialbleInDb?.city?:"",
                spamCount =  infoAvialbleInDb?.spamReportCount?:0L,
-               isInfoFoundInServer= infoAvialbleInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER
+               isInfoFoundInServer= infoAvialbleInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
            )
            if(searchResult.isInfoFoundInServer !=INFO_NOT_FOUND_IN_SERVER ){
                serverSearchResultLiveData.value = listOf(searchResult)
@@ -78,7 +82,6 @@ class ServerSearchViewModel(
            }
 
        }
-
         try {
            val response = defServerSearch?.await()
            val result = response?.body()?.cntcts
@@ -103,6 +106,7 @@ class ServerSearchViewModel(
 
     }
 
+
     private fun showDummySearchResult(){
         val dummyContact = Contact(1,
             firstName = "Tina Moss",
@@ -120,7 +124,13 @@ class ServerSearchViewModel(
             country = "",
             location = contact?.location?:"",
             spamCount =  contact?.spammCount?:0L,
-            isInfoFoundInServer= contact?.isInfoFoundInDb?:INFO_NOT_FOUND_IN_SERVER
+            isInfoFoundInServer= contact?.isInfoFoundInDb?:INFO_NOT_FOUND_IN_SERVER,
+            nameInPhoneBook = contact?.nameInPhoneBook?:"",
+            hUid = contact?.hUid?:"",
+            email = contact?.email?:"",
+            avatarGoogle = contact?.avatarGoogle?:"",
+            bio = contact?.bio?:"",
+
         )
 
     }

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.hashcaller.app.R
@@ -26,6 +27,7 @@ import com.hashcaller.app.databinding.SearchFilterAlertCheckBoxBinding
 import com.hashcaller.app.datastore.DataStoreInjectorUtil
 import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
+import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
 import com.hashcaller.app.utils.internet.CheckNetwork
@@ -42,7 +44,9 @@ import com.hashcaller.app.view.ui.sms.util.TextChangeListenerDelayed
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 import com.vmadalin.easypermissions.EasyPermissions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 
 
 class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearchAdapter.LongPressHandler,
@@ -60,7 +64,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
 
     private var queryStr = ""
     var contactsRecyclerAdapter: DialerAdapter? = null
-    var serverSearchResultAdapter: DialerAdapter? = null
+    var serverSearchResultAdapter: ServerSearchResultAdapter? = null
     private  var smsAdapter: SMSSearchAdapter? = null
     private lateinit var searchFilterViewBinding:SearchFilterAlertCheckBoxBinding
     private lateinit var checkBoxIncludeSMS:CheckBox
@@ -179,6 +183,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
         binding.imgBtnSearchFilter.setOnClickListener(this)
         searchFilterViewBinding.checkboxIncludeSMS.setOnCheckedChangeListener(this)
         binding.imgBtnBackCallhistory.setOnClickListener(this)
+        binding.btnClear.setOnClickListener(this)
 
 
     }
@@ -272,7 +277,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
                     30
                 )
             addItemDecoration(topSpacingDecorator)
-            serverSearchResultAdapter = DialerAdapter(context) { binding: ContactSearchResultItemBinding, contact: Contact, clickType:Int ->onContactItemClicked(binding, contact, clickType)}
+            serverSearchResultAdapter = ServerSearchResultAdapter(context) { binding: ContactSearchResultItemBinding, contact: Contact, clickType:Int ->onContactItemClicked(binding, contact, clickType)}
             adapter = serverSearchResultAdapter
             itemAnimator = null
         }
@@ -351,6 +356,27 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
             }
             R.id.imgBtnBackCallhistory -> {
                 finishAfterTransition()
+            }
+            R.id.btnClear -> {
+                lifecycleScope.launchWhenCreated {
+                    withContext(Dispatchers.IO){
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).callersInfoFromServerDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).spamListDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).blocklistDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).spamListDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).smsDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).contactInformationDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).contactLastSyncedDateDAO().delteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).mutedSendersDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).blockedOrSpamSendersDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).smsSearchQueriesDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).contactAddressesDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).callLogDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).smsThreadsDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).userHashedNumDAO().deleteAll()
+                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).hashedContactsDAO().deleteAll()
+                    }
+                }
             }
         }
     }

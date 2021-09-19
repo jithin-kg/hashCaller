@@ -627,7 +627,7 @@ class FloatingService: Service() {
             setSmallIcon(R.drawable.ic_baseline_call_24)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 priority = NotificationManager.IMPORTANCE_LOW
-            }else{
+            }else {
                 priority = Notification.PRIORITY_LOW
             }
 //            setContentIntent(notePendingIntent)

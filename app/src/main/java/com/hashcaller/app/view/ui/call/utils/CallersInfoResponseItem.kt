@@ -24,5 +24,9 @@ data class CallersInfoResponseItem (
     var imageThumbnail:String? = "",
     val hUid:String = "",
     val isVerifiedUser:Boolean = false,
-){
+    val bio:String = "",
+    val email:String = "",
+    val avatarGoogle:String = "",
+
+    ){
 }

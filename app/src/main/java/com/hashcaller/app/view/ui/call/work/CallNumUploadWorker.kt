@@ -22,6 +22,7 @@ import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.call.dialer.util.CallLogData
 import com.hashcaller.app.view.ui.call.repository.CallContainerRepository
 import com.hashcaller.app.view.ui.call.repository.CallLocalRepository
+import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
@@ -114,18 +115,20 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                 }
                                 formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
                                 callersInfoFromServerDAO?.updateByHash(
-                                    hashedNum = cntct.hash,
-                                    spamCount = cntct.spamCount,
-                                    firstName = cntct.firstName,
-                                    lastName = cntct.lastName,
-                                    nameInPhoneBook =cntct.nameInPhoneBook,
+                                    hashedNum = cntct.hash?:"",
+                                    spamCount = cntct.spamCount?:0L,
+                                    firstName = cntct.firstName?:"",
+                                    lastName = cntct.lastName?:"",
+                                    nameInPhoneBook =cntct.nameInPhoneBook?:"",
                                     date = Date(),
-                                    isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                                    isUserInfoFoundInServer = cntct.isInfoFoundInDb?: INFO_NOT_FOUND_IN_SERVER,
                                     thumbnailImg = cntct.imageThumbnail?:"",
-                                    city = cntct.location,
-                                    carrier = cntct.carrier,
-                                    hUid = cntct.hUid
-
+                                    city = cntct.location?:"",
+                                    carrier = cntct.carrier?:"",
+                                    hUid = cntct.hUid?:"",
+                                    bio = cntct.bio?:"",
+                                    email = cntct.email?:"",
+                                    avatarGoogle = cntct.avatarGoogle?:"",
                                 )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

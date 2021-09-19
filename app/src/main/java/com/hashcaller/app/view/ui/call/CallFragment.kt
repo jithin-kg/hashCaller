@@ -30,7 +30,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.FragmentCallBinding
-import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.SPAMMER_TYPE_BUSINESS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.hashcaller.app.utils.auth.TokenHelper
@@ -239,7 +238,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             callLogAdapter?.itemCount.let { count ->
                 if(count!=null && count < it.size ){
                     binding.pgBarCall.beGone()
-                    submitListToAdapter(it)
+                    submitListToAdapter(it, true)
 
 
                 }
@@ -250,7 +249,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         })
     }
 
-    private fun submitListToAdapter(it: MutableList<CallLogTable>) {
+    private fun submitListToAdapter(it: MutableList<CallLogTable>, isFromFirst10Items: Boolean) {
         lifecycleScope.launchWhenStarted {
             if(!checkScreeningRole()){
 //                            callLogAdapter?.setCallerIdReqViewVisiblity(true)
@@ -258,7 +257,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             }else {
                 callLogAdapter?.removeCallerIdRoleItem()
             }
-            callLogAdapter?.submitCallLogs(it)
+            callLogAdapter?.submitCallLogs(it, isFromFirst10Items)
         }
     }
 
@@ -279,7 +278,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
-            submitListToAdapter(it)
+            submitListToAdapter(it, false)
 //           lifecycleScope.launchWhenStarted {
 //               if(!checkScreeningRole()){
 ////                   callLogAdapter?.setCallerIdReqViewVisiblity(true)

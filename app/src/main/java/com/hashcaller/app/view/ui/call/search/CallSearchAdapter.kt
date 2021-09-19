@@ -198,7 +198,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //
 //                }
 //            }
-            logBinding.textViewTime.text = getRelativeTime(callLog.dateInMilliseconds)
+            logBinding.textViewTime.text = getRelativeTime(callLog.dateInMilliseconds).relativeTime
             expandableView.tvExpandNumCall.text = callLog.number
             setClickListener(logBinding.root, callLog)
         }

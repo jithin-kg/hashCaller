@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputLayout
+import com.hashcaller.app.view.ui.call.RelativeTime
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.models.PermissionRequest
 import java.text.DateFormat
@@ -64,28 +65,33 @@ fun getDate(milliSeconds: Long, dateFormat: String?): String? {
 
 fun getRelativeTime(
     dateMilli: Long
-): String {
+): RelativeTime {
     val days = getDaysDifference(dateMilli)
-    var relativeTime = ""
-
+    var relativeTimeStr = ""
+    val relativeTimeObj = RelativeTime("", RelativeTime.OLDER)
     if (days == 0L) {
 
 //                 val time = String.format("%02d" , c.get(Calendar.HOUR))+":"+
 //                     String.format("%02d" , c.get(Calendar.MINUTE))
 //                 val ftime = SimpleDateFormat("hh:mm:ss" ).format(time * 1000L)
-        relativeTime = setHourAndMinute(dateMilli)
-
+        relativeTimeStr = setHourAndMinute(dateMilli)
+        relativeTimeObj.relativeDay = RelativeTime.TODAY
 
     } else if (days == 1L) {
 
-        relativeTime = "Yesterday"
+        relativeTimeStr = "Yesterday"
+        relativeTimeObj.relativeDay = RelativeTime.YESTERDAY
+
     } else {
 //                 view.tvSMSTime.text = "prev days"
 
         val date = SimpleDateFormat("dd/MM/yyyy").format(Date(dateMilli))
-        relativeTime = date
+        relativeTimeStr = date
+        relativeTimeObj.relativeDay = RelativeTime.OLDER
+
     }
-    return relativeTime
+    relativeTimeObj.relativeTime = relativeTimeStr
+    return relativeTimeObj
 }
 
 /**

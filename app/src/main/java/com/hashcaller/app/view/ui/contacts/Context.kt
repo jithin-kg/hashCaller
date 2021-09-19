@@ -24,11 +24,13 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.fragment.app.FragmentActivity
 import androidx.work.*
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ContactListBinding
@@ -73,12 +75,14 @@ import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ADDRES
 import com.hashcaller.app.view.ui.contacts.utils.ContactLiveData
 import com.hashcaller.app.view.ui.contacts.utils.QUERY_STRING
 import com.hashcaller.app.view.ui.contacts.utils.SMS_CHAT_ID
+import com.hashcaller.app.view.ui.extensions.setRandomBackgroundCircle
 import com.hashcaller.app.view.ui.settings.SettingsActivity
 import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.sms.search.SearchSMSActivity
 import com.hashcaller.app.view.ui.sms.util.SMSContract
 import com.hashcaller.app.view.utils.SIMAccount
+import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.work.SpamReportWorker
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
@@ -91,6 +95,36 @@ import java.util.*
 fun Context.isDarkThemeOn(): Boolean {
     return resources.configuration.uiMode and
             UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
+}
+
+fun Context.setAvatar(
+    imgViewCntct: ImageView,
+    textViewcontactCrclr: TextView,
+    firstName: String,
+    lastName: String,
+    nameInPhoneBook: String,
+    photoThumnailServer: String?,
+    avatarGoogle: String,
+    name: String,
+
+    ) {
+    if(!avatarGoogle.isNullOrEmpty()){
+        textViewcontactCrclr.beInvisible()
+        imgViewCntct.beVisible()
+        Glide.with(this).load(avatarGoogle)
+            .into(imgViewCntct)
+    }else if(!photoThumnailServer.isNullOrEmpty()){
+        textViewcontactCrclr.beInvisible()
+        imgViewCntct.beVisible()
+        imgViewCntct.setImageBitmap(getDecodedBytes(photoThumnailServer))
+    }else {
+        if(name.length >= 1){
+            textViewcontactCrclr.beVisible()
+            imgViewCntct.beInvisible()
+            textViewcontactCrclr.text= name[0].toString()
+            textViewcontactCrclr.setRandomBackgroundCircle()
+        }
+    }
 }
 
 fun Context.showBadRequestToast(code: Int) {

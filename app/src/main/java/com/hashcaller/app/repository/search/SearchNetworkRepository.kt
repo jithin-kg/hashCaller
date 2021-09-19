@@ -1,6 +1,10 @@
 package com.hashcaller.app.repository.search
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.ContactsContract
 import android.util.Log
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.search.ISearchService
@@ -9,6 +13,7 @@ import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
+import com.hashcaller.app.view.ui.search.ServerSearchViewModel
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -116,6 +121,35 @@ class SearchNetworkRepository(
         }
     }
 
+    /**
+     * function to get contact details for a number
+     */
+    @SuppressLint("LongLogTag")
+    suspend fun getContactDetailForNumberFromCp(phoneNumber: String, context:Context): Contact?  = withContext(
+        Dispatchers.IO) {
+        var cursor: Cursor? = null
+        val phoneNum = phoneNumber.replace("+", "").trim()
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+        val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
+
+        var  contact:Contact? = null
+        try{
+            if(cursor2!=null && cursor2.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+                val name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
+                val contactId = cursor2.getLong(cursor2.getColumnIndex("contact_id"))
+                val normalizedNumber = cursor2.getString(cursor2.getColumnIndex("normalized_number"))
+                contact = Contact(contactId, name, normalizedNumber, null)
+            }
+
+
+        }catch (e:Exception){
+            Log.d(ServerSearchViewModel.TAG, "getConactInfoForNumber: exception $e")
+        }finally {
+            cursor2?.close()
+        }
+        return@withContext contact
+    }
     suspend fun findOneInDb(fno: String, userSelectedCountryIso: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
 
 

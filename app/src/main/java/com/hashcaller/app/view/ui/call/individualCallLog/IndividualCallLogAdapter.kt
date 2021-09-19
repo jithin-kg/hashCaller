@@ -92,7 +92,7 @@ class IndividualCallLogAdapter(
         ) {
 
             setCallDirection(log, binding)
-            binding.tvTime.text = getRelativeTime(log.date!!)
+            binding.tvTime.text = getRelativeTime(log.date!!).relativeTime
             binding.tvDuration.text = getRelativeDuration(log.duration)
 
 

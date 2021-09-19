@@ -45,6 +45,9 @@ data class CallersInfoFromServer (
     @ColumnInfo(name = "isInfoFoundInServer") var isUserInfoFoundInServer : Int = INFO_NOT_FOUND_IN_SERVER,
     @ColumnInfo(name = "thumbnailImg") var thumbnailImg:String = "",
     @ColumnInfo(name = "hUid") var hUid:String = "",
+    @ColumnInfo(name = "bio") var bio:String = "",
+    @ColumnInfo(name = "email") var email:String = "",
+    @ColumnInfo(name = "avatarGoogle") var avatarGoogle:String = "",
 
     ) {
 }

@@ -19,6 +19,7 @@ import com.hashcaller.app.network.HttpStatusCodes
 import com.hashcaller.app.repository.contacts.*
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
+import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
@@ -81,9 +82,9 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
             val def2 = async { sendContactOfSize1000() }
             def1.await()
             def2.await()
-        }catch (e: HttpException){
+        }catch (e:Exception){
+            Log.d(TAG, "doWork: exception $e")
             return@withContext Result.retry()
-            Log.d(TAG, "doWork: retry")
         }
         return@withContext Result.success()
     }
@@ -91,7 +92,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
     private suspend fun sendContactOfSize1000(): Int {
         if(!contactsListOf1000.isNullOrEmpty()){
             for (contactSublist in contactsListOf1000){
-                Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
 //                    val countryCode =   "91" //for emulator country code should be 91
                 var countryISO = countryCodeIso
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
@@ -107,7 +107,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     return ERROR_WHILE_UPLODING
 //                    throw  IOException()
 //                    return Result.retry()
-                    Log.d(TAG, "sendContactOfSize1000: server error ${result?.code()}")
                 }
 
 //                if(result!=null){
@@ -126,53 +125,61 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     @Throws(IOException::class)
     private suspend fun sendContactsOfSize12(): Int {
-        if(!contactsListOf12.isNullOrEmpty()){
-            for (contactSublist in contactsListOf12){
-                Log.d("__size", "doWork: sublist size is ${contactSublist.size}")
+       try{
+           if(!contactsListOf12.isNullOrEmpty()){
+               for (contactSublist in contactsListOf12){
 //                    val countryCode =   "91" //for emulator country code should be 91
-                var countryISO = countryCodeIso
+                   var countryISO = countryCodeIso
 //                        val countryISO = "IN" //for testing in emulator coutry iso should be india otherwise it always returns us
-                var countryCode = countryCodeIso
-                val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
-                val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
-                val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
-
-                var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
-                if(result?.code() in (500..599)){
-                    return ERROR_WHILE_UPLODING
+                   var countryCode = countryCodeIso
+                   val contactSyncDto = ContactsSyncDTO(contactSublist, countryCode.toString(), countryISO)
+                   val contactsNetworkRepository = ContactsNetworkRepository(context, tokenHelper)
+                   val result = contactsNetworkRepository.uploadContacts(contactSyncDto)
+                   Log.d(TAG, "sendContactsOfSize12: result $result")
+                   var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
+                   if(result?.code() in (500..599)){
+                       Log.d(TAG, "sendContactsOfSize12: server error")
+                       return ERROR_WHILE_UPLODING
 //                    return Result.retry()
-                }
+                   }
 
-                    result?.let { rslt->
-                        if(rslt.code() == HttpStatusCodes.STATUS_OK){
-                            rslt?.body()?.let { ctcts->
-                                for(cntct in ctcts.contacts){
-                                    //todo do updation
-                                    callersInfoFromServerDAO?.updateByHash(
-                                        hashedNum = cntct.hash,
-                                        spamCount = cntct.spamCount,
-                                        firstName = cntct.firstName,
-                                        lastName = cntct.lastName,
-                                        nameInPhoneBook = cntct.nameInPhoneBook,
-                                        date = Date(),
-                                        isUserInfoFoundInServer = cntct.isInfoFoundInDb,
-                                        thumbnailImg = cntct.imageThumbnail?:"",
-                                        city = cntct.location,
-                                        carrier = cntct.carrier,
-                                        hUid = cntct.hUid
-                                    )
+                   result?.let { rslt->
+                       if(rslt.code() == HttpStatusCodes.STATUS_OK){
+                           rslt?.body()?.let { ctcts->
+                               for(cntct in ctcts.contacts){
+                                   //todo do updation
+                                   callersInfoFromServerDAO?.updateByHash(
+                                       hashedNum = cntct.hash?:"",
+                                       spamCount = cntct.spamCount?:0L,
+                                       firstName = cntct.firstName?:"",
+                                       lastName = cntct.lastName?:"",
+                                       nameInPhoneBook = cntct.nameInPhoneBook?:"",
+                                       date = Date(),
+                                       isUserInfoFoundInServer = cntct.isInfoFoundInDb?: INFO_NOT_FOUND_IN_SERVER,
+                                       thumbnailImg = cntct.imageThumbnail?:"",
+                                       city = cntct.location?:"",
+                                       carrier = cntct.carrier?:"",
+                                       hUid = cntct.hUid?:"",
+                                       bio = cntct.bio?:"",
+                                       email = cntct.email?:"",
+                                       avatarGoogle = cntct.avatarGoogle?:"",
+
+                                   )
 //                            callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)
-                                }
-                            }
+                               }
+                           }
 
-                        }
-                    }
+                       }
+                   }
 
-                    saveDateInContactLastSycnDate()
+                   saveDateInContactLastSycnDate()
 //                    callersInfoFromServerDAO.insert(callerslistToBeSavedInLocalDb)
 
-            }
-        }
+               }
+           }
+       }catch (e:Exception){
+           Log.d(TAG, "sendContactsOfSize12: $e")
+       }
         return SUCCESS_UPLODING
     }
 
@@ -204,7 +211,6 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                     if(isTobeSearchedInServer){
                         var hashedPhoneNum:String? = Secrets().managecipher(context.packageName, contact.phoneNumber)
                         hashedPhoneNum?.let { hashed ->
-                            Log.d(TAG, "setNewlySavedContactsList: hashedNum ${hashed}")
 
                             insertIntoListSetUploadingStatus(contact.phoneNumber, hashed,
                             )

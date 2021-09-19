@@ -246,7 +246,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 }
 
 
-            binding.tvSMSTime.text = getRelativeTime(sms.dateInMilliseconds)
+            binding.tvSMSTime.text = getRelativeTime(sms.dateInMilliseconds).relativeTime
 
 
 

@@ -31,6 +31,12 @@ data class Contact(
     var isInfoFoundInServer:Int = INFO_NOT_FOUND_IN_SERVER,
     var lastName: String = "",
     var thumbnailInCprovider:String = "",
+    val nameInPhoneBook:String = "",
+    val hUid:String = "",
+    val email:String = "",
+    val avatarGoogle:String = "",
+    val bio:String = ""
+
     )  {
 
     fun doesContainPhoneNumber(text: String): Boolean {

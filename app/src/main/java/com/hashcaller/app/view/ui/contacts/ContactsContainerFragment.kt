@@ -49,8 +49,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
-    private var _binding: FragmentContactsContainerBinding? = null
 
+    private var _binding: FragmentContactsContainerBinding? = null
     private val binding get() = _binding!!
     private var isDflt = false
     private val TAG = "__ContactFragment"
@@ -173,6 +173,7 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
                         activity
                     )
                 }
+
             adapter = contactsRecyclerAdapter
 
         }
