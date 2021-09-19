@@ -337,7 +337,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                }
 //            }
             val relativeTime  = getRelativeTime(callLog.dateInMilliseconds)
-            logBinding.textVcallerName.text = relativeTime.relativeTime
+            logBinding.textViewTime.text = relativeTime.relativeTime
 //            if(relativeTime.relativeDay == RelativeTime.TODAY && !isTodayTextShown){
 //                logBinding.tvRelativeDay.beVisible()
 //                logBinding.tvRelativeDay.text = "Today"

@@ -192,6 +192,7 @@
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
+            android:label=""
             android:theme="@style/PopupTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
