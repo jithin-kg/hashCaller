@@ -103,7 +103,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:alpha="0.74"
-
                 android:text="Call ended"
                 android:textColor="@color/colorWhite"
                 android:textSize="12sp"
@@ -111,6 +110,20 @@
                 app:layout_constraintStart_toEndOf="@+id/sim"
                 app:layout_constraintTop_toTopOf="@+id/sim" />
 
+            <TextView
+                android:id="@+id/tvAppName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:alpha="0.74"
+                android:text="HashCaller"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/helpfulMessage"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="@dimen/margin_padding_size_medium"
+                android:layout_marginBottom="@dimen/margin_padding_size_medium"
+                />
             <TextView
                 android:id="@+id/txtVLocaltion"
                 android:layout_width="wrap_content"

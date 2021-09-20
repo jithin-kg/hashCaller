@@ -1,10 +1,16 @@
 package com.hashcaller.app.view.ui.search
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.net.Uri
+import android.provider.ContactsContract
 import android.text.SpannableStringBuilder
 import android.text.style.BackgroundColorSpan
+import android.util.Log
 import com.hashcaller.app.stubs.Contact
+import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
+import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.contacts.ContactsQueryHelper
 import com.hashcaller.app.view.ui.sms.util.SMS
 import com.hashcaller.app.view.ui.sms.util.SmsRepositoryHelper
@@ -16,7 +22,13 @@ import kotlinx.coroutines.withContext
 class AllSearchRepository(
     private val context: Context,
     private val contactQueryHelper: ContactsQueryHelper,
-    private val smsRepositoryHelper: SmsRepositoryHelper ) {
+    private val smsRepositoryHelper: SmsRepositoryHelper,
+    private val callerInfoFromServerDAO: CallersInfoFromServerDAO
+) {
+
+    companion object {
+        const val TAG = "__AllSearchRepository"
+    }
 
     private var listofContacts:List<Contact> = emptyList()
     private var mapofContacts:HashMap<String, Contact> = hashMapOf()
@@ -32,13 +44,32 @@ class AllSearchRepository(
     suspend fun getAllContacts(): List<Contact>  = withContext(Dispatchers.IO){
         return@withContext listofContacts
     }
+    /**
+     * function to get non thumbnail image ie clear image from cprovider
+     */
+    suspend fun getClearImageFromCprovider(phoneNum: String): String? = withContext(Dispatchers.IO) {
+        var photoUri:String? = null
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNum));
+        val cursor = context.contentResolver.query(uri, null,  null, null, null )
+        if(cursor!=null && cursor.moveToFirst()){
+//                    Log.d(TAG, "getConactInfoForNumber: data exist")
+            photoUri = cursor.getString(cursor.getColumnIndexOrThrow( ContactsContract.Contacts.PHOTO_URI))
+        }
+        return@withContext photoUri
+    }
 
+    @SuppressLint("LogNotTimber")
     suspend fun searchInContacts(searchTerm: String, isFullResultNeeded: Boolean): MutableList<Contact>  = withContext(Dispatchers.IO){
+
         var contactsListOfSize3:MutableList<Contact> = mutableListOf()
         val copyList:MutableList<Contact> = mutableListOf()
         copyList.addAll(listofContacts)
         for (contact in copyList){
 
+            if(contact.firstName.contains( "olme")){
+                Log.d(TAG, "searchInContacts:")
+            }
+//            +91 96333 60014
             contact.spanStartPosNum = 0
             contact.spanEndPosNum = 0
             contact.spanStartPosName = 0
@@ -185,5 +216,9 @@ class AllSearchRepository(
 
     suspend fun getListOfLimitedContacts(): MutableList<Contact> = withContext(Dispatchers.IO) {
         return@withContext contactQueryHelper.getAllContacts(true)
+    }
+
+    suspend fun getMoreInfoServerForContact(phoneNumber: String): CallersInfoFromServer? = withContext(Dispatchers.IO)  {
+        return@withContext callerInfoFromServerDAO.find(phoneNumber)
     }
 }

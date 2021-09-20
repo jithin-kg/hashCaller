@@ -32,13 +32,14 @@ interface CallersInfoFromServerDAO {
 
     @Query("SELECT * FROM callers_info_from_server WHERE contact_address=:contactAddress")
     suspend fun find(contactAddress: String) : CallersInfoFromServer?
+
     @Query("DELETE from callers_info_from_server ")
     suspend fun deleteAll()
 
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount,isBlockedByUser =:isBlockedByUser  WHERE contact_address =:contactAddress ")
     suspend fun update(spamCount: kotlin.Long, contactAddress: kotlin.String, isBlockedByUser:Boolean)
 
-    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount, firstName =:firstName,lastName=:lastName,nameInPhoneBook =:nameInPhoneBook,hUid=:hUid, informationReceivedDate=:date,isInfoFoundInServer=:isUserInfoFoundInServer,thumbnailImg=:thumbnailImg, city=:city,carrier=:carrier,bio=:bio,email=:email,avatarGoogle=:avatarGoogle  WHERE hashedNum =:hashedNum ")
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamCount, firstName =:firstName,lastName=:lastName,nameInPhoneBook =:nameInPhoneBook,hUid=:hUid, informationReceivedDate=:date,isInfoFoundInServer=:isUserInfoFoundInServer,thumbnailImg=:thumbnailImg, city=:city,carrier=:carrier,bio=:bio,email=:email,avatarGoogle=:avatarGoogle, isVerifiedUser=:isVerifiedUser  WHERE hashedNum =:hashedNum ")
     suspend fun updateByHash(hashedNum:String,
                      spamCount: Long ,
                      firstName:String,
@@ -52,7 +53,8 @@ interface CallersInfoFromServerDAO {
                      hUid:String = "",
                      bio:String = "",
                      email:String = "",
-                     avatarGoogle:String = ""
+                     avatarGoogle:String = "",
+                     isVerifiedUser:Boolean
                      )
 
     @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName,thumbnailImg=:thumbnailImg, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier WHERE contact_address =:contactAddress ")

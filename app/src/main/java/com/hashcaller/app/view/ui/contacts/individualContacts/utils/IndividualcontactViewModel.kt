@@ -19,6 +19,7 @@ import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactL
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
+import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB_GOOGLE
 import com.hashcaller.app.view.ui.contacts.startSpamReportWorker
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
@@ -258,19 +259,26 @@ class IndividualcontactViewModel(
             val thumbnailImageData= ThumbnailImageData()
             viewModelScope.launch {
                 val defCproviderTask = async { repository.getClearImageFromCprovider(phoneNum) }
-                val defDbTask = async { repository.getCallLogInfoForNum(phoneNum) }
+                val defDbTask = async { repository.getIndividualContactFromDb(phoneNum) }
 
                 try {
                     var imgFromCprovider: String? = defCproviderTask.await()
-                    var imgFromDb: String? = defDbTask.await()?.imageFromDb
+                    var inforFromDb = defDbTask.await()
+
                     if (imgFromCprovider != null) {
                         imageUri = imgFromCprovider
                         thumbnailImageData.imageFoundFrom = IMAGE_FOUND_FROM_C_PROVIDER
                         thumbnailImageData.imageStr = imageUri
-                    } else if (!imgFromDb.isNullOrEmpty()) {
-                        imageUri = imgFromDb
-                        thumbnailImageData.imageFoundFrom = IMAGE_FOUND_FROM_DB
-                        thumbnailImageData.imageStr = imageUri
+                    } else if (inforFromDb != null) {
+                        if(inforFromDb.thumbnailImg.isNotEmpty()){
+                            imageUri =inforFromDb.thumbnailImg
+                                thumbnailImageData.imageFoundFrom = IMAGE_FOUND_FROM_DB
+                            thumbnailImageData.imageStr = imageUri
+                        }else if(inforFromDb.avatarGoogle.isNotEmpty()){
+                            imageUri =inforFromDb.avatarGoogle
+                            thumbnailImageData.imageFoundFrom = IMAGE_FOUND_FROM_DB_GOOGLE
+                            thumbnailImageData.avatarGoogle = imageUri
+                        }
                     }
                 } catch (e: Exception) {
                     Log.d(TAG, "getClearImage: exception $e")
@@ -319,6 +327,7 @@ class IndividualcontactViewModel(
             if(contactForview.firstName.isNullOrEmpty()){
                 contactForview.firstName = formatPhoneNumber( phoneNum)
             }
+            contactForview.isVerifiedUser = infoInDb?.isVerifiedUser?:false
             contactForview.spammCount = infoInDb?.spamReportCount?:0
             contactForViewLivedata.value  = contactForview
         }catch (e:Exception){

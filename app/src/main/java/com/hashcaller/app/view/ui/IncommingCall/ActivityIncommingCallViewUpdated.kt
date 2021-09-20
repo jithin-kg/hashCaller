@@ -31,6 +31,7 @@ import com.hashcaller.app.network.search.model.Cntct
 import com.hashcaller.app.network.search.model.CntctitemForView
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.NO_SIM_DETECTED
+import com.hashcaller.app.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.constants.IntentKeys
@@ -48,7 +49,6 @@ import com.hashcaller.app.view.ui.contacts.search.utils.SearchViewModel
 import com.hashcaller.app.view.ui.contacts.stopFltinServiceFromActiivtyIncomming
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID
 import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
-import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.*
 import com.hashcaller.app.work.formatPhoneNumber
@@ -159,7 +159,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
             SIM_TWO -> {
                 binding.sim.setImageResource(R.drawable.ic_sim_2_line_white)
             }
-            else -> {
+            SIM_ONE -> {
                 binding.sim.setImageResource(R.drawable.ic_sim_1_line_white)
             }
         }
@@ -460,7 +460,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                     val checked = v.isChecked
                     if (checked) {
                         selectedRadioButton = radioScam
-                        Log.d(IndividualSMSActivity.TAG, "radio button clicked")
                         this.spammerType = SPAMMER_TYPE_SCAM
 
 //                                spinnerSelected.value = fals
@@ -473,7 +472,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                     if (checked) {
                         selectedRadioButton = radioSales
                         this.spammerType = SPAMMER_TYPE_SALES
-                        Log.d(IndividualSMSActivity.TAG, "onClick: radio scam")
 //                                spinnerSelected.value = false
 
                     }
@@ -520,7 +518,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock)
 
         bottomSheetDialog.setOnDismissListener {
-            Log.d(IndividualSMSActivity.TAG, "bottomSheetDialogDismissed")
+            Log.d(TAG, "bottomSheetDialogDismissed")
 
         }
     }

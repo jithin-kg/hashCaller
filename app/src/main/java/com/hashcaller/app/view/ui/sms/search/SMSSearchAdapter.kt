@@ -379,45 +379,11 @@ class SMSSearchAdapter(private val context: Context,
     }
      class SMSSearchItemDiffCallback : DiffUtil.ItemCallback<SMS>() {
         override fun areItemsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-//            return oldItem.expanded == newItem.expanded &&  oldItem.id == newItem.id
-            Log.d(TAG, "areItemsTheSame: oldItem ${oldItem.expanded}")
-            Log.d(TAG, "areItemsTheSame: newItem ${newItem.expanded}")
-            if(oldItem.expanded == newItem.expanded)
-                Log.d(TAG, "areItemsTheSame: yes")
-            else
-                Log.d(TAG, "areItemsTheSame: no")
             return oldItem.expanded == newItem.expanded &&  oldItem.threadID == newItem.threadID
-
-
         }
 
         override fun areContentsTheSame(oldItem: SMS, newItem: SMS): Boolean {
-            //is different we have new message for a chat
-            //update the badge of that addres
-//            Log.d(TAG, "areContentsTheSame: oldItem ${oldItem.expanded}")
-//            Log.d(TAG, "areContentsTheSame: newItem ${newItem.expanded}")
-//            if(oldItem.address == newItem.address){
-//                if(oldItem.msgString != newItem.msgString){
-//                    //we have a new message for this addess
-//                    //set badge counter for this number/address
-//                    //or i should get the count when i listng sms and if data change compare newcount
-//
-//                }
-//            }
-//            if(oldItem.name == newItem.name){
-//                Log.d(TAG, "areContentsTheSame: name are equal ${oldItem.name}, ${newItem.name}")
-//            }else{
-//                Log.d(TAG, "areContentsTheSame: name are not equal ${oldItem.name}, ${newItem.name}")
-//            }
-//            Log.d(TAG, "areContentsTheSame:msg old ${oldItem.msg}  msg new ${newItem.msg}")
-////            if(oldItem.expanded == newItem.expanded)
-//                Log.d(TAG, "areContentsTheSame: yes")
-//            else
-//                Log.d(TAG, "areContentsTheSame: no")
-//            return oldItem.expanded == newItem.expanded and oldItem.msgString.equals(newItem.msgString)
-            Log.d(TAG, "areContentsTheSame: old senderInfoFoundFrom ${oldItem.senderInfoFoundFrom } new senderInfoFoundFRom${oldItem.senderInfoFoundFrom }")
             return  oldItem.firstName== newItem.firstName && oldItem.msg == newItem.msg && oldItem.senderInfoFoundFrom == newItem.senderInfoFoundFrom
-           //TODO compare both messages and if the addres is same and message
         }
 
     }

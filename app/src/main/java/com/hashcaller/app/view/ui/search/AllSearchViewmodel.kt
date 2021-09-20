@@ -6,6 +6,7 @@ import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.view.ui.sms.util.SMS
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
+import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -35,10 +36,20 @@ class AllSearchViewmodel(
 
         emptyAllLists()
 
-        defContacts = async { allSearchRepository.searchInContacts(searchTerm, isFullResultNeeded)}
+        defContacts = async { allSearchRepository.searchInContacts(formatPhoneNumber(searchTerm), isFullResultNeeded)}
+
+
 //        defSMS = async {  allSearchRepository.searchInSMS(searchTerm) }
         try {
-            contactsSearchListLivedata.value =  defContacts?.await()
+            val contactsInCprovider = defContacts?.await()
+            if (contactsInCprovider != null) {
+                for (ct in contactsInCprovider){
+                   ct.thumbnailInCprovider = allSearchRepository.getClearImageFromCprovider(ct.phoneNumber)?:""
+                   val infoInDb = allSearchRepository.getMoreInfoServerForContact(ct.phoneNumber)
+                   ct.isVerifiedUser = infoInDb?.isVerifiedUser?:false
+                }
+            }
+            contactsSearchListLivedata.value =  contactsInCprovider
         }catch (e:Exception){
             Log.d(TAG, "onQueryTextChanged: $e")
         }

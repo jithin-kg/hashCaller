@@ -118,7 +118,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  var selectedRadioButton: RadioButton? = null
     private var radioGroupOne: RadioGroup? = null
     private var radioGroupTwo: RadioGroup? = null
-    val vm: CallContainerViewModel by viewModels()
+//    val vm: CallContainerViewModel by viewModels()
 
 
     /************/
@@ -797,7 +797,11 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         } else if (log.imageFromDb.isNotEmpty()) {
             pair = android.util.Pair(imgViewUserPhoto as View, "contactImageTransition")
 
-        } else {
+        }
+        else if (log.avatarGoogle.isNotEmpty()) {
+            pair = android.util.Pair(imgViewUserPhoto as View, "contactImageTransition")
+        }
+        else {
             pair = android.util.Pair(textViewCrclr as View, "firstLetterTransition")
         }
         pairList.add(pair)

@@ -1,17 +1,17 @@
 package com.hashcaller.app.view.ui.search
 
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.hashcaller.app.databinding.ContactSearchResultItemBinding
 import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.view.ui.contacts.setAvatar
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
+import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.extensions.setRandomBackgroundCircle
 import com.hashcaller.app.view.ui.sms.individual.util.TYPE_CLICK
@@ -68,7 +68,6 @@ class ServerSearchResultAdapter(private val context: Context, private val onCont
     }
 
     class ViewHolder(private val binding: ContactSearchResultItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        private val circle = binding.textViewcontactCrclr;
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
         fun bind(
@@ -87,24 +86,26 @@ class ServerSearchResultAdapter(private val context: Context, private val onCont
                 contact.avatarGoogle,
                 name
                 )
-            context.toggleUserBadge(binding.imgUserIconBg, binding.imgUserIcon, contact.hUid)
-            generateCircleView(contact, context);
+            context.toggleVerifiedBadge(binding.imgVerifiedBadge, contact.isVerifiedUser)
+            context.toggleUserBadge(
+                binding.imgUserIconBg,
+                binding.imgUserIcon,
+                contact.hUid
+            )
 
+            //only show image from server, not from content provider
+            val photoThumbnailFromServer = contact.photoThumnailServer?:""
+            val googleAvatar = contact.avatarGoogle?:""
+            if(photoThumbnailFromServer.isNotEmpty()){
+                loadImage(context, binding.imgViewCntct, photoThumbnailFromServer)
+            }else if(googleAvatar.isNotEmpty()){
+                Glide.with(context).load(googleAvatar)
+                    .into(binding.imgViewCntct)
+            }else {
+                generateCircleView(contact);
 
-//            if(!contact.photoThumnailServer.isNullOrEmpty()){
-//                binding.textViewcontactCrclr.visibility = View.INVISIBLE
-//                binding.imgViewCntct.visibility = View.VISIBLE
-//                binding.contactCard.visibility = View.VISIBLE
-//                loadImage(context, binding.imgViewCntct, contact.photoThumnailServer)
-//
-//            }else{
-//                binding.imgViewCntct.setImageURI(Uri.parse(""))
-//                binding.imgViewCntct.visibility = View.INVISIBLE
-//                binding.textViewcontactCrclr.visibility = View.VISIBLE
-//                binding.contactCard.visibility = View.INVISIBLE
-//                setNameFirstChar(contact)
-//            }
-
+            }
+//            if(contact.photoURI)
             val pNo = contact.phoneNumber
 
             binding.imgBtnCall.setOnClickListener {
@@ -133,14 +134,14 @@ class ServerSearchResultAdapter(private val context: Context, private val onCont
                 firstLetter = name[0].toString()
             }
             val firstLetterString = firstLetter.toString().toUpperCase()
-            circle.text = firstLetterString
+            binding.textViewcontactCrclr.text = firstLetterString
 
 
         }
 
-        private fun generateCircleView(contact: Contact, context: Context) {
+        private fun generateCircleView(contact: Contact) {
 
-            contact.drawable = circle.setRandomBackgroundCircle()
+            contact.drawable = binding.textViewcontactCrclr.setRandomBackgroundCircle()
 
         }
 

@@ -284,7 +284,7 @@ class InCommingCallManager(
                 city = resFromServer?.location?:"",
                 country = resFromServer?.country?:"",
                 carrier = resFromServer?.carrier?:"",
-                thumbnailImg = resFromServer?.thumbnailImg?:""
+                thumbnailImg = resFromServer?.thumbnailImg?:"",
                 )
         }
     }

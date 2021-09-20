@@ -291,7 +291,7 @@ class FloatingService: Service() {
         }else {
             //floating service already started
             //check if window is visible in view, if window is not visible and
-            //window has not been closed before start the window, this cituation
+            //window has not been closed before start the window, this situation
             //can occur when user attend the call even before broadcast receiver
             //receives the call state
             if(!isWinManuallyClsd  && !isWindopwOpened){

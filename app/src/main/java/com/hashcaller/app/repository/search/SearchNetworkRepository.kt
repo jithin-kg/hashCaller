@@ -95,6 +95,13 @@ class SearchNetworkRepository(
                 contactAddress = formatedNum,
                 spammerType = 0,
                 firstName = contact?.firstName?:"",
+                lastName = contact?.lastName?:"",
+                nameInPhoneBook = contact?.nameInPhoneBook?:"",
+                bio = contact?.bio?:"",
+                email = contact?.email?:"",
+                hUid = contact?.hUid?:"",
+                avatarGoogle = contact?.avatarGoogle?:"",
+                isVerifiedUser = contact?.isVerifiedUser?:false,
                 informationReceivedDate = Date(),
                 spamReportCount = contact?.spamCount?:0L,
                 city = contact?.location?:"",
@@ -117,7 +124,7 @@ class SearchNetworkRepository(
                 country = contact?.country?:"",
                 carrier = contact?.carrier?:"",
                 thumbnailImg = contact?.photoThumnailServer?:""
-                )
+            )
         }
     }
 
@@ -128,7 +135,6 @@ class SearchNetworkRepository(
     suspend fun getContactDetailForNumberFromCp(phoneNumber: String, context:Context): Contact?  = withContext(
         Dispatchers.IO) {
         var cursor: Cursor? = null
-        val phoneNum = phoneNumber.replace("+", "").trim()
         val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
         val cursor2 = context.contentResolver.query(uri, null,  null, null, null )
 
@@ -139,7 +145,7 @@ class SearchNetworkRepository(
                 val name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
                 val contactId = cursor2.getLong(cursor2.getColumnIndex("contact_id"))
                 val normalizedNumber = cursor2.getString(cursor2.getColumnIndex("normalized_number"))
-                contact = Contact(contactId, name, normalizedNumber, null)
+                contact = Contact(id=contactId, nameInPhoneBook= name,phoneNumber= normalizedNumber, firstName = "", photoThumnailServer = "")
             }
 
 

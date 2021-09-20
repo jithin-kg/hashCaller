@@ -83,7 +83,7 @@ class ContactsViewModel(
     }
 
     fun startWorker(applicationContext: Context?) = viewModelScope.launch {
-        withContext(Dispatchers.IO){
+        /*withContext(Dispatchers.IO){
             applicationContext?.let{ appContext ->
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                 val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
@@ -91,7 +91,7 @@ class ContactsViewModel(
                     .build()
                 WorkManager.getInstance(appContext).enqueue(request)
             }
-        }
+        }*/
 
 
 //

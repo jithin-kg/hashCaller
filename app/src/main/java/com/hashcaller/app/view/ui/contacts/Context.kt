@@ -703,7 +703,11 @@ fun Context.onSMSItemItemClicked(
  * if huid is not empty then badge is shown and vice versa
  * @return true if is registered user and false if user is not registered
  */
-fun Context.toggleUserBadge(imgVBadgeBackground:ImageView, imgVForeground:ImageView, huid:String): Boolean {
+fun Context.toggleUserBadge(
+    imgVBadgeBackground: ImageView,
+    imgVForeground: ImageView,
+    huid: String,
+): Boolean {
     val isHuidEmpty = huid.isNullOrEmpty()
     if(!isHuidEmpty){
         imgVBadgeBackground.beVisible();
@@ -713,4 +717,11 @@ fun Context.toggleUserBadge(imgVBadgeBackground:ImageView, imgVForeground:ImageV
         imgVForeground.beInvisible()
     }
     return !isHuidEmpty
+}
+
+fun Context.toggleVerifiedBadge(imgVBadge:ImageView, isVerified:Boolean){
+    if(isVerified)
+        imgVBadge.beVisible()
+    else
+        imgVBadge.beInvisible()
 }

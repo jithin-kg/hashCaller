@@ -69,11 +69,15 @@ class ServerSearchViewModel(
                firstName = infoAvialbleInDb?.firstName?:"",
                phoneNumber= phoneNumber,
                photoThumnailServer = infoAvialbleInDb?.thumbnailImg,
-               photoURI = "",
                country = "",
                location = infoAvialbleInDb?.city?:"",
                spamCount =  infoAvialbleInDb?.spamReportCount?:0L,
                isInfoFoundInServer= infoAvialbleInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
+               isVerifiedUser = infoAvialbleInDb?.isVerifiedUser?:false,
+               nameInPhoneBook = infoAvialbleInDb?.nameInPhoneBook?:"",
+               avatarGoogle = infoAvialbleInDb?.avatarGoogle?:"",
+               photoURI = infoAvialbleInDb?.thumbnailImg?:"",
+               hUid = infoAvialbleInDb?.hUid?:""
            )
            if(searchResult.isInfoFoundInServer !=INFO_NOT_FOUND_IN_SERVER ){
                serverSearchResultLiveData.value = listOf(searchResult)
@@ -118,6 +122,7 @@ class ServerSearchViewModel(
     private fun getPreparedContact(contact: Cntct?, formatedNum: String): Contact {
         return Contact(-1,
             firstName = contact?.firstName?:"",
+            lastName =contact?.lastName?:"",
             phoneNumber= formatedNum,
             photoThumnailServer = contact?.thumbnailImg?:"",
             photoURI = "",
@@ -130,6 +135,7 @@ class ServerSearchViewModel(
             email = contact?.email?:"",
             avatarGoogle = contact?.avatarGoogle?:"",
             bio = contact?.bio?:"",
+            isVerifiedUser = contact?.isVerifiedUser?:false
 
         )
 

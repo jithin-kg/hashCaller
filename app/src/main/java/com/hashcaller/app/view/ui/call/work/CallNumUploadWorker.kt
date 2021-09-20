@@ -113,6 +113,9 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                 if(cntct.hUid.isNotEmpty()){
                                     Log.d(TAG+"huid", "doWork: ${cntct.hUid}")
                                 }
+                                if(cntct.firstName == "Sathiamma"){
+                                    Log.d(TAG+"name", "doWork:Sathiamma")
+                                }
                                 formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
                                 callersInfoFromServerDAO?.updateByHash(
                                     hashedNum = cntct.hash?:"",
@@ -129,6 +132,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                                     bio = cntct.bio?:"",
                                     email = cntct.email?:"",
                                     avatarGoogle = cntct.avatarGoogle?:"",
+                                    isVerifiedUser = cntct.isVerifiedUser?:false
                                 )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

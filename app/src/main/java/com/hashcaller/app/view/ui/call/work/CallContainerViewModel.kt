@@ -82,14 +82,13 @@ class CallContainerViewModel(
      * called when there is a change in call log in content provider
      */
     fun getInformationForTheseNumbers(applicationContext: Context?) = viewModelScope.launch {
-       /* applicationContext?.let{
+        applicationContext?.let{
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-
             val oneTimeWorkRequest = OneTimeWorkRequest.Builder(CallNumUploadWorker::class.java)
                 .setConstraints(constraints)
                 .build()
             WorkManager.getInstance(it).enqueue(oneTimeWorkRequest)
-        }*/
+        }
     }
 
 
@@ -417,18 +416,23 @@ class CallContainerViewModel(
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
         for(item in list){
              val res =  repository?.findFromCallLogTable(item.contactAddress)
+            var fullName = ""
+            if(!item.firstName.isNullOrEmpty()){
+                fullName = item.firstName
+                if(!item.lastName.isNullOrEmpty()){
+                    fullName += " " + item.lastName
+                }
+            }
               if(res!=null){
-                  if(res.nameFromServer!= item.firstName ){
+                  if(
+                        res.nameFromServer!= fullName  || res.nameInPhoneBook != item.nameInPhoneBook ||
+                        res.avatarGoogle != item.avatarGoogle || res.imageFromDb != item.thumbnailImg  ||
+                        res.isVerifiedUser != item.isVerifiedUser || res.spamCount != item.spamReportCount  ||
+                        res.hUid != item.hUid
+                          ){
                       repository?.updateCallLogWithServerInfo(item)
-                  }else if(res.nameInPhoneBook != item.nameInPhoneBook){
-                      repository?.updateCallLogWithServerInfo(item)
                   }
-                  else if( res.spamCount < item.spamReportCount ){
-                      repository?.updateCallLogWithSpamerDetails(item)
-                  }
-                  else if(res.imageFromDb!= item.thumbnailImg){
-                      repository?.updateCallLogWithImgFromServer(item)
-                  }
+                  
 
               }
           }
@@ -502,6 +506,7 @@ class CallContainerViewModel(
         numbersSet.addAll(logs.map { it.number })
 
         for (num in numbersSet){
+
             val nameAndThumbnailFromCp: NameAndThumbnail? =  repository?.getNameForAddressFromContentProvider(num)
             if(nameAndThumbnailFromCp!=null){
             val callLogTableInfo=   repository?.findOneFromCallLogTable(num)
@@ -514,7 +519,7 @@ class CallContainerViewModel(
                     }
                 }
                 if(nameAndThumbnailFromCp!=null){
-                    if(callLogTableInfo.nameFromServer!= nameAndThumbnailFromCp.name || callLogTableInfo.thumbnailFromCp!= nameAndThumbnailFromCp.thumbnailUri){
+                    if(callLogTableInfo.nameInPhoneBook!= nameAndThumbnailFromCp.name || callLogTableInfo.thumbnailFromCp!= nameAndThumbnailFromCp.thumbnailUri){
                         repository?.updateWithCproviderInfo(callLogTableInfo.number, nameAndThumbnailFromCp)
                     }
                 }

@@ -73,7 +73,11 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //               view.imgViewCntct.setImageURI(Uri.parse(contact.photoThumnail))
 //           }
             //        Log.i(TAG, String.valueOf(no));
-            context.toggleUserBadge(binding.imgUserIconBg, binding.imgUserIcon, contact.carrier)
+            context.toggleUserBadge(
+                binding.imgUserIconBg,
+                binding.imgUserIcon,
+                contact.carrier
+            )
             if(contact.photoThumnailServer !=null){
                 binding.textViewcontactCrclr.visibility = View.INVISIBLE
                 binding.imgViewCntct.visibility = View.VISIBLE

@@ -599,16 +599,22 @@ class CallContainerRepository(
         var fullName:String? =""
         fullName = (serverInfo.firstName).trim()
         if(!fullName.isNullOrEmpty()){
-            if(serverInfo.lastName.trim().isNullOrEmpty()){
-                fullName+= serverInfo.lastName.trim()
+            if(!serverInfo.lastName.trim().isNullOrEmpty()){
+                fullName+= " "+serverInfo.lastName.trim()
             }
         }
-        callLogDAO?.updateWitServerInfo(serverInfo.contactAddress,
+        if(fullName.isNullOrEmpty()){
+            fullName = serverInfo.nameInPhoneBook
+        }
+
+        callLogDAO?.updateWitServerInfo(
+            contactAddress = serverInfo.contactAddress,
             nameFromServer = fullName?:"",
             spamCount =  serverInfo.spamReportCount,
             hUid = serverInfo.hUid,
-            imageFromDb = serverInfo.thumbnailImg
-
+            imageFromDb = serverInfo.thumbnailImg,
+            avatarGoogle= serverInfo.avatarGoogle,
+            isVerifiedUser = serverInfo.isVerifiedUser
         )
     }
 
@@ -658,7 +664,11 @@ class CallContainerRepository(
     }
 
    suspend fun updateWithCproviderInfo(number: String, nameAndThumbnailFromCp: NameAndThumbnail)  = withContext(Dispatchers.IO){
-        callLogDAO?.updateWitCproviderInfo(libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(number), countryISO), nameAndThumbnailFromCp.name, nameAndThumbnailFromCp.thumbnailUri )
+        callLogDAO?.updateWitCproviderInfo(
+            libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(number), countryISO),
+
+            nameAndThumbnailFromCp.name,
+            nameAndThumbnailFromCp.thumbnailUri )
     }
 
     suspend fun marAsReportedByUser(contactAddressList: List<String>) {
@@ -697,7 +707,8 @@ class CallContainerRepository(
     }
 
     suspend fun updateCallLogWithImgFromServer(item: CallersInfoFromServer) {
-        callLogDAO?.updateWithServerImage(item.thumbnailImg, libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(item.contactAddress), countryISO))
+        callLogDAO?.updateWithServerImage(item.thumbnailImg,
+            libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(item.contactAddress), countryISO))
     }
 
     suspend fun markAsSpamInSMS(contactAddress: String)  = withContext(Dispatchers.IO) {

@@ -48,6 +48,6 @@ data class CallersInfoFromServer (
     @ColumnInfo(name = "bio") var bio:String = "",
     @ColumnInfo(name = "email") var email:String = "",
     @ColumnInfo(name = "avatarGoogle") var avatarGoogle:String = "",
-
+    @ColumnInfo(name = "isVerifiedUser") var isVerifiedUser:Boolean = false
     ) {
 }

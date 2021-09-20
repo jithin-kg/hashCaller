@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.CallListBinding
 import com.hashcaller.app.databinding.ItemFinishSettingUpBinding
@@ -17,6 +18,7 @@ import com.hashcaller.app.view.ui.call.CallFragment.Companion.ID_SHOW_SCREENING_
 import com.hashcaller.app.view.ui.call.RelativeTime
 import com.hashcaller.app.view.ui.call.db.CallLogTable
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
+import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
 import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
@@ -182,9 +184,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         }
     }
     inner class ViewHolderCallLog(private val logBinding:  CallListBinding) : RecyclerView.ViewHolder(logBinding.root) {
-        private val name = logBinding.textVcallerName
-        private val circle = logBinding.textViewCrclr;
-        private val expandableView = logBinding.layoutExpandableCall
 
 //        private val image = view.findViewById<ImageView>(R.id.contact_image)
 
@@ -196,10 +195,9 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         ) {
             var isImageThumbnailAvaialble = false
             Log.d(TAG, "bind: ")
-            expandableView.setTag(callLog.dateInMilliseconds)
-
+            logBinding.layoutExpandableCall.setTag(callLog.dateInMilliseconds)
+            context.toggleVerifiedBadge(logBinding.imgVerifiedBadge, callLog.isVerifiedUser)
             val isRegisterdUser = context.toggleUserBadge(logBinding.imgUserIconBg, logBinding.imgUserIcon, callLog.hUid)
-
             if (viewMarkingHandlerHelper.isMarked(callLog.id)) {
                 Log.d(TAG, "bind: ismarked")
                 logBinding.imgViewCallMarked.beVisible()
@@ -227,7 +225,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 }else {
                     logBinding.imgVSimIcon.setImageResource(R.drawable.ic_sim_2_line)
                 }
+            }else {
+                logBinding.imgVSimIcon.beInvisible()
             }
+
                 var nameStr:String = ""
                 var infoFoundFrom = SENDER_INFO_SEARCHING
                 if(!callLog.nameInPhoneBook.isNullOrEmpty()){
@@ -252,38 +253,45 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                         showImageInCircle(logBinding, callLog.thumbnailFromCp)
                     }else{
                         logBinding.imgVThumbnail.beInvisible()
-                        circle.beVisible()
+                        logBinding.textViewCrclr.beVisible()
                         logBinding.pgBarCallItem.beInvisible()
                     }
 
                 }
 
                 SENDER_INFO_FROM_DB -> {
-                    logBinding.imgVIdentfByHash.beVisible()
+                    if(!callLog.isVerifiedUser){
+                        logBinding.imgVIdentfByHash.beVisible()
+                    }
                     if(callLog.imageFromDb.isNotEmpty()){
                         Log.d(TAG, "bind: imageFromDB notempty")
                         isImageThumbnailAvaialble = true
                         logBinding.imgVThumbnail.setImageBitmap(getDecodedBytes(callLog.imageFromDb))
                         logBinding.imgVThumbnail.beVisible();
                         logBinding.textViewCrclr.beInvisible()
-                    }else{
-                        Log.d(TAG, "bind: imageFromDB is Empty")
+                    }else if(callLog.avatarGoogle.isNotEmpty()){
+                        logBinding.imgVThumbnail.beVisible();
+                        logBinding.textViewCrclr.beInvisible()
+                        Glide.with(context).load(callLog.avatarGoogle)
+                            .into(logBinding.imgVThumbnail)
+                    }
+                    else{
                         logBinding.imgVThumbnail.beInvisible()
-                        circle.beVisible()
+                        logBinding.textViewCrclr.beVisible()
                         logBinding.pgBarCallItem.beInvisible()
                     }
                 }
                 SENDER_INFO_SEARCHING ->{
                     logBinding.imgVIdentfByHash.beInvisible()
                     logBinding.imgVThumbnail.beInvisible()
-                    circle.beVisible()
+                    logBinding.textViewCrclr.beVisible()
                     logBinding.pgBarCallItem.beVisible()
                 }
 
                 else ->{
                     logBinding.imgVIdentfByHash.beInvisible()
                     logBinding.imgVThumbnail.beInvisible()
-                    circle.beVisible()
+                    logBinding.textViewCrclr.beVisible()
                     logBinding.pgBarCallItem.beInvisible()
                 }
             }
@@ -292,24 +300,22 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
                 if (callLog.spamCount > SPAM_THREASHOLD || callLog.isReportedByUser) {
                     if(!isImageThumbnailAvaialble){
-                        name.setColorForText(R.color.spamText)
+                        logBinding.textVcallerName.setColorForText(R.color.spamText)
 //                    logBinding.imgViewCallSpamIcon.beVisible()
-                        circle.setRandomBackgroundCircle(TYPE_SPAM)
-                        circle.text = ""
+                        logBinding.textViewCrclr.setRandomBackgroundCircle(TYPE_SPAM)
+                        logBinding.textViewCrclr.text = ""
                     }
 
 
                 } else {
                     if(!isImageThumbnailAvaialble){
                         logBinding.imgViewCallSpamIcon.beInvisible()
-                        circle.setRandomBackgroundCircle(callLog.color)
-                        name.setColorForText(R.color.textColor)
-                        circle.text = firstLetterString
+                        logBinding.textViewCrclr.setRandomBackgroundCircle(callLog.color)
+                        logBinding.textVcallerName.setColorForText(R.color.textColor)
+                        logBinding.textViewCrclr.text = firstLetterString
                     }
-
-
                 }
-            name.text = nameStr
+            logBinding.textVcallerName.text = nameStr
 
 
 //            if(callLog.color!=0){
@@ -370,7 +376,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 logBinding.tvRelativeDay.beGone()
                 logBinding.tvRelativeDay.text = ""
             }
-            expandableView.tvExpandNumCall.text = callLog.numberFormated
+            logBinding.layoutExpandableCall.tvExpandNumCall.text = callLog.numberFormated
             setClickListener(logBinding.root, callLog)
         }
 

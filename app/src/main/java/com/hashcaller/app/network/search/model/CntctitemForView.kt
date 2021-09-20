@@ -32,6 +32,7 @@ data class CntctitemForView(
     //if network avaialble and got a reponse for the incomming caller this should be true
     var isSearchedForCallerInserver:Boolean = false,
     var isInInContacts:Boolean = false,
-    var hUid:String = ""
+    var hUid:String = "",
+    var isVerifiedUser:Boolean = false
 
-)
+    )

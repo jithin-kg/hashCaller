@@ -141,6 +141,8 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
                                 bio = cntct.bio?:"",
                                 email = cntct.email?:"",
                                 avatarGoogle = cntct.avatarGoogle?:"",
+                                isVerifiedUser = cntct.isVerifiedUser?:false
+
                             )
 
 //                           callerslistToBeSavedInLocalDb.add(callerInfoTobeSavedInDatabase)

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MotionScene
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:motion="http://schemas.android.com/apk/res-auto">
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools">
 
     <Transition
         motion:constraintSetEnd="@+id/first_half"
@@ -13,9 +13,85 @@
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
+
+        <Constraint
+            android:id="@+id/imgUserIconBg"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            motion:elevation="5dp"
+            android:src="@drawable/user_badge_background"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toStartOf="@+id/ivAvatar"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            motion:visibilityMode="ignore"
+            />
+        <Constraint
+            android:id="@+id/imgUserIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_person_outline"
+            motion:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+            motion:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+            motion:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+            motion:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+            android:elevation="6dp"
+            motion:visibilityMode="ignore"
+            />
+        <Constraint
+            android:id="@+id/imgVerifiedBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_verified_24"
+            motion:layout_constraintBottom_toBottomOf="@+id/tvName"
+            motion:layout_constraintStart_toEndOf="@+id/tvName"
+            android:layout_marginBottom="@dimen/margin_padding_size_large"
+            android:layout_marginStart="@dimen/margin_padding_size_small"
+            motion:visibilityMode="ignore"
+            />
+
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/first_half">
+
+
+        <Constraint
+            android:id="@+id/imgUserIconBg"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            motion:elevation="5dp"
+            android:src="@drawable/user_badge_background"
+            motion:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+            motion:layout_constraintStart_toStartOf="@+id/ivAvatar"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            motion:visibilityMode="ignore"
+            />
+
+        <Constraint
+            android:id="@+id/imgUserIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_person_outline"
+            motion:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+            motion:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+            motion:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+            motion:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+            android:elevation="6dp"
+            motion:visibilityMode="ignore"
+            />
+<!--motion:visibilityMode="ignore" is important (only then we can change visibility of a view in motion layout from kotlin)-->
+        <Constraint
+            android:id="@+id/imgVerifiedBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_verified_24"
+            motion:layout_constraintBottom_toBottomOf="@+id/tvName"
+            motion:layout_constraintStart_toEndOf="@+id/tvName"
+            android:layout_marginBottom="@dimen/margin_padding_size_large"
+            android:layout_marginStart="@dimen/margin_padding_size_small"
+            motion:visibilityMode="ignore"
+            />
 
         <Constraint
             motion:layout_constraintBottom_toTopOf="@+id/tvName"

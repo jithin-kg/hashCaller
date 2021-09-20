@@ -11,14 +11,14 @@ import androidx.room.*
 
 //TODO save the
 
-@Entity(tableName = "call_log",indices = [Index(value =["id", "number"], unique = true)])
+@Entity(tableName = "call_log",indices = [Index(value =["id", "number", "numberFormated"], unique = true)])
  data class CallLogTable (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "number") var  number:String = "", // number should be primary key, else there is duplicates
     @ColumnInfo(name = "id") var id: Long?,
-    @ColumnInfo(name = "nameInPhoneBook") var nameInPhoneBook:String? = null,
+    @ColumnInfo(name = "nameInPhoneBook") var nameInPhoneBook:String? = null, // is the name in content provider
 //    nameFromServer is the first name and last name combined name that received from server
-    @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null,
+    @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null, // either firstName + lastname or nameInPhonebook received from server
     @ColumnInfo(name = "spamCount") var spamCount: Long = 0,
     @ColumnInfo(name = "numberFormated") var  numberFormated:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
@@ -29,8 +29,11 @@ import androidx.room.*
     @ColumnInfo(name ="isReportedByUser") var isReportedByUser:Boolean = false,
     @ColumnInfo(name = "thumbnailFromCp") var thumbnailFromCp: String = "",
     @ColumnInfo(name = "imageUrlFromDb") var imageFromDb: String = "",
+    @ColumnInfo(name = "avatarGoogle") var avatarGoogle: String = "",
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false,
     @ColumnInfo(name = "hUid") var hUid: String,
+    @ColumnInfo(name = "isVerifiedUser") var isVerifiedUser:Boolean = false
 
-    ) {
+
+) {
 }

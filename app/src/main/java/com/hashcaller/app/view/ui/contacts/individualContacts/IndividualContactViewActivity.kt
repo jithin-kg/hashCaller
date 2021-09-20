@@ -20,6 +20,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
@@ -32,9 +33,12 @@ import com.hashcaller.app.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.hashcaller.app.view.ui.blockConfig.GeneralblockViewmodel
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_C_PROVIDER
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB
+import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB_GOOGLE
 import com.hashcaller.app.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
 import com.hashcaller.app.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
 import com.hashcaller.app.view.ui.contacts.makeCall
+import com.hashcaller.app.view.ui.contacts.toggleUserBadge
+import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID
 import com.hashcaller.app.view.ui.extensions.getMyPopupMenu
@@ -157,7 +161,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             binding.tvFirstLetter.text = it.firstName[0].toString()
-            binding.tvName.text = it.firstName + it.lastName
+            binding.tvName.text = name
             binding.tvLocationValues.text = it.country + " " + it.location
             binding.tvLocationValues.text = it.spammCount.toString()
             if(it.firstName==phoneNum){
@@ -165,12 +169,13 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             if(it.hUid.isNotEmpty()){
-                binding.imgUserIcon.beVisible()
                 binding.imgUserIconBg.beVisible()
+                binding.imgUserIcon.beVisible()
             }else {
                 binding.imgUserIcon.beInvisible()
                 binding.imgUserIconBg.beInvisible()
             }
+            toggleVerifiedBadge(binding.imgVerifiedBadge, it.isVerifiedUser)
         })
     }
 
@@ -219,9 +224,19 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                         binding.tvFirstLetter.text = ""
                     }
                     IMAGE_FOUND_FROM_DB ->{
+                        binding.ivAvatar.beVisible()
                         binding.ivAvatar.setImageBitmap(getDecodedBytes(it.imageStr))
-                        binding.tvFirstLetter.beGone()
                         binding.tvFirstLetter.text = ""
+                        binding.tvFirstLetter.beInvisible()
+
+
+                    }
+                    IMAGE_FOUND_FROM_DB_GOOGLE -> {
+                        binding.ivAvatar.beVisible()
+                        Glide.with(this).load(it.avatarGoogle)
+                            .into(binding.ivAvatar)
+                        binding.tvFirstLetter.text = ""
+                        binding.tvFirstLetter.beInvisible()
                     }
                     else->{
                         binding.tvFirstLetter.setRandomBackgroundCircle(color)

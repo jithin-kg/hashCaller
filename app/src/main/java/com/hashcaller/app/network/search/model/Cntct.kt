@@ -50,6 +50,9 @@ data class Cntct(
 
     @SerializedName("bio")
     val bio:String = "",
+    @SerializedName("isVerifiedUser")
+    val isVerifiedUser:Boolean = false,
+
 
 
 ):Serializable // it it important to extent serializable

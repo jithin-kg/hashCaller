@@ -42,13 +42,13 @@ interface ICallLogDAO {
     @Query("DELETE from call_log ")
     suspend fun deleteAll()
 
-    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, hUid =:hUid,  spamCount =:spamCount,imageUrlFromDb=:imageFromDb  WHERE numberFormated =:contactAddress")
-    suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String,hUid:String,  spamCount: kotlin.Long,imageFromDb:String)
+    @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, hUid =:hUid,  spamCount =:spamCount,imageUrlFromDb=:imageFromDb, avatarGoogle=:avatarGoogle, isVerifiedUser=:isVerifiedUser  WHERE numberFormated =:contactAddress")
+    suspend fun updateWitServerInfo(contactAddress: kotlin.String, nameFromServer:String, hUid:String,  spamCount: kotlin.Long,imageFromDb:String, avatarGoogle:String,isVerifiedUser:Boolean,  )
 
     @Query("UPDATE  call_log  SET nameFromServer =:nameFromServer, spamCount =:spamCount, color=:typeSpam  WHERE numberFormated =:contactAddress")
     abstract fun updateSpammerWitServerInfo(contactAddress: String, nameFromServer: String, spamCount: Long, typeSpam: Int)
 
-    @Query("UPDATE  call_log  SET nameFromServer =:name, thumbnailFromCp=:thumbnailFromCp WHERE numberFormated =:contactAddress")
+    @Query("UPDATE  call_log  SET nameInPhoneBook =:name, thumbnailFromCp=:thumbnailFromCp WHERE numberFormated =:contactAddress")
     suspend fun updateWitCproviderInfo(contactAddress: String, name:String, thumbnailFromCp: String)
 
     @Query("UPDATE  call_log  SET isDeleted=:isDeleted WHERE numberFormated =:num")

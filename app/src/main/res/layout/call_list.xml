@@ -211,28 +211,15 @@
             app:srcCompat="@drawable/horizontal_line" />
 
         <ImageView
-            android:id="@+id/imgVerifiedBackground"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:src="@drawable/user_badge_verified"
+            android:id="@+id/imgVerifiedBadge"
+            android:layout_width="@dimen/margin_padding_size_medium"
+            android:layout_height="@dimen/margin_padding_size_medium"
+            android:src="@drawable/ic_baseline_verified_24"
             android:elevation="4dp"
             app:layout_constraintBottom_toBottomOf="@+id/textVcallerName"
             app:layout_constraintStart_toEndOf="@+id/textVcallerName"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="16dp"
-            android:visibility="invisible"
-            />
-        <ImageView
-            android:id="@+id/imgVDone"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/ic_baseline_done_24"
-            app:layout_constraintBottom_toBottomOf="@+id/imgVerifiedBackground"
-            app:layout_constraintStart_toStartOf="@+id/imgVerifiedBackground"
-            android:elevation="6dp"
-            android:alpha="0.70"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="4dp"
             android:visibility="invisible"
             />
 

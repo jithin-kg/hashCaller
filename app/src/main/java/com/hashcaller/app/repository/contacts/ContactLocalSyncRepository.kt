@@ -92,15 +92,16 @@ class ContactLocalSyncRepository(
                             }
                             val add = listOfContacts.add(
                                 Contact(
-                                    id,
-                                    name,
-                                    phoneNo,
-                                    photoThumnail,
-                                    photoURI,
-                                    1,
-                                    nameSpann,
-                                    phoneSpann,
-                                    firstLetter
+                                    id=id,
+                                    nameInPhoneBook = name,
+                                    phoneNumber = phoneNo,
+                                    thumbnailInCprovider = photoThumnail,
+                                    photoURI = photoURI,
+                                    nameSpann = nameSpann,
+                                    phoneSpann = phoneSpann,
+                                    firstletter = firstLetter,
+                                    photoThumnailServer = "",
+                                    firstName = ""
                                 )
                             )
                             lastNumber = phoneNo

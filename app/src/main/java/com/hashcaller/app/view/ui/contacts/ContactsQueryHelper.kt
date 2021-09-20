@@ -18,7 +18,7 @@ class ContactsQueryHelper(private val context: Context?) {
                     var id = cursor.getString(0).toLong()
                     var name = cursor.getString(1)
                     var phoneNo = cursor.getString(2)
-
+                    phoneNo  = formatPhoneNumber(phoneNo)
                     val photoThumnail = cursor.getString(3)
 
                     var photoURI = if(cursor.getString(4) == null) "" else cursor.getString(4)
@@ -29,9 +29,10 @@ class ContactsQueryHelper(private val context: Context?) {
                                Contact(
                                    id,
                                    name,
-                                   phoneNo,
+                                   phoneNumber = formatedNum,
                                    photoThumnail,
-                                   photoURI
+                                   photoURI,
+
                                )
                            )
                            setOfContacts.add(formatedNum)

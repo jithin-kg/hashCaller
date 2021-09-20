@@ -7,7 +7,6 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ContactSearchResultItemBinding
 import com.hashcaller.app.stubs.Contact
+import com.hashcaller.app.view.ui.contacts.toggleUserBadge
+import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.extensions.setRandomBackgroundCircle
 import com.hashcaller.app.view.ui.sms.individual.util.TYPE_CLICK
@@ -104,9 +105,14 @@ class DialerAdapter(private val context: Context, private val onContactItemClick
                 setNameFirstChar(contact)
                 generateCircleView(contact, context);
             }
+            context.toggleUserBadge(
+                binding.imgUserIconBg,
+                binding.imgUserIcon,
+                contact.hUid
+            )
+            context.toggleVerifiedBadge(binding.imgVerifiedBadge, contact.isVerifiedUser)
 
             val pNo = contact.phoneNumber
-            Log.d(TAG, "phone num $pNo ")
 //            Glide.with(context).load(R.drawable.ic_account_circle_24px).into(image)
 
             binding.imgBtnCall.setOnClickListener {

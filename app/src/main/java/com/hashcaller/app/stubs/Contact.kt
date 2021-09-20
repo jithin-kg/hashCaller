@@ -35,7 +35,9 @@ data class Contact(
     val hUid:String = "",
     val email:String = "",
     val avatarGoogle:String = "",
-    val bio:String = ""
+    val bio:String = "",
+    var isVerifiedUser:Boolean = false,
+    var nameInLocalPhoneBook :String = ""
 
     )  {
 
