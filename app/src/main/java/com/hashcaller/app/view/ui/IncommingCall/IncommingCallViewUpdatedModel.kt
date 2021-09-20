@@ -1,77 +1,72 @@
 package com.hashcaller.app.view.ui.IncommingCall
 
-import android.util.Log
-import androidx.lifecycle.*
-import com.hashcaller.app.network.incomingcall.SuggestNameModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.work.*
 import com.hashcaller.app.repository.incomingcall.IncomingCallRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.hashcaller.app.repository.incomingcall.workers.SuggestNameWorker
+import com.hashcaller.app.repository.incomingcall.workers.ThumbsDownWorker
+import com.hashcaller.app.repository.incomingcall.workers.ThumbsUpWorker
 
 /**
  * Created by Jithin KG on 22,July,2020
  */
 class IncommingCallViewUpdatedModel(
+    val app: Application,
     private val repository: IncomingCallRepository
-) : ViewModel() {
+) : AndroidViewModel(app) {
     class Factory(
-        private val repository: IncomingCallRepository
+        private val application: Application, private val repository: IncomingCallRepository
 
     ) : ViewModelProvider.NewInstanceFactory() {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return IncommingCallViewUpdatedModel(repository) as T
+            return IncommingCallViewUpdatedModel(application, repository) as T
         }
     }
 
 
-    fun suggestName(name: String, number: String): LiveData<Boolean> {
-        val out = MutableLiveData<Boolean>()
+    fun suggestName(name: String, number: String) {
+        val constraints =
+            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        val data = Data.Builder().putString(SuggestNameWorker.NAME, name)
+            .putString(SuggestNameWorker.NUMBER, number).build()
 
-
-            val response = repository.suggestName(SuggestNameModel(name, number))
-            if (response?.isSuccessful == true && response.code() == 200) {
-                Log.d("``TAG``", "suggestName: ${response.body()?.message}")
-                out.postValue(true)
-            } else {
-                out.postValue(false)
-            }
-        }
-        return out
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SuggestNameWorker::class.java)
+            .setConstraints(constraints)
+            .setInputData(data)
+            .build()
+        WorkManager.getInstance(app).enqueue(oneTimeWorkRequest)
     }
 
-    fun upvote(name: String, number: String): LiveData<Boolean> {
-        val out = MutableLiveData<Boolean>()
+    fun upvote(name: String, number: String) {
+        val constraints =
+            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        val data = Data.Builder().putString(ThumbsUpWorker.NAME, name)
+            .putString(ThumbsUpWorker.NUMBER, number).build()
 
-
-            val response = repository.upvote(SuggestNameModel(name, number))
-            if (response?.isSuccessful == true && response.code() == 200) {
-                Log.d("``TAG``", "suggestName: ${response.body()?.message}")
-                out.postValue(true)
-            } else {
-                out.postValue(false)
-            }
-        }
-        return out
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(ThumbsUpWorker::class.java)
+            .setConstraints(constraints)
+            .setInputData(data)
+            .build()
+        WorkManager.getInstance(app).enqueue(oneTimeWorkRequest)
     }
 
-    fun downvote(name: String, number: String): LiveData<Boolean> {
-        val out = MutableLiveData<Boolean>()
+    fun downvote(name: String, number: String) {
+        val constraints =
+            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        val data = Data.Builder().putString(ThumbsDownWorker.NAME, name)
+            .putString(ThumbsDownWorker.NUMBER, number).build()
 
-
-            val response = repository.downVote(SuggestNameModel(name, number))
-            if (response?.isSuccessful == true && response.code() == 200) {
-                Log.d("``TAG``", "suggestName: ${response.body()?.message}")
-                out.postValue(true)
-            } else {
-                out.postValue(false)
-            }
-        }
-        return out
+        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(ThumbsDownWorker::class.java)
+            .setConstraints(constraints)
+            .setInputData(data)
+            .build()
+        WorkManager.getInstance(app).enqueue(oneTimeWorkRequest)
     }
 
 }

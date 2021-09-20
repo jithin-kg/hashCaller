@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.IncommingCall
 
+import android.app.Application
 import android.content.Context
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.local.db.HashCallerDatabase
@@ -15,9 +16,9 @@ object IncommingCallInjectorUtil {
         return IncommingCallViewModelFactory(spamNetworkRepository)
     }
 
-    fun provideFactory(token: TokenHelper?) : IncommingCallViewUpdatedModel.Factory {
+    fun provideFactory(application: Application,token: TokenHelper?) : IncommingCallViewUpdatedModel.Factory {
 
         val repo = IncomingCallRepository(token)
-        return IncommingCallViewUpdatedModel.Factory(repo)
+        return IncommingCallViewUpdatedModel.Factory(application, repo)
     }
 }
