@@ -2,10 +2,7 @@ package com.hashcaller.app.datastore
 
 import android.util.Base64
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import com.hashcaller.app.utils.auth.EnCryptor
 import com.hashcaller.app.view.ui.contacts.utils.SAMPLE_ALIAS
 import kotlinx.coroutines.Dispatchers
@@ -66,6 +63,20 @@ class DataStoreRepository(private val dataStore: DataStore<Preferences>)  {
         return@withContext encodeTokenString?:""
     }
 
+    suspend fun setInt(value:Int, key:String) = withContext(Dispatchers.IO){
+        val wrapedKey = intPreferencesKey(key)
+        dataStore.edit {
+            it[wrapedKey] = value
+        }
+    }
+    suspend fun getInt(key:String): Int? {
+        val wrapedKey = intPreferencesKey(key)
+        val flow:Flow<Int?> = dataStore.data.map {
+            it[wrapedKey]
+        }
+        return flow.first()
+    }
+
     suspend fun setBoolean(value: Boolean, key: String)  = withContext(Dispatchers.IO) {
         val wrapedKey = booleanPreferencesKey(key)
         dataStore.edit {
@@ -88,18 +99,5 @@ class DataStoreRepository(private val dataStore: DataStore<Preferences>)  {
         }
         return tokenFlow
     }
-//    suspend fun saveToken( key:String, value:String){
-//        val wrapedKey =  stringPreferencesKey(key)
-//        context.tokeDataStore.edit {
-//            it[wrapedKey] = value
-//        }
-//    }
-//
-//    suspend fun getToken( key:String): String {
-//        val wrapedKey =  stringPreferencesKey(key)
-//        val tokenFlow: Flow<String> = context.tokeDataStore.data.map {
-//            it[wrapedKey]?:""
-//        }
-//        return tokenFlow.first()
-//    }
+
 }

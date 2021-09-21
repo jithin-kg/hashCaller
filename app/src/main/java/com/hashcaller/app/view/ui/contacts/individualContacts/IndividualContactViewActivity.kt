@@ -25,9 +25,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityIndividualCotactViewBinding
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.blocklist.BlockTypes
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
+import com.hashcaller.app.utils.notifications.tokeDataStore
+import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.MyUndoListener
 import com.hashcaller.app.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.hashcaller.app.view.ui.blockConfig.GeneralblockViewmodel
@@ -87,6 +91,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         binding = ActivityIndividualCotactViewBinding.inflate(layoutInflater)
+        setDataStoreValues()
         //todo if number not in contact dont show edit option/ instead show create contact option
         setContentView(binding.root)
         getIntentExtras()
@@ -103,6 +108,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         observeAllBlockedList()
         observeIsthisNumberBlocked()
 
+    }
+    private fun setDataStoreValues() {
+        lifecycleScope.launchWhenCreated {
+            SPAM_THRESHOLD_VALUE = DataStoreRepository(this@IndividualContactViewActivity.tokeDataStore).getInt(
+                PreferencesKeys.SPAM_THRESHOLD)?: Constants.DEFAULT_SPAM_THRESHOLD
+        }
     }
 
     private fun observeIsthisNumberBlocked() {
@@ -153,7 +164,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }else {
                 binding.tvisInContact.text = "This person is not in your contact"
             }
-            if(it.spammCount > SPAM_THREASHOLD){
+            if(it.spammCount > SPAM_THRESHOLD_VALUE){
                 binding.layoutSpamCountt.beVisible()
                 binding.tvSpamCountValue.text = it.spammCount.toString()
             }else {
@@ -539,9 +550,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         settingsDialog.show()
     }
 
-    companion object{
-        private const val TAG = "__IndividualCotactViewActivity"
-    }
+
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         count++
@@ -592,5 +601,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
+    companion object{
+        private const val TAG = "__IndividualCotactViewActivity"
+        var SPAM_THRESHOLD_VALUE = Constants.DEFAULT_SPAM_THRESHOLD
 
+    }
 }

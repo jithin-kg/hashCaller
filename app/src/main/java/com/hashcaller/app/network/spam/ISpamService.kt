@@ -2,10 +2,12 @@ package com.hashcaller.app.network.spam
 
 import com.hashcaller.app.network.contact.NetWorkResponse
 import com.hashcaller.app.network.user.IuserService
+import com.hashcaller.app.utils.GenericResponse
 import com.hashcaller.app.view.ui.sms.work.UnknownSMSsendersInfoResponse
 import com.hashcaller.app.view.utils.spam.OperatorInformationDTO
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
@@ -41,5 +43,10 @@ interface ISpamService {
         @Body numbers: hashednums,
         @Header ("Authorization") token: String
     ):Response<UnknownSMSsendersInfoResponse>
+
+    @GET("spam/spamThreshold")
+    suspend fun getSpamThreshold(
+        @Header ("Authorization") token: String
+    ):Response<GenericResponse<SpamThresholdResponse>>
 
 }

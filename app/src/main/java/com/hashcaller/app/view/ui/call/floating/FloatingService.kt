@@ -19,9 +19,11 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.R
 import com.hashcaller.app.Secrets
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.repository.search.SearchNetworkRepository
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.Constants.Companion.NO_SIM_DETECTED
 import com.hashcaller.app.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
@@ -37,22 +39,15 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.START_FLOATING_SE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATIN_SERVICE_FROM_RECEIVER
 import com.hashcaller.app.utils.internet.InternetChecker
-import com.hashcaller.app.utils.notifications.HashCaller
 import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
-import com.hashcaller.app.view.ui.MainActivity
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.contacts.*
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import java.util.jar.Manifest
+import kotlinx.coroutines.*
 
 
-//todo close window when user takes call and show second windo iff call ended
-//todo now the second activity appears immediately when first window closes
 //const val INTENT_COMMAND = "com.localazy.quicknote.COMMAND"
 const val INTENT_COMMAND_EXIT = "EXIT"
 const val INTENT_COMMAND_NOTE = "NOTE"
@@ -75,6 +70,7 @@ class FloatingService: Service() {
     private var serviceStarted = false
     private var prevCallState:String? = null
     private var callEndedState:String = ""
+    private var  dataStoreRepository:DataStoreRepository? = null
 //    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -97,6 +93,8 @@ class FloatingService: Service() {
      */
     override fun onCreate() {
         super.onCreate()
+        dataStoreRepository = DataStoreRepository(this.tokeDataStore)
+
         rcfirebaseAuth = FirebaseAuth.getInstance()
         user = rcfirebaseAuth?.currentUser
         tokenHelper = TokenHelper(user)
@@ -105,7 +103,7 @@ class FloatingService: Service() {
         if(window == null){
             window = Window(this, libPhoneCodeHelper)
             WindowObj.setWindow(window!!)
-//                    windowCompanion = window
+//                   windowCompanion = window
         }
 
         /**
@@ -168,31 +166,10 @@ class FloatingService: Service() {
             super.onStartCommand(intent, flags, startId)
             val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
-
-//                registerCallStateListener { phoneNumber, callState ->
-//                    Log.d(TAG, "onStartCommand: $phoneNumber")
-//                    when(callState){
-//                        TelephonyManager.CALL_STATE_IDLE -> {
-//                            Log.d(TAG, "onStartCommand: $phoneNumber")
-//                            if(!phoneNumber.isNullOrEmpty()){
-//                                window?.close()
-//                                WindowObj.clearReference()
-//                                window = null
-//                                startActivityIncommingCallView(mphoneNumberStr)
-//
-//                            }
-//                        }
-//
-//                    }
-//                    stopService()
-//
-//                }
             }
             else if(command == START_FLOATING_SERVICE_OFF_HOOK && !isCallScreeningRoleHeld()){
                 registerCallStateListener { phoneNumber, callState ->
-
                 }
-
                   val num =   intent.getStringExtra(PHONE_NUMBER)
                 num?.let{
                     window?.open()
@@ -200,50 +177,18 @@ class FloatingService: Service() {
                         onStartCalled = true
                     doHandleCall(it)
                 }
-
-
             }
             else if(command == START_FLOATING_SERVICE){
-                Log.d(TAG, "onStartCommand:command == START_FLOATING_SERVICE ")
                 if(!onStartCalled && !isCallScreeningRoleHeld()){
-                    Log.d(TAG, "onStartCommand: screeningRoleHeld false")
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
                             TelephonyManager.CALL_STATE_RINGING, TelephonyManager.CALL_STATE_OFFHOOK ->{
-                                Log.d(TAG, "onStartCommand: ringin,offhook")
                                 window?.open()
                                 mphoneNumberStr = phoneNumber
                                 onStartCalled = true
-
-//                                if(command == START_FLOATING_SERVICE){
-                                    Log.d(TAG, "onStartCommand: window opening")
-                                    // Be sure to show the notification first for all commands.
-                                    // Don't worry, repeated calls have no effects.
-
-                                    doHandleCall(phoneNumber)
-//                        return START_NOT_STICKY
-//                                }
-//            }
-//        }
-
-//        else{
-////            if(command == STOP_FLOATING_SERVICE_AND_WINDOW){
-////                startActivityIncommingCallView(null, phoneNumber)
-////            }
-////            stopService()
-//        }
+                                doHandleCall(phoneNumber)
                             }
                             TelephonyManager.CALL_STATE_IDLE -> {
-                                Log.d(TAG, "onStartCommand:callidle ")
-//                                if(!phoneNumber.isNullOrEmpty()){
-//                                    window?.close()
-//                                    WindowObj.clearReference()
-//                                    window = null
-//                                    startActivityIncommingCallView(mphoneNumberStr)
-//                                }
-//                                stopService()
-//                                Log.d(TAG, "idle callback : ")
-//                                window.close()
                             }
                             TelephonyManager.CALL_STATE_OFFHOOK -> {
                                 Log.d(TAG, "onStartCommand: offhook")
@@ -251,28 +196,6 @@ class FloatingService: Service() {
 
                         }
                     }
-//        val command:String? = intent.getStringExtra(INTENT_COMMAND)
-//        phoneNumber = intent.getStringExtra(CONTACT_ADDRES)
-
-
-
-
-
-
-//        val window = Window(this)
-//        window.open()
-                    // Show the floating window for adding a new note.
-
-
-//        if (command == INTENT_COMMAND_NOTE) {
-////            Toast.makeText(
-////                this,
-////                "Floating window to be added in the next lessons.",
-////                Toast.LENGTH_SHORT
-////            ).show()
-//            val window = Window(this)
-//            window.open()
-//        }
                 }
             }else if(command == START_FLOATING_SERVICE_FROM_SCREENING_SERVICE){
                 registerCallStateListener { phoneNumber, callState ->
@@ -308,17 +231,6 @@ class FloatingService: Service() {
         return START_STICKY
     }
 
-    private fun showForegroundNotification() {
-        val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-        val notification = NotificationCompat.Builder(this, HashCaller.CHANNEL_3_CALL_SERVICE_ID)
-            .setContentText("HashCaller Caller id is running")
-            .setContentTitle("HashCaller Caller Id is active ")
-            .setSmallIcon(R.drawable.ic_phone_line)
-//            .setContentIntent(pendingIntent)
-            .build()
-        startForeground(CODE_FOREGROUND_SERVICE,notification )
-    }
 
     @SuppressLint("MissingPermission", "LogNotTimber")
     private fun observeSubscriptionStatus(context: Context) {
@@ -334,14 +246,9 @@ class FloatingService: Service() {
             if(availableSIMs.size >1){
                 val tel0 = telManager.createForSubscriptionId(availableSIMs[0].subscriptionId)
                 val tel1 = telManager.createForSubscriptionId(availableSIMs[1].subscriptionId)
-                Log.d(TAG, "observeSubscriptionStatus: lin1num ${tel0.line1Number}")
-                Log.d(TAG, "observeSubscriptionStatus:line2num ${tel1.line1Number}")
-
                 tel0.listen(object :PhoneStateListener(){
                     override fun onCallStateChanged(state: Int, phoneNumber: String?) {
                         super.onCallStateChanged(state, phoneNumber)
-                        Log.d(TAG, "onCallStateChanged: sim1 $state")
-
                         if(state ==  TelephonyManager.CALL_STATE_RINGING){
                             simHandlingCall = SIM_ONE
                             window?.setSimInView(SIM_ONE)
@@ -366,7 +273,6 @@ class FloatingService: Service() {
                 tel1.listen(object :PhoneStateListener(){
                     override fun onCallStateChanged(state: Int, phoneNumber: String?) {
                         super.onCallStateChanged(state, phoneNumber)
-                        Log.d(TAG, "onCallStateChanged: sim2 $state")
                         if(state ==  TelephonyManager.CALL_STATE_RINGING){
                             simHandlingCall = SIM_TWO
                             window?.setSimInView(SIM_TWO)
@@ -407,7 +313,6 @@ class FloatingService: Service() {
                     }
                 }, PhoneStateListener.LISTEN_CALL_STATE)
             }else {
-                Log.d(TAG, "observeSubscriptionStatus: no sim cards inserted")
             }
         }
 
@@ -427,6 +332,8 @@ class FloatingService: Service() {
                 this@FloatingService
             )
             hashedNum?.let {
+                var spamThreshold:Int = dataStoreRepository?.getInt(PreferencesKeys.SPAM_THRESHOLD)?:DEFAULT_SPAM_THRESHOLD
+                window?.setSpamThreshold(spamThreshold)
                 floatinServiceHelper = FloatinServiceHelper(
                     getIncomminCallManager(formatedNum, this@FloatingService),
                     it,
@@ -435,8 +342,11 @@ class FloatingService: Service() {
                     formatedNum,
                     this@FloatingService,
                     isCallScreeningRoleHeld(),
-                    DataStoreRepository(blockPreferencesDataStore)
+                    DataStoreRepository(blockPreferencesDataStore),
+                    spamThreshold
+
                 )
+                Log.d(TAG, "doHandleCall: spamThreshold $spamThreshold")
                 floatinServiceHelper.handleCall()
             }
 
@@ -444,7 +354,6 @@ class FloatingService: Service() {
     }
 
     private fun registerCallStateListener(listener:(phoneNumber:String, callState:Int)-> Unit) {
-        Log.d(TAG, "registerCallStateListener: ")
         val telephony = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         telephony.listen(object : PhoneStateListener() {
 
@@ -465,21 +374,9 @@ class FloatingService: Service() {
                            }
 
                         }
-//                        TelephonyManager.CALL_STATE_OFFHOOK -> {
-//                            Log.d(TAG, "onCallStateChanged:ringing $incomingNumber ")
-////                            startFloatingService(incomingNumber)
-//                            if(incomingNumber.isNotEmpty()){
-//                                listener(incomingNumber, TelephonyManager.CALL_STATE_OFFHOOK)
-//                            }
-//
-//                        }
                         TelephonyManager.CALL_STATE_IDLE -> {
                             onCallEnded()
-
-                            Log.d(TAG, "onCallStateChanged: idle $incomingNumber")
                             if(incomingNumber.isNotEmpty()){
-//                                if(!phoneNumber.isNullOrEmpty()){
-
                                 window?.close()
                                     WindowObj.clearReference()
                                     window = null
@@ -488,17 +385,9 @@ class FloatingService: Service() {
                                         callEndedState,
                                         callHandledSim
                                     )
-//                                }
                                 stopService()
-                                
-//                                listener(incomingNumber, TelephonyManager.CALL_STATE_RINGING)
                             }
-//                            stopFloatingService(true, incomingNumber)
                         }
-//                        TelephonyManager.CALL_STATE_OFFHOOK -> {
-//                            Log.d(TAG, "onCallStateChanged: ofhook $incomingNumber")
-//                        }
-//                        TelephonyManager.EXTRA_CARRIER_NAME
                     }
                 }
 
@@ -558,11 +447,7 @@ class FloatingService: Service() {
     private suspend fun getHashedNum(phoneNumber: String, context: Context): String? {
        var hashed:String? = ""
         try {
-//            Log.d(TAG, "getHashedNum: phonenum $phoneNumber")
              hashed =  Secrets().managecipher(context.packageName, formatPhoneNumber(phoneNumber))
-//            hashed = hashUsingArgon(hashed)
-//            Log.d(TAG, "getHashedNum: $hashed")
-            //2fde9f69809082858fa7a55d441fde7ab7beea302204a437a793d2545fc381a9 ->123123
             return hashed
         }catch (e:Exception){
             Log.d(TAG, "getHashedNum: $e")
@@ -577,23 +462,6 @@ class FloatingService: Service() {
     private fun showNotification() {
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-//        val exitIntent = Intent(this, FloatingService::class.java).apply {
-//            putExtra(INTENT_COMMAND, INTENT_COMMAND_EXIT)
-//        }
-
-//        val noteIntent = Intent(this, FloatingService::class.java).apply {
-//            putExtra(INTENT_COMMAND, INTENT_COMMAND_NOTE)
-//        }
-
-//        val exitPendingIntent = PendingIntent.getService(
-//            this, CODE_EXIT_INTENT, exitIntent, 0
-//        )
-
-//        val notePendingIntent = PendingIntent.getService(
-//            this, CODE_NOTE_INTENT, noteIntent, 0
-//        )
-
         // From Android O, it's necessary to create a notification channel first.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
@@ -635,14 +503,6 @@ class FloatingService: Service() {
             }else {
                 priority = Notification.PRIORITY_LOW
             }
-//            setContentIntent(notePendingIntent)
-//            addAction(
-//                NotificationCompat.Action(
-//                    0,
-//                    "getString(R.string.notification_exit)",
-//                    exitPendingIntent
-//                )
-//            )
             startForeground(CODE_FOREGROUND_SERVICE, build())
         }
 
@@ -670,22 +530,5 @@ class FloatingService: Service() {
 
 
         const val TAG = "__FloatingService"
-
-
-//        var windowCompanion:Window? = null
-//        var phoneNumber: String = ""
-//        fun startService(context: Context, message: String, num: String) {
-////            phoneNumber = num
-////            val startIntent = Intent(context, FloatingService::class.java)
-////            startIntent.putExtra("inputExtra", message)
-////            ContextCompat.startForegroundService(context, startIntent)
-////        }
-//        fun stopService(context: Context) {
-//            val stopIntent = Intent(context, FloatingService::class.java)
-//            context.stopService(stopIntent)
-//        }
-//        fun getInflatedWindow(): Window? {
-//            return windowCompanion
-//        }
     }
 }

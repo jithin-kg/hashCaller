@@ -18,7 +18,7 @@ interface SpamListDAO {
     @Query("DELETE from spammer_info WHERE contact_address=:address")
     suspend fun delete(address: String)
 
-    @Query("DELETE from spammer_info ")
+    @Query("DELETE from spammer_info")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM spammer_info")

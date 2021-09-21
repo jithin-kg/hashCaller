@@ -12,15 +12,18 @@ import kotlinx.coroutines.withContext
 
 class SpamCallRepository(
     private val callLogDao: ICallLogDAO,
-    private val context: Context) {
+    private val context: Context,
+    private val spamThreshold: Int,
+    ) {
     fun getSpamCallLogLivedata(): LiveData<MutableList<CallLogTable>> {
-       return callLogDao.getSpamCallLogLivedata()
+       return callLogDao.getSpamCallLogLivedata(spamLimit = spamThreshold.toLong())
     }
 
     suspend fun markAsDeleted(num: String) = withContext(Dispatchers.IO) {
         callLogDao.markAsDeleted(formatPhoneNumber(num))
 
     }
+
 
     suspend fun deleteCallLogsFromCp(number: String) = withContext(Dispatchers.IO) {
         try {

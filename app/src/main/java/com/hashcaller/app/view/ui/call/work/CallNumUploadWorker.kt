@@ -10,10 +10,15 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.Secrets
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
+import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
 import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.network.HttpStatusCodes
 import com.hashcaller.app.network.spam.hashednums
 import com.hashcaller.app.repository.contacts.PhoneNumWithHashedNumDTO
+import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
+import com.hashcaller.app.utils.Constants.Companion.isDataOutdated
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.internet.ConnectionLiveData
 import com.hashcaller.app.utils.notifications.tokeDataStore
@@ -33,11 +38,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by Jithin KG on 25,July,2020
- * Todo update worker https://www.youtube.com/watch?v=6manrgTPzyA
  *
  * worker for uploading callers  number to server inorder to  get info about the callers
  */
@@ -58,23 +61,30 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private var tokenHelper: TokenHelper? = TokenHelper(user)
     private val listToBeInsertedToDBFirst : MutableList<CallersInfoFromServer> = mutableListOf()
+    private var spamThreshold = Constants.DEFAULT_SPAM_THRESHOLD
+    private val dataStoreRepository  = DataStoreRepository(context.tokeDataStore)
 
-    val callContainerRepository =
-        CallContainerRepository(
-            context,
-            callersInfoFromServerDAO,
-            mutedCallersDAO,
-            callLogDAO,
-            DataStoreRepository(context.tokeDataStore),
-            tokenHelper,
-            smsThreadsDAO,
-            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
-            CountrycodeHelper(context).getCountryISO()
-        )
+    private lateinit var  callContainerRepository:CallContainerRepository
+
+
 
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
+
+            spamThreshold = dataStoreRepository.getInt(SPAM_THRESHOLD)?: DEFAULT_SPAM_THRESHOLD
+            callContainerRepository =  CallContainerRepository(
+                context,
+                callersInfoFromServerDAO,
+                mutedCallersDAO,
+                callLogDAO,
+                DataStoreRepository(context.tokeDataStore),
+                tokenHelper,
+                smsThreadsDAO,
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO(),
+                spamThreshold
+            )
             val networklivedta = ConnectionLiveData(context)
 
             val callersLocalRepository =
@@ -192,7 +202,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 }
 
             }else{
-                if(isCurrentDateAndPrevDateisGreaterThanLimit(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
+                if(isDataOutdated(callersInfoAvailableInLocalDb.informationReceivedDate, NUMBER_OF_DAYS)){
 
                     var hashedAddress:String? = Secrets().managecipher(context.packageName,contactAddressWithoutSpecialChars)
 //                    hashedAddress = hashUsingArgon(hashedAddress)
@@ -228,26 +238,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
     }
 
-    /**
-     * @param informationReceivedDate : date at which the data is inserted in db
-     * @param limit : number of day in which a lookup for the current number should perform
-     */
 
-     fun isCurrentDateAndPrevDateisGreaterThanLimit(
-        informationReceivedDate: Date,
-        limit: Int
-    ): Boolean {
-        val today = Date()
-        val miliSeconds: Long = today.getTime() - informationReceivedDate.getTime()
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds)
-        val minute = seconds / 60
-        val hour = minute / 60
-        val days = hour / 24
-        if(days > limit)
-            return true
-        return false
-
-    }
 
 //    private suspend fun uploadnumbersToServer(allsmswithoutspam: MutableList<SMS>): Response<UnknownSMSsendersInfoResponse> {
 //        val unkownsmsnumberslist = smsTracker.getUnknownNumbersList(allsmswithoutspam, context.packageName)
@@ -261,7 +252,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 
     companion object  {
         private const val TAG = "__CallNumUploadWorker"
-        const val NUMBER_OF_DAYS = 1
+        const val NUMBER_OF_DAYS = 7
     }
 
 }

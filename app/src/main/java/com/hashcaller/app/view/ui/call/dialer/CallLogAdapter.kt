@@ -14,12 +14,13 @@ import com.hashcaller.app.R
 import com.hashcaller.app.databinding.CallListBinding
 import com.hashcaller.app.databinding.ItemFinishSettingUpBinding
 import com.hashcaller.app.utils.DummYViewHolder
+import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.call.CallFragment.Companion.ID_SHOW_SCREENING_ROLE
 import com.hashcaller.app.view.ui.call.RelativeTime
 import com.hashcaller.app.view.ui.call.db.CallLogTable
+import com.hashcaller.app.view.ui.call.work.CallContainerViewModel
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.extensions.setColorForText
@@ -297,8 +298,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
             val firstLetter = nameStr[0]
             val firstLetterString = firstLetter.toString().toUpperCase()
-
-                if (callLog.spamCount > SPAM_THREASHOLD || callLog.isReportedByUser) {
+            Log.d(TAG, "bind: $CallContainerViewModel.SPAM_THRESHOLD")
+                if (callLog.spamCount > MainActivity.SPAM_THRESHOLD_VALUE || callLog.isReportedByUser) {
                     if(!isImageThumbnailAvaialble){
                         logBinding.textVcallerName.setColorForText(R.color.spamText)
 //                    logBinding.imgViewCallSpamIcon.beVisible()
@@ -627,8 +628,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     class CallItemDiffCallback : DiffUtil.ItemCallback<CallLogTable>() {
         override fun areItemsTheSame(oldItem: CallLogTable, newItem: CallLogTable): Boolean {
             return  oldItem.id == newItem.id
-
-
         }
 
 

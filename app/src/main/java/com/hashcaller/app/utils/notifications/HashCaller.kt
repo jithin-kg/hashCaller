@@ -7,8 +7,11 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.preferencesDataStore
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.view.ui.contacts.utils.USER_PREFERENCES_NAME
 import com.hashcaller.app.view.ui.contacts.utils.USER_PREFERENCES_BLOCK
+import kotlinx.coroutines.coroutineScope
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -16,7 +19,7 @@ import com.hashcaller.app.view.ui.contacts.utils.USER_PREFERENCES_BLOCK
  * not for in a particular place like activity this is the right place to do it.
  *
  * !!!!Warning you have to re install the application when you make change in
- * channel to take effect
+ * notification channel to take effect
  */
 val Context.tokeDataStore by preferencesDataStore(name = USER_PREFERENCES_NAME)
 val Context.blockPreferencesDataStore by preferencesDataStore(name = USER_PREFERENCES_BLOCK)
@@ -36,18 +39,9 @@ class HashCaller : Application(){
         const val CHANNEL_3_CALL_SERVICE_ID ="chanel3"
         const val NOTIFICATION_CHANNEL_NAME = "callerId"
         const val NOTIFICATION_ID = 1
-//        private lateinit var argon2:Argon2
-//        fun getArgon2(): Argon2 {
-//            return argon2
-//        }
 
+        var THRESHOLD = 112
 
-//          var callFragment: CallFragment? = null
-//          var messagesFragment: SMSContainerFragment? = null
-//          var blockConfigFragment: BlockConfigFragment? = null
-//          var contactFragment: ContactsContainerFragment? = null
-//          var dialerFragment: DialerFragment? = null
-//          var ft: FragmentTransaction? = null
 
     }
 
@@ -57,6 +51,9 @@ class HashCaller : Application(){
         AppCompatDelegate.setDefaultNightMode(
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         createNotificationChannels()
+
+
+
 //        https://www.freecodecamp.org/news/how-to-log-more-efficiently-with-timber-a3f41b193940/
 //        if(BuildConfig.DEBUG){
 //            //timber only works in debug build

@@ -22,7 +22,6 @@ import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB_GOOGLE
 import com.hashcaller.app.view.ui.contacts.startSpamReportWorker
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.sms.individual.util.EXACT_NUMBER
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.ON_COMPLETED
@@ -142,31 +141,6 @@ class IndividualcontactViewModel(
 
     fun unMuteByAddress(phoneNum: String) = viewModelScope.launch{
         mutedContactsDAO.delete(formatPhoneNumber(phoneNum))
-    }
-
-    /**
-     *  function to check whether a given number is blocked by the user
-     */
-    fun isThisAddressBlockedByUser(phoneNum: String, isBlockTopSpammersEnabled: Boolean): LiveData<Boolean> = liveData  {
-        var isBlocked = false
-        val res = repository.getCallLogInfoForNum(phoneNum)
-        if(res!=null){
-            if(res.isReportedByUser){
-                isBlocked = true
-            }
-
-            if(res.spamCount > SPAM_THREASHOLD  && isBlockTopSpammersEnabled){
-                isBlocked = true
-            }
-        }
-        emit(isBlocked)
-//        val res = callersInfoFromServer.find(formatPhoneNumber(phoneNum))
-//        if(res !=null){
-//            if(res.isBlockedByUser){
-//                isBlocked = true
-//            }
-//        }
-//        emit(isBlocked)
     }
 
     fun reportSpam(phoneNum: String,

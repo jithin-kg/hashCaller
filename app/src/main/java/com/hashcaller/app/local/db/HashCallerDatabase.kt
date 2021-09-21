@@ -58,7 +58,8 @@ import com.hashcaller.app.view.ui.sms.db.SmsThreadTable
     SmsThreadTable::class,
     UserHashedNumber::class,
     HashedNumber::class,
-    MyContacts::class
+    MyContacts::class,
+    SpamThresholdUpdatedDate::class
 
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
@@ -80,6 +81,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun userHashedNumDAO() : IUserHashedNumDao
         abstract fun hashedNumDAO() : IHashedNumbersDAO
         abstract fun hashedContactsDAO() : IHashedContactsDAO
+        abstract fun spamThresholdUpdateDAO() : ISpamThresholdLastUpdatedDao
 
 
     companion object{

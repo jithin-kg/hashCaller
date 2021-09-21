@@ -9,12 +9,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivitySpamCallsBinding
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.internet.ConnectionLiveData
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.SwipeToDeleteCallback
 import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.db.CallLogTable
@@ -43,12 +48,16 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         super.onCreate(savedInstanceState)
         binding = ActivitySpamCallsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         observeInternetLivedata()
 //        initSwipeHandler()
         initRecyclerView()
-        initViewmodel()
-        observeSpamCallLogs()
-        initListeners()
+        lifecycleScope.launchWhenCreated {
+            initViewmodel()
+            observeSpamCallLogs()
+            initListeners()
+        }
+
     }
 
     private fun initListeners() {
@@ -80,10 +89,22 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         })
     }
 
-    private fun initViewmodel() {
-        viewmodel = ViewModelProvider(this, SpamCallInjectorUtil.provideViewmodelFactory(applicationContext)).get(
-            SpamCallViewModel::class.java
-        )
+    private suspend fun initViewmodel() {
+//            lifecycleScope.launchWhenCreated {
+            SPAM_THRESHOLD_VALUE = DataStoreRepository(this@SpamCallsActivity.tokeDataStore).getInt(SPAM_THRESHOLD)?: DEFAULT_SPAM_THRESHOLD
+                viewmodel = ViewModelProvider(this@SpamCallsActivity,
+                    SpamCallInjectorUtil.provideViewmodelFactory(
+                        applicationContext,
+                        lifecycleScope,
+                        SPAM_THRESHOLD_VALUE
+                    ),
+
+                    ).get(
+                    SpamCallViewModel::class.java
+                )
+//            }
+
+
     }
 
     private fun observeInternetLivedata() {
@@ -100,17 +121,19 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
 
             layoutMngr = layoutManager as CustomLinearLayoutManager
 
-            callLogAdapter = CallLogAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity, isDarkThemeOn()) {
 
-                    id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ->onCallItemClicked(
-                id,
-                position,
-                view,
-                btn,
-                callLog,
-                clickType,
-                visibility
-            )}
+                callLogAdapter = CallLogAdapter(context, this@SpamCallsActivity, this@SpamCallsActivity, isDarkThemeOn()) {
+
+                        id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ->onCallItemClicked(
+                    id,
+                    position,
+                    view,
+                    btn,
+                    callLog,
+                    clickType,
+                    visibility
+                )}
+
             adapter = callLogAdapter
             itemAnimator = null
 
@@ -290,5 +313,9 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
 
     override fun onBackPressed() {
         finishAfterTransition()
+    }
+    companion object {
+        var SPAM_THRESHOLD_VALUE = DEFAULT_SPAM_THRESHOLD
+
     }
 }

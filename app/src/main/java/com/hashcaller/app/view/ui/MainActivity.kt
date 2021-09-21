@@ -44,21 +44,21 @@ import com.google.firebase.auth.FirebaseUserMetadata
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityMainBinding
 import com.hashcaller.app.datastore.DataStoreInjectorUtil
+import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.datastore.DataStoreViewmodel.Companion.PERMISSION__ONLY_GIVEN
 import com.hashcaller.app.datastore.DataStoreViewmodel.Companion.USER_INFO_AND_PERMISSION_GIVEN
 import com.hashcaller.app.datastore.DataStoreViewmodel.Companion.USER_INFO_ONLY_GIVEN
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.USER_INFO_AVIALABLE_IN_DB
 import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
-import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_SMS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
 import com.hashcaller.app.utils.auth.TokenHelper
-import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.utils.crypto.KeyManager
-import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallView
-import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallViewUpdated
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.blockConfig.BlockConfigFragment
 import com.hashcaller.app.view.ui.call.CallFragment
@@ -78,7 +78,6 @@ import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.app.view.ui.sms.individual.util.beVisible
 import com.hashcaller.app.view.ui.sms.individual.util.toast
-import com.hashcaller.app.view.ui.sms.search.SMSSearchFragment
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.DefaultFragmentManager
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
@@ -86,6 +85,9 @@ import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.security.*
 
@@ -167,6 +169,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
+
         mainViewmodel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewmodel::class.java)
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
@@ -187,6 +190,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        rcfirebaseAuth = FirebaseAuth.getInstance()
 //        initViewModel()
         checkUserInfoAvaialbleInDb(savedInstanceState)
+        setDataStoreValues()
 
 //        observeHashedNumbersTable()
        
@@ -198,6 +202,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        startActivity(i)
 //        finish()
 
+    }
+
+    private fun setDataStoreValues() {
+        lifecycleScope.launchWhenCreated {
+            SPAM_THRESHOLD_VALUE = DataStoreRepository(this@MainActivity.tokeDataStore).getInt(PreferencesKeys.SPAM_THRESHOLD)?: Constants.DEFAULT_SPAM_THRESHOLD
+        }
     }
 
     private fun observeHashedNumbersTable() {
@@ -1468,7 +1478,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     companion object {
         private const val TAG = "__MainActivity"
-
+        var SPAM_THRESHOLD_VALUE = DEFAULT_SPAM_THRESHOLD
         var fetchSMSOnCreate = false
 
         private const val KEY_ALIAS = "MYKeyAlias"
@@ -1497,6 +1507,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             ROLE_SCREENING_APP_REQUEST_CODE -> {

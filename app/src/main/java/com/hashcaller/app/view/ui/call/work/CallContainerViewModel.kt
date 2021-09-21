@@ -5,7 +5,10 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
 import androidx.work.*
+import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.repository.BlockListPatternRepository
+import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.view.ui.blockConfig.GeneralBlockRepository
 import com.hashcaller.app.view.ui.call.db.CallLogAndInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallLogTable
@@ -23,6 +26,7 @@ import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_PENDING
 import com.hashcaller.app.view.ui.sms.db.NameAndThumbnail
 import com.hashcaller.app.view.ui.sms.individual.util.*
+import com.hashcaller.app.work.SpamThresholdUpdateWorker
 import kotlinx.coroutines.*
 import java.lang.Exception
 
@@ -38,6 +42,8 @@ class CallContainerViewModel(
      var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
 //    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
+
+
     var callLogTableData: LiveData<MutableList<CallLogTable>>? = repository!!.getAllCallLogLivedata()
     var callersInfoFromDBLivedta:LiveData<List<CallersInfoFromServer>>  = repository!!.getCallLogLiveDAtaFromDB()
     var mutableCalllogTableData : MutableLiveData<MutableList<CallLogTable>?> = MutableLiveData()
@@ -53,7 +59,9 @@ class CallContainerViewModel(
         return showDfltCallerIdLayout
     }
     init {
+
     }
+
 
     fun clearMarkeditems(){
             markeditemsHelper.clearMarkeditems()
@@ -597,7 +605,16 @@ class CallContainerViewModel(
 //        }
     }
 
+    fun updateSpamThreshold(applicationContext:Context) = viewModelScope.launch {
 
+        applicationContext?.let{
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            val oneTimeWorkRequest = OneTimeWorkRequest.Builder(SpamThresholdUpdateWorker::class.java)
+                .setConstraints(constraints)
+                .build()
+            WorkManager.getInstance(it).enqueue(oneTimeWorkRequest)
+        }
+    }
 
 
     companion object {

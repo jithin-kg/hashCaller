@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.repository.BlockListPatternRepository
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.blockConfig.GeneralBlockRepository
@@ -36,6 +38,11 @@ object CallContainerInjectorUtil {
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
          val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
          val countryCodeIso = CountrycodeHelper(context!!).getCountryISO()
+        val dataStoreRepository  = DataStoreRepository(context.tokeDataStore)
+        var spamThreshold = DEFAULT_SPAM_THRESHOLD
+        lifecycleScope.launchWhenCreated {
+             spamThreshold = dataStoreRepository.getInt(PreferencesKeys.SPAM_THRESHOLD)?: DEFAULT_SPAM_THRESHOLD
+        }
 
         Log.d(TAG, "provideViewModelFactory countryIso: $countryCodeIso")
 
@@ -53,11 +60,12 @@ object CallContainerInjectorUtil {
                 callerInfoFromServerDAO!!,
                 mutedCallersDAO,
                 callLogDAO,
-                DataStoreRepository(context.tokeDataStore),
+                dataStoreRepository,
                 tokenHelper,
                 smsThreadsDAO,
                 LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
-                CountrycodeHelper(context).getCountryISO()
+                CountrycodeHelper(context).getCountryISO(),
+                spamThreshold
 
             )
         }

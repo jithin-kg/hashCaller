@@ -9,9 +9,16 @@ import com.hashcaller.app.view.ui.sms.individual.util.normalizeString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class DialerRepository(private val context: Context, private val callLogDAO: ICallLogDAO?) {
+class DialerRepository(
+    private val context: Context,
+    private val callLogDAO: ICallLogDAO?,
+    private val spamThreshold: Int
+
+) {
+
+
      suspend fun getFirst10Logs(): MutableList<CallLogTable>? = withContext(Dispatchers.IO)  {
-         return@withContext callLogDAO?.getFirst10Logs()
+         return@withContext callLogDAO?.getFirst10Logs(spamLimit = spamThreshold.toLong())
     }
 
     suspend fun getFilteredlist(text: String, allContacts: MutableList<Contact>?) = withContext(Dispatchers.IO) {

@@ -37,11 +37,6 @@ class SpamCallViewModel(private val repository: SpamCallRepository) : ViewModel(
     {
         private const val TAG ="__CallLogSearchViewModel"
     }
-
-
-
-
-
 }
 //class ContactsViewModel(application: Application): AndroidViewModel(application) {
 //

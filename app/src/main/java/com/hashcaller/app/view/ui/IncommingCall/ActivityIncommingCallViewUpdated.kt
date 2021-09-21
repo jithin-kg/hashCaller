@@ -26,10 +26,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityIncommingCallViewUpdatedBinding
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
+import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
 import com.hashcaller.app.network.HttpStatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.hashcaller.app.network.search.model.Cntct
 import com.hashcaller.app.network.search.model.CntctitemForView
 import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.Constants.Companion.NO_SIM_DETECTED
 import com.hashcaller.app.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
@@ -40,6 +44,7 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_V
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.hashcaller.app.view.ui.blockConfig.GeneralblockViewmodel
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
@@ -48,7 +53,6 @@ import com.hashcaller.app.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.hashcaller.app.view.ui.contacts.search.utils.SearchViewModel
 import com.hashcaller.app.view.ui.contacts.stopFltinServiceFromActiivtyIncomming
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.*
 import com.hashcaller.app.work.formatPhoneNumber
@@ -97,12 +101,16 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     private var spammerType: Int = SPAMMER_TYPE_SCAM
 
     private var callersInfo: CntctitemForView? = null
+    private var  dataStoreRepository: DataStoreRepository? = null
+    private var spamThreshold:Int = DEFAULT_SPAM_THRESHOLD
+
 
 
     //    private var country = ""
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setSpamThreshold()
         isVisible = true
         callHandledState = intent.getStringExtra(CALL_HANDLED_STATE) ?: ""
         registerForBroadCastReceiver()
@@ -122,6 +130,12 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         checkIfUserBlockedThisNumber()
         animateCard()
 
+    }
+    private fun setSpamThreshold() {
+        dataStoreRepository = DataStoreRepository(this.tokeDataStore)
+        lifecycleScope.launchWhenStarted {
+            spamThreshold = dataStoreRepository?.getInt(SPAM_THRESHOLD)?: DEFAULT_SPAM_THRESHOLD
+        }
     }
 
     private fun animateCard() {
@@ -189,7 +203,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         binding.txtVLocaltion.text = callersInfo.country + " " + callersInfo.location
         binding.txtVcallerName.text =
             if (callersInfo.firstName.isEmpty()) phoneNumber else callersInfo.firstName + " " + callersInfo.lastName
-        if (callersInfo.spammCount > SPAM_THREASHOLD) {
+        if (callersInfo.spammCount > spamThreshold) {
             Log.d(TAG, "onCreate: spammer calling");
             binding.materialCardView.setCardBackgroundColor(getColor(R.color.spamText))
         } else {

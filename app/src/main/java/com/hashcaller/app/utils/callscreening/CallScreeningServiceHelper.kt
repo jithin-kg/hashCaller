@@ -12,14 +12,15 @@ import androidx.core.app.NotificationCompat
 import com.hashcaller.app.R
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.KEY_BLOCK_COMMONG_SPAMMERS
+import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
 import com.hashcaller.app.network.HttpStatusCodes
 import com.hashcaller.app.network.search.model.CntctitemForView
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_BY_PATTERN
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.hashcaller.app.view.ui.contacts.utils.DATE_THREASHOLD
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
 import kotlinx.coroutines.*
 private const val NOTIFICATION_CHANNEL_GENERAL = "quicknote_general"
@@ -35,6 +36,7 @@ class CallScreeningServiceHelper(
     private val resToCallCallBack: (Boolean, Int) -> Unit) {
     var isSpam = false
     private var respondedToCall = false
+
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun  handleCall() = withContext(Dispatchers.IO){
         var isInfoFoundInCprovider = false
@@ -42,6 +44,7 @@ class CallScreeningServiceHelper(
             val isBlockCommonSpammersEnabled =  dataStoreRepository.getSharedPreferencesBoolean(
                 KEY_BLOCK_COMMONG_SPAMMERS
             )
+            val spamThreshold = dataStoreRepository.getInt(SPAM_THRESHOLD)?: DEFAULT_SPAM_THRESHOLD
                  WindowObj.getWindowObj()?.setPhoneNum(phoneNumber)
                 val defBlockedByPattern = async { inComingCallManager.isBlockedByPattern() }
                 val defNonContactsBlocked = async { inComingCallManager.isNonContactsCallsAllowed() }
@@ -60,7 +63,7 @@ class CallScreeningServiceHelper(
                     }
                     val infoAvailableInDb = definfoAvaialbleInDb.await()
                     if(infoAvailableInDb!=null){
-                        if(infoAvailableInDb.spammCount?:0L > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                        if(infoAvailableInDb.spammCount?:0L > spamThreshold && isBlockCommonSpammersEnabled){
                             respondToSpamCall(REASON_BLOCK_TOP_SPAMMER)
                         }
                         if(!isInfoFoundInCprovider){
@@ -97,7 +100,7 @@ class CallScreeningServiceHelper(
                         WindowObj.getWindowObj()?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
 
-                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                    if(resFromServer?.spammCount?:0 > spamThreshold && isBlockCommonSpammersEnabled){
                         respondToSpamCall(REASON_BLOCK_TOP_SPAMMER)
                     }
                     if(resFromServer!=null){

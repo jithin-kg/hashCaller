@@ -15,5 +15,7 @@ class PreferencesKeys {
 
         const val RCV_NOT_BLK_CALL ="rcvntoForBlkCall"
         const val RCV_NOT_BLK_SMS ="rcvntoForBlkSMS"
+
+        const val SPAM_THRESHOLD = "h.spamThreshold_value"
     }
 }

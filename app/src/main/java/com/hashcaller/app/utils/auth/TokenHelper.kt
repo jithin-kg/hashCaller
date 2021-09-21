@@ -11,7 +11,7 @@ class TokenHelper(private val user: FirebaseUser?) {
     /**
      * 
      * made the call back style to suspend and coroutine
-     * https://vineeth.ink/coroutine-basics-converting-callbacks-to-coroutines-207c9d59eb02#:~:text=It%20is%20fairly%20easy%20to,synchronous%20code%2C%20promising%20easier%20readability.
+     * https://vineeth.ink/coroutine-basics-converting-callbacks-to-coroutines-207c9d59eb02#:~:text=It%20is%20fairly%20easy%20to,synchronous%20code%2C%20promising%20easier%20readability
      */
    suspend fun getToken(): String? {
         var token:String?= null

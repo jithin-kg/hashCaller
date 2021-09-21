@@ -12,7 +12,6 @@ import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REAS
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_FOREIGN
 import com.hashcaller.app.view.ui.contacts.utils.DATE_THREASHOLD
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.isCurrentDateAndPrevDateisGreaterThanLimit
 import kotlinx.coroutines.*
 
@@ -25,6 +24,7 @@ class FloatinServiceHelper(
     private val context: Context,
     private val isCallScreeningRoleHeld: Boolean,
     private val dataStoreRepository: DataStoreRepository,
+    private val spamThreshold: Int,
 ) {
 
     suspend fun  handleCall(){
@@ -51,7 +51,7 @@ class FloatinServiceHelper(
 
                     val infoAvailableInDb = definfoFromDb.await()
                     if(infoAvailableInDb!=null){
-                        if(infoAvailableInDb.spammCount?:0L > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                        if(infoAvailableInDb.spammCount?:0L > spamThreshold && isBlockCommonSpammersEnabled){
                             isSpam = true
                             endCall(
                                 inComingCallManager,
@@ -104,7 +104,7 @@ class FloatinServiceHelper(
                         window?.updateWithServerInfo(resFromServer, phoneNumber)
                     }
 
-                    if(resFromServer?.spammCount?:0 > SPAM_THREASHOLD && isBlockCommonSpammersEnabled){
+                    if(resFromServer?.spammCount?:0 > spamThreshold && isBlockCommonSpammersEnabled){
 
                         isSpam = true
                         endCall(

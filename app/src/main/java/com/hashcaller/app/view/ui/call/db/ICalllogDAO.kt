@@ -2,7 +2,6 @@ package com.hashcaller.app.view.ui.call.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
 
 /**
@@ -20,10 +19,10 @@ interface ICallLogDAO {
     suspend fun delete(id: Long)
 
     @Query("SELECT * FROM call_log WHERE (isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser )  AND spamCount <=:spamLimit ORDER BY dateInMilliseconds DESC ")
-    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser: Boolean = false, spamLimit: Long = SPAM_THREASHOLD): LiveData<MutableList<CallLogTable>>
+    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser: Boolean = false, spamLimit: Long): LiveData<MutableList<CallLogTable>>
 
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND  isReportedByUser =:isReportedByUser  AND (nameInPhoneBook!=''  OR nameFromServer!='' ) AND spamCount <=:spamLimit  ORDER BY dateInMilliseconds DESC LIMIT 10")
-    suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false, spamLimit: Long = SPAM_THREASHOLD) : MutableList<CallLogTable>
+    suspend fun getFirst10Logs(isDeleted: Boolean = false, isReportedByUser:Boolean= false, spamLimit: Long ) : MutableList<CallLogTable>
 
     @Query("SELECT * FROM call_log ORDER BY dateInMilliseconds DESC ")
     suspend fun getAllCallLog(): MutableList<CallLogTable>
@@ -66,7 +65,7 @@ interface ICallLogDAO {
     suspend fun removeFromBlockList(formatedAddres: String, isReportedByUser: Boolean = false, spamCount: Long = 1, color: Int)
 
     @Query("SELECT * FROM call_log WHERE isDeleted=:isDeleted AND isReportedByUser =:isReportedByUser OR spamCount > :spamLimit ORDER BY dateInMilliseconds DESC ")
-    fun getSpamCallLogLivedata(isDeleted: Boolean = false, isReportedByUser: Boolean = true, spamLimit: Long = SPAM_THREASHOLD):LiveData<MutableList<CallLogTable>>
+    fun getSpamCallLogLivedata(isDeleted: Boolean = false, isReportedByUser: Boolean = true, spamLimit: Long):LiveData<MutableList<CallLogTable>>
 
     @Query("UPDATE  call_log  SET duration=:duration, dateInMilliseconds =:dateInMilliseconds, thumbnailFromCp =:thumbnailFromCp,id=:id, simId=:simId   WHERE numberFormated =:numberFormated")
     suspend fun updateIdAndRelatedInfos(numberFormated: String, id: Long?, duration: String, dateInMilliseconds: Long, thumbnailFromCp: String, simId: Int)

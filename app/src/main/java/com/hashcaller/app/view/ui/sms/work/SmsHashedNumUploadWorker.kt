@@ -10,9 +10,11 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.Secrets
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.network.spam.hashednums
 import com.hashcaller.app.repository.contacts.PhoneNumWithHashedNumDTO
+import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
@@ -33,8 +35,6 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Created by Jithin KG on 25,July,2020
- * Todo update worker https://www.youtube.com/watch?v=6manrgTPzyA
- *
  * worker for uploading sms senders number to server to get info about the senders
  */
 class SmsHashedNumUploadWorker(private val context: Context, private val params:WorkerParameters ) :
@@ -70,25 +70,28 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
     private val callLogDAO = context?.let{HashCallerDatabase.getDatabaseInstance(it).callLogDAO()}
     val callersInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }
     val mutedCallersDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }
+    private var spamThreshold = Constants.DEFAULT_SPAM_THRESHOLD
+    private val dataStoreRepository  = DataStoreRepository(context.tokeDataStore)
+    private lateinit var  callContainerRepository:CallContainerRepository
 
-    val callContainerRepository =
-        CallContainerRepository(
-            context,
-            callersInfoFromServerDAO,
-            mutedCallersDAO,
-            callLogDAO,
-            DataStoreRepository(context.tokeDataStore),
-            tokenHelper,
-            smsThreadsDAO,
-            LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
-            CountrycodeHelper(context).getCountryISO()
-        )
 
     @SuppressLint("LongLogTag")
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "doWork: ")
-
+            spamThreshold = dataStoreRepository.getInt(PreferencesKeys.SPAM_THRESHOLD)?: Constants.DEFAULT_SPAM_THRESHOLD
+            callContainerRepository =  CallContainerRepository(
+                context,
+                callersInfoFromServerDAO,
+                mutedCallersDAO,
+                callLogDAO,
+                DataStoreRepository(context.tokeDataStore),
+                tokenHelper,
+                smsThreadsDAO,
+                LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
+                CountrycodeHelper(context).getCountryISO(),
+                spamThreshold
+            )
 
             val allsmsincontentProvider = smsRepository.fetchSmsForWorker()
             val callerInfoFromServerDAO = context?.let { HashCallerDatabase.getDatabaseInstance(it).callersInfoFromServerDAO() }

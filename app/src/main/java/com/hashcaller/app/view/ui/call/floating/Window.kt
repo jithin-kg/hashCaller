@@ -16,10 +16,10 @@ import androidx.core.content.ContextCompat
 import com.hashcaller.app.R
 import com.hashcaller.app.network.search.model.CntctitemForView
 import com.hashcaller.app.stubs.Contact
+import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
 import com.hashcaller.app.utils.constants.IntentKeys
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
@@ -116,7 +116,7 @@ class Window(
         // Using kotlin extension for views caused error, so good old findViewById is used
         rootView.findViewById<View>(R.id.imgBtnCloseIncommin).setOnClickListener { closeManually() }
         rootView.findViewById<View>(R.id.layoutWindowParent).setOnClickListener {
-            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "Adding notes to be implemented.", Toast.LENGTH_SHORT).show()
         }
 //       rootView.findViewById<View>(R.id.layoutWindowParent).registerDraggableTouchListener()
         rootView.findViewById<View>(R.id.layoutWindowParent).registerDraggableTouchListener(
@@ -266,7 +266,7 @@ class Window(
 
 //            tvLocation.text = location
         }
-        if(resFromServer.spammCount> SPAM_THREASHOLD){
+        if(resFromServer.spammCount> SPAM_THRESHOLD_VALUE){
             layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
         }else{
             layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background )
@@ -327,7 +327,13 @@ class Window(
         layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
     }
 
+    fun setSpamThreshold(spamThreshold: Int) {
+        SPAM_THRESHOLD_VALUE= spamThreshold
+    }
+
     companion object{
+        var SPAM_THRESHOLD_VALUE = Constants.DEFAULT_SPAM_THRESHOLD
+
         const val TAG = "__Window"
         const val INFO_SEARCHING = 0
         const val INFO_FOUND_FROM_CPROVIDER = 1

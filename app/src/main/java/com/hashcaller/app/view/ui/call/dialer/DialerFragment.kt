@@ -22,8 +22,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ContactSearchResultItemBinding
 import com.hashcaller.app.databinding.FragmentDialerBinding
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.stubs.Contact
+import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
@@ -142,8 +146,10 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     }
 
     private fun initViewModel() {
-        viewmodel = ViewModelProvider(this, DialerInjectorUtil.provideDialerViewModelFactory(context?.applicationContext, lifecycleScope)).get(
-            DialerViewModel::class.java )
+
+            viewmodel = ViewModelProvider(this@DialerFragment, DialerInjectorUtil.provideDialerViewModelFactory(requireContext(), lifecycleScope)).get(
+                DialerViewModel::class.java )
+
     }
 
     private fun observeContacts() {

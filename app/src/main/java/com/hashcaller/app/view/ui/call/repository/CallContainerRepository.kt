@@ -13,10 +13,13 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.blocklist.mutedCallers.IMutedCallersDAO
 import com.hashcaller.app.local.db.blocklist.mutedCallers.MutedCallers
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.spam.hashednums
+import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.call.CallFragment.Companion.pageCall
 import com.hashcaller.app.view.ui.call.db.*
@@ -50,11 +53,13 @@ class CallContainerRepository(
     private val tokenHelper: TokenHelper?,
     private val smsThreadsDAO: ISMSThreadsDAO?,
     private val libPhoneCodeHelper: LibPhoneCodeHelper,
-    private val countryISO: String
+    private val countryISO: String,
+    private val spamThreshold: Int
 
 ) {
 
     private var retrofitService:ICallService? = null
+
 
     /**
      * @return all sms senders numbers list in the localDB which contains
@@ -564,8 +569,12 @@ class CallContainerRepository(
 
     }
 
+    suspend fun getSpamThreshold():Int {
+        return spamThreshold
+    }
     fun getAllCallLogLivedata(): LiveData<MutableList<CallLogTable>>?  {
-        return callLogDAO?.getAllLiveData()
+
+        return callLogDAO?.getAllLiveData(spamLimit= spamThreshold.toLong())
     }
 //    suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
 ////        return callLogDAO?.getAllCallLog()
@@ -660,7 +669,8 @@ class CallContainerRepository(
     }
 
     suspend fun getFirst10Logs(): MutableList<CallLogTable>? = withContext(Dispatchers.IO) {
-        return@withContext callLogDAO?.getFirst10Logs()
+
+        return@withContext callLogDAO?.getFirst10Logs(spamLimit=spamThreshold.toLong())
     }
 
    suspend fun updateWithCproviderInfo(number: String, nameAndThumbnailFromCp: NameAndThumbnail)  = withContext(Dispatchers.IO){

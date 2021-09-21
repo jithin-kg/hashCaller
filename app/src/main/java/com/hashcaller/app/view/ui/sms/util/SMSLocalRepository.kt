@@ -1761,7 +1761,7 @@ class SMSLocalRepository(
     }
 
     fun getSMSThreadsLivedata(): LiveData<MutableList<SmsThreadTable>>?  {
-        return smsThreadsDAO?.getAllLiveData()
+        return smsThreadsDAO?.getAllLiveData(spamlimit=15L)
     }
 
    suspend fun getNameForAddressFromContentProvider(contactAddress: String): NameAndThumbnail? = withContext(Dispatchers.IO) {

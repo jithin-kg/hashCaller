@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -220,7 +219,12 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                  observeCallLogFromDb()
                  observeCallLogInfoFromServer()
                  observeInternetLivedata()
+                 updateSpamThreshold()
              }
+    }
+
+    private fun updateSpamThreshold() {
+        viewmodel?.updateSpamThreshold(applicationContext = requireContext().applicationContext)
     }
 
 
@@ -278,6 +282,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
+            binding.pgBarCall.beGone()
             submitListToAdapter(it, false)
 //           lifecycleScope.launchWhenStarted {
 //               if(!checkScreeningRole()){
@@ -317,7 +322,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         viewmodel?.callLogs?.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
                 viewmodel?.updateDatabase(logs, context?.applicationContext)
-                binding.pgBarCall.beGone()
+
             }
         })
     }
@@ -378,6 +383,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
     private suspend fun initViewModel() {
         withContext(Dispatchers.IO){
+
             viewmodel = ViewModelProvider(this@CallFragment, CallContainerInjectorUtil.provideViewModelFactory(context?.applicationContext, lifecycleScope, tokenHelper)).get(
                 CallContainerViewModel::class.java)
             sharedUserInfoViewmodel = ViewModelProvider(this@CallFragment, MainActivityInjectorUtil.provideUserInjectorUtil(
@@ -432,27 +438,34 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         binding.rcrViewCallHistoryLogs.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as CustomLinearLayoutManager
+//            lifecycleScope.launchWhenCreated {
+//                val spamThreshold = DataStoreRepository(context.tokeDataStore).getInt(
+//                    PreferencesKeys.SPAM_THRESHOLD)?: Constants.DEFAULT_SPAM_THRESHOLD
+            Log.d(TAG, "initRecyclerView: ${MainActivity.SPAM_THRESHOLD_VALUE}")
+                callLogAdapter = CallLogAdapter(
 
-            callLogAdapter = CallLogAdapter(context.applicationContext,
-                this@CallFragment,
-                this@CallFragment,
-                context.isDarkThemeOn()
+                    context= context.applicationContext,
+                    viewMarkingHandlerHelper=this@CallFragment,
+                    networkHandler=this@CallFragment,
+                    isDarkThemOn=context.isDarkThemeOn(),
 
-                ) {
-                    id:Long,
-                    position:Int,
-                    view:View,
-                    btn:Int,
-                    callLog: CallLogTable,
-                    clickType:Int,
-                    visibility:Int ->onCallItemClicked(id,
-                        position,
-                        view,
-                        btn,
-                        callLog,
-                        clickType,
-                        visibility)
-            }
+                    ) {
+                        id:Long,
+                        position:Int,
+                        view:View,
+                        btn:Int,
+                        callLog: CallLogTable,
+                        clickType:Int,
+                        visibility:Int ->onCallItemClicked(id,
+                    position,
+                    view,
+                    btn,
+                    callLog,
+                    clickType,
+                    visibility)
+                }
+//            }
+
             adapter = callLogAdapter
             itemAnimator = null
         }

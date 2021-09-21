@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.SmsListViewBinding
 import com.hashcaller.app.utils.DummYViewHolder
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.extensions.setColorForText
@@ -135,7 +134,7 @@ class SMSListAdapter(private val context: Context,  private val viewMarkingHandl
                 }else if(sms.firstNameFromServer==null){
                     senderInforFrom = SENDER_INFO_SEARCHING
                 }
-                isSpam = sms.spamCount!! > SPAM_THREASHOLD || sms.isReportedByUser
+                isSpam = sms.spamCount!! > 15L || sms.isReportedByUser
             if(nameStr.isEmpty()){
                 //name is not found in server on content provider so, set name as number
                 nameStr = formatPhoneNumber(sms.contactAddress)

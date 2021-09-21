@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 class SpamSMSRepository(private val threadsDAO: ISMSThreadsDAO, private val context: Context) {
 
     fun getSpamCallLogLivedata(): LiveData<MutableList<SmsThreadTable>> {
-       return threadsDAO.getSpamSMSLogLivedata()
+       return threadsDAO.getSpamSMSLogLivedata(spsmCountLimit=15L)
     }
 
     suspend fun markAsDeleted(id: Long)  = withContext(Dispatchers.IO){

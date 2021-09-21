@@ -2,7 +2,6 @@ package com.hashcaller.app.view.ui.sms.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.hashcaller.app.view.ui.contacts.utils.SPAM_THREASHOLD
 
 /**
  * table which holds user reported and other other spammers number
@@ -15,10 +14,10 @@ interface ISMSThreadsDAO {
     suspend fun insert(smsThreads: List<SmsThreadTable>)
 
     @Query("SELECT * FROM chat_threads WHERE (isDeleted=:isDeleted  AND isReportedByUser=:isReportedByUser) AND spamCount<=:spamlimit ORDER BY dateInMilliseconds DESC ")
-    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser:Boolean = false, spamlimit:Long=SPAM_THREASHOLD): LiveData<MutableList<SmsThreadTable>>
+    fun getAllLiveData(isDeleted:Boolean= false, isReportedByUser:Boolean = false, spamlimit:Long): LiveData<MutableList<SmsThreadTable>>
 
     @Query("SELECT * FROM chat_threads WHERE isDeleted=:isDeleted  AND isReportedByUser=:isReportedByUser OR spamCount > :spsmCountLimit ORDER BY dateInMilliseconds DESC ")
-    fun getSpamSMSLogLivedata(isDeleted: Boolean=false, isReportedByUser: Boolean = true, spsmCountLimit: Long = SPAM_THREASHOLD): LiveData<MutableList<SmsThreadTable>>
+    fun getSpamSMSLogLivedata(isDeleted: Boolean=false, isReportedByUser: Boolean = true, spsmCountLimit: Long): LiveData<MutableList<SmsThreadTable>>
 
     @Query("DELETE from chat_threads WHERE threadId=:threadId")
     suspend fun delete(threadId: Long)
