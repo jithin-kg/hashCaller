@@ -63,6 +63,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private var firstName:String? = null
     private var email:String = ""
     private var bioStr:String = ""
+    private var googlePhotoUrlInDb: String = ""
+
     private var lastName:String? = null
     private lateinit var imagePickerHelper : ImagePickerHelper
     var imageMultipartBody: MultipartBody.Part? = null
@@ -77,6 +79,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private var isImageAvatarChosenFromGoogle = false
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private  var editTextEmail:EditText? = null
+    private var googleAccount: GoogleSignInAccount?= null
+
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -138,7 +142,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             toggleSaveButton(text.toString(), lastName, binding.outlinedTextField2)
         }
         binding.editTextEmail.doOnTextChanged { text, start, before, count ->
-            onEmailChanged(text.toString(), email)
+            toggleSaveButton(text.toString(), email, binding.outlinedTextField3)
         }
         binding.editTextBio.doOnTextChanged{text, start, before, count ->
             toggleSaveButton(text.toString(), bioStr, binding.outlinedTextField4)
@@ -166,12 +170,12 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun toggleSaveButton(text: String, nameInDb: String?, editTextField: TextInputLayout) {
 //        if(!text){
-            if(text!= nameInDb){
-                showSaveUpdateBtn()
-                editTextField.isCounterEnabled = true
-            }else if(text == nameInDb){
-                editTextField.isCounterEnabled = false
-            }
+//            if(text!= nameInDb){
+//                showSaveUpdateBtn()
+//                editTextField.isCounterEnabled = true
+//            }else if(text == nameInDb){
+//                editTextField.isCounterEnabled = false
+//            }
 
             if (binding.editTextFName.text.toString().trim() == firstName &&
                 binding.editTextLName.text.toString().trim() == lastName  &&
@@ -179,10 +183,17 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 binding.editTextBio.text.toString().trim() == bioStr
             ){
                 hideSaveUpdateBtn()
+                binding.outlinedTextField.isCounterEnabled = false
+                binding.outlinedTextField2.isCounterEnabled = false
+                binding.outlinedTextField3.isCounterEnabled = false
+                binding.outlinedTextField4.isCounterEnabled = false
+            }else {
+                binding.outlinedTextField.isCounterEnabled = true
+                binding.outlinedTextField2.isCounterEnabled = true
+                binding.outlinedTextField3.isCounterEnabled = true
+                binding.outlinedTextField4.isCounterEnabled = true
+                showSaveUpdateBtn()
             }
-
-//        }
-
     }
 
     private fun observeUserInfo() {
@@ -190,10 +201,11 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             if (it != null) {
                 val fLetter = formatPhoneNumber(it.firstname)[0].toString()
                 binding.tvFirstLetterMain.text = fLetter
-                firstName = "${it.firstname}"
-                lastName = "${it.lastName}"
+                firstName = it.firstname
+                lastName = it.lastName
                 email = it.email
                 bioStr = it.bio
+                googlePhotoUrlInDb = it.googleProfileImgUrl
 
 
                 binding.editTextFName.setText(firstName)
@@ -336,7 +348,8 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                         lastName,
                         googlePhotoUrl,
                         email,
-                        bio
+                        bio,
+                        googleAccount
                     ).observe(this, Observer {
                         Log.d(TAG, "updateUserInfo: $it")
                         binding.btnUpdate.isEnabled = true
@@ -404,7 +417,11 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun update(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?){
 
-        viewModel.updateUserInfoInServer(userInfo, imgMultiPart).observe(this, Observer {response->
+        viewModel.updateUserInfoInServer(
+            userInfo,
+            imgMultiPart,
+            googleAccount
+            ).observe(this, Observer {response->
             when (response.code()) {
                 HttpStatusCodes.STATUS_OK,STATUS_CREATED -> {
                    viewModel.updateUserInfoInDb(response.body()?.data).observe(this, Observer { status ->
@@ -484,23 +501,26 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private fun handleSignInResult(task: Task<GoogleSignInAccount>?) {
         try {
             task?.let{
-                val account: GoogleSignInAccount? = task?.getResult(ApiException::class.java)
+                googleAccount = task?.getResult(ApiException::class.java)
                 if (task.isSuccessful) {
-                    account?.let {
-                        val email = account.email
-                        val firstName:String = account.givenName?:""
-                        val lastName = account.familyName?:""
+                    googleAccount?.let {
+                        val email = googleAccount?.email
+                        val firstName:String = googleAccount?.givenName?:""
+                        val lastName = googleAccount?.familyName?:""
                         binding.editTextFName.setText(firstName)
                         if(lastName.isNotEmpty()){
                             binding.editTextLName.setText(lastName)
                         }
                         binding.editTextEmail.setText(email?:"")
-                        account.photoUrl?.let {
-                            googlePhotoUrl = account.photoUrl?.toString()?:""
+                        googleAccount?.photoUrl?.let {
+                            googlePhotoUrl = googleAccount?.photoUrl?.toString()?:""
                             if(googlePhotoUrl.isNotEmpty()){
                                 Glide.with(this).load(googlePhotoUrl)
                                     .into(binding.ivAvatar)
                                 binding.tvFirstLetterMain.beInvisible()
+                                if(googlePhotoUrl != googlePhotoUrlInDb){
+                                    showSaveUpdateBtn()
+                                }
                                 isImageAvatarChosenFromGoogle = true
                             }
 

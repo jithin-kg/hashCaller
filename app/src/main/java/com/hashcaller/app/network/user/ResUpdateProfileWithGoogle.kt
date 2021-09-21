@@ -9,5 +9,6 @@ data class ResUpdateProfileWithGoogle(
     val lastName: String,
     val email:String,
     val bio:String,
-    val avatarGoogle: String?
+    val avatarGoogle: String?,
+    val googleProfile: GoogleProfile
 )

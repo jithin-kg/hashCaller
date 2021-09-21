@@ -160,12 +160,17 @@ class UserInfoViewModel(
 
     }
 
-    fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultiPart: MultipartBody.Part?):LiveData<Response<GenericResponse<UpdateProfileResult>>> = liveData {
+    fun updateUserInfoInServer(
+        userInfo: UserInfoDTO,
+        imgMultiPart: MultipartBody.Part?,
+        googleAccount: GoogleSignInAccount?
+    ):LiveData<Response<GenericResponse<UpdateProfileResult>>> = liveData {
             try {
                 val hashedNumResultFromDb =  userHashedNumRepository.getHasehedNumOfuser()
                 if(hashedNumResultFromDb!=null){
                     val info = gePreparedPhonenum(userInfo, hashedNumResultFromDb)
-                    val response = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart)
+
+                    val response = userNetworkRepository.updateUserInfoInServer(info, imgMultiPart, googleAccount)
                     Log.d(TAG, "updateUserInfoInServer: $response")
                     response?.let {
                         emit(it)
@@ -307,16 +312,27 @@ class UserInfoViewModel(
         lastName: String,
         googlePhotoUrl: String,
         email: String,
-        bio: String
+        bio: String,
+        googleAccount: GoogleSignInAccount?
     ) :LiveData<Response<GenericResponse<ResUpdateProfileWithGoogle>>?> = liveData {
-
+        var googleProfile:GoogleProfile = GoogleProfile()
        try{
+           if(googleAccount!=null){
+                googleProfile = GoogleProfile(
+                   firstName=googleAccount?.givenName?:"",
+                    lastName = googleAccount?.familyName?:"",
+                   email = googleAccount?.email?:""
+                   )
+
+           }
            val profile = ResUpdateProfileWithGoogle(
                firstName= firstName,
                lastName = lastName,
                email =email,
                avatarGoogle = googlePhotoUrl,
-               bio = bio
+               bio = bio,
+               googleProfile = googleProfile
+
            )
            val response = userNetworkRepository.updateProfileWithGoogle(profile)
            emit(response)

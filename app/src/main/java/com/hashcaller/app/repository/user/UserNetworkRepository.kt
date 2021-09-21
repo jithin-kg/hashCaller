@@ -3,6 +3,7 @@ package com.hashcaller.app.repository.user
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.hashcaller.app.BasicResponseItem
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.user.*
@@ -48,8 +49,17 @@ class UserNetworkRepository(
     private var retrofitService:IuserService = RetrofitClient.createaService(IuserService::class.java)
 
 
-    suspend fun updateUserInfoInServer(userInfo: UserInfoDTO, imgMultipartBody: MultipartBody.Part?): Response<GenericResponse<UpdateProfileResult>>? = withContext(Dispatchers.IO) {
+    suspend fun updateUserInfoInServer(
+        userInfo: UserInfoDTO,
+        imgMultipartBody: MultipartBody.Part?,
+        googleAccount: GoogleSignInAccount?
+    ): Response<GenericResponse<UpdateProfileResult>>? = withContext(Dispatchers.IO) {
+        var gFName = createPartFromString(googleAccount?.givenName?:"")
+        var gLName = createPartFromString(googleAccount?.familyName?:"")
+        var gEmail = createPartFromString(googleAccount?.email?:"")
+
         prepareRquestBody(userInfo)
+
         token = tokenHelper?.getToken()
 
         token?.let {
@@ -62,6 +72,9 @@ class UserNetworkRepository(
                 countryISO,
                 bio,
                 email,
+                gFName,
+                gLName,
+                gEmail,
                 imgMultipartBody,
                 it
             )

@@ -24,6 +24,7 @@ import com.hashcaller.app.view.ui.call.repository.CallContainerRepository
 import com.hashcaller.app.view.ui.call.repository.CallLocalRepository
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.SEARCHING_FOR_INFO
+import com.hashcaller.app.view.ui.sms.individual.util.toast
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.ContactAddressWithHashDTO
@@ -104,6 +105,8 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     //99e6b20ac2e79d44dc9fe018c188b5ec6fb10ad78a844cb9d67a6ba5f14b30a0 918086176331
                     if(result?.code() in (500..599)){
                         return@withContext Result.retry()
+                    }else if(result?.code() ==  429){
+                        context.toast("Too many requests")
                     }
                     
                     result?.let{ reslt->

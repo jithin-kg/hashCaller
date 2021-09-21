@@ -57,6 +57,9 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var networkChecker:CheckNetwork
 
     private lateinit var binding: ActivityGetInitialUserInfoBinding
+    private var account: GoogleSignInAccount? = null
+
+
 
     //    private var imgFile: File? = null
 //    private var picturePath: String = ""
@@ -224,14 +227,14 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     private fun handleSignInResult(task: Task<GoogleSignInAccount>?) {
         try {
             task?.let{
-                val account: GoogleSignInAccount? = task?.getResult(ApiException::class.java)
+                account = task?.getResult(ApiException::class.java)
                 if (task.isSuccessful) {
                     account?.let {
-                        val email = account.email
-                        val firstName:String = account.givenName?:""
-                        val lastName = account.familyName?:""
+                        val email = it.email
+                        val firstName:String = it.givenName?:""
+                        val lastName = it.familyName?:""
 
-                        signupUser(account)
+                        signupUser(it)
 //                        binding.editTextFName.setText(firstName)
 //                        if(lastName.isNotEmpty()){
 //                            binding.editTextLName.setText(lastName)

@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import com.hashcaller.app.Secrets
 import com.hashcaller.app.network.contact.NetWorkResponse
 import com.hashcaller.app.network.spam.ReportedUserDTo
-import com.hashcaller.app.network.user.Resource
 import com.hashcaller.app.repository.spam.SpamNetworkRepository
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers

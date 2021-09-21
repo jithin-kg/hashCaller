@@ -64,6 +64,9 @@ interface IuserService {
         @Part("countryISO") countryISO:RequestBody,
         @Part("bio") bio:RequestBody,
         @Part("email") email:RequestBody,
+        @Part("gFName") gFName:RequestBody,
+        @Part("gLName") gLName:RequestBody,
+        @Part("gEmail") gEmail:RequestBody,
         @Part image: MultipartBody.Part?,
         @Header ("Authorization") token:String
     ): Response<GenericResponse<UpdateProfileResult>>

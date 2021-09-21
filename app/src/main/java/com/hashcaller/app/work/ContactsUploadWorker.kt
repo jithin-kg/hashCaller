@@ -21,6 +21,7 @@ import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.SEARCHING_FOR_INFO
+import com.hashcaller.app.view.ui.sms.individual.util.toast
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import kotlinx.coroutines.*
@@ -141,6 +142,8 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
                        Log.d(TAG, "sendContactsOfSize12: server error")
                        return ERROR_WHILE_UPLODING
 //                    return Result.retry()
+                   }else if(result?.code() ==  429){
+                       context.toast("Too many requests")
                    }
 
                    result?.let { rslt->
