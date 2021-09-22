@@ -5,11 +5,15 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.credentials.*
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityPhoneAuthBinding
@@ -37,21 +41,40 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
     private lateinit var libCountryCodeHelper: LibPhoneCodeHelper
     private var phoneNumber: String = ""
     private lateinit var dataStoreRepository: DataStoreRepository
+    private lateinit var pickerResultCb: ActivityResultLauncher<IntentSenderRequest>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPhoneAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        registerPickerCb()
         dataStoreRepository = DataStoreRepository(this.tokeDataStore)
         setDefaultDataStoreValues()
         initListeners()
         initViewModel()
+
         libCountryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
         lifecycleScope.launchWhenCreated {
             requestHint()
         }
 
+    }
+    fun registerPickerCb() {
+        pickerResultCb = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+            if(it.resultCode == RESULT_OK){
+                // get data from the dialog which is of type Credential
+                val credential: Credential? = it.data?.getParcelableExtra(Credential.EXTRA_KEY)
+
+                // set the received data t the text view
+                credential?.apply {
+                    val num = credential.id
+                    val countryCodeIso = CountrycodeHelper(this@ActivityPhoneAuth).getCountryISO()
+                    binding.edtTextPhone.setText(libCountryCodeHelper.getNumWithoutCountyCode(num, countryCodeIso))
+
+                }
+            }
+        }
     }
     private fun setDefaultDataStoreValues() {
         lifecycleScope.launchWhenCreated {
@@ -89,12 +112,6 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
             binding.btnGo.isEnabled = true
             toast("Please Enter a valid phone number.")
         }
-
-
-
-
-
-
     }
 
     private fun showAlert(phoneNumber: String) {
@@ -113,7 +130,6 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
 
     override fun onYesConfirmationMute() {
 
-        Log.d(TAG, "onYesConfirmationMute: ")
     }
 
 
@@ -128,9 +144,6 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
                     overridePendingTransition(R.anim.in_anim,
                         R.anim.out_anim
                     );
-//                    this.overridePendingTransition(R.anim.enter_from_right,
-//                        R.anim.fade_out_animation);
-
                     finish()
                 }
             }
@@ -145,7 +158,6 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.btnGo ->{
-
                 passPhoneNumber()
             }
         }
@@ -175,40 +187,18 @@ private fun requestHint() {
     val credentialsClient = Credentials.getClient(this, options)
     val intent = credentialsClient.getHintPickerIntent(hintRequest)
     try {
-        startIntentSenderForResult(
-            intent.intentSender,
-            CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle()
-        )
+//        startIntentSenderForResult(
+//            intent.intentSender,
+//            CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle()
+//        )
+        val intentSenderRequest = IntentSenderRequest.Builder(intent.intentSender).build()
+        pickerResultCb.launch(intentSenderRequest)
+
     } catch (e: IntentSender.SendIntentException) {
         e.printStackTrace()
     }
 
 }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == RESULT_OK) {
-
-            // get data from the dialog which is of type Credential
-            val credential: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
-
-            // set the received data t the text view
-            credential?.apply {
-                val num = credential.id
-                val countryCodeIso = CountrycodeHelper(this@ActivityPhoneAuth).getCountryISO()
-
-                binding.edtTextPhone.setText(libCountryCodeHelper.getNumWithoutCountyCode(num, countryCodeIso))
-
-                //
-//                tv1.text = credential.id
-
-                Log.d(TAG, "onActivityResult: ${credential.id}")
-            }
-        } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
-            Log.d(TAG, "onActivityResult: no phone num")
-            //            Toast.makeText(this, "No phone numbers found", Toast.LENGTH_LONG).show();
-        }
-    }
 
     companion object {
         const val TAG = "__ActivityPhoneAuth"

@@ -3,10 +3,12 @@ package com.hashcaller.app.view.ui.sms.individual.util
 import android.Manifest
 import android.app.Activity
 import android.app.SearchManager
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
@@ -74,6 +76,9 @@ fun Context.toast(msg: String, length: Int = Toast.LENGTH_SHORT) {
     } catch (e: Exception) {
 
     }
+
+
+
 }
 
 private fun doToast(context: Context, message: String, length: Int) {
@@ -84,6 +89,29 @@ private fun doToast(context: Context, message: String, length: Int) {
     } else {
         Toast.makeText(context, message, length).show()
     }
+}
+
+/**
+ * method returns a pair <true,roleManage> if we need to request Screening role
+ * else <false, null> or <false,roleManager >
+ */
+fun Context.shouldReqstScreeningRole(): Pair<Boolean, RoleManager?> {
+    var shouldRequest = false
+    var roleManager: RoleManager? = null
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+        val isHeld = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+        if (!isHeld) {
+            shouldRequest = true
+            //ask the user to set your app as the default screening app
+//            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+//            scrnRoleCallback.launch(intent)
+//                startActivityForResult(intent, ROLE_SCREENING_APP_REQUEST_CODE)
+        } else {
+            //you are already the default screening app!
+        }
+    }
+    return Pair(shouldRequest, roleManager)
 }
 
 

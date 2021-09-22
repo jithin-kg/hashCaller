@@ -301,14 +301,12 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
 
             }
             else ->{
-                Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
                 val intent = Intent(this, IndividualContactViewActivity::class.java )
                 intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
                 intent.putExtra("name", contactItem.firstName )
 //        intent.putExtra("id", contactItem.id)
                 intent.putExtra("photo", contactItem.photoURI)
                 intent.putExtra("color", contactItem.drawable)
-                Log.d(TAG, "onContactItemClicked: ${contactItem.photoURI}")
                 val pairList = ArrayList<android.util.Pair<View, String>>()
 //        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
                 var pair:android.util.Pair<View, String>? = null
@@ -408,7 +406,6 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-        Log.d(TAG, "onCheckedChanged: ${buttonView?.id}")
         when(buttonView?.id){
             R.id.checkboxIncludeSMS -> {
                 updateSearchPreferences(isChecked)

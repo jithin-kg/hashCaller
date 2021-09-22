@@ -77,10 +77,7 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
 
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

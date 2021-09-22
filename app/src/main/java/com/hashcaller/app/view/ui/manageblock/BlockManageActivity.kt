@@ -1,11 +1,17 @@
 package com.hashcaller.app.view.ui.manageblock
 
+import android.app.Activity
+import android.app.role.RoleManager
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -18,7 +24,6 @@ import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.utils.extensions.requestDefaultSMSrole
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.extensions.isScreeningRoleHeld
-import com.hashcaller.app.view.ui.extensions.requestScreeningRole
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.sms.util.SetAsDefaultSMSSnackbarListener
 
@@ -33,6 +38,8 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     private var isBlockNonContactCallsEnabled = false
     private lateinit var viewmodel : BlockSettingsViewModel
     private lateinit var dataStoreRepository: DataStoreRepository
+    private lateinit var scrnRoleCallback: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBlockManageBinding.inflate(layoutInflater)
@@ -43,6 +50,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         toggleRequestScreeningRoleBtn()
         initListeners()
         setToggleButtons()
+        regstrScreeningRoleResultCb()
     }
 
     private fun initViewmodel() {
@@ -141,29 +149,28 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
 //        binding.layoutBlockBeginsWith.setOnClickListener(this)
 
     }
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.imgBtnBackBlk -> {
                 finishAfterTransition()
             }
             R.id.btnRqstScreeningPermission -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    requestScreeningRole()
-                }
+//                    requestScreeningRole()
+                    val res = shouldReqstScreeningRole()
+                    if(res.first){
+                        //we should request screening role
+                        val intent = res.second?.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+                        scrnRoleCallback.launch(intent)
+                    }
             }
-//            R.id.switchDoNotReceiveSpamSMS -> {
-//
-//                onDoNotRecieveSpamSmsClicked()
-//            }
-//            R.id.layoutBlockContains ->{
-//                startBlockListActivity(NUMBER_CONTAINING)
-//            }
-//            R.id.layoutBlockEndsWith ->{
-//                startBlockListActivity(NUMBER_ENDS_WITH)
-//            }
-//            R.id.layoutBlockBeginsWith ->{
-//                startBlockListActivity(NUMBER_STARTS_WITH)
-//            }
+        }
+    }
+    fun regstrScreeningRoleResultCb() {
+        scrnRoleCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+//                callFragment.activtyResultisDefaultScreening()
+            }
         }
     }
 

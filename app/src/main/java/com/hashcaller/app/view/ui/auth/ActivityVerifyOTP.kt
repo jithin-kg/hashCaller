@@ -36,6 +36,7 @@ import com.hashcaller.app.view.ui.auth.permissionrequest.PermissionRequestActivi
 import com.hashcaller.app.view.ui.contacts.hasMandatoryPermissions
 import com.hashcaller.app.view.ui.contacts.showBadRequestToast
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.hashcaller.app.view.ui.contacts.utils.OPERATION_FAILED
 import com.hashcaller.app.view.ui.contacts.utils.SAMPLE_ALIAS
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
@@ -123,14 +124,12 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 // 2 - Auto-retrieval. On some devices Google Play services can automatically
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
-                Log.d(TAG, "onVerificationCompleted:$credential")
                 // [START_EXCLUDE silent]
                 code = credential.smsCode
 
 //                if(code == null) code = "123456" //Only for testing purpose
                 if (code != null) {
                     verifycode(code!!)
-                    Log.d(TAG, "onVerificationCompleted: $code")
                 }
 
                 verificationInProgress = false
@@ -153,14 +152,12 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
                     // [START_EXCLUDE]
-                    Log.d(TAG, "onVerificationFailed: ")
 //                    binding.fieldPhoneNumber.error = "Invalid phone number."
                     // [END_EXCLUDE]
                     toast("Invalid phone number", Toast.LENGTH_LONG)
                 } else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
                     // [START_EXCLUDE]
-                    Log.d(TAG, "onVerificationFailed: quote exceeeded")
                     Snackbar.make(
                         findViewById(android.R.id.content), "Quota exceeded.",
                         Snackbar.LENGTH_SHORT
@@ -294,20 +291,16 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
 
                     val user = task.result?.user
                     // [START_EXCLUDE]
-                    Log.d(TAG, "signInWithPhoneAuthCredential: signin succes $user")
 //                    updateUI(STATE_SIGNIN_SUCCESS, user)
                     // [END_EXCLUDE]
                 } else {
                     // Sign in failed, display a message and update the UI
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
                         // [START_EXCLUDE silent]
-                        Log.d(TAG, "signInWithPhoneAuthCredential: failed invalid code ")
 //                        binding.fieldVerificationCode.error = "Invalid code."
                         // [END_EXCLUDE]
                     }
@@ -403,18 +396,15 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
         credential: PhoneAuthCredential,
         code: String
     ) {
-        Log.d(TAG, "signInWithCreadential: $auth")
         auth!!.signInWithCredential(credential)
             .addOnCompleteListener(
                 this
             ) { task ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "successfull: ")
                     onSignedInInitialize(code)
                     otpview.setText(code)
 //                    Toast.makeText(this, "verified", Toast.LENGTH_SHORT).show()
                 } else {
-                    Log.d(TAG, "something went wrong: ")
                     Toast.makeText(
                         this,
                         "Something went wrong",
@@ -422,7 +412,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                     ).show()
                 }
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                    Log.d(TAG, "invalid code: ")
                     Toast.makeText(this, "invalid code", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -441,44 +430,6 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                 initViewModel()
                 checkUserInfoInServer()
             }
-//        userTokenCallBack?.onSignedInInititalize { token, exception ->
-//            if(!token.isNullOrEmpty()){
-//                encryptor = EnCryptor()
-//                val encryptedText = encryptor?.encryptText(SAMPLE_ALIAS,token.toString())
-//                val encodeTokenString = Base64.encodeToString(
-//                    encryptedText,
-//                    Base64.DEFAULT
-//                )
-//                dataStoreViewmodel.saveToken(encodeTokenString).observe(this, Observer {
-//                    if (it == OPERATION_COMPLETED) {
-////        setResult(1, i)
-////        finish()
-//                userInfoViewModel.getUserInfoFromServer(encodeTokenString).observe(this, Observer { userinfo ->
-//                    if(userinfo!= null){
-//                        if(!userinfo.result.firstName.isNullOrEmpty()){
-//                            //user exists in server
-//                            userInfoViewModel.saveUserInfoInLocalDb(userinfo).observe(this, Observer { status ->
-//                               when(status){
-//                                   OPERATION_COMPLETED -> {
-//                                     startMainActivity()
-//                                   }
-//                               }
-//                            })
-//                        }else{
-//                            //user info not exists in server
-//                            startGetUserInfoActivity()
-//                        }
-//                    }
-//                })
-//                    }
-//                })
-//            }
-//
-//
-//        }
-//
-//        setResult(1, i)
-//        finish()
     }
 
     private fun saveTokenInDataStore(task: Task<GetTokenResult>) {
@@ -502,7 +453,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
             }
 
         } else {
-            Log.d(TAG, "onSignedInInitialize:${task.exception}")
+            toast(task?.exception.toString())
         }
     }
 
@@ -523,8 +474,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                                         userInfoViewModel.saveUserInfoInLocalDb(
                                             userinfo,
                                             dataStoreViewmodel
-                                        )
-                                            .observe(this@ActivityVerifyOTP, Observer { status ->
+                                        ).observe(this@ActivityVerifyOTP, Observer { status ->
                                                 when (status) {
                                                     OPERATION_COMPLETED -> {
 
@@ -545,6 +495,9 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                                                             )
                                                             finish()
                                                         }
+                                                    }
+                                                    OPERATION_FAILED-> {
+                                                        toast("Something went wrong")
                                                     }
                                                 }
                                             })
@@ -577,16 +530,11 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun startGetUserInfoActivity() {
-        Log.d(TAG, "startGetUserInfoAcitvity: called")
         val i = Intent(this, GetInitialUserInfoActivity::class.java)
         startActivity(i)
         finish()
 
     }
 
-    private fun startSplashActivity() {
-        val i = Intent()
-        setResult(1, i)
-        finish()
-    }
+
 }

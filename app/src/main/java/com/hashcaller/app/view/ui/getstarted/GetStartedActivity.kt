@@ -61,18 +61,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnContinueGetStd -> {
-//                startPhoneAuthActivity()
-
-//                val isPermissionGiven = requesetPermission()
-//                if(isPermissionGiven){
-
-//                requestPermission()
-//                showAlert()
-//                if(!isPermissionGiven()){
-//                    requestPermission()
-//                }else {
                     startPhoneAuthActivity()
-//                }
             }
             R.id.tvTermsAgree ->{
                 startPrivacyIntent()
@@ -82,18 +71,7 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
             }
         }
     }
-    private fun isPermissionGiven(): Boolean {
-        return EasyPermissions.hasPermissions(
-            this,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_PHONE_STATE,
-//            READ_CALL_LOG,
-//            WRITE_CALL_LOG,
-//            READ_CONTACTS,
-//            READ_PHONE_STATE
 
-        )
-    }
     private fun showAlert() {
         if(alertBinding.root.parent!=null) {
             (alertBinding.root.parent as ViewGroup).removeView(alertBinding.root)
@@ -134,19 +112,12 @@ class GetStartedActivity : AppCompatActivity(), View.OnClickListener, EasyPermis
     }
     @SuppressLint("LongLogTag")
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        Log.d(TAG, "onPermissionsDenied: ")
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         startPhoneAuthActivity()
     }
 
-//    override fun finish() {
-//        super.finish()
-//        overridePendingTransition(R.anim.in_anim,
-//            R.anim.out_anim
-//        );
-//    }
     private fun startPhoneAuthActivity() {
             val i = Intent(this, ActivityPhoneAuth::class.java)
             startActivity(i)

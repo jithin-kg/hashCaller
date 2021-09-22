@@ -375,12 +375,10 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
     fun registerGoogleActivityResult() {
-
         googleSignInCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
             handleSignInResult(task);
         }
-
     }
     private fun registerForImagePickerResult() {
 

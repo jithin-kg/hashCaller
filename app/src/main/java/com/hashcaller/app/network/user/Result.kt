@@ -6,17 +6,17 @@ import com.google.gson.annotations.SerializedName
 @Keep
 data class Result(
 //    val email: String,
-    val firstName: String,
+    var firstName: String="",
 //    val gender: String,
-    val lastName: String,
-    val image: String?,
+    var lastName: String="",
+    var image: String?,
     @SerializedName("customToken")
-    val customToken:String?,
-    val isBlockedByAdmin:Int = 0,
-    val isPhoneNumRemovedInFireBs:Boolean = false,
-    var bio:String,
-    var email:String,
-    var avatarGoogle:String,
-    var isVerifiedUser:Boolean,
+    var customToken:String?,
+    var isBlockedByAdmin:Int = 0,
+    var isPhoneNumRemovedInFireBs:Boolean = false,
+    var bio:String="",
+    var email:String="",
+    var avatarGoogle:String="",
+    var isVerifiedUser:Boolean = false,
 
 )

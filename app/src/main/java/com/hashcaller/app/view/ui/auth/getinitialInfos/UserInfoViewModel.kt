@@ -16,6 +16,7 @@ import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHasehdNumRepositor
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserInfo
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.hashcaller.app.view.ui.contacts.utils.OPERATION_FAILED
 import com.hashcaller.app.view.utils.imageProcess.ImagePickerHelper
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -57,7 +58,7 @@ class UserInfoViewModel(
 
 
         }catch (e:Exception){
-
+            emit(OPERATION_FAILED)
             Log.d(TAG, "saveUserInfoInLocalDb: $e")
         }
            
