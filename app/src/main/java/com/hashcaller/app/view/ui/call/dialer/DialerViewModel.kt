@@ -52,7 +52,7 @@ class DialerViewModel(
                           if(!item.nameInPhoneBook.isNullOrEmpty()){
                               name = item.nameInPhoneBook!!
                           }else if(!item.nameFromServer.isNullOrEmpty()){
-                              name = item.nameInPhoneBook!!
+                              name = item.nameFromServer!!
                           }
                          val contact =  Contact(item.id!!,
                               name, item.number, item.thumbnailFromCp)
