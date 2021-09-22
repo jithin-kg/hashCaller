@@ -102,15 +102,6 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:stopWithTask="false" />
 
-        <service
-            android:name=".utils.callReceiver.CallFeedbackForegroundService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <service
-            android:name=".utils.callReceiver.CallFeedbackJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <activity
             android:name=".view.ui.profile.ProfileActivity"
             android:launchMode="singleTop"
