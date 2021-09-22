@@ -3,6 +3,7 @@ package com.hashcaller.app.view.ui.auth.getinitialInfos
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,10 +12,14 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -47,6 +52,7 @@ import com.hashcaller.app.view.utils.imageProcess.ImagePickerHelper
 import com.hashcaller.app.view.utils.validateInput
 import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
+import java.io.File
 
 class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var sharedPreferences: SharedPreferences
@@ -58,16 +64,15 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityGetInitialUserInfoBinding
     private var account: GoogleSignInAccount? = null
-
-
-
-    //    private var imgFile: File? = null
-//    private var picturePath: String = ""
     private lateinit var imagePickerHelper: ImagePickerHelper
     var imgeMultipartBody: MultipartBody.Part? = null
     private var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+
+    private lateinit var startForProfileImageResult: ActivityResultLauncher<Intent>
+    private  var imgFile: File? = null
+    private lateinit var googleSignInCallBack: ActivityResultLauncher<Intent>
 
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,9 +89,16 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         initGoogleSigninClient()
         networkChecker = CheckNetwork(this)
         networkChecker.registerNetworkCallback()
+        registerForImagePickerResult()
+        registerGoogleActivityResult()
 
-//        loadImage(this, binding.imgVAvatarInitial, "@drawable/contact_circular_background_grey")
 
+    }
+    fun registerGoogleActivityResult() {
+        googleSignInCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            handleSignInResult(task);
+        }
     }
 
     private fun initViewmodels() {
@@ -145,26 +157,16 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
 
     @SuppressLint("LongLogTag")
     override fun onClick(v: View?) {
-        Log.d(TAG, "onClick: ")
         when (v?.id) {
             R.id.btnUserContinue -> {
                 sendUserInfo()
             }
             R.id.btnGoogle -> {
                 val signInIntent = googleSignInClient.signInIntent
-                startActivityForResult(signInIntent, PermisssionRequestCodes.RC_SIGN_IN)
+                googleSignInCallBack.launch(signInIntent)
             }
             R.id.imgVAvatarInitial -> {
-                if (hasStoragePermission()) {
-                    startImagePickActivity()
-                } else {
-                    EasyPermissions.requestPermissions(
-                        this, perms = arrayOf(READ_EXTERNAL_STORAGE),
-                        rationale = "Hash caller need storage permission to configure profile picture",
-                        requestCode = REQUEST_CODE_STORAGE
-                    )
-                }
-
+                startImagePickActivity()
             }
         }
 
@@ -184,40 +186,21 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d(TAG, "onRequestPermissionsResult: ")
-        // EasyPermissions handles the request result.
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-    private fun hasStoragePermission(): Boolean {
-        return EasyPermissions.hasPermissions(this, READ_EXTERNAL_STORAGE)
-    }
 
     private fun startImagePickActivity() {
-        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(pickPhoto, REQUEST_CODE_IMG_PICK)
-    }
-
-    @SuppressLint("LongLogTag")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_CANCELED) {
-            when (requestCode) {
-                REQUEST_CODE_IMG_PICK -> if (resultCode == RESULT_OK && data != null) {
-                    val selectedImageUri: Uri? = data.data
-                    binding.imgVAvatarInitial.setImageURI(selectedImageUri)
-                    userInfoViewModel.processImage(this, selectedImageUri, imagePickerHelper)
-                }
-                PermisssionRequestCodes.RC_SIGN_IN -> {
-                    binding.pgBarInfo.beVisible()
-                    binding.btnUserContinue.isEnabled = false
-                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                    handleSignInResult(task);
-                }
+        ImagePicker.with(this)
+            .cropSquare()	    			//Crop image
+            .compress(30)			//Final image size will be less than 30 kb
+            .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+            .createIntent { intent ->
+                startForProfileImageResult.launch(intent)
             }
-        }
-
+        binding.pgBarImgPick.beVisible()
     }
+
     /**
      * https://developers.google.com/identity/sign-in/android/sign-in
      *
@@ -230,28 +213,8 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
                 account = task?.getResult(ApiException::class.java)
                 if (task.isSuccessful) {
                     account?.let {
-                        val email = it.email
-                        val firstName:String = it.givenName?:""
-                        val lastName = it.familyName?:""
-
                         signupUser(it)
-//                        binding.editTextFName.setText(firstName)
-//                        if(lastName.isNotEmpty()){
-//                            binding.editTextLName.setText(lastName)
-//                        }
-//                        binding.editTextEmail.setText(email?:"")
-//                        account.photoUrl?.let {
-//                            googlePhotoUrl = account.photoUrl?.toString()?:""
-//                            if(googlePhotoUrl.isNotEmpty()){
-//                                Glide.with(this).load(googlePhotoUrl)
-//                                    .into(binding.ivAvatar)
-//                                binding.tvFirstLetterMain.beInvisible()
-//                                isImageAvatarChosenFromGoogle = true
-//                            }
-//
-//                        }
                     }
-
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                 }
@@ -259,13 +222,11 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         } catch (e: ApiException) {
             // Google Sign In failed, update UI appropriately
             toast("Unable to sign in using google")
-            Log.w(TAG, "Google sign in failed", e)
         }
     }
 
     private fun signupUser(account: GoogleSignInAccount) {
         if (CheckNetwork.isetworkConnected()) {
-
             userInfoViewModel.signupUserWithGoogle(account).observe(this, Observer {
                if(it!= null){
                    when(it.code()){
@@ -291,16 +252,34 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun registerForImagePickerResult() {
 
+        startForProfileImageResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                val resultCode = result.resultCode
+                val data = result.data
+                binding.pgBarImgPick.beInvisible()
+                if (resultCode == Activity.RESULT_OK) {
+                    //Image Uri will not be null for RESULT_OK
+                    val fileUri = data?.data!!
+
+                    val mProfileUri = fileUri
+                    imgFile = File(fileUri.path!!)
+                    binding.imgVAvatarInitial.setImageURI(fileUri)
+                } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                    toast(ImagePicker.getError(data))
+                } else {
+                    toast("No image selected")
+                }
+            }
+    }
     @SuppressLint("LongLogTag")
     private fun sendUserInfo() {
 
         val firstName = binding.editTextFName.text.toString().trim()
         val lastName = binding.editTextLName.text.toString().trim()
-//    val email = binding.editTextEmail.text.toString().trim()
-
         userInfoViewModel.compresSAndPrepareForUpload(
-            imagePickerHelper.imgFile,
+            imgFile,
             this@GetInitialUserInfoActivity
         ).observe(this@GetInitialUserInfoActivity,
             Observer {
@@ -320,12 +299,6 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
                     var userInfo = UserInfoDTO()
                     userInfo.firstName = firstName;
                     userInfo.lastName = lastName;
-//        userInfo.email = "email";
-
-//        val body: MultipartBody.Part = createFormData.createFormData("files[0]", file.getName(), requestFile)
-//        userInfo.profilePic =imgPart
-
-
                     upload(userInfo, imgeMultipartBody)
                 }
             })
@@ -361,53 +334,6 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
             }
 
         })
-
-//        userInfoViewModel.upload(userInfo).observe(this, Observer {
-//
-//            it?.let { resource: Resource<Response<NetWorkResponse>?> ->
-////                val resMessage = resource.data?.body()?.message
-////                when (resource.status) {
-////
-////                    Status.SUCCESS -> {
-////                        if (resMessage.equals(EUserResponse.NO_SUCH_USER)) { // there is no such user in server
-////                            Log.d(TAG, "checkIfNewUser: no such user")
-////                            //This is a new user
-////                            val i = Intent(applicationContext, GetInitialUserInfoActivity::class.java)
-////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-////                            //set userLoggedIn = false in shared preference
-////
-////                            saveToSharedPref(false)
-////
-////                            applicationContext.startActivity(i)
-////
-////                        }else if(resMessage.equals(EUserResponse.EXISTING_USER)){
-////                            Log.d(UserUploadHelper.TAG, "upload: user already exist")
-//////                            val i  = Intent(applicationContext, MainActivity::class.java)
-//////                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//////                            //set userLogedIn = true in shared preferecce
-//////                            saveToSharedPref(true)
-////
-////                            userInfoViewModel.saveUserInfoInLocalDb(resMessage)
-////                            val i  = Intent(this, MainActivity::class.java)
-////                            startActivity(i)
-////                            finish()
-////
-////                        }
-////                        Log.d(TAG, "checkIfNewUser: success ${resource.data?.body()?.message}")
-////                    }
-////                    Status.LOADING -> {
-////                        Log.d(TAG, "checkIfNewUser: Loading")
-////                    }
-////                    else -> {
-////                        Log.d(TAG, "checkIfNewUser: else $resource")
-////                        Log.d(TAG, "checkIfNewUser:error ")
-////                    }
-////
-////
-////                }
-////
-////            }
-//        })
     }
 
     private fun onUserInfoSavedInLocalDb() {
@@ -417,7 +343,6 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(i)
             finish()
         } else {
-//                                        val i = Intent(this, PermissionRequestActivity::class.java)
             val i = Intent(
                 this,
                 PermissionRequestActivity::class.java

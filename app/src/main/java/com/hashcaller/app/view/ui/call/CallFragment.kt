@@ -58,7 +58,6 @@ import com.hashcaller.app.view.ui.contacts.makeCall
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.getSpannableString
 import com.hashcaller.app.view.ui.extensions.isScreeningRoleHeld
-import com.hashcaller.app.view.ui.extensions.requestScreeningRole
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.sms.list.SMSListAdapter
 import com.hashcaller.app.view.utils.ConfirmDialogFragment
@@ -92,9 +91,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private var isDflt = false
     private var isInternetAvailable = false
     private var isScreeningApp = false
-//    private var toolbar: Toolbar? = null
-//    var callFragment: View? = null
-//    private lateinit var searchViewCall: EditText
 
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     var layoutBottomSheet: ConstraintLayout? = null
@@ -105,7 +101,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  var lastOperationPerformed: Int ? = null
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
-//    private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = SPAMMER_TYPE_SCAM
     private lateinit var recyclerV : RecyclerView
     private lateinit var layoutMngr: LinearLayoutManager
@@ -117,10 +112,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  var selectedRadioButton: RadioButton? = null
     private var radioGroupOne: RadioGroup? = null
     private var radioGroupTwo: RadioGroup? = null
-//    val vm: CallContainerViewModel by viewModels()
-
-
-    /************/
+    private var isCallLogsCpEmpty = false
     var callLogAdapter: CallLogAdapter? = null
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private var tokenHelper: TokenHelper? = null
@@ -141,7 +133,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         setupBottomSheet()
@@ -153,7 +144,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             getDataDelayed()
         }else{
             binding.btnCallFragmentPermission.beVisible()
-            binding.pgBarCall.beGone()
             hideRecyclerView()
 
         }
@@ -174,7 +164,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         var isDefault = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if((activity as AppCompatActivity).isScreeningRoleHeld()){
-//                requestScreeningRole()
                isDefault = true
             }
         }else {
@@ -182,14 +171,10 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         }
 
         return isDefault
-//        viewmodel?.setShowDfltCallerIdLayout(showLayout)
     }
 
     private fun hideRecyclerView() {
-
-//        binding.btnCallFragmentPermission.beVisible()
         binding.rcrViewCallHistoryLogs.beInvisible()
-//        binding.shimmerViewContainerCall.beInvisible()
     }
 
     private fun showRecyclerView() {
@@ -197,15 +182,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         binding.btnCallFragmentPermission.beInvisible()
         binding.rcrViewCallHistoryLogs.beVisible()
         binding.pgBarCall.beVisible()
-    }
-
-    private fun observeUserInfo() {
-//        sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
-//            if(it!=null){
-//                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-////                binding.tvCircularAvatar.text = fLetter
-//            }
-//        })
     }
 
      fun getDataDelayed() {
@@ -241,22 +217,20 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         viewmodel?.getFirst10Logs()?.observe(viewLifecycleOwner, Observer {
             callLogAdapter?.itemCount.let { count ->
                 if(count!=null && count < it.size ){
-                    binding.pgBarCall.beGone()
+                        if(isCallLogsCpEmpty && it.isEmpty())
+                            binding.pgBarCall.beGone()
+                        else if(!isCallLogsCpEmpty && it.isNotEmpty())
+                            binding.pgBarCall.beGone()
                     submitListToAdapter(it, true)
-
-
                 }
             }
-            if (it.size > 1) {
-                binding.pgBarCall.beGone()
-            }
+
         })
     }
 
     private fun submitListToAdapter(it: MutableList<CallLogTable>, isFromFirst10Items: Boolean) {
         lifecycleScope.launchWhenStarted {
             if(!checkScreeningRole()){
-//                            callLogAdapter?.setCallerIdReqViewVisiblity(true)
                 it.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid = ""))
             }else {
                 callLogAdapter?.removeCallerIdRoleItem()
@@ -282,23 +256,16 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
-            binding.pgBarCall.beGone()
+            if(it.isEmpty() && isCallLogsCpEmpty)
+                binding.pgBarCall.beGone()
+            (!isCallLogsCpEmpty && it.isNotEmpty())
+                binding.pgBarCall.beGone()
             submitListToAdapter(it, false)
-//           lifecycleScope.launchWhenStarted {
-//               if(!checkScreeningRole()){
-////                   callLogAdapter?.setCallerIdReqViewVisiblity(true)
-//                   it.add(0, CallLogTable(id=ID_SHOW_SCREENING_ROLE))
-//               }
-//               callLogAdapter?.submitCallLogs(it)
-//           }
         })
-
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult: ")
-    }
+
+
 
     private fun initListeners() {
 
@@ -312,7 +279,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         radioScam?.setOnClickListener(this)
         radioBusiness?.setOnClickListener(this)
         radioPerson?.setOnClickListener(this)
-//        bottomSheetDialog.imgExpand.setOnClickListener(this)
         btnBlock?.setOnClickListener(this)
         binding.btnCallFragmentPermission.setOnClickListener(this)
     }
@@ -321,6 +287,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  suspend fun observeCallLog() {
         viewmodel?.callLogs?.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
+                isCallLogsCpEmpty = it.isEmpty()
                 viewmodel?.updateDatabase(logs, context?.applicationContext)
 
             }
@@ -397,7 +364,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)
         if(savedInstanceState == null){
 
@@ -405,7 +371,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     }
 
-    @SuppressLint("MissingPermission  Manifest.permission.READ_PHONE_STATE", "MissingPermission")
     private suspend fun setupSimCardCount() {
 //        val subscriptionManager = requireContext(). getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
 //        val availableSIMs  = subscriptionManager.activeSubscriptionInfoList
@@ -416,8 +381,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     private suspend fun observeCallLogInfoFromServer() {
-            //important not to remove the delay here, becase this is getting called before calllog table data is triggered
-//            delay(2000L)
            viewmodel?.callersInfoFromDBLivedta?.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observeCallLogInfoFromServer: ")
                 viewmodel?.updateWithNewInfoFromServer(it)
@@ -438,10 +401,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         binding.rcrViewCallHistoryLogs.apply {
             layoutManager = CustomLinearLayoutManager(context)
             layoutMngr = layoutManager as CustomLinearLayoutManager
-//            lifecycleScope.launchWhenCreated {
-//                val spamThreshold = DataStoreRepository(context.tokeDataStore).getInt(
-//                    PreferencesKeys.SPAM_THRESHOLD)?: Constants.DEFAULT_SPAM_THRESHOLD
-            Log.d(TAG, "initRecyclerView: ${MainActivity.SPAM_THRESHOLD_VALUE}")
                 callLogAdapter = CallLogAdapter(
 
                     context= context.applicationContext,
@@ -473,9 +432,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
 
 
-    private fun toggleExpandableView(v: View, pos: Int) {
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
     }
@@ -494,7 +450,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
 
     override fun onClick(v: View?) {
-        Log.d(TAG, "onClick: ")
         when (v?.id) {
             R.id.btnCallFragmentPermission ->{
                 requestRequiredPermissions()
@@ -578,8 +533,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 OPERATION_COMPLETED -> {
                     requireActivity().toast("Enabled notification for ${viewmodel?.contactAddress} ", Toast.LENGTH_LONG)
                     binding.imgBtnCallUnMuteCaller.beInvisible()
-//                    binding.imgBtnCallTbrMuteCaller.beVisible()
-//                    clearlists()
                     showSearchView()
                 }
             }
@@ -595,7 +548,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         bottomSheetDialog.setContentView(viewSheet)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
 
-//        selectedRadioButton = bottomSheetDialog.radioScam
         radioBusiness = bottomSheetDialog.findViewById<RadioButton>(R.id.radioBusiness) as RadioButton
         radioPerson = bottomSheetDialog.findViewById<RadioButton>(R.id.radioPerson) as RadioButton
         radioSales = bottomSheetDialog.findViewById<RadioButton>(R.id.radioSales) as RadioButton
@@ -606,14 +558,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
         btnBlock = bottomSheetDialog.findViewById(R.id.btnBlock)
         selectedRadioButton = radioScam
-
-
-//        bottomSheetDialog.setOnDismissListener {
-//            Log.d(TAG, "bottomSheetDialogDismissed")
-//
-//        }
-
-
     }
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
@@ -623,9 +567,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 val intent = Intent(activity, BlockListActivity::class.java)
                 startActivity(intent)
             }
-//            else ->{
-////            this.spammerType = SpamLocalListManager.menuItemClickPerformed(menuItem, bottomSheetDialog)
-//            }
         }
         return true
 
@@ -639,7 +580,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
 
     override fun onPause() {
-        Log.d(TAG, "onPause: ")
         super.onPause()
         clearMarkeditems()
     }
@@ -660,13 +600,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         })
     }
     private fun muteMarkedCaller() {
-//        val dialog = ConfirmDialogFragment(this,  "Mut")
-//        val dialog = ConfirmDialogFragment(this,
-//            getSpannableString("You won't receive call notification from ${getMarkedContactAddress()}"),
-//            getSpannableString("Mute caller  "), TYPE_MUTE)
-//        dialog.show(childFragmentManager, "sample")
-
-
     }
 
     private fun deletemarkedLogs() {
@@ -677,14 +610,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
 
-    private fun showDialerFragment() {
-        val ft = childFragmentManager.beginTransaction()
-        if (dialerFragment.isAdded) { // if the fragment is already in container
-            ft?.show(dialerFragment)
-        }else{
-            Log.d(TAG, "showDialerFragment:  fragment is not added")
-        }
-    }
 
     override var isDefaultFgmnt: Boolean
         get() = isDflt
@@ -705,7 +630,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         when(clickType){
             TYPE_CLICK_SCREENING_ROLE -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    (activity as AppCompatActivity).requestScreeningRole()
+                    (activity as MainActivity).reqScreeningRole()
                 }
                 return UNMARK_ITEM
             }
@@ -752,7 +677,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
             else ->{
                 if(getMarkedItemsSize() == 0){
-//                   startIndividualContactActivity(callLog, view)
                     val prevExpandedLyoutId = viewmodel?.getPreviousExpandedLayout()
                     if(prevExpandedLyoutId==null){
                         viewmodel?.setExpandedLayout(id, position)
@@ -995,13 +919,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                         Snackbar.LENGTH_SHORT)
                     lastOperationPerformed = OPERTION_MUTE
                     sbar.setAction("Undo", MyUndoListener(this))
-//        sbar.anchorView = bottomNavigationView
-
                     sbar.show()
-//                   showSnackBar("You no longer notified on from 800")
-//                val sbar = Snackbar.make(cordinateLyoutMainActivity, "You no longer notified on from 800", Snackbar.LENGTH_SHORT)
-//                sbar.show()
-//                    clearlists()
                     showSearchView()
                 }
             }
@@ -1024,11 +942,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     fun clearMarkeditems() {
         if(checkRequiredPermission()){
             if(viewmodel!=null){
-
                 lifecycleScope.launchWhenStarted {
                     for(position in viewmodel?.getmarkeditemPositions()!!){
                         callLogAdapter?.notifyItemChanged(position)
-
                     }
                     viewmodel?.clearMarkedItems()
                     viewmodel?.clearMarkedItemPositions()
@@ -1036,8 +952,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             }
 
         }
-
-//        showSearchView()
     }
 
     /**
@@ -1045,7 +959,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
      */
     override fun isMarked(id: Long?): Boolean {
         var isMrked = false
-
         if(viewmodel?.markeditemsHelper?.markedItems?.value !=null){
             if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
                 isMrked = true
@@ -1063,12 +976,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     fun activtyResultisDefaultScreening() {
-//        viewmodel?.removeScreeningRoleItemFromList()
         callLogAdapter?.removeCallerIdRoleItem()
-//        callLogAdapter?.notifyItemChanged(0)
-//        viewmodel?.doFakeUpdate()
-
     }
-
 
 }

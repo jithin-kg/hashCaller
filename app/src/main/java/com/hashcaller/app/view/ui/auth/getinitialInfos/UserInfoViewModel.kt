@@ -16,6 +16,7 @@ import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHasehdNumRepositor
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserInfo
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
+import com.hashcaller.app.view.ui.contacts.utils.OPERATION_FAILED
 import com.hashcaller.app.view.utils.imageProcess.ImagePickerHelper
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.*
@@ -47,13 +48,17 @@ class UserInfoViewModel(
             user.lastName = result.lastName
             user.phoneNumber = "2"
             user.photoURI = result.image?:""
+            user.googleProfileImgUrl = result.avatarGoogle
+            user.bio = result.bio
+            user.email = result.email
+
             userNetworkRepository.saveUserInfoInLocalDb(user)
             dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, true)
             emit(OPERATION_COMPLETED)
 
 
         }catch (e:Exception){
-
+            emit(OPERATION_FAILED)
             Log.d(TAG, "saveUserInfoInLocalDb: $e")
         }
            
@@ -136,8 +141,8 @@ class UserInfoViewModel(
         if(imgFile==null){
             emit(null)
         }else{
-            emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
-
+//            emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
+            emit(userNetworkRepository.getMultipartImage(context, imgFile))
         }
 
 //        val requestFile: okhttp3.RequestBody? =
@@ -359,7 +364,9 @@ class UserInfoViewModel(
 
     }
 
-
+    fun deleteUserFromDb()  = viewModelScope.launch{
+        userNetworkRepository.deleteUserFromDb()
+    }
 
 
 }

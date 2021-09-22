@@ -15,7 +15,7 @@ class LocalDbSearchRepository(
     ) {
 
 
-    suspend fun getInfoForNumber(phoneNumber: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
+    suspend fun getServerInfoForNumber(phoneNumber: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
 //        delay(1000L)
         val formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(phoneNumber), countryISO)
         return@withContext callersInfoFromServerDAO.find(formatedNum)

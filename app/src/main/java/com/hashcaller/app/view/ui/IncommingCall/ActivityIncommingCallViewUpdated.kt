@@ -125,7 +125,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         phoneNumber = intent.getStringExtra(PHONE_NUMBER) ?: ""
         callHandledSim = intent.getIntExtra(IntentKeys.CALL_HANDLED_SIM, NO_SIM_DETECTED)
         setViewFromIntent()
-        Log.d(TAG, "onCreate: $phoneNumber")
         getCallerInfo()
         checkIfUserBlockedThisNumber()
         animateCard()

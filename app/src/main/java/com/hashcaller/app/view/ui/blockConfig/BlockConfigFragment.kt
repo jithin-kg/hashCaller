@@ -38,7 +38,6 @@ import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 /**
  * Created by Jithin KG on 03,July,2020
  */
-//import database.sql.SQLiteDatabaseHandler;
 class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
     //    private SQLiteDatabaseHandler db;
     private var isDflt = false
@@ -55,18 +54,6 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     ): View? {
         binding = BlockConfigFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
-    }
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if(savedInstanceState!= null){
-//            if(childFragmentManager.getFragment(savedInstanceState, "blkListFragment") !=null)
-//            this.blkListFragment = childFragmentManager.getFragment(savedInstanceState, "blkListFragment") as BlkListFragment
-
-        }
-        initSwipeHandler()
-        initRecyclerView()
-
-
     }
     private fun initSwipeHandler() {
         context?.let {
@@ -87,7 +74,6 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
             blockListAdapter.notifyItemChanged(pos)
         })
 
-        //TODO notify dataset changed in adapter and remove item from the list in adapter
     }
 
     private fun initViewModel() {
@@ -121,21 +107,19 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     }
 
     private fun removePermissionItemFromList() {
-        blockListAdapter?.removePermissionItemFromView()
+        if(this::blockListAdapter.isInitialized)
+            blockListAdapter.removePermissionItemFromView()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden && !this::blockListViewModel.isInitialized){
 //            if (context?.hasReadContactsPermission() == true) {
-                initRecyclerView()
-                initViewModel()
-                 observeBlocklistLivedata()
+            initSwipeHandler()
+            initRecyclerView()
+            initViewModel()
+            observeBlocklistLivedata()
 
-
-//            } else {
-//                hideRecyevlerView()
-//            }
         }
     }
     private fun observeBlocklistLivedata() {
@@ -173,22 +157,16 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-//        if(this.blkListFragment != null){
-//            if(this.blkListFragment!!.isAdded){
-//                childFragmentManager.putFragment(outState,"blkListFragment", this.blkListFragment!!)
-//            }
-//        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         intListeners()
-//        setupViewPager(viewPagerBlockConfig)
-//        tabLayoutBlockConfig?.setupWithViewPager(viewPagerBlockConfig)
+
+
     }
 
     private fun intListeners() {
 
-//       binding.fabBtnShowDialpad?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_add_24))
         binding.fabBtnShowAdd.setOnClickListener(this as View.OnClickListener)
         binding.imgBtnHamBrgerBlk.setOnClickListener(this)
     }
@@ -198,9 +176,7 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
             this.blkListFragment = BlkListFragment()
         }
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-//        viewPagerAdapter.addFragment(BlkListFragment(), "BlockList")
         viewPagerAdapter.addFragment(this.blkListFragment!!, "Blk")
-//        viewPagerAdapter.addFragment(BlockScheduleFragment(), "Schedule")
         viewPager?.adapter = viewPagerAdapter
     }
 
@@ -208,11 +184,9 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         when(v?.id){
             R.id.imgBtnHamBrgerBlk ->{
                 (activity as MainActivity).showDrawer()
-//                requireContext().startSettingsActivity(activity)
             }
             R.id.fabBtnShowAdd -> {
                 val i = Intent(context, ActivityCreteBlockListPattern::class.java)
-//                i.putExtra("PersonID", personID);
                 startActivity(i)
             }
         }
@@ -230,7 +204,8 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     }
 
     private fun addItemPermissionItemToList() {
-        blockListAdapter.addPermissionItemToList()
+        if(this::blockListAdapter.isInitialized)
+            blockListAdapter.addPermissionItemToList()
     }
 
     override var isDefaultFgmnt: Boolean

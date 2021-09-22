@@ -82,23 +82,23 @@ class ContactsViewModel(
        
     }
 
-    fun startWorker(applicationContext: Context?) = viewModelScope.launch {
-        withContext(Dispatchers.IO){
-            applicationContext?.let{ appContext ->
-                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-                val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-                    .setConstraints(constraints)
-                    .build()
-                WorkManager.getInstance(appContext).enqueue(request)
-            }
-        }
-
-
+//    fun startWorker(applicationContext: Context?) = viewModelScope.launch {
+//        withContext(Dispatchers.IO){
+//            applicationContext?.let{ appContext ->
+//                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+//                val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+//                    .setConstraints(constraints)
+//                    .build()
+//                WorkManager.getInstance(appContext).enqueue(request)
+//            }
+//        }
 //
-//        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
-//            .build()
-//        WorkManager.getInstance().enqueue(request)
-    }
+//
+////
+////        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
+////            .build()
+////        WorkManager.getInstance().enqueue(request)
+//    }
 
     fun delteContactsInformation() = viewModelScope.launch {
         contactLocalSyncRepository.deleteAllitems()

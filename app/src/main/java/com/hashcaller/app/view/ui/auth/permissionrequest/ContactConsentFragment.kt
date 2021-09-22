@@ -28,9 +28,6 @@ class ContactConsentFragment : Fragment() {
     private var flagContinuePressed = false
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

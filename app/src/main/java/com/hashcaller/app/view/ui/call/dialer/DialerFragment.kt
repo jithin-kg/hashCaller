@@ -76,21 +76,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     private var searchQueryPhone = ""
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: ")
-//        setHasOptionsMenu(true);
-
-
-    }
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        
-        if(savedInstanceState!= null){
-         //get state of this fragment
-
-        }
-    }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         //save state of this fragment, list...
@@ -98,7 +83,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d(TAG, "onAttach: ")
     }
 
     override fun onResume() {
@@ -133,7 +117,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden &&  !this::viewmodel.isInitialized ){
-            initEditTextPhoneNumberObserver()
             if(checkCallPermission()){
                 initViewModel()
                 Log.d(TAG, "onCreateView: ")
@@ -171,13 +154,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         val permissionSms =
             ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CALL_LOG)
         if(permissionSms!= PackageManager.PERMISSION_GRANTED){
-            Log.d(TAG, "checkContactPermission: false")
-//            binding.btnDialerPermission.visibility = View.VISIBLE
-//            this.callHistoryFragment.pgbarCallHistory.visibility = View.GONE
             return false
         }
-//        binding.btnDialerPermission.visibility = View.GONE
-        Log.d(TAG, "checkContactPermission: true")
         return true
     }
 
@@ -205,7 +183,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             }
             //                editTextPhoneNumber.setSelection(newPos);
             bottomSheetDialog.editTextTextDigits.setText(phoneNumber)
-            Log.d(TAG, "onChanged: substringLength$subStringLen")
             bottomSheetDialog.editTextTextDigits.setSelection(subStringLen + 1)
         })
 
@@ -218,61 +195,22 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         binding.rcrViewCallLogs.adapter  = null
     }
     private fun initEditTextPhoneNumberObserver() {
-        /**
-         * Observes the numbers entered in the dialpad
-         * and updates the Edittext
-         */
-//        nameObserver =
-//            Observer<String?> { phoneNumber -> // Update the UI, in this case, a TextView.
 
-//                if(phoneNumber.isNotEmpty()){
-//                    lifecycleScope.launchWhenStarted {
-//                        job?.cancel()
-//                        DialerViewModel.cancelJob = false
-//                        job =   viewmodel.searchContactsInDb(phoneNumber)
-//                    }
-//                }else{
-//                    callLogAdapter?.setList(emptyList())
-//                }
-//                searchQueryPhone = phoneNumber
-//                if (phoneNumber != null) {
-//                    bottomSheetDialog.imgBtnBackspace.isEnabled = phoneNumber.isNotEmpty()
-//                }else{
-//                    bottomSheetDialog.imgBtnBackspace.isEnabled = false
-//                }
-//                //                editTextPhoneNumber.setSelection(newPos);
-//                bottomSheetDialog.editTextTextDigits.setText(phoneNumber)
-//                Log.d(TAG, "onChanged: substringLength$subStringLen")
-//                bottomSheetDialog.editTextTextDigits.setSelection(subStringLen + 1)
-//            }
     }
 
     private fun setupBottomSheet() {
         bottomSheetDialog = BottomSheetDialog(this.requireActivity(), R.style.BottomSheetDialog)
-
-
-
         val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet, null)
-
         bottomSheetDialog.setContentView(viewSheet)
         if(this.view?.visibility == View.VISIBLE){
             bottomSheetDialog.show()
-
-
         }
-
         bottomSheetDialog.setOnDismissListener{
-            Log.d(TAG, "bottomSheetDialogDismissed")
-
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
-
     }
 
     private fun initRecyclerView() {
@@ -286,7 +224,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             callLogAdapter = DialerAdapter(context) { binding: ContactSearchResultItemBinding, contact: Contact, clickType:Int ->onContactItemClicked(binding, contact, clickType)}
             adapter = callLogAdapter
             itemAnimator = null
-
         }
     }
 
@@ -304,7 +241,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
                 }
             }
             else ->{
-                Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")
                 val intent = Intent(context, IndividualContactViewActivity::class.java )
                 intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
                 intent.putExtra("name", contactItem.firstName )
@@ -343,16 +279,13 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         bottomSheetDialog.layoutNum9.setOnClickListener(this)
         bottomSheetDialog.layoutStar.setOnClickListener(this)
         bottomSheetDialog.layoutPound.setOnClickListener(this)
-
         bottomSheetDialog.imgBtnBackspace.setOnClickListener(this)
         bottomSheetDialog.fabBtnMakeCall.setOnClickListener(this)
 
         bottomSheetDialog.imgBtnBackspace.isEnabled = false
         bottomSheetDialog.editTextTextDigits.showSoftInputOnFocus = false;
-//        includeDialer.setOnClickListener(this)
         bottomSheetDialog.editTextTextDigits.append("")
         binding.imgBtnCloseDialer.setOnClickListener(this)
-//        binding.btnDialerPermission.setOnClickListener(this)
     }
 
 
@@ -361,10 +294,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             }
     fun showDialPad(){
         bottomSheetDialog.show()
-//        this.activity?.fabBtnShowDialpad?.visibility= View.GONE
-//        this.activity?.bottomNavigationView?.visibility= View.GONE
-//        this.activity?.bottomNavigationView?.removeView(bottomNavigationView)
-
     }
 
     override fun onClick(v: View?) {
@@ -416,14 +345,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             makeCallFromEditTextNum()
 
         }
-//            R.id.btnDialerPermission->{
-//            Log.d(TAG, "onClick: btn dialer permission")
-//            val res  = PermissionUtil.requestCallLogPermission(this.requireActivity())
-//            Log.d(TAG, "onClick: res is $res")
-//            this.permissionGivenLiveData.value = res
-//
-//        }
-            
             else->{
                 backspacePhoneNumEditText()
             }
@@ -451,7 +372,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
 
 
     private fun closeDialerFragment() {
-
         (activity as MainActivity?)?.showCallFragment()
     }
 
@@ -466,30 +386,20 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         val trimmedString: String?
 
         if (cursorPos == num!!.length && num.length > 0) {
-            Log.d("BACKSPACE", "cursor at end of the string:$cursorPos ")
             trimmedString = num.substring(0, cursorPos - 1)
-            Log.d("BACKSPACE", "trimmmed Number $trimmedString")
             subStringLen = num.substring(0, cursorPos - 1).length - 1
         } else if (cursorPos > 0) {
             //cursor in between
             trimmedString = num.substring(0, cursorPos - 1) + num.substring(cursorPos)
-            Log.d("BACKSPACE", "trimmmed Number $trimmedString")
             subStringLen = num.substring(0, cursorPos - 1).length - 1
         } else {
             trimmedString = num
-            Log.d("BACKSPACE", "trimmmed Number $trimmedString")
         }
-        Log.d("BACKSPACE", "substringLength$subStringLen")
-
         viewmodel.getPhoneNumber()?.value = trimmedString
     }
 
     private fun keypadClicked(s: String) {
         val num: String? = getPhoneNumFromViewModel()
-
-//        Log.d(TAG, "keypadClicked: num "+num);
-
-//        Log.d(TAG, "keypadClicked: num "+num);
         val currentNum: String
         var prevPosition: Int
         val pos: Int = bottomSheetDialog.editTextTextDigits.selectionEnd
@@ -501,13 +411,8 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             currentNum = num.substring(0, pos) + s + num.substring(pos)
             subStringLen = num.substring(0, pos).length
 
-
-//                editTextPhoneNumber.setSelection(subStringLen + 1);
-
-//                editTextPhoneNumber.setSelection(pos + 1);
         } else if (pos == 0) {
             currentNum = s + num
-            Log.d(TAG, "keypadClicked: at start of the phone number ")
             subStringLen = 0
         } else {
             currentNum = num + s
@@ -529,16 +434,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         get() = isDflt
         set(value) {isDflt = value}
 
-//    override fun onLongPressed(view: View, pos: Int, id: Long, address: String): Int {
-//        return 0
-//    }
-//
-//    override fun onCallButtonClicked(view: View, pos: Int, log: CallLogTable) {
-//        Log.d(TAG, "onCallButtonClicked: ")
-//
-//    }
-
-
 
     override fun isMarked(id: Long?): Boolean {
         return false
@@ -547,24 +442,5 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     override fun isViewExpanded(id: Long): Boolean {
         return false
     }
-
-    private fun observePermissionLiveData() {
-//        this.permissionGivenLiveData.observe(viewLifecycleOwner, Observer {
-//            if(it){
-//                Log.d(TAG, "observePermissionLiveData: permission given")
-//                observeEditTextnum()
-////                binding.btnDialerPermission.visibility = View.GONE
-//            }else{
-////                binding.btnDialerPermission.visibility = View.VISIBLE
-//                Log.d(TAG, "observePermissionLiveData: permission not given")
-//                if (this.viewmodel!! != null  ) {
-//                    if(this.viewmodel?.searchResultLivedata != null)
-//                        if(this.viewmodel.searchResultLivedata!!.hasObservers())
-//                            this.viewmodel?.searchResultLivedata?.removeObservers(this);
-//                }
-//            }
-//        })
-    }
-
 
 }

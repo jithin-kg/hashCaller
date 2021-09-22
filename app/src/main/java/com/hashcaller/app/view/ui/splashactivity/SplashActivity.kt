@@ -17,7 +17,7 @@ import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.utils.auth.Decryptor
 import com.hashcaller.app.utils.auth.EnCryptor
-import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
 import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
@@ -68,7 +68,7 @@ class SplashActivity : AppCompatActivity() {
     private fun checkUserInfoInDatastore() {
         lifecycleScope.launchWhenCreated {
             val wrapedKey =  booleanPreferencesKey(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB)
-            val tokenFlow: Flow<Boolean> = blockPreferencesDataStore.data.map {
+            val tokenFlow: Flow<Boolean> = tokeDataStore.data.map {
                 it[wrapedKey]?:false
             }
             if(tokenFlow.first()){

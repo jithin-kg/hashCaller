@@ -2,20 +2,23 @@ package com.hashcaller.app.view.ui.profile
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -24,14 +27,14 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityProfileBinding
 import com.hashcaller.app.databinding.BottomSheetProfileEditBinding
 import com.hashcaller.app.network.HttpStatusCodes
 import com.hashcaller.app.network.HttpStatusCodes.Companion.STATUS_CREATED
 import com.hashcaller.app.repository.user.UserInfoDTO
-import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.RC_SIGN_IN
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.internet.CheckNetwork
@@ -40,7 +43,6 @@ import com.hashcaller.app.view.ui.auth.getinitialInfos.BasicBottomSheetfragment
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.hashcaller.app.view.ui.contacts.utils.REQUEST_CODE_IMG_PICK
 import com.hashcaller.app.view.ui.extensions.getSpannableString
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
@@ -54,6 +56,7 @@ import com.hashcaller.app.view.utils.validateInput
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
+import java.io.File
 
 
 class ProfileActivity : AppCompatActivity(), View.OnClickListener {
@@ -80,9 +83,11 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private  var editTextEmail:EditText? = null
     private var googleAccount: GoogleSignInAccount?= null
+    private lateinit var getAction: ActivityResultLauncher<String>
+    private lateinit var startForProfileImageResult: ActivityResultLauncher<Intent>
+    private lateinit var googleSignInCallBack: ActivityResultLauncher<Intent>
 
-
-
+    private  var imgFile: File? = null
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,7 +106,12 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         rcfirebaseAuth = FirebaseAuth.getInstance()
 //        Firebase.auth.signOut()
         initGoogleSigninClient()
+
+       registerForImagePickerResult()
+        registerGoogleActivityResult()
     }
+
+
 
     private fun setUpbottomSheet() {
         bottomSheetDialog = BottomSheetDialog(this)
@@ -246,14 +256,14 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.ivAvatar ->{
-                if(hasStoragePermission()) {
+//                if(hasStoragePermission()) {
                     startImagePickActivity()
-                }else{
-                    EasyPermissions.requestPermissions(this, perms= arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        rationale = "Hash caller need storage permission to configure profile picture",
-                        requestCode= PermisssionRequestCodes.REQUEST_CODE_STORAGE
-                    )
-                }
+//                }else{
+//                    EasyPermissions.requestPermissions(this, perms= arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+//                        rationale = "Hash caller need storage permission to configure profile picture",
+//                        requestCode= PermisssionRequestCodes.REQUEST_CODE_STORAGE
+//                    )
+//                }
             }
             R.id.imgBtnBackBlock -> {
                 if(isFormValueNotChanged())
@@ -266,7 +276,10 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btnGoogle -> {
                 val signInIntent = googleSignInClient.signInIntent
-                startActivityForResult(signInIntent, RC_SIGN_IN)
+                googleSignInCallBack.launch(signInIntent)
+//                val signInIntent = googleSignInClient.signInIntent
+//                startActivityForResult(signInIntent, RC_SIGN_IN)
+
             }
             R.id.btnSignout -> {
                 googleSignInClient.signOut()
@@ -318,96 +331,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
         // EasyPermissions handles the request result.
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
-    private fun updateUserInfo() {
-            if(CheckNetwork.isetworkConnected()){
-                binding.pgBar.beVisible()
-                binding.btnUpdate.beInvisible()
 
-                binding.btnUpdate.isEnabled = false
-                binding.editTextFName.error = null
-                binding.editTextLName.error = null
-                binding.editTextEmail.error = null
-                binding.editTextBio.error = null
-
-                val firstName = binding.editTextFName.text.toString().trim()
-                val lastName = binding.editTextLName.text.toString().trim()
-                val email = binding.editTextEmail.text.toString().trim()
-                val bio = binding.editTextBio.text.toString().trim()
-
-                val isValid = validateInput(
-                    firstName,
-                    lastName,
-                    binding.outlinedTextField,
-                    binding.outlinedTextField2,
-                )
-                validateEmailAndBio()
-                if(isImageAvatarChosenFromGoogle){
-                    //profile photo is chosen from google auth
-                    viewModel.updateUserWithGoogleProfile(
-                        firstName,
-                        lastName,
-                        googlePhotoUrl,
-                        email,
-                        bio,
-                        googleAccount
-                    ).observe(this, Observer {
-                        Log.d(TAG, "updateUserInfo: $it")
-                        binding.btnUpdate.isEnabled = true
-                        if(it!=null){
-                            when(it.code()){
-                                HttpStatusCodes.STATUS_OK -> {
-                                    viewModel.updateUserInfoInDbWithGoogle(
-                                        it.body()?.data
-                                    ).observe(this, Observer { updateOP->
-                                        when(updateOP){
-                                            OPERATION_COMPLETED -> {
-                                                binding.pgBar.beGone()
-                                                binding.btnUpdate.isEnabled = true
-                                                hideSaveUpdateBtn()
-                                            }
-                                        }
-                                    })
-                                }else-> {
-                                toast("Something went wrong")
-                                }
-                            }
-                        }else {
-                            toast("Something went wrong")
-                        }
-
-
-                    })
-                }else {
-                    //profile photo is chosen from gallery
-                    viewModel.compresSAndPrepareForUpload(imagePickerHelper.imgFile, this).observe(this,
-                        Observer {
-                            imageMultipartBody = it
-
-                            binding.editTextFName.error = null
-//    binding.editTextEmail.error = null
-                            binding.editTextLName.error = null
-                            val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
-                            if(isValid){
-
-                                var userInfo = UserInfoDTO()
-                                userInfo.firstName = firstName;
-                                userInfo.lastName =  lastName;
-                                userInfo.email = email
-                                userInfo.bio = bio
-                                update(userInfo, imageMultipartBody)
-                            }
-                        })
-                }
-
-            }else{
-                toast("No internet")
-            }
-//        }
-
-
-
-
-    }
 
     private fun validateEmailAndBio() {
         val email = binding.editTextEmail.text.toString().trim()
@@ -450,34 +374,161 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
     }
-    private fun startImagePickActivity() {
-        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(pickPhoto, REQUEST_CODE_IMG_PICK)
-
-
-    }
-
-
-    @SuppressLint("LongLogTag")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_CANCELED) {
-            when (requestCode) {
-                REQUEST_CODE_IMG_PICK -> if (resultCode == RESULT_OK && data != null) {
-                    showSaveUpdateBtn()
-                    val selectedImageUri: Uri? = data.data
-                    binding.ivAvatar.setImageURI(selectedImageUri)
-
-                    viewModel.processImage(this, selectedImageUri, imagePickerHelper)
-                    isImageAvatarChosenFromGoogle = false
-                }
-                RC_SIGN_IN -> {
-                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                    handleSignInResult(task);
-                }
-            }
+    fun registerGoogleActivityResult() {
+        googleSignInCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            handleSignInResult(task);
         }
     }
+    private fun registerForImagePickerResult() {
+
+        startForProfileImageResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                val resultCode = result.resultCode
+                val data = result.data
+                binding.pgBarImgPick.beInvisible()
+                if (resultCode == Activity.RESULT_OK) {
+                    //Image Uri will not be null for RESULT_OK
+                    val fileUri = data?.data!!
+
+                    val mProfileUri = fileUri
+                    imgFile = File(fileUri.path!!)
+                    binding.ivAvatar.setImageURI(fileUri)
+                    showSaveUpdateBtn()
+                    isImageAvatarChosenFromGoogle = false
+                } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                    toast(ImagePicker.getError(data))
+                } else {
+                    toast("No image selected")
+                }
+            }
+    }
+    private fun startImagePickActivity() {
+        ImagePicker.with(this)
+            .cropSquare()	    			//Crop image
+            .compress(30)			//Final image size will be less than 30 kb
+            .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+            .createIntent { intent ->
+                startForProfileImageResult.launch(intent)
+            }
+        binding.pgBarImgPick.beVisible()
+//        getAction.launch("image/*")
+//        getAction.launch()
+//        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//        startActivityForResult(pickPhoto, REQUEST_CODE_IMG_PICK)
+    }
+    private fun updateUserInfo() {
+        if(CheckNetwork.isetworkConnected()){
+            binding.pgBar.beVisible()
+            binding.btnUpdate.beInvisible()
+
+            binding.btnUpdate.isEnabled = false
+            binding.editTextFName.error = null
+            binding.editTextLName.error = null
+            binding.editTextEmail.error = null
+            binding.editTextBio.error = null
+
+            val firstName = binding.editTextFName.text.toString().trim()
+            val lastName = binding.editTextLName.text.toString().trim()
+            val email = binding.editTextEmail.text.toString().trim()
+            val bio = binding.editTextBio.text.toString().trim()
+
+            val isValid = validateInput(
+                firstName,
+                lastName,
+                binding.outlinedTextField,
+                binding.outlinedTextField2,
+            )
+            validateEmailAndBio()
+            if(isImageAvatarChosenFromGoogle){
+                //profile photo is chosen from google auth
+                viewModel.updateUserWithGoogleProfile(
+                    firstName,
+                    lastName,
+                    googlePhotoUrl,
+                    email,
+                    bio,
+                    googleAccount
+                ).observe(this, Observer {
+                    Log.d(TAG, "updateUserInfo: $it")
+                    binding.btnUpdate.isEnabled = true
+                    if(it!=null){
+                        when(it.code()){
+                            HttpStatusCodes.STATUS_OK -> {
+                                viewModel.updateUserInfoInDbWithGoogle(
+                                    it.body()?.data
+                                ).observe(this, Observer { updateOP->
+                                    when(updateOP){
+                                        OPERATION_COMPLETED -> {
+                                            binding.pgBar.beGone()
+                                            binding.btnUpdate.isEnabled = true
+                                            hideSaveUpdateBtn()
+                                        }
+                                    }
+                                })
+                            }else-> {
+                            toast("Something went wrong")
+                        }
+                        }
+                    }else {
+                        toast("Something went wrong")
+                    }
+
+
+                })
+            }else {
+                //profile photo is chosen from gallery
+                viewModel.compresSAndPrepareForUpload(imgFile, this).observe(this,
+                    Observer {
+                        imageMultipartBody = it
+
+                        binding.editTextFName.error = null
+//    binding.editTextEmail.error = null
+                        binding.editTextLName.error = null
+                        val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
+                        if(isValid){
+
+                            var userInfo = UserInfoDTO()
+                            userInfo.firstName = firstName;
+                            userInfo.lastName =  lastName;
+                            userInfo.email = email
+                            userInfo.bio = bio
+                            update(userInfo, imageMultipartBody)
+                        }
+                    })
+            }
+
+        }else{
+            toast("No internet")
+        }
+//        }
+
+
+
+
+    }
+
+
+//    @SuppressLint("LongLogTag")
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode != RESULT_CANCELED) {
+//            when (requestCode) {
+//                REQUEST_CODE_IMG_PICK -> if (resultCode == RESULT_OK && data != null) {
+//                    showSaveUpdateBtn()
+//                    val selectedImageUri: Uri? = data.data
+//                    binding.ivAvatar.setImageURI(selectedImageUri)
+//
+//                    viewModel.processImage(this, selectedImageUri, imagePickerHelper)
+//                    isImageAvatarChosenFromGoogle = false
+//                }
+//                RC_SIGN_IN -> {
+//                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+//                    handleSignInResult(task);
+//                }
+//            }
+//        }
+//    }
 
 
 
@@ -517,6 +568,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                             if(googlePhotoUrl.isNotEmpty()){
                                 Glide.with(this).load(googlePhotoUrl)
                                     .into(binding.ivAvatar)
+                                binding.pgBarImgPick.beInvisible()
                                 binding.tvFirstLetterMain.beInvisible()
                                 if(googlePhotoUrl != googlePhotoUrlInDb){
                                     showSaveUpdateBtn()

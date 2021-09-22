@@ -55,6 +55,7 @@ class ContactsUploadWorker(private val context: Context,private val params:Worke
 
     override suspend fun doWork(): Result  = withContext(Dispatchers.IO){
         try {
+            Log.d(TAG, "doWork: ")
 //            val cursor = context!!.contentResolver.query(
 //                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 //                null, null, null,

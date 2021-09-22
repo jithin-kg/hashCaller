@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivitySpamCallsBinding
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
 import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.internet.ConnectionLiveData
@@ -43,7 +44,6 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
     private lateinit var viewmodel: SpamCallViewModel
     private lateinit var swipeHandler: SwipeToDeleteCallback
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySpamCallsBinding.inflate(layoutInflater)
@@ -52,6 +52,7 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         observeInternetLivedata()
 //        initSwipeHandler()
         initRecyclerView()
+        //important to call following functions to be launched when created
         lifecycleScope.launchWhenCreated {
             initViewmodel()
             observeSpamCallLogs()
@@ -59,6 +60,8 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
         }
 
     }
+
+
 
     private fun initListeners() {
         binding.imgBtnBackBlock.setOnClickListener(this)

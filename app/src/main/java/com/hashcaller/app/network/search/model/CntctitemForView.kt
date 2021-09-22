@@ -33,6 +33,10 @@ data class CntctitemForView(
     var isSearchedForCallerInserver:Boolean = false,
     var isInInContacts:Boolean = false,
     var hUid:String = "",
-    var isVerifiedUser:Boolean = false
+    var isVerifiedUser:Boolean = false,
+    var nameInPhoneBook:String = "",
+    var nameInLocalPhoneBook:String ="",
+    var spammerType:Int = 0,
+    var avatarGoogle:String = ""
 
     )

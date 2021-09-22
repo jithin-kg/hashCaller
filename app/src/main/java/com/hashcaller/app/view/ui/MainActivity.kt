@@ -3,21 +3,25 @@ package com.hashcaller.app.view.ui
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.role.RoleManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
-import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -65,6 +69,7 @@ import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
 import com.hashcaller.app.view.ui.call.spam.SpamCallsActivity
 import com.hashcaller.app.view.ui.contacts.ContactsContainerFragment
+import com.hashcaller.app.view.ui.contacts.startContactUploadWorker
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.startPermissionRequestActivity
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
@@ -75,10 +80,7 @@ import com.hashcaller.app.view.ui.notifications.ManageNotificationsActivity
 import com.hashcaller.app.view.ui.profile.ProfileActivity
 import com.hashcaller.app.view.ui.settings.SettingsActivity
 import com.hashcaller.app.view.ui.sms.SMSContainerFragment
-import com.hashcaller.app.view.ui.sms.individual.util.beGone
-import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
-import com.hashcaller.app.view.ui.sms.individual.util.beVisible
-import com.hashcaller.app.view.ui.sms.individual.util.toast
+import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.DefaultFragmentManager
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
@@ -86,9 +88,6 @@ import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.security.*
 
@@ -115,10 +114,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var hashedNumbersViewmodel : HasherViewmodel
     private lateinit var callFragment: CallFragment
     private lateinit var smsFragment: SMSContainerFragment
-    private lateinit var fullScreenFragment: FullscreenFragment
-    //    private lateinit var blockConfigFragment: BlockConfigFragment
     private lateinit var contactFragment: ContactsContainerFragment
-//    private lateinit var searchFragment: SearchFragment
     private lateinit var blockListFragment: BlockConfigFragment
     private lateinit var ft: FragmentTransaction
     private lateinit var dialerFragment: DialerFragment
@@ -146,6 +142,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private var dataStoreViewModel : DataStoreViewmodel? = null
     ///////////////////////////splash ////////////////////////////
     private val RC_SIGN_IN = 1
+    private lateinit var scrnRoleCallback: ActivityResultLauncher<Intent>
+
 
 
 
@@ -169,7 +167,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: ")
 
         mainViewmodel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewmodel::class.java)
         isDarkThemeOn =  isDarkThemeOn()
@@ -192,16 +189,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        initViewModel()
         checkUserInfoAvaialbleInDb(savedInstanceState)
         setDataStoreValues()
-
-//        observeHashedNumbersTable()
-       
-//        val i = Intent(this, ActivityIncommingCallViewUpdated::class.java)
-//        i.putExtra(IntentKeys.PHONE_NUMBER, "+918281600086")
-//        i.putExtra(IntentKeys.CALL_HANDLED_STATE, "Missed call" )
-//        i.putExtra(IntentKeys.CALL_HANDLED_SIM,Constants.SIM_ONE)
-//        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
-//        startActivity(i)
-//        finish()
+        lifecycleScope.launchWhenCreated {
+            this@MainActivity.startContactUploadWorker()
+        }
+        regstrScreeningRoleResultCb()
 
     }
 
@@ -211,20 +202,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-    private fun observeHashedNumbersTable() {
-        hashedNumbersViewmodel.hashedNumbersLiveData.observe(this, Observer {
-//            hashedNumbersViewmodel.doWork()
-        })
-    }
 
-    private fun startHashWorker() {
-//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-//
-//        val oneTimeWorkRequest = OneTimeWorkRequest.Builder(HashWorker::class.java)
-//            .setConstraints(constraints)
-//            .build()
-//        WorkManager.getInstance(applicationContext).enqueue(oneTimeWorkRequest)
-    }
 
     private fun checkUserInfoAvaialbleInDb(savedInstanceState: Bundle?) {
         dataStoreViewModel?.getPermissionAndUserInfo(USER_INFO_AVIALABLE_IN_DB, this)?.observe(this, Observer {
@@ -232,12 +210,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                USER_INFO_AND_PERMISSION_GIVEN ->{
 
                    firebaseAuthListener()
-//                   val ft = supportFragmentManager.beginTransaction()
-////                    ft.hide(fullScreenFragment)
-//                   ft.remove(fullScreenFragment)
-//                   ft.show(callFragment)
-//                   ft.commit()
-
                    binding = ActivityMainBinding.inflate(layoutInflater)
                     setContentView(binding.root)
                    initMainActivityComponents()
@@ -277,65 +249,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                    onSingnedOutcleanUp()
                }
            }
-
-//            if(it){
-//                if(!checkPermission()){
-//                    val i = Intent(this, PermissionRequestActivity::class.java)
-////            startActivityForResult(i, PERMISSION_REQUEST_CODE)
-//                    startActivity(i)
-//                    finish()
-//                }else {
-//
-////                    initMainActivityComponents()
-////                    setTheme(R.style.AppTheme)
-//                    firebaseAuthListener()
-//                    val ft = supportFragmentManager.beginTransaction()
-////                    ft.hide(fullScreenFragment)
-//                    ft.remove(fullScreenFragment)
-//                    ft.show(callFragment)
-//                    ft.commit()
-//                    binding.bottomNavigationView.beVisible()
-//                }
-//            }else{
-//                onSingnedOutcleanUp()
-//            }
         })
-//        userInfoViewModel.getUserInfoFromDb().observe(this, Observer {
-//            if(it!=null){
-//                /**
-//                 * important set theme only after user info is avialable in db, (so then only the view will show)
-//                 */
-//
-//                if(!checkPermission()){
-//                    val i = Intent(this, PermissionRequestActivity::class.java)
-////            startActivityForResult(i, PERMISSION_REQUEST_CODE)
-//                    startActivity(i)
-//                    finish()
-//                }else {
-//
-////                    initMainActivityComponents()
-////                    setTheme(R.style.AppTheme)
-//                    firebaseAuthListener()
-//                    val ft = supportFragmentManager.beginTransaction()
-////                    ft.hide(fullScreenFragment)
-//                    ft.remove(fullScreenFragment)
-//                    ft.show(callFragment)
-//                    ft.commit()
-//                    binding.bottomNavigationView.beVisible()
-//                }
-//
-//            }else{
-//                onSingnedOutcleanUp()
-//            }
-//        } )
-//        dataStoreViewModel?.getToken()?.observe(this, Observer {
-//            if(!it.isNullOrEmpty()){
-////                initMainActivityComponents(savedState)
-//                callback(true)
-//            }else{
-//                callback(false)
-//            }
-//        })
+
     }
 
 
@@ -347,96 +262,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }else{
             tokenHelper = TokenHelper(user)
         }
-//        _rcAuthStateListener =
-//            FirebaseAuth.AuthStateListener { firebaseAuth ->
-//                user = firebaseAuth.currentUser
-//                //                    Task<GetTokenResult> idToken = FirebaseUser.getIdToken();
-//                if (user != null) {
-//                    //user is signed in
-//                    checkUserInfoInDb()
-//
-//                } else {
-//                    // user is signed out
-//                    onSingnedOutcleanUp()
-//
-//                }
-//            }
-    }
-
-    private fun saveTokenIfConnected() {
-//        user?.getIdToken(true)
-//            ?.addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    var token = task.result?.token
-//                    // Send token to your backend via HTTPS
-//                    if(!token.isNullOrEmpty()){
-//                        dataStoreViewModel?.getEncryptedStr(token.toString())?.observe(this, Observer {encodeTokenString ->
-//                            dataStoreViewModel?.saveTokenViewmodelScope(encodeTokenString)
-//                        })
-//
-//                    }
-//
-//                }else{
-//                    Log.d(ActivityVerifyOTP.TAG, "onSignedInInitialize:${task.exception}")
-//                }
-//            }
     }
 
     private fun onSingnedOutcleanUp() {
+
 
         val i = Intent(this, GettingStartedSliderActivity::class.java)
 //        startActivityForResult(i, RC_SIGN_IN)
         startActivity(i)
         finish()
     }
-    private fun checkUserInfoInDb() {
-        dataStoreViewModel?.getToken()?.observe(this, Observer {
-            if(!it.isNullOrEmpty()){
-//                initMainActivityComponents(savedState)
-
-            }else{
-                onSingnedOutcleanUp()
-            }
-        })
-    }
     private fun initMainActivityComponents() {
 
         hideKeyboard(this)
-//        setStatusBarColor(this)
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
         initHashCallerViewmodel()
         initColors()
         setAllMenuItems()
-
-
-//        listenUiEvents()
-//        requestAlertWindowPermission()
-        Log.d(TAG, "onCreate: is dark theme on ${isDarkThemeOn()}")
         val c = ContextCompat.getColor(applicationContext, R.color.textColor);
-
-//        initViewModel()
         setupNavigationDrawer()
         initHeaderView()
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            if(!this. isScreeningRoleHeld()){
-//                requestScreeningRole()
-//
-//            }
-//        }
         setBottomSheetListener()
-
-//        mangeCipherInSharedPref()
-        observeUserInfoLiveData()
-//        setupContactUploadWork()
         initListeners()
-
-        setupBottomMenuIconsBasedOnTheme()
         initViewModel()
         observeUserInfo()
-
-
     }
 
     private fun initColors() {
@@ -445,7 +293,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun initHashCallerViewmodel() {
-//        hashCallerViewModel = ViewModelProvider.AndroidViewModelFactory(application).create(HashCallerViewModel::class.java)
         hashCallerViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(HashCallerViewModel::class.java)
 
     }
@@ -461,14 +308,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun initHeaderView() {
         header = binding.navView.getHeaderView(0)
-
         headerImgView =  header.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.imgViewAvatarDrawer)
         firstLetterView = header.findViewById<TextView>(R.id.tvFirstLetterMain)
 
     }
 
     private fun observeUserInfo() {
-
         userInfoViewModel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
                     try {
@@ -489,7 +334,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                     firstLetterView.beVisible()
                 }
                     }catch (e:Exception){
-                        Log.d(TAG, "observeUserInfo: $e")
                         toast("Unable to get user name")
                     }
 
@@ -498,76 +342,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-    private fun requestAlertWindowPermission() {
-        // Show alert dialog to the user saying a separate permission is needed
-        if(!canDrawOverlays(applicationContext)){
-            val myIntent = Intent(ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-            startActivity(myIntent)
-        }
-
-    }
-
     override fun onDestroy() {
         viewModelStore.clear()
-//        if(_rcfirebaseAuth!=null && _rcAuthStateListener!=null){
-//            _rcfirebaseAuth!!.removeAuthStateListener(_rcAuthStateListener!!)
-//        }
-//        _rcAuthStateListener = null
-//        _rcfirebaseAuth = null
         dataStoreViewModel = null
-//        _userInfoViewModel = null
         super.onDestroy()
 
 
     }
-    private fun listenUiEvents() {
-//       uiEvent.observe(this, {
-//            when (it) {
-//                is PermissionDenied -> {
-//                    checkCapabilitiesOnResume = true
-//                    // This will display a dialog directing them to enable the permission in app settings.
-//                    AppSettingsDialog.Builder(this).build().show()
-//                }
-//                is PhoneManifestPermissionsEnabled -> {
-//                    // now we can load phone dialer capabilities requests
-//                    capabilitiesRequestor.invokeCapabilitiesRequest()
-//                }
-//                else -> {
-//                    // NOOP
-//                }
-//            }
-//        })
-    }
 
 
-//    override fun onCreateContextMenu(menu: ContextMenu, v: View,
-//                                     menuInfo: ContextMenu.ContextMenuInfo) {
-//        super.onCreateContextMenu(menu, v, menuInfo)
-//        val inflater: MenuInflater = menuInflater
-//        inflater.inflate(R.menu.sms_container_menu, menu)
-//    }
 
-    @SuppressLint("SetTextI18n")
-    private fun observeUserInfoLiveData() {
-//
-//        this.userInfoViewModel.userInfo.observe(this, Observer {
-//            Log.d(TAG, "observeUserInfoLiveData: userinfo is $it")
-//            when (it) {
-//                null -> {
-//                    userInfoViewModel.getUserInfoFromServer().observe(this, Observer {
-////                        userInfoViewModel.insertUserInfo(it)
-//                    })
-//                }
-//
-//            }
-////            if (it != null)
-////                if (!it.firstname.isNullOrEmpty()) {
-//////                val header =navigationView.getHeaderView(0)
-//////                header.tvNavDrawerName.text = it.firstname + " " + it.lastName
-////                }
-//
-//        })
-    }
 
     fun showSnackBar(message: String){
         val sbar = Snackbar.make(cordinateLyoutMainActivity, message, Snackbar.LENGTH_SHORT)
@@ -576,29 +360,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         sbar.show()
 
     }
-    private fun setupContactUploadWork() {
-//        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-//
-//        val request2 = OneTimeWorkRequest.Builder(ContactsAddressLocalWorker::class.java)
-//            .build()
-//        WorkManager.getInstance().enqueue(request2)
-//
-//        val request =
-//            OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-//                .setConstraints(constraints)
-//                .build()
-//        WorkManager.getInstance().enqueue(request)
-
-    }
 
     private fun manageSavedInstanceState(savedInstanceState: Bundle?) {
-//        this.fullScreenFragment = FullscreenFragment()
         if (savedInstanceState == null) {
-            Log.d(TAG, "onCreate: savedInstanceState is null")
             ft = supportFragmentManager.beginTransaction()
-
-//            this.smsFragment = SMSContainerFragment()
-//            this.blockConfigFragment = BlockConfigFragment()
             this.contactFragment = ContactsContainerFragment()
             this.callFragment = CallFragment()
             this.dialerFragment = DialerFragment()
@@ -644,26 +409,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
 
     }
-
-    private fun mangeCipherInSharedPref() {
-//        if(!isCipherInSharedPreferences()){
-////            KeyManager.setCipherInSharedPreferences(this)
-//        }
-    }
-
-
-    private fun isCipherInSharedPreferences(): Boolean {
-        val isKeyAvailable = KeyManager.isKeyStored(this)
-        if(isKeyAvailable) Log.d(TAG, "isCipherInSharedPreferences: key availabl")
-        else
-            Log.d(TAG, "isCipherInSharedPreferences: key not available")
-        return  isKeyAvailable
-
-    }
-
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
-
-        Log.d(TAG, "setFragmentsFromSavedInstanceState: ")
 //        this.fullScreenFragment = supportFragmentManager.getFragment(savedInstanceState, "fullScreenFragment") as FullscreenFragment
         this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
 
@@ -739,7 +485,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.d(TAG, "onSaveInstanceState: ")
 
         supportFragmentManager.putFragment(outState, "callFragment", this.callFragment)
 //        supportFragmentManager.putFragment(outState, "fullScreenFragment", this.fullScreenFragment)
@@ -750,72 +495,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         supportFragmentManager.putFragment(outState, "blockListFragment", this.blockListFragment)
 //        supportFragmentManager.putFragment(outState, "smsSearchFragment", this.smsSearchFragment)
 
-
-
-
-//        supportFragmentManager.putFragment(outState,"blockConfigFragment", this.blockConfigFragment)
-//        if(this.searchFragment!=null)
-//            if(this.searchFragment?.isAdded!!)
-//                supportFragmentManager.putFragment(outState,"searchFragment", this.searchFragment!!)
-//        outState.putInt("AStringKey", )
-////        outState.putString("AStringKey2", variableData2)
-//        val p: Parcelable? = callFragment.saveAllState()
-//        if (p != null) {
-////            outState.putParcelable(FragmentActivity.FRAGMENTS_TAG, p)
-//        }
     }
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        Log.d(TAG, "onRestoreInstanceState: ")
-//        variableData = savedInstanceState.getInt("AStringKey")
-//        variableData2 = savedInstanceState.getString("AStringKey2")
     }
-    private fun syncSpamList() {
-        val list = CountrycodeHelper(applicationContext).getCountrycode()
-//        val spamSyncRepository = SpamSyncRepository()
-//        SpamSyncManager.sync(list, spamSyncRepository, this)
-
-    }
-
-
-
     /**
      * This function set the default fragment status of each fragment
      */
     private fun setTheDefaultFragment() {
-//        contactFragment.isDefaultFgmnt = true
-//        if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_FULL_FRAGMENT){
-//            fullScreenFragment.isDefaultFgmnt = true
-//        }else
-
-            if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CALL_FRAGMENT){
-            callFragment.isDefaultFgmnt = true
-        }
-//        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_MESSAGES_FRAGMENT){
-//            smsFragment.isDefaultFgmnt = true
-//        }
-        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_CONTACT_FRAGMENT){
-            contactFragment.isDefaultFgmnt = true
-        }
-
-
-
-
-//        else if(DefaultFragmentManager.defaultFragmentToShow == DefaultFragmentManager.SHOW_BLOCK_FRAGMENT){
-//            blockConfigFragment.isDefaultFgmnt = true
-//        }
-
-        else{
-            dialerFragment.isDefaultFgmnt = true
+        when (DefaultFragmentManager.defaultFragmentToShow) {
+            DefaultFragmentManager.SHOW_CALL_FRAGMENT -> {
+                callFragment.isDefaultFgmnt = true
+            }
+            DefaultFragmentManager.SHOW_CONTACT_FRAGMENT -> {
+                contactFragment.isDefaultFgmnt = true
+            }
+            else -> {
+                dialerFragment.isDefaultFgmnt = true
+            }
         }
     }
 
     fun showDialerFragment() {
-
         val ft = supportFragmentManager.beginTransaction()
         callFragment.clearMarkeditems()
-//        smsFragment.clearMarkeditems()
-
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
 
         if (dialerFragment.isAdded) { // if the fragment is already in container
@@ -826,55 +529,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             dialerFragment.showDialPad()
             bottomNavigationView.beGone()
         }
-        // Commit changes
-//        ft.addToBackStack("test")
         ft.commit()
     }
-    //called from dialerfragment, important call this function only from dialer fragment
-    fun hideBottomNav(){
-//        Log.d(TAG, "hideBottomNav: saved instance state is $savedState")
-        if(savedState!=null && dialerFragment.isVisible){
-            Log.d(TAG, "hideBottomNav: dialer frargment is visible")
-            bottomNavigationView.beGone()
-        }
 
-    }
-
-
-    //    private void onSingnedOutcleanUp() {
-    //        mUserName = "Anonymous";
-    //
-    //    }
-    //    private void onSignedInInitialize(String displayName) {
-    //        mUserName = displayName;
-    //       //TODO load main activiy content only after succesfull login
-    //        checkPermission();
-    //        loadMainActivity();
-    //
-    //    }
-    private fun loadMainActivity() {}
-    fun removeSearchFragment(){
-//        ft = supportFragmentManager.beginTransaction()
-//        ft.hide(this.searchFragment)
-//        ft.remove(this.searchFragment).commit()
-//        ft.commit()
-
-    }
-
-    /**
-     * adds fragment to frame layout after search fragment closes
-     */
-    fun addFragmentsAgain(){
-//        setTheDefaultFragment()
-//        DefaultFragmentManager.defaultFragmentToShow = 2
-//        addAllFragments()
-//        val actionRestart =
-//            findViewById<View>(R.id.bottombaritem_calls)
-
-
-
-
-    }
     fun addAllFragments() {
 
         ft = supportFragmentManager.beginTransaction()
@@ -903,33 +560,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         ft.add(R.id.frame_fragmentholder, blockListFragment)
         hideThisFragment(ft, blockListFragment, blockListFragment)
-
 //        ft.add(R.id.frame_fragmentholder, smsSearchFragment)
 //        hideThisFragment(ft, smsSearchFragment, smsSearchFragment)
-
-
-
-
-
 //        ft.add(R.id.frame_fragmentholder, blockConfigFragment)
 //        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
-
 //        fabBtnShowDialpad.visibility = View.VISIBLE
-
         ft.commit()
 
     }
 
     private fun setAllMenuItems() {
         menu = binding.bottomNavigationView.menu
-//        menuMessage = menu.findItem(R.id.bottombaritem_messages)
         menuContacts = menu.findItem(R.id.bottombaritem_contacts)
         menuCalls = menu.findItem( R.id.bottombaritem_calls )
-//        menuSearch = menu.findItem(R.id.bottombaritem_search)
-
-
-//        menuMessage = menu.findItem(R.id.bottombaritem_messages)
-
     }
 
     /**
@@ -949,7 +592,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setDefaultFragment(idValue: Int) {
-//        bottomNavigationView.selectedItemId = R.id.bottombaritem_calls
         binding.bottomNavigationView.selectedItemId = idValue
     }
 
@@ -960,39 +602,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             ft.show(blockListFragment)
             mainViewmodel.setActiveFragment(blockListFragment)
         }
-
         ft.commit()
     }
 
     fun showContactsFragment() {
         toggleBottomMenuIcons(showContactsFragment = true)
-
-
-//        showDialPad()
         val ft = supportFragmentManager.beginTransaction()
 
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
         if (contactFragment.isAdded) { // if the fragment is already in container
             ft.show(contactFragment)
             mainViewmodel.setActiveFragment(contactFragment)
-//            unMarkItems()
-
-//            smsFragment.showSearchView()
         }
-//         if(searchFragment!=null)
-//             if(searchFragment!!.isAdded){
-//                 ft.hide(searchFragment!!)
-//             }
-//        // Commit changes
         /**
          * Managing contacts uploading/Syncing by ContactsUPloadWorkManager
          */
         val intent = intent
         intent.getByteArrayExtra("key")
-//        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
-//            .build()
-//        WorkManager.getInstance().enqueue(request)
-//
         ft.commit()
     }
     fun showSMSSearchFragment() {
@@ -1042,73 +668,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
      fun showMessagesFragment() {
-
-//        toggleBottomMenuIcons(showMessageFragment = true)
         val ft = supportFragmentManager.beginTransaction()
-//        if( mainViewmodel.getActiveFragment() == smsSearchFragment){
-//            smsSearchFragment.
-//        }
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
-//        if (smsFragment.isAdded) { // if the fragment is already in container
-////            ft.addToBackStack(messagesFragment.javaClass.name)
-//            ft.show(smsFragment)
-//            mainViewmodel.setActiveFragment(smsFragment)
-//
-//
-////            setDefaultFragment(R.id.bottombaritem_messages)
-//        binding.bottomNavigationView.beVisible()
-//        binding.navView.beVisible()
-//        }
-        // Hide fragment B
-//        if (blockConfigFragment.isAdded) {
-//            ft.hide(blockConfigFragment)
-//            unMarkItems()
-//            messagesFragment.showSearchView()
-//
-//        }
-        // Hide fragment C
-
-//        if (contactFragment.isAdded) {
-//            ft.hide(contactFragment)
-//        }
-//        if (searchFragment.isAdded) {
-//            ft.hide(searchFragment)
-//        }
-
-//        if (callFragment.isAdded) {
-////            callFragment.clearMarkeditems()
-//            ft.hide(callFragment)
-//        }
-
-//        if (callFragment.isAdded) {
-//            ft.hide(callFragment)
-//        }
-//        if(dialerFragment.isAdded){
-//            ft.hide(dialerFragment)
-//        }
-
-
-        // Commit changes
         ft.commit()
     }
-    private fun setupBottomMenuIconsBasedOnTheme() {
-//        if (isDarkThemeOn) {
-////            Log.d(TAG, "setupBottomMenuIconsBasedOnTheme: isDarkThemeOn:true")
-////            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line)
-////            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line)
-////            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line)
-////            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line)
-//
-//
-//        }else {
-//            Log.d(TAG, "setupBottomMenuIconsBasedOnTheme: isDarkThemeOn:false")
-//            menuMessage.icon = ContextCompat.getDrawable(this, R.drawable.ic_home_4_line_primary)
-//            menuContacts.icon = ContextCompat.getDrawable(this, R.drawable.ic_contacts_book_line_primary)
-//            menuCalls.icon = ContextCompat.getDrawable(this, R.drawable.ic_phone_line_primary)
-//            menuSearch.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_line_primary)
-//
-//        }
-    }
+
     private fun toggleBottomMenuIcons(
         showMessageFragment: Boolean=false,
         showContactsFragment: Boolean=false,
@@ -1167,26 +731,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
-
-    //        @Override
-//        public void onBackPressed() {
-//            Log.d(TAG, "onBackPressed: MainActivity");
-//            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.callFragment);
-//            if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onKeyDown()) {
-//                super.onBackPressed();
-//            }
-//            super.onBackPressed();
-//        }
-
     override fun onBackPressed() {
-        Log.d(TAG, "onBackPressed: ")
         if(dialerFragment.isVisible){
             val ft = supportFragmentManager.beginTransaction()
             ft.hide(dialerFragment)
             ft.show(callFragment)
             binding.bottomNavigationView.beVisible()
 
-//            fabBtnShowDialpad.visibility = View.VISIBLE
             ft.commit()
         }
 //        else if(smsFragment.isVisible){
@@ -1224,111 +775,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         else{
 
-            //for hiding search fragment
-//            if(this::searchFragment !=null){
-//                if(this.searchFragment?.isAdded!! and this.searchFragment?.isVisible!!){
-//                    Log.d(TAG, "onBackPressed: searchfragment is visible")
-//                }
-//            }
-//            if(this.searchFragment !=null)
-//                if(this.searchFragment!!.isVisible){
-//
-//                }
-
-//            super.onBackPressed()
             finishAfterTransition()
 
         }
 
     }
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-////         super.onKeyDown(keyCode, event);
-//        Log.d(TAG, "key down")
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            Log.d(TAG, "onKeyDown: back button key down")
-//            val fragments = supportFragmentManager.fragments
-//            for (f in fragments) {
-////                if (f != null && f is CallFragment) f.onKeyDown(keyCode, event)
-//            }
-//            return true
-//        }
-//        Log.d(TAG, "returning")
-//        return false
-//    }
 
     private fun showDialPad() {}
-
-
-//    private fun checkPermission() {
-//        val permissionsUtil = PermissionsUtil(this)
-//        if (!permissionsUtil.checkPermissions()) {
-//            startActivity(Intent(this, ActivityRequestPermission::class.java))
-//            overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
-//            return
-//        }
-//    }
 
     override fun onPostResume() {
         super.onPostResume()
         val currentUser = FirebaseAuth.getInstance().currentUser
 
-        Log.i(TAG, "Onresume curretnUser $currentUser")
         if(currentUser == null){
             onSingnedOutcleanUp()
         }
-//        val iExtra = intent.getIntExtra(IntentKeys.SHOW_BLOCK_LIST, 0)
-//        when(iExtra){
-//            IntentKeys.SHOW_BLOCK_LIST_VALUE -> {
-//                binding.bottomNavigationView.selectedItemId = R.id.bottombaritem_blockList
-//            }
-//        }
-
-//        saveTokenIfConnected()
-
-        //        checkPermission();
-
-//        if(getCurrentTheme() == 1){
-//            setcurrentThemeInSharedPref()
-//        }
-//        checkPermission()
-//        if (checkPermission()) {
-//            if(_rcAuthStateListener!=null && _rcAuthStateListener !=null)
-//                _rcfirebaseAuth?.addAuthStateListener(_rcAuthStateListener!!)
-//        }
-        //        firebaseHelper.addFirebaseAuthListener();
-
     }
 
-    private fun setcurrentThemeInSharedPref() {
-        sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_TOKEN_NAME, Context.MODE_PRIVATE)
-        val currentTheme = getCurrentTheme()
-        var isDarkTheme = false
-        if(currentTheme == 1){
-            isDarkTheme = true
-        }
-        lifecycleScope.launch {
-            val editor = sharedPreferences.edit()
-
-            editor.putBoolean("isDarkTheme", isDarkTheme)
-            editor.commit()
-        }
-    }
     private fun getCurrentTheme(): Int {
         val currentNightMode = getResources().getConfiguration().uiMode and  Configuration.UI_MODE_NIGHT_MASK
         when (currentNightMode) {
             Configuration.UI_MODE_NIGHT_NO -> {
-                Log.d(TAG, "checkTheme: white")
                 return 0
 
             }
             // Night mode is not active, we're in day time
             Configuration.UI_MODE_NIGHT_YES -> {
-                Log.d(TAG, "checkTheme: dark")
                 return 1
             }
             // Night mode is active, we're at night!
             Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                Log.d(TAG, "checkTheme: undefined")
                 return 2
             }else->{
             return 2
@@ -1341,12 +817,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onRestart() {
         super.onRestart()
-        Log.i(TAG, "OnRestart")
         //        checkPermission();
     }
 
     override fun onStart() {
-        Log.i(TAG, "OnStart")
         super.onStart()
 //        this.user = rcfirebaseAuth!!.currentUser
 
@@ -1354,38 +828,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onClick(v: View) {
-        Log.d(TAG, "onClick: ")
         when(v.id){
             R.id.imgViewAvatarDrawer ->{
                 val intent = Intent(applicationContext, ProfileActivity::class.java)
                 startActivity(intent)
             }
-//        R.id.fabBtnShowDialpad->{
-//            showDialerFragment()
-//           GlobalScope.launch {
-//               val callersInfo = HashCallerDatabase.getDatabaseInstance(this@MainActivity).callersInfoFromServerDAO()
-//               callersInfo.deleteAll()
-//           }
-//        }
         }
-//        val i = Intent(baseContext, ActivityAddNewPattern::class.java)
-        //        i.putExtra("PersonID", personID);
-//        startActivity(i)
     }
 
-    //    private val phoneNumFromViewModel: String?
-//        get() {
-//            val phoneNumberViewModel: PhoneNumber = ViewModelProvider(this).get(PhoneNumber::class.java)
-//            val no = phoneNumberViewModel.phoneNumber
-//            return no?.value
-//        }
-//
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>,
         grantResults: IntArray
     ) {
 
-        Log.d(TAG, "onRequestPermissionsResult: ${requestCode}")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when(requestCode){
@@ -1420,7 +875,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     //
     fun makeCall(view: View?) {
-        Log.d(TAG, "callDude: ")
         call()
     }
 
@@ -1436,37 +890,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         startActivity(callIntent)
     }
 
-    //    @Override
-    //    protected void onStart() {
-    //        super.onStart();
-    ////        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-    //            PermissionsUtil permissionsUtil = new PermissionsUtil(this);
-    //
-    //            if (!permissionsUtil.checkPermissions()) {
-    //                startActivity(new Intent(this, ActivityRequestPermission.class));
-    //            }
-    //                       }
-    //    }
-    //after nested frags
-//    internal inner class ContactObserver(handler: Handler?) : ContentObserver(handler) {
-//        //        @Override
-//        //        public void onChange(boolean selfChange) {
-//        //            this.onChange(selfChange, null);
-//        //            Log.e("", "~~~~~~" + selfChange);
-//        //            // Override this method to listen to any changes
-//        //        }
-//        override fun onChange(selfChange: Boolean, uri: Uri) {
-//            // depending on the handler you might be on the UI
-//            // thread, so be cautious!
-//            Log.d("ContactObserver", "onChange: ")
-//        }
-//
-//        // left blank below constructor for this com.hashcaller.app.network.user.Contact observer example to work
-//        // or if you want to make this work using Handler then change below registering  //line
-//        init {
-//            Log.d("ContactObserver", "ContactObserver constructor ")
-//        }
-//    }
 
     fun isDarkThemeOn(): Boolean {
         return resources.configuration.uiMode and
@@ -1507,30 +930,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            ROLE_SCREENING_APP_REQUEST_CODE -> {
-
-                if (resultCode == Activity.RESULT_OK) {
-                    //The user set you as the default screening app!
-//                        dataStoreViewModel.userSelectedAsScreeningApp()
-                    callFragment.activtyResultisDefaultScreening()
-                    Log.d(TAG, "onActivityResult: user set as as the defaul screening app")
-                } else {
-                    //the user didn't set you as the default screening app...
-                    Log.d(TAG, "onActivityResult: user does not set as the defaul screening app")
-                }
-            }
-            PERMISSION_REQUEST_CODE ->{
-                firebaseAuthListener()
-
-            }
-
-        }
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -1583,13 +982,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: ")
-//        if(!isDefaultSMSHandler()){
-//            //this is to make sure that when BlockManageActivity starts the
-//                //switch will be in accordance with DefaultSMsHandlerPermission
-//            dataStoreViewModel?.setBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS, false)
-//        }
-
     }
 
     fun getBottomNavView(): BottomNavigationView {
@@ -1598,6 +990,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     fun getCorinateLayout(): CoordinatorLayout {
         return binding.cordinateLyoutMainActivity
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun reqScreeningRole() {
+        val res = shouldReqstScreeningRole()
+        if(res.first){
+            //we should request screening role
+            val intent = res.second?.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
+            scrnRoleCallback.launch(intent)
+        }
+    }
+    fun regstrScreeningRoleResultCb() {
+        scrnRoleCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                callFragment.activtyResultisDefaultScreening()
+            }
+        }
     }
 }
 

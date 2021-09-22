@@ -62,16 +62,6 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".view.ui.auth.RecommendeSettingsActivity" />
         <activity
-            android:name=".view.ui.FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/SplashTheme">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity
             android:name=".view.ui.userdata.GetUserDataActiivty"
             android:theme="@style/AppTheme" />
         <activity
@@ -111,10 +101,12 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:stopWithTask="false" />
+
         <service
             android:name=".utils.callReceiver.CallFeedbackForegroundService"
             android:enabled="true"
             android:exported="true" />
+
         <service
             android:name=".utils.callReceiver.CallFeedbackJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
@@ -122,12 +114,13 @@
         <activity
             android:name=".view.ui.profile.ProfileActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".view.ui.call.spam.SpamCallsActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".view.ui.notifications.ManageNotificationsActivity"
             android:launchMode="singleTop"
@@ -173,7 +166,7 @@
             android:name=".view.ui.auth.PermissionRequestActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
-            android:theme="@style/AppThemeStatusBar" />
+            android:theme="@style/AppThemeStatusBar"></activity>
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
             android:autoRemoveFromRecents="true"
@@ -185,16 +178,17 @@
             android:name=".view.ui.IncommingCall.ActivityIncommingCallViewUpdated"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
-            android:label=""
             android:launchMode="singleTask"
+            android:label=""
             android:theme="@style/PopupTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.ui.auth.getinitialInfos.GetInitialUserInfoActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppThemeStatusBar"> <!-- https://developer.android.com/training/keyboard-input/visibility -->
+            android:theme="@style/AppThemeStatusBar" > <!-- https://developer.android.com/training/keyboard-input/visibility -->
 
-        </activity> <!-- important adjust resize ensure that view that all of your layout content is accessible -->
+        </activity>
+        <!-- important adjust resize ensure that view that all of your layout content is accessible -->
         <activity
             android:name=".view.ui.contacts.search.ActivitySerchContacts"
             android:launchMode="singleTop"

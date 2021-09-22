@@ -114,6 +114,22 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/pgBarImgPick"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:elevation="18dp"
+                android:indeterminate="true"
+                app:trackColor="@color/colorWhite"
+                app:indicatorColor="@color/colorPrimary"
+                app:trackThickness="2dp"
+                app:indicatorSize="32dp"
+                android:visibility="invisible"
+                app:layout_constraintTop_toTopOf="@+id/ivAvatar"
+                app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+                app:layout_constraintStart_toStartOf="@+id/ivAvatar"
+                app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
+                />
 
             <TextView
                 android:id="@+id/tvFirstLetterMain"

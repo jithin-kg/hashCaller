@@ -301,3 +301,9 @@ fun getRandomColor(): Int {
     random = rand.nextInt(5 - 1) + 1
     return random
 }
+fun getRandomNum(length:Int): String {
+    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+    return (1..length)
+        .map { allowedChars.random() }
+        .joinToString("")
+}
