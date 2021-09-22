@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
+import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -69,7 +70,7 @@ class FullscreenActivity : AppCompatActivity() {
 //    }
     private fun onSingnedOutcleanUp() {
 
-        val i = Intent(this, GetStartedActivity::class.java)
+        val i = Intent(this, GettingStartedSliderActivity::class.java)
 //        startActivityForResult(i, RC_SIGN_IN)
         startActivity(i)
         finish()

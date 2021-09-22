@@ -20,6 +20,7 @@ import com.hashcaller.app.utils.auth.EnCryptor
 import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
 import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
+import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -98,7 +99,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun onSingnedOutcleanUp() {
 
-        val i = Intent(this@SplashActivity, GetStartedActivity::class.java)
+        val i = Intent(this@SplashActivity, GettingStartedSliderActivity::class.java)
 //        startActivityForResult(i, RC_SIGN_IN)
         startActivity(i)
         finish()

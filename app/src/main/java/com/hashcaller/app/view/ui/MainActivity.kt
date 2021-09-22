@@ -68,6 +68,7 @@ import com.hashcaller.app.view.ui.contacts.ContactsContainerFragment
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.startPermissionRequestActivity
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
+import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
 import com.hashcaller.app.view.ui.hashworker.HasherViewmodel
 import com.hashcaller.app.view.ui.manageblock.BlockManageActivity
 import com.hashcaller.app.view.ui.notifications.ManageNotificationsActivity
@@ -382,8 +383,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun onSingnedOutcleanUp() {
-        
-        val i = Intent(this, GetStartedActivity::class.java)
+
+        val i = Intent(this, GettingStartedSliderActivity::class.java)
 //        startActivityForResult(i, RC_SIGN_IN)
         startActivity(i)
         finish()
