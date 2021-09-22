@@ -39,7 +39,6 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.START_FLOATING_SE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATIN_SERVICE_FROM_RECEIVER
 import com.hashcaller.app.utils.internet.InternetChecker
-import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.contacts.*
 import com.hashcaller.app.view.utils.CountrycodeHelper
@@ -335,14 +334,14 @@ class FloatingService: Service() {
                 var spamThreshold:Int = dataStoreRepository?.getInt(PreferencesKeys.SPAM_THRESHOLD)?:DEFAULT_SPAM_THRESHOLD
                 window?.setSpamThreshold(spamThreshold)
                 floatinServiceHelper = FloatinServiceHelper(
-                    getIncomminCallManager(formatedNum, this@FloatingService),
+                    getIncomminCallManager(formatedNum, this@FloatingService ,spamThreshold),
                     it,
                     supervisorScope,
                     window,
                     formatedNum,
                     this@FloatingService,
                     isCallScreeningRoleHeld(),
-                    DataStoreRepository(blockPreferencesDataStore),
+                    DataStoreRepository(tokeDataStore),
                     spamThreshold
 
                 )
@@ -413,7 +412,7 @@ class FloatingService: Service() {
         }
     }
 
-    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+    private fun getIncomminCallManager(phoneNumber: String, context: Context, spamThreshold: Int): InCommingCallManager {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
 
@@ -436,7 +435,8 @@ class FloatingService: Service() {
             blockedListpatternDAO,
             contactAdressesDAO,
             callerInfoFromServerDAO,
-            countryCodeIso
+            countryCodeIso,
+            spamThreshold
 
         )
     }

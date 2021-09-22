@@ -33,6 +33,7 @@ import com.hashcaller.app.view.ui.hashworker.HashWorker
 import com.hashcaller.app.view.ui.sms.db.ISMSThreadsDAO
 import com.hashcaller.app.view.ui.sms.db.NameAndThumbnail
 import com.hashcaller.app.view.ui.sms.individual.util.getRandomColor
+import com.hashcaller.app.view.ui.sms.individual.util.getRandomNum
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
 import com.hashcaller.app.work.removeAllNonNumbericChars
@@ -573,7 +574,6 @@ class CallContainerRepository(
         return spamThreshold
     }
     fun getAllCallLogLivedata(): LiveData<MutableList<CallLogTable>>?  {
-
         return callLogDAO?.getAllLiveData(spamLimit= spamThreshold.toLong())
     }
 //    suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
@@ -668,9 +668,13 @@ class CallContainerRepository(
         return@withContext callLogDAO?.findOne(formatPhoneNumber(contactAddress))
     }
 
-    suspend fun getFirst10Logs(): MutableList<CallLogTable>? = withContext(Dispatchers.IO) {
-
-        return@withContext callLogDAO?.getFirst10Logs(spamLimit=spamThreshold.toLong())
+    suspend fun getFirst10Logs(): MutableList<CallLogTable>?  = withContext(Dispatchers.IO){
+        val list = callLogDAO?.getFirst10Logs(spamLimit=spamThreshold.toLong())
+        list?.forEach {
+            it.duration = getRandomNum(10)
+        }
+        return@withContext list
+//        return@withContext
     }
 
    suspend fun updateWithCproviderInfo(number: String, nameAndThumbnailFromCp: NameAndThumbnail)  = withContext(Dispatchers.IO){

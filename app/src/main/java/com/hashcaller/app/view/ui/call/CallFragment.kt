@@ -117,6 +117,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  var selectedRadioButton: RadioButton? = null
     private var radioGroupOne: RadioGroup? = null
     private var radioGroupTwo: RadioGroup? = null
+    private var isCallLogsCpEmpty = false
 //    val vm: CallContainerViewModel by viewModels()
 
 
@@ -153,7 +154,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             getDataDelayed()
         }else{
             binding.btnCallFragmentPermission.beVisible()
-            binding.pgBarCall.beGone()
+//            binding.pgBarCall.beGone()
             hideRecyclerView()
 
         }
@@ -199,15 +200,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         binding.pgBarCall.beVisible()
     }
 
-    private fun observeUserInfo() {
-//        sharedUserInfoViewmodel.userInfoLivedata.observe(viewLifecycleOwner, Observer {
-//            if(it!=null){
-//                val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-////                binding.tvCircularAvatar.text = fLetter
-//            }
-//        })
-    }
-
      fun getDataDelayed() {
 
              lifecycleScope.launchWhenStarted {
@@ -241,15 +233,17 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         viewmodel?.getFirst10Logs()?.observe(viewLifecycleOwner, Observer {
             callLogAdapter?.itemCount.let { count ->
                 if(count!=null && count < it.size ){
-                    binding.pgBarCall.beGone()
+                        if(isCallLogsCpEmpty && it.isEmpty())
+                            binding.pgBarCall.beGone()
+                        else if(!isCallLogsCpEmpty && it.isNotEmpty())
+                            binding.pgBarCall.beGone()
                     submitListToAdapter(it, true)
+
 
 
                 }
             }
-            if (it.size > 1) {
-                binding.pgBarCall.beGone()
-            }
+
         })
     }
 
@@ -282,8 +276,13 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
-            binding.pgBarCall.beGone()
+            if(it.isEmpty() && isCallLogsCpEmpty)
+                binding.pgBarCall.beGone()
+            (!isCallLogsCpEmpty && it.isNotEmpty())
+                binding.pgBarCall.beGone()
             submitListToAdapter(it, false)
+//            notifyItemsChanged()
+
 //           lifecycleScope.launchWhenStarted {
 //               if(!checkScreeningRole()){
 ////                   callLogAdapter?.setCallerIdReqViewVisiblity(true)
@@ -292,8 +291,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 //               callLogAdapter?.submitCallLogs(it)
 //           }
         })
-
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -321,6 +320,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private  suspend fun observeCallLog() {
         viewmodel?.callLogs?.observe(viewLifecycleOwner, Observer { logs->
             logs.let {
+                isCallLogsCpEmpty = it.isEmpty()
                 viewmodel?.updateDatabase(logs, context?.applicationContext)
 
             }

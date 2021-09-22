@@ -131,7 +131,7 @@ class SearchViewModel(
     }
 
     fun getCallerInfoFromDb(phoneNumber: String) :LiveData<CallersInfoFromServer?> = liveData {
-        emit(localDbSearchRepository.getInfoForNumber(phoneNumber))
+        emit(localDbSearchRepository.getServerInfoForNumber(phoneNumber))
     }
 
     fun getCountryForNumber(phoneNumber: String) :LiveData<String> = liveData {
@@ -148,10 +148,13 @@ class SearchViewModel(
         var location = ""
         var country = ""
         var spamCount = 0L
+        var nameInPhoneBook = ""
+        var hUid = ""
         var serverQueryPerfomed = false
         viewModelScope.launch {
            defContentProviderInfo =  async { contactLocalSyncRepository.getNameFromPhoneNumber(phoneNumber) }
-           defInfoInDb =  async { localDbSearchRepository.getInfoForNumber(phoneNumber) }
+            //todo get image in cprovider, //add verified and user badge in window layout and feedback activity
+           defInfoInDb =  async { localDbSearchRepository.getServerInfoForNumber(phoneNumber) }
 
        }.join()
         try {
@@ -177,11 +180,16 @@ class SearchViewModel(
         if(!infoInCProvider.isNullOrEmpty()){
             firstName = infoInCProvider
         }else if(infoAvailableInDb!= null){
-            if(!infoAvailableInDb.firstName.isNullOrEmpty()){
+            if(infoAvailableInDb.firstName.isNotEmpty()){
                 firstName = infoAvailableInDb.firstName
+                lastName = infoAvailableInDb.lastName
+            }else if(infoAvailableInDb.nameInPhoneBook.isNotEmpty()){
+                nameInPhoneBook = infoAvailableInDb.nameInPhoneBook
             }
            spamCount = infoAvailableInDb.spamReportCount?:0L
-
+            if(infoAvailableInDb.hUid.isNotEmpty()){
+                hUid = infoAvailableInDb.hUid
+            }
         }else{
             firstName = phoneNumber
         }
@@ -189,12 +197,15 @@ class SearchViewModel(
 
         val info = CntctitemForView(
             firstName = firstName,
+            lastName = lastName,
             country = country,
             isInfoFoundInServer = infoAvailableInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
             spammCount = spamCount,
             isSearchedForCallerInserver = serverQueryPerfomed,
-            informationReceivedDate = Date()
+            informationReceivedDate = Date(),
+            nameInPhoneBook = nameInPhoneBook
         )
+        info.isVerifiedUser = infoAvailableInDb?.isVerifiedUser?:false
         //todo add property doSearch in server in emiting object, if infoindb in null or (INFO_NOT_FOUND_IN_SERVER & days > 0)
         emit(info)
     }

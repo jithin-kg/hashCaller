@@ -65,7 +65,7 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
-import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallView
 import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallViewUpdated
 import com.hashcaller.app.view.ui.call.dialer.util.CallLogLiveData
@@ -83,6 +83,7 @@ import com.hashcaller.app.view.ui.sms.search.SearchSMSActivity
 import com.hashcaller.app.view.ui.sms.util.SMSContract
 import com.hashcaller.app.view.utils.SIMAccount
 import com.hashcaller.app.view.utils.getDecodedBytes
+import com.hashcaller.app.work.ContactsUploadWorker
 import com.hashcaller.app.work.SpamReportWorker
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
@@ -97,6 +98,15 @@ fun Context.isDarkThemeOn(): Boolean {
             UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
 }
 
+fun Context.startContactUploadWorker(){
+    applicationContext?.let{ appContext ->
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val request = OneTimeWorkRequest.Builder(ContactsUploadWorker::class.java)
+            .setConstraints(constraints)
+            .build()
+        WorkManager.getInstance(appContext).enqueue(request)
+    }
+}
 fun Context.setAvatar(
     imgViewCntct: ImageView,
     textViewcontactCrclr: TextView,
@@ -393,7 +403,7 @@ fun Context.isActivityIncommingCallViewVisible():Boolean{
 
 suspend fun Context.getBooleanFromSharedPref(key: String): Boolean {
     val wrapedKey =  booleanPreferencesKey(key)
-    val tokenFlow: Flow<Boolean> = blockPreferencesDataStore.data.map {
+    val tokenFlow: Flow<Boolean> = tokeDataStore.data.map {
         it[wrapedKey]?:false
     }
     return tokenFlow.first()

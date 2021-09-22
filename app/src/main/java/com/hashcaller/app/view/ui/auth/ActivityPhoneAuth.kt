@@ -13,6 +13,9 @@ import com.google.android.gms.auth.api.credentials.*
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityPhoneAuthBinding
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.auth.getinitialInfos.PhoneAuthInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
@@ -33,13 +36,15 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
     private lateinit var binding:ActivityPhoneAuthBinding
     private lateinit var libCountryCodeHelper: LibPhoneCodeHelper
     private var phoneNumber: String = ""
+    private lateinit var dataStoreRepository: DataStoreRepository
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityPhoneAuthBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+        dataStoreRepository = DataStoreRepository(this.tokeDataStore)
+        setDefaultDataStoreValues()
         initListeners()
         initViewModel()
         libCountryCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
@@ -47,6 +52,11 @@ class ActivityPhoneAuth : AppCompatActivity(), View.OnClickListener, Confirmatio
             requestHint()
         }
 
+    }
+    private fun setDefaultDataStoreValues() {
+        lifecycleScope.launchWhenCreated {
+            dataStoreRepository.setBoolean(true, PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS)
+        }
     }
 
     private fun initViewModel() {

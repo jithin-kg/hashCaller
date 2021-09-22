@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.hashcaller.app.R
 import com.hashcaller.app.network.search.model.CntctitemForView
 import com.hashcaller.app.stubs.Contact
@@ -224,42 +225,52 @@ class Window(
 
 
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
-//        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
+
         if(callerInfoFoundFrom!= INFO_FOUND_FROM_CPROVIDER){
-            //only update contents with server info iff info has not yet found from contentprovider
-            //TODO check for image uri from server and local db, if img uri in db isNullOrEpty then show image from server if exists
-            //todo cellular, country informations are to be shown, without this
-            //country informations should be shown even if no internet, im using  io.michaelrocks:libphonenumbe, use it
-            var name:String? = ""
+            var name:String = ""
             var  location:String? = ""
-            name = (resFromServer.firstName + resFromServer.lastName).trim()
-//            if(name.isNullOrEmpty()){
-//                name = phoneNumber
-//            }
+            if(resFromServer.firstName.isNotEmpty()){
+                name += resFromServer.firstName
+                if(resFromServer.lastName.isNotEmpty()){
+                    name += " "+ resFromServer.lastName
+                }
+            }else if(resFromServer.nameInPhoneBook.isNotEmpty()){
+                name = resFromServer.nameInPhoneBook
+            }
 
             var firstLetter = ""
-            if(!resFromServer.firstName.isNullOrEmpty()){
-                firstLetter = resFromServer.firstName[0].toString()
-            }else if(!resFromServer.lastName.isNullOrEmpty()){
-                firstLetter = resFromServer.lastName[0].toString()
-            }else{
-                firstLetter = formatPhoneNumber(phoneNumber)[0].toString()
+            if(name.isEmpty()){
+                // no name has found yet set phone number first digit as first letter
+                    name = phoneNumber
+                if(phoneNumber.isNotEmpty())
+                    firstLetter = formatPhoneNumber(phoneNumber)[0].toString()
+            }else {
+                firstLetter =  name[0].toString().uppercase()
             }
+
+            tvFirstLetter.text = firstLetter
 
             if(!resFromServer.location.isNullOrEmpty()){
                 location = resFromServer.location
             }else if(!resFromServer.country.isNullOrEmpty()){
                 location = resFromServer.country
             }
-            tvFirstLetter.text = firstLetter
             if(name.isNotEmpty()){
                 tvName.text = name
             }
 
             if(!resFromServer.thumbnailImg.isNullOrEmpty()){
+                imgVAvatar.beVisible()
                 imgVAvatar.setImageBitmap(getDecodedBytes(resFromServer.thumbnailImg))
                 tvFirstLetter.beGone()
-            }else{
+            }else if(resFromServer.avatarGoogle.isNotEmpty()){
+                imgVAvatar.beVisible()
+                Glide.with(context).load(resFromServer.avatarGoogle)
+                    .into(imgVAvatar)
+                tvFirstLetter.beGone()
+            }
+            else{
+                imgVAvatar.beInvisible()
                 imgVAvatar.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circular_avatar_main_background))
                 tvFirstLetter.beVisible()
             }

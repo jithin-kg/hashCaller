@@ -19,15 +19,17 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.R
 import com.hashcaller.app.Secrets
 import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
 import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.repository.search.SearchNetworkRepository
+import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.callHandlers.base.extensions.parseCountryCode
 import com.hashcaller.app.utils.callHandlers.base.extensions.removeTelPrefix
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager
 import com.hashcaller.app.utils.internet.InternetChecker
-import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.contacts.showNotifcationForSpamCall
 import com.hashcaller.app.view.ui.contacts.startFloatingServiceFromScreeningService
 import com.hashcaller.app.view.ui.contacts.stopFltinServiceFromActiivtyIncomming
@@ -60,6 +62,7 @@ class MyCallScreeningService: CallScreeningService() {
     private val libCountryHelper: LibPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private lateinit var countryCodeIso :String
     private var phoneNumber = ""
+    private lateinit var dataStoreRepository: DataStoreRepository
     //    private  var _window:Window? = null
 //    private  val window:Window get() = _window!!
 
@@ -95,6 +98,7 @@ class MyCallScreeningService: CallScreeningService() {
 //        WindowObj.setWindow(window)
 //        startCallScreeningForegroundService()
         supervisorScope.launch {
+            dataStoreRepository =  DataStoreRepository(tokeDataStore)
 //            CallScreeningFloatingService.handleCall()
 
             val hashedNum =    getHashedNum(
@@ -103,13 +107,14 @@ class MyCallScreeningService: CallScreeningService() {
             )
 
             helper = hashedNum?.let {
+                val incomingCallManager = getIncomminCallManager(phoneNumber, this@MyCallScreeningService)
                 CallScreeningServiceHelper(
-                    getIncomminCallManager(phoneNumber, this@MyCallScreeningService),
+                    incomingCallManager,
                     it,
                     supervisorScope,
                     phoneNumber,
                     this@MyCallScreeningService,
-                    DataStoreRepository(blockPreferencesDataStore)
+                    dataStoreRepository
 
                 ) { resToCall: Boolean, reason:Int -> run { respondeToTheCallCallback(resToCall,reason) } }
             }
@@ -125,22 +130,6 @@ class MyCallScreeningService: CallScreeningService() {
 
     }
 
-    private fun startCallScreeningForegroundService() {
-
-        val intent = Intent(this, CallScreeningFloatingService::class.java)
-//        phoneNumber?.let {
-//            intent.putExtra(CONTACT_ADDRES, phoneNumber)
-//            intent.putExtra(IntentKeys.INTENT_COMMAND, IntentKeys.START_FLOATING_SERVICE)
-
-        intent.putExtra("response", responseToCall)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                this.startForegroundService(intent)
-            } else {
-                this.startService(intent)
-            }
-//        }
-    }
 
     @SuppressLint("LongLogTag")
     override fun onUnbind(intent: Intent?): Boolean {
@@ -170,10 +159,10 @@ class MyCallScreeningService: CallScreeningService() {
 
 
 
-    private fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
+    private suspend fun getIncomminCallManager(phoneNumber: String, context: Context): InCommingCallManager {
         val  blockedListpatternDAO: BlockedLIstDao = HashCallerDatabase.getDatabaseInstance(context).blocklistDAO()
         val callerInfoFromServerDAO = HashCallerDatabase.getDatabaseInstance(context).callersInfoFromServerDAO()
-
+        val spamThreshold = dataStoreRepository.getInt(SPAM_THRESHOLD)?: DEFAULT_SPAM_THRESHOLD
         val searchRepository = SearchNetworkRepository(
             tokenHelper,
             callerInfoFromServerDAO,
@@ -193,7 +182,8 @@ class MyCallScreeningService: CallScreeningService() {
             blockedListpatternDAO,
             contactAdressesDAO,
             callerInfoFromServerDAO,
-            countryCodeIso
+            countryCodeIso,
+            spamThreshold
         )
     }
 

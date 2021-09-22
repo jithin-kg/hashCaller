@@ -22,7 +22,6 @@ import kotlinx.coroutines.coroutineScope
  * notification channel to take effect
  */
 val Context.tokeDataStore by preferencesDataStore(name = USER_PREFERENCES_NAME)
-val Context.blockPreferencesDataStore by preferencesDataStore(name = USER_PREFERENCES_BLOCK)
 
 class HashCaller : Application(){
     /**This will be called before any start of activity, right when our app will start.
@@ -82,19 +81,10 @@ class HashCaller : Application(){
 
             channel2.description = "Notification for blocked calls"
 
-//            val channel3 = NotificationChannel(CHANNEL_3_CALL_SERVICE_ID, NOTIFICATION_CHANNEL_NAME,
-//                NotificationManager.IMPORTANCE_DEFAULT)
-//            channel3.description = "HashCaller Caller id active"
-
-
             val notificationManager = getSystemService(NotificationManager::class.java)
 
             notificationManager.createNotificationChannel(channel1)
             notificationManager.createNotificationChannel(channel2)
-//            notificationManager.createNotificationChannel(channel3)
-
-
-
          }
     }
 

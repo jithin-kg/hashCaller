@@ -65,6 +65,7 @@ import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
 import com.hashcaller.app.view.ui.call.spam.SpamCallsActivity
 import com.hashcaller.app.view.ui.contacts.ContactsContainerFragment
+import com.hashcaller.app.view.ui.contacts.startContactUploadWorker
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.startPermissionRequestActivity
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
@@ -191,6 +192,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        initViewModel()
         checkUserInfoAvaialbleInDb(savedInstanceState)
         setDataStoreValues()
+        lifecycleScope.launchWhenCreated {
+            this@MainActivity.startContactUploadWorker()
+        }
+
 
 //        observeHashedNumbersTable()
        

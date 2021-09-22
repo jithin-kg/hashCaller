@@ -57,16 +57,6 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".view.ui.auth.RecommendeSettingsActivity" />
         <activity
-            android:name=".view.ui.FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/SplashTheme">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity
             android:name=".view.ui.userdata.GetUserDataActiivty"
             android:theme="@style/AppTheme" />
         <activity
@@ -107,14 +97,7 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:stopWithTask="false" />
 
-        <service
-            android:name=".utils.callReceiver.CallFeedbackForegroundService"
-            android:enabled="true"
-            android:exported="true" />
 
-        <service
-            android:name=".utils.callReceiver.CallFeedbackJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".view.ui.profile.ProfileActivity"

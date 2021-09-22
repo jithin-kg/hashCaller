@@ -3,16 +3,20 @@ package com.hashcaller.app.view.ui.manageblock
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityBlockManageBinding
 import com.hashcaller.app.datastore.DataStoreInjectorUtil
+import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.utils.extensions.requestDefaultSMSrole
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.extensions.isScreeningRoleHeld
 import com.hashcaller.app.view.ui.extensions.requestScreeningRole
 import com.hashcaller.app.view.ui.sms.individual.util.*
@@ -28,11 +32,12 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     private var isBlockForeignCallsEnabled = false
     private var isBlockNonContactCallsEnabled = false
     private lateinit var viewmodel : BlockSettingsViewModel
-    private lateinit var dataStoreViewmodel: DataStoreViewmodel
+    private lateinit var dataStoreRepository: DataStoreRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBlockManageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dataStoreRepository = DataStoreRepository(this.tokeDataStore)
         initViewmodel()
         observeSharedPrefValues()
         toggleRequestScreeningRoleBtn()
@@ -43,7 +48,6 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     private fun initViewmodel() {
         viewmodel = ViewModelProvider(this, BlockSettingsInjectorUtil.provideContactsViewModelFactory(applicationContext)).get(
             BlockSettingsViewModel::class.java)
-        dataStoreViewmodel = ViewModelProvider(this, DataStoreInjectorUtil.providerViewmodelFactory(applicationContext)).get(DataStoreViewmodel::class.java)
     }
 
     override fun onPostResume() {
@@ -78,17 +82,14 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     }
     private fun observeSharedPrefValues() {
 //        sharedpreferences = getSharedPreferences(SHARED_PREF_BLOCK_CONFIGURATIONS, Context.MODE_PRIVATE) ?: return
+            lifecycleScope.launchWhenCreated {
+                binding.blockSpammersAuto.isChecked  =  dataStoreRepository.getBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS)
+                binding.blockForeignCoutries.isChecked = dataStoreRepository.getBoolean(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER)
+                binding.blockNotIncontacts.isChecked = dataStoreRepository.getBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT)
+            }
 
-//        dataStoreViewmodel.getBoolean()
-        dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS).observe(this, Observer {
-            binding.blockSpammersAuto.isChecked = it
-        })
-        dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER).observe(this, Observer {
-            binding.blockForeignCoutries.isChecked = it
-        })
-        dataStoreViewmodel.getBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT).observe(this, Observer {
-            binding.blockNotIncontacts.isChecked = it
-        })
+
+
 //        dataStoreViewmodel.getBoolean(PreferencesKeys.DO_NOT_RECIEVE_SPAM_SMS).observe(this, Observer {
 ////            binding.switchDoNotReceiveSpamSMS.isChecked = it
 //
@@ -105,14 +106,20 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         when(buttonView?.id){
             R.id.blockNotIncontacts -> {
-                dataStoreViewmodel.setBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT, binding.blockNotIncontacts.isChecked)
+                setBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT, binding.blockNotIncontacts.isChecked)
             }
             R.id.blockSpammersAuto ->{
-                  dataStoreViewmodel.setBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS, binding.blockSpammersAuto.isChecked)
+                  setBoolean(PreferencesKeys.KEY_BLOCK_COMMONG_SPAMMERS, binding.blockSpammersAuto.isChecked)
             }
             R.id.blockForeignCoutries ->{
-                dataStoreViewmodel.setBoolean(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER, binding.blockForeignCoutries.isChecked)
+                setBoolean(PreferencesKeys.KEY_BLOCK_FOREIGN_NUMBER, binding.blockForeignCoutries.isChecked)
             }
+        }
+    }
+
+    private fun setBoolean(key: String, value:Boolean){
+        lifecycleScope.launchWhenCreated {
+            dataStoreRepository.setBoolean( value, key)
         }
     }
 

@@ -18,7 +18,7 @@ import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.NotificationHelper
 import com.hashcaller.app.utils.getStringValue
 import com.hashcaller.app.utils.internet.InternetChecker
-import com.hashcaller.app.utils.notifications.blockPreferencesDataStore
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.contacts.showNotifcationForSpamCall
@@ -49,7 +49,8 @@ class InCommingCallManager(
     private val blockedListpatternDAO: BlockedLIstDao,
     private val contactAdressesDAO: IContactAddressesDao,
     private val callerInfoFromServerDAO: CallersInfoFromServerDAO,
-    countryCodeIso: String
+    private val countryCodeIso: String,
+    private val spamThreshold: Int
 )  {
     private val phoneNumber = formatPhoneNumber(num)
     private val libPhoneCodeHelper =  LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
@@ -193,7 +194,7 @@ class InCommingCallManager(
 
     private suspend fun isBlockEnabledForKey(key: String): Boolean {
         val wrapedKey =  booleanPreferencesKey(key)
-        val tokenFlow: Flow<Boolean> = context.blockPreferencesDataStore.data.map {
+        val tokenFlow: Flow<Boolean> = context.tokeDataStore.data.map {
             it[wrapedKey]?:false
         }
         return tokenFlow.first()
@@ -205,17 +206,22 @@ class InCommingCallManager(
 
         val res = callerInfoFromServerDAO.find(formatPhoneNumber(phoneNumber))
         if(res!=null){
-            contactitemForView = CntctitemForView(
-                firstName = res.firstName,
-                lastName = res.lastName,
-                carrier = res.carrier,
-                location = res.city,
-                country = res.country,
-                spammCount = res.spamReportCount,
-                thumbnailImg = res.thumbnailImg,
-                statusCode = STATUS_OK,
-                informationReceivedDate = Date()
-            )
+            if(res.firstName.isNotEmpty() || res.nameInPhoneBook.isNotEmpty() || res.spamReportCount > spamThreshold){
+                contactitemForView = CntctitemForView(
+                    firstName = res.firstName,
+                    lastName = res.lastName,
+                    carrier = res.carrier,
+                    location = res.city,
+                    country = res.country,
+                    spammCount = res.spamReportCount,
+                    thumbnailImg = res.thumbnailImg,
+                    statusCode = STATUS_OK,
+                    informationReceivedDate = Date(),
+                    spammerType = res.spammerType,
+                    avatarGoogle = res.avatarGoogle
+                )
+            }
+
 
         }
         return@withContext contactitemForView
