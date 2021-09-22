@@ -373,7 +373,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
                         HashCallerDatabase.getDatabaseInstance(this@SearchActivity).contactAddressesDAO().deleteAll()
                         HashCallerDatabase.getDatabaseInstance(this@SearchActivity).callLogDAO().deleteAll()
                         HashCallerDatabase.getDatabaseInstance(this@SearchActivity).smsThreadsDAO().deleteAll()
-                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).userHashedNumDAO().deleteAll()
+//                        HashCallerDatabase.getDatabaseInstance(this@SearchActivity).userHashedNumDAO().deleteAll()
                         HashCallerDatabase.getDatabaseInstance(this@SearchActivity).hashedContactsDAO().deleteAll()
                     }
                 }

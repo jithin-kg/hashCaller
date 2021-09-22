@@ -232,7 +232,7 @@ class ContactLocalSyncRepository(
         HashCallerDatabase.getDatabaseInstance(context).contactAddressesDAO().deleteAll()
         HashCallerDatabase.getDatabaseInstance(context).callLogDAO().deleteAll()
         HashCallerDatabase.getDatabaseInstance(context).smsThreadsDAO().deleteAll()
-        HashCallerDatabase.getDatabaseInstance(context).userHashedNumDAO().deleteAll()
+//        HashCallerDatabase.getDatabaseInstance(context).userHashedNumDAO().deleteAll()
         HashCallerDatabase.getDatabaseInstance(context).hashedContactsDAO().deleteAll()
     }
 

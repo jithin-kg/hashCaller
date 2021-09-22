@@ -281,6 +281,8 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, Confirmation
                 HttpStatusCodes.STATUS_OK -> {
                     FirebaseAuth.getInstance().signOut();
                     dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, false)
+                    userInfoViewModel.deleteUserFromDb()
+
                     toast("Account deleted")
 //                    val intent = Intent(this, GetStartedActivity::class.java)
 //                   startActivity(intent)

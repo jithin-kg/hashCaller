@@ -47,6 +47,10 @@ class UserInfoViewModel(
             user.lastName = result.lastName
             user.phoneNumber = "2"
             user.photoURI = result.image?:""
+            user.googleProfileImgUrl = result.avatarGoogle
+            user.bio = result.bio
+            user.email = result.email
+
             userNetworkRepository.saveUserInfoInLocalDb(user)
             dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, true)
             emit(OPERATION_COMPLETED)
@@ -136,8 +140,8 @@ class UserInfoViewModel(
         if(imgFile==null){
             emit(null)
         }else{
-            emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
-
+//            emit( userNetworkRepository.getCompressedImageBody(context, imgFile))
+            emit(userNetworkRepository.getMultipartImage(context, imgFile))
         }
 
 //        val requestFile: okhttp3.RequestBody? =
@@ -359,7 +363,9 @@ class UserInfoViewModel(
 
     }
 
-
+    fun deleteUserFromDb()  = viewModelScope.launch{
+        userNetworkRepository.deleteUserFromDb()
+    }
 
 
 }

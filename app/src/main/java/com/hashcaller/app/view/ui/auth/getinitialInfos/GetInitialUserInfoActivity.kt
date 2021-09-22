@@ -3,6 +3,7 @@ package com.hashcaller.app.view.ui.auth.getinitialInfos
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,10 +12,14 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -47,6 +52,7 @@ import com.hashcaller.app.view.utils.imageProcess.ImagePickerHelper
 import com.hashcaller.app.view.utils.validateInput
 import com.vmadalin.easypermissions.EasyPermissions
 import okhttp3.MultipartBody
+import java.io.File
 
 class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var sharedPreferences: SharedPreferences
@@ -58,16 +64,14 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityGetInitialUserInfoBinding
     private var account: GoogleSignInAccount? = null
-
-
-
-    //    private var imgFile: File? = null
-//    private var picturePath: String = ""
     private lateinit var imagePickerHelper: ImagePickerHelper
     var imgeMultipartBody: MultipartBody.Part? = null
     private var rcfirebaseAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var tokenHelper: TokenHelper? = null
+
+    private lateinit var startForProfileImageResult: ActivityResultLauncher<Intent>
+    private  var imgFile: File? = null
 
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +88,7 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         initGoogleSigninClient()
         networkChecker = CheckNetwork(this)
         networkChecker.registerNetworkCallback()
+        registerForImagePickerResult()
 
 //        loadImage(this, binding.imgVAvatarInitial, "@drawable/contact_circular_background_grey")
 
@@ -155,15 +160,17 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
                 startActivityForResult(signInIntent, PermisssionRequestCodes.RC_SIGN_IN)
             }
             R.id.imgVAvatarInitial -> {
-                if (hasStoragePermission()) {
-                    startImagePickActivity()
-                } else {
-                    EasyPermissions.requestPermissions(
-                        this, perms = arrayOf(READ_EXTERNAL_STORAGE),
-                        rationale = "Hash caller need storage permission to configure profile picture",
-                        requestCode = REQUEST_CODE_STORAGE
-                    )
-                }
+                startImagePickActivity()
+
+//                if (hasStoragePermission()) {
+//                    startImagePickActivity()
+//                } else {
+//                    EasyPermissions.requestPermissions(
+//                        this, perms = arrayOf(READ_EXTERNAL_STORAGE),
+//                        rationale = "Hash caller need storage permission to configure profile picture",
+//                        requestCode = REQUEST_CODE_STORAGE
+//                    )
+//                }
 
             }
         }
@@ -194,30 +201,38 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun startImagePickActivity() {
-        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(pickPhoto, REQUEST_CODE_IMG_PICK)
-    }
-
-    @SuppressLint("LongLogTag")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_CANCELED) {
-            when (requestCode) {
-                REQUEST_CODE_IMG_PICK -> if (resultCode == RESULT_OK && data != null) {
-                    val selectedImageUri: Uri? = data.data
-                    binding.imgVAvatarInitial.setImageURI(selectedImageUri)
-                    userInfoViewModel.processImage(this, selectedImageUri, imagePickerHelper)
-                }
-                PermisssionRequestCodes.RC_SIGN_IN -> {
-                    binding.pgBarInfo.beVisible()
-                    binding.btnUserContinue.isEnabled = false
-                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                    handleSignInResult(task);
-                }
+        ImagePicker.with(this)
+            .cropSquare()	    			//Crop image
+            .compress(30)			//Final image size will be less than 30 kb
+            .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+            .createIntent { intent ->
+                startForProfileImageResult.launch(intent)
             }
-        }
-
+        binding.pgBarImgPick.beVisible()
+//        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//        startActivityForResult(pickPhoto, REQUEST_CODE_IMG_PICK)
     }
+
+//    @SuppressLint("LongLogTag")
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode != RESULT_CANCELED) {
+//            when (requestCode) {
+//                REQUEST_CODE_IMG_PICK -> if (resultCode == RESULT_OK && data != null) {
+//                    val selectedImageUri: Uri? = data.data
+//                    binding.imgVAvatarInitial.setImageURI(selectedImageUri)
+////                    userInfoViewModel.processImage(this, selectedImageUri, imagePickerHelper)
+//                }
+//                PermisssionRequestCodes.RC_SIGN_IN -> {
+//                    binding.pgBarInfo.beVisible()
+//                    binding.btnUserContinue.isEnabled = false
+//                    val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+//                    handleSignInResult(task);
+//                }
+//            }
+//        }
+//
+//    }
     /**
      * https://developers.google.com/identity/sign-in/android/sign-in
      *
@@ -291,7 +306,30 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun registerForImagePickerResult() {
 
+        startForProfileImageResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                val resultCode = result.resultCode
+                val data = result.data
+                binding.pgBarImgPick.beInvisible()
+                if (resultCode == Activity.RESULT_OK) {
+                    //Image Uri will not be null for RESULT_OK
+                    val fileUri = data?.data!!
+
+                    val mProfileUri = fileUri
+                    imgFile = File(fileUri.path!!)
+                    binding.imgVAvatarInitial.setImageURI(fileUri)
+
+//                    showSaveUpdateBtn()
+//                    isImageAvatarChosenFromGoogle = false
+                } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                    toast(ImagePicker.getError(data))
+                } else {
+                    toast("No image selected")
+                }
+            }
+    }
     @SuppressLint("LongLogTag")
     private fun sendUserInfo() {
 
@@ -300,7 +338,7 @@ class GetInitialUserInfoActivity : AppCompatActivity(), View.OnClickListener {
 //    val email = binding.editTextEmail.text.toString().trim()
 
         userInfoViewModel.compresSAndPrepareForUpload(
-            imagePickerHelper.imgFile,
+            imgFile,
             this@GetInitialUserInfoActivity
         ).observe(this@GetInitialUserInfoActivity,
             Observer {

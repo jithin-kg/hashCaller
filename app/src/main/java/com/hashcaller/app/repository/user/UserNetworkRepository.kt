@@ -132,7 +132,6 @@ class UserNetworkRepository(
         phoneNumber = createPartFromString(userInfo.phoneNumber)
         countryCode = createPartFromString(userInfo.countryCode)
         countryISO = createPartFromString(userInfo.countryISO)
-
         googleProfileImgUrl = createPartFromString(userInfo.googleProfileImgUrl)
 
     }
@@ -210,8 +209,8 @@ class UserNetworkRepository(
         userInfoDAO?.insert(user = userInfo)
     }
 
-    suspend fun getCompressedImageBody(context: Context, imgFile: File): MultipartBody.Part  = withContext(Dispatchers.Default){
-        return@withContext  imageCompressor.getCompressedImagePart(imgFile)
+    suspend fun getMultipartImage(context: Context, imgFile: File): MultipartBody.Part  = withContext(Dispatchers.Default){
+        return@withContext  imageCompressor.getMultipartImage(imgFile)
 
     }
 
@@ -258,7 +257,9 @@ class UserNetworkRepository(
         return@withContext token?.let { retrofitService.deactivateMyAccount(it) }
     }
 
-
+    suspend fun deleteUserFromDb() = withContext(Dispatchers.IO) {
+        userInfoDAO?.deleteAll()
+    }
 
 
     companion object{

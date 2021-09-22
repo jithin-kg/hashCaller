@@ -18,6 +18,9 @@ interface UserInfoDAO {
     @Query("DELETE from user_info WHERE phone_no=:address")
     suspend fun delete(address: String)
 
+    @Query("DELETE from user_info")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM user_info LIMIT 1")
     fun getUserInfoLiveData(): LiveData<UserInfo>
 

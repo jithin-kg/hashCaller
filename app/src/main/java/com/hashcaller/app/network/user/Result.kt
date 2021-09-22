@@ -13,6 +13,10 @@ data class Result(
     @SerializedName("customToken")
     val customToken:String?,
     val isBlockedByAdmin:Int = 0,
-    val isPhoneNumRemovedInFireBs:Boolean = false
+    val isPhoneNumRemovedInFireBs:Boolean = false,
+    var bio:String,
+    var email:String,
+    var avatarGoogle:String,
+    var isVerifiedUser:Boolean,
 
 )
