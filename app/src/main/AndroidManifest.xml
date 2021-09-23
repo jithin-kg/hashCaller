@@ -49,9 +49,14 @@
         android:supportsRtl="true"
         android:theme="@style/SplashTheme">
         <activity
-            android:name=".view.ui.auth.permissionrequest.PermissionRequestActivity"
-            android:theme="@style/AppTheme">
+            android:name=".view.ui.getstarted.GettingStartedSliderActivity"
+            android:theme="@style/AppTheme"
+            android:exported="true" >
+
         </activity>
+        <activity
+            android:name=".view.ui.auth.permissionrequest.PermissionRequestActivity"
+            android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".view.ui.CreditsActvity"
             android:theme="@style/AppTheme" />
@@ -96,8 +101,6 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:stopWithTask="false" />
-
-
 
         <activity
             android:name=".view.ui.profile.ProfileActivity"

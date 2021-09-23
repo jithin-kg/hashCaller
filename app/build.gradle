@@ -58,12 +58,12 @@ android {
     }
 //   This is added for signin
     signingConfigs{
-        debug {
-            keyAlias 'Key0'
-            keyPassword 'newHkey@535'
-            storeFile file('/Users/jithin/Desktop/hashcallerandoirdkey/hashcallerKey')
-            storePassword 'newHkey@535'
-        }
+//        debug {
+//            keyAlias 'Key0'
+//            keyPassword 'newHkey@535'
+//            storeFile file('/Users/jithin/Desktop/hashcallerandoirdkey/hashcallerKey')
+//            storePassword 'newHkey@535'
+//        }
         release {
 
             keyAlias 'Key0'
@@ -282,9 +282,13 @@ dependencies {
 
     implementation "androidx.fragment:fragment-ktx:1.3.6"
 
+    //App intro screens
+    implementation 'com.github.AppIntro:AppIntro:6.1.0'
+    implementation 'com.airbnb.android:lottie:4.1.0'
 
 }
 repositories {
     mavenCentral()
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    maven { url "https://jitpack.io" }
 }

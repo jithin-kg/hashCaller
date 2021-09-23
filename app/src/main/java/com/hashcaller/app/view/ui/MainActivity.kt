@@ -73,6 +73,7 @@ import com.hashcaller.app.view.ui.contacts.startContactUploadWorker
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.startPermissionRequestActivity
 import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
+import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
 import com.hashcaller.app.view.ui.hashworker.HasherViewmodel
 import com.hashcaller.app.view.ui.manageblock.BlockManageActivity
 import com.hashcaller.app.view.ui.notifications.ManageNotificationsActivity
@@ -123,7 +124,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var headerImgView:de.hdodenhof.circleimageview.CircleImageView
     private lateinit var firstLetterView:TextView
     private lateinit var menu:Menu
-//    private lateinit var  menuMessage:MenuItem
+    //    private lateinit var  menuMessage:MenuItem
     private lateinit var  menuContacts:MenuItem
     private lateinit var  menuCalls:MenuItem
     private lateinit var  menuSearch:MenuItem
@@ -205,49 +206,49 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun checkUserInfoAvaialbleInDb(savedInstanceState: Bundle?) {
         dataStoreViewModel?.getPermissionAndUserInfo(USER_INFO_AVIALABLE_IN_DB, this)?.observe(this, Observer {
-           when(it){
-               USER_INFO_AND_PERMISSION_GIVEN ->{
+            when(it){
+                USER_INFO_AND_PERMISSION_GIVEN ->{
 
-                   firebaseAuthListener()
-                   binding = ActivityMainBinding.inflate(layoutInflater)
+                    firebaseAuthListener()
+                    binding = ActivityMainBinding.inflate(layoutInflater)
                     setContentView(binding.root)
-                   initMainActivityComponents()
+                    initMainActivityComponents()
 
-                   if(savedInstanceState==null){
-                       addAllFragments()
-                   }else{
-                       val ft = supportFragmentManager.beginTransaction()
-                       setDefaultFragment(DefaultFragmentManager.id)
-                       ft.detach(callFragment)
-                       ft.attach(callFragment)
+                    if(savedInstanceState==null){
+                        addAllFragments()
+                    }else{
+                        val ft = supportFragmentManager.beginTransaction()
+                        setDefaultFragment(DefaultFragmentManager.id)
+                        ft.detach(callFragment)
+                        ft.attach(callFragment)
 //                       ft.detach(smsFragment)
 //                       ft.attach(smsFragment)
-                       ft.detach(contactFragment)
-                       ft.attach(contactFragment)
+                        ft.detach(contactFragment)
+                        ft.attach(contactFragment)
 //                       ft.detach(searchFragment)
 //                       ft.attach(searchFragment)
-                       ft.detach(blockListFragment)
-                       ft.attach(blockListFragment)
+                        ft.detach(blockListFragment)
+                        ft.attach(blockListFragment)
 //                       ft.detach(smsSearchFragment)
 //                       ft.attach(smsSearchFragment)
-                       ft.commit()
+                        ft.commit()
 //                       setFragmentsFromSavedInstanceState(savedInstanceState)
 //                       addAllFragments()
 
-                   }
+                    }
 //                   binding.bottomNavigationView.beVisible()
-               }
-               PERMISSION__ONLY_GIVEN -> {
-                   onSingnedOutcleanUp()
-               }
-               USER_INFO_ONLY_GIVEN -> {
-                  startPermissionRequestActivity()
-                   finish()
-               }
-               else -> {
-                   onSingnedOutcleanUp()
-               }
-           }
+                }
+                PERMISSION__ONLY_GIVEN -> {
+                    onSingnedOutcleanUp()
+                }
+                USER_INFO_ONLY_GIVEN -> {
+                    startPermissionRequestActivity()
+                    finish()
+                }
+                else -> {
+                    onSingnedOutcleanUp()
+                }
+            }
         })
 
     }
@@ -264,7 +265,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun onSingnedOutcleanUp() {
-        val i = Intent(this, GetStartedActivity::class.java)
+        val i = Intent(this, GettingStartedSliderActivity::class.java)
         startActivity(i)
         finish()
     }
@@ -312,26 +313,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private fun observeUserInfo() {
         userInfoViewModel.userInfoLivedata.observe(this, Observer {
             if (it != null) {
-                    try {
-                        if(it.firstname.isNotEmpty()){
-                            val fLetter = formatPhoneNumber(it.firstname)[0].toString()
-                        }
-
-                val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
-                fullName.text = "${it.firstname} ${it.lastName}"
-                if(!it.googleProfileImgUrl.isNullOrEmpty()){
-                    Glide.with(this).load(it.googleProfileImgUrl)
-                        .into(headerImgView)
-                    firstLetterView.beInvisible()
-                }else if(!it.photoURI.isNullOrEmpty()){
-                    headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
-                    firstLetterView.beInvisible()
-                }else{
-                    firstLetterView.beVisible()
-                }
-                    }catch (e:Exception){
-                        toast("Unable to get user name")
+                try {
+                    if(it.firstname.isNotEmpty()){
+                        val fLetter = formatPhoneNumber(it.firstname)[0].toString()
                     }
+
+                    val fullName = header.findViewById<TextView>(R.id.tvNavDrawerName)
+                    fullName.text = "${it.firstname} ${it.lastName}"
+                    if(!it.googleProfileImgUrl.isNullOrEmpty()){
+                        Glide.with(this).load(it.googleProfileImgUrl)
+                            .into(headerImgView)
+                        firstLetterView.beInvisible()
+                    }else if(!it.photoURI.isNullOrEmpty()){
+                        headerImgView.setImageBitmap(getDecodedBytes(it.photoURI))
+                        firstLetterView.beInvisible()
+                    }else{
+                        firstLetterView.beVisible()
+                    }
+                }catch (e:Exception){
+                    toast("Unable to get user name")
+                }
 
             }
         })
@@ -582,7 +583,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if(!fmnt.isDefaultFgmnt){
             ft.hide(fragment)
         }else {
-           mainViewmodel.setActiveFragment(fragment)
+            mainViewmodel.setActiveFragment(fragment)
         }
 
     }
@@ -663,7 +664,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         ft.commit()
     }
 
-     fun showMessagesFragment() {
+    fun showMessagesFragment() {
         val ft = supportFragmentManager.beginTransaction()
         mainViewmodel.getActiveFragment()?.let { ft.hide(it) }
         ft.commit()
@@ -757,7 +758,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 }
 //                callFragment.showSearchView()
 //                callFragment.updateSelectedItemCount()
-        }
+            }
 
             else{
 //                super.onBackPressed()
@@ -1005,4 +1006,3 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 }
-
