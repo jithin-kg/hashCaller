@@ -26,16 +26,17 @@ class GettingStartedPrivacyPolicy : Fragment(), SlideBackgroundColorHolder {
     ): View? {
         binding = FragmentGettingStartedPrivacyPolicyBinding.inflate(inflater, container, false)
 
-        binding.tvTermsAgree.setOnClickListener{startPrivacyIntent()}
+//        binding.tvTermsAgree.setOnClickListener{startPrivacyIntent()}
         return binding.root
     }
 
     override val defaultBackgroundColor: Int
-        get() = if (requireActivity().isDarkThemeOn()) Color.BLACK else Color.WHITE
+        get() = requireContext().getColor(R.color.colorBackground)
 
     override fun setBackgroundColor(backgroundColor: Int) {
-        binding.container.setBackgroundColor(backgroundColor)
+//        binding.container.setBackgroundColor(backgroundColor)
     }
+
 
     private fun startPrivacyIntent() {
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://hashcaller.com/privacy"))

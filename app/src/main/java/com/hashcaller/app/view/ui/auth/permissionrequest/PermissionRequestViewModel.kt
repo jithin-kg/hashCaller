@@ -15,6 +15,9 @@ class PermissionRequestViewModel(app: Application) : AndroidViewModel(app) {
     fun navigateToPendingPermissionScreen() {
         currentDestination.value = Destinations.OtherPendingPermissions
     }
+    fun navigateToOverlayPermissionScreen() {
+        currentDestination.value = Destinations.Overlay
+    }
 
     fun navigateToEnd() {
         currentDestination.value = Destinations.End
@@ -32,11 +35,15 @@ class PermissionRequestViewModel(app: Application) : AndroidViewModel(app) {
 
     lateinit var onOverlayPermissionGranted:()->Unit
     lateinit var onOverlayPermissionDenied:()->Unit
+
+    lateinit var onScreeningPermissionGranted:()->Unit
+    lateinit var onScreeningPermissionDenied:()->Unit
 }
 
 enum class Destinations {
     ContactConsent,
     OtherPendingPermissions,
+    Overlay,
     None,
     End
 }

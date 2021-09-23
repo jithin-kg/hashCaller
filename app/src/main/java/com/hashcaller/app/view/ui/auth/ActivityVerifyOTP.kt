@@ -405,11 +405,7 @@ class ActivityVerifyOTP : AppCompatActivity(), View.OnClickListener {
                     otpview.setText(code)
 //                    Toast.makeText(this, "verified", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(
-                        this,
-                        "Something went wrong",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    toast("Something went wrong")
                 }
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
                     Toast.makeText(this, "invalid code", Toast.LENGTH_SHORT)

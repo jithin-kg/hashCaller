@@ -3,61 +3,103 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
+    android:background="@color/colorBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/textView27"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            android:id="@+id/lottieAnimationView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.47000003"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_rawRes="@raw/data_center"
-            tools:srcCompat="@tools:sample/avatars[5]" />
-
-
-
-    <TextView
-        android:id="@+id/textView27"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:textColor="@color/colorWhite"
-
-        android:gravity="center"
-        android:textStyle="bold"
-        android:text="Securely Stored"
-        app:layout_constraintBottom_toTopOf="@+id/textView28"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/tvAgree"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView28"
+            <ImageView
+                android:id="@+id/imgVMain"
+                android:layout_width="wrap_content"
+                android:layout_height="104dp"
+                android:layout_marginTop="80dp"
+                android:src="@drawable/encrypted"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/tvHead3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_padding_size_large"
+                android:layout_marginEnd="@dimen/margin_padding_size_large"
+                android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@color/textColor"
+                android:text="@string/data_we_process"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgVMain"
 
-        style="@style/TextAppearance.AppCompat.Subhead"
+                />
+
+            <TextView
+                android:id="@+id/tvPrivacy"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="0dp"
+                android:textColor="@color/textColor"
+                android:layout_height="wrap_content"
+                android:text="@string/contacts_consent"
+                app:layout_constraintTop_toBottomOf="@+id/tvHead3"
+                android:layout_marginStart="@dimen/margin_padding_size_medium"
+                android:layout_marginEnd="@dimen/margin_padding_size_medium"
+                android:layout_marginTop="@dimen/margin_padding_size_xxlarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+            <TextView
+                android:id="@+id/tvPrivacyMore"
+                android:layout_width="0dp"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/more_info_privacy"
+                app:layout_constraintTop_toBottomOf="@+id/tvPrivacy"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/margin_padding_size_medium"
+                android:layout_marginEnd="@dimen/margin_padding_size_medium"
+                android:layout_marginTop="4dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+    <CheckBox
+        android:id="@+id/cbAggree"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="@dimen/appintro_bottombar_height"
-        android:textColor="@color/colorWhite"
-        android:paddingBottom="16dp"
-        android:text="User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an "
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+
+        />
+    <TextView
+        android:id="@+id/tvAgree"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/cbAggree"
+        app:layout_constraintBottom_toBottomOf="@+id/cbAggree"
+        android:text="@string/agree"
+        android:alpha="0.74"
+        android:textColor="@color/textColor"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintStart_toEndOf="@+id/cbAggree"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

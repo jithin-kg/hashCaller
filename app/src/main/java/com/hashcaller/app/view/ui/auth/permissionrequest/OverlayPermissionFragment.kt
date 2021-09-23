@@ -7,24 +7,29 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ContactConsentFragmentBinding
+import com.hashcaller.app.databinding.OverlayPermissionFragmentBinding
 import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.view.ui.contacts.hasReadContactsPermission
 import com.hashcaller.app.view.ui.contacts.hasReadPhoneStatePermission
+import com.hashcaller.app.view.ui.extensions.requestAlertWindowPermission
 import com.hashcaller.app.view.utils.requestPermission
+import kotlinx.coroutines.delay
 
-class ContactConsentFragment : Fragment() {
+class OverlayPermissionFragment : Fragment() {
 
     companion object {
-        fun newInstance() = ContactConsentFragment()
+        fun newInstance() = OverlayPermissionFragment()
         private const val TAG = "`ContactConsentFragment"
     }
 
     private val viewModel: PermissionRequestViewModel by activityViewModels()
-    private lateinit var binding: ContactConsentFragmentBinding
+    private lateinit var binding: OverlayPermissionFragmentBinding
     private var flagContinuePressed = false
 
 
@@ -33,7 +38,7 @@ class ContactConsentFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = ContactConsentFragmentBinding.inflate(layoutInflater, container, false)
+        binding = OverlayPermissionFragmentBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -44,45 +49,28 @@ class ContactConsentFragment : Fragment() {
     }
 
     private fun setupUi() = with(binding) {
-//        materialCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-//            if (isChecked) {
-//                motionLayout.transitionToEnd()
-//            } else {
-//                motionLayout.transitionToStart()
-//            }
-//        }
 
         continueButton.setOnClickListener {
             flagContinuePressed = true
-//            if (materialCheckBox.isChecked) {
-                requireActivity().requestPermissions(
-                    arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG),
-                    PermisssionRequestCodes.REQUEST_CODE_READ_CONTACTS,
-                )
-//            }
+            (activity as AppCompatActivity).requestAlertWindowPermission()
+        }
+        btnSkip.setOnClickListener {
+            viewModel.navigateToEnd()
         }
     }
 
 
     override fun onResume() {
         super.onResume()
-        if (requireContext().hasReadContactsPermission() && flagContinuePressed)
+        if (Settings.canDrawOverlays(requireContext()))
             checkAndNavigateToPendingPermissionsScreen()
     }
 
     private fun checkAndNavigateToPendingPermissionsScreen() {
-        val pendingPermissionsLeft =
-            !requireActivity().hasReadPhoneStatePermission() ||
-                    !Settings.canDrawOverlays(requireContext())
-
-        if (pendingPermissionsLeft)
-            viewModel.navigateToPendingPermissionScreen()
-        else
-            viewModel.navigateToEnd()
-    }
-
-    private fun resetAnimationState() {
-//        binding.materialCheckBox.isChecked = false
+            lifecycleScope.launchWhenCreated {
+                delay(400)
+                viewModel.navigateToEnd()
+            }
     }
 
 }

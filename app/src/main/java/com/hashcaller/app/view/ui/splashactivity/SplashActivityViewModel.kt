@@ -95,8 +95,8 @@ class SplashActivityViewModel(
     }
 
     fun saveUserInfo(result: Result) :LiveData<Int> = liveData {
-        repository?.saveUserInfoInLocalDb(UserInfo(null, result.firstName,
-            result.lastName, "sample ", "sample","sample", result.image?:""))
+        repository?.saveUserInfoInLocalDb(UserInfo(null, result.firstName?:"",
+            result.lastName?:"", "sample ", "sample","sample", result.image?:""))
 
         emit(OPERATION_COMPLETED)
     }

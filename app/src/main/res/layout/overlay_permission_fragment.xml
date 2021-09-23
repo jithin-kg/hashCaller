@@ -10,27 +10,29 @@
         android:layout_height="match_parent"
         android:background="@color/colorBackground">
 
-        <TextView
-            android:id="@+id/textView"
+        <Button
+            android:id="@+id/btnSkip"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Lets allow Permissions"
+            android:layout_marginEnd="16dp"
+            android:alpha="0.6"
+            android:text="Skip"
+            android:textAllCaps="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imgVMain"
             android:layout_width="wrap_content"
-            android:layout_height="104dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:src="@drawable/encrypted"
+            android:src="@drawable/ic_caller_id"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/btnSkip" />
 
         <TextView
             android:id="@+id/tvHead2"
@@ -39,7 +41,7 @@
             android:layout_marginStart="@dimen/margin_padding_size_large"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="@dimen/margin_padding_size_large"
-            android:text="To show your call history and to filter spam, HashCaller needs access to your calls and contacts"
+            android:text="Enable 'Draw over other apps' for showing Caller ID when you receive calls."
             android:textColor="@color/textColor"
             android:textSize="19sp"
             app:layout_constraintEnd_toEndOf="parent"

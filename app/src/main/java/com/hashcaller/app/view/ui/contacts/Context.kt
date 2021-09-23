@@ -145,6 +145,13 @@ fun Context.showBadRequestToast(code: Int) {
     }
 }
 
+fun Context.hashContactsPermission():Boolean {
+    return EasyPermissions.hasPermissions(
+        this,
+        READ_CONTACTS,
+//        READ_PHONE_NUMBERS
+    )
+}
 fun Context.hasMandatoryPermissions(): Boolean {
     return EasyPermissions.hasPermissions(
         this,

@@ -10,6 +10,7 @@ import com.github.appintro.SlideBackgroundColorHolder
 import com.github.appintro.SlidePolicy
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.GettingStartedFullFeaturedBinding
+import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
 
 class GettingStartedFullFeaturedFragment : Fragment(), SlideBackgroundColorHolder{
 
@@ -25,7 +26,7 @@ class GettingStartedFullFeaturedFragment : Fragment(), SlideBackgroundColorHolde
     }
 
     override val defaultBackgroundColor: Int
-        get() = requireContext().getColor(R.color.gettingstarted_1)
+        get() = requireContext().getColor(R.color.colorBackground)
 
     override fun setBackgroundColor(backgroundColor: Int) {
         binding.container.setBackgroundColor(backgroundColor)

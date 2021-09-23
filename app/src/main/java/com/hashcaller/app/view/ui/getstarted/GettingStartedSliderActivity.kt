@@ -14,18 +14,16 @@ import com.hashcaller.app.view.ui.getstarted.fragments.GettingStartedSecurelySto
 class GettingStartedSliderActivity : AppIntro() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
-
+//        setImmersiveMode()
+        isWizardMode = true
+        showStatusBar(true)
+        setStatusBarColor(getColor(R.color.colorBackground))
+        setStatusBarColorRes(R.color.colorBackground)
         addSlide(GettingStartedPrivacyPolicy())
-        addSlide(GettingStartedFullFeaturedFragment())
+//        addSlide(GettingStartedFullFeaturedFragment())
         addSlide(GettingStartedRespectPrivacyFragment())
         addSlide(GettingStartedSecurelyStoredFragment())
-
         isColorTransitionsEnabled = true
-
-
         isSkipButtonEnabled = false
         setSwipeLock(true)
         isIndicatorEnabled = false
@@ -46,7 +44,7 @@ class GettingStartedSliderActivity : AppIntro() {
 
     override fun onSkipPressed(currentFragment: Fragment?) {
         super.onSkipPressed(currentFragment)
-        startPhoneAuthActivity()
+//        startPhoneAuthActivity()
     }
 
     override fun onDonePressed(currentFragment: Fragment?) {
@@ -56,7 +54,7 @@ class GettingStartedSliderActivity : AppIntro() {
 
     override fun onNextPressed(currentFragment: Fragment?) {
         if (currentFragment is GettingStartedPrivacyPolicy) {
-            isSkipButtonEnabled = true
+//            isSkipButtonEnabled = true
             setSwipeLock(false)
             isIndicatorEnabled = true
         }
@@ -74,5 +72,7 @@ class GettingStartedSliderActivity : AppIntro() {
         finish()
 
     }
+
+
 
 }

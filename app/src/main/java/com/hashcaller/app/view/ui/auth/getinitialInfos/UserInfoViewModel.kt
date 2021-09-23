@@ -44,13 +44,13 @@ class UserInfoViewModel(
             val user = UserInfo(null)
             val result = singupResponse.data
 //            user.email = result.email
-            user.firstname = result.firstName
-            user.lastName = result.lastName
+            user.firstname = result.firstName?:""
+            user.lastName = result.lastName?:""
             user.phoneNumber = "2"
             user.photoURI = result.image?:""
-            user.googleProfileImgUrl = result.avatarGoogle
-            user.bio = result.bio
-            user.email = result.email
+            user.googleProfileImgUrl = result.avatarGoogle?:""
+            user.bio = result.bio?:""
+            user.email = result.email?:""
 
             userNetworkRepository.saveUserInfoInLocalDb(user)
             dataStoreViewmodel.setBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB, true)

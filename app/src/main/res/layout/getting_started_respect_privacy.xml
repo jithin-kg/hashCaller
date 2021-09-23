@@ -10,20 +10,18 @@
         android:id="@+id/lottieAnimationView"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView27"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.47000003"
         app:layout_constraintVertical_chainStyle="packed"
         app:lottie_autoPlay="true"
-        app:lottie_loop="true"
+        app:lottie_loop="false"
         app:lottie_rawRes="@raw/lock"
-        tools:srcCompat="@tools:sample/avatars[5]"
-        />
+        tools:srcCompat="@tools:sample/avatars[5]" />
+
 
     <TextView
         android:id="@+id/textView27"
@@ -31,32 +29,75 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@color/colorWhite"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:text="Respects user privacy"
-        app:layout_constraintBottom_toTopOf="@+id/textView28"
+        android:text="@string/respect_privacy"
+        android:textColor="@color/textColor"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lottieAnimationView" />
+
+    <ImageView
+        android:id="@+id/imgV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+        android:src="@drawable/ic_outline_lock_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
     <TextView
-        android:id="@+id/textView28"
-        android:textColor="@color/colorWhite"
-
+        android:id="@+id/tvDesc1"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:paddingBottom="16dp"
-
-        android:layout_marginBottom="@dimen/appintro_bottombar_height"
-        android:text="User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an User datas are saved in secure servers an "
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/privacy_desc"
+        android:textColor="@color/textColor"
+        app:layout_constraintBottom_toBottomOf="@+id/imgV1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/imgV1"
+        app:layout_constraintTop_toTopOf="@+id/imgV1" />
+
+    <ImageView
+        android:id="@+id/imgV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:src="@drawable/ic_shield_check_line"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDesc1" />
+
+    <TextView
+        android:id="@+id/tvDesc2"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="HashCaller doesn't store phone numbers without hashing"
+        android:textColor="@color/textColor"
+        app:layout_constraintBottom_toBottomOf="@+id/imgV2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgV2"
+        app:layout_constraintTop_toTopOf="@+id/imgV2" />
+
+    <Button
+        android:id="@+id/btnLearnMore"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Learn more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDesc2"
+        android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

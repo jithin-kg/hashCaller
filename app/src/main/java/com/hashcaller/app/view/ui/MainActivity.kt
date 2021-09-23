@@ -69,6 +69,8 @@ import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
 import com.hashcaller.app.view.ui.call.spam.SpamCallsActivity
 import com.hashcaller.app.view.ui.contacts.ContactsContainerFragment
+import com.hashcaller.app.view.ui.contacts.hasMandatoryPermissions
+import com.hashcaller.app.view.ui.contacts.hashContactsPermission
 import com.hashcaller.app.view.ui.contacts.startContactUploadWorker
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.startPermissionRequestActivity
@@ -190,7 +192,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         checkUserInfoAvaialbleInDb(savedInstanceState)
         setDataStoreValues()
         lifecycleScope.launchWhenCreated {
-            this@MainActivity.startContactUploadWorker()
+            if(hashContactsPermission()){
+                this@MainActivity.startContactUploadWorker()
+            }
+
         }
         regstrScreeningRoleResultCb()
 
