@@ -253,11 +253,12 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
             R.id.fabBtn -> {
                 Log.d(TAG, "onClick: delete")
                 contactViewModel.delteContactsInformation()
-                context?.startActivityIncommingCallViewUpdated(
-                    "+9180861762224",
-                    "Missed Call",
-                    -1
-                )
+//                context?.startActivityIncommingCallViewUpdated(
+//                    "+9180861762224",
+//                    "Missed Call",
+//                    -1,
+//                    cntctForView
+//                )
                 lifecycleScope.launchWhenStarted {
 //                    delay(2000L)
 //                    throw RuntimeException("Test crash")

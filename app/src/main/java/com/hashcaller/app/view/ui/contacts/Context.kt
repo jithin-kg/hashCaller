@@ -45,13 +45,18 @@ import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REAS
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_NON_CONTACT
 import com.hashcaller.app.utils.callReceiver.InCommingCallManager.Companion.REASON_BLOCK_TOP_SPAMMER
 import com.hashcaller.app.utils.constants.IntentKeys
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.AVATAR_GOOGLE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.CALL_HANDLED_SIM
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.CALL_STATE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.CARRIER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.COUNTRY
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.FIRST_NAME
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.FULL_NAME_FROM_SERVER
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.FULL_NAME_IN_C_PROVIDER
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.H_UID
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.INTENT_COMMAND
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.IS_VERIFIED_USER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.LAST_NAME
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.LOCATION
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.PHONE_NUMBER
@@ -64,6 +69,8 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.STATUS_CODE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_AND_WINDOW
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.THUMBNAIL_FROM_CPROVIDER
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.THUMBNAIL_FROM_DB
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallView
@@ -389,13 +396,22 @@ fun Context.startActivityIncommingCallView(
 fun Context.startActivityIncommingCallViewUpdated(
     phoneNumber: String,
     prevCallState: String?,
-    callHandledSim: Int
+    callHandledSim: Int,
+    cntctForView: CntctitemForView
 ) {
 
     val i = Intent(this, ActivityIncommingCallViewUpdated::class.java)
     i.putExtra(PHONE_NUMBER, phoneNumber?:"")
     i.putExtra(CALL_HANDLED_STATE, prevCallState?:"" )
     i.putExtra(CALL_HANDLED_SIM, callHandledSim )
+    i.putExtra(FULL_NAME_IN_C_PROVIDER, cntctForView.nameInLocalPhoneBook)
+    i.putExtra(FULL_NAME_FROM_SERVER, cntctForView.fullNameServer)
+    i.putExtra(THUMBNAIL_FROM_CPROVIDER, cntctForView.thumbnailImgCp)
+    i.putExtra(THUMBNAIL_FROM_DB, cntctForView.thumbnailImgServer)
+    i.putExtra(AVATAR_GOOGLE, cntctForView.avatarGoogle)
+    i.putExtra(H_UID, cntctForView.hUid)
+    i.putExtra(SPAM_COUNT, cntctForView.spammCount)
+    i.putExtra(IS_VERIFIED_USER, cntctForView.isVerifiedUser)
     i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
     startActivity(i)
 }

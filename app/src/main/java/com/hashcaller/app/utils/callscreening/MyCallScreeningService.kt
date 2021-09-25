@@ -91,12 +91,7 @@ class MyCallScreeningService: CallScreeningService() {
         phoneNumber = libCountryHelper.getES164Formatednumber(phoneNumber, countryCodeIso)
         responseBuilder = CallResponse.Builder()
 //        showNotification()
-        startFloatingServiceFromScreeningService(phoneNumber)
-
-//        _window = Window(this, phoneNumber)
-//        window.open()
-//        WindowObj.setWindow(window)
-//        startCallScreeningForegroundService()
+//        startFloatingServiceFromScreeningService(phoneNumber)
         supervisorScope.launch {
             dataStoreRepository =  DataStoreRepository(tokeDataStore)
 //            CallScreeningFloatingService.handleCall()
@@ -142,7 +137,7 @@ class MyCallScreeningService: CallScreeningService() {
             withContext(Dispatchers.Main){
                 if(isEndCall){
                     responseBuilder.setDisallowCall(true)
-                    stopFltinServiceFromActiivtyIncomming()
+//                    stopFltinServiceFromActiivtyIncomming()
 //                   stopFloatingService(true)
                 }
                 respondToCall(mCallDetails, responseBuilder.build())
@@ -216,134 +211,7 @@ class MyCallScreeningService: CallScreeningService() {
         const val TAG = "__MyCallScreeningService"
     }
 
-    private fun displayToast(message: String) {
-//        notificationManager.showToastNotification(applicationContext, message)
-//        EventBus.getDefault().post(MessageEvent(message))
-    }
-    private fun showNotification() {
-
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-//        val exitIntent = Intent(this, FloatingService::class.java).apply {
-//            putExtra(INTENT_COMMAND, INTENT_COMMAND_EXIT)
-//        }
-
-//        val noteIntent = Intent(this, FloatingService::class.java).apply {
-//            putExtra(INTENT_COMMAND, INTENT_COMMAND_NOTE)
-//        }
-
-//        val exitPendingIntent = PendingIntent.getService(
-//            this, CODE_EXIT_INTENT, exitIntent, 0
-//        )
-
-//        val notePendingIntent = PendingIntent.getService(
-//            this, CODE_NOTE_INTENT, noteIntent, 0
-//        )
-
-        // From Android O, it's necessary to create a notification channel first.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                with(
-                    NotificationChannel(
-                        NOTIFICATION_CHANNEL_GENERAL,
-                        " getString(R.string.notification_channel_general)",
-                        NotificationManager.IMPORTANCE_DEFAULT
-                    )
-                ) {
-                    enableLights(false)
-                    setShowBadge(false)
-                    enableVibration(false)
-                    setSound(null, null)
-                    lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-                    manager.createNotificationChannel(this)
-                }
-            } catch (ignored: Exception) {
-                // Ignore exception.
-            }
-        }
-
-        with(
-            NotificationCompat.Builder(
-                this,
-                NOTIFICATION_CHANNEL_GENERAL
-            )
-        ) {
-            setTicker(null)
-            setContentTitle(getString(R.string.app_name))
-            setContentText("Caller ID is active")
-            setAutoCancel(false)
-            setOngoing(true)
-            setWhen(System.currentTimeMillis())
-            setSmallIcon(R.drawable.ic_baseline_call_24)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                priority = NotificationManager.IMPORTANCE_LOW
-            }else{
-                priority = Notification.PRIORITY_LOW
-            }
-//            setContentIntent(notePendingIntent)
-//            addAction(
-//                NotificationCompat.Action(
-//                    0,
-//                    "getString(R.string.notification_exit)",
-//                    exitPendingIntent
-//                )
-//            )
-            startForeground(CODE_FOREGROUND_SERVICE, build())
-        }
-
-    }
-
-    /**
-     * funcftion to handle notificatoin, if call blocked and user preference is to
-     * to show notify for blocked calls , then show notification
-     */
-    @SuppressLint("LongLogTag")
-    private fun showNotificatification(isBlocked: Boolean, phoneNumber: String) {
-        var notificationManagerCmpt: NotificationManagerCompat = NotificationManagerCompat.from(this)
-//        if(isBlocked && isReceiveNotificationForSpamCallEnabled()){
-//            //show notification
-//            val resultIntent = Intent(this, MainActivity::class.java)
-////            resultIntent.putExtra(CONTACT_ADDRES, senderNo)
-//
-//// Create the TaskStackBuilder
-//            val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
-//                // Add the intent, which inflates the back stack
-//                addNextIntentWithParentStack(resultIntent)
-//                // Get the PendingIntent containing the entire back stack
-//                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//            }
-//            val notification = NotificationCompat
-//                .Builder(this, HashCaller.CHANNEL_2_ID )
-//                .setSmallIcon(R.drawable.ic_baseline_block_red)
-//                .setContentTitle("Call Blocked")
-//                .setContentText("Call from $phoneNumber is blocked")
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setCategory(NotificationCompat.CATEGORY_EVENT)
-//                .setContentIntent(resultPendingIntent)
-//                .setAutoCancel(true)
-//                .build()
-//
-//            notificationManagerCmpt.notify(2, notification)
-//
-//        }
-    }
 
 
-    /**
-     * important to request this permission to show the alert on top of other apps / dialer
-     */
-    private fun startCallViewActivity() {
-//        https://stackoverflow.com/questions/63509860/how-to-start-activity-from-callscreeningservice-in-java
-
-//        val i = Intent(this, ActivityIncommingCallView::class.java)
-//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        i.putExtra("name", "sample")
-//        i.putExtra("phoneNumber", "808123")
-//        i.putExtra("spamcount",0)
-//        i.putExtra("carrier","sample")
-//        i.putExtra("location", "sample")
-//        startActivity(i)
-    }
 
 }

@@ -57,18 +57,26 @@ interface CallersInfoFromServerDAO {
                      isVerifiedUser:Boolean
                      )
 
-    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName,thumbnailImg=:thumbnailImg, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier WHERE contact_address =:contactAddress ")
+    @Query("UPDATE  callers_info_from_server  SET spamReportCount =:spamReportCount,firstName =:firstName, lastName=:lastName,thumbnailImg=:thumbnailImg, informationReceivedDate=:informationReceivedDate, city=:city,country=:country, carrier=:carrier, nameInPhoneBook=:nameInPhoneBook,isInfoFoundInServer=:isUserInfoFoundInServer,type=:spammerType,hUid=:hUid,bio=:bio,email=:email,avatarGoogle=:avatarGoogle,isVerifiedUser=:isVerifiedUser  WHERE contact_address =:contactAddress")
     suspend fun updateWithServerinfo(
-                                     contactAddress: kotlin.String,
-                                     firstName:String,
-                                     lastName: String,
-                                     informationReceivedDate:Date,
-                                     spamReportCount:Long,
-                                     city:String,
-                                     country:String,
-                                     carrier:String,
-                                     thumbnailImg:String
-                                     )
+        contactAddress: String,
+        firstName: String,
+        lastName: String,
+        informationReceivedDate: Date,
+        spamReportCount: Long,
+        city: String,
+        country: String,
+        carrier: String,
+        thumbnailImg: String,
+        nameInPhoneBook: String,
+        isUserInfoFoundInServer: Int,
+        spammerType: Int,
+        hUid: String,
+        bio: String,
+        email: String,
+        avatarGoogle: String,
+        isVerifiedUser: Boolean,
+        )
 
     @Query("UPDATE  callers_info_from_server  SET isBlockedByUser =:isBlockedByUser, spamReportCount =:spamCount WHERE contact_address =:contactAddress")
     suspend fun unBlock(isBlockedByUser:Boolean, contactAddress: kotlin.String, spamCount: Long)

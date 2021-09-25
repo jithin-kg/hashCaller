@@ -15,19 +15,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityIncommingCallViewUpdatedBinding
 import com.hashcaller.app.datastore.DataStoreRepository
-import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
 import com.hashcaller.app.network.HttpStatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.hashcaller.app.network.search.model.Cntct
@@ -52,7 +52,9 @@ import com.hashcaller.app.view.ui.contacts.makeCall
 import com.hashcaller.app.view.ui.contacts.search.utils.SearchInjectorUtil
 import com.hashcaller.app.view.ui.contacts.search.utils.SearchViewModel
 import com.hashcaller.app.view.ui.contacts.stopFltinServiceFromActiivtyIncomming
+import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID
+import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.*
 import com.hashcaller.app.work.formatPhoneNumber
@@ -61,6 +63,7 @@ import kotlinx.android.synthetic.main.activity_incomming_call_view_updated.*
 import kotlinx.android.synthetic.main.activity_incomming_call_view_updated.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.coroutines.delay
+import java.util.*
 
 
 /**
@@ -79,7 +82,17 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     @SuppressLint("LongLogTag")
     private var showfeedbackView = false
     private var phoneNumber: String = ""
+    private var fullNameInCP: String = ""
+    private var fullNameserver: String = ""
+    private var imageFromCp: String = ""
+    private var imageFromDB: String = ""
+    private var avatarGoogle: String = ""
+    private var hUid: String = ""
+    private var spamCount: Long = 0L
+    private var isVerifiedUser:Boolean = false
     private var callHandledState: String = ""
+
+
     private var callHandledSim = NO_SIM_DETECTED
     private lateinit var userInfo: CntctitemForView
     private var statusCode = STATUS_SEARHING_IN_PROGRESS
@@ -114,9 +127,12 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         isVisible = true
         callHandledState = intent.getStringExtra(CALL_HANDLED_STATE) ?: ""
         registerForBroadCastReceiver()
-        getIntentxras(intent)
+
         binding = ActivityIncommingCallViewUpdatedBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        getIntentxras(intent)
+
         stopFltinServiceFromActiivtyIncomming()
         configurePopupActivity()
         initViewmodel()
@@ -124,7 +140,6 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         initListeners()
         phoneNumber = intent.getStringExtra(PHONE_NUMBER) ?: ""
         callHandledSim = intent.getIntExtra(IntentKeys.CALL_HANDLED_SIM, NO_SIM_DETECTED)
-        setViewFromIntent()
         getCallerInfo()
         checkIfUserBlockedThisNumber()
         animateCard()
@@ -149,34 +164,112 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
             binding.actionsCard.visibility = View.INVISIBLE
             delay(500)
 
-            binding.actionsCard.visibility = View.VISIBLE
+            binding.actionsCard.beVisible()
             binding.actionsCard.topToBottomAnim(500L, 100f)
+            if(hUid.isEmpty()){
+                delay(300)
+                binding.helpfulMessage.beVisible()
+                binding.helpfulMessage.bottomToTopAnim(500L, 500f)
+            }else {
+                binding.helpfulMessage.beGone()
+            }
 
-            delay(300)
-            binding.helpfulMessage.visibility = View.VISIBLE
-            binding.helpfulMessage.bottomToTopAnim(500L, 500f)
         }
 
     }
 
-    private fun setViewFromIntent() {
-        binding.tvPhoneNumIncomming.text = phoneNumber
-        binding.txtVcallerName.text = phoneNumber
+    private fun getIntentxras(intent: Intent) {
 
-        if (callHandledState.isEmpty()) {
-            callHandledState = "Call Ended"
-        }
-        binding.tvCallEndState.text = callHandledState
+        phoneNumber = intent.getStringExtra(PHONE_NUMBER) ?: ""
+        fullNameInCP = intent.getStringExtra(IntentKeys.FULL_NAME_IN_C_PROVIDER) ?: ""
+        fullNameserver = intent.getStringExtra(IntentKeys.FULL_NAME_FROM_SERVER) ?: ""
+        imageFromCp = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER) ?: ""
+        imageFromDB = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_DB) ?: ""
+        avatarGoogle = intent.getStringExtra(IntentKeys.AVATAR_GOOGLE) ?: ""
+        hUid = intent.getStringExtra(IntentKeys.H_UID) ?: ""
+        showfeedbackView = intent.getBooleanExtra(SHOW_FEEDBACK_VIEW, false)
+        isVerifiedUser = intent.getBooleanExtra(IntentKeys.IS_VERIFIED_USER, false)
+        intent.getLongExtra(IntentKeys.SPAM_COUNT, 0L)
 
-        when (callHandledSim) {
-            SIM_TWO -> {
-                binding.sim.setImageResource(R.drawable.ic_sim_2_line_white)
+        val contact = CntctitemForView(informationReceivedDate = Date())
+        contact.nameInLocalPhoneBook = fullNameInCP
+        contact.phoneNumber = phoneNumber
+        contact.fullNameServer = fullNameserver
+        contact.thumbnailImgCp = imageFromCp
+        contact.thumbnailImgServer = imageFromDB
+        contact.avatarGoogle = avatarGoogle
+        contact.hUid = hUid
+        contact.avatarGoogle = avatarGoogle
+        contact.isVerifiedUser = isVerifiedUser
+
+        setViewContent(contact)
+
+
+
+//        statusCode = intent.getIntExtra(STATUS_CODE, STATUS_SEARHING_IN_PROGRESS)
+    }
+    private fun setViewContent(contact: CntctitemForView) {
+        with(binding){
+            var fullName = ""
+            tvPhoneNumIncomming.text = phoneNumber
+
+            if(contact.nameInLocalPhoneBook.isNotEmpty()){
+                fullName = contact.nameInLocalPhoneBook
+            }else if(contact.fullNameServer.isNotEmpty()){
+                fullName = contact.fullNameServer
+
+            }else if(contact.nameInPhoneBook.isNotEmpty()){
+                fullName = contact.nameInPhoneBook
+            }else {
+                fullName = phoneNumber
             }
-            SIM_ONE -> {
-                binding.sim.setImageResource(R.drawable.ic_sim_1_line_white)
+            txtVcallerName.text = fullName
+
+            if(contact.thumbnailImgCp.isNotEmpty()){
+                imgVAvatarIncomming.beVisible()
+                tvFirstLetter.beInvisible()
+                loadImage(this@ActivityIncommingCallViewUpdated, imgVAvatarIncomming, contact.thumbnailImgCp)
+            }else if(contact.thumbnailImgServer.isNotEmpty()){
+                imgVAvatarIncomming.beVisible()
+                tvFirstLetter.beInvisible()
+                imgVAvatarIncomming.setImageBitmap(getDecodedBytes(contact.thumbnailImgServer))
+            }else if(contact.avatarGoogle.isNotEmpty()){
+                imgVAvatarIncomming.beVisible()
+                tvFirstLetter.beInvisible()
+                Glide.with(this@ActivityIncommingCallViewUpdated).load(contact.avatarGoogle)
+                    .into(imgVAvatarIncomming)
+            }else {
+                imgVAvatarIncomming.beInvisible()
+                tvFirstLetter.beVisible()
+                binding.tvFirstLetter.text = fullName[0].toString()
+            }
+            if(contact.isVerifiedUser){
+                txtVcallerName.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this@ActivityIncommingCallViewUpdated, R.drawable.ic_baseline_verified_2), null)
+            }else if(contact.hUid.isNotEmpty()){
+                //registed user
+                txtVcallerName.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+                
+            }else {
+                txtVcallerName.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this@ActivityIncommingCallViewUpdated, R.drawable.ic_baseline_edit_18_white), null)
+            }
+
+
+            toggleUserBadge(imgUserIconBg, imgUserIcon, contact.hUid)
+
+            if (callHandledState.isEmpty()) {
+                callHandledState = "Call Ended"
+            }
+            binding.tvCallEndState.text = callHandledState
+
+            when (callHandledSim) {
+                SIM_TWO -> {
+                    binding.sim.setImageResource(R.drawable.ic_sim_2_line_white)
+                }
+                SIM_ONE -> {
+                    binding.sim.setImageResource(R.drawable.ic_sim_1_line_white)
+                }
             }
         }
-
     }
 
     private fun checkIfUserBlockedThisNumber() {
@@ -186,11 +279,14 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
     private fun getCallerInfo() {
         viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
-            setViewElements(it)
-            if (!it.isSearchedForCallerInserver) {
-                //search fo
+            if (!it.shoudlSearchInServer) {
+                setViewElements(it)
+            }else {
+                viewModel.getCallerInfoFromServer(phoneNumber).observe(this, Observer {searchRes->
+                    searchRes?.let { it1 -> setViewElements(it1) }
+                })
             }
-//            if(it.in)
+
         })
     }
 
@@ -264,21 +360,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
     }
 
-    private fun getIntentxras(intent: Intent) {
-//        var firstName = intent.getStringExtra(FIRST_NAME)?:""
-//        val lastName = intent.getStringExtra(LAST_NAME)?:""
-        phoneNumber = intent.getStringExtra(PHONE_NUMBER) ?: ""
-//        val spamcount = intent.getIntExtra(SPAM_COUNT, 0)
-//        val location  = intent.getStringExtra(LOCATION)?:""
-//        val carrier  = intent.getStringExtra(CARRIER)?:""
-//        userInfo = CntctitemForView(
-//            firstName= firstName,
-//            lastName = l
-//        )
 
-        showfeedbackView = intent.getBooleanExtra(SHOW_FEEDBACK_VIEW, false)
-//        statusCode = intent.getIntExtra(STATUS_CODE, STATUS_SEARHING_IN_PROGRESS)
-    }
 
     private fun configurePopupActivity() {
         /**
@@ -385,9 +467,12 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
             }
             R.id.txtVcallerName -> {
-                binding.suggestCard.showAnim()
-                binding.txtVcallerName.post {
-                    showKeyboard(binding.suggestedNameEdittext)
+                if(hUid.isEmpty()){
+                    //only a non registerd user
+                    binding.suggestCard.showAnim()
+                    binding.txtVcallerName.post {
+                        showKeyboard(binding.suggestedNameEdittext)
+                    }
                 }
             }
 

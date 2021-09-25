@@ -55,7 +55,7 @@ class IndividualCallLogActivity : AppCompatActivity(), IndividualCallLogAdapter.
         nameFromDb = intent.getStringExtra(IntentKeys.FULL_NAME_FROM_SERVER)
         thumbnailFromCProvider = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER)
         hUid = intent.getStringExtra(IntentKeys.H_UID)
-        thumbnailFromDB = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_BB)
+        thumbnailFromDB = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_DB)
         isReportedByUser = intent.getBooleanExtra(IntentKeys.IS_REPORTED_BY_USER, false)
         spamCount = intent.getLongExtra(IntentKeys.SPAM_COUNT, 0L)
         avatarColor = intent.getIntExtra(IntentKeys.AVATAR_COLOR, 0)

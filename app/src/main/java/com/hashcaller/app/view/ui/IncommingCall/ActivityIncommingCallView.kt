@@ -161,13 +161,13 @@ class ActivityIncommingCallView : AppCompatActivity(), View.OnClickListener {
 
 
     private fun getCallerInfo() {
-        viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
-            setViewElements(it)
-            if(!it.isSearchedForCallerInserver){
-                //search fo
-            }
-//            if(it.in)
-        })
+//        viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
+//            setViewElements(it)
+//            if(!it.isSearchedForCallerInserver){
+//                //search fo
+//            }
+////            if(it.in)
+//        })
     }
     @SuppressLint("LongLogTag")
     private fun setViewElements(callersInfo: CntctitemForView) {

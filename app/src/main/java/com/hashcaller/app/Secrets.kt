@@ -22,7 +22,7 @@ class Secrets {
 
 //    external fun managecipher(packageName: String, key:String):String
 //    https://stackoverflow.com/questions/50425424/sha-256-mismatch-between-nodejs-and-java-code/50425781
-    fun managecipher(packageName: String, key:String):String{
+    fun managecipher(packageName: String?, key:String):String{
         val md = MessageDigest.getInstance("SHA-256")
         md.update(key.toByteArray())
         val byteData: ByteArray = md.digest()

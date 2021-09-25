@@ -1,13 +1,13 @@
 package com.hashcaller.app.view.ui.call
 
 import android.Manifest.permission.*
-import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.util.Pair
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -716,11 +716,35 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
 
-            val intent = getContactIntent(log, INDIVIDUAL_CONTACT_ACTIVITY)
-            val options = getOptions(view, log)
-            startActivity(intent)
+        var name = log.nameInPhoneBook
+        if(name.isNullOrEmpty()){
+            name = log?.nameFromServer
+        }
+        if(name.isNullOrEmpty()){
+            name = log.numberFormated
+        }
+
+        val intent = Intent(context, IndividualContactViewActivity::class.java )
+        intent.putExtra(com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID, log.number)
+        intent.putExtra("name", name )
+        intent.putExtra("photo", log.thumbnailFromCp)
+        intent.putExtra("color", log.color)
+
+        val pairList = java.util.ArrayList<Pair<View, String>>()
+        var pair:android.util.Pair<View, String>? = null
+        if(log.imageFromDb.isNotEmpty() || log.avatarGoogle.isNotEmpty() || log.thumbnailFromCp.isNotEmpty()){
+            pair = android.util.Pair(view.findViewById(R.id.imgVThumbnail) as View,"contactImageTransition")
+//           pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
+        }else {
+            pair = android.util.Pair(view.findViewById(R.id.textViewCrclr) as View, "firstLetterTransition")
+        }
+        pairList.add(pair)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
+        startActivity(intent, options.toBundle())
+
 //            startActivity(intent, options.toBundle())
     }
+
 
     private fun getOptions(view: View, log: CallLogTable): ActivityOptions {
 
@@ -745,6 +769,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         return ActivityOptions.makeSceneTransitionAnimation(activity, pairList[0])
     }
 
+
     private fun getContactIntent(
         log: CallLogTable,
         destinationActivity: Int
@@ -765,7 +790,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 intent.putExtra(IntentKeys.FULL_NAME_FROM_SERVER, log.nameFromServer)
                 intent.putExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER, log.thumbnailFromCp)
                 intent.putExtra(IntentKeys.H_UID, log.hUid)
-                intent.putExtra(IntentKeys.THUMBNAIL_FROM_BB, log.imageFromDb)
+                intent.putExtra(IntentKeys.THUMBNAIL_FROM_DB, log.imageFromDb)
                 intent.putExtra(IntentKeys.SPAM_COUNT, log.spamCount)
                 intent.putExtra(IntentKeys.IS_REPORTED_BY_USER, log.isReportedByUser)
                 intent.putExtra(IntentKeys.AVATAR_COLOR, log.color)
@@ -780,6 +805,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         intent.putExtra("color", log.color)
         return intent
     }
+
 
     private fun markItem(id: Long, clickType: Int, position: Int, number: String): Int {
         if(viewmodel?.markeditemsHelper?.markedItems?.value !=null){

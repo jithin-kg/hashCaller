@@ -22,6 +22,7 @@ import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.HashCallerDatabase
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
+import com.hashcaller.app.network.search.model.CntctitemForView
 import com.hashcaller.app.repository.search.SearchNetworkRepository
 import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.Constants.Companion.NO_SIM_DETECTED
@@ -45,6 +46,7 @@ import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.*
+import java.util.*
 
 
 //const val INTENT_COMMAND = "com.localazy.quicknote.COMMAND"
@@ -92,6 +94,7 @@ class FloatingService: Service() {
      */
     override fun onCreate() {
         super.onCreate()
+
         dataStoreRepository = DataStoreRepository(this.tokeDataStore)
 
         rcfirebaseAuth = FirebaseAuth.getInstance()
@@ -133,7 +136,7 @@ class FloatingService: Service() {
                         WindowObj.clearReference()
                         window = null
                         if(mphoneNumberStr.isNotEmpty()){
-                            startActivityIncommingCallViewUpdated(mphoneNumberStr, callEndedState, callHandledSim)
+                            startActivityIncommingCallViewUpdated(mphoneNumberStr, callEndedState, callHandledSim, cntctForView)
                         }
 
 //                                }
@@ -144,6 +147,7 @@ class FloatingService: Service() {
             }
         }
         registerReceiver(mysms, IntentFilter(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE))
+
 
     }
 
@@ -166,7 +170,8 @@ class FloatingService: Service() {
             val command = intent.getStringExtra(INTENT_COMMAND)
             if(command== IntentKeys.STOP_FLOATING_SERVICE_AND_WINDOW){
             }
-            else if(command == START_FLOATING_SERVICE_OFF_HOOK && !isCallScreeningRoleHeld()){
+//            else if(command == START_FLOATING_SERVICE_OFF_HOOK && !isCallScreeningRoleHeld()){
+            else if(command == START_FLOATING_SERVICE_OFF_HOOK ){
                 registerCallStateListener { phoneNumber, callState ->
                 }
                   val num =   intent.getStringExtra(PHONE_NUMBER)
@@ -178,7 +183,8 @@ class FloatingService: Service() {
                 }
             }
             else if(command == START_FLOATING_SERVICE){
-                if(!onStartCalled && !isCallScreeningRoleHeld()){
+//                if(!onStartCalled && !isCallScreeningRoleHeld()){
+                if(!onStartCalled ){
                     registerCallStateListener { phoneNumber, callState ->
                         when(callState){
                             TelephonyManager.CALL_STATE_RINGING, TelephonyManager.CALL_STATE_OFFHOOK ->{
@@ -262,7 +268,8 @@ class FloatingService: Service() {
                             startActivityIncommingCallViewUpdated(
                                 mphoneNumberStr,
                                 callEndedState,
-                                callHandledSim
+                                callHandledSim,
+                                cntctForView
                             )
                             stopService()
                         }
@@ -289,7 +296,8 @@ class FloatingService: Service() {
                             startActivityIncommingCallViewUpdated(
                                 mphoneNumberStr,
                                 callEndedState,
-                                callHandledSim
+                                callHandledSim,
+                                cntctForView
                             )
                             stopService()
                         }
@@ -382,7 +390,8 @@ class FloatingService: Service() {
                                     startActivityIncommingCallViewUpdated(
                                         incomingNumber,
                                         callEndedState,
-                                        callHandledSim
+                                        callHandledSim,
+                                        cntctForView
                                     )
                                 stopService()
                             }
@@ -530,5 +539,9 @@ class FloatingService: Service() {
 
 
         const val TAG = "__FloatingService"
+
+        var cntctForView: CntctitemForView = CntctitemForView(informationReceivedDate = Date())
+
+
     }
 }

@@ -43,6 +43,30 @@
             app:layout_constraintStart_toStartOf="@+id/imgVAvatarIncomming"
             app:layout_constraintTop_toTopOf="@+id/imgVAvatarIncomming" />
 
+        <ImageView
+            android:id="@+id/imgUserIcon"
+            android:layout_width="@dimen/width_icon_user_badge_list"
+            android:layout_height="@dimen/width_icon_user_badge_list"
+            android:elevation="6dp"
+            android:visibility="invisible"
+            android:src="@drawable/ic_person_outline"
+            app:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+            app:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+            app:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+            app:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+            />
+        <ImageView
+            android:id="@+id/imgUserIconBg"
+            android:layout_width="@dimen/width_user_bade_list_bg"
+            android:layout_height="@dimen/width_user_bade_list_bg"
+            android:elevation="5dp"
+            android:visibility="invisible"
+            android:src="@drawable/user_badge_background"
+            app:layout_constraintBottom_toBottomOf="@+id/imgVAvatarIncomming"
+            app:layout_constraintStart_toStartOf="@+id/imgVAvatarIncomming"
+            android:layout_marginBottom="2dp"
+            android:layout_marginStart="2dp"
+            />
         <ImageButton
             android:id="@+id/imgBtnCloseIncommin"
             android:layout_width="24dp"
@@ -55,22 +79,32 @@
             app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/ic_baseline_close_white" />
 
-        <TextView
-            android:id="@+id/txtVcallerNameWindow"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:id="@+id/nameFrame"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:letterSpacing="0.1"
-            android:text="@string/searching"
-            android:textColor="@color/colorWhite"
-            android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/txtVLocaltionWindow"
             app:layout_constraintEnd_toStartOf="@+id/imgBtnCloseIncommin"
             app:layout_constraintHorizontal_bias="0.068"
             app:layout_constraintStart_toEndOf="@+id/imgVAvatarIncomming"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread" />
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+
+            >
+            <TextView
+                android:id="@+id/txtVcallerNameWindow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:letterSpacing="0.1"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp"
+                app:drawableEndCompat="@drawable/ic_baseline_verified_2"
+                />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/txtVLocaltionWindow"
@@ -81,8 +115,8 @@
             android:text="@string/location"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toTopOf="@+id/tvPhoneNumIncomming"
-            app:layout_constraintStart_toStartOf="@+id/txtVcallerNameWindow"
-            app:layout_constraintTop_toBottomOf="@+id/txtVcallerNameWindow" />
+            app:layout_constraintStart_toStartOf="@+id/nameFrame"
+            app:layout_constraintTop_toBottomOf="@+id/nameFrame" />
 
         <TextView
             android:id="@+id/tvPhoneNumIncomming"

@@ -58,7 +58,6 @@
     <string name="resend_otp">Resend OTP</string>
     <string name="location">Location</string>
     <string name="drag_to_move_caller_id">Drag to move caller ID</string>
-    <string name="searching">Searching..</string>
     <string name="spam_calls">Spam Calls</string>
     <string name="profile">Profile</string>
     <string name="settings">Settings</string>
@@ -103,11 +102,13 @@
     <string name="work_illustrations_by_storyset"><u>Work illustrations by Storyset</u></string>
     <string name="android_open_source_project"><u># Android Open Source Project</u></string>
     <string name="remix_icon"><u># RemixIcon</u></string>
-    <string name="contacts_consent">We may process your personal information relating to you if you use our products or services. Such information may include your phone number (hashed) , call log, contacts, and spam reports. All phone numbers are processed, send and stored as secure hash values.Only hash digest of phone numbers are transferred and stored in HashCaller. Your personal data we collected will be removed from HashCaller when you deactivate your account. We use these information to improve our services. We will not use this information for any other purposes. We do not share or sell your personal information with third parties.</string>
+    <string name="contacts_consent">We may process your personal information relating to you if you use our products or services. Such information may include your phone number (hashed) , call log, contacts, and spam reports. All phone numbers are processed, sent and stored as secure hash values.Only hash digest of phone numbers are transferred and stored in HashCaller. Your personal data we collected will be removed from HashCaller when you deactivate your account. We use this information to improve our services.Your personal data including profile data and phone numbers removed when you  deactivate  your account. We will not use this information for any other purposes. We do not share or sell your personal information with third parties.The above data is necessary to provide our service. If you do not wish to accept , you may uninstall HashCaller.</string>
     <string name="agree">" I've read and agree to Hashcaller's <br /> <u>Terms of service</u> and <u> privacy policy</u> "</string>
     <string name="initial_info_title">Complete your \n Profile</string>
     <string name="privacy_desc">Only hash digest of phone numbers are transferred and stored in HahCaller</string>
-    <string name="respect_privacy">We Respects your privacy</string>
+    <string name="respect_privacy">We respect your privacy</string>
     <string name="more_info_privacy">For more information please refer to our <u>Privacy policy</u></string>
     <string name="data_we_process">Data we process</string>
+    <string name="lottie_1"><u>Animation by matthew widodo on LottieFiles</u></string>
+    <string name="icon_made"><u>Icons made by https://www.freepik.com Freepik from https://www.flaticon.com</u></string>
 </resources>

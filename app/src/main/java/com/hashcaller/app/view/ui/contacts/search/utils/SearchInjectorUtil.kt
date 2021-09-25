@@ -40,6 +40,13 @@ object SearchInjectorUtil {
             CountrycodeHelper(context).getCountryISO()
             )
 
-        return SearchViewModelFactory(searchNetworkRepository, contactLocalSyncRepository, localDbSearchRepository, blockListPatternRepository)
+
+        return SearchViewModelFactory(
+            searchNetworkRepository,
+            contactLocalSyncRepository,
+            localDbSearchRepository,
+            blockListPatternRepository,
+            CountrycodeHelper(context).getCountryISO()
+            )
     }
 }

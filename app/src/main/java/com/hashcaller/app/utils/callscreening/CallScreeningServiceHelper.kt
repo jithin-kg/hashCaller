@@ -70,9 +70,7 @@ class CallScreeningServiceHelper(
                             WindowObj.getWindowObj()?.updateWithServerInfo(infoAvailableInDb, phoneNumber)
                         }
                         if(isCurrentDateAndPrevDateisGreaterThanLimit(infoAvailableInDb.informationReceivedDate, DATE_THREASHOLD)){
-                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(
-                                hashedNum
-                            ) }
+                            defServerHandling =  async {  inComingCallManager.searchInServerAndHandle(hashedNum) }
                         }
 
                     }else{
@@ -96,9 +94,9 @@ class CallScreeningServiceHelper(
 
                     Log.d(TAG, "onReceive: second try")
                     val resFromServer = defServerHandling?.await()
-                    if(resFromServer?.statusCode == HttpStatusCodes.STATUS_OK){
-                        WindowObj.getWindowObj()?.updateWithServerInfo(resFromServer, phoneNumber)
-                    }
+//                    if(resFromServer?.statusCode == HttpStatusCodes.STATUS_OK){
+//                        WindowObj.getWindowObj()?.updateWithServerInfo(resFromServer, phoneNumber)
+//                    }
 
                     if(resFromServer?.spammCount?:0 > spamThreshold && isBlockCommonSpammersEnabled){
                         respondToSpamCall(REASON_BLOCK_TOP_SPAMMER)

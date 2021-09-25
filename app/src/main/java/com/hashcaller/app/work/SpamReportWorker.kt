@@ -56,6 +56,8 @@ class SpamReportWorker (private val context: Context, private val params:WorkerP
                 val response = token?.let { report?.let { it1 -> retrofitService?.report(it1, it) } }
                 if(response?.code() in 500..599){
                     return@withContext Result.retry()
+                }else if(response?.code() == 200){
+                    return@withContext Result.success()
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "doWork: ")

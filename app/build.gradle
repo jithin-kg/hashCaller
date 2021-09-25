@@ -41,7 +41,7 @@ android {
         applicationId "com.hashcaller.app"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-        versionCode 16
+        versionCode 17
         versionName "1.05.0"
         vectorDrawables.useSupportLibrary = true
 
@@ -285,6 +285,10 @@ dependencies {
     //App intro screens
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
     implementation 'com.airbnb.android:lottie:4.1.0'
+
+    implementation 'com.google.android.play:core:1.10.2'
+    // For Kotlin users also add the Kotlin extensions library for Play Core:
+    implementation 'com.google.android.play:core-ktx:1.8.1'
 
 }
 repositories {

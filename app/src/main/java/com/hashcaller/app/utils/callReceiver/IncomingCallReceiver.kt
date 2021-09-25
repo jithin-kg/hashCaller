@@ -21,6 +21,7 @@ class IncomingCallReceiver : BroadcastReceiver(){
     @SuppressLint( "LogNotTimber", "MissingPermission") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
        try {
+           Log.d(TAG, "onReceive: ")
               if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
                return
                 }

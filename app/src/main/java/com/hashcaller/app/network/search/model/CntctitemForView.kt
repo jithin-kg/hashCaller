@@ -21,7 +21,7 @@ data class CntctitemForView(
     var country: String="",
     var informationReceivedDate:Date,
     var spammCount : Long = 0L,
-    var thumbnailImg:String = "",
+    var thumbnailImgServer:String = "",
     var statusCode:Int = STATUS_SEARHING_IN_PROGRESS,
 
     var isInfoFoundInServer:Int = INFO_NOT_FOUND_IN_SERVER, // to indicate whether this caller info is available in server
@@ -37,6 +37,14 @@ data class CntctitemForView(
     var nameInPhoneBook:String = "",
     var nameInLocalPhoneBook:String ="",
     var spammerType:Int = 0,
-    var avatarGoogle:String = ""
+    var avatarGoogle:String = "",
+    var thumbnailImgCp:String = "",
+    var fullNameServer:String = "",
+    var phoneNumber:String = "",
+    var shoudlSearchInServer:Boolean = false,
+    var bio:String = "",
+    var email:String = "",
+    var clientHashedNum:String = ""
+
 
     )

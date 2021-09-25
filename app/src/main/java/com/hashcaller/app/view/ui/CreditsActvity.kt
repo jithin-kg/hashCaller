@@ -36,12 +36,16 @@ class CreditsActvity : AppCompatActivity(), View.OnClickListener {
         binding.tvAp16.setOnClickListener(this)
         binding.tvMit1.setOnClickListener(this)
         binding.tvAttr1.setOnClickListener(this)
+        binding.tvAttr3Lotti.setOnClickListener(this)
 //        binding.tvAp15.setOnClickListener(this)
 
     }
 
     override fun onClick(v: View?) {
         when(v?.id){
+            R.id.tvAttr3Lotti -> {
+                onLicenceClicked("https://lottiefiles.com/45085-padlock")
+            }
             R.id.tvAp1 -> {
                 onLicenceClicked("https://github.com/square/retrofit")
             }

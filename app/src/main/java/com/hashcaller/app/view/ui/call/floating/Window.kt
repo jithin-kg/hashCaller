@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -21,6 +20,7 @@ import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
 import com.hashcaller.app.utils.constants.IntentKeys
+import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
@@ -37,7 +37,8 @@ class Window(
 ) {
 
     private var phoneNumber:String = ""
-    private var callerInfoFoundFrom = INFO_SEARCHING
+    private var callerNameFoundFrom = NAME_SEARCHING
+    private var callerImageFoundFrom = IMAGE_SEARCHING
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private val rootView = layoutInflater.inflate(R.layout.window, null)
@@ -47,6 +48,9 @@ class Window(
     private val tvLocation:TextView = rootView.findViewById(R.id.txtVLocaltionWindow)
     private val layoutInnerWindow: ConstraintLayout = rootView.findViewById(R.id.layoutInnerWindow)
     private val imgVAvatar : CircleImageView = rootView.findViewById(R.id.imgVAvatarIncomming)
+    private val imgVUserBadgeBg: ImageView = rootView.findViewById(R.id.imgUserIconBg)
+    private val imgVUserIcon: ImageView = rootView.findViewById(R.id.imgUserIcon)
+//    private val imgVerifiedBadge: ImageView = rootView.findViewById(R.id.imgVerifiedBadge)
     private val imgVSimOne: ImageView = rootView.findViewById(R.id.imgVSimOne)
     private val imgVSimTwo: ImageView = rootView.findViewById(R.id.imgVSimTwo)
     private val windowParams = WindowManager.LayoutParams(
@@ -226,42 +230,33 @@ class Window(
 
     suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
 
-        if(callerInfoFoundFrom!= INFO_FOUND_FROM_CPROVIDER){
-            var name:String = ""
-            var  location:String? = ""
-            if(resFromServer.firstName.isNotEmpty()){
-                name += resFromServer.firstName
-                if(resFromServer.lastName.isNotEmpty()){
-                    name += " "+ resFromServer.lastName
-                }
-            }else if(resFromServer.nameInPhoneBook.isNotEmpty()){
-                name = resFromServer.nameInPhoneBook
+        var name:String = ""
+        var  location:String? = ""
+        if(resFromServer.firstName.isNotEmpty()){
+            name += resFromServer.firstName
+            if(resFromServer.lastName.isNotEmpty()){
+                name += " "+ resFromServer.lastName
             }
+            FloatingService.cntctForView.fullNameServer = name
+        }else if(resFromServer.nameInPhoneBook.isNotEmpty()){
+            name = resFromServer.nameInPhoneBook
+            FloatingService.cntctForView.nameInPhoneBook = resFromServer.nameInPhoneBook
+        }
+        var firstLetter = ""
+        if(name.isEmpty()){
+            // no name has found yet set phone number first digit as first letter
+            name = phoneNumber
+            if(phoneNumber.isNotEmpty())
+                firstLetter = formatPhoneNumber(phoneNumber)[0].toString()
+        }else {
+            firstLetter =  name[0].toString().uppercase()
+        }
 
-            var firstLetter = ""
-            if(name.isEmpty()){
-                // no name has found yet set phone number first digit as first letter
-                    name = phoneNumber
-                if(phoneNumber.isNotEmpty())
-                    firstLetter = formatPhoneNumber(phoneNumber)[0].toString()
-            }else {
-                firstLetter =  name[0].toString().uppercase()
-            }
-
-            tvFirstLetter.text = firstLetter
-
-            if(!resFromServer.location.isNullOrEmpty()){
-                location = resFromServer.location
-            }else if(!resFromServer.country.isNullOrEmpty()){
-                location = resFromServer.country
-            }
-            if(name.isNotEmpty()){
-                tvName.text = name
-            }
-
-            if(!resFromServer.thumbnailImg.isNullOrEmpty()){
+        if(callerImageFoundFrom != IMAGE_FOUND_FROM_CPROVIDER){
+            //only udpate image view with server image if there is no image in cprovider
+            if(resFromServer.thumbnailImgServer.isNotEmpty()){
                 imgVAvatar.beVisible()
-                imgVAvatar.setImageBitmap(getDecodedBytes(resFromServer.thumbnailImg))
+                imgVAvatar.setImageBitmap(getDecodedBytes(resFromServer.thumbnailImgServer))
                 tvFirstLetter.beGone()
             }else if(resFromServer.avatarGoogle.isNotEmpty()){
                 imgVAvatar.beVisible()
@@ -274,14 +269,41 @@ class Window(
                 imgVAvatar.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circular_avatar_main_background))
                 tvFirstLetter.beVisible()
             }
-
-//            tvLocation.text = location
         }
+
+        if(callerNameFoundFrom!= NAME_FOUND_FROM_CPROVIDER){
+            tvFirstLetter.text = firstLetter
+            if(!resFromServer.location.isNullOrEmpty()){
+                location = resFromServer.location
+            }else if(!resFromServer.country.isNullOrEmpty()){
+                location = resFromServer.country
+            }
+            if(name.isNotEmpty()){
+                tvName.text = name
+            }
+        }
+
+        if(resFromServer.isVerifiedUser){
+            tvName.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(context, R.drawable.ic_baseline_verified_2), null)
+        }else {
+            tvName.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+        }
+        context.toggleUserBadge(imgVUserBadgeBg, imgVUserIcon, resFromServer.hUid)
+
         if(resFromServer.spammCount> SPAM_THRESHOLD_VALUE){
             layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background_spam )
         }else{
             layoutInnerWindow.background = ContextCompat.getDrawable(context,R.drawable.incomming_call_background )
         }
+
+        FloatingService.cntctForView.firstName = resFromServer.firstName
+        FloatingService.cntctForView.lastName = resFromServer.lastName
+        FloatingService.cntctForView.nameInLocalPhoneBook = resFromServer.nameInLocalPhoneBook
+        FloatingService.cntctForView.avatarGoogle = resFromServer.avatarGoogle
+        FloatingService.cntctForView.thumbnailImgServer = resFromServer.thumbnailImgServer
+        FloatingService.cntctForView.spammCount = resFromServer.spammCount
+        FloatingService.cntctForView.isVerifiedUser = resFromServer.isVerifiedUser
+        FloatingService.cntctForView.hUid = resFromServer.hUid
 
     }
     fun updateWithDummyData(){
@@ -307,25 +329,32 @@ class Window(
         var firstLetter:String?   = ""
         var photoThumbnailUri:String? = ""
 //        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
-        if(!contactInfoInCprovider.firstName.isNullOrEmpty()){
-            firstName = contactInfoInCprovider.firstName
+        if(!contactInfoInCprovider.nameInLocalPhoneBook.isNullOrEmpty()){
+            firstName = contactInfoInCprovider.nameInLocalPhoneBook
         }
 
-        if(!contactInfoInCprovider.photoThumnailServer.isNullOrEmpty()){
+        if(!contactInfoInCprovider.thumbnailInCprovider.isNullOrEmpty()){
             photoThumbnailUri = contactInfoInCprovider.photoThumnailServer
-            loadImage(context, imgVAvatar, contactInfoInCprovider.photoThumnailServer)
+            loadImage(context, imgVAvatar, contactInfoInCprovider.thumbnailInCprovider)
+            setCallerImageFoundFrom(IMAGE_FOUND_FROM_CPROVIDER)
+            tvFirstLetter.beInvisible()
         }
         if(!firstName.isNullOrEmpty()){
             tvName.text = firstName
             firstLetter = firstName[0].toString()
             tvFirstLetter.text = firstLetter
-            setCallerInfoFoundFrom(INFO_FOUND_FROM_CPROVIDER)
+            setCallerNameFoundFrom(NAME_FOUND_FROM_CPROVIDER)
         }
-
+        FloatingService.cntctForView.nameInLocalPhoneBook = contactInfoInCprovider.nameInLocalPhoneBook
+        FloatingService.cntctForView.thumbnailImgCp = contactInfoInCprovider.thumbnailInCprovider
     }
 
-    fun setCallerInfoFoundFrom(foundFrom:Int){
-        callerInfoFoundFrom = foundFrom
+    fun setCallerNameFoundFrom(foundFrom:Int){
+        callerNameFoundFrom = foundFrom
+    }
+
+    fun setCallerImageFoundFrom(foundFrom:Int){
+        callerNameFoundFrom = foundFrom
     }
 
     suspend fun setPhoneNum(num:String) = withContext(Dispatchers.IO) {
@@ -346,9 +375,15 @@ class Window(
         var SPAM_THRESHOLD_VALUE = Constants.DEFAULT_SPAM_THRESHOLD
 
         const val TAG = "__Window"
-        const val INFO_SEARCHING = 0
-        const val INFO_FOUND_FROM_CPROVIDER = 1
-        const val INFO_FOUND_FROM_SERVER = 2
+        const val NAME_SEARCHING = 0 // caller name still not identified
+        const val NAME_FOUND_FROM_CPROVIDER = 1
+        const val NAME_FOUND_FROM_SERVER = 2
+
+        const val IMAGE_SEARCHING = -1
+        const val IMAGE_FOUND_FROM_CPROVIDER = 3
+        const val IMAGE_FOUND_FROM_SERVER = 4
+
+
     }
 
 }

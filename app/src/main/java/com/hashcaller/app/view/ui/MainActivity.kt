@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.provider.Settings.canDrawOverlays
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -42,6 +43,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.appupdate.testing.FakeAppUpdateManager
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
@@ -145,8 +152,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     ///////////////////////////splash ////////////////////////////
     private val RC_SIGN_IN = 1
     private lateinit var scrnRoleCallback: ActivityResultLauncher<Intent>
-
-
+    private lateinit var resultUpdate: ActivityResultLauncher<Intent>
+    private lateinit var  appUpdateManager: AppUpdateManager
 
 
 
@@ -198,8 +205,58 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         }
         regstrScreeningRoleResultCb()
+        registerForAppUpdateResultCb()
+        checkForUpdate()
 
     }
+
+    /**
+     * To determine priority, Google Play uses an integer value between 0 and 5, with 0 being
+     * the default and 5 being the highest priority.  To set the priority for an update, use the
+     * inAppUpdatePriority field under Edits.tracks.releases in the Google Play Developer API.
+     */
+    private fun checkForUpdate() {
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+//        val appUpdateManager = FakeAppUpdateManager(this)
+//        appUpdateManager.setUpdateAvailable(AppUpdateType.IMMEDIATE)
+// Returns an intent object that you use to check for an update.
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+// Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                toast("App update available, please check update HashCaller")
+                appUpdateManager.startUpdateFlowForResult(
+                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                    appUpdateInfo,
+                    // The current activity making the update request.
+                    this,
+                    // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
+                    // flexible updates.
+                    AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE)
+                        .setAllowAssetPackDeletion(true)
+                        .build(),
+                    // Include a request code to later monitor this update request.
+                    APP_UPDATE_REQ_CODE)
+                openActivityForResult()
+            }
+        }
+    }
+
+    private fun openActivityForResult(){
+        resultUpdate.launch(Intent(this, MainActivity::class.java))
+    }
+    private fun registerForAppUpdateResultCb(){
+       resultUpdate = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            if (result.resultCode == Activity.RESULT_OK){
+                toast("HashCaller is updated")
+            }else {
+                toast("Unable to finish updates")
+            }
+        }
+    }
+
 
     private fun setDataStoreValues() {
         lifecycleScope.launchWhenCreated {
@@ -902,34 +959,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         super.onPause()
 
     }
-    companion object {
-        private const val TAG = "__MainActivity"
-        var SPAM_THRESHOLD_VALUE = DEFAULT_SPAM_THRESHOLD
-        var fetchSMSOnCreate = false
-
-        private const val KEY_ALIAS = "MYKeyAlias"
-        private const val KEY_STORE = "AndroidKeyStore"
-        private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
-
-        private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
-        fun hideKeyboard(activity: Activity) {
-            try {
-                val inputManager = activity
-                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                val currentFocusedView = activity.currentFocus
-                if (currentFocusedView != null) {
-                    inputManager.hideSoftInputFromWindow(
-                        currentFocusedView.windowToken,
-                        InputMethodManager.HIDE_NOT_ALWAYS
-                    )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-
-    }
+   
 
 
 
@@ -984,6 +1014,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onResume() {
         super.onResume()
+
+        appUpdateManager
+            .appUpdateInfo
+            .addOnSuccessListener { appUpdateInfo ->
+                if (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                ) {
+                    Log.d(TAG, "onResume: ")
+                    // If an in-app update is already running, resume the update.
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.IMMEDIATE,
+                        this,
+                        APP_UPDATE_REQ_CODE
+                    );
+                }
+            }
     }
 
     fun getBottomNavView(): BottomNavigationView {
@@ -1009,5 +1056,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 callFragment.activtyResultisDefaultScreening()
             }
         }
+    }
+
+    companion object {
+        private const val APP_UPDATE_REQ_CODE = 32
+        private const val TAG = "__MainActivity"
+        var SPAM_THRESHOLD_VALUE = DEFAULT_SPAM_THRESHOLD
+        var fetchSMSOnCreate = false
+
+        private const val KEY_ALIAS = "MYKeyAlias"
+        private const val KEY_STORE = "AndroidKeyStore"
+        private const val CIPHER_TRANSFORMATION = "AES/CBC/NoPadding"
+
+        private  const val SHARED_PREFERENCE_TOKEN_KEY = "tokenKey"
+        fun hideKeyboard(activity: Activity) {
+            try {
+                val inputManager = activity
+                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val currentFocusedView = activity.currentFocus
+                if (currentFocusedView != null) {
+                    inputManager.hideSoftInputFromWindow(
+                        currentFocusedView.windowToken,
+                        InputMethodManager.HIDE_NOT_ALWAYS
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+
     }
 }

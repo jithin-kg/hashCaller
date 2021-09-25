@@ -6,17 +6,21 @@ import androidx.annotation.Keep
 class IntentKeys {
     companion object{
         //incomming call view Activity
+        const val PHONE_NUMBER = "phoneNumber"
         const val FULL_NAME_IN_C_PROVIDER = "fullName"
         const val FULL_NAME_FROM_SERVER = "nameFromServer"
+
         const val THUMBNAIL_FROM_CPROVIDER = "thumbnailFromCProvider"
         const val H_UID = "hUi"
-        const val THUMBNAIL_FROM_BB = "thumbnailFromDatabase"
+        const val THUMBNAIL_FROM_DB = "thumbnailFromDatabase"
+        const val AVATAR_GOOGLE = "avatarGoogle"
+        const val SPAM_COUNT = "spamcount"
+        const val IS_VERIFIED_USER = "c.isVerified"
+
         const val IS_REPORTED_BY_USER = "isReportedByUser"
         const val AVATAR_COLOR = "color"
         const val FIRST_NAME = "fistName"
         const val LAST_NAME = "lastName"
-        const val PHONE_NUMBER = "phoneNumber"
-        const val SPAM_COUNT = "spamcount"
         const val CARRIER = "carrier"
         const val LOCATION = "location"
         const val COUNTRY = "coutry"
@@ -39,5 +43,7 @@ class IntentKeys {
         const val CALL_STATE = "c.h.callState"
         const val CALL_HANDLED_STATE = "c.h.callHandldState"
         const val CALL_HANDLED_SIM = "c.h.callHndledSim"
+
+
     }
 }

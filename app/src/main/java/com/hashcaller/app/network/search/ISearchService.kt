@@ -25,11 +25,11 @@ suspend fun search(
     @Header("Authorization") token:String
 ):Response<SerachRes>
 
-    @POST("find/manualSearch")
-    suspend fun searchManual(
-        @Body searchBody:ManualSearchDTO,
-        @Header("Authorization") token:String
-    ):Response<SerachRes>
+//    @POST("find/manualSearch")
+//    suspend fun searchManual(
+//        @Body searchBody:ManualSearchDTO,
+//        @Header("Authorization") token:String
+//    ):Response<SerachRes>
 
     @POST("spam/incrementTotalSpamCount")
     suspend fun incrementTotalSpamCount( @Header("Authorization")token: String)

@@ -109,20 +109,21 @@
             android:layout_marginTop="8dp"
             motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
             android:visibility="invisible"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             motion:layout_editor_absoluteX="365dp" />
         <Constraint
-            android:id="@+id/tvNameSmall"
-            android:layout_width="wrap_content"
+            android:id="@+id/frameNameSmall"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="@dimen/margin_padding_size_medium"
+            android:layout_marginEnd="@dimen/margin_padding_size_medium"
             android:visibility="visible"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="0dp"
             motion:layout_constraintTop_toTopOf="@+id/imgBtnBack"
-            motion:layout_constraintBottom_toBottomOf="@+id/imgBtnBack"
             motion:layout_constraintStart_toEndOf="@+id/imgBtnBack"
-            />
+            motion:layout_constraintEnd_toStartOf="@+id/imgBtnMoreIndividualCntct"
+            motion:layout_constraintBottom_toBottomOf="@+id/imgBtnBack" />
+
         <Constraint
             android:id="@+id/scrollView"
             android:layout_width="match_parent"

@@ -14,6 +14,7 @@ import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.search.ServerSearchViewModel
+import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -118,13 +119,21 @@ class SearchNetworkRepository(
                 contactAddress = formatedNum,
                 firstName = contact?.firstName?:"",
                 lastName = contact?.lastName,
+                nameInPhoneBook = contact?.nameInPhoneBook?:"",
                 informationReceivedDate = Date(),
                 spamReportCount = contact?.spamCount?:0L,
                 city = contact?.location?:"",
                 country = contact?.country?:"",
                 carrier = contact?.carrier?:"",
-                thumbnailImg = contact?.photoThumnailServer?:""
-            )
+                isUserInfoFoundInServer = contact?.isInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
+                spammerType = contact?.spamerType?:0 ,
+                thumbnailImg = contact?.photoThumnailServer?:"",
+                hUid = contact?.hUid?:"",
+                bio = contact?.bio?:"",
+                email = contact?.email?:"",
+                avatarGoogle = contact?.avatarGoogle?:"",
+                isVerifiedUser = contact?.isVerifiedUser?:false
+                )
         }
     }
 

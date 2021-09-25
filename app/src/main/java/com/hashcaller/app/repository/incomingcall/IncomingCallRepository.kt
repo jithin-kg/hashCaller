@@ -1,20 +1,25 @@
 package com.hashcaller.app.repository.incomingcall
 
 import android.util.Log
+import com.hashcaller.app.Secrets
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.incomingcall.IIncomingCallService
 import com.hashcaller.app.network.incomingcall.SuggestNameModel
-import com.hashcaller.app.network.search.ISearchService
-import com.hashcaller.app.network.search.model.SerachRes
-import com.hashcaller.app.repository.search.SearchDTO
-import com.hashcaller.app.repository.search.SearchNetworkRepository
 import com.hashcaller.app.utils.auth.TokenHelper
+import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
+import com.hashcaller.app.view.utils.LibPhoneCodeHelper
+import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.Exception
 
-class IncomingCallRepository(private val tokenHelper: TokenHelper?) {
+class IncomingCallRepository(
+    private val tokenHelper: TokenHelper?,
+    private val callerInfoFromServerDAO: CallersInfoFromServerDAO,
+    private val libCountryHelper: LibPhoneCodeHelper,
+    private val countryCodeIso: String
+) {
 
     companion object{
         private const val TAG = "--IncomingCallRepository"
@@ -71,8 +76,9 @@ class IncomingCallRepository(private val tokenHelper: TokenHelper?) {
             Log.e(TAG, "suggestName: ",e)
             return@withContext null
         }
-
         return@withContext result
     }
+
+
 
 }

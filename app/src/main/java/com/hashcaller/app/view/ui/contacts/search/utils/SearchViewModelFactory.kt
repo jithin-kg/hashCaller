@@ -14,6 +14,7 @@ class SearchViewModelFactory(
     private val contactLocalSyncRepository: ContactLocalSyncRepository,
     private val localDbSearchRepository: LocalDbSearchRepository,
     private val blockListPatternRepository: BlockListPatternRepository,
+    private val countryISO: String,
 )
     :ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -22,7 +23,8 @@ class SearchViewModelFactory(
             contactLocalSyncRepository,
             localDbSearchRepository,
             LibPhoneCodeHelper(PhoneNumberUtil.getInstance()),
-            blockListPatternRepository
+            blockListPatternRepository,
+            countryISO
                      ) as T
     }
 }

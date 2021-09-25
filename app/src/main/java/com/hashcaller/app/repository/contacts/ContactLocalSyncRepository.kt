@@ -236,6 +236,39 @@ class ContactLocalSyncRepository(
         HashCallerDatabase.getDatabaseInstance(context).hashedContactsDAO().deleteAll()
     }
 
+    suspend fun infoFromContentProvider(phoneNumber:String): Contact?  = withContext(Dispatchers.IO){
+
+        var contact:Contact? = null
+        var cursor: Cursor? = null
+        var name = phoneNumber
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber))
+        val projection = arrayOf(
+            ContactsContract.PhoneLookup.CONTACT_ID,
+            ContactsContract.PhoneLookup.DISPLAY_NAME,
+            ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI
+        )
+
+        try {
+            cursor = context.contentResolver.query(uri, projection, null, null, null)
+            cursor.use {
+                if (cursor?.moveToFirst() == true) {
+                    //this table contains, stared contacts and other usefull informations
+                    val id = cursor.getStringValue(ContactsContract.PhoneLookup.CONTACT_ID)
+                    name=  cursor.getStringValue(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                    val thumbnail = cursor.getStringValue(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI)
+                    contact =  Contact(id.toLong(), nameInLocalPhoneBook = name, thumbnailInCprovider =thumbnail)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "getNameFromPhoneNumber: $e")
+        }
+        finally {
+            cursor?.close()
+        }
+        Log.d(TAG, "infoFromContentProvider:name is  $name ")
+        return@withContext contact
+    }
+
     @SuppressLint("LongLogTag")
     suspend fun getNameFromPhoneNumber(phoneNumber: String): String = withContext(Dispatchers.IO) {
         var cursor:Cursor? = null

@@ -21,6 +21,7 @@ import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.call.repository.CallContainerRepository
 import com.hashcaller.app.view.ui.sms.SMScontainerRepository
+import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.SEARCHING_FOR_INFO
 import com.hashcaller.app.view.ui.sms.util.SMS
 import com.hashcaller.app.view.utils.CountrycodeHelper
@@ -131,16 +132,16 @@ class SmsHashedNumUploadWorker(private val context: Context, private val params:
 
                             callersInfoFromServerDAO?.updateByHash(
                                 hashedNum = cntct.hash,
-                                spamCount = cntct.spamCount,
-                                firstName = cntct.firstName,
-                                nameInPhoneBook = cntct.nameInPhoneBook,
+                                spamCount = cntct.spamCount?:0,
+                                firstName = cntct.firstName?:"",
+                                nameInPhoneBook = cntct.nameInPhoneBook?:"",
                                 lastName = "",
                                 date = Date(),
-                                isUserInfoFoundInServer = cntct.isInfoFoundInDb,
+                                isUserInfoFoundInServer = cntct.isInfoFoundInDb?: INFO_NOT_FOUND_IN_SERVER,
                                 thumbnailImg = cntct.imageThumbnail?:"",
-                                city = cntct.location,
-                                carrier = cntct.carrier,
-                                hUid = cntct.hUid,
+                                city = cntct.location?:"",
+                                carrier = cntct.carrier?:"",
+                                hUid = cntct.hUid?:"",
                                 bio = cntct.bio?:"",
                                 email = cntct.email?:"",
                                 avatarGoogle = cntct.avatarGoogle?:"",

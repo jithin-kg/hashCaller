@@ -11,7 +11,7 @@ import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
 @Dao
 interface ICallLogDAO {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(callersList: List<CallLogTable>)
 
 

@@ -11,15 +11,17 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.local.db.contacts.IContactAddressesDao
-import com.hashcaller.app.network.HttpStatusCodes.Companion.STATUS_OK
 import com.hashcaller.app.network.search.model.CntctitemForView
+import com.hashcaller.app.network.search.model.DTOMapper
+import com.hashcaller.app.network.search.model.DTOMapper.Companion.convertServerResToContactView
+import com.hashcaller.app.network.search.model.DTOMapper.Companion.serverResultToConctView
+import com.hashcaller.app.network.search.model.SerachRes
 import com.hashcaller.app.repository.search.SearchNetworkRepository
 import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.NotificationHelper
 import com.hashcaller.app.utils.getStringValue
 import com.hashcaller.app.utils.internet.InternetChecker
 import com.hashcaller.app.utils.notifications.tokeDataStore
-import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.contacts.showNotifcationForSpamCall
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import java.util.*
 
 /**
@@ -56,6 +59,15 @@ class InCommingCallManager(
     private val libPhoneCodeHelper =  LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
     private val countryIso = CountrycodeHelper(context).getCountryISO()
 
+//    suspend fun searchInserver(hashedNum:String): Response<SerachRes>? {
+//        var response : Response<SerachRes>? = null
+//        try {
+//             response = searchRepository.search(hashedNum)
+//        }catch (e:Exception){
+//            Log.d(TAG, "searchInserver: $e")
+//        }
+//        return response
+//    }
     suspend fun searchInServerAndHandle(hasedNum: String): CntctitemForView? {
         var searchResult:CntctitemForView? = null
 
@@ -63,17 +75,9 @@ class InCommingCallManager(
                 val response = searchRepository.search(hasedNum)
 
                     val result = response?.body()?.cntcts
-                    if(result!= null){
-                        searchResult = CntctitemForView(result.firstName?:"", result.lastName?:"", result.carrier?:"",
-                            location = result.location?:"", result.lineType?:"",
-                            country = result.country?:"",
-                            spammCount = result.spammCount?:0L,
-                                thumbnailImg = result.thumbnailImg?:"",
-                                    statusCode = response.code(),
-                                        isInfoFoundInServer = result.isInfoFoundInDb?:INFO_NOT_FOUND_IN_SERVER,
-                                    informationReceivedDate = Date()
 
-                        )
+                    if(result!= null){
+                        searchResult = serverResultToConctView(response)
                     }
 
         }catch (e:Exception){
@@ -207,19 +211,7 @@ class InCommingCallManager(
         val res = callerInfoFromServerDAO.find(formatPhoneNumber(phoneNumber))
         if(res!=null){
             if(res.firstName.isNotEmpty() || res.nameInPhoneBook.isNotEmpty() || res.spamReportCount > spamThreshold){
-                contactitemForView = CntctitemForView(
-                    firstName = res.firstName,
-                    lastName = res.lastName,
-                    carrier = res.carrier,
-                    location = res.city,
-                    country = res.country,
-                    spammCount = res.spamReportCount,
-                    thumbnailImg = res.thumbnailImg,
-                    statusCode = STATUS_OK,
-                    informationReceivedDate = Date(),
-                    spammerType = res.spammerType,
-                    avatarGoogle = res.avatarGoogle
-                )
+                contactitemForView = convertServerResToContactView(res)
             }
 
 
@@ -238,6 +230,7 @@ class InCommingCallManager(
             ContactsContract.PhoneLookup.DISPLAY_NAME,
             ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI
         )
+
         try {
             cursor = context.contentResolver.query(uri, projection, null, null, null)
             cursor.use {
@@ -246,7 +239,7 @@ class InCommingCallManager(
                     val id = cursor.getStringValue(ContactsContract.PhoneLookup.CONTACT_ID)
                     name=  cursor.getStringValue(ContactsContract.PhoneLookup.DISPLAY_NAME)
                     val thumbnail = cursor.getStringValue(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI)
-                   contact =  Contact(id.toLong(), firstName = name, photoThumnailServer =thumbnail)
+                   contact =  Contact(id.toLong(), nameInLocalPhoneBook = name, thumbnailInCprovider =thumbnail)
                 }
             }
         } catch (e: Exception) {
@@ -264,33 +257,30 @@ class InCommingCallManager(
         formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
         val res = callerInfoFromServerDAO.find(formatedNum)
         if(res== null){
-            val info = CallersInfoFromServer(
-                contactAddress = formatedNum,
-                spammerType = 0,
-                firstName = resFromServer?.firstName?:"",
-                lastName = resFromServer?.lastName?:"",
-                 informationReceivedDate =         Date(),
-                spamReportCount = resFromServer?.spammCount?:0L,
-                city = resFromServer?.location?:"",
-                country = resFromServer?.country?:"",
-                carrier = resFromServer?.carrier?:"",
-                isBlockedByUser = false,
-                isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?:INFO_NOT_FOUND_IN_SERVER,
-                thumbnailImg = resFromServer?.thumbnailImg?:""
-                )
+
+            val info = DTOMapper.cntctitemForViewTOCallersInfoFromServer(resFromServer, formatedNum)
 
             callerInfoFromServerDAO.insert(listOf(info))
         }else{
+            //todo add client hashed phone number also
             callerInfoFromServerDAO?.updateWithServerinfo(
-                 contactAddress = formatedNum,
+                contactAddress = formatedNum,
                 firstName = resFromServer?.firstName?:"",
                 lastName = resFromServer?.lastName?:"",
+                nameInPhoneBook = resFromServer?.nameInPhoneBook?:"",
                 informationReceivedDate = Date(),
                 spamReportCount = resFromServer?.spammCount?:0L,
                 city = resFromServer?.location?:"",
                 country = resFromServer?.country?:"",
                 carrier = resFromServer?.carrier?:"",
-                thumbnailImg = resFromServer?.thumbnailImg?:"",
+                isUserInfoFoundInServer = resFromServer?.isInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
+                spammerType = resFromServer?.spammerType?:0 ,
+                thumbnailImg = resFromServer?.thumbnailImgServer?:"",
+                hUid = resFromServer?.hUid?:"",
+                bio = resFromServer?.bio?:"",
+                email = resFromServer?.email?:"",
+                avatarGoogle = resFromServer?.avatarGoogle?:"",
+                isVerifiedUser = resFromServer?.isVerifiedUser?:false
                 )
         }
     }

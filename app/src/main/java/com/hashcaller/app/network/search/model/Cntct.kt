@@ -31,14 +31,14 @@ data class Cntct(
     val spammCount : Long? = 0,
 
     @SerializedName("isInfoFoundInDb")
-    val isInfoFoundInDb:Int = INFO_NOT_FOUND_IN_SERVER,
+    val isInfoFoundInDb:Int? = INFO_NOT_FOUND_IN_SERVER,
 
     @SerializedName("thumbnailImg")
     val thumbnailImg:String = "",
 
     @SerializedName("nameInPhoneBook")
     val nameInPhoneBook:String = "",
-
+    //d
     @SerializedName("hUid")
     val hUid:String = "",
 
@@ -51,8 +51,8 @@ data class Cntct(
     @SerializedName("bio")
     val bio:String = "",
     @SerializedName("isVerifiedUser")
-    val isVerifiedUser:Boolean = false,
+    val isVerifiedUser:Boolean? = false,
 
-
+    val clientHashedNum:String?  = ""
 
 ):Serializable // it it important to extent serializable

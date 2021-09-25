@@ -159,7 +159,7 @@ class HashWorker (private val context: Context,
                     spammerType = 0,
                     firstName = cntct.firstName?:"",
                     informationReceivedDate = Date(),
-                    spamReportCount =  cntct.spamCount,
+                    spamReportCount =  cntct.spamCount?:0,
                     isUserInfoFoundInServer = cntct.isInfoFoundInDb?:0,
                     thumbnailImg = cntct.imageThumbnail?:""
                 )

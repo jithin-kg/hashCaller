@@ -4,11 +4,13 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.hashcaller.app.repository.incomingcall.IncomingCallRepository
 import com.hashcaller.app.repository.incomingcall.workers.SuggestNameWorker
 import com.hashcaller.app.repository.incomingcall.workers.ThumbsDownWorker
 import com.hashcaller.app.repository.incomingcall.workers.ThumbsUpWorker
+import kotlinx.coroutines.launch
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -27,7 +29,7 @@ class IncommingCallViewUpdatedModel(
     }
 
 
-    fun suggestName(name: String, number: String) {
+    fun suggestName(name: String, number: String)  = viewModelScope.launch {
         val constraints =
             Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
@@ -39,6 +41,9 @@ class IncommingCallViewUpdatedModel(
             .setInputData(data)
             .build()
         WorkManager.getInstance(app).enqueue(oneTimeWorkRequest)
+
+//        repository.updateSuggestedName(name , number)
+
     }
 
     fun upvote(name: String, number: String) {

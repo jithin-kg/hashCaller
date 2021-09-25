@@ -12,9 +12,9 @@ import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 @Keep
 data class Contact(
     val id: Long,
-    var firstName: String,
+    var firstName: String="",
     var phoneNumber: String = "",
-    var photoThumnailServer: String?,
+    var photoThumnailServer: String?="",
     var photoURI: String = "",
     var drawable: Int = 1,
     var nameSpann: SpannableStringBuilder? = null,
@@ -37,7 +37,8 @@ data class Contact(
     val avatarGoogle:String = "",
     val bio:String = "",
     var isVerifiedUser:Boolean = false,
-    var nameInLocalPhoneBook :String = ""
+    var nameInLocalPhoneBook :String = "",
+    var spamerType:Int?= -1,
 
     )  {
 

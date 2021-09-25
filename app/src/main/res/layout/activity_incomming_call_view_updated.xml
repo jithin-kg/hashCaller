@@ -44,6 +44,42 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.25"
                 app:srcCompat="@drawable/circular_avatar_main_background" />
+            <ImageView
+                android:id="@+id/imgUserIcon"
+                android:layout_width="@dimen/width_icon_user_badge_list"
+                android:layout_height="@dimen/width_icon_user_badge_list"
+                android:elevation="6dp"
+                android:visibility="invisible"
+                android:src="@drawable/ic_person_outline"
+                app:layout_constraintTop_toTopOf="@+id/imgUserIconBg"
+                app:layout_constraintBottom_toBottomOf="@+id/imgUserIconBg"
+                app:layout_constraintStart_toStartOf="@+id/imgUserIconBg"
+                app:layout_constraintEnd_toEndOf="@+id/imgUserIconBg"
+                />
+            <ImageView
+                android:id="@+id/imgUserIconBg"
+                android:layout_width="@dimen/width_user_bade_list_bg"
+                android:layout_height="@dimen/width_user_bade_list_bg"
+                android:elevation="5dp"
+                android:visibility="invisible"
+                android:src="@drawable/user_badge_background"
+                app:layout_constraintBottom_toBottomOf="@+id/imgVAvatarIncomming"
+                app:layout_constraintStart_toStartOf="@+id/imgVAvatarIncomming"
+                android:layout_marginBottom="2dp"
+                android:layout_marginStart="2dp"
+                />
+            <TextView
+                android:id="@+id/tvFirstLetter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="H"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imgVAvatarIncomming"
+                app:layout_constraintEnd_toEndOf="@+id/imgVAvatarIncomming"
+                app:layout_constraintStart_toStartOf="@+id/imgVAvatarIncomming"
+                app:layout_constraintTop_toTopOf="@+id/imgVAvatarIncomming" />
 
             <ImageView
                 android:id="@+id/imgBtnCloseIncommin"
@@ -58,11 +94,11 @@
                 app:srcCompat="@drawable/ic_baseline_close_white" />
 
             <FrameLayout
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:id="@+id/nameFrame"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/txtVLocaltion"
                 app:layout_constraintEnd_toStartOf="@+id/imgBtnCloseIncommin"
                 app:layout_constraintStart_toEndOf="@+id/imgVAvatarIncomming"
@@ -74,13 +110,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:drawableEnd="@drawable/ic_baseline_edit_18_white"
                     android:drawablePadding="8dp"
                     android:letterSpacing="0.1"
                     android:maxLines="2"
                     android:text="Prafuldev V R"
                     android:textColor="@color/colorWhite"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    app:drawableEndCompat="@drawable/ic_baseline_edit_18_white" />
             </FrameLayout>
           
             
@@ -164,7 +200,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/sim">
 
                 <TextView
-
                     android:id="@+id/textView26"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

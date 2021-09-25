@@ -147,22 +147,29 @@
             app:layout_constraintStart_toStartOf="@+id/textViewCrclr"
             app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
 
-        <TextView
-            android:id="@+id/textVcallerName"
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:id="@+id/fragmeName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:alpha=".87"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:layout_marginEnd="32dp"
             android:padding="4dp"
-            android:text="ContactName"
-            android:textColor="@color/textColor"
-            app:layout_constraintEnd_toStartOf="@+id/imgVIdentfByHash"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnCall"
             app:layout_constraintStart_toStartOf="@+id/imgVCallType"
-            app:layout_constraintTop_toTopOf="@+id/textViewCrclr" />
+            app:layout_constraintTop_toTopOf="@+id/textViewCrclr"
+            >
+            <TextView
+                android:id="@+id/textVcallerName"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".87"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="ContactName"
+                android:textColor="@color/textColor"
+                />
+        </FrameLayout>
+
 
         <ImageView
             android:id="@+id/imgVCallType"
@@ -195,7 +202,7 @@
             android:textColor="@color/textColor"
             android:text="TextView"
             app:layout_constraintStart_toEndOf="@+id/imgVSimIcon"
-            app:layout_constraintTop_toBottomOf="@+id/textVcallerName" />
+            app:layout_constraintTop_toBottomOf="@+id/fragmeName" />
 
         <ImageView
             android:id="@+id/dividerCall"
@@ -206,7 +213,7 @@
             android:alpha="0.04"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textVcallerName"
+            app:layout_constraintStart_toStartOf="@+id/fragmeName"
             app:layout_constraintTop_toBottomOf="@+id/imgVCallType"
             app:srcCompat="@drawable/horizontal_line" />
 
@@ -216,8 +223,8 @@
             android:layout_height="@dimen/margin_padding_size_medium"
             android:src="@drawable/ic_baseline_verified_24"
             android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textVcallerName"
-            app:layout_constraintStart_toEndOf="@+id/textVcallerName"
+            app:layout_constraintBottom_toBottomOf="@+id/fragmeName"
+            app:layout_constraintStart_toEndOf="@+id/fragmeName"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="16dp"
             android:visibility="invisible"
@@ -231,8 +238,8 @@
             android:layout_marginStart="4dp"
             android:layout_marginBottom="16dp"
             android:src="@drawable/ic_hash_circle"
-            app:layout_constraintBottom_toBottomOf="@+id/textVcallerName"
-            app:layout_constraintStart_toEndOf="@+id/textVcallerName" />
+            app:layout_constraintBottom_toBottomOf="@+id/fragmeName"
+            app:layout_constraintStart_toEndOf="@+id/fragmeName" />
 
         <ImageButton
             android:id="@+id/imgBtnCall"
@@ -243,7 +250,7 @@
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/textViewTime"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textVcallerName"
+            app:layout_constraintTop_toTopOf="@+id/fragmeName"
             app:srcCompat="@drawable/ic_baseline_call_white" />
 
         <!--        <TextView-->

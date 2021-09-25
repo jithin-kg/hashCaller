@@ -21,13 +21,13 @@ interface ISpamService {
     suspend fun report(
         @Body userInfo: SpamNumbersDTO,
         @Header ("Authorization") token:String
-    ):Response<NetWorkResponse>
+    ):Response<GenericResponse<String>>
 
     @POST("spam/unblock")
     suspend fun unblock(
         @Body userInfo: SpamNumbersDTO,
         @Header ("Authorization") token:String
-    ):Response<NetWorkResponse>
+    ):Response<GenericResponse<String>>
 
 
 

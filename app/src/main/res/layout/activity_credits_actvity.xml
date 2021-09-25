@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".app.view.ui.CreditsActvity"
     android:background="@color/colorBackground"
     android:theme="@style/AppTheme"
     >
@@ -329,7 +328,17 @@
               android:alpha="0.74"
               android:focusable="true"
               android:layout_height="wrap_content"
-              android:text="Icons made by https://www.freepik.com Freepik from  https://www.flaticon.com"
+              android:text="@string/icon_made"
+              android:textColor="@color/textColor"
+              />
+          <TextView
+              android:id="@+id/tvAttr3Lotti"
+              android:layout_width="wrap_content"
+              android:clickable="true"
+              android:alpha="0.74"
+              android:focusable="true"
+              android:layout_height="wrap_content"
+              android:text="@string/lottie_1"
               android:textColor="@color/textColor"
               />
       </LinearLayout>

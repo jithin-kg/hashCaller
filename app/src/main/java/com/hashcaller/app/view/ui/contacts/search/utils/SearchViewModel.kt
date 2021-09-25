@@ -7,6 +7,7 @@ import com.hashcaller.app.Secrets
 import com.hashcaller.app.local.db.contactInformation.ContactTable
 import com.hashcaller.app.network.search.SearchResponse
 import com.hashcaller.app.network.search.model.CntctitemForView
+import com.hashcaller.app.network.search.model.DTOMapper
 import com.hashcaller.app.network.search.model.SerachRes
 import com.hashcaller.app.repository.BlockListPatternRepository
 import com.hashcaller.app.repository.contacts.ContactLocalSyncRepository
@@ -14,7 +15,6 @@ import com.hashcaller.app.repository.search.SearchNetworkRepository
 import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.view.ui.IncommingCall.LocalDbSearchRepository
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
-import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.view.utils.hashPhoneNum
 import com.hashcaller.app.work.formatPhoneNumber
@@ -38,7 +38,8 @@ class SearchViewModel(
     private val contactLocalSyncRepository: ContactLocalSyncRepository,
     private val localDbSearchRepository: LocalDbSearchRepository,
     private val libPhoneCodeHelper: LibPhoneCodeHelper,
-    private val blockListPatternRepository: BlockListPatternRepository
+    private val blockListPatternRepository: BlockListPatternRepository,
+    private val countryISO: String
 
 ): ViewModel() {
     var searchRes = MutableLiveData<Response<SearchResponse>>()
@@ -139,75 +140,73 @@ class SearchViewModel(
     }
 
     fun getCallerInfo(phoneNumber: String): LiveData<CntctitemForView> = liveData {
-        var defContentProviderInfo:Deferred<String>? = null
-        var defInfoInDb : Deferred<CallersInfoFromServer?>? = null
-        var infoInCProvider:String? = null
+        var defContentProviderInfo: Deferred<Contact?>? = null
+        var defInfoInDb: Deferred<CallersInfoFromServer?>? = null
+        var infoInCProvider: Contact? = null
         var infoAvailableInDb: CallersInfoFromServer? = null
-        var firstName = ""
-        var lastName = ""
-        var location = ""
-        var country = ""
-        var spamCount = 0L
-        var nameInPhoneBook = ""
-        var hUid = ""
-        var serverQueryPerfomed = false
-        viewModelScope.launch {
-           defContentProviderInfo =  async { contactLocalSyncRepository.getNameFromPhoneNumber(phoneNumber) }
-            //todo get image in cprovider, //add verified and user badge in window layout and feedback activity
-           defInfoInDb =  async { localDbSearchRepository.getServerInfoForNumber(phoneNumber) }
+        var fullName = ""
 
-       }.join()
-        try {
-            infoInCProvider=  defContentProviderInfo?.await()
-        }catch (e:Exception){
-            Log.d(TAG, "getCallerInfo: $e")
-        }
-
-        try{
-            infoAvailableInDb = defInfoInDb?.await()
-            if(infoAvailableInDb !=null){
-                serverQueryPerfomed = true
-            }
-        }catch (e:Exception){
-            Log.d(TAG, "getCallerInfo: $e")
-        }
-        try {
-           country =  libPhoneCodeHelper.getCountryName(phoneNumber)
-        }catch (e:java.lang.Exception){
-            Log.d(TAG, "getCallerInfo: $e")
-        }
-
-        if(!infoInCProvider.isNullOrEmpty()){
-            firstName = infoInCProvider
-        }else if(infoAvailableInDb!= null){
-            if(infoAvailableInDb.firstName.isNotEmpty()){
-                firstName = infoAvailableInDb.firstName
-                lastName = infoAvailableInDb.lastName
-            }else if(infoAvailableInDb.nameInPhoneBook.isNotEmpty()){
-                nameInPhoneBook = infoAvailableInDb.nameInPhoneBook
-            }
-           spamCount = infoAvailableInDb.spamReportCount?:0L
-            if(infoAvailableInDb.hUid.isNotEmpty()){
-                hUid = infoAvailableInDb.hUid
-            }
-        }else{
-            firstName = phoneNumber
-        }
-
-
-        val info = CntctitemForView(
-            firstName = firstName,
-            lastName = lastName,
-            country = country,
-            isInfoFoundInServer = infoAvailableInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
-            spammCount = spamCount,
-            isSearchedForCallerInserver = serverQueryPerfomed,
-            informationReceivedDate = Date(),
-            nameInPhoneBook = nameInPhoneBook
+        val resultContact = CntctitemForView(
+            informationReceivedDate = Date()
         )
-        info.isVerifiedUser = infoAvailableInDb?.isVerifiedUser?:false
-        //todo add property doSearch in server in emiting object, if infoindb in null or (INFO_NOT_FOUND_IN_SERVER & days > 0)
-        emit(info)
+        viewModelScope.launch {
+            defContentProviderInfo =
+                async { contactLocalSyncRepository.infoFromContentProvider(phoneNumber) }
+            //todo get image in cprovider, //add verified and user badge in window layout and feedback activity
+            defInfoInDb = async { localDbSearchRepository.getServerInfoForNumber(phoneNumber) }
+
+        }.join()
+        try {
+            infoInCProvider = defContentProviderInfo?.await()
+        } catch (e: Exception) {
+            Log.d(TAG, "getCallerInfo: $e")
+        }
+
+        try {
+            infoAvailableInDb = defInfoInDb?.await()
+
+        } catch (e: Exception) {
+            Log.d(TAG, "getCallerInfo: $e")
+        }
+        try {
+            resultContact.country = libPhoneCodeHelper.getCountryName(phoneNumber)
+        } catch (e: java.lang.Exception) {
+            Log.d(TAG, "getCallerInfo: $e")
+        }
+
+        if (infoInCProvider!= null && infoInCProvider.nameInLocalPhoneBook.isNotEmpty()) {
+            fullName = infoInCProvider?.nameInLocalPhoneBook?:""
+            resultContact.nameInLocalPhoneBook = infoInCProvider.nameInLocalPhoneBook
+            resultContact.thumbnailImgCp = infoInCProvider.thumbnailInCprovider
+        } else if (infoAvailableInDb != null) {
+            if (infoAvailableInDb.firstName.isNotEmpty()) {
+                fullName += infoAvailableInDb.firstName
+                resultContact.firstName = infoAvailableInDb.firstName
+
+                if (infoAvailableInDb.lastName.isNotEmpty()) {
+                    fullName += " " + infoAvailableInDb.lastName
+                    resultContact.lastName = infoAvailableInDb.lastName
+
+                }
+                if (infoAvailableInDb.nameInPhoneBook.isNotEmpty()) {
+                    fullName = infoAvailableInDb.nameInPhoneBook
+                    resultContact.nameInPhoneBook = infoAvailableInDb.nameInPhoneBook
+                }
+                resultContact.spammCount = infoAvailableInDb.spamReportCount ?: 0L
+                resultContact.hUid = infoAvailableInDb.hUid
+                resultContact.isVerifiedUser = infoAvailableInDb.isVerifiedUser
+                resultContact.avatarGoogle = infoAvailableInDb.avatarGoogle
+            }
+        }
+        if(fullName.isEmpty()){
+            fullName = phoneNumber
+        }
+        if(infoAvailableInDb == null && infoInCProvider == null){
+            resultContact.shoudlSearchInServer = true
+        }
+        emit(resultContact)
+
+
     }
 
     fun isthisNumberBlocked(phoneNumber: String) :LiveData<Int> = liveData {
@@ -223,6 +222,16 @@ class SearchViewModel(
 
     }
 
+    fun getCallerInfoFromServer(phoneNumber: String): LiveData<CntctitemForView?> = liveData {
+        val formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(phoneNumber),countryISO )
+        val response = searchNetworkRepository.search(formatedNum)
+        val result = response?.body()?.cntcts
+        if(result!= null){
+            val searchResult = DTOMapper.serverResultToConctView(response)
+            emit(searchResult)
+        }
+
+    }
 
 
     /**

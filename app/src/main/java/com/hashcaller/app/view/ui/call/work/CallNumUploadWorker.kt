@@ -85,7 +85,6 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                 CountrycodeHelper(context).getCountryISO(),
                 spamThreshold
             )
-            val networklivedta = ConnectionLiveData(context)
 
             val callersLocalRepository =
                 CallLocalRepository(
@@ -111,6 +110,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                      * send the list to server
                      */
                     val result = callContainerRepository.uploadNumbersToGetInfo(hashednums(senderInfoSublist))
+                    Log.d(TAG, "doWork: $result")
                     var callerslistToBeSavedInLocalDb : MutableList<CallersInfoFromServer> = mutableListOf()
                     //99e6b20ac2e79d44dc9fe018c188b5ec6fb10ad78a844cb9d67a6ba5f14b30a0 918086176331
                     if(result?.code() in (500..599)){
@@ -123,13 +123,16 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                         if(reslt.code() == HttpStatusCodes.STATUS_OK){
                             for(cntct in reslt.body()?.contacts!!){
                                 var formated = formatPhoneNumber(cntct.hash)
-                                if(cntct.hUid.isNotEmpty()){
+                                if(!cntct.hUid.isNullOrEmpty()){
                                     Log.d(TAG+"huid", "doWork: ${cntct.hUid}")
                                 }
                                 if(cntct.firstName == "Sathiamma"){
                                     Log.d(TAG+"name", "doWork:Sathiamma")
                                 }
                                 formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+                                if(!cntct.avatarGoogle.isNullOrEmpty()){
+                                    Log.d(TAG, "doWork: avatarGoogle not empty")
+                                }
                                 callersInfoFromServerDAO?.updateByHash(
                                     hashedNum = cntct.hash?:"",
                                     spamCount = cntct.spamCount?:0L,
@@ -208,10 +211,10 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
 //                    hashedAddress = hashUsingArgon(hashedAddress)
                     hashedAddress?.let {hashed->
                         callersListTobeSendToServer.add(ContactAddressWithHashDTO( hashed))
-                        insertIntoListSetUploadingStatus(
-                            caller.number,
-                            hashed,
-                        )
+//                        insertIntoListSetUploadingStatus(
+//                            caller.number,
+//                            hashed,
+//                        )
                     }
                 }
 //                    if(sms.currentDate)
@@ -232,7 +235,7 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
             contactAddress = phoneNumber,
             hashedNum = hashed,
             isUserInfoFoundInServer = SEARCHING_FOR_INFO,
-            informationReceivedDate = Date(),
+            informationReceivedDate = Date(2323223232L),
         )
         listToBeInsertedToDBFirst.add(callerInfoTobeSavedInDatabase)
 

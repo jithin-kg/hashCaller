@@ -203,6 +203,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 binding.outlinedTextField3.isCounterEnabled = true
                 binding.outlinedTextField4.isCounterEnabled = true
                 showSaveUpdateBtn()
+
             }
     }
 
@@ -419,8 +420,6 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
     }
     private fun updateUserInfo() {
         if(CheckNetwork.isetworkConnected()){
-            binding.pgBar.beVisible()
-            binding.btnUpdate.beInvisible()
 
             binding.btnUpdate.isEnabled = false
             binding.editTextFName.error = null
@@ -439,8 +438,16 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                 binding.outlinedTextField,
                 binding.outlinedTextField2,
             )
+            if(!isValid){
+                binding.pgBar.beInvisible()
+                binding.btnUpdate.beInvisible()
+            }else {
+                binding.pgBar.beVisible()
+            }
+
+
             validateEmailAndBio()
-            if(isImageAvatarChosenFromGoogle){
+            if(isImageAvatarChosenFromGoogle && isValid){
                 //profile photo is chosen from google auth
                 viewModel.updateUserWithGoogleProfile(
                     firstName,
@@ -477,25 +484,27 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
                 })
             }else {
-                //profile photo is chosen from gallery
-                viewModel.compresSAndPrepareForUpload(imgFile, this).observe(this,
-                    Observer {
-                        imageMultipartBody = it
+                if(isValid){
+                    //profile photo is chosen from gallery
+                    viewModel.compresSAndPrepareForUpload(imgFile, this).observe(this,
+                        Observer {
+                            imageMultipartBody = it
 
-                        binding.editTextFName.error = null
+                            binding.editTextFName.error = null
 //    binding.editTextEmail.error = null
-                        binding.editTextLName.error = null
-                        val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
-                        if(isValid){
+                            binding.editTextLName.error = null
+                            val isValid = validateInput(firstName, lastName, binding.outlinedTextField, binding.outlinedTextField2);
+                            if(isValid){
 
-                            var userInfo = UserInfoDTO()
-                            userInfo.firstName = firstName;
-                            userInfo.lastName =  lastName;
-                            userInfo.email = email
-                            userInfo.bio = bio
-                            update(userInfo, imageMultipartBody)
-                        }
-                    })
+                                var userInfo = UserInfoDTO()
+                                userInfo.firstName = firstName;
+                                userInfo.lastName =  lastName;
+                                userInfo.email = email
+                                userInfo.bio = bio
+                                update(userInfo, imageMultipartBody)
+                            }
+                        })
+                }
             }
 
         }else{
@@ -533,10 +542,12 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
 
 
     private fun hideSaveUpdateBtn() {
+        binding.btnUpdate.isEnabled = false
         binding.btnUpdate.beInvisible()
         binding.imgBtnBackBlock.setImageDrawable(getDrawable(R.drawable.ic_baseline_arrow_back_white))
     }
     fun showSaveUpdateBtn(){
+        binding.btnUpdate.isEnabled = true
         Log.d(TAG, "showSaveUpdateBtn: ")
         binding.btnUpdate.beVisible()
         binding.imgBtnBackBlock.setImageDrawable(getDrawable(R.drawable.ic_close_line))
