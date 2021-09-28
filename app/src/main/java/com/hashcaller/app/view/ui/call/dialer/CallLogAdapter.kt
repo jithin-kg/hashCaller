@@ -343,6 +343,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //
 //                }
 //            }
+            if(callLog.relativeDay.isNotEmpty()){
+                logBinding.tvRelativeDay.text = callLog.relativeDay
+                logBinding.tvRelativeDay.beVisible()
+            }else {
+                logBinding.tvRelativeDay.beGone()
+            }
             val relativeTime  = getRelativeTime(callLog.dateInMilliseconds)
             logBinding.textViewTime.text = relativeTime.relativeTime
 //            if(relativeTime.relativeDay == RelativeTime.TODAY && !isTodayTextShown){
@@ -351,32 +357,32 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                isTodayTextShown = true
 //            }
 //            else
-            if(relativeTime.relativeDay == RelativeTime.TODAY && todayDayNumber == null && isCompleteCallLogsRetrieved){
-                    logBinding.tvRelativeDay.beVisible()
-                    logBinding.tvRelativeDay.text = "Today"
-                    todayDayNumber = callLog.number
-            }else if(todayDayNumber != null && callLog.number == todayDayNumber && isCompleteCallLogsRetrieved){
-                    logBinding.tvRelativeDay.beVisible()
-                    logBinding.tvRelativeDay.text = "Today"
-            } else if(relativeTime.relativeDay == RelativeTime.YESTERDAY && yesterDayNumber == null && isCompleteCallLogsRetrieved){
-                    logBinding.tvRelativeDay.beVisible()
-                    logBinding.tvRelativeDay.text = "Yesterday"
-                    yesterDayNumber = callLog.number
-            }else if(yesterDayNumber != null && callLog.number == yesterDayNumber && isCompleteCallLogsRetrieved){
-                    logBinding.tvRelativeDay.beVisible()
-                    logBinding.tvRelativeDay.text = "Yesterday"
-            }else if(relativeTime.relativeDay == RelativeTime.OLDER && olderDayNumber == null && isCompleteCallLogsRetrieved){
-                logBinding.tvRelativeDay.beVisible()
-                logBinding.tvRelativeDay.text = "Older"
-                olderDayNumber = callLog.number
-            }else if(olderDayNumber != null && callLog.number == olderDayNumber && isCompleteCallLogsRetrieved){
-                logBinding.tvRelativeDay.beVisible()
-                logBinding.tvRelativeDay.text = "Older"
-            }
-            else {
-                logBinding.tvRelativeDay.beGone()
-                logBinding.tvRelativeDay.text = ""
-            }
+//            if(relativeTime.relativeDay == RelativeTime.TODAY && todayDayNumber == null && isCompleteCallLogsRetrieved){
+//                    logBinding.tvRelativeDay.beVisible()
+//                    logBinding.tvRelativeDay.text = "Today"
+//                    todayDayNumber = callLog.number
+//            }else if(todayDayNumber != null && callLog.number == todayDayNumber && isCompleteCallLogsRetrieved){
+//                    logBinding.tvRelativeDay.beVisible()
+//                    logBinding.tvRelativeDay.text = "Today"
+//            } else if(relativeTime.relativeDay == RelativeTime.YESTERDAY && yesterDayNumber == null && isCompleteCallLogsRetrieved){
+//                    logBinding.tvRelativeDay.beVisible()
+//                    logBinding.tvRelativeDay.text = "Yesterday"
+//                    yesterDayNumber = callLog.number
+//            }else if(yesterDayNumber != null && callLog.number == yesterDayNumber && isCompleteCallLogsRetrieved){
+//                    logBinding.tvRelativeDay.beVisible()
+//                    logBinding.tvRelativeDay.text = "Yesterday"
+//            }else if(relativeTime.relativeDay == RelativeTime.OLDER && olderDayNumber == null && isCompleteCallLogsRetrieved){
+//                logBinding.tvRelativeDay.beVisible()
+//                logBinding.tvRelativeDay.text = "Older"
+//                olderDayNumber = callLog.number
+//            }else if(olderDayNumber != null && callLog.number == olderDayNumber && isCompleteCallLogsRetrieved){
+//                logBinding.tvRelativeDay.beVisible()
+//                logBinding.tvRelativeDay.text = "Older"
+//            }
+//            else {
+//                logBinding.tvRelativeDay.beGone()
+//                logBinding.tvRelativeDay.text = ""
+//            }
             logBinding.layoutExpandableCall.tvExpandNumCall.text = callLog.numberFormated
             setClickListener(logBinding.root, callLog)
         }

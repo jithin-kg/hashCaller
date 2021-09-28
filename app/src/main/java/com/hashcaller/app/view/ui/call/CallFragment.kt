@@ -44,6 +44,8 @@ import com.hashcaller.app.view.ui.MainActivityInjectorUtil
 import com.hashcaller.app.view.ui.MyUndoListener
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListActivity
+import com.hashcaller.app.view.ui.call.RelativeTime.Companion.OLDER
+import com.hashcaller.app.view.ui.call.RelativeTime.Companion.YESTERDAY
 import com.hashcaller.app.view.ui.call.db.CallLogTable
 import com.hashcaller.app.view.ui.call.dialer.CallLogAdapter
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
@@ -63,6 +65,7 @@ import com.hashcaller.app.view.ui.sms.list.SMSListAdapter
 import com.hashcaller.app.view.utils.ConfirmDialogFragment
 import com.hashcaller.app.view.utils.ConfirmationClickListener
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
+import com.hashcaller.app.view.utils.getRelativeTime
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
@@ -256,11 +259,45 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogFromDb() {
         this.viewmodel?.callLogTableData?.observe(viewLifecycleOwner, Observer {
-            if(it.isEmpty() && isCallLogsCpEmpty)
-                binding.pgBarCall.beGone()
-            (!isCallLogsCpEmpty && it.isNotEmpty())
-                binding.pgBarCall.beGone()
-            submitListToAdapter(it, false)
+            if(it.isEmpty() && isCallLogsCpEmpty) binding.pgBarCall.beGone()
+            !isCallLogsCpEmpty && it.isNotEmpty()
+            binding.pgBarCall.beGone()
+
+            lifecycleScope.launchWhenCreated {
+                withContext(Dispatchers.IO){
+                    if(it.isNotEmpty()){
+                        var todayDayNumber:String? = null
+                        var yesterDayNumber:String? = null
+                         var olderDayNumber:String? = null
+
+                        for (log in it){
+//                            if(olderDayNumber != null){
+//                                break
+//                            }
+                            val relativeObj =  getRelativeTime(log.dateInMilliseconds)
+                            if(relativeObj.relativeDay == RelativeTime.TODAY && todayDayNumber == null) {
+                                log.relativeDay = "Today"
+                                todayDayNumber ="Today"
+                            }else if(relativeObj.relativeDay == YESTERDAY && yesterDayNumber == null ){
+                                log.relativeDay = "Yesterday"
+                                yesterDayNumber ="Yesterday"
+                            }else if(relativeObj.relativeDay == OLDER && olderDayNumber == null ){
+                                log.relativeDay = "Older"
+                                olderDayNumber ="Older"
+                            }else {
+                                log.relativeDay = ""
+                            }
+
+
+                        }
+                    }
+                    withContext(Dispatchers.Main){
+                        submitListToAdapter(it, false)
+                    }
+
+                }
+            }
+
         })
     }
 
@@ -427,6 +464,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
             adapter = callLogAdapter
             itemAnimator = null
+
         }
     }
 

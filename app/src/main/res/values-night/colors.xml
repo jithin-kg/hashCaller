@@ -58,6 +58,7 @@
 
     <color name="textColor">#FFFFFF</color>
     <color name="dashColor">#8DFFFFFF</color>
+    <color name="unselectedIndicator">#3A3D3E</color>
 
     <color name="bottomNavIconColor">@color/textColor</color>
     <color name="textColorSecondary">#7E7B7B</color>

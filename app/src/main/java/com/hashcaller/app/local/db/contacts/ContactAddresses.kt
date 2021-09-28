@@ -1,5 +1,6 @@
 package com.hashcaller.app.local.db.contacts
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,6 +12,7 @@ import androidx.room.PrimaryKey
  * block non contact calls if user enabled that option
  *
  */
+@Keep
 @Entity(tableName = "contact_addresses_for_searching")
 data class ContactAddresses(
     @PrimaryKey(autoGenerate = false)

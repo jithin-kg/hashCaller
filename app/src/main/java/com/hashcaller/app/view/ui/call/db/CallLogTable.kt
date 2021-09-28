@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.call.db
 
+import androidx.annotation.Keep
 import androidx.room.*
 
 //Todo unique contact address
@@ -10,7 +11,7 @@ import androidx.room.*
  */
 
 //TODO save the
-
+@Keep
 @Entity(tableName = "call_log",indices = [Index(value =["id", "number", "numberFormated"], unique = true)])
  data class CallLogTable (
     @PrimaryKey(autoGenerate = false)
@@ -32,7 +33,8 @@ import androidx.room.*
     @ColumnInfo(name = "avatarGoogle") var avatarGoogle: String = "",
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false,
     @ColumnInfo(name = "hUid") var hUid: String,
-    @ColumnInfo(name = "isVerifiedUser") var isVerifiedUser:Boolean = false
+    @ColumnInfo(name = "isVerifiedUser") var isVerifiedUser:Boolean = false,
+    @ColumnInfo(name = "relativeDay") var relativeDay:String = "" // for showing today, yesterday, older in call fragment
 
 
 ) {

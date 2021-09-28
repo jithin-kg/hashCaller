@@ -1,6 +1,7 @@
 package com.hashcaller.app.view.ui.search
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -59,6 +60,7 @@ class ServerSearchResultAdapter(private val context: Context, private val onCont
     }
 
     fun setList(newContactList: List<Contact>) {
+        Log.d(TAG, "setList: $newContactList")
         contacts = newContactList
         this.submitList(newContactList)
     }

@@ -10,11 +10,11 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollV"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/tvAgree"
+        app:layout_constraintBottom_toTopOf="@+id/cbAggree"
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

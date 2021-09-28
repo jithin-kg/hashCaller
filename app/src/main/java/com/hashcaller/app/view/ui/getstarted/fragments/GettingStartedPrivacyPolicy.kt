@@ -25,7 +25,6 @@ class GettingStartedPrivacyPolicy : Fragment(), SlideBackgroundColorHolder {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentGettingStartedPrivacyPolicyBinding.inflate(inflater, container, false)
-
 //        binding.tvTermsAgree.setOnClickListener{startPrivacyIntent()}
         return binding.root
     }

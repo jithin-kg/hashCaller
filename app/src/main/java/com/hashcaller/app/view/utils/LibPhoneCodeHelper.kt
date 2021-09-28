@@ -22,10 +22,10 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
         }
         return regionCode
     }
-    suspend fun getCountryName(phoneNum:String): String = withContext(Dispatchers.IO) {
+    suspend fun getCountryName(phoneNum:String, defaultRegions:String ="IN"): String = withContext(Dispatchers.IO) {
         var countryName = ""
         try {
-            val numberProto =phoneUtil.parse(phoneNum, "IN")
+            val numberProto =phoneUtil.parse(phoneNum, defaultRegions)
 
 //             countryCode = numberProto.countryCode.toString()
 //            PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY

@@ -2,6 +2,7 @@ package com.hashcaller.app.view.ui.getstarted
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro
 import com.hashcaller.app.R
@@ -26,9 +27,11 @@ class GettingStartedSliderActivity : AppIntro() {
         isColorTransitionsEnabled = true
         isSkipButtonEnabled = false
         setSwipeLock(true)
-        isIndicatorEnabled = false
-
-
+        isIndicatorEnabled = true
+        setIndicatorColor(ContextCompat.getColor(this, R.color.colorPrimary),ContextCompat.getColor(this, R.color.unselectedIndicator))
+        setNextArrowColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        setBackArrowColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        setColorDoneText(ContextCompat.getColor(this, R.color.colorPrimary))
     }
 
     /***

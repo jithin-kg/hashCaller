@@ -87,53 +87,57 @@ class SearchNetworkRepository(
     }
 
     suspend fun saveServerInfoIntoDB(contact: Contact) = withContext(Dispatchers.IO){
-        var formatedNum = formatPhoneNumber(contact.phoneNumber)
-        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso )
-        val res = callersInfoFromServerDAO?.find(formatedNum)
+        try {
+            var formatedNum = formatPhoneNumber(contact.phoneNumber)
+            formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso )
+            val res = callersInfoFromServerDAO?.find(formatedNum)
 
-        if(res== null){
-            val info = CallersInfoFromServer(
-                contactAddress = formatedNum,
-                spammerType = 0,
-                firstName = contact?.firstName?:"",
-                lastName = contact?.lastName?:"",
-                nameInPhoneBook = contact?.nameInPhoneBook?:"",
-                bio = contact?.bio?:"",
-                email = contact?.email?:"",
-                hUid = contact?.hUid?:"",
-                avatarGoogle = contact?.avatarGoogle?:"",
-                isVerifiedUser = contact?.isVerifiedUser?:false,
-                informationReceivedDate = Date(),
-                spamReportCount = contact?.spamCount?:0L,
-                city = contact?.location?:"",
-                country = contact?.country?:"",
-                carrier = contact?.carrier?:"",
-                isBlockedByUser = false,
-                isUserInfoFoundInServer = contact?.isInfoFoundInServer?:0,
-                thumbnailImg = contact?.photoThumnailServer?:""
-            )
-
-            callersInfoFromServerDAO?.insert(listOf(info))
-        }else{
-            callersInfoFromServerDAO?.updateWithServerinfo(
-                contactAddress = formatedNum,
-                firstName = contact?.firstName?:"",
-                lastName = contact?.lastName,
-                nameInPhoneBook = contact?.nameInPhoneBook?:"",
-                informationReceivedDate = Date(),
-                spamReportCount = contact?.spamCount?:0L,
-                city = contact?.location?:"",
-                country = contact?.country?:"",
-                carrier = contact?.carrier?:"",
-                isUserInfoFoundInServer = contact?.isInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
-                spammerType = contact?.spamerType?:0 ,
-                thumbnailImg = contact?.photoThumnailServer?:"",
-                hUid = contact?.hUid?:"",
-                bio = contact?.bio?:"",
-                email = contact?.email?:"",
-                avatarGoogle = contact?.avatarGoogle?:"",
-                isVerifiedUser = contact?.isVerifiedUser?:false
+            if(res== null){
+                val info = CallersInfoFromServer(
+                    contactAddress = formatedNum,
+                    spammerType = 0,
+                    firstName = contact?.firstName?:"",
+                    lastName = contact?.lastName?:"",
+                    nameInPhoneBook = contact?.nameInPhoneBook?:"",
+                    bio = contact?.bio?:"",
+                    email = contact?.email?:"",
+                    hUid = contact?.hUid?:"",
+                    avatarGoogle = contact?.avatarGoogle?:"",
+                    isVerifiedUser = contact?.isVerifiedUser?:false,
+                    informationReceivedDate = Date(),
+                    spamReportCount = contact?.spamCount?:0L,
+                    city = contact?.location?:"",
+                    country = contact?.country?:"",
+                    carrier = contact?.carrier?:"",
+                    isBlockedByUser = false,
+                    isUserInfoFoundInServer = contact?.isInfoFoundInServer?:0,
+                    thumbnailImg = contact?.photoThumnailServer?:""
                 )
+                Log.d(TAG, "saveServerInfoIntoDB: inserting $info")
+                callersInfoFromServerDAO?.insert(listOf(info))
+            }else{
+                callersInfoFromServerDAO?.updateWithServerinfo(
+                    contactAddress = formatedNum,
+                    firstName = contact?.firstName?:"",
+                    lastName = contact?.lastName,
+                    nameInPhoneBook = contact?.nameInPhoneBook?:"",
+                    informationReceivedDate = Date(),
+                    spamReportCount = contact?.spamCount?:0L,
+                    city = contact?.location?:"",
+                    country = contact?.country?:"",
+                    carrier = contact?.carrier?:"",
+                    isUserInfoFoundInServer = contact?.isInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
+                    spammerType = contact?.spamerType?:0 ,
+                    thumbnailImg = contact?.photoThumnailServer?:"",
+                    hUid = contact?.hUid?:"",
+                    bio = contact?.bio?:"",
+                    email = contact?.email?:"",
+                    avatarGoogle = contact?.avatarGoogle?:"",
+                    isVerifiedUser = contact?.isVerifiedUser?:false
+                )
+            }
+        }catch (e:Exception){
+            Log.d(TAG, "saveServerInfoIntoDB: $e")
         }
     }
 
@@ -166,14 +170,7 @@ class SearchNetworkRepository(
         return@withContext contact
     }
     suspend fun findOneInDb(fno: String, userSelectedCountryIso: String): CallersInfoFromServer?  = withContext(Dispatchers.IO){
-
-
-        var formatedNum = formatPhoneNumber(fno)
-
-        formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum,
-            this@SearchNetworkRepository.countryIso
-        )
-        return@withContext callersInfoFromServerDAO?.find(formatedNum)
+        return@withContext callersInfoFromServerDAO?.find(fno)
     }
 
     suspend fun makeDelay() = withContext(Dispatchers.IO) {

@@ -4,14 +4,14 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.hashcaller",
+  "applicationId": "com.hashcaller.app",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 5,
-      "versionName": "1.0.4",
+      "versionCode": 17,
+      "versionName": "1.05.0",
       "outputFile": "app-release.apk"
     }
   ]

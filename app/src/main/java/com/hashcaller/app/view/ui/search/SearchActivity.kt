@@ -120,6 +120,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
     private fun observeSererSearchResult() {
         serverSearchViewmodel.serverSearchResultLiveData.observe(this, Observer {
             if(it!=null){
+                Log.d(TAG, "observeSererSearchResult: $it")
                 serverSearchResultAdapter?.setList(it)
                 if(it.isNotEmpty()){
                     binding.tvNoResultshashCaller.beGone()
@@ -219,7 +220,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
 
     override fun onTextChanged(newText: String) {
 //        binding.tvQueryItem.text = ""
-        runOnUiThread {
+//        runOnUiThread {
             if(!CheckNetwork.isetworkConnected()){
                 toast("No internet")
             }else {
@@ -245,7 +246,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
                 serverSearchViewmodel.clearResult()
                 binding.linearLayoutSearch.beGone()
             }
-        }
+//        }
 
     }
 

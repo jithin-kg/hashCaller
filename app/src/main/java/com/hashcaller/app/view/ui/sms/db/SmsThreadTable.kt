@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.sms.db
 
+import androidx.annotation.Keep
 import androidx.room.*
 
 //Todo unique contact address
@@ -9,7 +10,7 @@ import androidx.room.*
  */
 
 //TODO save the
-
+@Keep
 @Entity(tableName = "chat_threads",indices = [Index(value =["threadId", "contactAddress"], unique = true)])
  data class SmsThreadTable (
    @PrimaryKey(autoGenerate = false)

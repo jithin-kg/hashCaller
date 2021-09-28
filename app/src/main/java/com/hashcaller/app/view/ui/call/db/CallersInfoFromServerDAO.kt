@@ -33,6 +33,8 @@ interface CallersInfoFromServerDAO {
     @Query("SELECT * FROM callers_info_from_server WHERE contact_address=:contactAddress")
     suspend fun find(contactAddress: String) : CallersInfoFromServer?
 
+
+
     @Query("DELETE from callers_info_from_server ")
     suspend fun deleteAll()
 

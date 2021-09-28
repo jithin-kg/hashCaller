@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.hashworker
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,6 +12,7 @@ import androidx.room.PrimaryKey
  * All the numbers in this table has to be uploaded to server and get information for
  * the  numbers
   */
+@Keep
 @Entity(tableName = "unknown_hashed_number")
 data class HashedNumber(
     @PrimaryKey() val number: String,

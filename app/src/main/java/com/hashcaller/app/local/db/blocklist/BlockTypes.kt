@@ -1,5 +1,8 @@
 package com.hashcaller.app.local.db.blocklist
 
+import androidx.annotation.Keep
+
+@Keep
 class BlockTypes {
     companion object{
         const val BLOCK_TYPE_STARTS_WITH = 0

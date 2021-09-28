@@ -22,7 +22,9 @@ import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.view.ui.call.CallFragment.Companion.pageCall
+import com.hashcaller.app.view.ui.call.RelativeTime
 import com.hashcaller.app.view.ui.call.db.*
+import com.hashcaller.app.view.ui.call.dialer.CallLogAdapter
 import com.hashcaller.app.view.ui.call.dialer.util.CallLogData
 import com.hashcaller.app.view.ui.call.dialer.util.CallLogLiveData
 import com.hashcaller.app.view.ui.call.utils.UnknownCallersInfoResponse
@@ -35,6 +37,7 @@ import com.hashcaller.app.view.ui.sms.db.NameAndThumbnail
 import com.hashcaller.app.view.ui.sms.individual.util.getRandomColor
 import com.hashcaller.app.view.ui.sms.individual.util.getRandomNum
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
+import com.hashcaller.app.view.utils.getRelativeTime
 import com.hashcaller.app.work.formatPhoneNumber
 import com.hashcaller.app.work.removeAllNonNumbericChars
 import kotlinx.coroutines.*
@@ -575,6 +578,8 @@ class CallContainerRepository(
     }
     fun getAllCallLogLivedata(): LiveData<MutableList<CallLogTable>>?  {
         return callLogDAO?.getAllLiveData(spamLimit= spamThreshold.toLong())
+
+
     }
 //    suspend fun getAllCallLog(): MutableList<CallLogAndInfoFromServer>? {
 ////        return callLogDAO?.getAllCallLog()

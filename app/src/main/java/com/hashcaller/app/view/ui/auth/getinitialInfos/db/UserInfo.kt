@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.auth.getinitialInfos.db
 
+import androidx.annotation.Keep
 import androidx.room.*
 
 //Todo unique contact address
@@ -24,7 +25,7 @@ import androidx.room.*
  */
 
 //TODO save the
-
+@Keep
 @Entity(tableName = "user_info",indices = [Index(value =["phone_no"], unique = true)])
 data class UserInfo (
     @PrimaryKey(autoGenerate = true) val id: Int?,

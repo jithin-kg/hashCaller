@@ -1,8 +1,9 @@
 package com.hashcaller.app.network.incomingcall
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
-
+@Keep
 data class SuggestNameModel(
     @SerializedName("name")
     val name: String,

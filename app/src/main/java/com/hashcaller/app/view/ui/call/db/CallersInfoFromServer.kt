@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.call.db
 
+import androidx.annotation.Keep
 import androidx.room.*
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import java.util.*
@@ -25,9 +26,8 @@ import java.util.*
  *
  */
 
-//TODO save the
-
-@Entity(tableName = "callers_info_from_server",indices = [Index(value =["contact_address"], unique = true)])
+@Keep
+@Entity(tableName = "callers_info_from_server",indices = [Index(value =["contact_address","hashedNum"], unique = true)])
 data class CallersInfoFromServer (
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "contact_address") var contactAddress: String= "",

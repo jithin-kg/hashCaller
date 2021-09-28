@@ -8,7 +8,9 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
 
-
+    lintOptions {
+        checkReleaseBuilds false
+    }
 
     /**This 'compileOptions' is added by me for build time error
      * invoke-customs are only supported starting with android O --min-api 26
@@ -41,10 +43,9 @@ android {
         applicationId "com.hashcaller.app"
         minSdkVersion 24 //using stream need api level 24
         targetSdkVersion 30
-        versionCode 17
-        versionName "1.05.0"
+        versionCode 22
+        versionName "1.05.6"
         vectorDrawables.useSupportLibrary = true
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //   https://stackoverflow.com/questions/27186726/java-lang-unsatisfiedlinkerror-dalvik-system-pathclassloader/46051246
 //        ndk {

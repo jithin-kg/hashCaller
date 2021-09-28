@@ -25,10 +25,10 @@ class TextChangeListenerDelayed(private val iListener:ITextChangeListenerDelayed
                 before: Int,
                 count: Int
             ) {
-                GlobalScope.launch {
-                    delay(300L)
+//                GlobalScope.launch {
+//                    delay(300L)
                     iListener.onTextChanged(view.text.toString())
-                }
+//                }
 
             }
 

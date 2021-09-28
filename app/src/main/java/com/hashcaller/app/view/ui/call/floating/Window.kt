@@ -25,6 +25,7 @@ import com.hashcaller.app.view.ui.contacts.utils.loadImage
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.app.view.ui.sms.individual.util.beVisible
+import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.work.formatPhoneNumber
@@ -69,6 +70,7 @@ class Window(
                 WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
         PixelFormat.TRANSLUCENT
     )
+    private val countryCodeIso = CountrycodeHelper(context).getCountryISO()
 
 
     private fun getCurrentDisplayMetrics(): DisplayMetrics {
@@ -157,7 +159,7 @@ class Window(
 
     private  suspend fun setCountryCode() = withContext(Dispatchers.IO)  {
         if(phoneNumber.isNotEmpty()){
-            val country = countryCodeHelper?.getCountryName(phoneNumber)
+            val country = countryCodeHelper?.getCountryName(phoneNumber,countryCodeIso)
             setcountry(country)
         }
     }

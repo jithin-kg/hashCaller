@@ -1,5 +1,6 @@
 package com.hashcaller.app.local.db.blocklist
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -9,6 +10,7 @@ import androidx.room.PrimaryKey
 /**
  * class to insert user spam reported numbers
  */
+@Keep
 @Entity(tableName = "spammer_info",indices = [Index(value =["contact_address"], unique = true)])
 data class SpammerInfo(
     @PrimaryKey(autoGenerate = true) val id: Int?,

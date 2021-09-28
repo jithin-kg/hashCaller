@@ -1,5 +1,8 @@
 package com.hashcaller.app.network
 
+import androidx.annotation.Keep
+
+@Keep
  class HttpStatusCodes {
      companion object{
          // used while searching, if no item found -> then server returns 204 as status code

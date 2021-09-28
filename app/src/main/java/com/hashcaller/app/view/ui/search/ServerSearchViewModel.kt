@@ -22,6 +22,7 @@ import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.*
 import retrofit2.Response
 import java.lang.Exception
+import java.util.Queue
 
 /**
  * ViewModel to only perform  search in server
@@ -33,7 +34,6 @@ class ServerSearchViewModel(
     val serverSearchResultLiveData: MutableLiveData<List<Contact>?> = MutableLiveData(null)
     private var defServerSearch: Deferred<Response<SerachRes>?>? = null
     private var defServerinfoAvialableInDb: Deferred<CallersInfoFromServer?>? = null
-
     fun searchInServer(
         phoneNumber: String,
         packageName: String,
@@ -42,34 +42,39 @@ class ServerSearchViewModel(
     ) =  viewModelScope.launch {
 //        searchNetworkRepository.makeDelay()
 //        showDummySearchResult()
+        Log.d(TAG, "searchInServer: called")
+        serverSearchResultLiveData.value = emptyList()
         var formatedNum = formatPhoneNumber(phoneNumber)
         formatedNum =  libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso)
-        defServerSearch?.cancel()
-        defServerinfoAvialableInDb?.cancel()
+        Log.d(TAG, "searchInServer:formatedNum $formatedNum")
+//        defServerSearch?.cancel()
+//        defServerinfoAvialableInDb?.cancel()
         defServerSearch = null
         defServerinfoAvialableInDb = null
+        val hashed =  Secrets().managecipher(packageName,formatedNum)
         defServerinfoAvialableInDb = async { getServerinfoAvailableInDb(formatedNum, countryIso) }
 
-
-       val hashed =  Secrets().managecipher(packageName,formatedNum)
         Log.d(TAG, "searchInServer: $hashed")
        var infoAvialbleInDb:CallersInfoFromServer? = null
        try {
            infoAvialbleInDb =  defServerinfoAvialableInDb?.await()
+           Log.d(TAG, "searchInServer:infoAvialbleInDb $infoAvialbleInDb")
 //           val infoInCproviderForExactNum = searchNetworkRepository.getContactDetailForNumberFromCp(phoneNumber)
        } catch (e:Exception){
            Log.d(TAG, "searchInServer: $e")
        }
         var isPerformServerSearchInServer = shouldPerformServerSearch(infoAvialbleInDb)
+        Log.d(TAG, "searchInServer: $isPerformServerSearchInServer")
        if(isPerformServerSearchInServer){
            defServerSearch = async { searchNetworkRepository.manualSearch(hashed, countryCode, countryIso) }
        }else {
            //no need to perform searching in server, information avaialbe in local db
+           Log.d(TAG, "searchInServer: no need to search in server $infoAvialbleInDb")
            val searchResult = Contact(-1,
                firstName = infoAvialbleInDb?.firstName?:"",
                phoneNumber= phoneNumber,
                photoThumnailServer = infoAvialbleInDb?.thumbnailImg,
-               country = "",
+               country = infoAvialbleInDb?.country?:"",
                location = infoAvialbleInDb?.city?:"",
                spamCount =  infoAvialbleInDb?.spamReportCount?:0L,
                isInfoFoundInServer= infoAvialbleInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER,
@@ -80,8 +85,10 @@ class ServerSearchViewModel(
                hUid = infoAvialbleInDb?.hUid?:""
            )
            if(searchResult.isInfoFoundInServer !=INFO_NOT_FOUND_IN_SERVER ){
+               Log.d(TAG, "searchInServer: updating livedata if$searchResult")
                serverSearchResultLiveData.value = listOf(searchResult)
            }else {
+               Log.d(TAG, "searchInServer: updating livedata setting empty list")
                serverSearchResultLiveData.value = emptyList()
            }
 
@@ -97,12 +104,22 @@ class ServerSearchViewModel(
                 }
 
 //           }
-            if(response?.code() == NO_CONTENT){
-                saveServerIntoDb(getPreparedContact(null, formatedNum))
-                serverSearchResultLiveData.value = emptyList()
-            }else if(response?.code() == STATUS_OK){
-                saveServerIntoDb(getPreparedContact(result, formatedNum))
+
+            response?.body()?.let {
+                val reshash = it.cntcts?.clientHashedNum?:""
+                if(reshash == hashed){
+                    if(response?.code() == NO_CONTENT){
+                        saveServerIntoDb(getPreparedContact(null, formatedNum))
+                        serverSearchResultLiveData.value = emptyList()
+                    }else if(response?.code() == STATUS_OK){
+                        Log.d(TAG, "searchInServer: status ok $result")
+                        saveServerIntoDb(getPreparedContact(result, formatedNum))
+                    }
+                }
+
+
             }
+
        }catch (e:Exception){
            Log.d(TAG, "searchInServer: $e")
        }

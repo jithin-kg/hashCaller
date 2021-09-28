@@ -135,9 +135,9 @@ class SearchViewModel(
         emit(localDbSearchRepository.getServerInfoForNumber(phoneNumber))
     }
 
-    fun getCountryForNumber(phoneNumber: String) :LiveData<String> = liveData {
-       emit( libPhoneCodeHelper.getCountryName(phoneNumber))
-    }
+//    fun getCountryForNumber(phoneNumber: String) :LiveData<String> = liveData {
+//       emit( libPhoneCodeHelper.getCountryName(phoneNumber))
+//    }
 
     fun getCallerInfo(phoneNumber: String): LiveData<CntctitemForView> = liveData {
         var defContentProviderInfo: Deferred<Contact?>? = null
@@ -169,7 +169,7 @@ class SearchViewModel(
             Log.d(TAG, "getCallerInfo: $e")
         }
         try {
-            resultContact.country = libPhoneCodeHelper.getCountryName(phoneNumber)
+            resultContact.country = libPhoneCodeHelper.getCountryName(phoneNumber,countryISO )
         } catch (e: java.lang.Exception) {
             Log.d(TAG, "getCallerInfo: $e")
         }
