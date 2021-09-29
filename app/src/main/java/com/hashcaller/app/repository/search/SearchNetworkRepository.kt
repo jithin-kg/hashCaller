@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
+import com.hashcaller.app.Secrets
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.search.ISearchService
 import com.hashcaller.app.network.search.model.SerachRes
@@ -90,11 +91,13 @@ class SearchNetworkRepository(
         try {
             var formatedNum = formatPhoneNumber(contact.phoneNumber)
             formatedNum = libPhoneCodeHelper.getES164Formatednumber(formatedNum, countryIso )
+            val hashedNum = Secrets().managecipher(null, formatedNum)
             val res = callersInfoFromServerDAO?.find(formatedNum)
 
             if(res== null){
                 val info = CallersInfoFromServer(
                     contactAddress = formatedNum,
+                    hashedNum = hashedNum,
                     spammerType = 0,
                     firstName = contact?.firstName?:"",
                     lastName = contact?.lastName?:"",

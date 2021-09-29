@@ -1,18 +1,14 @@
 package com.hashcaller.app.view.ui
 
 import android.Manifest.permission.*
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.role.RoleManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
-import android.provider.Settings.canDrawOverlays
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
@@ -43,12 +39,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.appupdate.testing.FakeAppUpdateManager
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
@@ -66,22 +56,20 @@ import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
-import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.ROLE_SCREENING_APP_REQUEST_CODE
+import com.hashcaller.app.utils.updatemanager.UpdateManagerViewmodel
 import com.hashcaller.app.utils.auth.TokenHelper
-import com.hashcaller.app.utils.crypto.KeyManager
 import com.hashcaller.app.utils.notifications.tokeDataStore
+import com.hashcaller.app.utils.updatemanager.UpdateMangerInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.blockConfig.BlockConfigFragment
 import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
 import com.hashcaller.app.view.ui.call.spam.SpamCallsActivity
 import com.hashcaller.app.view.ui.contacts.ContactsContainerFragment
-import com.hashcaller.app.view.ui.contacts.hasMandatoryPermissions
 import com.hashcaller.app.view.ui.contacts.hashContactsPermission
 import com.hashcaller.app.view.ui.contacts.startContactUploadWorker
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.extensions.startPermissionRequestActivity
-import com.hashcaller.app.view.ui.getstarted.GetStartedActivity
 import com.hashcaller.app.view.ui.getstarted.GettingStartedSliderActivity
 import com.hashcaller.app.view.ui.hashworker.HasherViewmodel
 import com.hashcaller.app.view.ui.manageblock.BlockManageActivity
@@ -90,14 +78,12 @@ import com.hashcaller.app.view.ui.profile.ProfileActivity
 import com.hashcaller.app.view.ui.settings.SettingsActivity
 import com.hashcaller.app.view.ui.sms.SMSContainerFragment
 import com.hashcaller.app.view.ui.sms.individual.util.*
-import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.DefaultFragmentManager
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
-import kotlinx.coroutines.launch
 import java.security.*
 
 
@@ -153,7 +139,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private val RC_SIGN_IN = 1
     private lateinit var scrnRoleCallback: ActivityResultLauncher<Intent>
     private lateinit var resultUpdate: ActivityResultLauncher<Intent>
-    private lateinit var  appUpdateManager: AppUpdateManager
 
 
 
@@ -171,6 +156,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     ///////////////////////////// end //////////////////////////////////////////
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     private lateinit var hashCallerViewModel: HashCallerViewModel
+    private lateinit var updateManagerViewmodel: UpdateManagerViewmodel
 
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
@@ -206,6 +192,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
         regstrScreeningRoleResultCb()
         registerForAppUpdateResultCb()
+        updateManagerViewmodel = ViewModelProvider(this, UpdateMangerInjectorUtil.providerViewmodelFactory(this)).get(
+            UpdateManagerViewmodel::class.java)
         checkForUpdate()
 
     }
@@ -216,32 +204,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      * inAppUpdatePriority field under Edits.tracks.releases in the Google Play Developer API.
      */
     private fun checkForUpdate() {
-        appUpdateManager = AppUpdateManagerFactory.create(this)
-//        val appUpdateManager = FakeAppUpdateManager(this)
-//        appUpdateManager.setUpdateAvailable(AppUpdateType.IMMEDIATE)
-// Returns an intent object that you use to check for an update.
-        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-
-// Checks that the platform will allow the specified type of update.
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-            ) {
-                toast("App update available, please check update HashCaller")
-                appUpdateManager.startUpdateFlowForResult(
-                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                    appUpdateInfo,
-                    // The current activity making the update request.
-                    this,
-                    // Or pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
-                    // flexible updates.
-                    AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE)
-                        .setAllowAssetPackDeletion(true)
-                        .build(),
-                    // Include a request code to later monitor this update request.
-                    APP_UPDATE_REQ_CODE)
-                openActivityForResult()
-            }
-        }
+//        lifecycleScope.launchWhenCreated {
+        updateManagerViewmodel.checkForUpdate().observe(this, Observer {
+            Log.d(TAG, "checkForUpdate: $it")
+            when(it){
+                UpdateManagerViewmodel.IMMEDIATE_UPDATE -> {
+                    val i = Intent(this@MainActivity, ImmediateUpdateActivity::class.java)
+                    startActivity(i)
+                    finish()
+                }
+            } 
+        })
+           
+//        }
     }
 
     private fun openActivityForResult(){
@@ -1014,23 +989,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onResume() {
         super.onResume()
+        checkForUpdate()
 
-        appUpdateManager
-            .appUpdateInfo
-            .addOnSuccessListener { appUpdateInfo ->
-                if (appUpdateInfo.updateAvailability()
-                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
-                ) {
-                    Log.d(TAG, "onResume: ")
-                    // If an in-app update is already running, resume the update.
-                    appUpdateManager.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        AppUpdateType.IMMEDIATE,
-                        this,
-                        APP_UPDATE_REQ_CODE
-                    );
-                }
-            }
     }
 
     fun getBottomNavView(): BottomNavigationView {

@@ -172,6 +172,22 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             binding.tvFirstLetter.text = it.firstName[0].toString()
+            var nameOfContact = ""
+            if(it.hUid.isNotEmpty() &&  (it.firstName.isNotEmpty() || it.lastName.isNotEmpty())){
+                nameOfContact += it.firstName
+                if(it.lastName.isNotEmpty()){
+                    nameOfContact += " "+ it.lastName
+                }
+            }else if(it.nameInLocalPhoneBook.isNotEmpty()){
+                nameOfContact = it.nameInLocalPhoneBook
+            }else if(it.nameInPhoneBook.isNotEmpty()){
+                nameOfContact = it.nameInLocalPhoneBook
+            }else {
+                nameOfContact = it.phoneNumber
+            }
+            if(nameOfContact.isNotEmpty()){
+                binding.tvName.text = nameOfContact
+            }
             binding.tvName.text = name
             binding.tvLocationValues.text = it.country + " " + it.location
             binding.tvLocationValues.text = it.spammCount.toString()

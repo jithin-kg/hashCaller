@@ -50,6 +50,8 @@
                 android:id="@+id/tvPrivacy"
                 style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="0dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center|start"
                 android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:text="@string/contacts_consent"

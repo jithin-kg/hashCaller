@@ -18,7 +18,9 @@
     <!--    E2ECFD blue 4-->
 
     <!--    <color name="colorPrimary">#145291</color>-->
+
     <color name="colorPrimary">#3398ED</color>
+
     <color name="colorPrimaryAlpha">#1D3398ED</color>
     <color name="colorBgLowAlpha">#12000000</color>
     <color name="colorBackgroundAppBar">#145291</color>
@@ -27,7 +29,7 @@
     <color name="colorPrimaryDarkIncomingCallView">#145291</color>
     <color name="primaryText"> #145191</color>
     <!--    <color name="colorBackgroundAppBar">#2D83C4</color>-->
-
+    <color name="colorPrimaryBackground">#3398ED</color>
     <color name="colorSplash">#145291</color>
     <color name="bottom_nav_color">#E2ECFD</color>
     <color name="colorBackground">#FCFFFFFF</color>
@@ -111,7 +113,6 @@
     <color name="gettingstarted_1">#3490dc</color>
     <color name="gettingstarted_2">#2B2B2B</color>
     <color name="gettingstarted_3">#27A65D</color>
-
 
 
 </resources>

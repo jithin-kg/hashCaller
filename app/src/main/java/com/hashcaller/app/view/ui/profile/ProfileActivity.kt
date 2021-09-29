@@ -387,7 +387,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 val resultCode = result.resultCode
                 val data = result.data
-                binding.pgBarImgPick.beInvisible()
+                binding.pgBarImgPick.beVisible()
                 if (resultCode == Activity.RESULT_OK) {
                     //Image Uri will not be null for RESULT_OK
                     val fileUri = data?.data!!
@@ -395,11 +395,13 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
                     val mProfileUri = fileUri
                     imgFile = File(fileUri.path!!)
                     binding.ivAvatar.setImageURI(fileUri)
+                    binding.pgBarImgPick.beInvisible()
                     showSaveUpdateBtn()
                     isImageAvatarChosenFromGoogle = false
                 } else if (resultCode == ImagePicker.RESULT_ERROR) {
                     toast(ImagePicker.getError(data))
                 } else {
+                    binding.pgBarImgPick.beInvisible()
                     toast("No image selected")
                 }
             }
@@ -412,7 +414,7 @@ class ProfileActivity : AppCompatActivity(), View.OnClickListener {
             .createIntent { intent ->
                 startForProfileImageResult.launch(intent)
             }
-        binding.pgBarImgPick.beVisible()
+
 //        getAction.launch("image/*")
 //        getAction.launch()
 //        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)

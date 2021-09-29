@@ -98,15 +98,15 @@ class ServerSearchResultAdapter(private val context: Context, private val onCont
             //only show image from server, not from content provider
             val photoThumbnailFromServer = contact.photoThumnailServer?:""
             val googleAvatar = contact.avatarGoogle?:""
-            if(photoThumbnailFromServer.isNotEmpty()){
-                loadImage(context, binding.imgViewCntct, photoThumbnailFromServer)
-            }else if(googleAvatar.isNotEmpty()){
-                Glide.with(context).load(googleAvatar)
-                    .into(binding.imgViewCntct)
-            }else {
-                generateCircleView(contact);
-
-            }
+//            if(photoThumbnailFromServer.isNotEmpty()){
+//                loadImage(context, binding.imgViewCntct, photoThumbnailFromServer)
+//            }else if(googleAvatar.isNotEmpty()){
+//                Glide.with(context).load(googleAvatar)
+//                    .into(binding.imgViewCntct)
+//            }else {
+//                generateCircleView(contact);
+//
+//            }
 //            if(contact.photoURI)
             val pNo = contact.phoneNumber
 

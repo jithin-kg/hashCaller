@@ -23,6 +23,8 @@ import com.hashcaller.app.local.db.sms.mute.IMutedSendersDAO
 import com.hashcaller.app.local.db.sms.mute.MutedSenders
 import com.hashcaller.app.local.db.sms.search.ISmsQueriesDAO
 import com.hashcaller.app.local.db.sms.search.SmsSearchQueries
+import com.hashcaller.app.local.db.update.IUpdateAndPriorityDao
+import com.hashcaller.app.local.db.update.UpdateAndPriority
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.IUserHashedNumDao
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserHashedNumber
 import com.hashcaller.app.view.ui.auth.getinitialInfos.db.UserInfo
@@ -59,7 +61,8 @@ import com.hashcaller.app.view.ui.sms.db.SmsThreadTable
     UserHashedNumber::class,
     HashedNumber::class,
     MyContacts::class,
-    SpamThresholdUpdatedDate::class
+    SpamThresholdUpdatedDate::class,
+    UpdateAndPriority::class
 
 ), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
@@ -82,6 +85,7 @@ abstract class HashCallerDatabase: RoomDatabase() {
         abstract fun hashedNumDAO() : IHashedNumbersDAO
         abstract fun hashedContactsDAO() : IHashedContactsDAO
         abstract fun spamThresholdUpdateDAO() : ISpamThresholdLastUpdatedDao
+        abstract fun updateAndPriorityDao() : IUpdateAndPriorityDao
 
 
     companion object{

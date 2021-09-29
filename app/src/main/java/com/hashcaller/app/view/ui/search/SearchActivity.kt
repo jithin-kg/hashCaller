@@ -229,6 +229,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
             queryStr = newText
 //            this.searchViewmodel.searc
             if(queryStr.isNotEmpty()){
+                //we have different layout for server search and local search
                 searchViewmodel.onQueryTextChanged(newText.toLowerCase(), false)
                 binding.linearLayoutSearch.beVisible()
                 //this is important to cancel job, or request will be made frequently
@@ -303,8 +304,21 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
             }
             else ->{
                 val intent = Intent(this, IndividualContactViewActivity::class.java )
+                var nameOfContact = ""
+                if(contactItem.hUid.isNotEmpty() && (contactItem.firstName.isNotEmpty() || contactItem.lastName.isNotEmpty())){
+                    nameOfContact += contactItem.firstName
+                    if(contactItem.lastName.isNotEmpty()){
+                        nameOfContact += " "+ contactItem.lastName
+                    }
+                }else if(contactItem.nameInLocalPhoneBook.isNotEmpty()){
+                    nameOfContact = contactItem.nameInLocalPhoneBook
+                }else if(contactItem.nameInPhoneBook.isNotEmpty()){
+                    nameOfContact = contactItem.nameInLocalPhoneBook
+                }else {
+                    nameOfContact = contactItem.phoneNumber
+                }
                 intent.putExtra(CONTACT_ID, contactItem.phoneNumber)
-                intent.putExtra("name", contactItem.firstName )
+                intent.putExtra("name", nameOfContact)
 //        intent.putExtra("id", contactItem.id)
                 intent.putExtra("photo", contactItem.photoURI)
                 intent.putExtra("color", contactItem.drawable)

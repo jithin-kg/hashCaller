@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context=".view.ui.ImmediateUpdateActivity">
+    <ImageView
+        android:id="@+id/imgVLogo"
+        android:layout_width="144dp"
+        android:layout_height="144dp"
+        android:src="@drawable/ic_circle_logo_hashcaller"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvHead"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Please update \n HashCaller"
+        app:layout_constraintTop_toBottomOf="@+id/imgVLogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:textColor="@color/textColor"
+        android:alpha="0.79"
+        android:layout_marginStart="@dimen/margin_padding_size_large"
+        android:layout_marginEnd="@dimen/margin_padding_size_large"
+        />
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="This version of app is no longer supported. Please go to the Play store to download the latest version."
+        app:layout_constraintTop_toBottomOf="@+id/tvHead"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        android:textSize="24sp"
+
+        android:textColor="@color/textColor"
+        android:alpha="0.79"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        android:layout_marginStart="@dimen/margin_padding_size_large"
+        android:layout_marginEnd="@dimen/margin_padding_size_large"
+        />
+
+    <Button
+        android:id="@+id/btnUpdateApp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Update"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginEnd="@dimen/margin_padding_size_medium"
+        android:layout_marginBottom="@dimen/margin_padding_size_xlarge"
+        android:paddingTop="@dimen/margin_padding_size_small"
+        android:paddingBottom="@dimen/margin_padding_size_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

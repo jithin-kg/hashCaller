@@ -21,13 +21,15 @@ class GettingStartedSliderActivity : AppIntro() {
         setStatusBarColor(getColor(R.color.colorBackground))
         setStatusBarColorRes(R.color.colorBackground)
         addSlide(GettingStartedPrivacyPolicy())
-//        addSlide(GettingStartedFullFeaturedFragment())
+        addSlide(GettingStartedFullFeaturedFragment())
         addSlide(GettingStartedRespectPrivacyFragment())
         addSlide(GettingStartedSecurelyStoredFragment())
         isColorTransitionsEnabled = true
         isSkipButtonEnabled = false
         setSwipeLock(true)
         isIndicatorEnabled = true
+
+//        isIndicatorEnabled = false
         setIndicatorColor(ContextCompat.getColor(this, R.color.colorPrimary),ContextCompat.getColor(this, R.color.unselectedIndicator))
         setNextArrowColor(ContextCompat.getColor(this, R.color.colorPrimary))
         setBackArrowColor(ContextCompat.getColor(this, R.color.colorPrimary))

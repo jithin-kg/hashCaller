@@ -46,6 +46,7 @@ interface IuserService {
         @Body userInfo: ResUpdateProfileWithGoogle
     ) : Response<GenericResponse<ResUpdateProfileWithGoogle>>
 
+
     @POST("user/signupWithGoogle")
     suspend fun signupWithGoogleAuth(
         @Header("Authorization")

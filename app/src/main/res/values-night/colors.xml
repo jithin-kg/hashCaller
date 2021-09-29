@@ -5,6 +5,7 @@
     <color name="colorBgLowAlpha">#12FFFFFF</color>
     <color name="colorBackground">#03141B</color>
     <color name="search_background_color">#2C3337</color>
+    <color name="colorPrimaryBackground">#03141B</color>
 
     <color name="statusBarColor">#AB000000</color>
     <color name="colorPrimaryDark">#AB000000</color>
