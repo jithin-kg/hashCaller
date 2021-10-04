@@ -105,9 +105,6 @@ class SpamCallsActivity : AppCompatActivity(), CallLogAdapter.ViewHandlerHelper,
                     ).get(
                     SpamCallViewModel::class.java
                 )
-//            }
-
-
     }
 
     private fun observeInternetLivedata() {

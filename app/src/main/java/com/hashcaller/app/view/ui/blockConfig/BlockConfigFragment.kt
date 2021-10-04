@@ -236,6 +236,9 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
 
         binding.fabBtnShowAdd.setOnClickListener(this as View.OnClickListener)
         binding.imgBtnHamBrgerBlk.setOnClickListener(this)
+        binding.btnDismiss.setOnClickListener {
+            binding.layoutOverlayPermission.beGone()
+        }
     }
 
     private fun setupViewPager(viewPager: ViewPager?) {

@@ -246,7 +246,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
             when(it.size){
                 0 ->{
-                    showSearchView()
+//                    showSearchView()
                 }
                 else ->{
                     showBlockBtnInToolbar(it.size)
@@ -306,11 +306,12 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private fun initListeners() {
 
-        binding.imgBtnCallTbrBlock.setOnClickListener(this)
+//        binding.imgBtnCallTbrBlock.setOnClickListener(this)
+//        binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
+//        binding.imgBtnCallSearch.setOnClickListener(this)
+//        binding.imgBtnHamBrgerCalls.setOnClickListener(this)
         binding.fabBtnShowDialpad.setOnClickListener(this)
-        binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
-        binding.imgBtnCallSearch.setOnClickListener(this)
-        binding.imgBtnHamBrgerCalls.setOnClickListener(this)
+
 
         radioSales?.setOnClickListener(this)
         radioScam?.setOnClickListener(this)
@@ -564,15 +565,15 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
 
     private fun unmuteUser() {
-        viewmodel?.unmuteByAddress()?.observe(viewLifecycleOwner, Observer {
-            when(it){
-                OPERATION_COMPLETED -> {
-                    requireActivity().toast("Enabled notification for ${viewmodel?.contactAddress} ", Toast.LENGTH_LONG)
-                    binding.imgBtnCallUnMuteCaller.beInvisible()
-                    showSearchView()
-                }
-            }
-        })
+//        viewmodel?.unmuteByAddress()?.observe(viewLifecycleOwner, Observer {
+//            when(it){
+//                OPERATION_COMPLETED -> {
+//                    requireActivity().toast("Enabled notification for ${viewmodel?.contactAddress} ", Toast.LENGTH_LONG)
+//                    binding.imgBtnCallUnMuteCaller.beInvisible()
+//                    showSearchView()
+//                }
+//            }
+//        })
     }
 
     private fun setupBottomSheet() {
@@ -621,19 +622,19 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     private fun blockMarkedCaller() {
-        this.viewmodel?.blockThisAddress(
-            this.spammerType,
-            context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
-                when(it){
-                    ON_COMPLETED -> {
-                        viewmodel?.clearMarkedItems()
-                        bottomSheetDialog.hide()
-                        bottomSheetDialog.dismiss()
-                        bottomSheetDialogfeedback.show()
-                        showSearchView()
-                    }
-                }
-        })
+//        this.viewmodel?.blockThisAddress(
+//            this.spammerType,
+//            context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
+//                when(it){
+//                    ON_COMPLETED -> {
+//                        viewmodel?.clearMarkedItems()
+//                        bottomSheetDialog.hide()
+//                        bottomSheetDialog.dismiss()
+//                        bottomSheetDialogfeedback.show()
+//                        showSearchView()
+//                    }
+//                }
+//        })
     }
     private fun muteMarkedCaller() {
     }
@@ -878,52 +879,20 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     }
 
-    private fun hideBlockButton() {
-        this.requireActivity().runOnUiThread {
-            binding.imgBtnCallTbrBlock.beInvisible()
-            binding.imgBtnCallTbrMuteCaller.beInvisible()
-            binding.imgBtnCallUnMuteCaller.beInvisible()
-        }
 
-    }
 
-    private fun showBlockButon() {
-       this.requireActivity().runOnUiThread {
-           binding.imgBtnCallTbrBlock.beVisible()
-          if(isScreeningApp){ // checking screening app rol is available
-              //check if user already muted or blocked the contact
-              viewmodel?.checkWhetherMutedOrBlocked()?.observe(viewLifecycleOwner, Observer {
-                  when(it){
-                      IS_MUTED_ADDRESS -> {
-                          if(isScreeningApp){
-                              binding.imgBtnCallUnMuteCaller.beVisible()
-                              binding.imgBtnCallTbrMuteCaller.beInvisible()
-                          }
-
-                      }
-                      IS_NOT_MUTED_ADDRESS ->{
-                          binding.imgBtnCallUnMuteCaller.beInvisible()
-//                          binding.imgBtnCallTbrMuteCaller.beVisible()
-                      }
-                  }
-              })
-
-          }
-       }
-
-    }
 
     private fun showBlockBtnInToolbar(count: Int) {
-        updateSelectedItemCount(count)
-        binding.imgBtnCallSearch.beInvisible()
-            binding.imgBtnCallTbrBlock.beVisible()
-
-        if(isScreeningApp){
-//            binding.imgBtnCallTbrMuteCaller.beVisible()
-        }
-        binding.imgBtnCallSearch.beInvisible()
-        binding.tvVHashcaller.beInvisible()
-        binding.imgBtnHamBrgerCalls.beInvisible()
+//        updateSelectedItemCount(count)
+//        binding.imgBtnCallSearch.beInvisible()
+//            binding.imgBtnCallTbrBlock.beVisible()
+//
+//        if(isScreeningApp){
+////            binding.imgBtnCallTbrMuteCaller.beVisible()
+//        }
+//        binding.imgBtnCallSearch.beInvisible()
+//        binding.tvVHashcaller.beInvisible()
+//        binding.imgBtnHamBrgerCalls.beInvisible()
 
     }
 
@@ -935,20 +904,20 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         }
     }
 
-    fun showSearchView(){
-
-        binding.imgBtnCallTbrBlock.beInvisible()
-        binding. imgBtnCallTbrMuteCaller.beInvisible()
-        binding.tvCallSelectedCount.beInvisible()
-        binding.imgBtnCallUnMuteCaller.beInvisible()
-        binding.pgBarDeleting.beInvisible()
-        binding.tvVHashcaller.beVisible()
-        binding.imgBtnHamBrgerCalls.beVisible()
-    }
+//    fun showSearchView(){
+//
+//        binding.imgBtnCallTbrBlock.beInvisible()
+//        binding. imgBtnCallTbrMuteCaller.beInvisible()
+//        binding.tvCallSelectedCount.beInvisible()
+//        binding.imgBtnCallUnMuteCaller.beInvisible()
+//        binding.pgBarDeleting.beInvisible()
+//        binding.tvVHashcaller.beVisible()
+//        binding.imgBtnHamBrgerCalls.beVisible()
+//    }
 
     fun updateSelectedItemCount(count: Int) {
-        binding.tvCallSelectedCount.text = "${count.toString()} Selected"
-        binding.tvCallSelectedCount.beVisible()
+//        binding.tvCallSelectedCount.text = "${count.toString()} Selected"
+//        binding.tvCallSelectedCount.beVisible()
     }
 
     override fun onYesConfirmationDelete() {
@@ -960,10 +929,10 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 ON_PROGRESS -> {
 //                    binding.imgBtnCallTbrDelete.beInvisible()
 
-                    binding.pgBarDeleting.beVisible()
+//                    binding.pgBarDeleting.beVisible()
                 }
                 ON_COMPLETED -> {
-                    showSearchView()
+//                    showSearchView()
                 }
             }
         })
@@ -981,7 +950,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     lastOperationPerformed = OPERTION_MUTE
                     sbar.setAction("Undo", MyUndoListener(this))
                     sbar.show()
-                    showSearchView()
+//                    showSearchView()
                 }
             }
         })

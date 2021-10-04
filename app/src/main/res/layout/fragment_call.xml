@@ -7,7 +7,9 @@
     android:background="@color/colorBackground"
     android:theme="@style/AppTheme"
     android:layout_marginBottom="?attr/actionBarSize"
-    android:id="@+id/cordinateLyoutCall">
+    android:id="@+id/cordinateLyoutCall"
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+    >
 
     <FrameLayout
         android:id="@+id/frameFragmentDialer"
@@ -28,162 +30,7 @@
         android:text="Give permissions"
         android:textColor="@color/colorWhite"
         />
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbarCallContainer"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:elevation="4dp"
-        app:layout_scrollFlags="scroll|enterAlways"
-        android:background="@color/colorBackgroundAppBar"
-        >
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/callToolbarLayoutItems"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginStart="0dp"
-            app:layout_scrollFlags="scroll|enterAlways">
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/imgBtnHamBrgerCalls"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:src="@drawable/ic_menu_line"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tvVHashcaller"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvVHashcaller"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:gravity="start"
-                android:text="@string/hashcaller_name"
-                android:textColor="@color/colorWhite"
-                android:textSize="24sp"
-                android:layout_marginStart="16dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerCalls"
-                app:layout_constraintTop_toTopOf="parent" />
-<!--https://www.flaticon.com/free-icon/shield_786447?term=shield&page=1&position=35&page=1&position=35&related_id=786447&origin=search-->
-<!--          attribution <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
-
-            <ImageButton
-                android:id="@+id/imgBtnCallSearch"
-                android:layout_width="@dimen/margin_padding_size_large"
-                android:layout_height="@dimen/margin_padding_size_large"
-                android:padding="@dimen/margin_padding_size_medium"
-                android:layout_marginEnd="@dimen/margin_padding_size_large"
-                android:background="?android:selectableItemBackground"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:src="@drawable/ic_search_line_white"
-                />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/imgBtnCallTbrDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_delete_bin_5_line_white"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallSearch"
-                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallSearch"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnCallSearch" />
-
-            <ProgressBar
-                android:id="@+id/pgBarDeleting"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:indeterminateTint="@color/colorPrimary"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_delete_blue_24"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
-                app:layout_constraintEnd_toEndOf="@+id/imgBtnCallTbrDelete"
-                app:layout_constraintStart_toStartOf="@+id/imgBtnCallTbrDelete"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/imgBtnCallTbrMuteCaller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_baseline_notifications_off"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
-                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/imgBtnCallUnMuteCaller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_baseline_notifications_active_24"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrBlock"
-                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrBlock"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrBlock" />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/imgBtnCallTbrBlock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:background="?android:selectableItemBackground"
-                android:src="@drawable/ic_spam_3_line_white"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnCallTbrDelete"
-                app:layout_constraintEnd_toStartOf="@+id/imgBtnCallTbrDelete"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnCallTbrDelete" />
-
-            <TextView
-                android:id="@+id/tvCallSelectedCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="selected "
-                android:textColor="@color/colorWhite"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/tvVHashcaller"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-<!--        </androidx.appcompat.widget.Toolbar>-->
-    </com.google.android.material.appbar.AppBarLayout>
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-<!--            >-->
-<!--&lt;!&ndash;            <a href="https://storyset.com/communication">Communication illustrations by Storyset</a>&ndash;&gt;-->
-<!--            <androidx.appcompat.widget.AppCompatImageView-->
-<!--                android:id="@+id/imgV"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                />-->
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcrViewCallHistoryLogs"
         android:layout_width="match_parent"

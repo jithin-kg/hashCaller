@@ -63,6 +63,7 @@ import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.utils.updatemanager.UpdateMangerInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.blockConfig.BlockConfigFragment
+import com.hashcaller.app.view.ui.call.CallContainerFragment
 import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
 import com.hashcaller.app.view.ui.call.spam.SpamCallsActivity
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var hashedNumbersViewmodel : HasherViewmodel
-    private lateinit var callFragment: CallFragment
+    private lateinit var callFragment: CallContainerFragment
     private lateinit var smsFragment: SMSContainerFragment
     private lateinit var contactFragment: ContactsContainerFragment
     private lateinit var blockListFragment: BlockConfigFragment
@@ -456,7 +457,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         if (savedInstanceState == null) {
             ft = supportFragmentManager.beginTransaction()
             this.contactFragment = ContactsContainerFragment()
-            this.callFragment = CallFragment()
+            this.callFragment = CallContainerFragment()
             this.dialerFragment = DialerFragment()
 //            this.searchFragment = SearchFragment()
             this.blockListFragment = BlockConfigFragment()
@@ -502,7 +503,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
     private fun setFragmentsFromSavedInstanceState(savedInstanceState: Bundle) {
 //        this.fullScreenFragment = supportFragmentManager.getFragment(savedInstanceState, "fullScreenFragment") as FullscreenFragment
-        this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallFragment
+        this.callFragment = supportFragmentManager.getFragment(savedInstanceState, "callFragment") as CallContainerFragment
 
         this.contactFragment = supportFragmentManager.getFragment(
             savedInstanceState,
