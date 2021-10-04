@@ -72,13 +72,16 @@ class FloatingService: Service() {
     private var prevCallState:String? = null
     private var callEndedState:String = ""
     private var  dataStoreRepository:DataStoreRepository? = null
-//    private var token:String? = ""
+    private var callStateReceiver: BroadcastReceiver? = null
+
+    //    private var token:String? = ""
     override fun onBind(intent: Intent?): IBinder? = null
 
     /**
      * Remove the foreground notification and stop the service.
      */
     private fun stopService() {
+        unregisterReceiver(callStateReceiver)
         stopForeground(true)
         stopSelf()
         window = null
@@ -115,7 +118,7 @@ class FloatingService: Service() {
          *  changed to IDLE
          */
 
-        val mysms: BroadcastReceiver = object : BroadcastReceiver() {
+        callStateReceiver = object : BroadcastReceiver() {
             override fun onReceive(arg0: Context?, intent: Intent) {
                 val  command = intent.getStringExtra(INTENT_COMMAND)?:""
 
@@ -126,7 +129,7 @@ class FloatingService: Service() {
                         window?.close()
                         WindowObj.clearReference()
                         window = null
-//                                }
+    //                                }
                         stopService()
                     }
                     STOP_FLOATIN_SERVICE_FROM_RECEIVER -> {
@@ -137,16 +140,17 @@ class FloatingService: Service() {
                         window = null
                         if(mphoneNumberStr.isNotEmpty()){
                             startActivityIncommingCallViewUpdated(mphoneNumberStr, callEndedState, callHandledSim, cntctForView)
+
                         }
 
-//                                }
+    //                                }
                         stopService()
                     }
                 }
 
             }
         }
-        registerReceiver(mysms, IntentFilter(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE))
+        registerReceiver(callStateReceiver, IntentFilter(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE))
 
 
     }

@@ -1,18 +1,18 @@
 package com.hashcaller.app.repository.incomingcall
 
 import android.util.Log
-import com.hashcaller.app.Secrets
 import com.hashcaller.app.network.RetrofitClient
 import com.hashcaller.app.network.incomingcall.IIncomingCallService
 import com.hashcaller.app.network.incomingcall.SuggestNameModel
 import com.hashcaller.app.utils.auth.TokenHelper
+import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
-import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.Exception
+import java.util.*
 
 class IncomingCallRepository(
     private val tokenHelper: TokenHelper?,
@@ -79,6 +79,18 @@ class IncomingCallRepository(
         return@withContext result
     }
 
+    suspend fun saveSugestionInDb(hashedNum: String, formatedNum: String, name: String) = withContext(Dispatchers.IO) {
+        val res = callerInfoFromServerDAO.findByHash(hashedNum)
+        if(res == null){
+            //insert new record
+            val info = CallersInfoFromServer( contactAddress = formatedNum, hashedNum = hashedNum, nameInPhoneBook = name,informationReceivedDate =  Date())
+            callerInfoFromServerDAO.insert(listOf(info))
+        }else {
+            //update
+            callerInfoFromServerDAO.updateBySuggestion(hashedNum, name)
+        }
+
+    }
 
 
 }

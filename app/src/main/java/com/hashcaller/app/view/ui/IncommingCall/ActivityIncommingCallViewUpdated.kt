@@ -41,6 +41,7 @@ import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.CALL_HANDLED_STATE
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.CLOSE_INCOMMING_VIEW
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.NAME_IN_SERVER_PHONE_BOOK
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
@@ -84,6 +85,8 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     private var phoneNumber: String = ""
     private var fullNameInCP: String = ""
     private var fullNameserver: String = ""
+    private var nameInServerPhoneBook: String=""
+
     private var imageFromCp: String = ""
     private var imageFromDB: String = ""
     private var avatarGoogle: String = ""
@@ -163,10 +166,9 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
             binding.helpfulMessage.visibility = View.INVISIBLE
             binding.actionsCard.visibility = View.INVISIBLE
             delay(500)
-
             binding.actionsCard.beVisible()
             binding.actionsCard.topToBottomAnim(500L, 100f)
-            if(hUid.isEmpty()){
+            if(!isVerifiedUser){
                 delay(300)
                 binding.helpfulMessage.beVisible()
                 binding.helpfulMessage.bottomToTopAnim(500L, 500f)
@@ -183,6 +185,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         phoneNumber = intent.getStringExtra(PHONE_NUMBER) ?: ""
         fullNameInCP = intent.getStringExtra(IntentKeys.FULL_NAME_IN_C_PROVIDER) ?: ""
         fullNameserver = intent.getStringExtra(IntentKeys.FULL_NAME_FROM_SERVER) ?: ""
+        nameInServerPhoneBook = intent.getStringExtra(NAME_IN_SERVER_PHONE_BOOK)?:""
         imageFromCp = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_CPROVIDER) ?: ""
         imageFromDB = intent.getStringExtra(IntentKeys.THUMBNAIL_FROM_DB) ?: ""
         avatarGoogle = intent.getStringExtra(IntentKeys.AVATAR_GOOGLE) ?: ""
@@ -195,6 +198,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         contact.nameInLocalPhoneBook = fullNameInCP
         contact.phoneNumber = phoneNumber
         contact.fullNameServer = fullNameserver
+        contact.nameInPhoneBook = nameInServerPhoneBook
         contact.thumbnailImgCp = imageFromCp
         contact.thumbnailImgServer = imageFromDB
         contact.avatarGoogle = avatarGoogle
@@ -215,16 +219,16 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
             if(contact.nameInLocalPhoneBook.isNotEmpty()){
                 fullName = contact.nameInLocalPhoneBook
+
             }else if(contact.fullNameServer.isNotEmpty()){
                 fullName = contact.fullNameServer
 
             }else if(contact.nameInPhoneBook.isNotEmpty()){
                 fullName = contact.nameInPhoneBook
             }else {
-                fullName = phoneNumber
+                fullName = formatPhoneNumber(phoneNumber)
             }
             txtVcallerName.text = fullName
-
             if(contact.thumbnailImgCp.isNotEmpty()){
                 imgVAvatarIncomming.beVisible()
                 tvFirstLetter.beInvisible()
@@ -239,8 +243,10 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                 Glide.with(this@ActivityIncommingCallViewUpdated).load(contact.avatarGoogle)
                     .into(imgVAvatarIncomming)
             }else {
-                imgVAvatarIncomming.beInvisible()
+//                imgVAvatarIncomming.beInvisible()
                 tvFirstLetter.beVisible()
+                imgVAvatarIncomming.setImageDrawable(ContextCompat.getDrawable(this@ActivityIncommingCallViewUpdated, R.drawable.circular_avatar_main_background))
+                imgVAvatarIncomming.beVisible()
                 binding.tvFirstLetter.text = fullName[0].toString()
             }
             if(contact.isVerifiedUser){
@@ -269,6 +275,21 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                     binding.sim.setImageResource(R.drawable.ic_sim_1_line_white)
                 }
             }
+            if (contact.spammCount > spamThreshold) {
+                Log.d(TAG, "onCreate: spammer calling");
+                materialCardView.setCardBackgroundColor(getColor(R.color.spamText))
+            } else {
+                materialCardView.setCardBackgroundColor(0xff3398ED.toInt())
+
+            }
+
+//            if(contact.nameInLocalPhoneBook.isNotEmpty()){
+//                Log.d(TAG, "setViewContent:nameInLocalPhoneBook not empty ")
+//                helpfulMessage.beGone()
+//            }else {
+//                Log.d(TAG, "setViewContent:nameInLocalPhoneBook is empty ")
+//                helpfulMessage.beVisible()
+//            }
         }
     }
 
@@ -280,10 +301,14 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     private fun getCallerInfo() {
         viewModel.getCallerInfo(phoneNumber).observe(this, Observer {
             if (!it.shoudlSearchInServer) {
-                setViewElements(it)
+//                setViewElements(it)
+                setViewContent(it)
             }else {
                 viewModel.getCallerInfoFromServer(phoneNumber).observe(this, Observer {searchRes->
-                    searchRes?.let { it1 -> setViewElements(it1) }
+                    searchRes?.let { it1 ->
+                        setViewContent(it1)
+//                        setViewElements(it1)
+                    }
                 })
             }
 
@@ -292,9 +317,8 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
     @SuppressLint("LongLogTag")
     private fun setViewElements(callersInfo: CntctitemForView) {
-
+        setViewContent(callersInfo)
         this.callersInfo = callersInfo
-
         binding.txtVLocaltion.text = callersInfo.country + " " + callersInfo.location
         binding.txtVcallerName.text =
             if (callersInfo.firstName.isEmpty()) phoneNumber else callersInfo.firstName + " " + callersInfo.lastName

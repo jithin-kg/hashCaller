@@ -59,6 +59,7 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.INTENT_COMMAND
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.IS_VERIFIED_USER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.LAST_NAME
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.LOCATION
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.NAME_IN_SERVER_PHONE_BOOK
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.PHONE_NUMBER
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.SHOW_FEEDBACK_VIEW
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.SPAM_COUNT
@@ -408,6 +409,7 @@ fun Context.startActivityIncommingCallViewUpdated(
     i.putExtra(FULL_NAME_FROM_SERVER, cntctForView.fullNameServer)
     i.putExtra(THUMBNAIL_FROM_CPROVIDER, cntctForView.thumbnailImgCp)
     i.putExtra(THUMBNAIL_FROM_DB, cntctForView.thumbnailImgServer)
+    i.putExtra(NAME_IN_SERVER_PHONE_BOOK,cntctForView.nameInPhoneBook)
     i.putExtra(AVATAR_GOOGLE, cntctForView.avatarGoogle)
     i.putExtra(H_UID, cntctForView.hUid)
     i.putExtra(SPAM_COUNT, cntctForView.spammCount)

@@ -5,10 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
 import androidx.work.*
-import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.repository.BlockListPatternRepository
-import com.hashcaller.app.utils.Constants
-import com.hashcaller.app.utils.Constants.Companion.DEFAULT_SPAM_THRESHOLD
 import com.hashcaller.app.view.ui.blockConfig.GeneralBlockRepository
 import com.hashcaller.app.view.ui.call.db.CallLogAndInfoFromServer
 import com.hashcaller.app.view.ui.call.db.CallLogTable
@@ -37,9 +34,10 @@ class CallContainerViewModel(
     private val blockListPatternRepository: BlockListPatternRepository,
     private val generalBlockRepository: GeneralBlockRepository
 ) :ViewModel(){
+
     private var showDfltCallerIdLayout = false
     var contactAddress = ""
-     var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
+    var lstOfAllCallLogs: MutableList<CallLogAndInfoFromServer> = mutableListOf()
     var callLogsMutableLiveData:MutableLiveData<MutableList<CallLogAndInfoFromServer>> = MutableLiveData()
 //    var callLogTableData: LiveData<List<CallLogTable>>? = repository!!.getAllCallLogLivedata()
 
@@ -422,26 +420,41 @@ class CallContainerViewModel(
      * called when info about a caller comes from server, or db changes
      */
     fun updateWithNewInfoFromServer(list: List<CallersInfoFromServer>) = viewModelScope.launch {
-        for(item in list){
-             val res =  repository?.findFromCallLogTable(item.contactAddress)
-            var fullName = ""
-            if(!item.firstName.isNullOrEmpty()){
-                fullName = item.firstName
-                if(!item.lastName.isNullOrEmpty()){
-                    fullName += " " + item.lastName
+        for(infoFromServer in list){
+             val resCallLog =  repository?.findFromCallLogTable(infoFromServer.contactAddress)
+            var fullName: String? = null
+            var nameFromServer = ""
+            if(!infoFromServer.firstName.isNullOrEmpty()){
+                fullName = infoFromServer.firstName
+                if(!infoFromServer.lastName.isNullOrEmpty()){
+                    fullName += " " + infoFromServer.lastName
                 }
             }
-              if(res!=null){
-                  if(
-                        res.nameFromServer!= fullName  || res.nameInPhoneBook != item.nameInPhoneBook ||
-                        res.avatarGoogle != item.avatarGoogle || res.imageFromDb != item.thumbnailImg  ||
-                        res.isVerifiedUser != item.isVerifiedUser || res.spamCount != item.spamReportCount  ||
-                        res.hUid != item.hUid
-                          ){
-                      repository?.updateCallLogWithServerInfo(item)
-                  }
-                  
+            if(resCallLog?.nameFromServer != fullName || resCallLog?.nameFromServer != infoFromServer.nameInPhoneBook){
+                nameFromServer = fullName?:infoFromServer.nameInPhoneBook
+            }
 
+              if(resCallLog!=null){
+                  Log.d(TAG, "updateWithNewInfoFromServer:  nameFromServer ${resCallLog.nameFromServer} fullName $fullName")
+                  Log.d(TAG, "updateWithNewInfoFromServer:  nameInPhoneBook ${resCallLog.nameFromServer} nameInPhoneBook ${infoFromServer.nameInPhoneBook}")
+                  Log.d(TAG, "updateWithNewInfoFromServer:  avatarGoogle ${resCallLog.avatarGoogle} avatarGoogle ${infoFromServer.avatarGoogle}")
+                  Log.d(TAG, "updateWithNewInfoFromServer:  imageFromDb ${resCallLog.imageFromDb} imageFromDb ${infoFromServer.thumbnailImg}")
+                  Log.d(TAG, "updateWithNewInfoFromServer:  isVerifiedUser ${resCallLog.isVerifiedUser} isVerifiedUser ${infoFromServer.isVerifiedUser}")
+                  Log.d(TAG, "updateWithNewInfoFromServer:  spamCount ${resCallLog.spamCount} spamCount ${infoFromServer.spamReportCount}")
+                  Log.d(TAG, "updateWithNewInfoFromServer:  hUid ${resCallLog.hUid} hUid ${infoFromServer.hUid}")
+//                  if(
+//                        res.nameFromServer!= fullName  || res.nameInPhoneBook != item.nameInPhoneBook ||
+//                        res.avatarGoogle != item.avatarGoogle || res.imageFromDb != item.thumbnailImg  ||
+//                        res.isVerifiedUser != item.isVerifiedUser || res.spamCount != item.spamReportCount  ||
+//                        res.hUid != item.hUid
+//                          ){
+                      if(resCallLog.nameFromServer != nameFromServer ||
+                          resCallLog.avatarGoogle != infoFromServer.avatarGoogle || resCallLog.imageFromDb != infoFromServer.thumbnailImg  ||
+                          resCallLog.isVerifiedUser != infoFromServer.isVerifiedUser || resCallLog.spamCount != infoFromServer.spamReportCount  ||
+                          resCallLog.hUid != infoFromServer.hUid
+                      ){
+                      repository?.updateCallLogWithServerInfo(infoFromServer)
+                  }
               }
           }
     }
@@ -618,6 +631,6 @@ class CallContainerViewModel(
 
 
     companion object {
-        const val TAG = "__SmsContainerViewModel"
+        const val TAG = "__CallContainerViewModel"
     }
 }

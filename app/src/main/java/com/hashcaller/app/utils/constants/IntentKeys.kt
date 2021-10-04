@@ -9,7 +9,7 @@ class IntentKeys {
         const val PHONE_NUMBER = "phoneNumber"
         const val FULL_NAME_IN_C_PROVIDER = "fullName"
         const val FULL_NAME_FROM_SERVER = "nameFromServer"
-
+        const val NAME_IN_SERVER_PHONE_BOOK = "nameInServerPhoneBook"
         const val THUMBNAIL_FROM_CPROVIDER = "thumbnailFromCProvider"
         const val H_UID = "hUi"
         const val THUMBNAIL_FROM_DB = "thumbnailFromDatabase"

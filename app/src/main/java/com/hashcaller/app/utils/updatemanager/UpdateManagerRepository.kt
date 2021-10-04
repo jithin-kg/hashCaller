@@ -22,7 +22,6 @@ class UpdateManagerRepository(
 
     suspend fun getPriorityFromServer(versionCode: Int): Response<GenericResponse<GetPriorityDTO.Response?>>?  = withContext(Dispatchers.IO){
         var res: Response<GenericResponse<GetPriorityDTO.Response?>>?= null
-
         tokenHelper.getToken()?.let {
             res = retrofitService.getPriorityByUpdateVersionCode(token = it, GetPriorityDTO(versionCode) )
         }

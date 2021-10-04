@@ -21,7 +21,7 @@ class GettingStartedSliderActivity : AppIntro() {
         setStatusBarColor(getColor(R.color.colorBackground))
         setStatusBarColorRes(R.color.colorBackground)
         addSlide(GettingStartedPrivacyPolicy())
-        addSlide(GettingStartedFullFeaturedFragment())
+//        addSlide(GettingStartedFullFeaturedFragment())
         addSlide(GettingStartedRespectPrivacyFragment())
         addSlide(GettingStartedSecurelyStoredFragment())
         isColorTransitionsEnabled = true

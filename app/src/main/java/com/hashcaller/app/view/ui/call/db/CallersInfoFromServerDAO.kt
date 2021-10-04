@@ -33,6 +33,9 @@ interface CallersInfoFromServerDAO {
     @Query("SELECT * FROM callers_info_from_server WHERE contact_address=:contactAddress")
     suspend fun find(contactAddress: String) : CallersInfoFromServer?
 
+    @Query("SELECT * FROM callers_info_from_server WHERE hashedNum=:hashedNum")
+    suspend fun findByHash(hashedNum: String) : CallersInfoFromServer?
+
 
 
     @Query("DELETE from callers_info_from_server ")
@@ -85,4 +88,7 @@ interface CallersInfoFromServerDAO {
 
     @Query("SELECT * FROM callers_info_from_server")
     fun getAllLiveData()  : LiveData<List<CallersInfoFromServer>>
+
+    @Query("UPDATE  callers_info_from_server  SET  nameInPhoneBook=:name WHERE hashedNum=:hashedNum")
+    suspend fun updateBySuggestion(hashedNum: String, name: String)
 }

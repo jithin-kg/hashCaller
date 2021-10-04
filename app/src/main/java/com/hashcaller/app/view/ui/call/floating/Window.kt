@@ -22,6 +22,7 @@ import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
 import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
+import com.hashcaller.app.view.ui.extensions.setRandomBackgroundCircle
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.app.view.ui.sms.individual.util.beVisible
@@ -230,8 +231,34 @@ class Window(
 
 
 
-    suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
+    suspend fun updateWithcontentProviderInfo(contactInfoInCprovider: Contact) = withContext(Dispatchers.Main) {
+        Log.d(TAG, "updateWithcontentProviderInfo: $contactInfoInCprovider ")
+        var firstName:String? = ""
+        var firstLetter:String?   = ""
+        var photoThumbnailUri:String? = ""
+//        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
+        if(!contactInfoInCprovider.nameInLocalPhoneBook.isNullOrEmpty()){
+            firstName = contactInfoInCprovider.nameInLocalPhoneBook
+        }
 
+        if(!contactInfoInCprovider.thumbnailInCprovider.isNullOrEmpty()){
+            photoThumbnailUri = contactInfoInCprovider.photoThumnailServer
+            loadImage(context, imgVAvatar, contactInfoInCprovider.thumbnailInCprovider)
+            setCallerImageFoundFrom(IMAGE_FOUND_FROM_CPROVIDER)
+            tvFirstLetter.beInvisible()
+        }
+        if(!firstName.isNullOrEmpty()){
+            tvName.text = firstName
+            firstLetter = firstName[0].toString()
+            tvFirstLetter.text = firstLetter
+            setCallerNameFoundFrom(NAME_FOUND_FROM_CPROVIDER)
+        }
+        FloatingService.cntctForView.nameInLocalPhoneBook = contactInfoInCprovider.nameInLocalPhoneBook
+        FloatingService.cntctForView.thumbnailImgCp = contactInfoInCprovider.thumbnailInCprovider
+    }
+
+    suspend fun updateWithServerInfo(resFromServer: CntctitemForView, phoneNumber: String) = withContext(Dispatchers.Main){
+        Log.d(TAG, "updateWithServerInfo: $resFromServer")
         var name:String = ""
         var  location:String? = ""
         if(resFromServer.firstName.isNotEmpty()){
@@ -267,9 +294,11 @@ class Window(
                 tvFirstLetter.beGone()
             }
             else{
-                imgVAvatar.beInvisible()
-                imgVAvatar.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circular_avatar_main_background))
+//                imgVAvatar.beInvisible()
                 tvFirstLetter.beVisible()
+//                tvFirstLetter.setRandomBackgroundCircle()
+                imgVAvatar.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circular_avatar_main_background))
+                imgVAvatar.beVisible()
             }
         }
 
@@ -325,31 +354,7 @@ class Window(
 
     }
 
-    suspend fun updateWithcontentProviderInfo(contactInfoInCprovider: Contact) = withContext(Dispatchers.Main) {
 
-        var firstName:String? = ""
-        var firstLetter:String?   = ""
-        var photoThumbnailUri:String? = ""
-//        tvLocation.text = countryCodeHelper?.getCountryCode(phoneNumber)
-        if(!contactInfoInCprovider.nameInLocalPhoneBook.isNullOrEmpty()){
-            firstName = contactInfoInCprovider.nameInLocalPhoneBook
-        }
-
-        if(!contactInfoInCprovider.thumbnailInCprovider.isNullOrEmpty()){
-            photoThumbnailUri = contactInfoInCprovider.photoThumnailServer
-            loadImage(context, imgVAvatar, contactInfoInCprovider.thumbnailInCprovider)
-            setCallerImageFoundFrom(IMAGE_FOUND_FROM_CPROVIDER)
-            tvFirstLetter.beInvisible()
-        }
-        if(!firstName.isNullOrEmpty()){
-            tvName.text = firstName
-            firstLetter = firstName[0].toString()
-            tvFirstLetter.text = firstLetter
-            setCallerNameFoundFrom(NAME_FOUND_FROM_CPROVIDER)
-        }
-        FloatingService.cntctForView.nameInLocalPhoneBook = contactInfoInCprovider.nameInLocalPhoneBook
-        FloatingService.cntctForView.thumbnailImgCp = contactInfoInCprovider.thumbnailInCprovider
-    }
 
     fun setCallerNameFoundFrom(foundFrom:Int){
         callerNameFoundFrom = foundFrom

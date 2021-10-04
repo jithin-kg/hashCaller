@@ -28,7 +28,12 @@ class UpdateManagerViewmodel(private val context: Context, private val repositor
             try {
                 appUpdateManager = AppUpdateManagerFactory.create(context)
                 val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-
+                
+                
+//                val resServer = repository.getPriorityFromServer(41)
+//                Log.d(TAG, "checkForUpdate: $resServer")
+                
+                
                 appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
                     viewModelScope.launch {
                         if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {

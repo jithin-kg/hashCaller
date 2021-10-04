@@ -202,7 +202,7 @@ class UserNetworkRepository(
         formattedPhoneNum: String
     ): Response<SingupResponse>? = withContext(Dispatchers.IO) {
         val token = tokenHelper?.getToken()
-        return@withContext token?.let { retrofitService.getUserInfo(it, GetUserInfoDTO(hashedNum, formattedPhoneNum)) }
+        return@withContext token?.let { retrofitService.getUserInfo(it, GetUserInfoDTO(hashedNum)) }
     }
 
     suspend fun insertNewUserIntoDb(userInfo: UserInfo)  = withContext(Dispatchers.IO) {

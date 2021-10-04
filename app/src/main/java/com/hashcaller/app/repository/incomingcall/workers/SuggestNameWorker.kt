@@ -44,10 +44,12 @@ class SuggestNameWorker(private val context: Context, private val params: Worker
             val hashedNum  = Secrets().managecipher(null, formatedNum)
             val response = repository.suggestName(
                 SuggestNameModel(
-                    inputData.getString(NAME)!! ,
+                    inputData.getString(NAME)?:"" ,
                     hashedNum
                 )
             )
+
+            repository.saveSugestionInDb(hashedNum,formatedNum, inputData.getString(NAME)?:"" )
             return if (response != null) {
                 if (response.isSuccessful && response.code() == 200) {
                     Result.success()

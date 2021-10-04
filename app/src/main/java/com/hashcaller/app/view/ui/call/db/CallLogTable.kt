@@ -19,7 +19,7 @@ import androidx.room.*
     @ColumnInfo(name = "id") var id: Long?,
     @ColumnInfo(name = "nameInPhoneBook") var nameInPhoneBook:String? = null, // is the name in content provider
 //    nameFromServer is the first name and last name combined name that received from server
-    @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null, // either firstName + lastname or nameInPhonebook received from server
+    @ColumnInfo(name = "nameFromServer") var nameFromServer:String? = null, // nameInPhonebook received from server
     @ColumnInfo(name = "spamCount") var spamCount: Long = 0,
     @ColumnInfo(name = "numberFormated") var  numberFormated:String = "",
     @ColumnInfo(name = "type") var type : Int = 0,
@@ -34,8 +34,7 @@ import androidx.room.*
     @ColumnInfo(name = "isDeleted") var isDeleted: Boolean = false,
     @ColumnInfo(name = "hUid") var hUid: String,
     @ColumnInfo(name = "isVerifiedUser") var isVerifiedUser:Boolean = false,
-    @ColumnInfo(name = "relativeDay") var relativeDay:String = "" // for showing today, yesterday, older in call fragment
-
+    @ColumnInfo(name = "relativeDay") var relativeDay:String = "", // for showing today, yesterday, older in call fragment
 
 ) {
 }

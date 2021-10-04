@@ -188,15 +188,16 @@ class SearchViewModel(
                     resultContact.lastName = infoAvailableInDb.lastName
 
                 }
-                if (infoAvailableInDb.nameInPhoneBook.isNotEmpty()) {
-                    fullName = infoAvailableInDb.nameInPhoneBook
-                    resultContact.nameInPhoneBook = infoAvailableInDb.nameInPhoneBook
-                }
-                resultContact.spammCount = infoAvailableInDb.spamReportCount ?: 0L
-                resultContact.hUid = infoAvailableInDb.hUid
-                resultContact.isVerifiedUser = infoAvailableInDb.isVerifiedUser
-                resultContact.avatarGoogle = infoAvailableInDb.avatarGoogle
+
             }
+            if (infoAvailableInDb.nameInPhoneBook.isNotEmpty()) {
+                fullName = infoAvailableInDb.nameInPhoneBook
+                resultContact.nameInPhoneBook = infoAvailableInDb.nameInPhoneBook
+            }
+            resultContact.spammCount = infoAvailableInDb.spamReportCount ?: 0L
+            resultContact.hUid = infoAvailableInDb.hUid
+            resultContact.isVerifiedUser = infoAvailableInDb.isVerifiedUser
+            resultContact.avatarGoogle = infoAvailableInDb.avatarGoogle
         }
         if(fullName.isEmpty()){
             fullName = phoneNumber

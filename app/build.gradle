@@ -43,8 +43,8 @@ android {
         applicationId "com.hashcaller.app"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 39
-        versionName "1.19.00"
+        versionCode 40
+        versionName "1.20.00"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //   https://stackoverflow.com/questions/27186726/java-lang-unsatisfiedlinkerror-dalvik-system-pathclassloader/46051246
@@ -80,8 +80,7 @@ android {
             minifyEnabled false
             shrinkResources false
             zipAlignEnabled false
-            useProguard false
-//            make sure to change app debuggable to false in build.gradle file, otherwise google play console will complain that app is not signed while uploading
+            //            make sure to change app debuggable to false in build.gradle file, otherwise google play console will complain that app is not signed while uploading
             debuggable false
 
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -110,7 +109,6 @@ android {
             minifyEnabled false
             shrinkResources false
 //            zipAlignEnabled true
-            useProguard false
 
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
