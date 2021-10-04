@@ -16,9 +16,7 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
         try {
             val numberProto =phoneUtil.parse(phoneNum, countryIso)
              regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
-            Log.d(TAG+"iso", "getCopuntryIso: regionCode:$regionCode")
         }catch (e:Exception){
-            Log.e(TAG+"iso", "getCopuntryIso: $e")
         }
         return regionCode
     }
@@ -34,12 +32,9 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
             countryName= geocoder.getDescriptionForNumber(numberProto, Locale.ENGLISH)
             val regionCode = phoneUtil.getRegionCodeForNumber(numberProto)
 
-            Log.d(TAG, "getCountryCode: $countryName")
 
         }catch (e:Exception){
-            Log.e(TAG, "getCountryCode: exception $phoneNum  $e")
         }
-        Log.d(TAG, "getCountryCode: returning $countryName")
         return@withContext countryName
     }
 
@@ -70,7 +65,6 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
 
 
        }catch (e:Exception){
-           Log.e(TAG, "getNumberWithCountryCode: $e")
        }
         return formatPhoneNumber(formatedNumber)
     }
@@ -86,7 +80,6 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
              isValidForRegion = phoneUtil.isValidNumberForRegion(formatedNumProto, countryIso)
 
         }catch (e:Exception){
-            Log.e(TAG, "getNumberWithCountryCode: $e")
         }
         return isValidForRegion
     }
@@ -97,13 +90,11 @@ class LibPhoneCodeHelper(private val phoneUtil: PhoneNumberUtil) {
         try {
             val numberProto =phoneUtil.parse(phoneNum, countryIso)
             countryCode = "+"+numberProto.countryCode.toString()
-            Log.d(TAG, "getNumWithoutCountyCode: $countryCode")
             val lenCountyCode = countryCode.length
             if(phoneNum.startsWith(countryCode)){
                numWithoutCountryCode =  phoneNum.substring(lenCountyCode, phoneNum.length)
             }
         }catch (e:Exception){
-            Log.e(TAG+"iso", "getCopuntryIso: $e")
         }
         return numWithoutCountryCode
     }

@@ -137,7 +137,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 }
 
     override fun getItemCount(): Int {
-//        Log.d("__ContactAdapter", "getItemCount: ${contacts.size}")
        return callLogs.size
     }
 
@@ -195,12 +194,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             networkHandler: SMSListAdapter.NetworkHandler
         ) {
             var isImageThumbnailAvaialble = false
-            Log.d(TAG, "bind: ")
             logBinding.layoutExpandableCall.setTag(callLog.dateInMilliseconds)
             context.toggleVerifiedBadge(logBinding.imgVerifiedBadge, callLog.isVerifiedUser)
             val isRegisterdUser = context.toggleUserBadge(logBinding.imgUserIconBg, logBinding.imgUserIcon, callLog.hUid)
             if (viewMarkingHandlerHelper.isMarked(callLog.id)) {
-                Log.d(TAG, "bind: ismarked")
                 logBinding.imgViewCallMarked.beVisible()
             } else {
                 logBinding.imgViewCallMarked.beInvisible()
@@ -265,7 +262,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                         logBinding.imgVIdentfByHash.beVisible()
                     }
                     if(callLog.imageFromDb.isNotEmpty()){
-                        Log.d(TAG, "bind: imageFromDB notempty")
                         isImageThumbnailAvaialble = true
                         logBinding.imgVThumbnail.setImageBitmap(getDecodedBytes(callLog.imageFromDb))
                         logBinding.imgVThumbnail.beVisible();
@@ -298,7 +294,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
             val firstLetter = nameStr[0]
             val firstLetterString = firstLetter.toString().toUpperCase()
-            Log.d(TAG, "bind: $CallContainerViewModel.SPAM_THRESHOLD")
                 if (callLog.spamCount > MainActivity.SPAM_THRESHOLD_VALUE || callLog.isReportedByUser) {
                     if(!isImageThumbnailAvaialble){
                         logBinding.textVcallerName.setColorForText(R.color.spamText)
@@ -444,7 +439,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                     TYPE_CLICK_VIEW_CALL_HISTORY,
                     visibility
                 )
-                Log.d(TAG, "setClickListener: imagBtnInfoExpand")
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
                 true
             }
@@ -604,7 +598,6 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
     }
 
     private fun toggleMarkingAndExpand(isToBeMarked: Int, view: View, logBinding: CallListBinding) {
-        Log.d(TAG, "toggleMarkingAndExpand: ")
         when (isToBeMarked) {
             MARK_ITEM -> {
                 view.imgViewCallMarked.beVisible()

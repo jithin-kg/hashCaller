@@ -103,6 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Block spammers, create pattern"
+            android:textColor="@color/textColor"
             app:layout_constraintEnd_toEndOf="@+id/textView21"
             app:layout_constraintStart_toStartOf="@+id/textView21"
             app:layout_constraintTop_toBottomOf="@+id/textView21" />
@@ -154,6 +155,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Call"
+            android:textColor="@color/textColor"
             app:layout_constraintStart_toStartOf="@+id/tvNotifications"
             app:layout_constraintEnd_toEndOf="@+id/tvNotifications"
             app:layout_constraintTop_toBottomOf="@+id/tvNotifications"

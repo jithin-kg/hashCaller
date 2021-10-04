@@ -5,13 +5,15 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.view.ui.contacts.utils.USER_PREFERENCES_NAME
-import com.hashcaller.app.view.ui.contacts.utils.USER_PREFERENCES_BLOCK
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 
 /**
  * This class which extends from Application represents our whole application with all its
@@ -29,8 +31,6 @@ class HashCaller : Application(){
      */
 
     companion object{
-
-
         const val CHANNEL_1_ID = "channel1";
         const val CHANNEL_2_ID = "channel2";
 
@@ -38,30 +38,42 @@ class HashCaller : Application(){
         const val CHANNEL_3_CALL_SERVICE_ID ="chanel3"
         const val NOTIFICATION_CHANNEL_NAME = "callerId"
         const val NOTIFICATION_ID = 1
-
         var THRESHOLD = 112
+        const val TAG = "__HashCaller"
+        var isUserInfoAvaialableInDb:Boolean? = null
 
-
+        suspend fun isUserInfoAvaialableDb(tokeDataStore: DataStore<Preferences>): Boolean {
+            return DataStoreRepository(tokeDataStore).getBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB)
+            if(isUserInfoAvaialableInDb == null){
+                isUserInfoAvaialableInDb =  DataStoreRepository(tokeDataStore).getBoolean(PreferencesKeys.USER_INFO_AVIALABLE_IN_DB)
+                return isUserInfoAvaialableInDb!!
+            }else {
+                return isUserInfoAvaialableInDb!!
+            }
+        }
     }
 
 
     override fun onCreate() {
         super.onCreate()
+        Log.d(TAG, "onCreate:1 ")
+        val supervisorScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        supervisorScope.launch {
+//            delay(2000L)
+            Log.d(TAG, "onCreate:2 ")
+            if(isUserInfoAvaialableDb(tokeDataStore)){
+                Log.d(TAG, "onCreate: 3")
+                isUserInfoAvaialableInDb =true
+            }else {
+                isUserInfoAvaialableInDb = null
+            }
+        }
+
         AppCompatDelegate.setDefaultNightMode(
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         createNotificationChannels()
 
-
-
-//        https://www.freecodecamp.org/news/how-to-log-more-efficiently-with-timber-a3f41b193940/
-//        if(BuildConfig.DEBUG){
-//            //timber only works in debug build
-//            Timber.plant(Timber.DebugTree())
-//        }
     }
-
-
-
 
 
 

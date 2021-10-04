@@ -350,7 +350,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     val recyclerViewSize = callLogAdapter!!.itemCount
                     var isLoading = false
                     if(!fullDataFromCproviderFetched){
-                        Log.d(TAG, "onScrolled: getting next page")
                         if((visibleItemCount + pastVisibleItem) >= recyclerViewSize){
                             pageCall+=10
 //                            viewmodel.getNextPage()
@@ -419,7 +418,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     private suspend fun observeCallLogInfoFromServer() {
            viewmodel?.callersInfoFromDBLivedta?.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observeCallLogInfoFromServer: ")
                 viewmodel?.updateWithNewInfoFromServer(it)
             })
 
@@ -965,7 +963,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     binding.pgBarDeleting.beVisible()
                 }
                 ON_COMPLETED -> {
-                    Log.d(TAG, "SMS_DELETE_ON_COMPLETED: ")
                     showSearchView()
                 }
             }

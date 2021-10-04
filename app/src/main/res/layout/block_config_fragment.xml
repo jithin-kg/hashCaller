@@ -215,27 +215,95 @@
     <!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"-->
     <!--        />-->
     <!--important android:overScrollMode="never" to remove shadow-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcrViewPtrnList"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorBackground"
-        android:clipToPadding="false"
-        android:layoutAnimation="@anim/layout_anim_recycler_view"
-        android:overScrollMode="ifContentScrolls"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/contact_list"
-        />
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+             <androidx.constraintlayout.widget.ConstraintLayout
+                 android:id="@+id/layoutRadioContactsOnly"
+                 android:layout_width="0dp"
+                 android:layout_height="wrap_content"
+                 app:layout_constraintTop_toTopOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 android:layout_marginHorizontal="16dp"
+                 android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+                 >
+                 <androidx.appcompat.widget.AppCompatImageView
+                     android:id="@+id/imgVContact"
+                     android:layout_width="32dp"
+                     android:layout_height="32dp"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintBottom_toBottomOf="parent"
+                     android:src="@drawable/ic_baseline_person_24"
+                     app:layout_constraintStart_toStartOf="parent"
+
+                     />
+
+                 <TextView
+                     android:id="@+id/tvHeadContactsOnly"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:text="Contacts Only"
+                     android:textColor="@color/textColor"
+                     app:layout_constraintStart_toEndOf="@+id/imgVContact"
+                     app:layout_constraintTop_toTopOf="parent"
+                     android:layout_marginStart="@dimen/margin_padding_size_medium"
+
+                     />
+                 <TextView
+                     android:id="@+id/tvSubContactsOnly"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:text="Only allow calls from known callers"
+                     android:textColor="@color/textColorSecondary"
+                     app:layout_constraintStart_toEndOf="@+id/imgVContact"
+                     android:layout_marginStart="@dimen/margin_padding_size_medium"
+                     app:layout_constraintTop_toBottomOf="@+id/tvHeadContactsOnly"
+                     />
+                 <com.google.android.material.switchmaterial.SwitchMaterial
+                     android:id="@+id/radioCntct"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintStart_toEndOf="@+id/tvSubContactsOnly"
+                     />
+             </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcrViewPtrnList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorBackground"
+                android:layoutAnimation="@anim/layout_anim_recycler_view"
+                android:overScrollMode="ifContentScrolls"
+                android:orientation="vertical"
+                tools:listitem="@layout/contact_list"
+                app:layout_constraintTop_toBottomOf="@+id/layoutRadioContactsOnly"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+            <ProgressBar
+                android:id="@+id/pgBarBlockList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
     <!--    /***********/-->
-    <ProgressBar
-        android:id="@+id/pgBarBlockList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        />
+
     <!--    <com.facebook.shimmer.ShimmerFrameLayout-->
     <!--        android:id="@+id/shimmerViewContainerCall"-->
     <!--        android:layout_width="match_parent"-->
@@ -285,7 +353,6 @@
         android:text="Create"
         android:textColor="@color/colorWhite"
         android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="@dimen/margin_padding_size_large"
         app:iconTint="@color/colorWhite"
         app:icon="@drawable/ic_baseline_add_white"
         android:backgroundTint="@color/colorPrimary" />

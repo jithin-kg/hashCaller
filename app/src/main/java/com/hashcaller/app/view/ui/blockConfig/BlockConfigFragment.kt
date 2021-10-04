@@ -55,26 +55,7 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         binding = BlockConfigFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
-    private fun initReveaelSwipeHandler() {
-        itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.rcrViewPtrnList) {
-            override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
-                var buttons = listOf<UnderlayButton>()
-                val deleteButton = deleteButton(position)
-                val markAsUnreadButton = markAsUnreadButton(position)
-                val archiveButton = archiveButton(position)
-//                when (position) {
-//                    1 -> buttons = listOf(deleteButton)
-//                    2 -> buttons = listOf(deleteButton, markAsUnreadButton)
-//                    3 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
-//                    else -> Unit
-//                }
-//                return buttons
-                return listOf(deleteButton)
-            }
-        })
 
-        itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
-    }
 
     private fun archiveButton(position: Int) : SwipeHelper.UnderlayButton {
         return SwipeHelper.UnderlayButton(
@@ -110,9 +91,32 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
             android.R.color.holo_red_light,
             object : SwipeHelper.UnderlayButtonClickListener {
                 override fun onClick() {
-                   requireContext().toast("Deleted item $position")
+//                    binding.rcrViewPtrnList.itemAnimator = null
+                    deletePattern(pos = position)
+//                   requireContext().toast("Deleted item $position")
                 }
             })
+    }
+
+    private fun initReveaelSwipeHandler() {
+        itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.rcrViewPtrnList) {
+            override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
+                var buttons = listOf<UnderlayButton>()
+                val deleteButton = deleteButton(position)
+                val markAsUnreadButton = markAsUnreadButton(position)
+                val archiveButton = archiveButton(position)
+//                when (position) {
+//                    1 -> buttons = listOf(deleteButton)
+////                    2 -> buttons = listOf(deleteButton, markAsUnreadButton)
+////                    3 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
+//                    else -> Unit
+//                }
+//                return buttons
+                return listOf(deleteButton)
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
     }
     private fun initSwipeHandler() {
         context?.let {

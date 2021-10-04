@@ -212,7 +212,6 @@ class CallContainerViewModel(
                 repository?.deleteLog(item)
 //                async { repository?.deleteCallLogsFromDBByid(item) }
 //                    kotlinx.coroutines.delay(500L)
-                Log.d(TAG, "deleteThread: iterating $item")
                 //delete the item from call log table as well , because just after this deletion is performed
                 //if an incomming call comes, it will not show in call log, since it is marked as deleted previously
                 //so delete items which are marked as deleted
@@ -435,13 +434,13 @@ class CallContainerViewModel(
             }
 
               if(resCallLog!=null){
-                  Log.d(TAG, "updateWithNewInfoFromServer:  nameFromServer ${resCallLog.nameFromServer} fullName $fullName")
-                  Log.d(TAG, "updateWithNewInfoFromServer:  nameInPhoneBook ${resCallLog.nameFromServer} nameInPhoneBook ${infoFromServer.nameInPhoneBook}")
-                  Log.d(TAG, "updateWithNewInfoFromServer:  avatarGoogle ${resCallLog.avatarGoogle} avatarGoogle ${infoFromServer.avatarGoogle}")
-                  Log.d(TAG, "updateWithNewInfoFromServer:  imageFromDb ${resCallLog.imageFromDb} imageFromDb ${infoFromServer.thumbnailImg}")
-                  Log.d(TAG, "updateWithNewInfoFromServer:  isVerifiedUser ${resCallLog.isVerifiedUser} isVerifiedUser ${infoFromServer.isVerifiedUser}")
-                  Log.d(TAG, "updateWithNewInfoFromServer:  spamCount ${resCallLog.spamCount} spamCount ${infoFromServer.spamReportCount}")
-                  Log.d(TAG, "updateWithNewInfoFromServer:  hUid ${resCallLog.hUid} hUid ${infoFromServer.hUid}")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  nameFromServer ${resCallLog.nameFromServer} fullName $fullName")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  nameInPhoneBook ${resCallLog.nameFromServer} nameInPhoneBook ${infoFromServer.nameInPhoneBook}")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  avatarGoogle ${resCallLog.avatarGoogle} avatarGoogle ${infoFromServer.avatarGoogle}")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  imageFromDb ${resCallLog.imageFromDb} imageFromDb ${infoFromServer.thumbnailImg}")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  isVerifiedUser ${resCallLog.isVerifiedUser} isVerifiedUser ${infoFromServer.isVerifiedUser}")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  spamCount ${resCallLog.spamCount} spamCount ${infoFromServer.spamReportCount}")
+//                  Log.d(TAG, "updateWithNewInfoFromServer:  hUid ${resCallLog.hUid} hUid ${infoFromServer.hUid}")
 //                  if(
 //                        res.nameFromServer!= fullName  || res.nameInPhoneBook != item.nameInPhoneBook ||
 //                        res.avatarGoogle != item.avatarGoogle || res.imageFromDb != item.thumbnailImg  ||

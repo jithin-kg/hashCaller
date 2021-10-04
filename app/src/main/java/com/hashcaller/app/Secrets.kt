@@ -33,7 +33,6 @@ class Secrets {
             if (hex.length == 1) hexString.append('0')
             hexString.append(hex)
         }
-    Log.d(TAG, "managecipher: ${hexString.toString()}")
     return hexString.toString()
     }
 

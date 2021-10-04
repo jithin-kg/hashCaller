@@ -58,6 +58,7 @@ import com.hashcaller.app.utils.PermisssionRequestCodes
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.hashcaller.app.utils.updatemanager.UpdateManagerViewmodel
 import com.hashcaller.app.utils.auth.TokenHelper
+import com.hashcaller.app.utils.notifications.HashCaller.Companion.isUserInfoAvaialableDb
 import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.utils.updatemanager.UpdateMangerInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
@@ -162,16 +163,47 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        lifecycleScope.launchWhenCreated {
+            if(isUserInfoAvaialableDb(tokeDataStore) == false){
+                onSingnedOutcleanUp()
+            }
+        }
         mainViewmodel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewmodel::class.java)
+        manageSavedInstanceState(savedInstanceState)
+        initMain(savedInstanceState)
+        savedState = savedInstanceState
+        setDataStoreValues()
+        lifecycleScope.launchWhenCreated {
+            if(hashContactsPermission()){
+                this@MainActivity.startContactUploadWorker()
+            }
+
+        }
+        regstrScreeningRoleResultCb()
+        registerForAppUpdateResultCb()
+
+        updateManagerViewmodel = ViewModelProvider(this, UpdateMangerInjectorUtil.providerViewmodelFactory(this)).get(
+        UpdateManagerViewmodel::class.java)
+        checkForUpdate()
+    }
+
+    private fun doSOm(savedInstanceState: Bundle?){
+        Log.d(TAG, "onCreate: ")
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        lifecycleScope.launchWhenCreated {
+            if(isUserInfoAvaialableDb(tokeDataStore) == false){
+                onSingnedOutcleanUp()
+            }
+        }
+        mainViewmodel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewmodel::class.java)
+        initMain(savedInstanceState)
         isDarkThemeOn =  isDarkThemeOn()
         savedState = savedInstanceState
-//        setTheme(R.style.splashScreenTheme)
-        initDataStoreViewmodel()
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//        initMainActivityComponents()
-
+//        initDataStoreViewmodel()
         manageSavedInstanceState(savedInstanceState)
         if(savedInstanceState!= null){
 //            addAllFragments()
@@ -182,7 +214,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //
 //        rcfirebaseAuth = FirebaseAuth.getInstance()
 //        initViewModel()
-        checkUserInfoAvaialbleInDb(savedInstanceState)
+//        checkUserInfoAvaialbleInDb(savedInstanceState)
         setDataStoreValues()
         lifecycleScope.launchWhenCreated {
             if(hashContactsPermission()){
@@ -239,7 +271,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
+    private fun initMain(savedInstanceState: Bundle?) {
+        firebaseAuthListener()
+        initMainActivityComponents()
+        if(savedInstanceState==null){
+            addAllFragments()
+        }else {
+            val ft = supportFragmentManager.beginTransaction()
+            setDefaultFragment(DefaultFragmentManager.id)
+            ft.detach(callFragment)
+            ft.attach(callFragment)
+//                       ft.detach(smsFragment)
+//                       ft.attach(smsFragment)
+            ft.detach(contactFragment)
+            ft.attach(contactFragment)
+//                       ft.detach(searchFragment)
+//                       ft.attach(searchFragment)
+            ft.detach(blockListFragment)
+            ft.attach(blockListFragment)
+//                       ft.detach(smsSearchFragment)
+//                       ft.attach(smsSearchFragment)
+            ft.commit()
+//                       setFragmentsFromSavedInstanceState(savedInstanceState)
+//                       addAllFragments()
 
+        }
+
+    }
 
     private fun checkUserInfoAvaialbleInDb(savedInstanceState: Bundle?) {
         dataStoreViewModel?.getPermissionAndUserInfo(USER_INFO_AVIALABLE_IN_DB, this)?.observe(this, Observer {
@@ -247,8 +305,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 USER_INFO_AND_PERMISSION_GIVEN ->{
 
                     firebaseAuthListener()
-                    binding = ActivityMainBinding.inflate(layoutInflater)
-                    setContentView(binding.root)
+//                    binding = ActivityMainBinding.inflate(layoutInflater)
+//                    setContentView(binding.root)
                     initMainActivityComponents()
 
                     if(savedInstanceState==null){
@@ -307,7 +365,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         finish()
     }
     private fun initMainActivityComponents() {
-
         hideKeyboard(this)
         initHashCallerViewmodel()
         initColors()
@@ -479,7 +536,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setBottomSheetListener(){
-        binding. bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             var fragment: Fragment
             val selectedFragment = ""
             when (menuItem.itemId) {
@@ -600,7 +657,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        hideThisFragment(ft, blockConfigFragment, blockConfigFragment)
 //        fabBtnShowDialpad.visibility = View.VISIBLE
         ft.commit()
-
     }
 
     private fun setAllMenuItems() {
