@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -27,10 +28,8 @@ import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListAdapter
 import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListViewModel
 import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.hashcaller.app.view.ui.extensions.requestAlertWindowPermission
-import com.hashcaller.app.view.ui.sms.individual.util.TYPE_CLICK_ALLOW_OVERLAY
-import com.hashcaller.app.view.ui.sms.individual.util.TYPE_CLICK_DISMISS_OVERLAY
-import com.hashcaller.app.view.ui.sms.individual.util.beGone
-import com.hashcaller.app.view.ui.sms.individual.util.beVisible
+import com.hashcaller.app.view.ui.sms.individual.util.*
+import com.hashcaller.app.view.ui.utils.SwipeHelper
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 
@@ -46,6 +45,7 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     private lateinit var blockListAdapter: BlockListAdapter
     private lateinit var blockListViewModel: BlockListViewModel
     private lateinit var swipeHandler: SwipeToDeleteCallback
+    private lateinit var  itemTouchHelper: ItemTouchHelper
 
 
     override fun onCreateView(
@@ -55,10 +55,69 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         binding = BlockConfigFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+    private fun initReveaelSwipeHandler() {
+        itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.rcrViewPtrnList) {
+            override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
+                var buttons = listOf<UnderlayButton>()
+                val deleteButton = deleteButton(position)
+                val markAsUnreadButton = markAsUnreadButton(position)
+                val archiveButton = archiveButton(position)
+//                when (position) {
+//                    1 -> buttons = listOf(deleteButton)
+//                    2 -> buttons = listOf(deleteButton, markAsUnreadButton)
+//                    3 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
+//                    else -> Unit
+//                }
+//                return buttons
+                return listOf(deleteButton)
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
+    }
+
+    private fun archiveButton(position: Int) : SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            requireContext(),
+            "Archive",
+            14.0f,
+            android.R.color.holo_blue_light,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+                    requireContext().toast("Archived item $position")
+                }
+            })
+    }
+    private fun markAsUnreadButton(position: Int) : SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            requireContext(),
+            "Mark as unread",
+            14.0f,
+            android.R.color.holo_green_light,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+                   requireContext(). toast("Marked as unread item $position")
+                }
+            })
+    }
+
+
+    private fun deleteButton(position: Int) : SwipeHelper.UnderlayButton {
+        return SwipeHelper.UnderlayButton(
+            requireContext(),
+            "Unblock",
+            14.0f,
+            android.R.color.holo_red_light,
+            object : SwipeHelper.UnderlayButtonClickListener {
+                override fun onClick() {
+                   requireContext().toast("Deleted item $position")
+                }
+            })
+    }
     private fun initSwipeHandler() {
         context?.let {
             swipeHandler = object : SwipeToDeleteCallback(it) {
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, ) {
                     val adapter = binding.rcrViewPtrnList.adapter
                     deletePattern(viewHolder.adapterPosition)
                 }
@@ -66,7 +125,6 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
             val itemTouchHelper = ItemTouchHelper(swipeHandler)
             itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
         }
-
     }
     private fun deletePattern(pos: Int) {
         val item = blockListAdapter.getItemAtPosition(pos);
@@ -84,13 +142,15 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
 
         binding.rcrViewPtrnList?.apply {
             layoutManager = CustomLinearLayoutManager(context)
-            ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.rcrViewPtrnList);
+//            ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.rcrViewPtrnList);
             val topSpacingDecorator =
                 TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecorator)
+//            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             blockListAdapter =
                 BlockListAdapter(){clickType:Int -> onListItemClicked(clickType)}
             adapter = blockListAdapter
+
 
         }
     }
@@ -115,8 +175,10 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         super.onHiddenChanged(hidden)
         if(!hidden && !this::blockListViewModel.isInitialized){
 //            if (context?.hasReadContactsPermission() == true) {
-            initSwipeHandler()
+//            initSwipeHandler()
             initRecyclerView()
+
+            initReveaelSwipeHandler()
             initViewModel()
             observeBlocklistLivedata()
 
@@ -131,6 +193,7 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                        //important to set animation controller for recyclerview to show recyclerview animation
                        val animationController: LayoutAnimationController =
                            AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
+
                        binding.rcrViewPtrnList.layoutAnimation = animationController
                        if(!Settings.canDrawOverlays(context) && !blockListViewModel.getDismissedState()){
                            list.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
