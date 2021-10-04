@@ -310,7 +310,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 //        binding.imgBtnCallUnMuteCaller.setOnClickListener(this)
 //        binding.imgBtnCallSearch.setOnClickListener(this)
 //        binding.imgBtnHamBrgerCalls.setOnClickListener(this)
-        binding.fabBtnShowDialpad.setOnClickListener(this)
+//        binding.fabBtnShowDialpad.setOnClickListener(this)
 
 
         radioSales?.setOnClickListener(this)
@@ -501,9 +501,9 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
             R.id.imgBtnCallUnMuteCaller ->{
                 unmuteUser()
             }
-            R.id.fabBtnShowDialpad ->{
-                (activity as MainActivity).showDialerFragment()
-            }
+//            R.id.fabBtnShowDialpad ->{
+//                (activity as MainActivity).showDialerFragment()
+//            }
             R.id.imgBtnCallSearch ->{
                 activity?.startSearchActivity()
             }

@@ -41,6 +41,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|enterAlways"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -195,4 +197,16 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabBtnShowDialpad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:contentDescription="dialpad"
+        android:textColor="@color/colorWhite"
+        android:layout_marginEnd="@dimen/bottom_fab_margin"
+        android:layout_marginBottom="@dimen/margin_padding_size_large"
+        app:iconTint="@color/colorWhite"
+        app:icon="@drawable/ic_baseline_dialpad_24"
+        android:backgroundTint="@color/colorPrimary" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,20 +6,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorBackground"
     android:theme="@style/AppTheme"
-    android:layout_marginBottom="?attr/actionBarSize"
     android:id="@+id/cordinateLyoutCall"
-    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <FrameLayout
-        android:id="@+id/frameFragmentDialer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize"
-        android:background="@color/colorBackground"
-        android:focusableInTouchMode="true">
 
-    </FrameLayout>
 
     <Button
         android:id="@+id/btnCallFragmentPermission"
@@ -36,10 +27,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBackground"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/recycler_view_padding_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/contact_list"
         />
@@ -82,18 +69,7 @@
 
 
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabBtnShowDialpad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:contentDescription="dialpad"
-        android:textColor="@color/colorWhite"
-        android:layout_marginEnd="@dimen/bottom_fab_margin"
-        android:layout_marginBottom="@dimen/margin_padding_size_large"
-        app:iconTint="@color/colorWhite"
-        app:icon="@drawable/ic_baseline_dialpad_24"
-        android:backgroundTint="@color/colorPrimary" />
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
