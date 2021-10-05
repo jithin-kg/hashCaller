@@ -2,7 +2,6 @@ package com.hashcaller.app.view.ui.blockConfig
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -28,6 +26,7 @@ import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListAdapter
 import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListViewModel
 import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.hashcaller.app.view.ui.extensions.requestAlertWindowPermission
+import com.hashcaller.app.view.ui.sms.individual.SampleActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.utils.SwipeHelper
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
@@ -199,15 +198,15 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                            AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
 
                        binding.rcrViewPtrnList.layoutAnimation = animationController
-                       if(!Settings.canDrawOverlays(context) && !blockListViewModel.getDismissedState()){
-                           list.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
-                       }else {
-                           if(list.isNotEmpty()){
-                               if(list[0].id == LIST_DUMMY_ID){
-                                   list.removeAt(0)
-                               }
-                           }
-                       }
+//                       if(!Settings.canDrawOverlays(context) && !blockListViewModel.getDismissedState()){
+//                           list.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
+//                       }else {
+//                           if(list.isNotEmpty()){
+//                               if(list[0].id == LIST_DUMMY_ID){
+//                                   list.removeAt(0)
+//                               }
+//                           }
+//                       }
                        blockListAdapter.submitPatternsList(list)
 
                    }
@@ -227,17 +226,17 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        intListeners()
-
-
+        initListeners()
     }
 
-    private fun intListeners() {
-
+    private fun initListeners() {
         binding.fabBtnShowAdd.setOnClickListener(this as View.OnClickListener)
         binding.imgBtnHamBrgerBlk.setOnClickListener(this)
         binding.btnDismiss.setOnClickListener {
             binding.layoutOverlayPermission.beGone()
+        }
+        binding.btnSetup.setOnClickListener {
+            (activity as AppCompatActivity).requestAlertWindowPermission()
         }
     }
 
@@ -256,7 +255,8 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                 (activity as MainActivity).showDrawer()
             }
             R.id.fabBtnShowAdd -> {
-                val i = Intent(context, ActivityCreteBlockListPattern::class.java)
+//                val i = Intent(context, ActivityCreteBlockListPattern::class.java)
+                val i = Intent(context, SampleActivity::class.java)
                 startActivity(i)
             }
         }
@@ -265,11 +265,11 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
 
     override fun onResume() {
         super.onResume()
-        if(Settings.canDrawOverlays(context)){
-            removePermissionItemFromList()
-        }else {
-            addItemPermissionItemToList()
-        }
+//        if(Settings.canDrawOverlays(context)){
+//            removePermissionItemFromList()
+//        }else {
+//            addItemPermissionItemToList()
+//        }
 
     }
 

@@ -1,6 +1,7 @@
 package com.hashcaller.app.view.ui.call
 
 import android.Manifest.permission.*
+import android.R.id
 import android.app.ActivityOptions
 import android.app.NotificationManager
 import android.content.Intent
@@ -16,6 +17,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -83,6 +85,16 @@ import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import android.content.res.ColorStateList
+
+import android.graphics.drawable.RippleDrawable
+import kotlinx.android.synthetic.main.call_container_fragment.*
+import android.R.id.tabhost
+
+import android.widget.TextView
+
+
+
 
 
 /**
@@ -117,9 +129,9 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPager(binding.viewPager)
-        binding.tabLayout.setupWithViewPager(binding.viewPager)
         initListeners()
         setupBottomSheet()
+
     }
 
     private fun initListeners() {
@@ -133,6 +145,12 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
             (activity as MainActivity).showDrawer()
 
         }
+        binding.fabBtnShowDialpad.setOnClickListener{
+//            binding.tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.spamText))
+//            binding.tabLayout.setTabTextColors()
+            (activity as MainActivity).showDialerFragment()
+        }
+
 
     }
     private suspend fun observeMarkedItems() {
@@ -217,12 +235,42 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
         bottomSheetDialog.show()
 
     }
-    private fun setupViewPager(viewPager: ViewPager?) {
+    private fun setupViewPager(viewPager: ViewPager) {
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPagerAdapter.addFragment(CallFragment(), "Calls")
         viewPagerAdapter.addFragment(SpamCallFragment(), "Spam calls")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
-        viewPager!!.adapter = viewPagerAdapter
+        viewPager.adapter = viewPagerAdapter
+        binding.tabLayout.setupWithViewPager(binding.viewPager)
+
+//        val tv = binding.tabLayout.getChildAt(1).findViewById<TextView>(android.R.id.title)
+//        tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.spamText))
+//
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                Log.d(TAG, "onTabSelected: ${tab?.position}")
+                if(tab?.position == 1){
+//                    tabLayout.setTabTextColors(ContextCompat.getColorStateList(requireContext(), R.color.spamText));
+                    tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.spamText));
+//                    tabLayout.setSelectedTabT
+                }else {
+//                    tabLayout.setTabTextColors(ContextCompat.getColorStateList(requireContext(), R.color.colorWhite));
+                    tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                Log.d(TAG, "onTabUnselected: ${tab?.position}")
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                Log.d(TAG, "onTabReselected: ${tab?.position}")
+
+            }
+
+        })
+
     }
 
 

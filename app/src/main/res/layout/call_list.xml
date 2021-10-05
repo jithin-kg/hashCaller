@@ -6,10 +6,10 @@
     android:id="@+id/layoutLinearCallItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
     android:orientation="vertical"
     android:paddingTop="8dp"
     android:clickable="true"
+    android:animateLayoutChanges="true"
     android:background="@color/colorBackground"
     android:focusable="true">
     <TextView
@@ -270,7 +270,7 @@
         android:id="@+id/layoutExpandableCall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:visibility="gone"
         android:background="@color/colorBackground"
         >
 
@@ -301,17 +301,17 @@
             app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"
             app:srcCompat="@drawable/ic_baseline_history_24" />
 
-<!--        <Button-->
-<!--            android:id="@+id/imgBtnCallExpand"-->
-<!--            android:layout_width="102dp"-->
-<!--            android:layout_height="38dp"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:text="click me"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"-->
-<!--            app:layout_constraintHorizontal_bias="0.5"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"-->
-<!--            />-->
+        <!--        <Button-->
+        <!--            android:id="@+id/imgBtnCallExpand"-->
+        <!--            android:layout_width="102dp"-->
+        <!--            android:layout_height="38dp"-->
+        <!--            android:layout_marginTop="16dp"-->
+        <!--            android:text="click me"-->
+        <!--            app:layout_constraintEnd_toStartOf="@+id/imgBtnSmsExpand"-->
+        <!--            app:layout_constraintHorizontal_bias="0.5"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/tvExpandNumCall"-->
+        <!--            />-->
         <ImageButton
             android:id="@+id/imgBtnSmsExpand"
             android:layout_width="101dp"
@@ -348,19 +348,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgBtnExpandHistory"
             app:srcCompat="@drawable/horizontal_line" />
-<!--        <View-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="1dp"-->
-<!--            android:background="@color/lineColor"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand" />-->
+        <!--        <View-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="1dp"-->
+        <!--            android:background="@color/lineColor"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/imgBtnCallExpand" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </LinearLayout>
-
-
-
-
-
-

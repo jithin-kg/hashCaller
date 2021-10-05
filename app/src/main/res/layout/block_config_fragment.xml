@@ -432,7 +432,7 @@
         android:layout_marginEnd="@dimen/bottom_fab_margin"
         app:iconTint="@color/colorWhite"
         app:icon="@drawable/ic_baseline_add_white"
-        android:backgroundTint="@color/colorPrimary" />
+        android:backgroundTint="@color/spamText" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

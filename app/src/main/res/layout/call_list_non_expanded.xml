@@ -261,12 +261,11 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         app:cardBackgroundColor="@color/expand_layout_bg"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/layoutcallMain1"

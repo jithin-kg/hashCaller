@@ -1,5 +1,6 @@
 package com.hashcaller.app.view.ui.call.dialer
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,9 +17,7 @@ import com.hashcaller.app.databinding.ItemFinishSettingUpBinding
 import com.hashcaller.app.utils.DummYViewHolder
 import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.call.CallFragment.Companion.ID_SHOW_SCREENING_ROLE
-import com.hashcaller.app.view.ui.call.RelativeTime
 import com.hashcaller.app.view.ui.call.db.CallLogTable
-import com.hashcaller.app.view.ui.call.work.CallContainerViewModel
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
 import com.hashcaller.app.view.ui.contacts.utils.TYPE_SPAM
@@ -45,12 +44,12 @@ class CallLogAdapter(private val context: Context,
                      private val  networkHandler: SMSListAdapter.NetworkHandler,
                      private val isDarkThemOn:Boolean,
                      private val onContactItemClickListener:
-                    (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int)->Int
-                   ) :
+                         (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int)->Int
+) :
     androidx.recyclerview.widget.ListAdapter<CallLogTable, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
 
     private val VIEW_TYPE_LOG = 0;
-//    private val VIEW_TYPE_SPAM = 1;
+    //    private val VIEW_TYPE_SPAM = 1;
     private val VIEW_TYPE_LOADING = 1
     private val VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID = 2
     private var callLogs: MutableList<CallLogTable> = mutableListOf()
@@ -75,8 +74,8 @@ class CallLogAdapter(private val context: Context,
         const val BUTTON_INFO = 3;
     }
 
-     
-    
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):  RecyclerView.ViewHolder {
         if(viewType == VIEW_TYPE_LOG){
@@ -105,45 +104,45 @@ class CallLogAdapter(private val context: Context,
             if (callLogs[position].id == ID_SHOW_SCREENING_ROLE && position==0){
                 return VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID
             }
-         else if( position < callLogs.size)
-             if(this.callLogs[position].id == null){
-                return VIEW_TYPE_LOADING
-            }
+            else if( position < callLogs.size)
+                if(this.callLogs[position].id == null){
+                    return VIEW_TYPE_LOADING
+                }
         }
 
         return VIEW_TYPE_LOG
     }
 
-override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-    val contact = callLogs[position]
-    when(holder.itemViewType) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val contact = callLogs[position]
+        when(holder.itemViewType) {
 
-         VIEW_TYPE_LOG -> {
+            VIEW_TYPE_LOG -> {
 
 
-             (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener, networkHandler)
+                (holder as ViewHolderCallLog).bind(callLogs[position],context, onContactItemClickListener, networkHandler)
+            }
+            VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID -> {
+                (holder as ViewHolderDefaultCallerId).bind()
+            }
+
+            VIEW_TYPE_LOADING ->{
+                (holder as DummYViewHolder).bind()
+            }
+
+
         }
-        VIEW_TYPE_SET_AS_DEFAULT_CALLER_ID -> {
-            (holder as ViewHolderDefaultCallerId).bind()
-        }
-
-        VIEW_TYPE_LOADING ->{
-            (holder as DummYViewHolder).bind()
-        }
-
 
     }
 
-}
-
     override fun getItemCount(): Int {
-       return callLogs.size
+        return callLogs.size
     }
 
     fun submitCallLogs(newContactList: MutableList<CallLogTable>, isFromFirst10Items: Boolean) {
-       if(!isFromFirst10Items){
-           isCompleteCallLogsRetrieved = true
-       }
+        if(!isFromFirst10Items){
+            isCompleteCallLogsRetrieved = true
+        }
         callLogs = newContactList!!
         this.submitList(newContactList)
     }
@@ -193,6 +192,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int) -> Int,
             networkHandler: SMSListAdapter.NetworkHandler
         ) {
+
             var isImageThumbnailAvaialble = false
             logBinding.layoutExpandableCall.setTag(callLog.dateInMilliseconds)
             context.toggleVerifiedBadge(logBinding.imgVerifiedBadge, callLog.isVerifiedUser)
@@ -203,9 +203,10 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 logBinding.imgViewCallMarked.beInvisible()
             }
             if(viewMarkingHandlerHelper.isViewExpanded(callLog.id!!)){
-             logBinding.layoutExpandableCall.beVisible()
+                showExpandableLayout(logBinding.layoutExpandableCall)
             }else {
-                logBinding.layoutExpandableCall.beGone()
+                hideExpandableLayout(logBinding.layoutExpandableCall)
+
             }
 
             val sim = callLog.simId
@@ -227,21 +228,21 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 logBinding.imgVSimIcon.beInvisible()
             }
 
-                var nameStr:String = ""
-                var infoFoundFrom = SENDER_INFO_SEARCHING
-                if(!callLog.nameInPhoneBook.isNullOrEmpty()){
-                    infoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
-                    nameStr = callLog.nameInPhoneBook!!
-                }else if(!callLog.nameFromServer.isNullOrEmpty()){
-                    infoFoundFrom = SENDER_INFO_FROM_DB
-                    nameStr = callLog.nameFromServer!!
-                }else if(callLog.nameFromServer== null){
-                    infoFoundFrom = SENDER_INFO_SEARCHING
-                    nameStr = callLog.numberFormated
-                }else{
-                    infoFoundFrom = SENDER_INFO_NOT_FOUND
-                    nameStr = callLog.numberFormated
-                }
+            var nameStr:String = ""
+            var infoFoundFrom = SENDER_INFO_SEARCHING
+            if(!callLog.nameInPhoneBook.isNullOrEmpty()){
+                infoFoundFrom = SENDER_INFO_FROM_CONTENT_PROVIDER
+                nameStr = callLog.nameInPhoneBook!!
+            }else if(!callLog.nameFromServer.isNullOrEmpty()){
+                infoFoundFrom = SENDER_INFO_FROM_DB
+                nameStr = callLog.nameFromServer!!
+            }else if(callLog.nameFromServer== null){
+                infoFoundFrom = SENDER_INFO_SEARCHING
+                nameStr = callLog.numberFormated
+            }else{
+                infoFoundFrom = SENDER_INFO_NOT_FOUND
+                nameStr = callLog.numberFormated
+            }
 
             when (infoFoundFrom) {
                 SENDER_INFO_FROM_CONTENT_PROVIDER -> {
@@ -294,23 +295,23 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             }
             val firstLetter = nameStr[0]
             val firstLetterString = firstLetter.toString().toUpperCase()
-                if (callLog.spamCount > MainActivity.SPAM_THRESHOLD_VALUE || callLog.isReportedByUser) {
-                    if(!isImageThumbnailAvaialble){
-                        logBinding.textVcallerName.setColorForText(R.color.spamText)
+            if (callLog.spamCount > MainActivity.SPAM_THRESHOLD_VALUE || callLog.isReportedByUser) {
+                if(!isImageThumbnailAvaialble){
+                    logBinding.textVcallerName.setColorForText(R.color.spamText)
 //                    logBinding.imgViewCallSpamIcon.beVisible()
-                        logBinding.textViewCrclr.setRandomBackgroundCircle(TYPE_SPAM)
-                        logBinding.textViewCrclr.text = ""
-                    }
-
-
-                } else {
-                    if(!isImageThumbnailAvaialble){
-                        logBinding.imgViewCallSpamIcon.beInvisible()
-                        logBinding.textViewCrclr.setRandomBackgroundCircle(callLog.color)
-                        logBinding.textVcallerName.setColorForText(R.color.textColor)
-                        logBinding.textViewCrclr.text = firstLetterString
-                    }
+                    logBinding.textViewCrclr.setRandomBackgroundCircle(TYPE_SPAM)
+                    logBinding.textViewCrclr.text = ""
                 }
+
+
+            } else {
+                if(!isImageThumbnailAvaialble){
+                    logBinding.imgViewCallSpamIcon.beInvisible()
+                    logBinding.textViewCrclr.setRandomBackgroundCircle(callLog.color)
+                    logBinding.textVcallerName.setColorForText(R.color.textColor)
+                    logBinding.textViewCrclr.text = firstLetterString
+                }
+            }
             logBinding.textVcallerName.text = nameStr
 
 
@@ -509,10 +510,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //                        view.imgViewCallMarked.beVisible()
 //                    }
 //                    EXPAND_LAYOUT ->{
-//                        logBinding.layoutExpandableCall.beVisible()
 //                    }
 //                    COMPRESS_LAYOUT ->{
-//                        logBinding.layoutExpandableCall.beGone()
 //
 //                    }
 //                    else -> {
@@ -597,16 +596,23 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     }
 
+    private fun hideExpandableLayout(v: ConstraintLayout) {
+        v.layoutExpandableCall.beGone()
+    }
+    private fun showExpandableLayout(v: ConstraintLayout) {
+        v.layoutExpandableCall.beVisible()
+    }
+
     private fun toggleMarkingAndExpand(isToBeMarked: Int, view: View, logBinding: CallListBinding) {
         when (isToBeMarked) {
             MARK_ITEM -> {
                 view.imgViewCallMarked.beVisible()
             }
             EXPAND_LAYOUT ->{
-                logBinding.layoutExpandableCall.beVisible()
+                showExpandableLayout(logBinding.layoutExpandableCall)
             }
             COMPRESS_LAYOUT ->{
-                logBinding.layoutExpandableCall.beGone()
+                hideExpandableLayout(logBinding.layoutExpandableCall)
 
             }
             else -> {
@@ -746,6 +752,3 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
 
 }
-
-
-

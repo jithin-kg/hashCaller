@@ -378,7 +378,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         if(checkScreeningRole()){
             callLogAdapter?.removeCallerIdRoleItem()
         }else {
-            callLogAdapter?.addCallerIdRoleItem()
+//            callLogAdapter?.addCallerIdRoleItem()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

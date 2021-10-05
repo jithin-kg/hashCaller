@@ -122,17 +122,17 @@ class CallNumUploadWorker(private val context: Context, private val params:Worke
                     result?.let{ reslt->
                         if(reslt.code() == HttpStatusCodes.STATUS_OK){
                             for(cntct in reslt.body()?.contacts!!){
-                                var formated = formatPhoneNumber(cntct.hash)
+//                                var formated = formatPhoneNumber(cntct.hash)
                                 if(!cntct.hUid.isNullOrEmpty()){
                                     Log.d(TAG+"huid", "doWork: ${cntct.hUid}")
                                 }
                                 if(cntct.firstName == "Sathiamma"){
                                     Log.d(TAG+"name", "doWork:Sathiamma")
                                 }
-                                formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
-                                if(!cntct.avatarGoogle.isNullOrEmpty()){
-                                    Log.d(TAG, "doWork: avatarGoogle not empty")
-                                }
+//                                formated = libCountryHelper.getES164Formatednumber(formated,countryCodeIso )
+//                                if(!cntct.avatarGoogle.isNullOrEmpty()){
+//                                    Log.d(TAG, "doWork: avatarGoogle not empty")
+//                                }
                                 callersInfoFromServerDAO?.updateByHash(
                                     hashedNum = cntct.hash?:"",
                                     spamCount = cntct.spamCount?:0L,
