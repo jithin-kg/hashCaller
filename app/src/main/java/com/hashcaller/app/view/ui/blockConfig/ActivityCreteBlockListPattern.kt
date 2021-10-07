@@ -8,10 +8,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityCreteBlockListPatternBinding
@@ -24,6 +21,9 @@ import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListViewModel
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
 import com.hashcaller.app.work.formatPhoneNumber
+import android.app.Activity
+import android.view.inputmethod.InputMethodManager
+import kotlinx.coroutines.delay
 
 
 class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,LifecycleObserver,
@@ -119,19 +119,19 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
     private fun showSnackBar(message: String) {
 
-        val sbar = Snackbar.make(binding.layoutCreatePattern,
-            message,
-            Snackbar.LENGTH_SHORT)
-//        lastOperationPerformed = OPERTION_MUTE
-        sbar.setAction("View", MyUndoListener(this))
-//        sbar.anchorView = bottomNavigationView
+        lifecycleScope.launchWhenStarted {
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-        sbar.show()
-//        Handler().postDelayed(
-//            {
-//            val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
-//            }, 1500)
+            delay(400L)
+            val sbar = Snackbar.make(binding.layoutCreatePattern,
+                message,
+                Snackbar.LENGTH_SHORT)
+            sbar.setAction("View", MyUndoListener(this@ActivityCreteBlockListPattern))
+            sbar.show()
+        }
+
     }
 
     companion object {

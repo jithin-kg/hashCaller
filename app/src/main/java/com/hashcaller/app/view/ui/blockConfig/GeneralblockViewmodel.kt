@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.*
+import com.hashcaller.app.local.db.blocklist.BlockTypes
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CONTACTS
@@ -154,26 +155,32 @@ class GeneralblockViewmodel(
         randomColor: Int,
         applicationContext: Context
     )  = viewModelScope.launch{
-        val defCall = async { repository?.markAsNotSpamInCalls(phoneNum, randomColor) }
         val defPattern = async { blockListPatternRepository.delete(phoneNum, numberType) }
-//        val defSMS = async { repository?.markAsNotSpamInSMS(phoneNum, randomColor) }
-        val defWorker = async { startUnblockWorker(phoneNum,applicationContext ) }
+
+        if(numberType == BLOCK_TYPE_FROM_CALL_LOG || numberType== BLOCK_TYPE_FROM_CONTACTS ){
+            val defCall = async { repository?.markAsNotSpamInCalls(phoneNum, randomColor) }
+            //val defSMS = async { repository?.markAsNotSpamInSMS(phoneNum, randomColor) }
+            val defWorker = async { startUnblockWorker(phoneNum,applicationContext ) }
+
+            try{
+                defCall.await()
+
+            }catch (e:Exception){
+                Log.d(TAG, "removeFromBlockList: $e")
+            }
+            try{
+                defWorker.await()
+            }catch (e:Exception){
+                Log.d(TAG, "removeFromBlockList: $e")
+            }
+        }
+
         try{
             defPattern.await()
         }catch (e:Exception){
             Log.d(TAG, "removeFromBlockList: $e")
         }
-        try{
-            defCall.await()
 
-        }catch (e:Exception){
-            Log.d(TAG, "removeFromBlockList: $e")
-        }
-        try{
-            defWorker.await()
-        }catch (e:Exception){
-            Log.d(TAG, "removeFromBlockList: $e")
-        }
 
        /* try{
             defSMS.await()

@@ -15,12 +15,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorBackground"
     android:id="@+id/cordinateLyoutMainActivity"
-    tools:context=".app.view.ui.MainActivity"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    tools:context=".app.view.ui.MainActivity">
 
     <FrameLayout
         android:id="@+id/frame_fragmentholder"
@@ -31,37 +28,6 @@
        >
 
     </FrameLayout>
-
-<!--    <include-->
-<!--        android:id="@+id/bottom_sheet"-->
-<!--        android:elevation="16dp"-->
-<!--        layout="@layout/sheet_dial_pad"-->
-<!--        android:visibility="invisible"-->
-
-<!--        />-->
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_anchor="@id/bottomNavigationView"-->
-<!--        app:layout_anchorGravity="end"-->
-<!--        android:layout_marginEnd="@dimen/bottom_fab_margin"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        app:layout_dodgeInsetEdges="bottom"-->
-<!--        >-->
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/fabBtnShowDialpad"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"-->
-
-<!--            android:layout_marginBottom="?attr/actionBarSize"-->
-<!--            android:src="@drawable/ic_baseline_dialpad_24"-->
-<!--            android:visibility="invisible"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -74,22 +40,6 @@
         app:itemTextColor="@drawable/selector_bottombar_item"
         app:menu="@menu/bottombar_menu"
         />
-
-    <!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--        android:id="@+id/bottomNavigationView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom"-->
-
-<!--        android:elevation="1dp"-->
-<!--        app:itemBackground="@color/colorWhite"-->
-<!--        app:itemIconTint="@drawable/selector_bottombar_item"-->
-<!--        app:itemTextColor="@color/colorPrimary"-->
-<!--        app:menu="@menu/bottombar_menu"-->
-<!--        tools:layout_editor_absoluteY="790dp">-->
-
-
-<!--    </com.google.android.material.bottomnavigation.BottomNavigationView>-->
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

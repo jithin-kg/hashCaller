@@ -281,7 +281,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                             }else {
                                 binding.tvFirstLetter.beVisible()
                             }
-
                         }
 
                     }

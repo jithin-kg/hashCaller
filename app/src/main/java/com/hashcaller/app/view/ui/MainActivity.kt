@@ -1012,9 +1012,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 startActivity(intent)
             }
 
-            R.id.spamCalls ->{
 
-            }
             R.id.drawerConfigureBlocking ->{
                 val intent = Intent(this, BlockManageActivity::class.java)
                 startActivity(intent)

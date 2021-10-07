@@ -92,53 +92,9 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     }
 
 
-    private fun deleteButton(position: Int) : SwipeHelper.UnderlayButton {
-        return SwipeHelper.UnderlayButton(
-            requireContext(),
-            "Unblock",
-            14.0f,
-            android.R.color.holo_red_light,
-            object : SwipeHelper.UnderlayButtonClickListener {
-                override fun onClick() {
-//                    binding.rcrViewPtrnList.itemAnimator = null
-                    deletePattern(pos = position)
-//                   requireContext().toast("Deleted item $position")
-                }
-            })
-    }
 
-    private fun initReveaelSwipeHandler() {
-        itemTouchHelper = ItemTouchHelper(object : SwipeHelper(binding.rcrViewPtrnList) {
-            override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
-                var buttons = listOf<UnderlayButton>()
-                val deleteButton = deleteButton(position)
-                val markAsUnreadButton = markAsUnreadButton(position)
-                val archiveButton = archiveButton(position)
-//                when (position) {
-//                    1 -> buttons = listOf(deleteButton)
-////                    2 -> buttons = listOf(deleteButton, markAsUnreadButton)
-////                    3 -> buttons = listOf(deleteButton, markAsUnreadButton, archiveButton)
-//                    else -> Unit
-//                }
-//                return buttons
-                return listOf(deleteButton)
-            }
-        })
 
-        itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
-    }
-    private fun initSwipeHandler() {
-//        context?.let {
-//            swipeHandler = object : SwipeToDeleteCallback(it) {
-//                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, ) {
-//                    val adapter = binding.rcrViewPtrnList.adapter
-//                    deletePattern(viewHolder.adapterPosition)
-//                }
-//            }
-//            val itemTouchHelper = ItemTouchHelper(swipeHandler)
-//            itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
-//        }
-    }
+
     private fun deletePattern(pos: Int) {
         val item = blockListAdapter.getItemAtPosition(pos);
         blockListViewModel.delete(item.numberPattern, item.type).observe(this, Observer {
@@ -184,29 +140,26 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                 pattern?.let {p->
                     when(p.type){
                         BLOCK_TYPE_STARTS_WITH -> {
-                            message = "Unblock numbers that starts with '${p.numberPattern}'"
+                            message = "Unblock numbers that starts with '${p.numberPattern}'?"
                         }
                         BLOCK_TYPE_CONTAINS -> {
-                            message = "Unblock numbers that contains '${p.numberPattern}'"
+                            message = "Unblock numbers that contains '${p.numberPattern}'?"
                         }
                         BLOCK_TYPE_ENDS_WITH -> {
-                            message = "Unblock numbers that ends with '${p.numberPattern}'"
+                            message = "Unblock numbers that ends with '${p.numberPattern}'?"
                         }
                         BLOCK_TYPE_EXACT_NUMBER -> {
-                            message = "Unblock number '${p.numberPattern}'"
+                            message = "Unblock number'${p.numberPattern}' ? "
                         }
-                        BLOCK_TYPE_FROM_CALL_LOG -> {
-                            message = "Unblock name varanam '${p.numberPattern}'"
+                        BLOCK_TYPE_FROM_CALL_LOG, BLOCK_TYPE_FROM_CONTACTS -> {
+                            var name: String = p.name
+                            if(name.isEmpty())
+                                name = p.numberPattern
+                            message = "Unblock '$name' ?"
                         }
-                        BLOCK_TYPE_FROM_CONTACTS -> {
-                            message = "Unblock name varanam '${p.numberPattern}'"
-                        }
-
-
-
                     }
                     patternToDelete = p
-                    showAlert("Unblock ${pattern.numberPattern}?")
+                    showAlert(message)
                 }
 
             }
@@ -226,18 +179,13 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         when(actionType){
             ConfirmDialogFragment2.ON_POSITIVE_ACTION -> {
                 patternToDelete?.let {
-                    if(it.type == BlockTypes.BLOCK_TYPE_EXACT_NUMBER || it.type == BlockTypes.BLOCK_TYPE_FROM_CALL_LOG || it.type == BlockTypes.BLOCK_TYPE_FROM_CONTACTS ){
+//                    if(it.type == BlockTypes.BLOCK_TYPE_EXACT_NUMBER || it.type == BlockTypes.BLOCK_TYPE_FROM_CALL_LOG || it.type == BlockTypes.BLOCK_TYPE_FROM_CONTACTS ){
                         generalBlockViewmodel.removeFromBlockList(
                             it.numberPattern,
                             it.type,
                             getRandomColor(),
                             requireActivity()
                         )
-                    }
-
-//                    blockListViewModel.delete(it.numberPattern, it.type).observe(this, Observer {
-////                        blockListAdapter.notifyItemChanged(pos)
-//                    })
                 }
 
             }

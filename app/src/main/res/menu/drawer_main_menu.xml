@@ -15,12 +15,7 @@
 <!--            android:icon="@drawable/ic_message_3_line"-->
 <!--            android:state_activated="false"-->
 <!--            />-->
-        <item
-            android:id="@+id/spamCalls"
-            android:title="Spam calls"
-            android:icon="@drawable/ic_phone_line"
-            android:state_activated="false"
-            />
+
 <!--        <item-->
 <!--            android:id="@+id/myBlockLIst"-->
 <!--            android:title="My block list"-->
