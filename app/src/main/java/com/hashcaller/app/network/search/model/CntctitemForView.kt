@@ -44,7 +44,8 @@ data class CntctitemForView(
     var shoudlSearchInServer:Boolean = false,
     var bio:String = "",
     var email:String = "",
-    var clientHashedNum:String = ""
+    var clientHashedNum:String = "",
+    var nameForblockListPattern:String = ""
 
 
     )

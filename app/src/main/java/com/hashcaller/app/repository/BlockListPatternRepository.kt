@@ -1,8 +1,11 @@
 package com.hashcaller.app.repository
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CONTACTS
 import com.hashcaller.app.local.db.blocklist.BlockedListPattern
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.local.db.blocklist.mutedCallers.IMutedCallersDAO
@@ -28,6 +31,7 @@ class BlockListPatternRepository(
 
     //room executes all queries on a seperate thread
     val allBlockedList: LiveData<MutableList<BlockedListPattern>>? = blockedLIstDao?.getAllBLockListPattern()
+    val allCustomBlockLIst: LiveData<MutableList<BlockedListPattern>>? = blockedLIstDao?.getAllCustomBLockListPattern()
 
     @SuppressLint("LongLogTag")
     suspend fun insert(blockedListPattern: BlockedListPattern): Int  = withContext(Dispatchers.IO){
@@ -43,11 +47,14 @@ class BlockListPatternRepository(
     }
 
     @SuppressLint("LongLogTag")
-    suspend fun insertPattern(numberPattern: String, type:Int): Int  = withContext(Dispatchers.IO){
+    suspend fun insertPattern(numberPattern: String, type: Int, name: String): Int  = withContext(Dispatchers.IO){
        val formatedNumPattern = libCountryHelper.getES164Formatednumber(formatPhoneNumber(numberPattern), countryCodeIso)
        val  blockedListPattern =  BlockedListPattern(
-            null, formatedNumPattern,
-            "", type
+            id=null,
+           numberPattern=formatedNumPattern,
+           numberPatterRegex="",
+           type= type,
+           name = name
         )
 
         val res =  blockedLIstDao?.find(formatedNumPattern, blockedListPattern.type)
@@ -62,13 +69,21 @@ class BlockListPatternRepository(
     }
     @SuppressLint("LongLogTag")
     suspend fun delete(blockedListPattern: String, type: Int) = withContext(Dispatchers.IO){
-        var blockPattern = blockedListPattern
-        when(type){
-            BLOCK_TYPE_EXACT_NUMBER -> {
-                blockPattern = libCountryHelper.getES164Formatednumber(formatPhoneNumber(blockPattern), countryCodeIso)
-            }
-        }
-        blockedLIstDao?.delete(blockPattern, type)
+       try{
+           var blockPattern = blockedListPattern
+           when(type){
+               BLOCK_TYPE_EXACT_NUMBER,BLOCK_TYPE_FROM_CALL_LOG,BLOCK_TYPE_FROM_CONTACTS -> {
+
+                   blockPattern = libCountryHelper.getES164Formatednumber(formatPhoneNumber(blockPattern), countryCodeIso)
+                   blockedLIstDao?.delete(blockPattern, BLOCK_TYPE_EXACT_NUMBER,BLOCK_TYPE_FROM_CALL_LOG,BLOCK_TYPE_FROM_CONTACTS)
+               }else -> {
+                   blockedLIstDao?.delete(blockPattern, type)
+               }
+           }
+
+       }catch (e:Exception){
+           Log.d(TAG, "delete: $e")
+       }
     }
     @SuppressLint("LongLogTag")
     suspend fun getListOfdata():List<BlockedListPattern>? = withContext(Dispatchers.IO){
@@ -78,7 +93,6 @@ class BlockListPatternRepository(
     }
      fun getListLiveData(): LiveData<MutableList<BlockedListPattern>>? {
         return blockedLIstDao?.getAllBLockListPattern()
-
 
     }
 

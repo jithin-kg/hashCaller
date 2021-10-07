@@ -42,7 +42,13 @@
         <!--            app:navigationIcon="@drawable/ic_baseline_menu_24"-->
         <!--            app:layout_scrollFlags="scroll|enterAlways"-->
         <!--            >-->
-
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ToolbarLayoutItemsBlk"
             android:layout_width="match_parent"
@@ -54,8 +60,8 @@
                 android:id="@+id/imgBtnHamBrgerBlk"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="32dp"
                 android:layout_marginEnd="4dp"
+                android:layout_marginBottom="@dimen/margin_padding_size_small"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
                 android:src="@drawable/ic_menu_line"
@@ -87,11 +93,11 @@
                 android:textSize="16sp"
                 android:layout_marginStart="16dp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnHamBrgerBlk"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/imgBtnHamBrgerBlk"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/imgBtnHamBrgerBlk" />
             <!--https://www.flaticon.com/free-icon/shield_786447?term=shield&page=1&position=35&page=1&position=35&related_id=786447&origin=search-->
             <!--          attribution <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
 
@@ -205,7 +211,7 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <!--        </androidx.appcompat.widget.Toolbar>-->
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <!--    <androidx.viewpager.widget.ViewPager-->
@@ -232,6 +238,7 @@
                  app:layout_constraintEnd_toEndOf="parent"
                  android:layout_marginHorizontal="16dp"
                  android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+                android:background="@drawable/background_setting_up"
                  >
                 <TextView
                     android:id="@+id/tvHeadOverlayItem"
@@ -248,16 +255,20 @@
                     app:layout_constraintEnd_toStartOf="@+id/imageButton"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-                <androidx.constraintlayout.utils.widget.ImageFilterView
+                <ImageView
                     android:id="@+id/imageButton"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="88dp"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/call_center" />
+                    app:srcCompat="@drawable/ic_caller_id"
+                    app:layout_constraintBottom_toTopOf="@+id/btnSetup"
+                    />
 
                 <TextView
                     android:id="@+id/tvSetupDescription"
@@ -309,6 +320,10 @@
                  app:layout_constraintEnd_toEndOf="parent"
                  android:layout_marginHorizontal="16dp"
                  android:layout_marginTop="@dimen/margin_padding_size_xlarge"
+                 android:clickable="true"
+                 android:focusable="true"
+                 android:foreground="?android:attr/selectableItemBackground"
+
                  >
                  <androidx.appcompat.widget.AppCompatImageView
                      android:id="@+id/imgVContact"
@@ -356,7 +371,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorBackground"
-                android:layoutAnimation="@anim/layout_anim_recycler_view"
                 android:overScrollMode="ifContentScrolls"
                 android:orientation="vertical"
                 tools:listitem="@layout/contact_list"
@@ -375,7 +389,23 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 />
+            <TextView
+                android:id="@+id/tvInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:gravity="center"
+                android:alpha="0.5"
+                android:layout_marginStart="@dimen/margin_padding_size_xlarge"
+                android:layout_marginEnd="@dimen/margin_padding_size_xlarge"
+                android:text="Create your custom block list to block calls."
+                app:layout_constraintTop_toBottomOf="@+id/layoutRadioContactsOnly"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/standard_touch_size"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 
@@ -410,29 +440,21 @@
     <!--    </com.facebook.shimmer.ShimmerFrameLayout>-->
 
 
-    <TextView
-        android:id="@+id/tvInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/textColor"
-        android:gravity="center"
-        android:layout_marginStart="@dimen/margin_padding_size_xlarge"
-        android:layout_marginEnd="@dimen/margin_padding_size_xlarge"
-        android:text="Create your custom block list to block calls and SMS."
-        android:layout_gravity="center"
-        />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabBtnShowAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:contentDescription="dialpad"
-        android:text="Create"
+        android:layout_marginBottom="@dimen/margin_padding_size_large"
         android:textColor="@color/colorWhite"
         android:layout_marginEnd="@dimen/bottom_fab_margin"
         app:iconTint="@color/colorWhite"
         app:icon="@drawable/ic_baseline_add_white"
-        android:backgroundTint="@color/spamText" />
+        android:backgroundTint="@color/red_varient_1"
+
+        />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

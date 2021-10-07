@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
@@ -29,6 +30,7 @@ import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityIncommingCallViewUpdatedBinding
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.SPAM_THRESHOLD
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
 import com.hashcaller.app.network.HttpStatusCodes.Companion.STATUS_SEARHING_IN_PROGRESS
 import com.hashcaller.app.network.search.model.Cntct
 import com.hashcaller.app.network.search.model.CntctitemForView
@@ -119,7 +121,9 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     private var callersInfo: CntctitemForView? = null
     private var  dataStoreRepository: DataStoreRepository? = null
     private var spamThreshold:Int = DEFAULT_SPAM_THRESHOLD
-
+    private var radioGroupOne: RadioGroup? = null
+    private var radioGroupTwo: RadioGroup? = null
+    private var finalName = ""
 
 
     //    private var country = ""
@@ -214,21 +218,20 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     }
     private fun setViewContent(contact: CntctitemForView) {
         with(binding){
-            var fullName = ""
             tvPhoneNumIncomming.text = phoneNumber
 
             if(contact.nameInLocalPhoneBook.isNotEmpty()){
-                fullName = contact.nameInLocalPhoneBook
+                finalName = contact.nameInLocalPhoneBook
 
             }else if(contact.fullNameServer.isNotEmpty()){
-                fullName = contact.fullNameServer
+                finalName = contact.fullNameServer
 
             }else if(contact.nameInPhoneBook.isNotEmpty()){
-                fullName = contact.nameInPhoneBook
+                finalName = contact.nameInPhoneBook
             }else {
-                fullName = formatPhoneNumber(phoneNumber)
+                finalName = formatPhoneNumber(phoneNumber)
             }
-            txtVcallerName.text = fullName
+            txtVcallerName.text = finalName
             if(contact.thumbnailImgCp.isNotEmpty()){
                 imgVAvatarIncomming.beVisible()
                 tvFirstLetter.beInvisible()
@@ -247,7 +250,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                 tvFirstLetter.beVisible()
                 imgVAvatarIncomming.setImageDrawable(ContextCompat.getDrawable(this@ActivityIncommingCallViewUpdated, R.drawable.circular_avatar_main_background))
                 imgVAvatarIncomming.beVisible()
-                binding.tvFirstLetter.text = fullName[0].toString()
+                binding.tvFirstLetter.text = finalName[0].toString()
             }
             if(contact.isVerifiedUser){
                 txtVcallerName.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this@ActivityIncommingCallViewUpdated, R.drawable.ic_baseline_verified_2), null)
@@ -372,7 +375,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
         generalBlockViewmodel = ViewModelProvider(
             this,
-            GeneralBlockInjectorUtil.provideViewModel(this, phoneNumber)
+            GeneralBlockInjectorUtil.provideViewModel(this)
         ).get(
             GeneralblockViewmodel::class.java
         )
@@ -549,6 +552,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
             R.id.detailsButton -> {
                 val intent = Intent(this, IndividualContactViewActivity::class.java)
                 intent.putExtra(CONTACT_ID, phoneNumber)
+                intent.putExtra(IntentKeys.INTENT_SOURCE, BLOCK_TYPE_FROM_CALL_LOG)
                 startActivity(intent)
                 finishAfterTransition()
             }
@@ -561,8 +565,10 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     private fun blockThisAddress() {
         generalBlockViewmodel.blockThisAddress(
             spammerType = spammerType,
-            phoneNumber,
-            applicationContext
+            contactAddress = phoneNumber,
+            applicationContext = applicationContext,
+            intentSource = BLOCK_TYPE_FROM_CALL_LOG,
+            name= finalName
         )
             .observe(this, Observer {
                 when (it) {
@@ -579,6 +585,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         if (v is RadioButton) {
             when (v.id) {
                 R.id.radioScam -> {
+                    radioGroupTwo?.clearCheck()
                     val checked = v.isChecked
                     if (checked) {
                         selectedRadioButton = radioScam
@@ -589,7 +596,7 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                     }
                 }
                 R.id.radioSales -> {
-
+                    radioGroupTwo?.clearCheck()
                     val checked = v.isChecked
                     if (checked) {
                         selectedRadioButton = radioSales
@@ -599,12 +606,14 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
                     }
                 }
                 R.id.radioBusiness -> {
+                    radioGroupOne?.clearCheck()
                     val checked = v.isChecked
                     if (checked) {
                         spammerType = Constants.SPAMMER_TYPE_BUSINESS
                     }
                 }
                 R.id.radioPerson -> {
+                    radioGroupOne?.clearCheck()
                     val checked = v.isChecked
                     if (checked) {
                         spammerType = SPAMMER_TYPE_PEERSON
@@ -639,6 +648,9 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         previousCheckedRadioButton = radioScam
         btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock)
 
+        radioGroupOne = bottomSheetDialog.findViewById<RadioGroup>(R.id.radioGroupOne) as RadioGroup
+        radioGroupTwo = bottomSheetDialog.findViewById<RadioGroup>(R.id.radioPersonOrBusiness) as RadioGroup
+        selectedRadioButton = radioScam
         bottomSheetDialog.setOnDismissListener {
             Log.d(TAG, "bottomSheetDialogDismissed")
 

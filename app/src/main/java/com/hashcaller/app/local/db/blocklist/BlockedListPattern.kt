@@ -21,5 +21,8 @@ data class BlockedListPattern(
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name="num_pattern") val numberPattern:String,
      @ColumnInfo(name = "num_pattern_regex") val numberPatterRegex:String,
-     @ColumnInfo(name = "type") val type:Int   ) {
+     @ColumnInfo(name = "type") val type:Int, //refer class BlockTypes
+     @ColumnInfo(name = "contactName") val name:String,
+
+    ) {
 }

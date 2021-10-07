@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +28,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -64,9 +66,7 @@ import com.hashcaller.app.utils.updatemanager.UpdateMangerInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.blockConfig.BlockConfigFragment
 import com.hashcaller.app.view.ui.call.CallContainerFragment
-import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.dialer.DialerFragment
-import com.hashcaller.app.view.ui.call.spam.SpamCallsActivity
 import com.hashcaller.app.view.ui.contacts.ContactsContainerFragment
 import com.hashcaller.app.view.ui.contacts.hashContactsPermission
 import com.hashcaller.app.view.ui.contacts.startContactUploadWorker
@@ -159,6 +159,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     var bottomSheetBehavior: BottomSheetBehavior<*>? = null
     private lateinit var hashCallerViewModel: HashCallerViewModel
     private lateinit var updateManagerViewmodel: UpdateManagerViewmodel
+//    private val markViewmodel: MarkhelperViewmodel by viewModels()
 
 //    var contactsUploadWorkManager: ContactsUploadWorkManager? = null
 
@@ -188,6 +189,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         updateManagerViewmodel = ViewModelProvider(this, UpdateMangerInjectorUtil.providerViewmodelFactory(this)).get(
         UpdateManagerViewmodel::class.java)
         checkForUpdate()
+
+//        markViewmodel.toggleBottomSheet.observe(this, Observer {
+//            Log.d(TAG, "onCreate: $it")
+//        })
     }
 
     private fun doSOm(savedInstanceState: Bundle?){
@@ -1008,8 +1013,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
 
             R.id.spamCalls ->{
-                val intent = Intent(this, SpamCallsActivity::class.java)
-                startActivity(intent)
+
             }
             R.id.drawerConfigureBlocking ->{
                 val intent = Intent(this, BlockManageActivity::class.java)
@@ -1074,6 +1078,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             }
         }
     }
+
 
     companion object {
         private const val APP_UPDATE_REQ_CODE = 32

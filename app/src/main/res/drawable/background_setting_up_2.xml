@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="rectangle">
+<!--            dimen set using px because dp is much thicker than px-->
+            <stroke android:color="@color/dashColor"
+                android:width="0px"
+                />
+<!--                <gradient-->
+<!--                    android:angle="90"-->
+<!--                    android:startColor="#ED3833"-->
+<!--                    android:endColor="#B9B52D29"-->
+<!--                    android:type="linear"-->
+<!--                    />-->
+<!--            <solid-->
+<!--                android:color="#E97171"/>-->
+            <corners android:radius="4dp"/>
+        </shape>
+    </item>
+</selector>
+
+

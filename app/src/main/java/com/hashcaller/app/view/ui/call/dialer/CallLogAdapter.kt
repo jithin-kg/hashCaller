@@ -1,8 +1,6 @@
 package com.hashcaller.app.view.ui.call.dialer
 
-import android.animation.LayoutTransition
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +32,7 @@ import com.hashcaller.app.view.ui.sms.util.SENDER_INFO_SEARCHING
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.hashcaller.app.view.utils.getRelativeTime
 import kotlinx.android.synthetic.main.call_list.view.*
+import java.util.*
 
 /**
  * Created by Jithin KG on 22,July,2020
@@ -44,7 +43,7 @@ class CallLogAdapter(private val context: Context,
                      private val  networkHandler: SMSListAdapter.NetworkHandler,
                      private val isDarkThemOn:Boolean,
                      private val onContactItemClickListener:
-                         (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int)->Int
+                         (id:Long, postition:Int, view:View, btn:Int, callLog:CallLogTable, clickType:Int, visibility:Int, nameStr:String?)->Int
 ) :
     androidx.recyclerview.widget.ListAdapter<CallLogTable, RecyclerView.ViewHolder>(CallItemDiffCallback()) {
 
@@ -158,12 +157,13 @@ class CallLogAdapter(private val context: Context,
             binding.btnSetup.setOnClickListener {
                 onContactItemClickListener(
                     ID_SHOW_SCREENING_ROLE,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     it,
                     BUTTON_SIM_1,
                     CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid = ""),
                     TYPE_CLICK_SCREENING_ROLE,
-                    it.visibility
+                    it.visibility,
+                    null
                 )
                 true
             }
@@ -171,12 +171,13 @@ class CallLogAdapter(private val context: Context,
             binding.btnDismiss.setOnClickListener {
                 onContactItemClickListener(
                     ID_SHOW_SCREENING_ROLE,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     it,
                     BUTTON_SIM_1,
                     CallLogTable(id=ID_SHOW_SCREENING_ROLE, hUid=""),
                     TYPE_CLICK_DISMISS_SCREENING_ROLE,
-                    it.visibility
+                    it.visibility,
+                    null
                 )
                 true
             }
@@ -189,7 +190,7 @@ class CallLogAdapter(private val context: Context,
 
         fun bind(
             callLog: CallLogTable, context: Context,
-            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int) -> Int,
+            onContactItemClickListener: (id: Long, postition: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int, nameStr: String?) -> Int,
             networkHandler: SMSListAdapter.NetworkHandler
         ) {
 
@@ -203,9 +204,9 @@ class CallLogAdapter(private val context: Context,
                 logBinding.imgViewCallMarked.beInvisible()
             }
             if(viewMarkingHandlerHelper.isViewExpanded(callLog.id!!)){
-                showExpandableLayout(logBinding.layoutExpandableCall)
+                showExpandableLayout(logBinding)
             }else {
-                hideExpandableLayout(logBinding.layoutExpandableCall)
+                hideExpandableLayout(logBinding)
 
             }
 
@@ -294,7 +295,7 @@ class CallLogAdapter(private val context: Context,
                 }
             }
             val firstLetter = nameStr[0]
-            val firstLetterString = firstLetter.toString().toUpperCase()
+            val firstLetterString = firstLetter.toString().uppercase(Locale.getDefault())
             if (callLog.spamCount > MainActivity.SPAM_THRESHOLD_VALUE || callLog.isReportedByUser) {
                 if(!isImageThumbnailAvaialble){
                     logBinding.textVcallerName.setColorForText(R.color.spamText)
@@ -347,44 +348,12 @@ class CallLogAdapter(private val context: Context,
             }
             val relativeTime  = getRelativeTime(callLog.dateInMilliseconds)
             logBinding.textViewTime.text = relativeTime.relativeTime
-//            if(relativeTime.relativeDay == RelativeTime.TODAY && !isTodayTextShown){
-//                logBinding.tvRelativeDay.beVisible()
-//                logBinding.tvRelativeDay.text = "Today"
-//                isTodayTextShown = true
-//            }
-//            else
-//            if(relativeTime.relativeDay == RelativeTime.TODAY && todayDayNumber == null && isCompleteCallLogsRetrieved){
-//                    logBinding.tvRelativeDay.beVisible()
-//                    logBinding.tvRelativeDay.text = "Today"
-//                    todayDayNumber = callLog.number
-//            }else if(todayDayNumber != null && callLog.number == todayDayNumber && isCompleteCallLogsRetrieved){
-//                    logBinding.tvRelativeDay.beVisible()
-//                    logBinding.tvRelativeDay.text = "Today"
-//            } else if(relativeTime.relativeDay == RelativeTime.YESTERDAY && yesterDayNumber == null && isCompleteCallLogsRetrieved){
-//                    logBinding.tvRelativeDay.beVisible()
-//                    logBinding.tvRelativeDay.text = "Yesterday"
-//                    yesterDayNumber = callLog.number
-//            }else if(yesterDayNumber != null && callLog.number == yesterDayNumber && isCompleteCallLogsRetrieved){
-//                    logBinding.tvRelativeDay.beVisible()
-//                    logBinding.tvRelativeDay.text = "Yesterday"
-//            }else if(relativeTime.relativeDay == RelativeTime.OLDER && olderDayNumber == null && isCompleteCallLogsRetrieved){
-//                logBinding.tvRelativeDay.beVisible()
-//                logBinding.tvRelativeDay.text = "Older"
-//                olderDayNumber = callLog.number
-//            }else if(olderDayNumber != null && callLog.number == olderDayNumber && isCompleteCallLogsRetrieved){
-//                logBinding.tvRelativeDay.beVisible()
-//                logBinding.tvRelativeDay.text = "Older"
-//            }
-//            else {
-//                logBinding.tvRelativeDay.beGone()
-//                logBinding.tvRelativeDay.text = ""
-//            }
             logBinding.layoutExpandableCall.tvExpandNumCall.text = callLog.numberFormated
-            setClickListener(logBinding.root, callLog)
+            setClickListener(logBinding.root, callLog,nameStr)
         }
 
 
-        private fun setClickListener(view: View, callLog: CallLogTable) {
+        private fun setClickListener(view: View, callLog: CallLogTable, nameStr: String) {
             view.imgBtnCall.setOnClickListener{
 //                val visibility = logBinding.layoutExpandableCall.visibility
 
@@ -392,12 +361,13 @@ class CallLogAdapter(private val context: Context,
 
                 onContactItemClickListener(
                     callLog.id!!,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     it,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_MAKE_CALL,
-                    visibility
+                    visibility,
+                    nameStr
                 )
             }
             view.setOnLongClickListener { v ->
@@ -406,12 +376,13 @@ class CallLogAdapter(private val context: Context,
 
                 var isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     v,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_LONG_PRESS,
-                    visibility
+                    visibility,
+                    nameStr
                 )
 //                when (isToBeMarked) {
 //                    MARK_ITEM -> {
@@ -428,17 +399,18 @@ class CallLogAdapter(private val context: Context,
 
             }
 
-            logBinding.imgBtnExpandHistory.setOnClickListener {
+            logBinding.layoutHistory.setOnClickListener {
                 val visibility = view.findViewById<ConstraintLayout>(R.id.layoutExpandableCall).visibility
 
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     it,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_CLICK_VIEW_CALL_HISTORY,
-                    visibility
+                    visibility,
+                    nameStr
                 )
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
                 true
@@ -449,12 +421,13 @@ class CallLogAdapter(private val context: Context,
 
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     logBinding.root,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,
-                    visibility
+                    visibility,
+                    nameStr
                 )
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
 
@@ -464,12 +437,13 @@ class CallLogAdapter(private val context: Context,
                 val visibility =  logBinding.layoutExpandableCall.visibility
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     it,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,
-                    visibility
+                    visibility,
+                    nameStr
                 )
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
 
@@ -479,14 +453,19 @@ class CallLogAdapter(private val context: Context,
 //                true
 //            }
 
-            view.imgBtnSmsExpand.setOnClickListener {
-//                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_START_INDIVIDUAL_SMS, callLog)
-                true
-            }
 
-            view.imgBtnInfoExpand.setOnClickListener {
+            view.layoutDetails.setOnClickListener {
 //                viewMarkingHandler.onCallButtonClicked(it, INTENT_TYPE_MORE_INFO, callLog)
-                onContactItemClickListener(callLog.id!!, adapterPosition,view, BUTTON_SIM_1, callLog, TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT, View.VISIBLE )
+                onContactItemClickListener(
+                    callLog.id!!,
+                    bindingAdapterPosition,
+                    view,
+                    BUTTON_SIM_1,
+                    callLog,
+                    TYPE_CLICK_VIWE_INDIVIDUAL_CONTACT,
+                    View.VISIBLE,
+                    nameStr
+                    )
                 true
             }
 
@@ -497,12 +476,13 @@ class CallLogAdapter(private val context: Context,
 
                 val isToBeMarked = onContactItemClickListener(
                     callLog.id!!,
-                    this.adapterPosition,
+                    bindingAdapterPosition,
                     v,
                     BUTTON_SIM_1,
                     callLog,
                     TYPE_CLICK,
-                    visibility
+                    visibility,
+                    nameStr
                 )
                 toggleMarkingAndExpand(isToBeMarked, view, logBinding)
 //                when (isToBeMarked) {
@@ -596,11 +576,17 @@ class CallLogAdapter(private val context: Context,
 
     }
 
-    private fun hideExpandableLayout(v: ConstraintLayout) {
+    private fun hideExpandableLayout(v: CallListBinding) {
         v.layoutExpandableCall.beGone()
+//        v.dividerBottum.beGone()
+
+
     }
-    private fun showExpandableLayout(v: ConstraintLayout) {
+    private fun showExpandableLayout(v: CallListBinding) {
         v.layoutExpandableCall.beVisible()
+//        v.dividerBottum.background.alpha = 10
+//        v.dividerBottum.beVisible()
+
     }
 
     private fun toggleMarkingAndExpand(isToBeMarked: Int, view: View, logBinding: CallListBinding) {
@@ -609,10 +595,10 @@ class CallLogAdapter(private val context: Context,
                 view.imgViewCallMarked.beVisible()
             }
             EXPAND_LAYOUT ->{
-                showExpandableLayout(logBinding.layoutExpandableCall)
+                showExpandableLayout(logBinding)
             }
             COMPRESS_LAYOUT ->{
-                hideExpandableLayout(logBinding.layoutExpandableCall)
+                hideExpandableLayout(logBinding)
 
             }
             else -> {

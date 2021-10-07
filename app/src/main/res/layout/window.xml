@@ -9,6 +9,8 @@
     android:id="@+id/layoutWindowParent"
     >
 
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutInnerWindow"
         android:layout_width="match_parent"
@@ -169,14 +171,16 @@
             app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutDragIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/incomming_call_background"
         android:layout_marginTop="8dp"
         >
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"

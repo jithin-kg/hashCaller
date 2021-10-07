@@ -1,80 +1,30 @@
 package com.hashcaller.app.view.ui.call
 
 import android.Manifest.permission.*
-import android.R.id
-import android.app.ActivityOptions
-import android.app.NotificationManager
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
-import android.util.Pair
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import com.google.firebase.auth.FirebaseAuth
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.CallContainerFragmentBinding
-import com.hashcaller.app.databinding.FragmentCallBinding
-import com.hashcaller.app.utils.Constants.Companion.SPAMMER_TYPE_BUSINESS
-import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
-import com.hashcaller.app.utils.auth.TokenHelper
-import com.hashcaller.app.utils.constants.IntentKeys
-import com.hashcaller.app.utils.extensions.requestCallPhonePermission
 import com.hashcaller.app.utils.extensions.startSearchActivity
-import com.hashcaller.app.utils.internet.ConnectionLiveData
-import com.hashcaller.app.utils.notifications.HashCaller.Companion.CHANNEL_1_ID
-import com.hashcaller.app.utils.notifications.HashCaller.Companion.CHANNEL_2_ID
-import com.hashcaller.app.utils.notifications.HashCaller.Companion.CHANNEL_3_CALL_SERVICE_ID
 import com.hashcaller.app.view.adapter.ViewPagerAdapter
 import com.hashcaller.app.view.ui.MainActivity
-import com.hashcaller.app.view.ui.MainActivityInjectorUtil
-import com.hashcaller.app.view.ui.MyUndoListener
-import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
-import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListActivity
-import com.hashcaller.app.view.ui.call.RelativeTime.Companion.OLDER
-import com.hashcaller.app.view.ui.call.RelativeTime.Companion.YESTERDAY
-import com.hashcaller.app.view.ui.call.db.CallLogTable
-import com.hashcaller.app.view.ui.call.dialer.CallLogAdapter
-import com.hashcaller.app.view.ui.call.dialer.DialerFragment
-import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
-import com.hashcaller.app.view.ui.call.floating.NOTIFICATION_CHANNEL_GENERAL
-import com.hashcaller.app.view.ui.call.individualCallLog.IndividualCallLogActivity
 import com.hashcaller.app.view.ui.call.spam.SpamCallFragment
-import com.hashcaller.app.view.ui.call.utils.CallContainerInjectorUtil
-import com.hashcaller.app.view.ui.call.work.CallContainerViewModel
-import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
-import com.hashcaller.app.view.ui.contacts.isDarkThemeOn
-import com.hashcaller.app.view.ui.contacts.makeCall
+import com.hashcaller.app.view.ui.contacts.startFloatingService
 import com.hashcaller.app.view.ui.contacts.utils.*
-import com.hashcaller.app.view.ui.extensions.getSpannableString
-import com.hashcaller.app.view.ui.extensions.isScreeningRoleHeld
 import com.hashcaller.app.view.ui.sms.individual.util.*
-import com.hashcaller.app.view.ui.sms.list.SMSListAdapter
-import com.hashcaller.app.view.utils.ConfirmDialogFragment
-import com.hashcaller.app.view.utils.ConfirmationClickListener
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
-import com.hashcaller.app.view.utils.getRelativeTime
-import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.models.PermissionRequest
 import kotlinx.android.synthetic.main.activity_individual_cotact_view.*
 import kotlinx.android.synthetic.main.bottom_sheet_block.*
 import kotlinx.android.synthetic.main.bottom_sheet_block_feedback.*
@@ -83,18 +33,11 @@ import kotlinx.android.synthetic.main.call_list.view.*
 import kotlinx.android.synthetic.main.contact_list.*
 import kotlinx.android.synthetic.main.fragment_call.*
 import kotlinx.android.synthetic.main.fragment_call.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import android.content.res.ColorStateList
 
-import android.graphics.drawable.RippleDrawable
 import kotlinx.android.synthetic.main.call_container_fragment.*
-import android.R.id.tabhost
 
-import android.widget.TextView
-
-
-
+import com.hashcaller.app.view.ui.utils.IMarkingHelper
+import kotlinx.coroutines.delay
 
 
 /**
@@ -102,7 +45,8 @@ import android.widget.TextView
  * Use the [CallContainerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
+class CallContainerFragment : Fragment(),IDefaultFragmentSelection, IMarkingHelper,
+    View.OnClickListener {
 
     private  lateinit var binding: CallContainerFragmentBinding
     private var toolbar: Toolbar? = null
@@ -117,6 +61,9 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
     private var radioGroupOne: RadioGroup? = null
     private var radioGroupTwo: RadioGroup? = null
     private var btnBlock:Button? = null
+    private lateinit var markhelperViewmodel: MarkhelperViewmodel
+
+//    private val markViewmodel: MarkhelperViewmodel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,15 +76,18 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPager(binding.viewPager)
-        initListeners()
+        markhelperViewmodel = ViewModelProvider(requireActivity()).get(MarkhelperViewmodel::class.java)
         setupBottomSheet()
+        initListeners()
+
 
     }
 
     private fun initListeners() {
-        binding.imgBtnCallTbrBlock.setOnClickListener{
-            showBottomSheetDialog()
-        }
+        binding.imgBtnCallTbrBlock.setOnClickListener(this)
+//        binding.imgBtnCallTbrBlock.setOnClickListener{
+//            showBottomSheetDialog()
+//        }
         binding.imgBtnCallSearch.setOnClickListener{
             activity?.startSearchActivity()
         }
@@ -146,67 +96,16 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
 
         }
         binding.fabBtnShowDialpad.setOnClickListener{
-//            binding.tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.spamText))
-//            binding.tabLayout.setTabTextColors()
             (activity as MainActivity).showDialerFragment()
         }
 
 
-    }
-    private suspend fun observeMarkedItems() {
-        //todo add view model
-//        viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
-//            when(it.size){
-//                0 ->{
-//                    showSearchView()
-//                }
-//                else ->{
-//                    showBlockBtnInToolbar(it.size)
-//                }
-//
-//            }
-//        })
-    }
 
+    }
     private fun blockMarkedCaller() {
-//        this.viewmodel?.blockThisAddress(
-//            this.spammerType,
-//            context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
-//            when(it){
-//                ON_COMPLETED -> {
-//                    viewmodel?.clearMarkedItems()
-//                    bottomSheetDialog.hide()
-//                    bottomSheetDialog.dismiss()
-//                    bottomSheetDialogfeedback.show()
-//                    showSearchView()
-//                }
-//            }
-//        })
-    }
-
-    fun showSearchView(){
-
-        binding.imgBtnCallTbrBlock.beInvisible()
-        binding. imgBtnCallTbrMuteCaller.beInvisible()
-        binding.tvCallSelectedCount.beInvisible()
-        binding.imgBtnCallUnMuteCaller.beInvisible()
-        binding.pgBarDeleting.beInvisible()
-        binding.tvVHashcaller.beVisible()
-        binding.imgBtnHamBrgerCalls.beVisible()
-    }
-    private fun showBlockBtnInToolbar(count: Int) {
-        updateSelectedItemCount(count)
-        binding.imgBtnCallSearch.beInvisible()
-        binding.imgBtnCallTbrBlock.beVisible()
-
-//        if(isScreeningApp){
-////            binding.imgBtnCallTbrMuteCaller.beVisible()
-//        }
-        binding.imgBtnCallSearch.beInvisible()
-        binding.tvVHashcaller.beInvisible()
-        binding.imgBtnHamBrgerCalls.beInvisible()
 
     }
+
     fun updateSelectedItemCount(count: Int) {
         binding.tvCallSelectedCount.text = "${count.toString()} Selected"
         binding.tvCallSelectedCount.beVisible()
@@ -237,7 +136,7 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
     }
     private fun setupViewPager(viewPager: ViewPager) {
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPagerAdapter.addFragment(CallFragment(), "Calls")
+        viewPagerAdapter.addFragment(CallFragment(this), "Calls")
         viewPagerAdapter.addFragment(SpamCallFragment(), "Spam calls")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
         viewPager.adapter = viewPagerAdapter
@@ -251,7 +150,8 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
                 Log.d(TAG, "onTabSelected: ${tab?.position}")
                 if(tab?.position == 1){
 //                    tabLayout.setTabTextColors(ContextCompat.getColorStateList(requireContext(), R.color.spamText));
-                    tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.spamText));
+                    tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(requireContext(), R.color.red_varient_1));
+                    markhelperViewmodel.onHddenStateChange(true)
 //                    tabLayout.setSelectedTabT
                 }else {
 //                    tabLayout.setTabTextColors(ContextCompat.getColorStateList(requireContext(), R.color.colorWhite));
@@ -304,17 +204,20 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
     
 
     companion object {
-            private const val TAG ="__CallFragment"
-
-
-    
+            private const val TAG ="__CallContainerFragment"
     }
 
     override fun onPause() {
         super.onPause()
     }
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        Log.d(TAG, "onHiddenChanged: $hidden")
+        markhelperViewmodel.onHddenStateChange(hidden)
 
+    }
     fun clearMarkeditems() {
+        markhelperViewmodel.onCallFragmentHidden()
 
     }
 
@@ -323,7 +226,45 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection{
     }
 
     fun getMarkedItemsSize(): Int {
-        return 0
+        return markhelperViewmodel.getMakedItemsSize()
     }
+
+    override fun showBlockBtnInToolbar(count: Int) {
+        updateSelectedItemCount(count)
+        binding.imgBtnCallSearch.beInvisible()
+        binding.imgBtnCallTbrBlock.beVisible()
+        binding.imgBtnCallSearch.beInvisible()
+        binding.tvVHashcaller.beInvisible()
+        binding.imgBtnHamBrgerCalls.beInvisible()
+    }
+
+    override fun showSearchView() {
+        binding.imgBtnCallTbrBlock.beInvisible()
+        binding. imgBtnCallTbrMuteCaller.beInvisible()
+        binding.tvCallSelectedCount.beInvisible()
+        binding.imgBtnCallUnMuteCaller.beInvisible()
+        binding.pgBarDeleting.beInvisible()
+        binding.tvVHashcaller.beVisible()
+        binding.imgBtnHamBrgerCalls.beVisible()
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.imgBtnCallTbrBlock -> {
+//                requireContext().startFloatingService(TelephonyManager.EXTRA_STATE_RINGING )
+                Log.d(TAG, "initListeners: ")
+
+//                (activity as MainActivity).toggleBotomSheet()
+                markhelperViewmodel.toggleBottomSheet(true)
+                lifecycleScope.launchWhenStarted {
+                    delay(300L)
+                    markhelperViewmodel.toggleBottomSheet(false)
+
+                }
+            }
+
+        }
+    }
+
 
 }

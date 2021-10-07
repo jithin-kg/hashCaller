@@ -43,13 +43,13 @@ class BlockListViewModel(application: Application) : AndroidViewModel(applicatio
             countryCodeIso
         )
 
-        allblockedList = blockListPatternRepository.allBlockedList
+        allblockedList = blockListPatternRepository.allCustomBlockLIst
     }
 
     //creating a coroutine to call suspending function
     //view models have their on scope we are launching coroutine on the viewmodelScope
     fun insert(newPattern: String, patterntype: Int):  LiveData<Int> = liveData{
-        blockListPatternRepository.insertPattern(newPattern, patterntype).apply {
+        blockListPatternRepository.insertPattern(newPattern, patterntype, newPattern).apply {
             emit( OPERATION_COMPLETED)
         }
 

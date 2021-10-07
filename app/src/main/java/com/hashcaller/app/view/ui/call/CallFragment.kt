@@ -29,10 +29,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.FragmentCallBinding
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
 import com.hashcaller.app.utils.Constants.Companion.SPAMMER_TYPE_BUSINESS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
 import com.hashcaller.app.utils.auth.TokenHelper
 import com.hashcaller.app.utils.constants.IntentKeys
+import com.hashcaller.app.utils.constants.IntentKeys.Companion.INTENT_SOURCE
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
 import com.hashcaller.app.utils.extensions.startSearchActivity
 import com.hashcaller.app.utils.internet.ConnectionLiveData
@@ -43,7 +45,6 @@ import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.MainActivityInjectorUtil
 import com.hashcaller.app.view.ui.MyUndoListener
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
-import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListActivity
 import com.hashcaller.app.view.ui.call.RelativeTime.Companion.OLDER
 import com.hashcaller.app.view.ui.call.RelativeTime.Companion.YESTERDAY
 import com.hashcaller.app.view.ui.call.db.CallLogTable
@@ -62,6 +63,7 @@ import com.hashcaller.app.view.ui.extensions.getSpannableString
 import com.hashcaller.app.view.ui.extensions.isScreeningRoleHeld
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.sms.list.SMSListAdapter
+import com.hashcaller.app.view.ui.utils.IMarkingHelper
 import com.hashcaller.app.view.utils.ConfirmDialogFragment
 import com.hashcaller.app.view.utils.ConfirmationClickListener
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
@@ -85,7 +87,7 @@ import kotlinx.coroutines.withContext
  * Use the [CallFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelection,
+class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnClickListener , IDefaultFragmentSelection,
     CallLogAdapter.ViewHandlerHelper, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
@@ -120,7 +122,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     private var permissionGivenLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private var tokenHelper: TokenHelper? = null
     private var btnBlock:Button? = null
-
+//    private val markViewmodel: MarkhelperViewmodel by viewModels()
+    private lateinit var markViewmodel: MarkhelperViewmodel
 
     
     
@@ -199,7 +202,28 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                  observeCallLogInfoFromServer()
                  observeInternetLivedata()
                  updateSpamThreshold()
+                 observeBottomSheetState()
+                 observeParentFragmentHidenState()
              }
+    }
+
+    private fun observeParentFragmentHidenState() {
+        markViewmodel.hiddenSatte.observe(viewLifecycleOwner, Observer {
+            when(it){
+                HiddenStates.Hidden -> {
+                    clearMarkeditems()
+                }
+            }
+        })
+    }
+
+    private fun observeBottomSheetState() {
+        markViewmodel.toggleBottomSheet.observe(viewLifecycleOwner, Observer { showBottomSheet->
+            Log.d(TAG, "observeBottomSheetState: ")
+            if(showBottomSheet){
+                showBottomSheetDialog()
+            }
+        })
     }
 
     private fun updateSpamThreshold() {
@@ -243,13 +267,14 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     private suspend fun observeMarkedItems() {
-        viewmodel?.markeditemsHelper?.markedItems?.observe(viewLifecycleOwner, Observer {
+        markViewmodel.markeditemsHelper.markedItems.observe(viewLifecycleOwner, Observer {
             when(it.size){
                 0 ->{
 //                    showSearchView()
+                    toolbarCb.showSearchView()
                 }
                 else ->{
-                    showBlockBtnInToolbar(it.size)
+                   toolbarCb.showBlockBtnInToolbar(it.size)
                 }
 
             }
@@ -374,7 +399,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     override fun onResume() {
         super.onResume()
-
+        Log.d(TAG, "onResume: ")
         if(checkScreeningRole()){
             callLogAdapter?.removeCallerIdRoleItem()
         }else {
@@ -397,7 +422,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 UserInfoViewModel::class.java
             )
         }
-
+        markViewmodel = ViewModelProvider(requireActivity()).get(MarkhelperViewmodel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -451,13 +476,17 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                         btn:Int,
                         callLog: CallLogTable,
                         clickType:Int,
-                        visibility:Int ->onCallItemClicked(id,
+                        visibility:Int,
+                        nameStr:String?
+                    ->onCallItemClicked(id,
                     position,
                     view,
                     btn,
                     callLog,
                     clickType,
-                    visibility)
+                    visibility,
+                    nameStr
+                    )
                 }
 //            }
 
@@ -601,8 +630,6 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         when(menuItem?.itemId){
             R.id.itemMyBlockList ->{
 
-                val intent = Intent(activity, BlockListActivity::class.java)
-                startActivity(intent)
             }
         }
         return true
@@ -618,23 +645,34 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     override fun onPause() {
         super.onPause()
-        clearMarkeditems()
+//        clearMarkeditems()
+        markViewmodel.clearMarkedItems()
     }
 
     private fun blockMarkedCaller() {
-//        this.viewmodel?.blockThisAddress(
-//            this.spammerType,
-//            context?.applicationContext)?.observe(viewLifecycleOwner, Observer {
-//                when(it){
-//                    ON_COMPLETED -> {
-//                        viewmodel?.clearMarkedItems()
-//                        bottomSheetDialog.hide()
-//                        bottomSheetDialog.dismiss()
-//                        bottomSheetDialogfeedback.show()
-//                        showSearchView()
-//                    }
+            Log.d(TAG, "blockMarkedCaller: ")
+        markViewmodel.toggleBottomSheet(false)
+//            when(it){
+//                BlockBtnState.clicked -> {
+                    this.viewmodel?.blockThisAddress(
+                        this.spammerType,
+                        context?.applicationContext,
+                        markViewmodel.getMakedItems(),
+                        markViewmodel.getMarkedItemContactDetails()
+                    )?.observe(viewLifecycleOwner, Observer {
+                        when(it){
+                            ON_COMPLETED -> {
+                                markViewmodel.clearMarkedItems()
+                                bottomSheetDialog.hide()
+                                bottomSheetDialog.dismiss()
+                                bottomSheetDialogfeedback.show()
+                                toolbarCb.showSearchView()
+                            }
+                        }
+                    })
 //                }
-//        })
+//            }
+
     }
     private fun muteMarkedCaller() {
     }
@@ -662,7 +700,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         btn: Int,
         callLog: CallLogTable,
         clickType: Int,
-        visibility: Int
+        visibility: Int,
+        nameStr: String?
     ): Int {
         when(clickType){
             TYPE_CLICK_SCREENING_ROLE -> {
@@ -676,16 +715,16 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                 callLogAdapter?.removeCallerIdRoleItem()
             }
             TYPE_LONG_PRESS ->{
-                val prevExpandedLyoutId = viewmodel?.getPreviousExpandedLayout()
+                val prevExpandedLyoutId = markViewmodel.getPreviousExpandedLayout()
                 if(prevExpandedLyoutId!=null){
                     //already a lyout is expanded
-                    val oldPos = viewmodel?.getPrevExpandedPosition()
-                    viewmodel?.setExpandedLayout(null, null)
+                    val oldPos = markViewmodel.getPrevExpandedPosition()
+                    markViewmodel?.setExpandedLayout(null, null)
                     if(oldPos!=null){
                         callLogAdapter?.notifyItemChanged(oldPos)
                     }
                 }
-                return  markItem(id, clickType, position,callLog.number)
+                return  markItem(id, clickType, position,callLog.number, nameStr)
 
             }
             TYPE_CLICK_VIEW_CALL_HISTORY ->{
@@ -698,7 +737,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
                     startIndividualContactActivity(callLog, view)
                     return UNMARK_ITEM
                 }else{
-                    return  markItem(id, TYPE_CLICK, position,callLog.number) // mark item
+                    return  markItem(id, TYPE_CLICK, position, callLog.number, nameStr) // mark item
                 }
             }
             TYPE_MAKE_CALL ->{
@@ -714,25 +753,25 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
             else ->{
                 if(getMarkedItemsSize() == 0){
-                    val prevExpandedLyoutId = viewmodel?.getPreviousExpandedLayout()
+                    val prevExpandedLyoutId = markViewmodel.getPreviousExpandedLayout()
                     if(prevExpandedLyoutId==null){
-                        viewmodel?.setExpandedLayout(id, position)
+                        markViewmodel.setExpandedLayout(id, position)
                         return EXPAND_LAYOUT
                     }else if(prevExpandedLyoutId != id){
-                        val oldPos = viewmodel?.getPrevExpandedPosition()
-                        viewmodel?.setExpandedLayout(id, position)
+                        val oldPos = markViewmodel.getPrevExpandedPosition()
+                        markViewmodel.setExpandedLayout(id, position)
                         if(oldPos!=null){
                             callLogAdapter?.notifyItemChanged(oldPos)
                         }
                         return EXPAND_LAYOUT
                     }else{
 
-                        viewmodel?.setExpandedLayout(null, null)
+                        markViewmodel.setExpandedLayout(null, null)
                         return COMPRESS_LAYOUT
 
                     }
                 }else{
-                    return markItem(id, clickType, position, callLog.number)
+                    return markItem(id, clickType, position, callLog.number, nameStr)
                 }
             }
         }
@@ -741,7 +780,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     private fun startCallHistoryActivity(callLog: CallLogTable, view: View) {
-        viewmodel?.setExpandedLayout(null, null)
+        markViewmodel.setExpandedLayout(null, null)
 
         val intent = getContactIntent(callLog, INDIVIDUAL_CALL_LOG_ACTIVITY )
 
@@ -749,7 +788,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     fun getMarkedItemsSize(): Int {
-       return  viewmodel?.markeditemsHelper?.getmarkedItemSize()?:0
+       return  markViewmodel.markeditemsHelper?.getmarkedItemSize()?:0
     }
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
 
@@ -766,7 +805,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         intent.putExtra("name", name )
         intent.putExtra("photo", log.thumbnailFromCp)
         intent.putExtra("color", log.color)
-
+        intent.putExtra(INTENT_SOURCE, BLOCK_TYPE_FROM_CALL_LOG)
         val pairList = java.util.ArrayList<Pair<View, String>>()
         var pair:android.util.Pair<View, String>? = null
         if(log.imageFromDb.isNotEmpty() || log.avatarGoogle.isNotEmpty() || log.thumbnailFromCp.isNotEmpty()){
@@ -844,29 +883,36 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
 
-    private fun markItem(id: Long, clickType: Int, position: Int, number: String): Int {
-        if(viewmodel?.markeditemsHelper?.markedItems?.value !=null){
-            if(viewmodel?.markeditemsHelper?.markedItems?.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
+    private fun markItem(id: Long, clickType: Int, position: Int, number: String, nameStr: String?): Int {
+        if(markViewmodel.markeditemsHelper.markedItems.value !=null){
+            if(markViewmodel.markeditemsHelper.markedItems.value!!.isEmpty() && clickType == TYPE_LONG_PRESS){
                 //if is empty and click type is long then start marking
-                viewmodel?.addTomarkeditems(id, position, number)
+//                viewmodel?.addTomarkeditems(id, position, number)
+                markViewmodel.addTomarkeditems(id, position, number, nameStr)
                 return MARK_ITEM
-            }else if(clickType == TYPE_LONG_PRESS && viewmodel?.markeditemsHelper?.markedItems?.value!!.isNotEmpty()){
+            }else if(clickType == TYPE_LONG_PRESS && markViewmodel.markeditemsHelper.markedItems?.value!!.isNotEmpty()){
                 //already some items are marked
-                if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
-                    viewmodel?.removeMarkeditemById(id, position, number)
+                if(markViewmodel.markeditemsHelper.markedItems?.value!!.contains(id)){
+//                    viewmodel?.removeMarkeditemById(id, position, number)
+                    markViewmodel.removeMarkeditemById(id, position, number)
                     return UNMARK_ITEM
                 }else{
 
-                    viewmodel?.addTomarkeditems(id, position, number)
+//                    viewmodel?.addTomarkeditems(id, position, number)
+                    markViewmodel.addTomarkeditems(id, position, number, nameStr)
+
                     return MARK_ITEM
                 }
-            }else if(clickType == TYPE_CLICK && viewmodel?.markeditemsHelper?.markedItems?.value!!.isNotEmpty()){
+            }else if(clickType == TYPE_CLICK && markViewmodel.markeditemsHelper.markedItems.value!!.isNotEmpty()){
                 //already markig started , mark on unamrk new item
-                if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
-                    viewmodel?.removeMarkeditemById(id, position, number)
+                if(markViewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
+//                    viewmodel?.removeMarkeditemById(id, position, number)
+                    markViewmodel.removeMarkeditemById(id, position, number)
                     return UNMARK_ITEM
                 }else{
-                    viewmodel?.addTomarkeditems(id, position, number)
+//                    viewmodel?.addTomarkeditems(id, position, number)
+                    markViewmodel.addTomarkeditems(id, position, number, nameStr)
+
                     return MARK_ITEM
                 }
             }else {
@@ -898,6 +944,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        Log.d(TAG, "onHiddenChanged: $hidden")
 
         if(hidden){ // if fragment is hidden
             clearMarkeditems()
@@ -924,18 +971,19 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
         this.activity?.runOnUiThread{
 //            binding.imgBtnCallTbrDelete.beInvisible()
         }
-        this.viewmodel?.deleteThread()?.observe(viewLifecycleOwner, Observer {
-            when (it) {
-                ON_PROGRESS -> {
-//                    binding.imgBtnCallTbrDelete.beInvisible()
-
-//                    binding.pgBarDeleting.beVisible()
-                }
-                ON_COMPLETED -> {
-//                    showSearchView()
-                }
-            }
-        })
+//        this.viewmodel?.deleteThread()?.observe(viewLifecycleOwner, Observer {
+//            when (it) {
+//                ON_PROGRESS -> {
+////                    binding.imgBtnCallTbrDelete.beInvisible()
+//
+////                    binding.pgBarDeleting.beVisible()
+//                }
+//                ON_COMPLETED -> {
+//
+////                    showSearchView()
+//                }
+//            }
+//        })
 //        viewmodel.clearMarkedItems()
     }
 
@@ -971,15 +1019,15 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
      */
     fun clearMarkeditems() {
         if(checkRequiredPermission()){
-            if(viewmodel!=null){
                 lifecycleScope.launchWhenStarted {
-                    for(position in viewmodel?.getmarkeditemPositions()!!){
+                    for(position in markViewmodel.getmarkeditemPositions()){
                         callLogAdapter?.notifyItemChanged(position)
                     }
-                    viewmodel?.clearMarkedItems()
-                    viewmodel?.clearMarkedItemPositions()
+                    markViewmodel.clearMarkedItems()
+                    markViewmodel.clearMarkedItemPositions()
+
+                    toolbarCb.showSearchView()
                 }
-            }
 
         }
     }
@@ -989,8 +1037,8 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
      */
     override fun isMarked(id: Long?): Boolean {
         var isMrked = false
-        if(viewmodel?.markeditemsHelper?.markedItems?.value !=null){
-            if(viewmodel?.markeditemsHelper?.markedItems?.value!!.contains(id)){
+        if(markViewmodel.markeditemsHelper.markedItems.value !=null){
+            if(markViewmodel.markeditemsHelper.markedItems.value!!.contains(id)){
                 isMrked = true
             }
         }
@@ -998,7 +1046,7 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
     }
 
     override fun isViewExpanded(id: Long): Boolean {
-        return viewmodel?.isThisViewExpanded(id)?:false
+        return markViewmodel.isThisViewExpanded(id)?:false
     }
 
     override fun isInternetAvailable(): Boolean {
@@ -1007,6 +1055,10 @@ class CallFragment : Fragment(), View.OnClickListener , IDefaultFragmentSelectio
 
     fun activtyResultisDefaultScreening() {
         callLogAdapter?.removeCallerIdRoleItem()
+    }
+
+    fun showBottumSheet() {
+        bottomSheetDialog.show()
     }
 
 }

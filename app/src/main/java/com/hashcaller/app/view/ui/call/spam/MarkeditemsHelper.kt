@@ -1,10 +1,15 @@
 package com.hashcaller.app.view.ui.call.spam
 
 import androidx.lifecycle.MutableLiveData
+import com.hashcaller.app.network.search.model.CntctitemForView
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 class MarkeditemsHelper {
 
     var markedAddres:MutableSet<String> = mutableSetOf()
+    var markedAddressAndContactDetails: HashMap<String, CntctitemForView> = hashMapOf()
     private var expandedLayoutId: Long? = null
     private var expandedLayoutPositin:Int? = null
     var contactAddress = ""
@@ -19,6 +24,12 @@ class MarkeditemsHelper {
     }
     fun getMarkedItems(): List<String> {
         return markedAddres.toList()
+    }
+    fun getContactDetailOfMarkedItem(number:String): CntctitemForView? {
+        return markedAddressAndContactDetails[number]
+    }
+    fun getAllContactDetailOfMarkedItem(): HashMap<String, CntctitemForView> {
+        return markedAddressAndContactDetails
     }
 
     fun getExpanedLayoutPosition(): Int? {
@@ -36,15 +47,21 @@ class MarkeditemsHelper {
         markedItems.value?.clear()
         markedItems.value = markedItems.value
         markedAddres.clear()
+        markedAddressAndContactDetails.clear()
     }
-    fun addTomarkeditems(id: Long, position: Int, number: String){
+    fun addTomarkeditems(id: Long, position: Int, number: String, nameStr: String?){
         markedItems.value!!.add(id)
         markedItemsPositions.add(position)
         markedItems.value = markedItems.value
         contactAddress = number
         markedAddres.add(number)
+        nameStr?.let {
+            markedAddressAndContactDetails[number] = CntctitemForView(informationReceivedDate =  Date(), nameForblockListPattern = it)
+        }
+
 
     }
+
     fun isThisViewExpanded(id: Long): Boolean {
         return id == expandedLayoutId
     }
@@ -68,6 +85,7 @@ class MarkeditemsHelper {
         markedAddres.remove(number)
         markedItemsPositions.remove(position)
         markedItems.value = markedItems.value
+        markedAddressAndContactDetails.remove(number)
     }
 
     fun getPrevExpandedPosition(): Int? {

@@ -74,7 +74,6 @@ import com.hashcaller.app.utils.constants.IntentKeys.Companion.THUMBNAIL_FROM_CP
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.THUMBNAIL_FROM_DB
 import com.hashcaller.app.utils.constants.IntentKeys.Companion.UPDATE_INCOMMING_VIEW
 import com.hashcaller.app.utils.notifications.tokeDataStore
-import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallView
 import com.hashcaller.app.view.ui.IncommingCall.ActivityIncommingCallViewUpdated
 import com.hashcaller.app.view.ui.call.dialer.util.CallLogLiveData
 import com.hashcaller.app.view.ui.call.floating.FloatingService
@@ -380,19 +379,6 @@ fun Context.stopFltinServiceFromActiivtyIncomming(){
 
 }
 
-fun Context.startActivityIncommingCallView(
-    phoneNumber: String,
-    prevCallState: String?,
-    callHandledSim: Int
-) {
-
-    val i = Intent(this, ActivityIncommingCallView::class.java)
-    i.putExtra(PHONE_NUMBER, phoneNumber?:"")
-    i.putExtra(CALL_HANDLED_STATE, prevCallState?:"" )
-    i.putExtra(CALL_HANDLED_SIM, callHandledSim )
-    i.flags = Intent.FLAG_ACTIVITY_NEW_TASK //Calling startActivity() from outside of an Activity  context requires the FLAG
-    startActivity(i)
-}
 
 fun Context.startActivityIncommingCallViewUpdated(
     phoneNumber: String,
@@ -422,9 +408,7 @@ fun Context.closeIncommingCallView(){
 //        i.putExtra("kill", 1)
 //    startActivity(i)
 }
-fun Context.isActivityIncommingCallViewVisible():Boolean{
-    return ActivityIncommingCallView.isVisible?:false
-}
+
 
 suspend fun Context.getBooleanFromSharedPref(key: String): Boolean {
     val wrapedKey =  booleanPreferencesKey(key)
@@ -692,25 +676,7 @@ fun Context.generateCircleView(num:Int?=null): Drawable? {
 }
 
 
-fun Context.onContactItemClicked(binding: ContactListBinding, contactItem: Contact,activity:Activity? ){
-    val intent = Intent(this, IndividualContactViewActivity::class.java )
-    intent.putExtra(com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID, contactItem.phoneNumber)
-    intent.putExtra("name", contactItem.firstName )
-//        intent.putExtra("id", contactItem.id)
-    intent.putExtra("photo", contactItem.photoURI)
-    intent.putExtra("color", contactItem.drawable)
-    val pairList = ArrayList<android.util.Pair<View, String>>()
-//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
-    var pair:android.util.Pair<View, String>? = null
-    if(contactItem.photoURI.isEmpty()){
-        pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
-    }else{
-        pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
-    }
-    pairList.add(pair)
-    val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
-    startActivity(intent, options.toBundle())
-}
+
 
 fun Context.onSMSItemItemClicked(
     view: View,

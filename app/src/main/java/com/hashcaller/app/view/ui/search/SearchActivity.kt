@@ -28,7 +28,9 @@ import com.hashcaller.app.datastore.DataStoreInjectorUtil
 import com.hashcaller.app.datastore.DataStoreViewmodel
 import com.hashcaller.app.datastore.PreferencesKeys.Companion.SHOW_SMS_IN_SEARCH_RESULT
 import com.hashcaller.app.local.db.HashCallerDatabase
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CONTACTS
 import com.hashcaller.app.stubs.Contact
+import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
 import com.hashcaller.app.utils.internet.CheckNetwork
 import com.hashcaller.app.view.ui.call.dialer.DialerAdapter
@@ -322,6 +324,7 @@ class SearchActivity : AppCompatActivity(), ITextChangeListenerDelayed, SMSSearc
 //        intent.putExtra("id", contactItem.id)
                 intent.putExtra("photo", contactItem.photoURI)
                 intent.putExtra("color", contactItem.drawable)
+                intent.putExtra(IntentKeys.INTENT_SOURCE, BLOCK_TYPE_FROM_CONTACTS)
                 val pairList = ArrayList<android.util.Pair<View, String>>()
 //        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
                 var pair:android.util.Pair<View, String>? = null

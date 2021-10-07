@@ -105,18 +105,12 @@
             android:launchMode="singleTop"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".view.ui.call.spam.SpamCallsActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name=".view.ui.notifications.ManageNotificationsActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".view.ui.blockConfig.blockList.BlockListActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name=".view.ui.manageblock.BlockManageActivity"
             android:launchMode="singleTop"
@@ -155,13 +149,7 @@
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/AppThemeStatusBar" />
-        <activity
-            android:name=".view.ui.IncommingCall.ActivityIncommingCallView"
-            android:autoRemoveFromRecents="true"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:theme="@style/PopupTheme"
-            android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".view.ui.IncommingCall.ActivityIncommingCallViewUpdated"
             android:autoRemoveFromRecents="true"

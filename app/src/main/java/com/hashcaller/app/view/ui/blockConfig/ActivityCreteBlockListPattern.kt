@@ -15,14 +15,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityCreteBlockListPatternBinding
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_CONTAINS
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_ENDS_WITH
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_WITH
 import com.hashcaller.app.stubs.TelephonyInfo
 import com.hashcaller.app.view.ui.MyUndoListener
 import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListViewModel
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
 import com.hashcaller.app.view.ui.sms.individual.util.KEY_INTENT_BLOCK_LIST
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_CONTAINING
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_ENDS_WITH
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.hashcaller.app.work.formatPhoneNumber
 
 
@@ -33,7 +33,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
     private lateinit var  blockListViewModel: BlockListViewModel
     private  var themeLiveData:MutableLiveData<Int>? = null
     private var prevtheme:Int? = null
-    private var patterntype = NUMBER_STARTS_WITH //by default the type is create pattern number starts with
+    private var patterntype = BLOCK_TYPE_STARTS_WITH //by default the type is create pattern number starts with
 
     var sharedPreferences: SharedPreferences? = null
 
@@ -42,7 +42,7 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
 
         super.onCreate(savedInstanceState)
         binding = ActivityCreteBlockListPatternBinding.inflate(layoutInflater)
-        patterntype = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, NUMBER_STARTS_WITH)
+        patterntype = intent.getIntExtra(KEY_INTENT_BLOCK_LIST, BLOCK_TYPE_STARTS_WITH)
         setContentView(binding.root)
         initViewmodel()
         Log.d(TAG, "onCreate: intent value is $patterntype")
@@ -93,15 +93,15 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         if(newPattern.isNotEmpty()){
             var patternRegex = ""
             when(patterntype){
-                NUMBER_STARTS_WITH ->{
+                BLOCK_TYPE_STARTS_WITH ->{
                     patternRegex = "$newPattern([0-9]*)"
                     message = "Calls from number starting with $newPattern will be blocked."
                 }
-                NUMBER_ENDS_WITH ->{
+                BLOCK_TYPE_ENDS_WITH ->{
                     patternRegex = "([0-9]*$newPattern)"
                     message = "Calls from number ending  with $newPattern will be blocked."
                 }
-                NUMBER_CONTAINING ->{
+                BLOCK_TYPE_CONTAINS ->{
                     patternRegex = "([0-9]*$newPattern[0-9]*)"
                     message = "Calls from number containing  $newPattern will be blocked."
                 }
@@ -188,13 +188,13 @@ class ActivityCreteBlockListPattern : AppCompatActivity(), View.OnClickListener,
         when(position){
 
             0 ->{
-                patterntype = NUMBER_STARTS_WITH
+                patterntype = BLOCK_TYPE_STARTS_WITH
             }
             1 ->{
-                patterntype = NUMBER_ENDS_WITH
+                patterntype = BLOCK_TYPE_ENDS_WITH
             }
             2 ->{
-                patterntype = NUMBER_CONTAINING
+                patterntype = BLOCK_TYPE_CONTAINS
             }
         }
 

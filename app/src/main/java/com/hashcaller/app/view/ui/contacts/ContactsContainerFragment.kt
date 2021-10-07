@@ -2,8 +2,12 @@ package com.hashcaller.app.view.ui.contacts
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,24 +23,26 @@ import com.google.firebase.auth.FirebaseUser
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ContactListBinding
 import com.hashcaller.app.databinding.FragmentContactsContainerBinding
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CONTACTS
 import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_READ_CONTACTS
 import com.hashcaller.app.utils.auth.TokenHelper
+import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.utils.extensions.startSearchActivity
 import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.MainActivityInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.hashcaller.app.view.ui.contacts.utils.ContacInjectorUtil
 import com.hashcaller.app.view.ui.contacts.utils.ContactGlobalHelper
 import com.hashcaller.app.view.ui.contacts.utils.ContactsViewModel
-import com.hashcaller.app.view.ui.sms.individual.util.beGone
-import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
-import com.hashcaller.app.view.ui.sms.individual.util.beVisible
+import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
+import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -164,7 +170,7 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
 //                addItemDecoration(topSpacingDecorator)
             contactsRecyclerAdapter =
                 ContactAdapter(context) { binding: ContactListBinding, contact: Contact ->
-                    context.onContactItemClicked(
+                    onContactItemClicked(
                         binding,
                         contact,
                         activity
@@ -175,6 +181,26 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
 
         }
 
+    }
+    fun onContactItemClicked(binding: ContactListBinding, contactItem: Contact,activity: Activity? ){
+        val intent = Intent(requireContext(), IndividualContactViewActivity::class.java )
+        intent.putExtra(com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID, contactItem.phoneNumber)
+        intent.putExtra("name", contactItem.firstName )
+//        intent.putExtra("id", contactItem.id)
+        intent.putExtra("photo", contactItem.photoURI)
+        intent.putExtra("color", contactItem.drawable)
+        intent.putExtra(IntentKeys.INTENT_SOURCE, BLOCK_TYPE_FROM_CONTACTS)
+        val pairList = ArrayList<Pair<View, String>>()
+//        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
+        var pair:android.util.Pair<View, String>? = null
+        if(contactItem.photoURI.isEmpty()){
+            pair = android.util.Pair(binding.textViewcontactCrclr as View, "firstLetterTransition")
+        }else{
+            pair = android.util.Pair(binding.imgViewCntct as View,"contactImageTransition")
+        }
+        pairList.add(pair)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity,pairList[0])
+        startActivity(intent, options.toBundle())
     }
 //     fun onContactItemClicked(binding: ContactListBinding, contactItem: com.hashcaller.app.network.user.Contact){
 //        Log.d(TAG, "onContactItemClicked: ${contactItem.phoneNumber}")

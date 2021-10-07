@@ -22,7 +22,6 @@ import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData
 import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData.Companion.IMAGE_FOUND_FROM_DB_GOOGLE
 import com.hashcaller.app.view.ui.contacts.startSpamReportWorker
 import com.hashcaller.app.view.ui.contacts.utils.OPERATION_COMPLETED
-import com.hashcaller.app.view.ui.sms.individual.util.EXACT_NUMBER
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
 import com.hashcaller.app.view.ui.sms.individual.util.ON_COMPLETED
 import com.hashcaller.app.work.formatPhoneNumber
@@ -143,9 +142,12 @@ class IndividualcontactViewModel(
         mutedContactsDAO.delete(formatPhoneNumber(phoneNum))
     }
 
-    fun reportSpam(phoneNum: String,
-                   spammerType: Int,
-                   applicationContext: Context?
+    fun reportSpam(
+        phoneNum: String,
+        spammerType: Int,
+        applicationContext: Context?,
+        finalName: String,
+        intentSource: Int
     ):LiveData<Int> = liveData {
 
         if (phoneNum.isNotEmpty()) {
@@ -156,7 +158,7 @@ class IndividualcontactViewModel(
                     val as1 = async { repository?.marAsReportedByUser(listOfNums) }
 
                     val as2 = async {
-                        addAddressToPatternsTable(listOfNums)
+                        addAddressToPatternsTable(listOfNums, finalName, intentSource)
 
                     }
 //                    val as4 = async { repository?.markAsSpamInSMS(contactAddress) }
@@ -213,11 +215,18 @@ class IndividualcontactViewModel(
         applicationContext?.startSpamReportWorker(commanSeperatedNumbers, spammerType)
     }
 
-    private suspend fun addAddressToPatternsTable(markedItems: List<String>) {
+    private suspend fun addAddressToPatternsTable(
+        markedItems: List<String>,
+        finalName: String,
+        intentSource: Int
+    ) {
+
         for (num in markedItems){
             blockListPatternRepository.insertPattern(
                 num,
-                EXACT_NUMBER )
+                intentSource,
+                finalName
+            )
         }
     }
 
@@ -286,8 +295,11 @@ class IndividualcontactViewModel(
         try {
             val infoInCprovider = defCp.await()
             val infoInDb = defDb.await()
-             contactForview.firstName =  getStrinProp(infoInCprovider?.firstName, infoInDb?.firstName)
-             contactForview.lastName = getStrinProp(infoInCprovider?.lastName, infoInDb?.lastName)
+             contactForview.firstName =  infoInDb?.firstName?:""
+             contactForview.lastName = infoInDb?.lastName?:""
+            contactForview.nameInPhoneBook = infoInDb?.nameInPhoneBook?:""
+            contactForview.nameInLocalPhoneBook = infoInCprovider?.nameInLocalPhoneBook?:""
+            contactForview.nameInPhoneBook = infoInDb?.nameInPhoneBook?:""
              contactForview.carrier = getStrinProp(infoInCprovider?.carrier, infoInDb?.carrier)
              contactForview.country = getStrinProp(infoInCprovider?.country, infoInDb?.country)
 //             contactForview.lineType = getStrinProp(infoInCprovider?.lineType, infoInDb?.lineType)

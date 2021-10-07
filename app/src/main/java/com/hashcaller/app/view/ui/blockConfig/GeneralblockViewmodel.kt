@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.*
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CONTACTS
 import com.hashcaller.app.local.db.blocklist.BlockedListPattern
 import com.hashcaller.app.repository.BlockListPatternRepository
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.view.ui.call.work.CallContainerViewModel
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ADDRES
-import com.hashcaller.app.view.ui.sms.individual.util.EXACT_NUMBER
 import com.hashcaller.app.view.ui.sms.individual.util.ON_COMPLETED
 import com.hashcaller.app.work.SpamReportWorker
 import com.hashcaller.app.work.UnblockWorker
@@ -33,7 +35,13 @@ class GeneralblockViewmodel(
     val isThisNumberBlocked : MutableLiveData<Boolean> = MutableLiveData(false)
 
 
-    fun blockThisAddress(spammerType: Int, contactAddress: String, applicationContext: Context) : LiveData<Int> = liveData {
+    fun blockThisAddress(
+        spammerType: Int,
+        contactAddress: String,
+        applicationContext: Context,
+        intentSource: Int,
+        name: String
+    ) : LiveData<Int> = liveData {
 //        contactAddress = markeditemsHelper.getmarkedAddresAt(0) ?: ""
         val formatedNum = formatPhoneNumber(contactAddress)
         if (contactAddress.isNotEmpty()) {
@@ -43,7 +51,7 @@ class GeneralblockViewmodel(
 //                    val as4 = async { repository?.marAsReportedByUserInSMS(formatedNum) }
 
                     val as2 = async {
-                        blockListPatternRepository.insertPattern(contactAddress,EXACT_NUMBER )
+                        blockListPatternRepository.insertPattern(contactAddress, intentSource, name)
                     }
 
                     val as3 = async {
@@ -127,7 +135,7 @@ class GeneralblockViewmodel(
        var isNumBlockedByUser = false
         if(allBlockListLivedata?.value!=null){
             for (pattern in allBlockListLivedata.value!!){
-                if(pattern.numberPattern == formatPhoneNumber(phoneNum) && pattern.type == EXACT_NUMBER ){
+                if(pattern.numberPattern == formatPhoneNumber(phoneNum) && (pattern.type == BLOCK_TYPE_EXACT_NUMBER  || pattern.type == BLOCK_TYPE_FROM_CALL_LOG || pattern.type == BLOCK_TYPE_FROM_CONTACTS )){
                     isNumBlockedByUser = true
                     break
                 }
@@ -148,12 +156,10 @@ class GeneralblockViewmodel(
     )  = viewModelScope.launch{
         val defCall = async { repository?.markAsNotSpamInCalls(phoneNum, randomColor) }
         val defPattern = async { blockListPatternRepository.delete(phoneNum, numberType) }
-
 //        val defSMS = async { repository?.markAsNotSpamInSMS(phoneNum, randomColor) }
         val defWorker = async { startUnblockWorker(phoneNum,applicationContext ) }
         try{
             defPattern.await()
-
         }catch (e:Exception){
             Log.d(TAG, "removeFromBlockList: $e")
         }

@@ -26,6 +26,7 @@ import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.extensions.isScreeningRoleHeld
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.sms.util.SetAsDefaultSMSSnackbarListener
+import kotlinx.android.synthetic.main.block_config_fragment.*
 
 
 class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
@@ -143,6 +144,7 @@ class BlockManageActivity : AppCompatActivity(), View.OnClickListener,
         binding.blockSpammersAuto.setOnCheckedChangeListener(this)
         binding.imgBtnBackBlk.setOnClickListener(this)
         binding.btnRqstScreeningPermission.setOnClickListener(this)
+
 //        binding.switchDoNotReceiveSpamSMS.setOnClickListener(this)
 //        binding.layoutBlockContains.setOnClickListener(this)
 //        binding.layoutBlockEndsWith.setOnClickListener(this)

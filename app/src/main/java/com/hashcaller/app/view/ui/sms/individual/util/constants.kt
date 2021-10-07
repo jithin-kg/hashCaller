@@ -21,10 +21,8 @@ const val INFO_NOT_FOUND_IN_SERVER = 0
 const val SEARCHING_FOR_INFO = 2
 
 const val KEY_INTENT_BLOCK_LIST = "numberContaining"
-const val NUMBER_STARTS_WITH= 0
-const val NUMBER_CONTAINING = 1
-const val NUMBER_ENDS_WITH = 2
-const val EXACT_NUMBER = 3
+
+const val FROM_CONTACTS = 5
 
 const val SET_DEF_SMS_REQ_CODE = 222
 const val UNMARK_ITEM = 0
@@ -42,6 +40,8 @@ const val TYPE_CLICK_SCREENING_ROLE = 5
 const val TYPE_CLICK_DISMISS_SCREENING_ROLE = 6
 const val TYPE_CLICK_ALLOW_OVERLAY = 7
 const val TYPE_CLICK_DISMISS_OVERLAY = 8
+const val TYPE_CLICK_DELETE_PATTERN = 9
+
 
 const val SMS_NOT_READ = 0
 const val SMS_READED = 1

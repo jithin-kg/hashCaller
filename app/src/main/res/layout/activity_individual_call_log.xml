@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".app.view.ui.call.individualCallLog.IndividualCallLogActivity">
+    >
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarIndividualSMS"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:background="@color/colorBackground"
+        android:background="@color/colorBackgroundAppBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,7 +21,7 @@
             android:id="@+id/toolbarSMSIndividual"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorBackground"
+            android:background="@color/colorBackgroundAppBar"
             android:minHeight="?attr/actionBarSize"
 
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
@@ -64,8 +64,8 @@
                     app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imgVAvatar"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_marginStart="16dp"
                     app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
                     app:layout_constraintStart_toEndOf="@+id/imgBtnBackSmsIndividual"
@@ -77,8 +77,8 @@
                     />
                 <TextView
                     android:id="@+id/tvFirstLetter"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:text="A"
                     android:visibility="invisible"
                     android:gravity="center"
@@ -107,7 +107,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
                         android:text="Name"
-                        android:textColor="@color/textColor"
+                        android:textColor="@color/colorWhite"
 
                         />
 
@@ -118,7 +118,7 @@
                         android:layout_marginStart="16dp"
                         android:paddingTop="4dp"
                         android:text="Number"
-                        android:textColor="@color/textColor"
+                        android:textColor="@color/colorWhite"
                         android:layout_marginBottom="8dp"
                         />
                 </androidx.appcompat.widget.LinearLayoutCompat>

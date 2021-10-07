@@ -7,6 +7,7 @@ import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import com.hashcaller.app.view.utils.spam.OperatorInformationDTO
 import com.vmadalin.easypermissions.EasyPermissions
+import java.util.*
 
 /**
  * helper class to get sim operator name and country code
@@ -45,7 +46,7 @@ class CountrycodeHelper(private val context: Context) {
 //                    val operator = tel.networkOperator
 //                    val simOperator = tel.simOperator
 
-            val countryIso = lsuSubscriptionInfo.countryIso.toUpperCase()
+            val countryIso = lsuSubscriptionInfo.countryIso.uppercase(Locale.getDefault())
             val countryCode = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance().getCountryCodeForRegion(countryIso)
 //            val countryCode =
 //                io.michaelrocks.libphonenumber.android.PhoneNumberUtil.createInstance(context)

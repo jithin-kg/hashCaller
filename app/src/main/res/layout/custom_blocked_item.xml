@@ -29,37 +29,64 @@
         android:background="@drawable/contact_circular_background"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvBlkType"
+    <FrameLayout
+        android:id="@+id/frameType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:alpha=".87"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:padding="2dp"
-        android:text=""
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:transitionName="contactNameTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toEndOf="@+id/tvFirstLetterBlk"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/margin_padding_size_small"
+        android:layout_marginEnd="@dimen/margin_padding_size_small"
 
-    <TextView
-        android:id="@+id/textViewBlkPattern"
+        >
+        <TextView
+            android:id="@+id/tvBlkType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="2dp"
+            android:text=""
+            android:alpha="0.74"
+            android:textColor="@color/textColor"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:transitionName="contactNameTransition"
+            />
+    </FrameLayout>
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/imgBtnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_remove_circle_24"
+        android:alpha="0.60"
+        android:padding="@dimen/margin_padding_size_medium"
+        android:layout_marginEnd="@dimen/margin_padding_size_medium"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="@+id/tvBlkType"
-        app:layout_constraintTop_toBottomOf="@+id/tvBlkType" />
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnDelete"
+        app:layout_constraintStart_toStartOf="@+id/frameType"
+        app:layout_constraintTop_toBottomOf="@+id/frameType"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        android:alpha="0.64"
+        >
+        <TextView
+            android:id="@+id/textViewBlkPattern"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/textColor"
+             />
+    </FrameLayout>
 
 <!--    <ImageView-->
 <!--        android:id="@+id/imgVBlkSeperator"-->

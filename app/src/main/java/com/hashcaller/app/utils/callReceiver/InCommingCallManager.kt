@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.datastore.PreferencesKeys
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_CONTAINS
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_WITH
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.local.db.contacts.IContactAddressesDao
 import com.hashcaller.app.network.search.model.CntctitemForView
@@ -25,8 +27,6 @@ import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServerDAO
 import com.hashcaller.app.view.ui.contacts.showNotifcationForSpamCall
 import com.hashcaller.app.view.ui.sms.individual.util.INFO_NOT_FOUND_IN_SERVER
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_CONTAINING
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.hashcaller.app.view.utils.CountrycodeHelper
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 import com.hashcaller.app.work.formatPhoneNumber
@@ -92,9 +92,9 @@ class InCommingCallManager(
         var match: Boolean
         blockedListpatternDAO.getAllBLockListPatternByFlow().collect {
             for (item in it){
-                if(item.type == NUMBER_STARTS_WITH){
+                if(item.type == BLOCK_TYPE_STARTS_WITH){
                     match =   phoneNumber.startsWith(item.numberPattern)
-                }else if(item.type == NUMBER_CONTAINING ){
+                }else if(item.type == BLOCK_TYPE_CONTAINS ){
                     match =  phoneNumber.contains(item.numberPattern)
                 }else{
                     match = phoneNumber.endsWith(item.numberPattern)
@@ -148,9 +148,9 @@ class InCommingCallManager(
 
       for (item in blockedListpatternDAO.getAllBLockListPatternList()){
 
-              if(item.type == NUMBER_STARTS_WITH) {
+              if(item.type == BLOCK_TYPE_STARTS_WITH) {
                   match =   phoneNumber.startsWith(item.numberPattern)
-              }else if(item.type == NUMBER_CONTAINING ){
+              }else if(item.type == BLOCK_TYPE_CONTAINS ){
                   match =  phoneNumber.contains(item.numberPattern)
               }else {
                   match = phoneNumber.endsWith(item.numberPattern)

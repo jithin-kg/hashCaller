@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
@@ -13,6 +14,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.i18n.phonenumbers.PhoneNumberUtil
@@ -505,20 +507,28 @@ class FloatingService: Service() {
             )
         ) {
             setTicker(null)
-            setContentTitle(getString(R.string.app_name))
-            setContentText("Caller ID is active")
+//            setContentTitle(getString(R.string.app_name))
+            setContentTitle("Caller ID is active")
+//            setContentText("Caller ID is active")
             setAutoCancel(false)
             setOngoing(true)
             setWhen(System.currentTimeMillis())
-            setSmallIcon(R.drawable.ic_baseline_call_24)
+            setSmallIcon(R.drawable.ic_launcher_foreground)
+//            setColor(ContextCompat.getColor(this@FloatingService, R.color.colorPrimary))
+            color = 0x3398ED
+//            setLargeIcon(BitmapFactory.decodeResource(this@FloatingService. getResources(), R.drawable.ic_launcher_foreground))
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 priority = NotificationManager.IMPORTANCE_LOW
             }else {
-                priority = Notification.PRIORITY_LOW
+                try{
+                    priority = Notification.PRIORITY_LOW
+                }catch (e:Exception){
+                    Log.d(TAG, "showNotification: $e")
+                }
+
             }
             startForeground(CODE_FOREGROUND_SERVICE, build())
         }
-
     }
 
 

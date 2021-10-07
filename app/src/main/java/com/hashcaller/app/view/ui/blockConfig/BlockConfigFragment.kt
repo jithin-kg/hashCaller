@@ -2,6 +2,7 @@ package com.hashcaller.app.view.ui.blockConfig
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,22 +14,29 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.BlockConfigFragmentBinding
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
+import com.hashcaller.app.local.db.blocklist.BlockTypes
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_CONTAINS
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_ENDS_WITH
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CONTACTS
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_WITH
 import com.hashcaller.app.local.db.blocklist.BlockedListPattern
-import com.hashcaller.app.view.adapter.ViewPagerAdapter
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.MainActivity
-import com.hashcaller.app.view.ui.SwipeToDeleteCallback
-import com.hashcaller.app.view.ui.blockConfig.blockList.BlkListFragment
 import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListAdapter
 import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListViewModel
 import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
+import com.hashcaller.app.view.ui.extensions.getSpannableString
 import com.hashcaller.app.view.ui.extensions.requestAlertWindowPermission
-import com.hashcaller.app.view.ui.sms.individual.SampleActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.ui.utils.SwipeHelper
+import com.hashcaller.app.view.utils.ConfirmDialogFragment2
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 
@@ -39,12 +47,14 @@ import com.hashcaller.app.view.utils.TopSpacingItemDecoration
 class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection {
     //    private SQLiteDatabaseHandler db;
     private var isDflt = false
-    private var blkListFragment : BlkListFragment? = null
     private lateinit var binding: BlockConfigFragmentBinding
     private lateinit var blockListAdapter: BlockListAdapter
     private lateinit var blockListViewModel: BlockListViewModel
-    private lateinit var swipeHandler: SwipeToDeleteCallback
+//    private lateinit var swipeHandler: SwipeToDeleteCallback
     private lateinit var  itemTouchHelper: ItemTouchHelper
+    private lateinit var dataStoreRepository: DataStoreRepository
+    private var patternToDelete:BlockedListPattern? = null
+    private lateinit var generalBlockViewmodel: GeneralblockViewmodel
 
 
     override fun onCreateView(
@@ -118,16 +128,16 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
         itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
     }
     private fun initSwipeHandler() {
-        context?.let {
-            swipeHandler = object : SwipeToDeleteCallback(it) {
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, ) {
-                    val adapter = binding.rcrViewPtrnList.adapter
-                    deletePattern(viewHolder.adapterPosition)
-                }
-            }
-            val itemTouchHelper = ItemTouchHelper(swipeHandler)
-            itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
-        }
+//        context?.let {
+//            swipeHandler = object : SwipeToDeleteCallback(it) {
+//                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, ) {
+//                    val adapter = binding.rcrViewPtrnList.adapter
+//                    deletePattern(viewHolder.adapterPosition)
+//                }
+//            }
+//            val itemTouchHelper = ItemTouchHelper(swipeHandler)
+//            itemTouchHelper.attachToRecyclerView(binding.rcrViewPtrnList)
+//        }
     }
     private fun deletePattern(pos: Int) {
         val item = blockListAdapter.getItemAtPosition(pos);
@@ -139,6 +149,9 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
 
     private fun initViewModel() {
         blockListViewModel = ViewModelProvider(this).get(BlockListViewModel::class.java)
+        generalBlockViewmodel = ViewModelProvider(this, GeneralBlockInjectorUtil.provideViewModel(
+            requireContext()
+        )).get(GeneralblockViewmodel::class.java)
     }
 
     private fun initRecyclerView(){
@@ -151,13 +164,13 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
             addItemDecoration(topSpacingDecorator)
 //            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             blockListAdapter =
-                BlockListAdapter(){clickType:Int -> onListItemClicked(clickType)}
+                BlockListAdapter(){clickType:Int,pattern:BlockedListPattern?, position:Int? -> onListItemClicked(clickType, pattern, position)}
             adapter = blockListAdapter
 
 
         }
     }
-    fun onListItemClicked(clickType:Int){
+    fun onListItemClicked(clickType: Int, pattern: BlockedListPattern?, position: Int?){
         when(clickType){
             TYPE_CLICK_ALLOW_OVERLAY ->{
                 (activity as AppCompatActivity).requestAlertWindowPermission()
@@ -166,6 +179,69 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                 blockListViewModel.setDismissedState(true)
                 removePermissionItemFromList()
             }
+            TYPE_CLICK_DELETE_PATTERN -> {
+                var message = ""
+                pattern?.let {p->
+                    when(p.type){
+                        BLOCK_TYPE_STARTS_WITH -> {
+                            message = "Unblock numbers that starts with '${p.numberPattern}'"
+                        }
+                        BLOCK_TYPE_CONTAINS -> {
+                            message = "Unblock numbers that contains '${p.numberPattern}'"
+                        }
+                        BLOCK_TYPE_ENDS_WITH -> {
+                            message = "Unblock numbers that ends with '${p.numberPattern}'"
+                        }
+                        BLOCK_TYPE_EXACT_NUMBER -> {
+                            message = "Unblock number '${p.numberPattern}'"
+                        }
+                        BLOCK_TYPE_FROM_CALL_LOG -> {
+                            message = "Unblock name varanam '${p.numberPattern}'"
+                        }
+                        BLOCK_TYPE_FROM_CONTACTS -> {
+                            message = "Unblock name varanam '${p.numberPattern}'"
+                        }
+
+
+
+                    }
+                    patternToDelete = p
+                    showAlert("Unblock ${pattern.numberPattern}?")
+                }
+
+            }
+        }
+    }
+
+    private fun showAlert(message: String) {
+        val dialog = ConfirmDialogFragment2(
+            getSpannableString("Calls from this number won't be blocked"),
+            getSpannableString(message)
+            )
+        {action:Int -> onDialogFragmentAction(action)}
+        dialog.show(requireActivity().supportFragmentManager, "unblock")
+    }
+
+    private fun onDialogFragmentAction(actionType:Int){
+        when(actionType){
+            ConfirmDialogFragment2.ON_POSITIVE_ACTION -> {
+                patternToDelete?.let {
+                    if(it.type == BlockTypes.BLOCK_TYPE_EXACT_NUMBER || it.type == BlockTypes.BLOCK_TYPE_FROM_CALL_LOG || it.type == BlockTypes.BLOCK_TYPE_FROM_CONTACTS ){
+                        generalBlockViewmodel.removeFromBlockList(
+                            it.numberPattern,
+                            it.type,
+                            getRandomColor(),
+                            requireActivity()
+                        )
+                    }
+
+//                    blockListViewModel.delete(it.numberPattern, it.type).observe(this, Observer {
+////                        blockListAdapter.notifyItemChanged(pos)
+//                    })
+                }
+
+            }
+
         }
     }
 
@@ -177,11 +253,7 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden && !this::blockListViewModel.isInitialized){
-//            if (context?.hasReadContactsPermission() == true) {
-//            initSwipeHandler()
             initRecyclerView()
-
-            initReveaelSwipeHandler()
             initViewModel()
             observeBlocklistLivedata()
 
@@ -194,10 +266,10 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                lifecycleScope.launchWhenStarted {
                    blockedListPatterns?.let{ list->
                        //important to set animation controller for recyclerview to show recyclerview animation
-                       val animationController: LayoutAnimationController =
-                           AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
+//                       val animationController: LayoutAnimationController =
+//                           AnimationUtils.loadLayoutAnimation(context, R.anim.layout_anim_recycler_view)
 
-                       binding.rcrViewPtrnList.layoutAnimation = animationController
+//                       binding.rcrViewPtrnList.layoutAnimation = animationController
 //                       if(!Settings.canDrawOverlays(context) && !blockListViewModel.getDismissedState()){
 //                           list.add(0, BlockedListPattern(id=LIST_DUMMY_ID,"", "", 0))
 //                       }else {
@@ -227,26 +299,35 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
+        if(Settings.canDrawOverlays(context)){
+            binding.layoutOverlayPermission.beGone()
+        }else {
+            binding.layoutOverlayPermission.beVisible()
+        }
+        dataStoreRepository = DataStoreRepository(requireContext().tokeDataStore)
+        lifecycleScope.launchWhenStarted {
+            binding.radioCntct.isChecked = dataStoreRepository.getBoolean(PreferencesKeys.KEY_BLOCK_NON_CONTACT)
+        }
     }
 
     private fun initListeners() {
-        binding.fabBtnShowAdd.setOnClickListener(this as View.OnClickListener)
-        binding.imgBtnHamBrgerBlk.setOnClickListener(this)
-        binding.btnDismiss.setOnClickListener {
-            binding.layoutOverlayPermission.beGone()
+
+        with(binding){
+            layoutRadioContactsOnly.setOnClickListener(this@BlockConfigFragment)
+            radioCntct.setOnClickListener(this@BlockConfigFragment)
+            fabBtnShowAdd.setOnClickListener(this@BlockConfigFragment as View.OnClickListener)
+            imgBtnHamBrgerBlk.setOnClickListener(this@BlockConfigFragment)
+            btnDismiss.setOnClickListener {
+                layoutOverlayPermission.beGone()
+            }
+            btnSetup.setOnClickListener {
+                (activity as AppCompatActivity).requestAlertWindowPermission()
+            }
         }
-        binding.btnSetup.setOnClickListener {
-            (activity as AppCompatActivity).requestAlertWindowPermission()
-        }
+
     }
 
     private fun setupViewPager(viewPager: ViewPager?) {
-        if(this.blkListFragment == null){
-            this.blkListFragment = BlkListFragment()
-        }
-        val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPagerAdapter.addFragment(this.blkListFragment!!, "Blk")
-        viewPager?.adapter = viewPagerAdapter
     }
 
     override fun onClick(v: View?) {
@@ -255,16 +336,35 @@ class BlockConfigFragment : Fragment(), View.OnClickListener, IDefaultFragmentSe
                 (activity as MainActivity).showDrawer()
             }
             R.id.fabBtnShowAdd -> {
-//                val i = Intent(context, ActivityCreteBlockListPattern::class.java)
-                val i = Intent(context, SampleActivity::class.java)
+                val i = Intent(context, ActivityCreteBlockListPattern::class.java)
+//                val i = Intent(context, SampleActivity::class.java)
                 startActivity(i)
+            }
+            R.id.layoutRadioContactsOnly -> {
+                binding.radioCntct.isChecked = !binding.radioCntct.isChecked
+                onRadioContactChange()
+            }
+            R.id.radioCntct -> {
+                onRadioContactChange()
             }
         }
 
     }
 
+    private fun onRadioContactChange() {
+        lifecycleScope.launchWhenStarted {
+            dataStoreRepository.setBoolean(binding.radioCntct.isChecked, PreferencesKeys.KEY_BLOCK_NON_CONTACT )
+           if(binding.radioCntct.isChecked){
+               requireContext().toast("Only calls from your contacts will be able to reach you")
+           }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+        if(Settings.canDrawOverlays(context)){
+            binding.layoutOverlayPermission.beGone()
+        }
 //        if(Settings.canDrawOverlays(context)){
 //            removePermissionItemFromList()
 //        }else {

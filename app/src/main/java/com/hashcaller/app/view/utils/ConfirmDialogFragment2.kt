@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.text.SpannableString
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.hashcaller.app.view.ui.contacts.utils.TYPE_DELETE
-import com.hashcaller.app.view.ui.contacts.utils.TYPE_MUTE
 
 class ConfirmDialogFragment2(
     private val message: SpannableString,

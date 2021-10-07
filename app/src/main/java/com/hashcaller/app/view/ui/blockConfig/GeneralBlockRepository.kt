@@ -2,8 +2,8 @@ package com.hashcaller.app.view.ui.blockConfig
 
 import android.util.Log
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
-import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_CONTAINS
-import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_ENDS_WITH
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_CONTAINS
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_ENDS_WITH
 import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_WITH
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.view.ui.call.db.CallLogTable
@@ -66,10 +66,10 @@ class GeneralBlockRepository(
                     BLOCK_TYPE_STARTS_WITH ->{
 
                     }
-                    BLOCK_TYPE_STARTS_CONTAINS ->{
+                    BLOCK_TYPE_CONTAINS ->{
 
                     }
-                    BLOCK_TYPE_STARTS_ENDS_WITH ->{
+                    BLOCK_TYPE_ENDS_WITH ->{
 
                     }
 
@@ -93,10 +93,10 @@ class GeneralBlockRepository(
                     BLOCK_TYPE_STARTS_WITH ->{
 
                     }
-                    BLOCK_TYPE_STARTS_CONTAINS ->{
+                    BLOCK_TYPE_CONTAINS ->{
 
                     }
-                    BLOCK_TYPE_STARTS_ENDS_WITH ->{
+                    BLOCK_TYPE_ENDS_WITH ->{
 
                     }
 

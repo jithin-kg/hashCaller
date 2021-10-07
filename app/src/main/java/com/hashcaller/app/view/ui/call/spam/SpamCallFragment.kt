@@ -31,6 +31,7 @@ import com.hashcaller.app.R
 import com.hashcaller.app.databinding.SpamCallsFragmentBinding
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.SPAMMER_TYPE_BUSINESS
 import com.hashcaller.app.utils.PermisssionRequestCodes.Companion.REQUEST_CODE_CALL_LOG
@@ -47,7 +48,6 @@ import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.MainActivityInjectorUtil
 import com.hashcaller.app.view.ui.MyUndoListener
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
-import com.hashcaller.app.view.ui.blockConfig.blockList.BlockListActivity
 import com.hashcaller.app.view.ui.call.CallFragment
 import com.hashcaller.app.view.ui.call.RelativeTime
 import com.hashcaller.app.view.ui.call.RelativeTime.Companion.OLDER
@@ -184,7 +184,7 @@ class SpamCallFragment : Fragment(), CallLogAdapter.ViewHandlerHelper,
 
             callLogAdapter = CallLogAdapter(context, this@SpamCallFragment, this@SpamCallFragment, requireContext().isDarkThemeOn()) {
 
-                    id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ->onCallItemClicked(
+                    id: Long, position: Int, view: View, btn: Int, callLog: CallLogTable, clickType: Int, visibility: Int ,nameStr:String?->onCallItemClicked(
                 id,
                 position,
                 view,
@@ -261,6 +261,7 @@ class SpamCallFragment : Fragment(), CallLogAdapter.ViewHandlerHelper,
     private fun startIndividualContactActivity(log: CallLogTable, view: View) {
 
         val intent = getContactIntent(log, CallFragment.INDIVIDUAL_CONTACT_ACTIVITY)
+        intent.putExtra(IntentKeys.INTENT_SOURCE, BLOCK_TYPE_FROM_CALL_LOG)
         val options = getOptions(view, log)
         startActivity(intent, options.toBundle())
     }

@@ -10,8 +10,7 @@ import com.hashcaller.app.view.utils.LibPhoneCodeHelper
 
 object GeneralBlockInjectorUtil {
     fun provideViewModel(
-                                context: Context,
-                                phoneNum: String) : GeneralBlockViewModelFactory {
+                                context: Context) : GeneralBlockViewModelFactory {
 
         val blockListDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).blocklistDAO() }
         val mutedCallersDao = context?.let { HashCallerDatabase.getDatabaseInstance(it).mutedCallersDAO() }

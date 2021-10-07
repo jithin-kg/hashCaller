@@ -15,6 +15,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.hashcaller.app.R
 import com.hashcaller.app.local.db.HashCallerDatabase
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_CONTAINS
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_EXACT_NUMBER
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_STARTS_WITH
 import com.hashcaller.app.local.db.blocklist.BlockedLIstDao
 import com.hashcaller.app.local.db.sms.block.BlockedOrSpamSenders
 import com.hashcaller.app.local.db.sms.mute.IMutedSendersDAO
@@ -26,9 +29,6 @@ import com.hashcaller.app.view.ui.contacts.utils.CONTACT_NAME
 import com.hashcaller.app.view.ui.contacts.utils.FROM_SMS_RECIEVER
 
 import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
-import com.hashcaller.app.view.ui.sms.individual.util.EXACT_NUMBER
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_CONTAINING
-import com.hashcaller.app.view.ui.sms.individual.util.NUMBER_STARTS_WITH
 import com.hashcaller.app.view.ui.sms.services.SaveSmsService
 import com.hashcaller.app.view.utils.DefaultFragmentManager
 import com.hashcaller.app.work.formatPhoneNumber
@@ -115,7 +115,7 @@ class SmsReceiver : BroadcastReceiver() {
 //            res =  blockedOrSpamSendersDAO!!.find(formatPhoneNumber(senderNo))
 
                 Log.d(TAG, "isBlockedUser: res in launch is $res")
-                val defBlockExactNumPattern =   async {blockListPatternDAO?.find(senderNo, EXACT_NUMBER)  }
+                val defBlockExactNumPattern =   async {blockListPatternDAO?.find(senderNo, BLOCK_TYPE_EXACT_NUMBER)  }
                val defBlockedByPattern =  async { isSpamInPattern(senderNo) }
 
                 try {
@@ -149,9 +149,9 @@ class SmsReceiver : BroadcastReceiver() {
        val blockList =  blockListPatternDAO?.getAllBLockListPatternList()
        var matches = false
         blockList?.forEach { item->
-            if(item.type == NUMBER_STARTS_WITH) {
+            if(item.type == BLOCK_TYPE_STARTS_WITH) {
                 matches =   phoneNumber.startsWith(item.numberPattern)
-            }else if(item.type == NUMBER_CONTAINING ){
+            }else if(item.type == BLOCK_TYPE_CONTAINS ){
                 matches =  phoneNumber.contains(item.numberPattern)
             }else {
                 matches = phoneNumber.endsWith(item.numberPattern)

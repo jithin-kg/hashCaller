@@ -21,7 +21,6 @@ class IncomingCallReceiver : BroadcastReceiver(){
     @SuppressLint( "LogNotTimber", "MissingPermission") // P`ermissions checked when app opened; just fail here if missing
     override fun onReceive(context: Context, intent: Intent) {
        try {
-           Log.d(TAG, "onReceive: ")
               if (TelephonyManager.ACTION_PHONE_STATE_CHANGED != intent.action) {
                return
                 }
@@ -31,24 +30,18 @@ class IncomingCallReceiver : BroadcastReceiver(){
 
            when(state){
                    TelephonyManager.EXTRA_STATE_RINGING -> {
-                   Log.d(TAG, "onReceive: ringing :  startFloatingService")
                    context.startFloatingService(state)
 
                }
                TelephonyManager.EXTRA_STATE_OFFHOOK-> {
-//                   prevState = OFFHOOK
-//                   Log.d(TAG, "onReceive: hook num ${intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER)}")
                    val num = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
 
 
-                   Log.d(TAG, "onReceive: offhook $num")
                    if(!num.isNullOrEmpty()){
                        context.startFloatingServiceOffhook(num, state)
                    }
                }
                TelephonyManager.EXTRA_STATE_IDLE -> {
-                   Log.d(TAG, "onReceive: idle sending broadcast")
-
                    val stopIntent = Intent(IntentKeys.BROADCAST_STOP_FLOATING_SERVICE)
                    stopIntent.putExtra(
                        IntentKeys.INTENT_COMMAND,

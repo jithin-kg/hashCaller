@@ -17,11 +17,14 @@ interface BlockedLIstDao {
     suspend fun insert(blockPattern: BlockedListPattern)
 
 
-    @Query("DELETE from block_list_pattern WHERE num_pattern=:blockPattern AND type=:type")
-    suspend fun delete(blockPattern: String, type:Int)
+    @Query("DELETE from block_list_pattern WHERE num_pattern=:blockPattern AND type IN (:type)")
+    suspend fun delete(blockPattern: String, vararg type:Int)
     
     @Query("SELECT * FROM block_list_pattern")
      fun getAllBLockListPattern():LiveData<MutableList<BlockedListPattern>>
+
+    @Query("SELECT * FROM block_list_pattern WHERE type NOT IN (:notRequiredTypes)")
+    fun getAllCustomBLockListPattern(vararg notRequiredTypes:Int):LiveData<MutableList<BlockedListPattern>>
 
     @Query("SELECT * FROM block_list_pattern")
     fun getAllBLockListPatternByFlow():Flow<List<BlockedListPattern>>

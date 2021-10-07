@@ -72,9 +72,9 @@ class SampleActivity : AppCompatActivity(), View.OnClickListener {
                 isExpanded = true
                 binding.layoutcallMain1.beInvisible()
                 binding.materialCardView.beVisible()
-                binding.materialCardView.slideVisibilityToBottom(true, 500L)
-                delay(501L)
                 binding.materialCardView.layoutParams = LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                delay(501L)
+                binding.materialCardView.slideVisibilityToBottom(true, 500L)
 
             }
 //            binding.layoutExpandableCall.beVisible()

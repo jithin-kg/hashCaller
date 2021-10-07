@@ -11,7 +11,6 @@ import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.ui.call.spam.MarkeditemsHelper
 import com.hashcaller.app.view.ui.contacts.startSpamReportWorker
 import com.hashcaller.app.view.ui.sms.db.SmsThreadTable
-import com.hashcaller.app.view.ui.sms.individual.util.EXACT_NUMBER
 import com.hashcaller.app.view.ui.sms.individual.util.ON_COMPLETED
 import com.hashcaller.app.view.ui.sms.individual.util.ON_PROGRESS
 import com.hashcaller.app.view.ui.sms.list.SMSLiveData
@@ -60,7 +59,7 @@ class SMSViewModel(
 
     }
     fun addTomarkeditems(id: Long, position: Int, address: String){
-        markeditemsHelper.addTomarkeditems(id, position, address)
+//        markeditemsHelper.addTomarkeditems(id, position, address)
 
     }
     fun removeMarkeditemById(id: Long, position: Int, address: String){
@@ -162,10 +161,11 @@ class SMSViewModel(
 //                             contactAddress = thread.numFormated
 //                            repository?.markAsSpam(contactAddress, 1, "", "")
 
-                            blockListPatternRepository.insertPattern(
-                                    contactAddress,
-                                    EXACT_NUMBER
-                            )
+//                            blockListPatternRepository.insertPattern(
+//                                contactAddress,
+//                                EXACT_NUMBER,
+//                                name
+//                            )
                     blockListPatternRepository?.markAsSpam(contactAddress)
                  }
 

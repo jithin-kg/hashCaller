@@ -28,10 +28,11 @@ import com.hashcaller.app.databinding.ActivityIndividualCotactViewBinding
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.blocklist.BlockTypes
+import com.hashcaller.app.local.db.blocklist.BlockTypes.Companion.BLOCK_TYPE_FROM_CALL_LOG
 import com.hashcaller.app.utils.Constants
+import com.hashcaller.app.utils.constants.IntentKeys
 import com.hashcaller.app.utils.extensions.requestCallPhonePermission
 import com.hashcaller.app.utils.notifications.tokeDataStore
-import com.hashcaller.app.view.ui.MainActivity
 import com.hashcaller.app.view.ui.MyUndoListener
 import com.hashcaller.app.view.ui.blockConfig.GeneralBlockInjectorUtil
 import com.hashcaller.app.view.ui.blockConfig.GeneralblockViewmodel
@@ -41,7 +42,6 @@ import com.hashcaller.app.view.ui.contacts.individualContacts.ThumbnailImageData
 import com.hashcaller.app.view.ui.contacts.individualContacts.utils.IndividualContactInjectorUtil
 import com.hashcaller.app.view.ui.contacts.individualContacts.utils.IndividualcontactViewModel
 import com.hashcaller.app.view.ui.contacts.makeCall
-import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.toggleVerifiedBadge
 import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID
@@ -52,6 +52,7 @@ import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.getDecodedBytes
 import com.vmadalin.easypermissions.EasyPermissions
+import kotlinx.coroutines.delay
 
 
 class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
@@ -72,6 +73,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = SPAMMER_TYPE_SCAM
+    private var intentSource : Int = BLOCK_TYPE_FROM_CALL_LOG
 //    private lateinit var imgExpand:ImageView
     private lateinit var radioScam:RadioButton
     private lateinit var radioSales:RadioButton
@@ -84,6 +86,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var tvSpamfeedbackMsg : TextView
     private lateinit var tvblockedFeedback : TextView
     private var  popup: PopupMenu? = null
+    private var finalName = ""
     @SuppressLint("LongLogTag")
 //    private  var contactId: Long? = null
 
@@ -92,14 +95,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         binding = ActivityIndividualCotactViewBinding.inflate(layoutInflater)
         setDataStoreValues()
-        //todo if number not in contact dont show edit option/ instead show create contact option
         setContentView(binding.root)
         getIntentExtras()
         setupBottomSheet()
         initListeners()
         initViewmodel()
-//        setDetailsInview(phoneNum, name)
-
         viewModel.getContactsFromDb(phoneNum)
         getContactMutedInformation()
         setClearImage(photoURI)
@@ -122,7 +122,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             if(isNumberBlocked){
                 binding.btnBlockIndividualContact.beGone()
                 binding.btnUnblock.beVisible()
-                color = -1
+                color = TYPE_SPAM
                 setClearImage(photoURI)
 //                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
                 
@@ -130,7 +130,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.btnBlockIndividualContact.beVisible()
                 binding.btnUnblock.beGone()
 
-                if(prevColor != -1 ){
+                if(prevColor != TYPE_SPAM ){
                     color = prevColor
                 }else {
                     prevColor = getRandomColor()
@@ -171,7 +171,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.layoutSpamCountt.beGone()
             }
 
-            binding.tvFirstLetter.text = it.firstName[0].toString()
+//            binding.tvFirstLetter.text = it.firstName[0].toString()
             var nameOfContact = ""
             if(it.hUid.isNotEmpty() &&  (it.firstName.isNotEmpty() || it.lastName.isNotEmpty())){
                 nameOfContact += it.firstName
@@ -181,14 +181,19 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }else if(it.nameInLocalPhoneBook.isNotEmpty()){
                 nameOfContact = it.nameInLocalPhoneBook
             }else if(it.nameInPhoneBook.isNotEmpty()){
-                nameOfContact = it.nameInLocalPhoneBook
+                nameOfContact = it.nameInPhoneBook
             }else {
                 nameOfContact = it.phoneNumber
             }
             if(nameOfContact.isNotEmpty()){
                 binding.tvName.text = nameOfContact
+                finalName = nameOfContact
+                binding.tvNameSmall.text = nameOfContact
+                binding.tvFirstLetter.text = nameOfContact[0].toString()
             }
-            binding.tvName.text = name
+//            binding.tvName.text = nameOfContact
+
+            finalName = name
             binding.tvLocationValues.text = it.country + " " + it.location
             binding.tvLocationValues.text = it.spammCount.toString()
             if(it.firstName==phoneNum){
@@ -208,6 +213,8 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun getIntentExtras() {
         phoneNum = intent.getStringExtra(CONTACT_ID)?:""
+//        +918848233258 normal
+        Log.d(TAG, "getIntentExtras: $phoneNum")
          name = intent.getStringExtra("name")?:""
         if(name.isEmpty()){
             name = phoneNum
@@ -217,6 +224,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         color = intent.getIntExtra("color", 1)
         prevColor = color
         binding.tvNumberValue.text = phoneNum
+        intentSource = intent.getIntExtra(IntentKeys.INTENT_SOURCE,BLOCK_TYPE_FROM_CALL_LOG)
     }
 
     private fun initViewmodel() {
@@ -230,14 +238,14 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         )
 
         generalBlockViewmodel = ViewModelProvider(this, GeneralBlockInjectorUtil.provideViewModel(
-            this,
-            phoneNum
+            this
          )).get(GeneralblockViewmodel::class.java)
     }
     @SuppressLint("LongLogTag")
     private fun setClearImage(photoURI: String?) {
-        binding.tvName.text = name
-        binding.tvNameSmall.text = name
+//        binding.tvName.text = name
+//        finalName = name
+//        binding.tvNameSmall.text = name
 
 //        binding.txtViewNumber.text = phoneNum
 
@@ -255,8 +263,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                         binding.ivAvatar.setImageBitmap(getDecodedBytes(it.imageStr))
                         binding.tvFirstLetter.text = ""
                         binding.tvFirstLetter.beInvisible()
-
-
                     }
                     IMAGE_FOUND_FROM_DB_GOOGLE -> {
                         binding.ivAvatar.beVisible()
@@ -267,15 +273,19 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                     }
                     else->{
                         binding.tvFirstLetter.setRandomBackgroundCircle(color)
+
                         binding.ivAvatar.beInvisible()
                         if(name.isNotEmpty()){
-                            binding.tvFirstLetter.beVisible()
-                            binding.tvFirstLetter.text = name[0].toString()
+                            if(color == TYPE_SPAM){
+                                binding.tvFirstLetter.text = ""
+                            }else {
+                                binding.tvFirstLetter.beVisible()
+                            }
+
                         }
 
                     }
                 }
-
             })
 //        }
     }
@@ -289,7 +299,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         bottomSheetDialog.setContentView(viewSheet)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
         tvSpamfeedbackMsg = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
-        tvblockedFeedback = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
+        tvblockedFeedback = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvblocked_feedback) as TextView
 
 //        imgExpand = bottomSheetDialog.findViewById<ImageView>(R.id.imgExpand) as ImageView
         radioScam = bottomSheetDialog.findViewById<RadioButton>(R.id.radioScam) as RadioButton
@@ -382,9 +392,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                     showBottomSheetDialog()
                 }
 
-                else {
-                    reportSpamAndblock()
-                }
+//                else {
+//                    reportSpamAndblock()
+//                }
 
 
             }
@@ -432,20 +442,33 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             getRandomColor(),
             applicationContext
         )
+            if(finalName.isEmpty())
+                finalName = phoneNum
+            toast("You have unblocked  $finalName")
        
     }
 
+
+
+    /**
+     * called when user clicks block button in bottom sheet
+     */
     private fun blockThisAddress() {
         //todo, while saving spam count in chat threads the spam count is having large number, fix it
         generalBlockViewmodel.blockThisAddress(
             spammerType,
             phoneNum,
-            applicationContext
+            applicationContext,
+            intentSource,
+            finalName
         ).observe(this, Observer {
             when(it){
                 ON_COMPLETED -> {
                     bottomSheetDialog.hide()
                     bottomSheetDialog.dismiss()
+                    if(finalName.isEmpty())
+                        finalName = phoneNum
+                    tvblockedFeedback.text = "All Calls from $finalName will be blocked"
                     bottomSheetDialogfeedback.show()
                 }
             }
@@ -457,7 +480,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 R.id.radioScam -> {
                     radioGroupTwo?.clearCheck()
                     this.spammerType = SPAMMER_TYPE_SCAM
-
                 }
                 R.id.radioSales -> {
                     this.spammerType = SPAMMER_TYPE_SALES
@@ -476,44 +498,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         }
     }
 
-    private fun reportSpamAndblock() {
-        viewModel.reportSpam(
-            phoneNum,
-            this.spammerType,
-            this
-        ).observe(
-            this,
-            Observer {
-                when (it) {
-                    OPERATION_UNBLOCKED -> {
 
-                        bottomSheetDialog.hide()
-                        val sbar = Snackbar.make(
-                            binding.layoutIndividualContact,
-                            "You have unblocked $phoneNum",
-                            Snackbar.LENGTH_LONG
-                        )
-                        sbar.show()
-                    }
-                    ON_COMPLETED -> {
-                        bottomSheetDialog.hide()
-                        val sb = SpannableStringBuilder(phoneNum);
-                        val bss = StyleSpan(Typeface.BOLD); // Span to make text bold
-                        sb.setSpan(
-                            bss,
-                            0,
-                            phoneNum!!.length,
-                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
-                        ); // make first 4 characters Bold
-                       tvSpamfeedbackMsg.text = sb
-
-                        bottomSheetDialogfeedback.show()
-                        tvblockedFeedback.text  = "You blocked $phoneNum"
-                    }
-
-                }
-            })
-    }
 
     private fun showBottomSheetDialog() {
         bottomSheetDialog.show()
@@ -552,19 +537,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         startActivity(intent)
     }
 
-    private fun popupImage() {
-        var imgVCntctPop:ImageView?
-        val settingsDialog = Dialog(this)
-        settingsDialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        settingsDialog.setContentView(
-            layoutInflater.inflate(
-                R.layout.image_layout, null
-            )
-        )
-        imgVCntctPop = settingsDialog.findViewById<ImageView>(R.id. imgVCntctPop)
-        imgVCntctPop?.setImageURI(Uri.parse(photoURI))
-        settingsDialog.show()
-    }
+
 
 
 
@@ -582,7 +555,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                             )
                             sbar.setAction("Undo", MyUndoListener(this))
 //        sbar.anchorView = bottomNavigationView
-
                             sbar.show()
                         }
 
@@ -620,6 +592,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     companion object{
         private const val TAG = "__IndividualCotactViewActivity"
         var SPAM_THRESHOLD_VALUE = Constants.DEFAULT_SPAM_THRESHOLD
-
+        private const val TYPE_SPAM  = -1
     }
 }
