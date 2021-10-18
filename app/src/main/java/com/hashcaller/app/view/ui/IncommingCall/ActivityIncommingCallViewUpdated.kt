@@ -723,8 +723,11 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         super.onStop()
         //to prevent memory leak
         if (mMessageReceiver != null) {
-
-            unregisterReceiver(mMessageReceiver)
+            try{
+                unregisterReceiver(mMessageReceiver)
+            }catch (e:Exception){
+                Log.e(TAG, "onStop: $e")
+            }
 
         }
     }

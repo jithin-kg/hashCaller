@@ -83,7 +83,12 @@ class FloatingService: Service() {
      * Remove the foreground notification and stop the service.
      */
     private fun stopService() {
-        unregisterReceiver(callStateReceiver)
+        //important calling unregisterreciever on a non registerd receiver causes "Fatal Exception: java.lang.IllegalArgumentException"
+        try{
+            unregisterReceiver(callStateReceiver)
+        }catch (e:Exception){
+            Log.e(TAG, "stopService: $e", )
+        }
         stopForeground(true)
         stopSelf()
         window = null

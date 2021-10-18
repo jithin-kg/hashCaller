@@ -296,10 +296,13 @@ class UserInfoViewModel(
     }
 
     fun signupUserWithGoogle(account: GoogleSignInAccount):LiveData<Response<GenericResponse<SignupWithGoogleDto>>?> = liveData {
-        val firstName = account.givenName
-        val lastName = account.familyName
-        val email = account.email
-        val googlePhotoUrl  = account.photoUrl.toString()
+        val firstName = account.givenName?:""
+        val lastName = account.familyName?:""
+        val email = account.email?:""
+        var googlePhotoUrl  = ""
+        account.photoUrl?.let {
+            googlePhotoUrl = it.toString()
+        }
         val hashedNum =  userHashedNumRepository.getHasehedNumOfuser()?.hashedNumber?:""
         val profile = SignupWithGoogleDto(
             firstName= firstName,

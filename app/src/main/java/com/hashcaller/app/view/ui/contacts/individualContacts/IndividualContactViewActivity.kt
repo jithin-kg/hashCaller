@@ -134,7 +134,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.btnUnblock.beVisible()
                 color = TYPE_SPAM
                 setClearImage(photoURI)
-
                 setSpamTheme()
 //                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
                 
@@ -206,9 +205,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.tvisInContact.text = "This person is not in your contact"
             }
             if(it.spammCount > SPAM_THRESHOLD_VALUE){
+                setSpamTheme()
                 binding.layoutSpamCountt.beVisible()
                 binding.tvSpamCountValue.text = it.spammCount.toString()
             }else {
+                setNormalTheme()
                 binding.layoutSpamCountt.beGone()
             }
 
