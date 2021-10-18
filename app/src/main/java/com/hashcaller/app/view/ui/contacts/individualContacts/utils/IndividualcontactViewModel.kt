@@ -306,6 +306,7 @@ class IndividualcontactViewModel(
              contactForview.location = getStrinProp(infoInCprovider?.location, infoInDb?.city)
              contactForview.hUid = infoInDb?.hUid?:""
             contactForview.phoneNumber = phoneNum
+            contactForview.spammCount = infoInDb?.spamReportCount?: 0
 //            if(infoInCprovider?.firstName.isNullOrEmpty()){
 //                contactForview.isInfoFoundInServer = infoInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER
 //            }

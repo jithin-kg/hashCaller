@@ -36,6 +36,7 @@
         android:background="?android:selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_arrow_back_24"
         android:tag="title"
+        android:elevation="3dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -64,6 +65,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_more_vert" />
 
+    <ImageView
+        android:id="@+id/imgVSpamHead"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
+        android:elevation="1dp"
+        android:background="@color/spamText"
+        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
@@ -101,6 +113,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         />
+
     <TextView
         android:id="@+id/tvFirstLetter"
         android:layout_width="@dimen/individual_contact_avatar"
@@ -118,7 +131,8 @@
         app:layout_constraintEnd_toEndOf="@+id/ivAvatar"
         app:layout_constraintStart_toStartOf="@+id/ivAvatar"
         app:layout_constraintTop_toTopOf="@+id/ivAvatar"
-        app:layout_constraintWidth_percent=".28" />
+        app:layout_constraintWidth_percent=".28"
+        />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvName"
@@ -127,6 +141,7 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:tag="name"
+        android:elevation="3dp"
         tools:text="Test"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -157,6 +172,7 @@
         app:layout_constraintStart_toEndOf="@+id/imgBtnBack"
         android:layout_marginBottom="80dp"
         android:visibility="invisible"
+        android:elevation="1dp"
         >
         <TextView
             android:id="@+id/tvNameSmall"
@@ -165,9 +181,10 @@
             tools:text="name small"
             android:textStyle="bold"
             android:textSize="16sp"
+            android:elevation="3dp"
             android:gravity="start"
             android:maxLines="1"
-            android:textColor="@color/textColor"
+            android:textColor="@color/colorWhite"
              />
     </FrameLayout>
 
@@ -401,7 +418,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutSpamCount"
+                android:id="@+id/layoutLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

@@ -17,9 +17,11 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
+import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -54,6 +56,7 @@ import com.hashcaller.app.view.ui.extensions.startContactEditActivity
 import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.getDecodedBytes
+import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.coroutines.delay
 
@@ -97,6 +100,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         super.onCreate(savedInstanceState)
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         binding = ActivityIndividualCotactViewBinding.inflate(layoutInflater)
+//        setStatusBarColor(this, )
+//        setStatusBarColorRes(R.color.colorBackground)
+
+
         setDataStoreValues()
         setContentView(binding.root)
         getIntentExtras()
@@ -127,9 +134,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.btnUnblock.beVisible()
                 color = TYPE_SPAM
                 setClearImage(photoURI)
+
+                setSpamTheme()
 //                popup?.menu?.findItem(R.id.itemUnblockNumber)?.isVisible = true
                 
             } else {
+                setNormalTheme()
                 binding.btnBlockIndividualContact.beVisible()
                 binding.btnUnblock.beGone()
 
@@ -144,6 +154,35 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //                binding.btnBlockIndividualContact.beVisible()
             }
         })
+
+    }
+
+    private fun setNormalTheme() {
+        val window =getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary))
+        binding.imgVSpamHead.setBackgroundColor( ContextCompat.getColor(this, R.color.colorPrimary))
+    }
+
+    private fun setSpamTheme() {
+        val window =getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+        window.setStatusBarColor(ContextCompat.getColor(this,R.color.spamText))
+        binding.imgVSpamHead.setBackgroundColor( ContextCompat.getColor(this, R.color.spamText))
 
     }
 
@@ -162,7 +201,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun obseveContactForView() {
         viewModel.contactForViewLivedata.observe(this, Observer {
             if(it.isInInContacts){
-
                 binding.tvisInContact.text = "This person is in your contact"
             }else {
                 binding.tvisInContact.text = "This person is not in your contact"
@@ -192,7 +230,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.tvName.text = nameOfContact
                 finalName = nameOfContact
                 binding.tvNameSmall.text = nameOfContact
-                binding.tvFirstLetter.text = nameOfContact[0].toString()
+                if(nameOfContact == phoneNum){
+                    val firstLetter = formatPhoneNumber(nameOfContact)[0].toString()
+                    binding.tvFirstLetter.text = firstLetter
+                }
+//                binding.tvFirstLetter.text = nameOfContact[0].toString()
             }
 //            binding.tvName.text = nameOfContact
 
@@ -285,7 +327,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                             if(color == TYPE_SPAM){
                                 binding.tvFirstLetter.text = ""
                             }else {
-                                binding.tvFirstLetter.text = finalName[0].toString()
+                                if(finalName == phoneNum){
+                                    val firstLetter = formatPhoneNumber(finalName)[0].toString()
+                                    binding.tvFirstLetter.text = firstLetter
+                                }
+//                                binding.tvFirstLetter.text = finalName[0].toString()
                                 binding.tvFirstLetter.beVisible()
                             }
                         }

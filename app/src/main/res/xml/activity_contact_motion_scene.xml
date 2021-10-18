@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools">
+    >
 
     <Transition
         motion:constraintSetEnd="@+id/first_half"
@@ -105,13 +105,22 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:gravity="center"
+            android:elevation="3dp"
             motion:layout_constraintBottom_toTopOf="@+id/imgBtnBack"
-            android:layout_marginTop="8dp"
-            motion:layout_constraintTop_toTopOf="@+id/ivAvatar"
             android:visibility="invisible"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            motion:layout_editor_absoluteX="365dp" />
+            motion:layout_editor_absoluteX="365dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            />
+        <Constraint
+            android:id="@+id/imgVSpamHead"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:elevation="1dp"
+            android:src="@drawable/horizontal_line_large"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintBottom_toBottomOf="@+id/imgVdividerMain"
+            />
         <Constraint
             android:id="@+id/frameNameSmall"
             android:layout_width="0dp"
@@ -144,6 +153,17 @@
             motion:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="@dimen/margin_top_hair_cntct_ind"
             android:visibility="visible" />
+        <Constraint
+            android:id="@+id/tvNameSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:elevation="3dp"
+            android:gravity="start"
+            android:maxLines="1"
+            android:textColor="@color/colorWhite"
+            />
         <Constraint
             android:id="@+id/imgVdividerMain"
             motion:layout_constraintEnd_toEndOf="parent"

@@ -387,7 +387,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun initColors() {
         hashCallerViewModel.initColors()
-
     }
 
     private fun initHashCallerViewmodel() {

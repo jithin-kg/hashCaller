@@ -86,6 +86,9 @@
         <entry key="app/src/main/res/drawable/background_setting_up.xml" value="0.15104166666666666" />
         <entry key="app/src/main/res/drawable/background_setting_up_2.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/horizontal_line.xml" value="0.15104166666666666" />
+        <entry key="app/src/main/res/drawable/horizontal_line_large.xml" value="0.18489583333333334" />
+        <entry key="app/src/main/res/drawable/horizontal_line_large_spam.xml" value="0.18489583333333334" />
+        <entry key="app/src/main/res/drawable/horizontal_line_settings.xml" value="0.18489583333333334" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_white.xml" value="0.25052083333333336" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.25052083333333336" />
         <entry key="app/src/main/res/drawable/ic_baseline_block_24.xml" value="0.15104166666666666" />
