@@ -3,6 +3,9 @@ package com.hashcaller.app.view.ui.contacts.individualContacts
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
@@ -196,9 +199,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             finalName = name
             binding.tvLocationValues.text = it.country + " " + it.location
             binding.tvLocationValues.text = it.spammCount.toString()
-            if(it.firstName==phoneNum){
-                binding.layoutNumber.beGone()
-            }
+//            if(it.firstName==phoneNum){
+//                binding.layoutNumber.beGone()
+//            }
 
             if(it.hUid.isNotEmpty()){
                 binding.imgUserIconBg.beVisible()
@@ -208,6 +211,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.imgUserIconBg.beInvisible()
             }
             toggleVerifiedBadge(binding.imgVerifiedBadge, it.isVerifiedUser)
+            setClearImage(null)
         })
     }
 
@@ -223,7 +227,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         photoURI = intent.getStringExtra("photo")?:""
         color = intent.getIntExtra("color", 1)
         prevColor = color
-        binding.tvNumberValue.text = phoneNum
+        binding.tvNumberValue.post {
+            binding.tvNumberValue.text = phoneNum
+        }
         intentSource = intent.getIntExtra(IntentKeys.INTENT_SOURCE,BLOCK_TYPE_FROM_CALL_LOG)
     }
 
@@ -275,10 +281,11 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                         binding.tvFirstLetter.setRandomBackgroundCircle(color)
 
                         binding.ivAvatar.beInvisible()
-                        if(name.isNotEmpty()){
+                        if(finalName.isNotEmpty()){
                             if(color == TYPE_SPAM){
                                 binding.tvFirstLetter.text = ""
                             }else {
+                                binding.tvFirstLetter.text = finalName[0].toString()
                                 binding.tvFirstLetter.beVisible()
                             }
                         }
@@ -350,18 +357,32 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 //    }
 
     private fun initListeners() {
-        binding.switchIndividualContact.setOnClickListener(this)
-        binding.btnBlockIndividualContact.setOnClickListener(this)
-        binding.imgBtnBack.setOnClickListener(this)
-        binding.btnUnblock.setOnClickListener(this)
-        binding.imgBtnCallindividual.setOnClickListener(this)
-//        binding.imgBtnSMS.setOnClickListener(this)
-        binding.imgBtnMoreIndividualCntct.setOnClickListener(this)
-        radioSales.setOnClickListener(this)
-        radioScam.setOnClickListener(this)
-        radioBusiness.setOnClickListener(this)
-        radioPerson.setOnClickListener(this)
-        btnBlock.setOnClickListener(this)
+
+
+        with(binding){
+            switchIndividualContact.setOnClickListener(this@IndividualContactViewActivity)
+            btnBlockIndividualContact.setOnClickListener(this@IndividualContactViewActivity)
+            imgBtnBack.setOnClickListener(this@IndividualContactViewActivity)
+            btnUnblock.setOnClickListener(this@IndividualContactViewActivity)
+            imgBtnCallindividual.setOnClickListener(this@IndividualContactViewActivity)
+            imgBtnMoreIndividualCntct.setOnClickListener(this@IndividualContactViewActivity)
+            layoutNumber.setOnLongClickListener {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("label",phoneNum)
+                clipboard.setPrimaryClip(clip)
+                toast("Number copied to Clipboard")
+                return@setOnLongClickListener true
+            }
+
+
+        }
+        radioSales.setOnClickListener(this@IndividualContactViewActivity)
+        radioScam.setOnClickListener(this@IndividualContactViewActivity)
+        radioBusiness.setOnClickListener(this@IndividualContactViewActivity)
+        radioPerson.setOnClickListener(this@IndividualContactViewActivity)
+        btnBlock.setOnClickListener(this@IndividualContactViewActivity)
+
+
     }
 
     private fun setImage(photoUri: String?) {
@@ -424,6 +445,9 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
             R.id.btnUnblock -> {
                 unblockThisAddres()
+            }
+            R.id.layoutNumber -> {
+
             }
             else -> {
             this.radioButtonClickPerformed(v)

@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.util.Pair
 import android.view.LayoutInflater
@@ -34,9 +35,7 @@ import com.hashcaller.app.view.ui.MainActivityInjectorUtil
 import com.hashcaller.app.view.ui.auth.getinitialInfos.UserInfoViewModel
 import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
-import com.hashcaller.app.view.ui.contacts.utils.ContacInjectorUtil
-import com.hashcaller.app.view.ui.contacts.utils.ContactGlobalHelper
-import com.hashcaller.app.view.ui.contacts.utils.ContactsViewModel
+import com.hashcaller.app.view.ui.contacts.utils.*
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
@@ -184,11 +183,12 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
     }
     fun onContactItemClicked(binding: ContactListBinding, contactItem: Contact,activity: Activity? ){
         val intent = Intent(requireContext(), IndividualContactViewActivity::class.java )
-        intent.putExtra(com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID, contactItem.phoneNumber)
         intent.putExtra("name", contactItem.firstName )
 //        intent.putExtra("id", contactItem.id)
         intent.putExtra("photo", contactItem.photoURI)
         intent.putExtra("color", contactItem.drawable)
+        intent.putExtra(CONTACT_ADDRES, contactItem.phoneNumber)
+        intent.putExtra(com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID, contactItem.phoneNumber)
         intent.putExtra(IntentKeys.INTENT_SOURCE, BLOCK_TYPE_FROM_CONTACTS)
         val pairList = ArrayList<Pair<View, String>>()
 //        val p1 = android.util.Pair(imgViewCntct as View,"contactImageTransition")
@@ -277,18 +277,18 @@ class ContactsContainerFragment : Fragment(), View.OnClickListener, IDefaultFrag
 
             }
             R.id.fabBtn -> {
-                Log.d(TAG, "onClick: delete")
-                contactViewModel.delteContactsInformation()
+                requireContext().startFloatingService(TelephonyManager.EXTRA_STATE_RINGING)
+//                contactViewModel.delteContactsInformation()
 //                context?.startActivityIncommingCallViewUpdated(
 //                    "+9180861762224",
 //                    "Missed Call",
 //                    -1,
 //                    cntctForView
 //                )
-                lifecycleScope.launchWhenStarted {
-//                    delay(2000L)
-//                    throw RuntimeException("Test crash")
-                }
+//                lifecycleScope.launchWhenStarted {
+////                    delay(2000L)
+////                    throw RuntimeException("Test crash")
+//                }
             }
             R.id.imgBtnSearch -> {
                 startSearchActivity()

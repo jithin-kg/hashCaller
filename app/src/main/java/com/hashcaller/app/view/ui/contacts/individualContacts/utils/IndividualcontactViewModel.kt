@@ -305,14 +305,17 @@ class IndividualcontactViewModel(
 //             contactForview.lineType = getStrinProp(infoInCprovider?.lineType, infoInDb?.lineType)
              contactForview.location = getStrinProp(infoInCprovider?.location, infoInDb?.city)
              contactForview.hUid = infoInDb?.hUid?:""
-            if(infoInCprovider?.firstName.isNullOrEmpty()){
-                contactForview.isInfoFoundInServer = infoInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER
-            }else {
+            contactForview.phoneNumber = phoneNum
+//            if(infoInCprovider?.firstName.isNullOrEmpty()){
+//                contactForview.isInfoFoundInServer = infoInDb?.isUserInfoFoundInServer?: INFO_NOT_FOUND_IN_SERVER
+//            }
+
+            if(contactForview.nameInLocalPhoneBook.isNotEmpty()) {
                 contactForview.isInInContacts = true
             }
-            if(contactForview.firstName.isNullOrEmpty()){
-                contactForview.firstName = formatPhoneNumber( phoneNum)
-            }
+//            if(contactForview.firstName.isNullOrEmpty()){
+//                contactForview.firstName = formatPhoneNumber( phoneNum)
+//            }
             contactForview.isVerifiedUser = infoInDb?.isVerifiedUser?:false
             contactForview.spammCount = infoInDb?.spamReportCount?:0
             contactForViewLivedata.value  = contactForview

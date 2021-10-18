@@ -240,9 +240,9 @@ class IndividualContactRepository(
 //                    Log.d(TAG, "getConactInfoForNumber: data exist")
                    val name = cursor2.getString(cursor2.getColumnIndexOrThrow("display_name"))
                    val contactId = cursor2.getLong(cursor2.getColumnIndex("contact_id"))
-                   val normalizedNumber = cursor2.getString(cursor2.getColumnIndex("normalized_number"))
+                   val normalizedNumber:String? = cursor2.getString(cursor2.getColumnIndex("normalized_number"))
 //                    contact = Contact(id=contactId, name, normalizedNumber, null)
-                    contact = Contact(id=contactId,nameInLocalPhoneBook = name, phoneNumber = normalizedNumber)
+                    contact = Contact(id=contactId,nameInLocalPhoneBook = name, phoneNumber = normalizedNumber?:phoneNumber)
                }
 
 

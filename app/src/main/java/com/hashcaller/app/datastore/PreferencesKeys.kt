@@ -17,5 +17,6 @@ class PreferencesKeys {
         const val RCV_NOT_BLK_SMS ="rcvntoForBlkSMS"
 
         const val SPAM_THRESHOLD = "h.spamThreshold_value"
+        const val KEY_WINDOW_POSITION = "h.window.x"
     }
 }

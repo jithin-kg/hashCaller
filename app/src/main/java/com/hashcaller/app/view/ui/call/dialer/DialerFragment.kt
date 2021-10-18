@@ -33,6 +33,7 @@ import com.hashcaller.app.view.ui.call.dialer.util.CustomLinearLayoutManager
 import com.hashcaller.app.view.ui.contacts.individualContacts.IndividualContactViewActivity
 import com.hashcaller.app.view.ui.contacts.makeCall
 import com.hashcaller.app.view.ui.contacts.utils.CONTACT_ID
+import com.hashcaller.app.view.ui.contacts.utils.isNumericOnlyString
 import com.hashcaller.app.view.ui.sms.individual.util.TYPE_MAKE_CALL
 import com.hashcaller.app.view.utils.IDefaultFragmentSelection
 import com.hashcaller.app.view.utils.TopSpacingItemDecoration
@@ -54,7 +55,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelection,
-    CallLogAdapter.ViewHandlerHelper {
+    CallLogAdapter.ViewHandlerHelper, View.OnLongClickListener {
     private var _binding: FragmentDialerBinding ? = null
     private val binding get() = _binding!!
     private var isDflt = false
@@ -181,7 +182,6 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
             }else{
                 bottomSheetDialog.imgBtnBackspace.isEnabled = false
             }
-            //                editTextPhoneNumber.setSelection(newPos);
             bottomSheetDialog.editTextTextDigits.setText(phoneNumber)
             bottomSheetDialog.editTextTextDigits.setSelection(subStringLen + 1)
         })
@@ -268,6 +268,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         binding.fabShoDialPad2.setOnClickListener(this)
 
         bottomSheetDialog.layoutNum0.setOnClickListener(this)
+        bottomSheetDialog.layoutNum0.setOnLongClickListener(this)
         bottomSheetDialog.layoutNum1.setOnClickListener(this)
         bottomSheetDialog.layoutNum2.setOnClickListener(this)
         bottomSheetDialog.layoutNum3.setOnClickListener(this)
@@ -398,6 +399,27 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
         viewmodel.getPhoneNumber()?.value = trimmedString
     }
 
+    override fun onLongClick(v: View?): Boolean {
+        var str = ""
+        when(v?.id){
+            R.id.layoutNum0 -> {
+                getPhoneNumFromViewModel()?.let {
+                    keypadClicked("+")
+//                    if(!isNumericOnlyString(it)){
+//                        keypadClicked("+")
+////                        str = it
+////                        str+= "+"
+////                        viewmodel?.getPhoneNumber()?.value = str
+//                    }
+                
+                }
+                
+            }
+        }
+
+        return true
+    }
+    
     private fun keypadClicked(s: String) {
         val num: String? = getPhoneNumFromViewModel()
         val currentNum: String
@@ -442,5 +464,7 @@ class DialerFragment : Fragment(), View.OnClickListener, IDefaultFragmentSelecti
     override fun isViewExpanded(id: Long): Boolean {
         return false
     }
+
+    
 
 }

@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityIncommingCallViewUpdatedBinding
 import com.hashcaller.app.datastore.DataStoreRepository
@@ -124,6 +125,8 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
     private var radioGroupOne: RadioGroup? = null
     private var radioGroupTwo: RadioGroup? = null
     private var finalName = ""
+    private lateinit var libPhoneCodeHelper : LibPhoneCodeHelper
+    private lateinit var countryCodeIso : CountrycodeHelper
 
 
     //    private var country = ""
@@ -134,7 +137,8 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
         isVisible = true
         callHandledState = intent.getStringExtra(CALL_HANDLED_STATE) ?: ""
         registerForBroadCastReceiver()
-
+        libPhoneCodeHelper = LibPhoneCodeHelper(PhoneNumberUtil.getInstance())
+        countryCodeIso = CountrycodeHelper(this)
         binding = ActivityIncommingCallViewUpdatedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -212,6 +216,9 @@ class ActivityIncommingCallViewUpdated : AppCompatActivity(), View.OnClickListen
 
         setViewContent(contact)
 
+        lifecycleScope.launchWhenStarted {
+           binding.txtVLocaltion.text =  libPhoneCodeHelper.getCountryName(phoneNumber,countryCodeIso.getCountryISO() )
+        }
 
 
 //        statusCode = intent.getIntExtra(STATUS_CODE, STATUS_SEARHING_IN_PROGRESS)

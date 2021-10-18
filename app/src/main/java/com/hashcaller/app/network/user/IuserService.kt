@@ -16,10 +16,10 @@ import retrofit2.http.*
 interface IuserService {
     companion object {
 
-//        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
+        public const val BASE_URL: String = "https://iexcrfljeazsamekapi.hashcaller.com/"
 //        public const val BASE_URL: String = "https://apiv1.hashcaller.com/"
 
-        public const val BASE_URL: String = "http://192.168.43.34:8080/"
+//        public const val BASE_URL: String = "http://192.168.43.34:8080/"
 //          public const val BASE_URL: String = "http://192.168.225.34:8080/"
 //         const val BASE_URL: String = "https:/    /real-caller-api-2-jzlji.ondigitalocean.app/"  //-> worked
 //        public const val BASE_URL: String = "https://real-caller-api-2-jzlji.ondigitalocean.app/" worker with DO
@@ -107,3 +107,15 @@ interface IuserService {
         token: String,
     ): Response<BasicResponseItem<String>>
 }
+
+//.env.ts
+//export const ENV = {
+//    PROJECT_ID: 'hashcaller-1b9c7',
+//    API_KEY: 'AIzaSyBUBCT0pyy2tNs7yjWMIG3yZ0tusHgI63U',
+//    AUTH_DOMAIN: 'hashcaller-1b9c7.firebaseapp.com',
+//    DATABASE_URL: '',
+//    STORAGE_BUCKET: 'hashcaller-1b9c7.appspot.com',
+//    MESSAGING_SENDER_ID: '474062402455',
+//    APP_ID: '1:474062402455:web:6663ff5bfc79ba433a4ad2',
+//    MEASUREMENT_ID: "G-T5NZXRV0BN"
+//};

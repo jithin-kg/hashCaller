@@ -126,8 +126,8 @@ class FloatingService: Service() {
 
                 when(command){
                     STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY -> {
+                        Log.d(TAG, "onReceive: STOP_FLOATING_SERVICE_FROM_INCOMMING_ACTVTY")
                         onCallEnded()
-
                         window?.close()
                         WindowObj.clearReference()
                         window = null
@@ -135,8 +135,9 @@ class FloatingService: Service() {
                         stopService()
                     }
                     STOP_FLOATIN_SERVICE_FROM_RECEIVER -> {
-                        onCallEnded()
+                        Log.d(TAG, "onReceive: STOP_FLOATIN_SERVICE_FROM_RECEIVER")
 
+                        onCallEnded()
                         window?.close()
                         WindowObj.clearReference()
                         window = null

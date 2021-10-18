@@ -16,7 +16,7 @@ import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.view.ui.IncommingCall.LocalDbSearchRepository
 import com.hashcaller.app.view.ui.call.db.CallersInfoFromServer
 import com.hashcaller.app.view.utils.LibPhoneCodeHelper
-import com.hashcaller.app.view.utils.hashPhoneNum
+//import com.hashcaller.app.view.utils.hashPhoneNum
 import com.hashcaller.app.work.formatPhoneNumber
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -76,7 +76,7 @@ class SearchViewModel(
 //                    mt.value  = cntctsFromDb?.value
 //                 Log.d(TAG, "search: ${cntctsFromDb?.value?.size}")
                  Log.d(TAG, "search: hash is $phoneNumber")
-                val hashedPhone = hashPhoneNum(phoneNumber)
+//                val hashedPhone = hashPhoneNum(phoneNumber)
 //                 val encPhone = encryptPhoneNum("hi", key)
 //                 Log.d(TAG, "search: enc hi is $encPhone")
 //                 val encPhone = encryptPhoneNum(hashedPhone, key)

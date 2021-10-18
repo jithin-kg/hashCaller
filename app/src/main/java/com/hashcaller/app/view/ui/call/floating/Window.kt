@@ -14,15 +14,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.hashcaller.app.R
+import com.hashcaller.app.datastore.DataStoreRepository
+import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.network.search.model.CntctitemForView
 import com.hashcaller.app.stubs.Contact
 import com.hashcaller.app.utils.Constants
 import com.hashcaller.app.utils.Constants.Companion.SIM_ONE
 import com.hashcaller.app.utils.Constants.Companion.SIM_TWO
 import com.hashcaller.app.utils.constants.IntentKeys
+import com.hashcaller.app.utils.notifications.tokeDataStore
 import com.hashcaller.app.view.ui.contacts.toggleUserBadge
 import com.hashcaller.app.view.ui.contacts.utils.loadImage
-import com.hashcaller.app.view.ui.extensions.setRandomBackgroundCircle
 import com.hashcaller.app.view.ui.sms.individual.util.beGone
 import com.hashcaller.app.view.ui.sms.individual.util.beInvisible
 import com.hashcaller.app.view.ui.sms.individual.util.beVisible
@@ -55,6 +57,7 @@ class Window(
 //    private val imgVerifiedBadge: ImageView = rootView.findViewById(R.id.imgVerifiedBadge)
     private val imgVSimOne: ImageView = rootView.findViewById(R.id.imgVSimOne)
     private val imgVSimTwo: ImageView = rootView.findViewById(R.id.imgVSimTwo)
+    private val dataStoreRepo = DataStoreRepository(context.tokeDataStore)
     private val windowParams = WindowManager.LayoutParams(
         0,
         0,
@@ -111,7 +114,12 @@ class Window(
         params.x = 0
 //        params.horizontalMargin = 8f
 
-        params.y = (dm.heightPixels - params.height) / 2
+        params.y =  (dm.heightPixels - params.height) / 2
+        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        supervisorScope.launch {
+
+            params.y = dataStoreRepo.getInt(PreferencesKeys.KEY_WINDOW_POSITION)?:(dm.heightPixels - params.height) / 2
+        }
     }
 
 
@@ -136,12 +144,18 @@ class Window(
     }
     private fun setPosition(x: Int, y: Int) {
 //        windowParams.x = x
+        //todo , save y and show the window in that y when window reopened again
+
+
         windowParams.y = y
         update()
         if(rootView.findViewById<View>(R.id.layoutDragIndicator).visibility == View.VISIBLE){
             rootView.findViewById<View>(R.id.layoutDragIndicator).beGone()
         }
-
+        val supervisorScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        supervisorScope.launch {
+            dataStoreRepo.setInt(y, PreferencesKeys.KEY_WINDOW_POSITION)
+        }
     }
     private fun update() {
         try {
@@ -158,12 +172,7 @@ class Window(
 
     }
 
-    private  suspend fun setCountryCode() = withContext(Dispatchers.IO)  {
-        if(phoneNumber.isNotEmpty()){
-            val country = countryCodeHelper?.getCountryName(phoneNumber,countryCodeIso)
-            setcountry(country)
-        }
-    }
+
 
     private suspend fun setcountry(country: String?) = withContext(Dispatchers.Main) {
         Log.d(TAG, "setCountryCode: $country")
@@ -366,8 +375,15 @@ class Window(
 
     suspend fun setPhoneNum(num:String) = withContext(Dispatchers.IO) {
         phoneNumber = num
+        tvName.text = num
         setCountryCode()
 
+    }
+    private  suspend fun setCountryCode() = withContext(Dispatchers.IO)  {
+        if(phoneNumber.isNotEmpty()){
+            val country = countryCodeHelper?.getCountryName(phoneNumber,countryCodeIso)
+            setcountry(country)
+        }
     }
 
     fun setwindowSpamColor() {

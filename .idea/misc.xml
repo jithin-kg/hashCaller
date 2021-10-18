@@ -94,13 +94,16 @@
         <entry key="app/src/main/res/drawable/ic_circle_logo_hashcaller.xml" value="0.20260416666666667" />
         <entry key="app/src/main/res/drawable/ic_circle_logo_hashcaller_2.xml" value="0.14635416666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.14635416666666667" />
+        <entry key="app/src/main/res/drawable/ic_outline_info_24.xml" value="0.25052083333333336" />
+        <entry key="app/src/main/res/drawable/ic_outline_person_outline_24_3.xml" value="0.21510416666666668" />
+        <entry key="app/src/main/res/drawable/ic_person_outline.xml" value="0.21510416666666668" />
         <entry key="app/src/main/res/drawable/ic_phone_fill.xml" value="0.14635416666666667" />
         <entry key="app/src/main/res/drawable/tab_selector.xml" value="0.196875" />
         <entry key="app/src/main/res/layout/activity_block_manage.xml" value="0.11398176291793313" />
         <entry key="app/src/main/res/layout/activity_crete_block_list_pattern.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_incomming_call_view_updated.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_individual_call_log.xml" value="0.18342391304347827" />
-        <entry key="app/src/main/res/layout/activity_individual_cotact_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_individual_cotact_view.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.10833333333333334" />
         <entry key="app/src/main/res/layout/activity_sample.xml" value="0.12135416666666667" />
         <entry key="app/src/main/res/layout/activity_search_main.xml" value="0.18342391304347827" />
@@ -115,6 +118,7 @@
         <entry key="app/src/main/res/layout/call_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/call_list_expanded.xml" value="0.25" />
         <entry key="app/src/main/res/layout/call_list_non_expanded.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/contact_list.xml" value="0.17239583333333333" />
         <entry key="app/src/main/res/layout/custom_blocked_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/drawer_header.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment__spam_call.xml" value="0.1" />
@@ -126,7 +130,7 @@
         <entry key="app/src/main/res/layout/item_overlay_permission.xml" value="0.16983695652173914" />
         <entry key="app/src/main/res/layout/overlay_permission_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/popup_splash.xml" value="0.1677472881339881" />
-        <entry key="app/src/main/res/layout/sample_dialog.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/sample_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/spam_calls_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/window.xml" value="0.5" />
         <entry key="app/src/main/res/menu/drawer_main_menu.xml" value="0.1125" />

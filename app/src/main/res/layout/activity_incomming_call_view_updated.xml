@@ -165,7 +165,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.79"
-                android:text="Location"
+                tools:text="Location"
                 android:textColor="@color/colorWhite"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@+id/tvPhoneNumIncomming"

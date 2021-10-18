@@ -646,7 +646,10 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
     override fun onPause() {
         super.onPause()
 //        clearMarkeditems()
-        markViewmodel.clearMarkedItems()
+        if(this::markViewmodel.isInitialized){
+            markViewmodel.clearMarkedItems()
+        }
+
     }
 
     private fun blockMarkedCaller() {

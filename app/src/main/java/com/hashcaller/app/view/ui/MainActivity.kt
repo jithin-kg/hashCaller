@@ -243,6 +243,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      */
     private fun checkForUpdate() {
 //        lifecycleScope.launchWhenCreated {
+
         updateManagerViewmodel.checkForUpdate().observe(this, Observer {
             Log.d(TAG, "checkForUpdate: $it")
             when(it){
