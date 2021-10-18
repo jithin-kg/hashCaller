@@ -87,7 +87,7 @@ import kotlinx.coroutines.withContext
  * Use the [CallFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnClickListener , IDefaultFragmentSelection,
+class CallFragment() : Fragment(), View.OnClickListener , IDefaultFragmentSelection,
     CallLogAdapter.ViewHandlerHelper, ConfirmationClickListener,
     MyUndoListener.SnackBarListner,android.widget.PopupMenu.OnMenuItemClickListener,
     PopupMenu.OnMenuItemClickListener, SMSListAdapter.NetworkHandler {
@@ -135,7 +135,6 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
        tokenHelper =  TokenHelper(FirebaseAuth.getInstance().currentUser)
     registerForContextMenu(binding.rcrViewCallHistoryLogs) //in oncreatView
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -271,10 +270,16 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
             when(it.size){
                 0 ->{
 //                    showSearchView()
-                    toolbarCb.showSearchView()
+//                    (parentFragment as CallContainerFragment?)!!.domS()
+//                    parentFragment?.
+//                    toolbarCb.showSearchView()
+                    (parentFragment as CallContainerFragment?)?.showSearchView()
+
                 }
                 else ->{
-                   toolbarCb.showBlockBtnInToolbar(it.size)
+
+//                   toolbarCb.showBlockBtnInToolbar(it.size)
+                    (parentFragment as CallContainerFragment?)?.showBlockBtnInToolbar(it.size)
                 }
 
             }
@@ -553,7 +558,8 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
     private fun requestRequiredPermissions() {
         val request = PermissionRequest.Builder(this.context)
             .code(REQUEST_CODE_CALL_LOG)
-            .perms(arrayOf(READ_CALL_LOG,
+            .perms(arrayOf(
+                READ_CALL_LOG,
             ))
             .rationale("HashCaller needs access to call logs to identify unknown callers in call log.")
             .positiveButtonText("Continue")
@@ -669,7 +675,8 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
                                 bottomSheetDialog.hide()
                                 bottomSheetDialog.dismiss()
                                 bottomSheetDialogfeedback.show()
-                                toolbarCb.showSearchView()
+//                                toolbarCb.showSearchView()
+                                (parentFragment as CallContainerFragment?)?.showSearchView()
                             }
                         }
                     })
@@ -1029,7 +1036,8 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
                     markViewmodel.clearMarkedItems()
                     markViewmodel.clearMarkedItemPositions()
 
-                    toolbarCb.showSearchView()
+//                    toolbarCb.showSearchView()
+                    (parentFragment as CallContainerFragment?)?.showSearchView()
                 }
 
         }
@@ -1063,5 +1071,7 @@ class CallFragment(private val toolbarCb: IMarkingHelper) : Fragment(), View.OnC
     fun showBottumSheet() {
         bottomSheetDialog.show()
     }
+
+
 
 }

@@ -45,7 +45,7 @@ import kotlinx.coroutines.delay
  * Use the [CallContainerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CallContainerFragment : Fragment(),IDefaultFragmentSelection, IMarkingHelper,
+class CallContainerFragment : Fragment(),IDefaultFragmentSelection,
     View.OnClickListener {
 
     private  lateinit var binding: CallContainerFragmentBinding
@@ -136,7 +136,7 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection, IMarkingHelp
     }
     private fun setupViewPager(viewPager: ViewPager) {
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
-        viewPagerAdapter.addFragment(CallFragment(this), "Calls")
+        viewPagerAdapter.addFragment(CallFragment(), "Calls")
         viewPagerAdapter.addFragment(SpamCallFragment(), "Spam calls")
 //        viewPagerAdapter.addFragment(ContactsIdentifiedFragment(), "Identified")
         viewPager.adapter = viewPagerAdapter
@@ -229,7 +229,7 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection, IMarkingHelp
         return markhelperViewmodel.getMakedItemsSize()
     }
 
-    override fun showBlockBtnInToolbar(count: Int) {
+     fun showBlockBtnInToolbar(count: Int) {
         updateSelectedItemCount(count)
         binding.imgBtnCallSearch.beInvisible()
         binding.imgBtnCallTbrBlock.beVisible()
@@ -238,7 +238,7 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection, IMarkingHelp
         binding.imgBtnHamBrgerCalls.beInvisible()
     }
 
-    override fun showSearchView() {
+     fun showSearchView() {
         binding.imgBtnCallTbrBlock.beInvisible()
         binding. imgBtnCallTbrMuteCaller.beInvisible()
         binding.tvCallSelectedCount.beInvisible()
@@ -264,6 +264,10 @@ class CallContainerFragment : Fragment(),IDefaultFragmentSelection, IMarkingHelp
             }
 
         }
+    }
+
+    fun  domS(){
+
     }
 
 

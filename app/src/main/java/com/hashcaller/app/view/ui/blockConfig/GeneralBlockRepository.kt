@@ -33,7 +33,7 @@ class GeneralBlockRepository(
     suspend fun markAsNotSpamInCalls(contactAddress: String, color:Int) = withContext(Dispatchers.IO) {
         val formatedAdders = libPhoneCodeHelper.getES164Formatednumber(formatPhoneNumber(contactAddress), countryISO)
         Log.d(TAG, "markAsNotSpamInCalls: ")
-        callLogDAO?.removeFromBlockList(formatedAdders, color = color)
+        callLogDAO?.removeFromBlockList(formatedAddres = formatedAdders, color = color)
     }
 
 
