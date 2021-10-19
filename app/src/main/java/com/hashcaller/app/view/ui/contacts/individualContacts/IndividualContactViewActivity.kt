@@ -30,6 +30,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.hashcaller.app.R
 import com.hashcaller.app.databinding.ActivityIndividualCotactViewBinding
+import com.hashcaller.app.databinding.BottomSheetBlockBinding
+import com.hashcaller.app.databinding.BottomSheetSuggestBinding
 import com.hashcaller.app.datastore.DataStoreRepository
 import com.hashcaller.app.datastore.PreferencesKeys
 import com.hashcaller.app.local.db.blocklist.BlockTypes
@@ -56,6 +58,7 @@ import com.hashcaller.app.view.ui.extensions.startContactEditActivity
 import com.hashcaller.app.view.ui.sms.individual.IndividualSMSActivity
 import com.hashcaller.app.view.ui.sms.individual.util.*
 import com.hashcaller.app.view.utils.getDecodedBytes
+import com.hashcaller.app.view.utils.scaleOutAnim
 import com.hashcaller.app.work.formatPhoneNumber
 import com.vmadalin.easypermissions.EasyPermissions
 import kotlinx.coroutines.delay
@@ -77,6 +80,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private var isBlocked = false
     private lateinit var bottomSheetDialogfeedback: BottomSheetDialog
     private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var bottmSheetSuggest: BottomSheetDialog
     private  var selectedRadioButton: RadioButton? = null
     private  var spammerType:Int = SPAMMER_TYPE_SCAM
     private var intentSource : Int = BLOCK_TYPE_FROM_CALL_LOG
@@ -93,6 +97,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var tvblockedFeedback : TextView
     private var  popup: PopupMenu? = null
     private var finalName = ""
+    private lateinit var bindingSuggest : BottomSheetSuggestBinding
     @SuppressLint("LongLogTag")
 //    private  var contactId: Long? = null
 
@@ -157,17 +162,14 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun setNormalTheme() {
-        val window =getWindow();
-
+        val window = window;
 // clear FLAG_TRANSLUCENT_STATUS flag:
 //        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
 // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
 // finally change the color
-        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary))
-        binding.imgVSpamHead.setBackgroundColor( ContextCompat.getColor(this, R.color.colorPrimary))
+        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorBackgroundAppBar))
+        binding.imgVSpamHead.setBackgroundColor( ContextCompat.getColor(this, R.color.colorBackgroundAppBar))
     }
 
     private fun setSpamTheme() {
@@ -231,11 +233,8 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 binding.tvName.text = nameOfContact
                 finalName = nameOfContact
                 binding.tvNameSmall.text = nameOfContact
-                if(nameOfContact == phoneNum){
-                    val firstLetter = formatPhoneNumber(nameOfContact)[0].toString()
-                    binding.tvFirstLetter.text = firstLetter
-                }
-//                binding.tvFirstLetter.text = nameOfContact[0].toString()
+                setFirstLetter(nameOfContact)
+
             }
 //            binding.tvName.text = nameOfContact
 
@@ -255,7 +254,44 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
             toggleVerifiedBadge(binding.imgVerifiedBadge, it.isVerifiedUser)
             setClearImage(null)
+
+            hideLastSmallDivider()
         })
+    }
+
+    private fun hideLastSmallDivider() {
+        var visibleDividers:MutableList<View> = mutableListOf()
+        with(binding){
+            if(imgVDivider1.visibility == View.VISIBLE)
+                visibleDividers.add(imgVDivider1)
+            if(imgVDivider2.visibility == View.VISIBLE)
+                visibleDividers.add(imgVDivider2)
+            if(imgVDivider3.visibility == View.VISIBLE)
+                visibleDividers.add(imgVDivider3)
+            if(imgVDivider4.visibility == View.VISIBLE)
+                visibleDividers.add(imgVDivider4)
+            if(imgVDivider5.visibility == View.VISIBLE)
+                visibleDividers.add(imgVDivider5)
+
+         if(visibleDividers.isNotEmpty()){
+             visibleDividers[visibleDividers.size - 1].beInvisible()
+         }
+        }
+
+
+
+//        val listDivider =
+    }
+
+    private fun setFirstLetter(nameOfContact: String) {
+        var firstLetter = ""
+        if(nameOfContact == phoneNum){
+             firstLetter = formatPhoneNumber(nameOfContact)[0].toString()
+
+        }else {
+            firstLetter = nameOfContact[0].toString()
+        }
+        binding.tvFirstLetter.text = firstLetter
     }
 
     private fun getIntentExtras() {
@@ -322,17 +358,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                     }
                     else->{
                         binding.tvFirstLetter.setRandomBackgroundCircle(color)
-
                         binding.ivAvatar.beInvisible()
                         if(finalName.isNotEmpty()){
                             if(color == TYPE_SPAM){
                                 binding.tvFirstLetter.text = ""
                             }else {
-                                if(finalName == phoneNum){
-                                    val firstLetter = formatPhoneNumber(finalName)[0].toString()
-                                    binding.tvFirstLetter.text = firstLetter
-                                }
-//                                binding.tvFirstLetter.text = finalName[0].toString()
+                                setFirstLetter(finalName)
                                 binding.tvFirstLetter.beVisible()
                             }
                         }
@@ -346,10 +377,13 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun setupBottomSheet() {
         bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialogfeedback = BottomSheetDialog(this)
-        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+        val viewSheet = BottomSheetBlockBinding.inflate(layoutInflater)
+//        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+//        val viewSheet = layoutInflater.inflate(R.layout.bottom_sheet_block, null)
+
         val viewSheetFeedback = layoutInflater.inflate(R.layout.bottom_sheet_block_feedback, null)
 
-        bottomSheetDialog.setContentView(viewSheet)
+        bottomSheetDialog.setContentView(viewSheet.root)
         bottomSheetDialogfeedback.setContentView(viewSheetFeedback)
         tvSpamfeedbackMsg = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvSpamfeedbackMsg) as TextView
         tvblockedFeedback = bottomSheetDialogfeedback.findViewById<TextView>(R.id.tvblocked_feedback) as TextView
@@ -365,6 +399,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
         btnBlock = bottomSheetDialog.findViewById<Button>(R.id.btnBlock) as Button
         selectedRadioButton = radioScam
+
+        //bottom sheet suggest
+        bindingSuggest = BottomSheetSuggestBinding.inflate(layoutInflater)
+        bottmSheetSuggest = BottomSheetDialog(this)
+        bottmSheetSuggest.setContentView(bindingSuggest.root)
+
 //        imgExpand.setOnClickListener(this)
 
 
@@ -420,6 +460,17 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 toast("Number copied to Clipboard")
                 return@setOnLongClickListener true
             }
+            thumbsUpButton.setOnClickListener {
+                it.scaleOutAnim(600)
+            }
+            thumbsDownButton.setOnClickListener {
+                it.scaleOutAnim(600)
+                lifecycleScope.launchWhenStarted {
+                    delay(600)
+                    bottmSheetSuggest.show()
+                }
+
+            }
 
 
         }
@@ -428,6 +479,7 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
         radioBusiness.setOnClickListener(this@IndividualContactViewActivity)
         radioPerson.setOnClickListener(this@IndividualContactViewActivity)
         btnBlock.setOnClickListener(this@IndividualContactViewActivity)
+
 
 
     }

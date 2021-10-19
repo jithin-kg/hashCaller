@@ -32,13 +32,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
         android:background="?android:selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_arrow_back_24"
         android:tag="title"
         android:elevation="3dp"
+        android:padding="@dimen/margin_padding_size_medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        />
+    <ImageButton
+        android:id="@+id/imgBtnEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_edit_18_white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        android:elevation="3dp"
+        android:padding="@dimen/margin_padding_size_medium"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginEnd="@dimen/margin_padding_size_medium"
         />
     <ImageView
         android:id="@+id/imgVdividerMain"
@@ -81,7 +95,7 @@
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/individual_contact_avatar"
         android:layout_height="@dimen/individual_contact_avatar"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/margin_padding_size_xxxlarge"
         android:elevation="4dp"
         android:src="@drawable/contact_circular_background"
         android:tag="avatar"
@@ -234,8 +248,11 @@
                     android:layout_marginStart="@dimen/margin_start_info_individual_contact"
                     android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
                     android:background="@color/colorBackground"
-                    android:padding="20dp"
+                    android:gravity="start"
+                    android:paddingTop="@dimen/margin_padding_size_medium"
+                    android:paddingBottom="@dimen/margin_padding_size_medium"
                     android:text="number"
+                    android:paddingStart="@dimen/margin_padding_size_small"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_list_item"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -272,10 +289,13 @@
                     android:id="@+id/tvisInContact"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_start_info_individual_contact"
+                    android:layout_marginStart="@dimen/margin_padding_size_small"
                     android:layout_marginEnd="@dimen/margin_end_individual_contact_value"
+                    android:gravity="start"
+                    android:paddingStart="@dimen/margin_padding_size_small"
                     android:background="@color/colorBackground"
-                    android:padding="20dp"
+                    android:paddingTop="@dimen/margin_padding_size_medium"
+                    android:paddingBottom="@dimen/margin_padding_size_medium"
                     android:text="@string/this_persons_is_in_your_contact"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_list_item"
@@ -286,7 +306,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
             <ImageView
-                android:id="@+id/dividerCntct"
+                android:id="@+id/imgVDivider2"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_with_settings"
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
@@ -317,6 +337,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:text="Bio"
+                    android:paddingStart="@dimen/margin_padding_size_small"
                     android:alpha="0.60"
                     android:layout_marginTop="@dimen/margin_padding_size_small"
                     android:textColor="@color/textColor"
@@ -336,6 +357,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="@dimen/margin_padding_size_small"
                     android:paddingTop="@dimen/margin_padding_size_small"
+                    android:paddingStart="@dimen/margin_padding_size_small"
+
                     >
                     <TextView
                         android:id="@+id/tvBio"
@@ -350,12 +373,15 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
             <ImageView
-                android:id="@+id/imgViewIndvdlCntct2"
+                android:id="@+id/imgVDivider3"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_with_settings"
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
                 android:alpha="0.12"
+                android:layout_marginTop="@dimen/margin_padding_size_medium"
                 app:srcCompat="@drawable/horizontal_line_settings" />
+
+
             <!--            -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutSim"
@@ -408,7 +434,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
-                android:id="@+id/imgVDividerSim"
+                android:id="@+id/imgVDivider4"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_with_settings"
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
@@ -467,7 +493,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
-                android:id="@+id/imgViewIndvdlCntct5"
+                android:id="@+id/imgVDivider5"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_with_settings"
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
@@ -523,8 +549,91 @@
                     app:layout_constraintTop_toTopOf="@+id/tvSpamCount"
                     app:layout_goneMarginEnd="16dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/dividerLarge2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@drawable/horizontal_line_settings"
+                app:layout_constraintTop_toBottomOf="@+id/imgBtnBack"
+                android:layout_marginTop="@dimen/margin_padding_size_xxlarge"
+                android:alpha="0.20"
+                />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutSugestionQ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="@dimen/margin_padding_size_medium"
+                >
 
-<!--            <ImageView-->
+                <ImageView
+                    android:id="@+id/imgSugst"
+                    android:layout_width="@dimen/settings_icons_width"
+                    android:layout_height="@dimen/settings_icons_width"
+                    android:layout_marginStart="@dimen/margin_padding_size_medium"
+                    android:alpha="0.74"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_outline_info_24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:layout_editor_absoluteY="66dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/margin_padding_size_small"
+                    />
+
+                <FrameLayout
+                    android:id="@+id/frameSugestionQ"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/thumbsUpButton"
+                    android:layout_marginEnd="@dimen/margin_padding_size_small"
+                    android:layout_marginTop="@dimen/margin_padding_size_small"
+                    >
+                    <TextView
+                        android:id="@+id/tvSugstnQ"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Was this suggestion helpful?"
+                        tools:text="Was this suggestion helpful?"
+                        android:textColor="@color/textColor"
+                        android:textSize="@dimen/text_size_list_item"
+                        />
+                </FrameLayout>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/thumbsUpButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:scaleX="0.8"
+                    android:scaleY="0.8"
+                    android:src="@drawable/ic_baseline_thumb_up_24"
+                    app:layout_constraintStart_toEndOf="@+id/frameSugestionQ"
+                    app:layout_constraintTop_toTopOf="@+id/frameSugestionQ"
+                    app:layout_constraintEnd_toStartOf="@+id/thumbsDownButton"
+                    app:tint="#53A55E" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/thumbsDownButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:scaleX="0.8"
+                    android:scaleY="0.8"
+                    android:src="@drawable/ic_baseline_thumb_down_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/thumbsUpButton"
+                    app:layout_constraintTop_toTopOf="@+id/thumbsUpButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="@dimen/margin_padding_size_medium"
+                    app:tint="#B55A5A" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!--            <ImageView-->
 <!--                android:id="@+id/imgViewIndvdlCntct6"-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="@dimen/divider_with_settings"-->
@@ -592,6 +701,7 @@
                 android:layout_marginTop="@dimen/margin_padding_size_xlarge"
                 />
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 

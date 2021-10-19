@@ -2,6 +2,9 @@ package com.hashcaller.app.work
 
 import android.database.Cursor
 import android.provider.ContactsContract
+import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.internal.common.CrashlyticsCore
 import com.hashcaller.app.repository.contacts.PhoneNumWithHashedNumDTO
 import com.hashcaller.app.view.ui.contacts.utils.contactWithMetaDataForSms
 import com.hashcaller.app.view.utils.ContactGlobal
@@ -23,51 +26,56 @@ class WorkerContactRepository(
 
     suspend fun fetchContacts(): MutableList<PhoneNumWithHashedNumDTO> = withContext(Dispatchers.IO) {
 
-        var hashSetOfAddress : HashSet<String> = HashSet()
+        try{
+            var hashSetOfAddress : HashSet<String> = HashSet()
 
 
-        if (cursor?.count ?: 0 > 0) {
-            while (cursor!!.moveToNext()) {
-                var contact = PhoneNumWithHashedNumDTO()
-                val name =
-                    cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                var phoneNo =
-                    cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                phoneNo = formatPhoneNumber(phoneNo)
+            if (cursor?.count ?: 0 > 0) {
+                while (cursor!!.moveToNext()) {
+                    var contact = PhoneNumWithHashedNumDTO()
+                    val name =
+                        cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                    var phoneNo =
+                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                    phoneNo = formatPhoneNumber(phoneNo)
 
-                phoneNo = libCountryHelper.getES164Formatednumber(phoneNo, countryISO)
-                if(!hashSetOfAddress.contains(phoneNo)){
-                    hashSetOfAddress.add(phoneNo)
-                }else{
-                    continue
-                }
-
-                val photoUri =
-                    cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
-                val duplicate =
-                    AtomicBoolean(false)
-
-                if (lastNumber != phoneNo) {
-//                    contact.name = name
-//                    contact.phoneNumber = phoneNo
-                    //add first 8 number digits for getting  geographical information about a number in api
-                    if(phoneNo.length>7){
-                        contact.hashedPhoneNumber = phoneNo
+                    phoneNo = libCountryHelper.getES164Formatednumber(phoneNo, countryISO)
+                    if(!hashSetOfAddress.contains(phoneNo)){
+                        hashSetOfAddress.add(phoneNo)
                     }else{
-                        contact.hashedPhoneNumber = phoneNo
+                        continue
                     }
 
-                    contact.name = name
+                    val photoUri =
+                        cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
+                    val duplicate =
+                        AtomicBoolean(false)
 
-                    //encode and hash phone number
+                    if (lastNumber != phoneNo) {
+//                    contact.name = name
+//                    contact.phoneNumber = phoneNo
+                        //add first 8 number digits for getting  geographical information about a number in api
+                        if(phoneNo.length>7){
+                            contact.hashedPhoneNumber = phoneNo
+                        }else{
+                            contact.hashedPhoneNumber = phoneNo
+                        }
+
+                        contact.name = name
+
+                        //encode and hash phone number
 //                    phoneNo = Secrets().managecipher(context.packageName, phoneNo)
-                    contact.phoneNumber = phoneNo
+                        contact.phoneNumber = phoneNo
 
-                    contacts.add(contact)
-                    lastNumber = phoneNo
+                        contacts.add(contact)
+                        lastNumber = phoneNo
+                    }
                 }
+                cursor.close()
             }
-            cursor.close()
+        }catch (e:Exception){
+            FirebaseCrashlytics.getInstance().recordException(e)
+            Log.e(TAG, "fetchContacts: $e")
         }
 
         return@withContext contacts
@@ -88,7 +96,9 @@ class WorkerContactRepository(
         }
     }
 
-
+    companion object{
+        const val TAG = "__WorkerContactRepository"
+    }
 
 
 }

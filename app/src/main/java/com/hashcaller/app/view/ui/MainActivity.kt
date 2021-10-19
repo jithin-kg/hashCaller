@@ -193,6 +193,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 //        markViewmodel.toggleBottomSheet.observe(this, Observer {
 //            Log.d(TAG, "onCreate: $it")
 //        })
+
     }
 
     private fun doSOm(savedInstanceState: Bundle?){
