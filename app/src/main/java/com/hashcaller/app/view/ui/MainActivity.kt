@@ -41,6 +41,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseUserMetadata
@@ -187,13 +189,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         registerForAppUpdateResultCb()
 
         updateManagerViewmodel = ViewModelProvider(this, UpdateMangerInjectorUtil.providerViewmodelFactory(this)).get(
-        UpdateManagerViewmodel::class.java)
+            UpdateManagerViewmodel::class.java)
         checkForUpdate()
 
 //        markViewmodel.toggleBottomSheet.observe(this, Observer {
 //            Log.d(TAG, "onCreate: $it")
 //        })
-
     }
 
     private fun doSOm(savedInstanceState: Bundle?){
@@ -244,18 +245,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
      */
     private fun checkForUpdate() {
 //        lifecycleScope.launchWhenCreated {
+        try{
+            val appUpdateManager = AppUpdateManagerFactory.create(this)
+            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+            appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
 
-        updateManagerViewmodel.checkForUpdate().observe(this, Observer {
-            Log.d(TAG, "checkForUpdate: $it")
-            when(it){
-                UpdateManagerViewmodel.IMMEDIATE_UPDATE -> {
-                    val i = Intent(this@MainActivity, ImmediateUpdateActivity::class.java)
-                    startActivity(i)
-                    finish()
+                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                    val versionCode = appUpdateInfo.availableVersionCode()
+                    updateManagerViewmodel.checkForUpdate(versionCode).observe(this, Observer {
+                        Log.d(TAG, "checkForUpdate: $it")
+                        when(it){
+                            UpdateManagerViewmodel.IMMEDIATE_UPDATE -> {
+                                val i = Intent(this@MainActivity, ImmediateUpdateActivity::class.java)
+                                startActivity(i)
+                                finish()
+                            }
+                        }
+                    })
                 }
-            } 
-        })
-           
+            }
+
+        }catch (e:Exception){
+            Log.d(TAG, "checkForUpdate: $e")
+        }
+
+
 //        }
     }
 
@@ -263,7 +277,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         resultUpdate.launch(Intent(this, MainActivity::class.java))
     }
     private fun registerForAppUpdateResultCb(){
-       resultUpdate = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+        resultUpdate = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             if (result.resultCode == Activity.RESULT_OK){
                 toast("HashCaller is updated")
             }else {
@@ -997,7 +1011,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         super.onPause()
 
     }
-   
+
 
 
 
