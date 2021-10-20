@@ -77,7 +77,6 @@ class IndividualcontactViewModel(
             Log.d(TAG, "getContactsFromDb: num is $num")
 
             val c = repository.getIndividualContactFromDb(num)
-            Log.d(TAG, "size is $c ")
             if(c!=null ){
                 mt.value = c
             }
@@ -166,17 +165,17 @@ class IndividualcontactViewModel(
                     try {
                         as1.await()
                     } catch (e: Exception) {
-                        Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
+                        Log.d(TAG, "blockThisAddress: $e")
                     }
                     try {
                         as2.await()
                     } catch (e: Exception) {
-                        Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
+                        Log.d(TAG, "blockThisAddress: $e")
                     }
                     try {
                         as3.await()
                     } catch (e: Exception) {
-                        Log.d(CallContainerViewModel.TAG, "blockThisAddress: $e")
+                        Log.d(TAG, "blockThisAddress: $e")
                     }
 //                    try{
 //                        as4.await()
@@ -319,6 +318,7 @@ class IndividualcontactViewModel(
 //            }
             contactForview.isVerifiedUser = infoInDb?.isVerifiedUser?:false
             contactForview.spammCount = infoInDb?.spamReportCount?:0
+            contactForview.bio = infoInDb?.bio?:""
             contactForViewLivedata.value  = contactForview
         }catch (e:Exception){
             Log.d(TAG, "getAgregatedContactInformation: exception $e")

@@ -133,7 +133,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun observeIsthisNumberBlocked() {
         generalBlockViewmodel.isThisNumberBlocked.observe(this, Observer { isNumberBlocked->
-            Log.d(TAG, "observeIsthisNumberBlocked: $isNumberBlocked")
             if(isNumberBlocked){
                 binding.btnBlockIndividualContact.beGone()
                 binding.btnUnblock.beVisible()
@@ -214,6 +213,12 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
                 setNormalTheme()
                 binding.layoutSpamCountt.beGone()
             }
+            if(it.bio.isNotEmpty()){
+                binding.layoutBio.beVisible()
+                binding.tvBio.text = it.bio
+            }else{
+                binding.layoutBio.beGone()
+            }
 
 //            binding.tvFirstLetter.text = it.firstName[0].toString()
             var nameOfContact = ""
@@ -262,19 +267,29 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun hideLastSmallDivider() {
         var visibleDividers:MutableList<View> = mutableListOf()
         with(binding){
-            if(imgVDivider1.visibility == View.VISIBLE)
+            if(layoutNumber.visibility == View.VISIBLE)
                 visibleDividers.add(imgVDivider1)
-            if(imgVDivider2.visibility == View.VISIBLE)
+            if(layoutCntct.visibility == View.VISIBLE)
                 visibleDividers.add(imgVDivider2)
-            if(imgVDivider3.visibility == View.VISIBLE)
+            if(layoutBio.visibility == View.VISIBLE)
                 visibleDividers.add(imgVDivider3)
-            if(imgVDivider4.visibility == View.VISIBLE)
+            if(layoutSim.visibility == View.VISIBLE)
                 visibleDividers.add(imgVDivider4)
-            if(imgVDivider5.visibility == View.VISIBLE)
+            if(layoutLocation.visibility == View.VISIBLE)
                 visibleDividers.add(imgVDivider5)
+//            if(layoutSpamCountt.visibility == View.VISIBLE)
+//                visibleDividers.add()
 
          if(visibleDividers.isNotEmpty()){
              visibleDividers[visibleDividers.size - 1].beInvisible()
+//             binding.imgVDivider1.beGone()
+             binding.imgVDivider2.beGone()
+//             binding.imgVDivider3.beGone()
+//             binding.imgVDivider4.beGone()
+//             binding.imgVDivider5.beGone()
+
+             binding.imgVDivider2.alpha = 0f
+
          }
         }
 
@@ -297,7 +312,6 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
     private fun getIntentExtras() {
         phoneNum = intent.getStringExtra(CONTACT_ID)?:""
 //        +918848233258 normal
-        Log.d(TAG, "getIntentExtras: $phoneNum")
          name = intent.getStringExtra("name")?:""
         if(name.isEmpty()){
             name = phoneNum
@@ -465,10 +479,10 @@ class IndividualContactViewActivity : AppCompatActivity(), View.OnClickListener,
             }
             thumbsDownButton.setOnClickListener {
                 it.scaleOutAnim(600)
-                lifecycleScope.launchWhenStarted {
-                    delay(600)
+//                lifecycleScope.launchWhenStarted {
+//                    delay(500)
                     bottmSheetSuggest.show()
-                }
+//                }
 
             }
 

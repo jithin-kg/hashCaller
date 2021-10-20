@@ -51,6 +51,7 @@
         android:layout_marginTop="@dimen/margin_padding_size_small"
         android:elevation="3dp"
         android:padding="@dimen/margin_padding_size_medium"
+        android:visibility="gone"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_marginEnd="@dimen/margin_padding_size_medium"
         />
@@ -311,12 +312,16 @@
                 android:layout_height="@dimen/divider_with_settings"
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
                 android:alpha="0.12"
-                app:srcCompat="@drawable/horizontal_line_settings" />
+                app:srcCompat="@drawable/horizontal_line_settings"
+                android:visibility="invisible"
+                />
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutBio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                >
 
                 <ImageView
                     android:id="@+id/imgBio"
@@ -379,7 +384,10 @@
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
                 android:alpha="0.12"
                 android:layout_marginTop="@dimen/margin_padding_size_medium"
-                app:srcCompat="@drawable/horizontal_line_settings" />
+                app:srcCompat="@drawable/horizontal_line_settings"
+                android:visibility="invisible"
+
+                />
 
 
             <!--            -->
@@ -440,7 +448,9 @@
                 android:layout_marginStart="@dimen/indvdl_divider_margin_start"
                 android:alpha="0.12"
                 android:visibility="gone"
-                app:srcCompat="@drawable/horizontal_line_settings" />
+                app:srcCompat="@drawable/horizontal_line_settings"
+
+                />
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -564,6 +574,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="@dimen/margin_padding_size_medium"
+                android:visibility="gone"
                 >
 
                 <ImageView

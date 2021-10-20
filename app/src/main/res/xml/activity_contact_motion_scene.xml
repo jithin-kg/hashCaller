@@ -94,6 +94,59 @@
             />
 
         <Constraint
+            android:id="@+id/imgVdividerMain"
+            android:layout_width="1dp"
+            android:layout_height="-1000dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/horizontal_line_settings"
+            motion:layout_constraintTop_toBottomOf="@+id/imgBtnBack"
+            android:layout_marginTop="@dimen/margin_top_hair_cntct_ind"
+            android:alpha="0.20"
+            motion:visibilityMode="ignore"
+            />
+        <Constraint
+            android:id="@+id/imgVDivider2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_with_settings"
+            android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+            android:alpha="0.12"
+            motion:srcCompat="@drawable/horizontal_line_settings"
+            motion:visibilityMode="ignore"
+            />
+        <Constraint
+            android:id="@+id/imgVDivider3"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_with_settings"
+            android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+            android:alpha="0.12"
+            android:layout_marginTop="@dimen/margin_padding_size_medium"
+            motion:srcCompat="@drawable/horizontal_line_settings"
+            motion:visibilityMode="ignore"
+            />
+        <Constraint
+            android:id="@+id/imgVDivider4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_with_settings"
+            android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+            android:alpha="0.12"
+            android:visibility="gone"
+            motion:srcCompat="@drawable/horizontal_line_settings"
+            motion:visibilityMode="ignore"
+
+            />
+        <Constraint
+            android:id="@+id/imgVDivider5"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_with_settings"
+            android:layout_marginStart="@dimen/indvdl_divider_margin_start"
+            android:alpha="0.12"
+            android:visibility="gone"
+            motion:srcCompat="@drawable/horizontal_line_settings"
+            motion:visibilityMode="ignore"
+            />
+
+        <Constraint
             motion:layout_constraintBottom_toTopOf="@+id/tvName"
             android:id="@+id/ivAvatar"
             android:layout_height="@dimen/individual_contact_avatar"

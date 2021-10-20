@@ -106,6 +106,7 @@
         <entry key="app/src/main/res/drawable/tab_selector.xml" value="0.196875" />
         <entry key="app/src/main/res/layout/activity_block_manage.xml" value="0.11398176291793313" />
         <entry key="app/src/main/res/layout/activity_crete_block_list_pattern.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_get_initial_user_info.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_incomming_call_view_updated.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_individual_call_log.xml" value="0.18342391304347827" />
         <entry key="app/src/main/res/layout/activity_individual_cotact_view.xml" value="0.22" />
@@ -119,7 +120,7 @@
         <entry key="app/src/main/res/layout/block_config_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/bottom_sheet_block.xml" value="0.125" />
         <entry key="app/src/main/res/layout/bottom_sheet_block_feedback.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/bottom_sheet_suggest.xml" value="0.11510416666666666" />
+        <entry key="app/src/main/res/layout/bottom_sheet_suggest.xml" value="0.25" />
         <entry key="app/src/main/res/layout/call_container_fragment.xml" value="0.18" />
         <entry key="app/src/main/res/layout/call_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/call_list_expanded.xml" value="0.25" />

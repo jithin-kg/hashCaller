@@ -1,3 +1,502 @@
+commit 4425ce12489099d401a3961dceb82fd35733e4fb
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Oct 19 19:14:51 2021 +0530
+
+    added suggest bottom sheet in individualcontactviewactvity
+
+commit bcd4e8b24ae33348e9736c2326284b43898b7833
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 18 19:38:36 2021 +0530
+
+    bug fix:Unable to instantiate fragment com.hashcaller.app.view.ui.call.CallFragment: could not find Fragment constructor
+
+commit c71604aa414a518d828fe33fa50beaa8b711695b
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 18 19:10:52 2021 +0530
+
+    bug fix: crashletics reported bugs fixed
+
+commit 2b28b226e5f942783dcb34d81244595c337f2cf2
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 18 18:46:35 2021 +0530
+
+    changing individualcontactactivity header based on spam status
+
+commit 1f12375c64438fcd0c4942b98023847761fe9393
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 18 15:46:49 2021 +0530
+
+    bug fix:location not showing in activityincommingcallviewupdated
+
+commit 128f638bc36d343f313fb61cb6f78ca7eb94eacb
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Oct 7 22:52:06 2021 +0530
+
+    fix: non contact patterns not deleting in blockconfigfragment
+
+commit e99846330fbae3118a5dbd3161eb3675b5bca01c
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Oct 7 21:47:23 2021 +0530
+
+    fix: individualContactViewActivity details not showing correctly when intent from activityincommingcallview
+
+commit 373d626661ffb428f30c971cd684c6e33430901d
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Oct 5 23:17:36 2021 +0530
+
+    calllog item expand transitions added
+
+commit e136f6dd67e95df64e00c385ec7552503b69e147
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Oct 5 02:26:49 2021 +0530
+
+    fixed toolbar not collapsing issue
+
+commit cf4034c30df3e52eccd973ec5b36b7f553a233ac
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 4 23:00:23 2021 +0530
+
+    added spam calls fragment
+
+commit 4b2019e362467e0e6c3e8cec72967b5b79ce9c66
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 4 18:39:57 2021 +0530
+
+    fix restore state in mainactivity ontheme change
+
+commit 065a13c3a1b10cede9834b1561a67b4594f66837
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 4 12:39:11 2021 +0530
+
+    swipe to reveal button added in blockconfigfragment
+
+commit 04e32a8643d75b5204be7858f59df51b2891e458
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Oct 4 11:22:36 2021 +0530
+
+    fix: update call log when name suggested
+
+commit 4f92540a4aff6ef3acb214d68988552ec05022c5
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Sep 29 21:28:29 2021 +0530
+
+    added update layout
+
+commit 286dafa1e24d7d871c6faf328aacd881adfa1ece
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Sep 28 19:31:55 2021 +0530
+
+    changed getstarted slieder icon colors
+
+commit f21ed9d406b957d357a0e0cdcf15789ef846d548
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sat Sep 25 21:35:04 2021 +0530
+
+    hashing number in thumbsup,down,suggest workers
+
+commit 466fc9404d4126682ce08af30f073c34ffb25dbe
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Sep 24 00:54:12 2021 +0530
+
+    added overlay permission screen
+
+commit 2f0e44f38ac96360a4affc50dfe29669679c67fa
+Merge: d1a4a6a3 c8f6f3a8
+Author: Jithin KG <31859018+jithin-kg@users.noreply.github.com>
+Date:   Thu Sep 23 09:48:35 2021 +0530
+
+    Merge pull request #5 from pz64/master
+    
+    Added intro screens with dummy text
+
+commit c8f6f3a8cc250d208395c392c418e664306f27b2
+Author: pz64 <thepzy64@gmail.com>
+Date:   Thu Sep 23 00:31:36 2021 +0530
+
+    Added intro screens with dummy text
+
+commit 801882fa707cd394d39c00fdbbee2c994be940c7
+Merge: 66da7a0d d1a4a6a3
+Author: pz64 <thepzy64@gmail.com>
+Date:   Thu Sep 23 00:26:16 2021 +0530
+
+    Merge branch 'master' of https://github.com/pz64/hashCaller
+    
+    # Conflicts:
+    #       app/src/main/AndroidManifest.xml
+    #       app/src/main/java/com/hashcaller/app/view/ui/FullscreenActivity.kt
+    #       app/src/main/java/com/hashcaller/app/view/ui/MainActivity.kt
+
+commit 66da7a0dfab9847366607ac9afcf3c3d1ac5b4ab
+Author: pz64 <thepzy64@gmail.com>
+Date:   Thu Sep 23 00:19:54 2021 +0530
+
+    Added intro screens with dummy text
+
+commit d1a4a6a3b7fe8b57a0efccdd6e4824fafe934b32
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Sep 22 20:09:02 2021 +0530
+
+    bug fix:dialerviewmodle worng name assignment
+
+commit 857a9972045fe7d2a83ec11df4d3eda52fd07668
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Sep 22 20:05:09 2021 +0530
+
+    replaced all deprecated startActivityfor result with ActivityresultLauncher
+
+commit 9147d3cda0ceaece1abb145cc8e466d5f118c711
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Sep 22 17:28:34 2021 +0530
+
+    fix: added image picker library to chose image from gallery/cam
+
+commit e926e90151a470b7b52a4884fedf64304801eba8
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Sep 22 11:24:29 2021 +0530
+
+    fix: relative day not showing accurately in call log
+
+commit 2d9702993502301b1bf7381d740d220c76ce3d2f
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Sep 21 22:03:29 2021 +0530
+
+    replaced default spamthreshold constant with worker result
+
+commit d691d08ab210c905f8856400743769afeaa1a26f
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Sep 21 11:51:22 2021 +0530
+
+    sending google signin auth data not in form
+
+commit d92c8cb068287c377b027f990b380bc9347d48c7
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Sep 20 17:03:07 2021 +0530
+
+    added verified badge
+
+commit 54a40c308dd35514c8ee9abbdecf87443f98a5e4
+Merge: 61775fa5 117a1cdf
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Sep 20 09:59:53 2021 +0530
+
+    Merge branch 'master' of https://github.com/jithin-kg/hashCaller
+    mergin unexpected merge
+
+commit 61775fa52397ebf4d710f02acec5f39819b5afc8
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Sep 20 01:43:08 2021 +0530
+
+    removed app name from activity as a dialog using empty label in manifest
+
+commit 85724befbfa02938932f215cdb92ed80bd9aaada
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Sep 20 00:48:42 2021 +0530
+
+    changed api response dto in search,call,contact and added relative day in call fragment
+
+commit 117a1cdf35387b7040e779055cf4c54cacac17f9
+Merge: 89f8f96b 924d6c30
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sat Sep 18 22:01:49 2021 +0530
+
+    Merge pull request #4 from pz64/master
+    
+    added work manager in incomingcallview
+
+commit 924d6c30b10ff64e76e1762d6d652ddb3cb75100
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sat Sep 18 22:00:40 2021 +0530
+
+    removed telephony stuff in android 11
+
+commit 8b8c507c0bada62d99bd3a3bfd65ea98d5013a0a
+Merge: 082aa320 89f8f96b
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sat Sep 18 21:34:19 2021 +0530
+
+    Merge branch 'jithin-kg:master' into master
+
+commit 89f8f96baab68125d98c63b89c1a347cc17798a8
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sat Sep 18 14:52:32 2021 +0530
+
+    signup(profile) using google,update profil using google and GetInitialUserInfoActivity design updated
+
+commit 082aa3206383d73dfae90c3d4d45292267cbd8f0
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sat Sep 18 00:10:19 2021 +0530
+
+    added workmanager in incomingcallview
+
+commit a487dfff9169d6368d3bd0ff43d3144f3b2da8a8
+Merge: 9a2eac78 e4c5989b
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sat Sep 18 00:01:33 2021 +0530
+
+    Merge branch 'master' of https://github.com/pz64/hashCaller
+
+commit 9a2eac78b3594479074cb256c139594575976b7c
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sat Sep 18 00:00:58 2021 +0530
+
+    added workmanager in incomingcallview
+
+commit e4c5989bdc56acf70e064436ad7fb050e8659dac
+Merge: 60658f27 8c8dee80
+Author: Jithin KG <31859018+jithin-kg@users.noreply.github.com>
+Date:   Fri Sep 17 08:50:14 2021 +0530
+
+    Merge pull request #3 from pz64/master
+    
+    incoming call view updated
+
+commit 60658f27a28c24db1f47265783c1bd6d74ab6927
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Sep 17 08:44:04 2021 +0530
+
+    added login with google
+
+commit 8c8dee807812686b56a4458e73655fa4d80cc840
+Author: pz64 <thepzy64@gmail.com>
+Date:   Thu Sep 16 23:20:40 2021 +0530
+
+    added debug key back
+
+commit f0fd142e682437ad42c50289a4cea1c920b4bf28
+Author: pz64 <thepzy64@gmail.com>
+Date:   Thu Sep 16 23:18:26 2021 +0530
+
+    added incoming call view updated
+
+commit e06ef7368e6e1975d13ed7c9b5798d41a4579be8
+Author: pz64 <thepzy64@gmail.com>
+Date:   Thu Sep 16 22:50:06 2021 +0530
+
+    added incoming call view updated
+
+commit e155eb7ec9b9b862ac4ef43ea7644e647ae89b86
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Sep 8 13:23:33 2021 +0530
+
+    added phoneNumber from phone book in unknown number response
+
+commit 146c4449bf3da5c5a0a194b54f4956c5948d05fc
+Merge: ff9130f1 1c9e9c3e
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sun Aug 29 21:46:20 2021 +0530
+
+    Merge branch 'master' of https://github.com/jithin-kg/hashCaller
+    merge userconsent screen feature
+
+commit 1c9e9c3ea77e267dddac49260050d1dd71893c1f
+Merge: 04d946f0 4eacb613
+Author: Jithin KG <31859018+jithin-kg@users.noreply.github.com>
+Date:   Sun Aug 29 21:46:08 2021 +0530
+
+    Merge pull request #2 from pz64/master
+    
+    Added UserConsent Screen for Contact Permission.
+
+commit ff9130f1e4631d5f43555616230506eb085db586
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sun Aug 29 21:45:45 2021 +0530
+
+    changed caller responseItem
+
+commit 4eacb613833943b89658a47b3bb1479fc5c9266f
+Author: pz64 <thepzy64@gmail.com>
+Date:   Sun Aug 29 20:34:18 2021 +0530
+
+    Added UserConsent Screen for Contact Permission.
+    Added second screen for Phone state and overlay permission.
+
+commit 6b73f4c4580aff475468a031766c2af6ad3ec6db
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Aug 27 16:28:47 2021 +0530
+
+    fixed unblocking contacts from individual contacts
+
+commit 04d946f001a64e86afebc5e10b2e9a79247b5008
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Aug 27 10:57:01 2021 +0530
+
+    commented smssearchfragment from mainactivity
+
+commit da88bf1bfd3eb72eebd4a9f90ec31f57e639799f
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Aug 27 10:44:31 2021 +0530
+
+    added permission ANSWER_PHONE_CALLS to block incomming call if app not selected as default caller Id
+
+commit b8b303a6cbbeebc980cad1edcf718a349ad70d6e
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Aug 26 21:56:42 2021 +0530
+
+    fixed mainactivity onresume blank view due to smsfragment commented/removed
+
+commit 1a8c2c64a7c64cfffd2f983bebb0606b83909f1b
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Aug 26 20:00:09 2021 +0530
+
+    sending spam reported contacts as array
+
+commit e47f16122eab47b4d3d8484c5b08c135a3cc2522
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Aug 26 11:46:14 2021 +0530
+
+    fixed dialer text (duplicate), radio button different group selection
+
+commit 5b1806e2d59d9005a540ddc4ca6aa43fd864b774
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Aug 25 16:58:09 2021 +0530
+
+    fixed contacts fragment crash (hardrware acceleration desabled)
+
+commit ebfd54defffac0e58febf2a213c30ec7646a71c6
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Aug 20 21:57:00 2021 +0530
+
+    removed call_log_write_permissions
+
+commit b130bdd3d025e9aee53328abc45f91d4371c8ef5
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Aug 20 19:55:43 2021 +0530
+
+    detach and attach of fragment changed to different transactions and removed all sms permissions and activity, receivers and services removed from manifes
+
+commit 5153a82dd095f373da90d5ef4430ef8267e7c591
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Aug 17 14:22:19 2021 +0530
+
+    removed ndk and changed hashing function without ndk
+
+commit 310a7869559877d86b8d0c7f70ef5dc20022366f
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Aug 17 10:30:00 2021 +0530
+
+    changed hashing algorithm
+
+commit 768baa085f2e4ebdb234363a4b441cbed0422a20
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Aug 16 19:13:50 2021 +0530
+
+    fixed changed release.debuggable to false (otherwise google play complains app is not signed)
+
+commit 2f2b004b94e387e4ecb1f273d45fb7bc20085f71
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Aug 16 18:37:42 2021 +0530
+
+    fixed new SMS send list alignment and hide fab in contactscotnainerfragment
+
+commit 40db0414506d47d5b827b019cc5e4fdcdb3cf56a
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Aug 16 16:13:31 2021 +0530
+
+    updated libraries
+
+commit 8acb1983606494bd27e6aea7a15736df0302c59c
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sat Aug 14 16:34:11 2021 +0530
+
+    changed dummy data in window
+
+commit 52b5fe1d6bb2fabbe1d543a32340769c6357fc24
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Sat Aug 14 15:58:13 2021 +0530
+
+    added screening role request in blockamangeActivity
+
+commit 4bb107eb7e3e870832f9e2459d4b7590f8e0a5c7
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Thu Aug 12 18:18:46 2021 +0530
+
+    changed from targetSdkVersion 29 to 30 but floating window not showing
+
+commit e2a39d31149bf6a507c1d45efef929dd063bbd0c
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Aug 11 22:17:30 2021 +0530
+
+    added deactivate account option
+
+commit d0fd4a03acfdd87b9836d006554de606bcac07d9
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Aug 11 18:35:54 2021 +0530
+
+    removed unused libraries
+
+commit 0ad283d5a33ac5edd9a846afeb9fe42aeef0e709
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Aug 10 21:00:58 2021 +0530
+
+    replaced app-icon with bold one
+
+commit 7fc1e1359d7c78c47fa34f553da03337ad635121
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Aug 10 20:23:50 2021 +0530
+
+    changed launher icon
+
+commit 4712003cf5049fea7e9b94aa5db4a9821bc23bba
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Aug 10 12:22:01 2021 +0530
+
+    changed com.nibble.hashcaller package to com.hashcaller
+
+commit 46ed50947419756d39988eb2079299db2a06c4c2
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Fri Aug 6 11:32:21 2021 +0530
+
+    changed savemycontacts response
+
+commit c0cecae9b9ce2beb7c9ffa9da01a1364de751ad9
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Jul 26 19:38:12 2021 +0530
+
+    chaged p color
+
+commit de9de00fe0138df42c572f85f669a249b2c1a100
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Wed Jul 21 00:19:09 2021 +0530
+
+    fix:stoping floatingservice when call blocked by screeningservice
+
+commit 75b255f3aa4a5dde6c737267d9c3ec6e691244ba
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Jul 20 23:56:35 2021 +0530
+
+    closing activity incomming call view quickly
+
+commit 9e886826f1a68fbebfca34c182d72d9fbf51670d
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Jul 20 22:58:54 2021 +0530
+
+    displaying sim icon on window and activityincommingcallview
+
+commit 3b9a9516b03d64cdc75508ad96ab41ef0ceda590
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Jul 20 16:45:55 2021 +0530
+
+    showing window when broadcast reciever failed to get message on quick attend of incomming call
+
+commit ffebabeb539c8200be3399a246a1a22deb54d139
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Jul 20 11:41:57 2021 +0530
+
+    added window in outgoing calls
+
+commit 44afd4191ff7f24ee4137682ff86e707d1bf60a4
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Mon Jul 19 12:43:58 2021 +0530
+
+    starting and stoping floating service according to incommingcallreceiver state properly
+
+commit 69a971b618a674c0e1153c27a9366fd00031228e
+Author: jithin-kg <jithinjkg@gmail.com>
+Date:   Tue Jul 13 10:50:36 2021 +0530
+
+    changed response structures of api responses
+
 commit c4c18c8d5e810e04c240f0aa386e8d9340fb1f4b
 Author: jithin-kg <jithinjkg@gmail.com>
 Date:   Fri Jul 9 12:55:43 2021 +0530
@@ -41,7 +540,7 @@ Date:   Fri Jul 2 10:18:16 2021 +0530
     added savemycontacts request in contactuploadworker
 
 commit 0f4003c622fd780e7249ce953e1c8ac8676cb451
-Merge: 4bea28a 60a3726
+Merge: 4bea28a7 60a3726f
 Author: jithin-kg <jithinjkg@gmail.com>
 Date:   Thu Jul 1 18:57:19 2021 +0530
 
@@ -54,7 +553,7 @@ Date:   Thu Jul 1 18:04:20 2021 +0530
     added phone num validation in ActivityPhoneauth
 
 commit 60a3726fe170180beb39b0d4a32092303d8d8dfb
-Merge: 44fa344 f0b3817
+Merge: 44fa3446 f0b38179
 Author: Jithin KG <31859018+jithin-kg@users.noreply.github.com>
 Date:   Thu Jul 1 15:34:34 2021 +0530
 
@@ -729,7 +1228,7 @@ Date:   Sun May 9 19:49:40 2021 +0530
     showing floating window successfully
 
 commit ab75ff99c19093a990070c694c405e0951f521ea
-Merge: 34528a9 75e3480
+Merge: 34528a92 75e34809
 Author: jithin-kg <jithinjkg@gmail.com>
 Date:   Sun May 9 19:30:21 2021 +0530
 
@@ -1066,7 +1565,7 @@ Date:   Sun Apr 25 13:17:15 2021 +0530
     fixed flickering of circle color in call fragment by saving color in db while inserting calllog
 
 commit ad33a0ffe597ca9c5245bd8a34878aa3923d5d07
-Merge: 5316cac 1abfb42
+Merge: 5316cacb 1abfb42e
 Author: jithin-kg <jithinjkg@gmail.com>
 Date:   Sun Apr 25 12:40:49 2021 +0530
 
@@ -1872,7 +2371,7 @@ Date:   Sat Mar 6 15:43:29 2021 +0530
     sms listing using grouping and paging by offset
 
 commit a9056325e6e65dca223ace084d1c581eed4f8854
-Merge: ff1ef01 ac3f4f7
+Merge: ff1ef012 ac3f4f75
 Author: jithin-kg <jithinjkg@gmail.com>
 Date:   Sat Mar 6 13:28:53 2021 +0530
 
